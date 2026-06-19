@@ -70,6 +70,13 @@ class Opening:
     # 'breach' = soft/destructible panel: collision tagged so you can swap it
     # out at runtime for the breaching mechanic.
 
+    # --- optional tactical metadata (game-agnostic; ignored if unset) ---
+    tag: Optional[str] = None              # e.g. "main_entry", "rear_access"
+    breach_class: Optional[str] = None     # e.g. "soft_wall", "reinforceable"
+    material: Optional[str] = None         # e.g. "drywall", "brick"
+    vaultable: Optional[bool] = None       # window/low opening you can climb through
+    reinforceable: Optional[bool] = None   # defenders can reinforce this
+
     def resolved(self):
         d = dict(width=self.width, height=self.height, sill=self.sill)
         defaults = {
@@ -147,6 +154,62 @@ class Parapet:
     thick: float = 0.2
 
 
+# ----------------------------------------------------------------------------
+# TACTICAL GRAMMAR  --  optional gameplay layer (game-agnostic)
+# ----------------------------------------------------------------------------
+
+@dataclass
+class Room:
+    """A named tactical space on a story. bounds = [min_x, min_y, max_x, max_y]
+    in level coords. Used for reachability/route validation and the scorecard,
+    and emitted as a NAV_REGION marker for Godot."""
+    id: str
+    story: int
+    bounds: list[float]                    # [min_x, min_y, max_x, max_y]
+    role: Optional[str] = None             # "public_entry", "objective_room", "stairwell"...
+    combat_range: Optional[str] = None     # "close", "medium", "long"
+    fortifiable: Optional[bool] = None
+    objective: bool = False                # convenience flag; role may also imply it
+
+
+@dataclass
+class VerticalLink:
+    """A designed vertical interaction connecting stories. 'stair' references
+    an existing stairwell role; 'floor_hole'/'hatch' describe a vertical angle
+    or drop point (these also cut the slab if cut_slab is true)."""
+    kind: Literal["stair", "floor_hole", "hatch"] = "stair"
+    role: Optional[str] = None             # "main_rotation", "vertical_angle"
+    from_story: Optional[int] = None       # for stair
+    to_story: Optional[int] = None
+    story: Optional[int] = None            # for floor_hole / hatch
+    x: Optional[float] = None
+    y: Optional[float] = None
+    size_x: Optional[float] = None
+    size_y: Optional[float] = None
+    breachable: Optional[bool] = None      # hatch
+    cut_slab: bool = True                  # floor_hole/hatch punch the slab
+
+
+@dataclass
+class Marker:
+    """A gameplay point baked into the GLB as a named empty AND written to the
+    companion gameplay.json. type drives the node name prefix; Godot's import
+    script maps these to game nodes.
+
+    Common types: attacker_spawn, defender_spawn, objective, extraction,
+    camera_socket, door_socket, breach_panel, cover_low, cover_high,
+    patrol_point, loot, nav_region.
+    """
+    type: str
+    x: float = 0.0
+    y: float = 0.0
+    z: float = 0.0
+    rot_z: float = 0.0                     # facing, degrees
+    id: Optional[str] = None               # suffix, e.g. "A" -> ATTACKER_SPAWN_A
+    room: Optional[str] = None             # optional Room.id this belongs to
+    meta: Optional[dict] = None            # arbitrary extra data -> gameplay.json
+
+
 @dataclass
 class LevelSpec:
     name: str = "level"
@@ -175,6 +238,11 @@ class LevelSpec:
     placements: list[Placement] = field(default_factory=list)
     # where vendored asset files live, relative to the spec file
     assets_dir: str = "../assets"
+
+    # tactical grammar (all optional; plain building specs omit these)
+    rooms: list[Room] = field(default_factory=list)
+    vertical_links: list[VerticalLink] = field(default_factory=list)
+    markers: list[Marker] = field(default_factory=list)
 
     # if no ext_walls are specified, auto-generate solid exterior walls
     auto_exterior: bool = True

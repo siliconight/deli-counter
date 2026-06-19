@@ -96,6 +96,23 @@ def validate_file(path):
         print(f"  -> {len(hard)} schema error(s)"
               + ("" if sem_ok else ", semantic errors"))
         return False
+
+    # tactical analysis (only meaningful if the spec defines rooms)
+    try:
+        from tactical import analyze, format_scorecard
+        terrors, twarnings, scorecard = analyze(spec)
+        for w in twarnings:
+            print(f"  TACTICAL-WARN: {w}")
+        for e in terrors:
+            print(f"  TACTICAL-ERROR: {e}")
+        if scorecard.get("tactical"):
+            print(format_scorecard(spec.name, scorecard))
+        if terrors:
+            print(f"  -> {len(terrors)} tactical error(s)")
+            return False
+    except Exception as ex:
+        print(f"  TACTICAL: analysis skipped ({ex})")
+
     print("  -> OK")
     return True
 

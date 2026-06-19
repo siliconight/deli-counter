@@ -1,0 +1,29 @@
+name: deli-counter-check
+
+# Runs the source-control gate on every push and PR: validates all specs
+# (schema + loader + tactical rules) and confirms CATALOG.md is current.
+# No Blender needed — these checks are pure Python.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install validation deps
+        run: pip install jsonschema
+
+      - name: Run gate (validate specs + catalog freshness)
+        run: python check.py

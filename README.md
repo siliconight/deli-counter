@@ -114,6 +114,19 @@ hook or CI job. Neither needs Blender.
 the change in `CHANGELOG.md`. Convention: MAJOR = schema break, MINOR = new
 feature (old specs unchanged), PATCH = geometry fix.
 
+### CI
+
+`.github/workflows/check.yml` runs `python check.py` on every push and PR to
+`main` — validates all specs (schema + loader + tactical rules) and confirms
+`CATALOG.md` is current. No Blender needed; a bad spec fails CI server-side.
+
+### Versioned release packages
+
+`python package.py` builds `dist/deli_counter-<KIT_VERSION>.zip` (named from
+`version.py`) and writes a `VERSION` stamp file. `dist/` is gitignored —
+attach the zip to a GitHub Release rather than committing it. `python
+package.py --check` prints the version that would be packaged.
+
 ## Import into Godot 4
 
 Drop the `.glb` into the project. The importer reads collision suffixes:
@@ -176,6 +189,45 @@ generated geometry, so Godot wires it up on GLB import. `validate.py` checks
 every placement points at a defined asset and that vendored files exist —
 before Blender ever launches. See `specs/kitbash_demo.json` for a worked
 example.
+
+## Tactical layer — playable level packages
+
+Beyond geometry, a spec can describe **gameplay meaning**. All of this is
+optional — a plain building spec omits it and still builds.
+
+- **`rooms`** — named spaces with `bounds` `[min_x, min_y, max_x, max_y]`,
+  `role` (`public_entry`, `objective_room`, `connector`, `fortifiable`…),
+  `combat_range`, `fortifiable`. Drive reachability/route validation and the
+  scorecard; emitted as `NAV_REGION_*` markers.
+- **`vertical_links`** — designed vertical interactions: `stair` (rotation),
+  `floor_hole` (vertical angle, cuts the slab), `hatch` (breachable drop).
+- **`markers`** — gameplay points: `attacker_spawn`, `defender_spawn`,
+  `objective`, `extraction`, `cover_low/high`, `camera_socket`,
+  `patrol_point`, `loot`, etc. With optional `id`, `room`, `rot_z`, `meta`.
+- **Tactical openings** — `door`/`window`/`breach`/`garage` carry optional
+  `tag`, `breach_class`, `material`, `vaultable`, `reinforceable`.
+
+**Delivered to Godot two ways**: named Empties baked into the GLB (a
+`MARKERS` collection — `ATTACKER_SPAWN_A`, `OBJECTIVE_A`, `DOOR_SOCKET_*`,
+`BREACH_PANEL_*`, `NAV_REGION_*`, `HATCH_*`) **and** a companion
+`<name>.gameplay.json` next to the GLB for parsing without walking node names.
+
+**Validation checks tactical quality**, not just that it builds:
+≥2 attacker entries, every floor has vertical access, objective rooms have
+≥2 access paths, no unreachable rooms, minimum opening width, breach metadata
+present. `validate.py` hard-fails on these and prints a **scorecard**:
+
+```
+  scorecard for rowhouse_raid:
+    floors: 3   rooms: 7   markers: 6
+    attacker entries: 4   objective rooms: 1   breach points: 4
+    vertical links: 4   unreachable rooms: 0
+    errors: 0   warnings: 0
+```
+
+See `specs/rowhouse_raid.json` for a full tactical level. Sightline analysis
+and an in-engine nav smoke test are a planned Godot-side Phase 2 (they need
+real geometry raycasts).
 
 ## Iterating toward real models
 

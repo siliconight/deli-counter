@@ -5,6 +5,28 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.5.0]
+### Added — tactical layer (turns levels into playable level packages)
+- **Tactical grammar** (all optional; plain building specs still build):
+  `rooms` (named spaces with bounds/role/combat_range/fortifiable),
+  `vertical_links` (stair / floor_hole / hatch with designed roles), and
+  `markers` (spawns, objectives, cover, camera/door sockets, etc.).
+- **Tactical openings**: `door`/`window`/`breach`/`garage` now carry optional
+  `tag`, `breach_class`, `material`, `vaultable`, `reinforceable`.
+- **Gameplay markers delivered both ways**: named Empties baked into the GLB
+  (a `MARKERS` collection — `ATTACKER_SPAWN_A`, `OBJECTIVE_A`, `NAV_REGION_*`,
+  `DOOR_SOCKET_*`, `BREACH_PANEL_*`, `HATCH_*`) **and** a companion
+  `<name>.gameplay.json` so Godot can read meaning without parsing names.
+- **Graph-based tactical validation** in `validate.py` via new `tactical.py`
+  (no Blender): >=2 attacker entries, every floor has vertical access, every
+  objective room has >=2 access paths, no unreachable rooms, min opening
+  width, breach metadata present, spawns-vs-objectives. Hard-fails the gate.
+- **Tactical scorecard** printed per level and shown in `CATALOG.md`.
+- New example spec `rowhouse_raid.json` (basement objective, vertical angle,
+  breachable walls, switchback rotation) exercising the full grammar.
+- Schema 1.2.0. Sightline analysis + in-engine nav smoke test intentionally
+  deferred to a Godot-side Phase 2 (need real geometry raycasts).
+
 ## [0.4.1]
 ### Changed
 - Named the tool **Deli Counter**.

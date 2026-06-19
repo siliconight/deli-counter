@@ -36,6 +36,14 @@ def summarize(path):
     spec = load_spec(path)
     breach = sum(1 for w in spec.ext_walls for o in w.openings if o.kind == "breach")
     breach += sum(1 for p in spec.partitions for o in p.openings if o.kind == "breach")
+    tactical = None
+    try:
+        from tactical import analyze
+        _, _, sc = analyze(spec)
+        if sc.get("tactical"):
+            tactical = sc
+    except Exception:
+        pass
     return {
         "file": os.path.basename(path),
         "name": spec.name,
@@ -49,6 +57,9 @@ def summarize(path):
         "breach_points": breach,
         "assets": len(spec.assets),
         "placements": len(spec.placements),
+        "rooms": len(spec.rooms),
+        "markers": len(spec.markers),
+        "tactical": tactical,
         "spec": spec,
     }
 
@@ -89,6 +100,17 @@ def render(rows):
             alist = ", ".join(f"{a.id} ({a.fmt})" for a in s.assets)
             lines.append(f"- Kitbash assets: {alist}")
             lines.append(f"- Placements: {len(s.placements)} instance(s)")
+        if r.get("tactical"):
+            t = r["tactical"]
+            lines.append(f"- **Tactical**: {t['rooms']} rooms, "
+                         f"{t['attacker_entries']} entries, "
+                         f"{t['objective_rooms']} objective room(s), "
+                         f"{t['breach_points']} breach pts, "
+                         f"{t['markers']} markers")
+            if s.rooms:
+                rnames = ", ".join(f"{rm.id}" + (" (obj)" if (rm.objective or rm.role=="objective_room") else "")
+                                   for rm in s.rooms)
+                lines.append(f"- Rooms: {rnames}")
         lines.append("")
     return "\n".join(lines)
 

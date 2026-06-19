@@ -39,10 +39,10 @@ def main():
             sys.path.append(p)
 
     from spec_loader import load_spec
-    from deli_counter import build, export
+    from deli_counter import build, export, write_gameplay_json
 
     spec = load_spec(spec_path)
-    build(spec, base_dir=os.path.dirname(os.path.abspath(spec_path)))
+    builder = build(spec, base_dir=os.path.dirname(os.path.abspath(spec_path)))
     # out_path may be a semicolon-separated list of targets (multi-format)
     written = []
     if out_path:
@@ -53,6 +53,11 @@ def main():
             os.makedirs(os.path.dirname(os.path.abspath(target)), exist_ok=True)
             export(target)
             written.append(target)
+        # tactical companion json next to the first output
+        if written and (builder.gameplay["markers"] or builder.gameplay["rooms"]
+                        or builder.gameplay["vertical_links"]):
+            base = os.path.splitext(written[0])[0]
+            write_gameplay_json(builder, base + ".gameplay.json")
         _write_manifest(spec_path, written)
 
 

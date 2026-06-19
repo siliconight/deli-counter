@@ -14,6 +14,7 @@ import os
 from spec_types import (
     LevelSpec, ExtWall, Opening, Partition, Stairwell,
     SlabHole, Volume, Parapet, Asset, Placement,
+    Room, VerticalLink, Marker,
 )
 
 
@@ -47,15 +48,21 @@ def spec_from_dict(d: dict) -> LevelSpec:
             p["scale_xyz"] = tuple(p["scale_xyz"])
         placements.append(Placement(**p))
 
+    rooms = [Room(**r) for r in d.get("rooms", [])]
+    vertical_links = [VerticalLink(**v) for v in d.get("vertical_links", [])]
+    markers = [Marker(**m) for m in d.get("markers", [])]
+
     top = {k: v for k, v in d.items() if k not in (
         "$schema",
         "ext_walls", "partitions", "stairs", "slab_holes", "volumes",
         "parapets", "assets", "placements",
+        "rooms", "vertical_links", "markers",
     )}
     return LevelSpec(
         ext_walls=ext_walls, partitions=partitions, stairs=stairs,
         slab_holes=slab_holes, volumes=volumes, parapets=parapets,
-        assets=assets, placements=placements, **top,
+        assets=assets, placements=placements,
+        rooms=rooms, vertical_links=vertical_links, markers=markers, **top,
     )
 
 

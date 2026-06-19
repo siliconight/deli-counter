@@ -43,6 +43,7 @@ import random
 from spec_types import (
     Axis, Wall, Collision, Opening, ExtWall, Partition, Stairwell,
     SlabHole, Volume, Parapet, LevelSpec, Asset, Placement,
+    Room, VerticalLink, Marker,
 )
 
 
@@ -96,6 +97,17 @@ class _Builder:
         bm.free()
         obj.scale = (max(size[0], 1e-4), max(size[1], 1e-4), max(size[2], 1e-4))
         obj.location = center
+        return obj
+
+    def _empty(self, name, location, collection, rot_z=0.0, size=0.4):
+        """A named Empty used as a gameplay marker node. Exports to glTF as a
+        node with no mesh; Godot's import script maps the name to a game node."""
+        obj = bpy.data.objects.new(name, None)
+        obj.empty_display_type = 'ARROWS'
+        obj.empty_display_size = size
+        obj.location = location
+        obj.rotation_euler = (0.0, 0.0, math.radians(rot_z))
+        collection.objects.link(obj)
         return obj
 
     def _col_box(self, name, center, size, mode=None):
@@ -200,17 +212,24 @@ class _Builder:
         self._clear()
         self.VISUAL = self._col("VISUAL")
         self.COLLISION = self._col("COLLISION")
+        self.MARKERS = self._col("MARKERS")
+        self.gameplay = {"markers": [], "rooms": [], "vertical_links": [],
+                         "openings": []}
         self._slabs()
         self._exterior()
         self._partitions()
         self._stairs()
+        self._vertical_links()
         self._slab_holes_cut()
         self._volumes()
         self._placements()
         self._parapets()
+        self._rooms()
+        self._markers()
         print(f"[deli_counter] built '{self.s.name}' seed={self.s.seed}: "
               f"{len(self.VISUAL.objects)} visual, "
-              f"{len(self.COLLISION.objects)} collision")
+              f"{len(self.COLLISION.objects)} collision, "
+              f"{len(self.MARKERS.objects)} markers")
 
     def _story_range(self):
         base = -1 if self.s.has_basement else 0
@@ -249,11 +268,46 @@ class _Builder:
                 holes = []
                 if spec_w:
                     holes = [self._opening_to_hole(op, run) for op in spec_w.openings]
+                    self._record_openings(spec_w.openings, c, axis, run,
+                                          f"ext_{s}_{wname}", s)
                 self._box_with_holes(f"ext_{s}_{wname}", c, size, holes, self.VISUAL)
                 if holes:
                     self._wall_collision(f"ext_col_{s}_{wname}", c, size, axis, holes)
                 else:
                     self._col_box(f"ext_col_{s}_{wname}", c, size)
+
+    def _record_openings(self, openings, wall_center, axis, run, wall_name, story):
+        """Capture tactical opening metadata (tag/breach_class/material/etc.)
+        into gameplay.json, with the opening's world position. Also emits a
+        DOOR_SOCKET / BREACH_PANEL marker empty when tactical tags are present
+        so Godot can replace baked openings with reusable scenes."""
+        H = self.s.story_height
+        for j, op in enumerate(openings):
+            r = op.resolved()
+            u = op.pos * run
+            cz = wall_center[2] - H / 2 + r["sill"] + r["height"] / 2 \
+                + self.s.floor_thick / 2
+            if axis == 0:
+                wx, wy = wall_center[0] + u, wall_center[1]
+            else:
+                wx, wy = wall_center[0], wall_center[1] + u
+            has_meta = any([op.tag, op.breach_class, op.material,
+                            op.vaultable, op.reinforceable])
+            self.gameplay["openings"].append({
+                "wall": wall_name, "kind": op.kind, "story": story,
+                "x": round(wx, 3), "y": round(wy, 3), "z": round(cz, 3),
+                "width": r["width"], "height": r["height"], "sill": r["sill"],
+                "tag": op.tag, "breach_class": op.breach_class,
+                "material": op.material, "vaultable": bool(op.vaultable),
+                "reinforceable": bool(op.reinforceable),
+            })
+            # socket markers for door/breach so Godot can swap in scenes
+            if op.kind == "door":
+                nm = f"DOOR_SOCKET_{wall_name}_{j}".upper()
+                self._empty(nm, (wx, wy, cz), self.MARKERS)
+            elif op.kind == "breach":
+                nm = f"BREACH_PANEL_{wall_name}_{j}".upper()
+                self._empty(nm, (wx, wy, cz), self.MARKERS)
 
     def _partitions(self):
         H, wt = self.s.story_height, self.s.wall_thick
@@ -271,6 +325,8 @@ class _Builder:
                 size = (length, wt, H)
                 axis = 0
             holes = [self._opening_to_hole(op, length) for op in p.openings]
+            self._record_openings(p.openings, c, axis, length,
+                                  f"int_{p.story}_{i}", p.story)
             self._box_with_holes(f"int_{p.story}_{i}", c, size, holes, self.VISUAL)
             if holes:
                 self._wall_collision(f"int_col_{p.story}_{i}", c, size, axis, holes)
@@ -487,6 +543,63 @@ class _Builder:
                     self.COLLISION.objects.link(cj)
                     self._apply_transform(cj, p)
 
+    # ----------------------------------------------------------------------
+    # TACTICAL LAYER  --  vertical links, rooms, markers, gameplay.json
+    # ----------------------------------------------------------------------
+    def _vertical_links(self):
+        """floor_hole / hatch links cut the slab (like slab_holes) and record
+        gameplay intent. 'stair' links are descriptive only (geometry comes
+        from the stairs section). All are written to gameplay.json."""
+        for v in self.s.vertical_links:
+            self.gameplay["vertical_links"].append({
+                "kind": v.kind, "role": v.role,
+                "from_story": v.from_story, "to_story": v.to_story,
+                "story": v.story, "x": v.x, "y": v.y,
+                "breachable": v.breachable,
+            })
+            if v.kind in ("floor_hole", "hatch") and v.cut_slab \
+                    and v.story is not None and v.x is not None:
+                sx = v.size_x or 1.5
+                sy = v.size_y or 1.5
+                self.s.slab_holes.append(SlabHole(
+                    story=v.story, x=v.x, y=v.y, size_x=sx, size_y=sy))
+            # a hatch is a breachable marker too
+            if v.kind == "hatch" and v.x is not None:
+                z = (v.story or 0) * self.s.story_height
+                name = "HATCH_" + (f"{int(v.x)}_{int(v.y)}")
+                self._empty(name, (v.x, v.y, z), self.MARKERS)
+                self.gameplay["markers"].append({
+                    "name": name, "type": "hatch",
+                    "x": v.x, "y": v.y, "z": z,
+                    "breachable": bool(v.breachable)})
+
+    def _rooms(self):
+        for r in self.s.rooms:
+            minx, miny, maxx, maxy = r.bounds
+            cx, cy = (minx + maxx) / 2, (miny + maxy) / 2
+            z = r.story * self.s.story_height
+            name = "NAV_REGION_" + r.id.upper()
+            self._empty(name, (cx, cy, z), self.MARKERS, size=0.6)
+            self.gameplay["rooms"].append({
+                "id": r.id, "story": r.story, "bounds": r.bounds,
+                "role": r.role, "combat_range": r.combat_range,
+                "fortifiable": bool(r.fortifiable),
+                "objective": bool(r.objective or r.role == "objective_room"),
+                "center": [cx, cy, z],
+            })
+
+    def _markers(self):
+        for m in self.s.markers:
+            suffix = ("_" + m.id) if m.id else ""
+            name = m.type.upper() + suffix
+            self._empty(name, (m.x, m.y, m.z), self.MARKERS, rot_z=m.rot_z)
+            entry = {"name": name, "type": m.type, "id": m.id,
+                     "x": m.x, "y": m.y, "z": m.z, "rot_z": m.rot_z,
+                     "room": m.room}
+            if m.meta:
+                entry["meta"] = m.meta
+            self.gameplay["markers"].append(entry)
+
     def _parapets(self):
         hx, hy = self.s.footprint_x / 2, self.s.footprint_y / 2
         for p in self.s.parapets:
@@ -506,8 +619,29 @@ class _Builder:
 
 def build(spec: LevelSpec, base_dir: str = "."):
     """Public entry point. base_dir is the spec file's folder, used to
-    resolve the vendored assets directory for kitbashing."""
-    _Builder(spec, base_dir=base_dir).build()
+    resolve the vendored assets directory for kitbashing. Returns the builder
+    so callers can read .gameplay (tactical companion data)."""
+    b = _Builder(spec, base_dir=base_dir)
+    b.build()
+    return b
+
+
+def write_gameplay_json(builder, path):
+    """Write the tactical companion file (<name>.gameplay.json) next to the
+    GLB. Holds markers, rooms, vertical links, and tagged openings so Godot
+    can read gameplay meaning without parsing node names."""
+    import json
+    data = {
+        "level": builder.s.name,
+        "markers": builder.gameplay["markers"],
+        "rooms": builder.gameplay["rooms"],
+        "vertical_links": builder.gameplay["vertical_links"],
+        "openings": builder.gameplay["openings"],
+    }
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2)
+    print(f"[deli_counter] gameplay -> {path}")
+    return data
 
 
 def export(path: str, fmt: str = None):

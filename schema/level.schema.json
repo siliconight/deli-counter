@@ -164,6 +164,69 @@
           "thick": { "type": "number", "exclusiveMinimum": 0 }
         }
       }
+    },
+
+    "rooms": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "story", "bounds"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "story": { "type": "integer" },
+          "bounds": {
+            "type": "array",
+            "items": { "type": "number" },
+            "minItems": 4, "maxItems": 4
+          },
+          "role": { "type": ["string", "null"] },
+          "combat_range": { "enum": ["close", "medium", "long", null] },
+          "fortifiable": { "type": ["boolean", "null"] },
+          "objective": { "type": "boolean" }
+        }
+      }
+    },
+
+    "vertical_links": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["kind"],
+        "additionalProperties": false,
+        "properties": {
+          "kind": { "enum": ["stair", "floor_hole", "hatch"] },
+          "role": { "type": ["string", "null"] },
+          "from_story": { "type": ["integer", "null"] },
+          "to_story": { "type": ["integer", "null"] },
+          "story": { "type": ["integer", "null"] },
+          "x": { "type": ["number", "null"] },
+          "y": { "type": ["number", "null"] },
+          "size_x": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+          "size_y": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+          "breachable": { "type": ["boolean", "null"] },
+          "cut_slab": { "type": "boolean" }
+        }
+      }
+    },
+
+    "markers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["type"],
+        "additionalProperties": false,
+        "properties": {
+          "type": { "type": "string" },
+          "x": { "type": "number" },
+          "y": { "type": "number" },
+          "z": { "type": "number" },
+          "rot_z": { "type": "number" },
+          "id": { "type": ["string", "null"] },
+          "room": { "type": ["string", "null"] },
+          "meta": { "type": ["object", "null"] }
+        }
+      }
     }
   },
 
@@ -176,7 +239,12 @@
         "pos": { "type": "number", "minimum": -0.5, "maximum": 0.5 },
         "width": { "type": ["number", "null"], "exclusiveMinimum": 0 },
         "height": { "type": ["number", "null"], "exclusiveMinimum": 0 },
-        "sill": { "type": ["number", "null"], "minimum": 0 }
+        "sill": { "type": ["number", "null"], "minimum": 0 },
+        "tag": { "type": ["string", "null"] },
+        "breach_class": { "type": ["string", "null"] },
+        "material": { "type": ["string", "null"] },
+        "vaultable": { "type": ["boolean", "null"] },
+        "reinforceable": { "type": ["boolean", "null"] }
       }
     }
   }
