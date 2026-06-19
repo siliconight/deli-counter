@@ -5,6 +5,20 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.14.0]
+### Added — Godot level test harness (roadmap #5)
+- `godot/template/`: a drop-in test scene for walking a generated level at
+  player scale. `level_test.tscn` (root + ground + light + environment + HUD),
+  `player.gd` (CharacterBody3D FPS controller, 1.8 m capsule / 1.6 m eye, sized
+  to the scale guidelines), and `level_test.gd` (loads the level, respawns at
+  the first spawn marker, F4 bakes a NavigationMesh, F3 toggles scale proxies).
+- Collision-view honesty: Godot's runtime collision toggle is unreliable, so
+  the harness uses a startup `show_collision_shapes` export and points to the
+  editor's Debug → Visible Collision Shapes menu instead of shipping a flaky
+  hotkey.
+- `godot/template/README.md` with the per-level workflow and a "what to check"
+  scale/playability pass.
+
 ## [0.13.1]
 ### Fixed — post-import marker placement (found during first Godot import)
 - The post-import script read each marker's `global_transform` while mutating
