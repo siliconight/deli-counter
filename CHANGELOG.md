@@ -5,6 +5,16 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.16.1]
+### Changed — docs
+- Refreshed the README for the plugin workflow: the "Import into Godot 4"
+  section now leads with the editor plugin (install once → pick `.glb` → Set
+  up & Play) and demotes the manual import-and-wire steps to "under the hood."
+  Documented the walkable test harness, updated the pipeline diagram, layout
+  tree, and iterate loop, and added an honesty note that the plugin/harness
+  are the newest pieces (import pipeline confirmed in-engine; plugin one-click
+  flow written against the 4.x editor API, smoke-test in your engine).
+
 ## [0.16.0]
 ### Added — Godot editor plugin (kills the per-level file shuffle)
 - `godot/addon/deli_counter/`: a self-contained Godot editor plugin. Install

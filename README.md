@@ -12,7 +12,7 @@ collision proxy and exports it for your game. Levels can also **kitbash** from
 existing models — layering imported assets into the generated shell.
 
 ```
-prompt  ->  specs/<name>.json  ->  build.py  ->  build/<name>.{glb,obj,gltf}  ->  Godot
+prompt  ->  specs/<name>.json  ->  build.py  ->  build/<name>.glb  ->  Godot plugin: import + walk
 ```
 
 The whole thing is designed to live in source control and stay
@@ -53,7 +53,11 @@ deli_counter/
     warehouse.json    worked example: single tall warehouse
     CATALOG.md        auto-generated level index (do not hand-edit)
   build/              outputs (binaries gitignored, manifests tracked)
-  godot/              Godot 4 import hook + runtime helper (see godot/README.md)
+  godot/              Godot 4 integration (see godot/README.md):
+                        deli_counter_postimport.gd  import hook (markers->nodes)
+                        deli_level.gd               runtime query/breach helper
+                        template/                   walkable test harness scene
+                        addon/deli_counter/         editor plugin (one-click play)
   .github/workflows/  CI: runs check.py on push/PR
   README.md  CHANGELOG.md  .gitignore  package.py
 ```
@@ -146,7 +150,16 @@ package.py --check` prints the version that would be packaged.
 
 ## Import into Godot 4
 
-Drop the `.glb` into the project. The importer reads collision suffixes:
+**Easiest path — the editor plugin.** Install the plugin once
+(`godot/addon/deli_counter/` → `res://addons/deli_counter/`, then enable
+**Deli Counter** in Project Settings → Plugins). A dock appears: drop a
+level's `.glb` + `.gameplay.json` into your project, click **Pick level
+.glb…**, then **Set up & Play ▶**. It assigns the import hook, reimports,
+builds a walkable test scene, and runs it — no Import-tab steps, no manual
+scene wiring. See `godot/addon/deli_counter/README.md`.
+
+**What import does under the hood** (the plugin automates this; you can also
+do it by hand). Dropping the `.glb` in, the importer reads collision suffixes:
 
 - `-convcolonly` -> `StaticBody3D` + `ConvexPolygonShape3D`
 - `-colonly`     -> `StaticBody3D` + `ConcavePolygonShape3D` (trimesh)
@@ -154,12 +167,24 @@ Drop the `.glb` into the project. The importer reads collision suffixes:
 `VISUAL` meshes import with no collision. `breach` openings produce a tagged
 `*_BREACHPANEL` (visual + collision) to swap for a destructible body.
 
-**Turning markers into game nodes:** the `godot/` folder has an
-`EditorScenePostImport` hook that converts the baked marker empties
-(spawns, objectives, sockets, cover, hatches, NAV_REGIONs) into `Marker3D`
-nodes in gameplay groups — or instances of your own scenes — and tags breach
-panels with metadata. A runtime helper (`DeliLevel`) queries them and breaches
-panels. See `godot/README.md`.
+**Turning markers into game nodes:** an `EditorScenePostImport` hook converts
+the baked marker empties (spawns, objectives, sockets, cover, hatches,
+NAV_REGIONs) into `Marker3D` nodes in gameplay groups — or instances of your
+own scenes — and tags breach panels with metadata. A runtime helper
+(`DeliLevel`) queries them and breaches panels. The plugin assigns this hook
+for you; to do it manually, set it as the `.glb`'s Import Script and reimport.
+See `godot/README.md` and `godot/IMPORT_GUIDE.md`.
+
+**Walking a level:** the plugin's test scene (or `godot/template/`
+`level_test.tscn` by hand) gives you a player sized to the scale guidelines
+(1.8 m capsule, 1.6 m eye), with stair-stepping so generated stairs are
+climbable, plus a navmesh-bake key and respawn-at-spawn-marker. Use it to
+confirm scale and collision before dressing the level.
+
+> The Godot plugin and test harness are the newest pieces. The import pipeline
+> (collision + markers) is confirmed working in a real Godot project; the
+> plugin's one-click flow is written against the Godot 4.x editor API and
+> should be smoke-tested in your engine.
 
 ## Writing a spec
 
@@ -314,8 +339,9 @@ To eyeball scale in Blender, set `"scale_ref": true` in a spec and rebuild:
 (visible in the viewport, never exported). If a doorway towers over the proxy
 and walls clear its head, your scale is right.
 
-1. Describe a building -> a new `specs/<name>.json`.
-2. `validate.py` -> `build.py` -> open the `.glb` in Godot, walk it.
+1. Describe a building -> a new `specs/<name>.json` (or `new_level.py --preset`).
+2. `validate.py` -> `build.py` -> import with the Godot plugin and **walk it**
+   in the test harness (checks scale + collision before you dress anything).
 3. Tweak the spec (move walls, add entries, resize) and rebuild — deterministic.
 4. As the builder gains fidelity (materials, prefab props, destructible
    pieces), bump `KIT_VERSION` and rebuild all levels with `--all`.
