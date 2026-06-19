@@ -14,7 +14,7 @@ import os
 from spec_types import (
     LevelSpec, ExtWall, Opening, Partition, Stairwell,
     SlabHole, Volume, Parapet, Asset, Placement,
-    Room, VerticalLink, Marker,
+    Room, VerticalLink, Marker, Objective, LootSpawn, Zone,
 )
 
 
@@ -51,18 +51,23 @@ def spec_from_dict(d: dict) -> LevelSpec:
     rooms = [Room(**r) for r in d.get("rooms", [])]
     vertical_links = [VerticalLink(**v) for v in d.get("vertical_links", [])]
     markers = [Marker(**m) for m in d.get("markers", [])]
+    objectives = [Objective(**o) for o in d.get("objectives", [])]
+    loot = [LootSpawn(**l) for l in d.get("loot", [])]
+    zones = [Zone(**z) for z in d.get("zones", [])]
 
     top = {k: v for k, v in d.items() if k not in (
         "$schema",
         "ext_walls", "partitions", "stairs", "slab_holes", "volumes",
         "parapets", "assets", "placements",
         "rooms", "vertical_links", "markers",
+        "objectives", "loot", "zones",
     )}
     return LevelSpec(
         ext_walls=ext_walls, partitions=partitions, stairs=stairs,
         slab_holes=slab_holes, volumes=volumes, parapets=parapets,
         assets=assets, placements=placements,
-        rooms=rooms, vertical_links=vertical_links, markers=markers, **top,
+        rooms=rooms, vertical_links=vertical_links, markers=markers,
+        objectives=objectives, loot=loot, zones=zones, **top,
     )
 
 

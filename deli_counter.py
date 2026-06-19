@@ -43,7 +43,7 @@ import random
 from spec_types import (
     Axis, Wall, Collision, Opening, ExtWall, Partition, Stairwell,
     SlabHole, Volume, Parapet, LevelSpec, Asset, Placement,
-    Room, VerticalLink, Marker,
+    Room, VerticalLink, Marker, Objective, LootSpawn, Zone,
 )
 
 
@@ -213,8 +213,9 @@ class _Builder:
         self.VISUAL = self._col("VISUAL")
         self.COLLISION = self._col("COLLISION")
         self.MARKERS = self._col("MARKERS")
-        self.gameplay = {"markers": [], "rooms": [], "vertical_links": [],
-                         "openings": []}
+        self.gameplay = {"mode": self.s.mode, "markers": [], "rooms": [],
+                         "vertical_links": [], "openings": [],
+                         "objectives": [], "loot": [], "zones": []}
         self._slabs()
         self._exterior()
         self._partitions()
@@ -226,6 +227,7 @@ class _Builder:
         self._parapets()
         self._rooms()
         self._markers()
+        self._heist()
         print(f"[deli_counter] built '{self.s.name}' seed={self.s.seed}: "
               f"{len(self.VISUAL.objects)} visual, "
               f"{len(self.COLLISION.objects)} collision, "
@@ -600,6 +602,36 @@ class _Builder:
                 entry["meta"] = m.meta
             self.gameplay["markers"].append(entry)
 
+    def _heist(self):
+        """Emit heist-mode markers: objectives, loot, and zones. These are
+        written regardless of mode (so a designer can mix), but the heist
+        validation rules only fire when mode == 'heist'."""
+        for o in self.s.objectives:
+            name = f"OBJECTIVE_{o.id}".upper()
+            self._empty(name, (o.x, o.y, o.z), self.MARKERS)
+            self.gameplay["objectives"].append({
+                "name": name, "id": o.id, "kind": o.kind,
+                "x": o.x, "y": o.y, "z": o.z, "room": o.room,
+                "required": bool(o.required), "duration": o.duration,
+                "meta": o.meta})
+        for l in self.s.loot:
+            name = f"LOOT_{l.id}".upper()
+            self._empty(name, (l.x, l.y, l.z), self.MARKERS)
+            self.gameplay["loot"].append({
+                "name": name, "id": l.id, "kind": l.kind,
+                "x": l.x, "y": l.y, "z": l.z, "value": l.value,
+                "bags": l.bags, "room": l.room, "meta": l.meta})
+        for zn in self.s.zones:
+            cx = (zn.bounds[0] + zn.bounds[2]) / 2 if zn.bounds else 0.0
+            cy = (zn.bounds[1] + zn.bounds[3]) / 2 if zn.bounds else 0.0
+            cz = zn.story * self.s.story_height
+            name = f"{zn.kind.upper()}_ZONE_{zn.id}".upper()
+            self._empty(name, (cx, cy, cz), self.MARKERS, size=0.8)
+            self.gameplay["zones"].append({
+                "name": name, "id": zn.id, "kind": zn.kind,
+                "story": zn.story, "bounds": zn.bounds,
+                "center": [cx, cy, cz], "meta": zn.meta})
+
     def _parapets(self):
         hx, hy = self.s.footprint_x / 2, self.s.footprint_y / 2
         for p in self.s.parapets:
@@ -633,10 +665,14 @@ def write_gameplay_json(builder, path):
     import json
     data = {
         "level": builder.s.name,
+        "mode": builder.s.mode,
         "markers": builder.gameplay["markers"],
         "rooms": builder.gameplay["rooms"],
         "vertical_links": builder.gameplay["vertical_links"],
         "openings": builder.gameplay["openings"],
+        "objectives": builder.gameplay["objectives"],
+        "loot": builder.gameplay["loot"],
+        "zones": builder.gameplay["zones"],
     }
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)

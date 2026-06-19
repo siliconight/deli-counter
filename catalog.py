@@ -47,6 +47,7 @@ def summarize(path):
     return {
         "file": os.path.basename(path),
         "name": spec.name,
+        "mode": getattr(spec, "mode", "assault"),
         "footprint": f"{spec.footprint_x:g}x{spec.footprint_y:g}m",
         "stories": spec.n_stories + (1 if spec.has_basement else 0),
         "basement": "yes" if spec.has_basement else "no",
@@ -81,6 +82,7 @@ def render(rows):
     for r in rows:
         s = r["spec"]
         lines.append(f"## {r['name']}  (`{r['file']}`)\n")
+        lines.append(f"- Mode: **{r.get('mode', 'assault')}**")
         lines.append(f"- Footprint: {r['footprint']}, story height "
                      f"{s.story_height:g}m, {r['stories']} floor(s)"
                      f"{' incl. basement' if s.has_basement else ''}")
@@ -100,8 +102,16 @@ def render(rows):
             alist = ", ".join(f"{a.id} ({a.fmt})" for a in s.assets)
             lines.append(f"- Kitbash assets: {alist}")
             lines.append(f"- Placements: {len(s.placements)} instance(s)")
-        if r.get("tactical"):
-            t = r["tactical"]
+        t = r.get("tactical")
+        if t and t.get("mode") == "heist":
+            lines.append(f"- **Heist**: {t['objectives']} objectives "
+                         f"({t['required_objectives']} required), "
+                         f"{t['loot_spawns']} loot ({t['loot_bags']} bags, "
+                         f"value {t['loot_value']:g}), "
+                         f"{t['extraction_zones']} extraction zone(s)")
+            if t.get("phases"):
+                lines.append(f"- Phases: {', '.join(t['phases'])}")
+        elif t:
             lines.append(f"- **Tactical**: {t['rooms']} rooms, "
                          f"{t['attacker_entries']} entries, "
                          f"{t['objective_rooms']} objective room(s), "

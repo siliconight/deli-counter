@@ -5,6 +5,30 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.7.0]
+### Added — second tactical mode: heist (PvE crew play)
+- `mode` field on the spec: `"assault"` (default, the existing
+  attacker/defender breach model) or `"heist"` (PvE crew objectives + loot +
+  extraction). Existing specs default to assault — fully back-compatible.
+- Heist grammar: `objectives` (independent, completable in any order, with
+  `kind`/`required`/`duration`), `loot` (spawns with `value`/`bags`/`kind`
+  for a loot economy), and `zones` (`extraction` / `secure` / `drop`
+  volumetric regions). Spawns can carry a `phase` tag (stealth/alarm/loud/…)
+  in their `meta` — the phase state machine itself lives in game code.
+- Emitted as markers (`OBJECTIVE_*`, `LOOT_*`, `EXTRACTION_ZONE_*`,
+  `SECURE_ZONE_*`) and captured in `<name>.gameplay.json` (now includes
+  `mode` and the heist sections).
+- `tactical.py` branches on mode: heist validation checks extraction exists,
+  crew entry exists, required objectives present, loot is deliverable, and
+  objectives are reachable — instead of the assault breach rules. Scorecard
+  is mode-specific (heist shows objectives/loot value/bags/phases).
+- Fixed: room-connectivity graph now uses the actual `stairs` section (not
+  just `vertical_links`) so multi-story reachability is correct. Improves
+  assault validation too.
+- New example spec `harbor_score.json` (heist: drill/hack objectives, loot
+  worth 900k across 8 bags, secure + extraction zones, phased spawns).
+- Schema 1.3.0.
+
 ## [0.6.0]
 ### Added — Godot integration (closes the compiler → playable loop)
 - `godot/deli_counter_postimport.gd`: an `EditorScenePostImport` hook that

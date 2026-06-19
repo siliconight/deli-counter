@@ -54,8 +54,9 @@ def main():
             export(target)
             written.append(target)
         # tactical companion json next to the first output
-        if written and (builder.gameplay["markers"] or builder.gameplay["rooms"]
-                        or builder.gameplay["vertical_links"]):
+        g = builder.gameplay
+        if written and (g["markers"] or g["rooms"] or g["vertical_links"]
+                        or g["objectives"] or g["loot"] or g["zones"]):
             base = os.path.splitext(written[0])[0]
             write_gameplay_json(builder, base + ".gameplay.json")
         _write_manifest(spec_path, written)

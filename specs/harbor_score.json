@@ -1,0 +1,77 @@
+{
+  "$schema": "../schema/level.schema.json",
+  "name": "harbor_score",
+  "mode": "heist",
+  "seed": 2099,
+  "footprint_x": 34.0,
+  "footprint_y": 26.0,
+  "story_height": 5.0,
+  "n_stories": 1,
+  "has_basement": true,
+  "collision": "convex",
+  "auto_exterior": true,
+
+  "ext_walls": [
+    { "wall": "S", "story": 0, "openings": [
+      { "kind": "garage", "pos": -0.2, "width": 3.2, "tag": "loading_dock" },
+      { "kind": "door", "pos": 0.3, "width": 1.1, "tag": "side_entry" }
+    ]},
+    { "wall": "N", "story": 0, "openings": [
+      { "kind": "door", "pos": 0.0, "width": 1.1, "tag": "office_entry" }
+    ]},
+    { "wall": "E", "story": 0, "openings": [
+      { "kind": "window", "pos": 0.0, "width": 1.4, "sill": 1.2, "vaultable": true }
+    ]}
+  ],
+
+  "partitions": [
+    { "story": 0, "axis": "Y", "pos": 6.0, "start": -13, "end": 13, "openings": [
+      { "kind": "door", "pos": -0.2 },
+      { "kind": "door", "pos": 0.3 }
+    ]},
+    { "story": -1, "axis": "X", "pos": 0.0, "start": -16, "end": 16, "openings": [
+      { "kind": "door", "pos": 0.0 }
+    ]}
+  ],
+
+  "stairs": [
+    { "x": 12.0, "y": 9.0, "from_story": -1, "to_story": 1, "style": "switchback", "cut_slabs": true }
+  ],
+
+  "rooms": [
+    { "id": "loading_floor", "story": 0, "bounds": [-17, -13, 6, 13], "role": "open_floor", "combat_range": "long" },
+    { "id": "office_wing", "story": 0, "bounds": [6, -13, 17, 13], "role": "connector", "combat_range": "close" },
+    { "id": "basement_storage", "story": -1, "bounds": [-16, -13, 16, 13], "role": "vault", "combat_range": "medium" }
+  ],
+
+  "volumes": [
+    { "name": "shelving_a", "x": -8.0, "y": -6.0, "z": 2.0, "size_x": 12.0, "size_y": 1.2, "size_z": 4.0, "collision": "convex" },
+    { "name": "shelving_b", "x": -8.0, "y": 4.0, "z": 2.0, "size_x": 12.0, "size_y": 1.2, "size_z": 4.0, "collision": "convex" },
+    { "name": "cargo_cover", "x": 0.0, "y": 9.0, "z": 1.0, "size_x": 4.0, "size_y": 4.0, "size_z": 2.0, "collision": "convex" }
+  ],
+
+  "objectives": [
+    { "id": "drill_vault", "kind": "drill", "x": -10, "y": 0, "z": -5, "room": "basement_storage", "required": true, "duration": 90 },
+    { "id": "hack_manifest", "kind": "hack", "x": 12, "y": -8, "z": 0, "room": "office_wing", "required": true, "duration": 30 },
+    { "id": "open_dock", "kind": "interact", "x": -14, "y": -12, "z": 0, "room": "loading_floor", "required": false }
+  ],
+
+  "loot": [
+    { "id": "vault_cash_1", "kind": "cash", "x": -11, "y": 2, "z": -5, "value": 250000, "bags": 3, "room": "basement_storage" },
+    { "id": "vault_cash_2", "kind": "cash", "x": -9, "y": -2, "z": -5, "value": 250000, "bags": 3, "room": "basement_storage" },
+    { "id": "art_crate", "kind": "art", "x": 0, "y": 9, "z": 0, "value": 400000, "bags": 2, "room": "loading_floor" }
+  ],
+
+  "zones": [
+    { "id": "main", "kind": "extraction", "story": 0, "bounds": [-17, -13, -8, -4] },
+    { "id": "dock_secure", "kind": "secure", "story": 0, "bounds": [-17, -13, -10, -8] }
+  ],
+
+  "markers": [
+    { "type": "crew_spawn", "id": "A", "x": -14, "y": -16, "z": 0, "rot_z": 90, "meta": { "phase": "stealth" } },
+    { "type": "responder_spawn", "id": "1", "x": 16, "y": 14, "z": 0, "meta": { "phase": "alarm" } },
+    { "type": "responder_spawn", "id": "2", "x": -16, "y": 14, "z": 0, "meta": { "phase": "loud" } },
+    { "type": "patrol_point", "id": "01", "x": 0, "y": 0, "z": 0, "room": "loading_floor", "meta": { "phase": "stealth" } },
+    { "type": "camera_socket", "id": "01", "x": 5, "y": 12, "z": 4, "room": "loading_floor" }
+  ]
+}

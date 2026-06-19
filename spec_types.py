@@ -210,11 +210,63 @@ class Marker:
     meta: Optional[dict] = None            # arbitrary extra data -> gameplay.json
 
 
+# ----------------------------------------------------------------------------
+# HEIST GRAMMAR  --  PvE crew objectives, loot economy, extraction (mode=heist)
+# ----------------------------------------------------------------------------
+
+@dataclass
+class Objective:
+    """A heist task. Objectives are independent (completable in any order);
+    set `required` to mark which must be done before extraction counts. Emitted
+    as OBJECTIVE_<id> marker; interactable type drives Godot behavior."""
+    id: str
+    x: float = 0.0
+    y: float = 0.0
+    z: float = 0.0
+    kind: str = "interact"                 # "drill", "hack", "grab", "thermite", "interact"
+    room: Optional[str] = None
+    required: bool = True                  # must complete before extraction is valid
+    duration: Optional[float] = None       # seconds (designer hint; game owns timing)
+    meta: Optional[dict] = None
+
+
+@dataclass
+class LootSpawn:
+    """A loot pickup. `value` is abstract bag/score value; `bags` how many
+    carriable units it yields. Emitted as LOOT_<id> marker."""
+    id: str
+    x: float = 0.0
+    y: float = 0.0
+    z: float = 0.0
+    value: float = 1000.0
+    bags: int = 1
+    kind: str = "cash"                     # "cash", "gold", "art", "cargo", etc.
+    room: Optional[str] = None
+    meta: Optional[dict] = None
+
+
+@dataclass
+class Zone:
+    """A volumetric gameplay region: secure/drop point for loot, or the
+    extraction zone. bounds = [min_x, min_y, max_x, max_y]; spans the story.
+    Emitted as <ZONE_TYPE>_ZONE_<id> marker with bounds in gameplay.json."""
+    id: str
+    kind: str = "extraction"               # "extraction", "secure", "drop"
+    story: int = 0
+    bounds: list[float] = field(default_factory=list)  # [minx,miny,maxx,maxy]
+    meta: Optional[dict] = None
+
+
 @dataclass
 class LevelSpec:
     name: str = "level"
     seed: int = 1999
     grid: float = 0.5
+
+    # tactical style: "assault" = symmetric attacker/defender breach play;
+    # "heist" = PvE crew objectives + loot + extraction. Drives which
+    # validation rules and scorecard apply. Default keeps old specs valid.
+    mode: str = "assault"
 
     footprint_x: float = 24.0
     footprint_y: float = 18.0
@@ -243,6 +295,11 @@ class LevelSpec:
     rooms: list[Room] = field(default_factory=list)
     vertical_links: list[VerticalLink] = field(default_factory=list)
     markers: list[Marker] = field(default_factory=list)
+
+    # heist grammar (mode="heist"): objectives, loot economy, zones
+    objectives: list[Objective] = field(default_factory=list)
+    loot: list[LootSpawn] = field(default_factory=list)
+    zones: list[Zone] = field(default_factory=list)
 
     # if no ext_walls are specified, auto-generate solid exterior walls
     auto_exterior: bool = True

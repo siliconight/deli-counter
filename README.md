@@ -204,6 +204,23 @@ example.
 Beyond geometry, a spec can describe **gameplay meaning**. All of this is
 optional — a plain building spec omits it and still builds.
 
+### Two modes
+
+A spec's `mode` selects the tactical style; validation and the scorecard
+branch on it:
+
+- **`assault`** (default) — symmetric attacker/defender play: multiple entry
+  routes, breachable walls, objective rooms to take and hold, verticality.
+- **`heist`** — PvE crew play: independent `objectives` (any order), a `loot`
+  economy (`value`/`bags`/`kind`), `zones` (`extraction`/`secure`/`drop`),
+  and `phase`-tagged spawns (stealth/alarm/loud/escape — the state machine
+  lives in your game code). Validation checks the heist loop is completable
+  (extraction exists, objectives reachable, loot deliverable) rather than the
+  breach rules.
+
+Existing assault concepts (`rooms`, `vertical_links`, tactical openings)
+apply to both modes.
+
 - **`rooms`** — named spaces with `bounds` `[min_x, min_y, max_x, max_y]`,
   `role` (`public_entry`, `objective_room`, `connector`, `fortifiable`…),
   `combat_range`, `fortifiable`. Drive reachability/route validation and the

@@ -8,6 +8,7 @@
   "properties": {
     "$schema": { "type": "string" },
     "name": { "type": "string" },
+    "mode": { "enum": ["assault", "heist"] },
     "seed": { "type": "integer", "default": 1999 },
     "grid": { "type": "number", "default": 0.5, "exclusiveMinimum": 0 },
 
@@ -224,6 +225,66 @@
           "rot_z": { "type": "number" },
           "id": { "type": ["string", "null"] },
           "room": { "type": ["string", "null"] },
+          "meta": { "type": ["object", "null"] }
+        }
+      }
+    },
+
+    "objectives": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "x": { "type": "number" },
+          "y": { "type": "number" },
+          "z": { "type": "number" },
+          "kind": { "type": "string" },
+          "room": { "type": ["string", "null"] },
+          "required": { "type": "boolean" },
+          "duration": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+          "meta": { "type": ["object", "null"] }
+        }
+      }
+    },
+
+    "loot": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "x": { "type": "number" },
+          "y": { "type": "number" },
+          "z": { "type": "number" },
+          "value": { "type": "number", "minimum": 0 },
+          "bags": { "type": "integer", "minimum": 1 },
+          "kind": { "type": "string" },
+          "room": { "type": ["string", "null"] },
+          "meta": { "type": ["object", "null"] }
+        }
+      }
+    },
+
+    "zones": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "kind", "bounds"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "kind": { "enum": ["extraction", "secure", "drop"] },
+          "story": { "type": "integer" },
+          "bounds": {
+            "type": "array",
+            "items": { "type": "number" },
+            "minItems": 4, "maxItems": 4
+          },
           "meta": { "type": ["object", "null"] }
         }
       }
