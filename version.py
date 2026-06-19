@@ -1,7 +1,7 @@
 """
 version.py  --  single source of truth for the kit version
 ==========================================================
-Deli Counter -- the DELCO_DANGEROUS level kit (GabagoolStudios).
+Deli Counter -- a spec-driven Blender level kit for Godot 4.
 
 Bump KIT_VERSION when the builder's geometry output changes in a way that
 would alter existing levels (so a rebuilt .glb differs). Record what changed

@@ -1,10 +1,14 @@
-# Deli Counter — DELCO_DANGEROUS level kit
+<p align="center">
+  <img src="assets/branding/logo.png" alt="Deli Counter" width="480">
+</p>
 
-_GabagoolStudios. Stack a level like a sandwich: layer the parts, serve the whole._
+# Deli Counter — a Blender level kit for Godot 4
+
+_Stack a level like a sandwich: layer the parts, serve the whole._
 
 Spec-driven Blender level generator. You describe a building as a JSON
 spec; the kit builds a monolithic compound in Blender 4.x with a separate
-collision proxy and exports it for the game. Levels can also **kitbash** from
+collision proxy and exports it for your game. Levels can also **kitbash** from
 existing models — layering imported assets into the generated shell.
 
 ```
@@ -17,8 +21,8 @@ self-documenting as the level set grows toward real game models.
 ## Layout
 
 ```
-levels/
-  heist_kit.py        core builder (needs Blender's bpy)
+deli_counter/
+  deli_counter.py     core builder (needs Blender's bpy)
   spec_types.py       spec dataclasses (pure Python, no bpy)
   spec_loader.py      JSON/YAML -> LevelSpec
   version.py          KIT_VERSION / SCHEMA_VERSION (stamped into manifests)

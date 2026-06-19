@@ -2,7 +2,7 @@
 spec_types.py  --  pure-Python spec dataclasses (no bpy)
 ========================================================
 The vocabulary you describe a building in. Importable outside Blender, so
-validation and loading work in normal Python; only heist_kit's builder needs bpy.
+validation and loading work in normal Python; only the builder needs bpy.
 """
 
 from dataclasses import dataclass, field

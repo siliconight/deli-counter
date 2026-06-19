@@ -12,8 +12,8 @@ import sys
 import os
 
 # ---- manual-fallback defaults (used only if no `--` args are passed) -------
-SPEC_PATH = ""   # e.g. r"C:\dev\DELCO_DANGEROUS\levels\specs\bank.json"
-OUT_PATH = ""    # e.g. r"C:\dev\DELCO_DANGEROUS\levels\build\bank.glb"
+SPEC_PATH = ""   # e.g. r"C:\deli_counter\specs\bank.json"
+OUT_PATH = ""    # e.g. r"C:\deli_counter\build\bank.glb"
 # ----------------------------------------------------------------------------
 
 
@@ -39,7 +39,7 @@ def main():
             sys.path.append(p)
 
     from spec_loader import load_spec
-    from heist_kit import build, export
+    from deli_counter import build, export
 
     spec = load_spec(spec_path)
     build(spec, base_dir=os.path.dirname(os.path.abspath(spec_path)))
@@ -82,7 +82,7 @@ def _write_manifest(spec_path, written):
         mpath = base + ".manifest.json"
         with open(mpath, "w", encoding="utf-8") as f:
             json.dump(manifest, f, indent=2)
-        print(f"[heist_kit] manifest -> {mpath}")
+        print(f"[deli_counter] manifest -> {mpath}")
 
 
 if __name__ == "__main__":

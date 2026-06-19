@@ -1,7 +1,7 @@
 """
-heist_kit.py  --  DELCO_DANGEROUS level framework (core library)
+deli_counter.py  --  Deli Counter level kit (core library)
 =================================================================
-A spec-driven generator for monolithic FPS heist levels in Blender 4.x,
+A spec-driven generator for monolithic game levels in Blender 4.x,
 exporting to Godot 4 via glTF (-convcolonly / -colonly collision convention).
 
 WORKFLOW
@@ -208,7 +208,7 @@ class _Builder:
         self._volumes()
         self._placements()
         self._parapets()
-        print(f"[heist_kit] built '{self.s.name}' seed={self.s.seed}: "
+        print(f"[deli_counter] built '{self.s.name}' seed={self.s.seed}: "
               f"{len(self.VISUAL.objects)} visual, "
               f"{len(self.COLLISION.objects)} collision")
 
@@ -537,7 +537,7 @@ def export(path: str, fmt: str = None):
     else:
         raise ValueError(f"Unsupported export format: {ext} "
                          "(use glb, gltf, or obj)")
-    print(f"[heist_kit] exported {path}")
+    print(f"[deli_counter] exported {path}")
 
 
 # backwards-compat alias

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-build.py  --  CLI for the heist level kit
+build.py  --  CLI for the Deli Counter level kit
 =========================================
 Builds a level from a JSON/YAML spec by driving Blender in background mode,
 then exports a .glb for Godot. This is the reproducible one-command path.
@@ -74,7 +74,7 @@ def _out_paths(build_dir, name, formats, explicit_out):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="Build heist levels from specs.")
+    ap = argparse.ArgumentParser(description="Build levels from specs.")
     ap.add_argument("spec", nargs="?", help="path to a .json/.yaml spec")
     ap.add_argument("--out", help="explicit output path (single format, "
                     "overrides --format)")

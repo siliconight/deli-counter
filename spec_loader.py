@@ -2,7 +2,7 @@
 spec_loader.py  --  build a LevelSpec from a plain dict (JSON or YAML)
 =======================================================================
 Keeps level data out of code. A spec is a .json file (or .yaml if PyYAML is
-installed); this module parses it into the heist_kit dataclasses.
+installed); this module parses it into the deli_counter dataclasses.
 
 The dict shape mirrors the dataclasses exactly -- see schema/level.schema.json
 and specs/bank.json for the canonical structure.

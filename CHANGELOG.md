@@ -1,14 +1,13 @@
 # Changelog
 
-**Deli Counter** — the DELCO_DANGEROUS level kit (GabagoolStudios).
+**Deli Counter** — a spec-driven Blender level kit for Godot 4.
 
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
 ## [0.4.1]
 ### Changed
-- Named the tool **Deli Counter**. (Folder and module names unchanged to
-  avoid breaking imports; this is the product name.)
+- Named the tool **Deli Counter**.
 
 ## [0.4.0]
 ### Added
@@ -53,7 +52,6 @@ entry. See that file for the versioning convention.
 
 ## [0.1.0]
 ### Added
-- Initial spec-driven generator (`heist_kit.py`): LevelSpec dataclasses +
+- Initial spec-driven generator (`deli_counter.py`): LevelSpec dataclasses +
   builder producing dual VISUAL/COLLISION meshes with Godot glTF collision
   naming. Worked example: `bank`.
-- Superseded the standalone `gen_heist_compound.py` prototype.
