@@ -5,6 +5,22 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.12.0]
+### Added — preset recipes (walk-up authoring)
+- `presets.py`: parameterized recipe generators that emit a complete, playable
+  spec (tactical layer, materials, vertical, spawns) — not just a shell. Pure
+  Python, no Blender. First recipe: **bank** (glass-front lobby + teller line,
+  manager office, security room, basement vault objective reached by a stair),
+  parameterized by `mode`, `floors`, `basement`, `scale_ref`. In `heist` mode
+  it emits the full heist loop (objectives, loot, extraction/secure zones,
+  crew/responder spawns); in `assault` it uses the room-objective layout.
+- `new_level.py`: CLI walk-up entry point —
+  `python new_level.py --preset bank --name my_bank [--mode heist] [--floors 3]
+  [--no-basement] [--scale-ref]`. Generates `specs/<name>.json`, validates it
+  immediately, and prints the build command. `--list` shows available recipes.
+- Recipe registry is extensible: corner_store, rowhome, warehouse,
+  police_station, and safehouse will follow the bank's structure.
+
 ## [0.11.0]
 ### Added — scale-reference proxies
 - `scale_ref` spec flag (default off). When on, the build drops a 1.8 m
