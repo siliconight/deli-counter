@@ -1,0 +1,40 @@
+{
+  "$schema": "../schema/level.schema.json",
+  "name": "kitbash_demo",
+  "seed": 42,
+  "footprint_x": 20.0,
+  "footprint_y": 16.0,
+  "story_height": 5.0,
+  "n_stories": 1,
+  "has_basement": false,
+  "collision": "convex",
+  "auto_exterior": true,
+  "assets_dir": "../assets",
+
+  "ext_walls": [
+    { "wall": "S", "story": 0, "openings": [
+      { "kind": "garage", "pos": 0.0 },
+      { "kind": "door", "pos": -0.35 }
+    ]},
+    { "wall": "N", "story": 0, "openings": [ { "kind": "breach", "pos": 0.0 } ]},
+    { "wall": "E", "story": 0, "openings": [ { "kind": "door", "pos": 0.0 } ]}
+  ],
+
+  "assets": [
+    {
+      "id": "crate",
+      "file": "props/crate.obj",
+      "fmt": "obj",
+      "collision": "convex"
+    }
+  ],
+
+  "placements": [
+    { "asset": "crate", "x": -6.0, "y": -4.0, "z": 0.0 },
+    { "asset": "crate", "x": -6.0, "y": -4.0, "z": 1.0, "rot_z": 15 },
+    { "asset": "crate", "x": -4.5, "y": -4.0, "z": 0.0 },
+    { "asset": "crate", "x": 5.0,  "y": 3.0,  "z": 0.0, "scale": 1.5 },
+    { "asset": "crate", "x": 2.0,  "y": -5.0, "z": 0.0, "rot_z": 45,
+      "name": "cover_crate", "collision": "box" }
+  ]
+}

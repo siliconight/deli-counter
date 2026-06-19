@@ -1,0 +1,183 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://gabagoolstudios/delco/level.schema.json",
+  "title": "DELCO_DANGEROUS level spec",
+  "type": "object",
+  "required": ["name"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "name": { "type": "string" },
+    "seed": { "type": "integer", "default": 1999 },
+    "grid": { "type": "number", "default": 0.5, "exclusiveMinimum": 0 },
+
+    "footprint_x": { "type": "number", "exclusiveMinimum": 0 },
+    "footprint_y": { "type": "number", "exclusiveMinimum": 0 },
+    "story_height": { "type": "number", "exclusiveMinimum": 0 },
+    "n_stories": { "type": "integer", "minimum": 1 },
+    "has_basement": { "type": "boolean" },
+
+    "wall_thick": { "type": "number", "exclusiveMinimum": 0 },
+    "floor_thick": { "type": "number", "exclusiveMinimum": 0 },
+    "collision": { "enum": ["convex", "trimesh", "none"] },
+    "auto_exterior": { "type": "boolean" },
+    "assets_dir": { "type": "string" },
+
+    "assets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "file"],
+        "additionalProperties": false,
+        "properties": {
+          "id": { "type": "string" },
+          "file": { "type": "string" },
+          "fmt": { "enum": ["glb", "gltf", "obj", "blend"] },
+          "collision": { "enum": ["convex", "box", "file", "trimesh", "none"] },
+          "collision_file": { "type": ["string", "null"] },
+          "blend_object": { "type": ["string", "null"] }
+        }
+      }
+    },
+
+    "placements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["asset"],
+        "additionalProperties": false,
+        "properties": {
+          "asset": { "type": "string" },
+          "x": { "type": "number" },
+          "y": { "type": "number" },
+          "z": { "type": "number" },
+          "rot_x": { "type": "number" },
+          "rot_y": { "type": "number" },
+          "rot_z": { "type": "number" },
+          "scale": { "type": "number", "exclusiveMinimum": 0 },
+          "scale_xyz": {
+            "type": ["array", "null"],
+            "items": { "type": "number" },
+            "minItems": 3, "maxItems": 3
+          },
+          "collision": { "enum": ["convex", "box", "file", "trimesh", "none"] },
+          "name": { "type": ["string", "null"] }
+        }
+      }
+    },
+
+    "ext_walls": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["wall", "story"],
+        "additionalProperties": false,
+        "properties": {
+          "wall": { "enum": ["N", "S", "E", "W"] },
+          "story": { "type": "integer" },
+          "openings": { "type": "array", "items": { "$ref": "#/$defs/opening" } }
+        }
+      }
+    },
+
+    "partitions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["story", "axis", "pos", "start", "end"],
+        "additionalProperties": false,
+        "properties": {
+          "story": { "type": "integer" },
+          "axis": { "enum": ["X", "Y"] },
+          "pos": { "type": "number" },
+          "start": { "type": "number" },
+          "end": { "type": "number" },
+          "openings": { "type": "array", "items": { "$ref": "#/$defs/opening" } }
+        }
+      }
+    },
+
+    "stairs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["x", "y", "from_story", "to_story"],
+        "additionalProperties": false,
+        "properties": {
+          "x": { "type": "number" },
+          "y": { "type": "number" },
+          "from_story": { "type": "integer" },
+          "to_story": { "type": "integer" },
+          "width": { "type": "number", "exclusiveMinimum": 0 },
+          "run": { "type": "number", "exclusiveMinimum": 0 },
+          "style": { "enum": ["straight", "switchback"] },
+          "cut_slabs": { "type": "boolean" }
+        }
+      }
+    },
+
+    "slab_holes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["story", "x", "y", "size_x", "size_y"],
+        "additionalProperties": false,
+        "properties": {
+          "story": { "type": "integer" },
+          "x": { "type": "number" },
+          "y": { "type": "number" },
+          "size_x": { "type": "number", "exclusiveMinimum": 0 },
+          "size_y": { "type": "number", "exclusiveMinimum": 0 }
+        }
+      }
+    },
+
+    "volumes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "x", "y", "z", "size_x", "size_y", "size_z"],
+        "additionalProperties": false,
+        "properties": {
+          "name": { "type": "string" },
+          "x": { "type": "number" },
+          "y": { "type": "number" },
+          "z": { "type": "number" },
+          "size_x": { "type": "number", "exclusiveMinimum": 0 },
+          "size_y": { "type": "number", "exclusiveMinimum": 0 },
+          "size_z": { "type": "number", "exclusiveMinimum": 0 },
+          "collision": { "enum": ["convex", "trimesh", "none"] },
+          "visual": { "type": "boolean" }
+        }
+      }
+    },
+
+    "parapets": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["story"],
+        "additionalProperties": false,
+        "properties": {
+          "story": { "type": "integer" },
+          "height": { "type": "number", "exclusiveMinimum": 0 },
+          "thick": { "type": "number", "exclusiveMinimum": 0 }
+        }
+      }
+    }
+  },
+
+  "$defs": {
+    "opening": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": { "enum": ["door", "window", "garage", "breach"] },
+        "pos": { "type": "number", "minimum": -0.5, "maximum": 0.5 },
+        "width": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+        "height": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+        "sill": { "type": ["number", "null"], "minimum": 0 }
+      }
+    }
+  }
+}

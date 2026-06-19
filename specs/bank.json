@@ -1,0 +1,68 @@
+{
+  "$schema": "../schema/level.schema.json",
+  "name": "bank",
+  "seed": 1999,
+  "footprint_x": 28.0,
+  "footprint_y": 20.0,
+  "story_height": 3.5,
+  "n_stories": 2,
+  "has_basement": true,
+  "collision": "convex",
+  "auto_exterior": true,
+
+  "ext_walls": [
+    { "wall": "S", "story": 0, "openings": [
+      { "kind": "door",   "pos": 0.0 },
+      { "kind": "window", "pos": -0.3 },
+      { "kind": "window", "pos": 0.3 }
+    ]},
+    { "wall": "E", "story": 0, "openings": [
+      { "kind": "garage", "pos": 0.2 },
+      { "kind": "window", "pos": -0.3 }
+    ]},
+    { "wall": "W", "story": 0, "openings": [ { "kind": "door", "pos": 0.0 } ]},
+    { "wall": "N", "story": 0, "openings": [ { "kind": "breach", "pos": 0.0 } ]},
+
+    { "wall": "S", "story": 1, "openings": [
+      { "kind": "window", "pos": -0.25 }, { "kind": "window", "pos": 0.25 }
+    ]},
+    { "wall": "N", "story": 1, "openings": [
+      { "kind": "window", "pos": -0.25 }, { "kind": "window", "pos": 0.25 }
+    ]},
+    { "wall": "E", "story": 1, "openings": [ { "kind": "window", "pos": 0.0 } ]},
+    { "wall": "W", "story": 1, "openings": [ { "kind": "window", "pos": 0.0 } ]}
+  ],
+
+  "partitions": [
+    { "story": 0, "axis": "X", "pos": 2.0, "start": -14, "end": 4,
+      "openings": [ { "kind": "door", "pos": 0.2 } ] },
+    { "story": 0, "axis": "Y", "pos": 4.0, "start": -10, "end": 2,
+      "openings": [ { "kind": "door", "pos": 0.0 } ] },
+    { "story": 1, "axis": "X", "pos": 0.0, "start": -14, "end": 14,
+      "openings": [ { "kind": "door", "pos": -0.3 }, { "kind": "door", "pos": 0.3 } ] },
+    { "story": 1, "axis": "Y", "pos": -6.0, "start": 0, "end": 10,
+      "openings": [ { "kind": "door", "pos": 0.0 } ] },
+    { "story": -1, "axis": "Y", "pos": 6.0, "start": -10, "end": 0,
+      "openings": [ { "kind": "breach", "pos": 0.0 } ] }
+  ],
+
+  "stairs": [
+    { "x": -10.0, "y": 6.0, "from_story": -1, "to_story": 2,
+      "style": "switchback", "cut_slabs": true }
+  ],
+
+  "slab_holes": [
+    { "story": 1, "x": 0.0, "y": -4.0, "size_x": 8.0, "size_y": 6.0 }
+  ],
+
+  "volumes": [
+    { "name": "VAULT", "x": 8.0, "y": 6.0, "z": -1.75,
+      "size_x": 5.0, "size_y": 5.0, "size_z": 3.0, "collision": "convex" },
+    { "name": "teller_counter", "x": -2.0, "y": -2.0, "z": 0.5,
+      "size_x": 8.0, "size_y": 0.8, "size_z": 1.0, "collision": "convex" },
+    { "name": "roof_ac", "x": 8.0, "y": 6.0, "z": 7.6,
+      "size_x": 3.0, "size_y": 2.0, "size_z": 1.2, "collision": "convex" }
+  ],
+
+  "parapets": [ { "story": 2, "height": 1.1 } ]
+}

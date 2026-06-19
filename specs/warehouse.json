@@ -1,0 +1,50 @@
+{
+  "$schema": "../schema/level.schema.json",
+  "name": "warehouse",
+  "seed": 7,
+  "footprint_x": 36.0,
+  "footprint_y": 24.0,
+  "story_height": 6.0,
+  "n_stories": 1,
+  "has_basement": false,
+  "collision": "convex",
+  "auto_exterior": true,
+
+  "ext_walls": [
+    { "wall": "S", "story": 0, "openings": [
+      { "kind": "garage", "pos": -0.25 },
+      { "kind": "garage", "pos": 0.25 },
+      { "kind": "door", "pos": 0.0 }
+    ]},
+    { "wall": "N", "story": 0, "openings": [
+      { "kind": "breach", "pos": 0.0 },
+      { "kind": "window", "pos": -0.35, "sill": 3.0 },
+      { "kind": "window", "pos": 0.35, "sill": 3.0 }
+    ]},
+    { "wall": "E", "story": 0, "openings": [ { "kind": "door", "pos": 0.0 } ]},
+    { "wall": "W", "story": 0, "openings": [ { "kind": "garage", "pos": 0.0 } ]}
+  ],
+
+  "partitions": [
+    { "story": 0, "axis": "Y", "pos": 8.0, "start": -12, "end": 12,
+      "openings": [ { "kind": "door", "pos": -0.2 }, { "kind": "door", "pos": 0.3 } ] },
+    { "story": 0, "axis": "X", "pos": -6.0, "start": 8, "end": 18,
+      "openings": [ { "kind": "door", "pos": 0.0 } ] }
+  ],
+
+  "stairs": [],
+  "slab_holes": [],
+
+  "volumes": [
+    { "name": "crate_stack_a", "x": -8.0, "y": -4.0, "z": 1.5,
+      "size_x": 4.0, "size_y": 4.0, "size_z": 3.0, "collision": "convex" },
+    { "name": "crate_stack_b", "x": -2.0, "y": 6.0, "z": 1.0,
+      "size_x": 3.0, "size_y": 6.0, "size_z": 2.0, "collision": "convex" },
+    { "name": "office_mezz", "x": 13.0, "y": 0.0, "z": 1.6,
+      "size_x": 8.0, "size_y": 10.0, "size_z": 0.3, "collision": "convex" },
+    { "name": "shelving_run", "x": 4.0, "y": -9.0, "z": 2.5,
+      "size_x": 16.0, "size_y": 1.2, "size_z": 5.0, "collision": "convex" }
+  ],
+
+  "parapets": [ { "story": 1, "height": 0.8 } ]
+}

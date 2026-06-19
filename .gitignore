@@ -1,0 +1,15 @@
+# Build outputs — regenerable from specs, kept out of source control.
+# (If you decide to commit release models, whitelist them explicitly below.)
+build/*.glb
+build/*.gltf
+build/*.bin
+build/*.obj
+build/*.mtl
+build/textures/
+
+# Keep manifests tracked: they are the traceability record (text, tiny).
+!build/*.manifest.json
+
+__pycache__/
+*.pyc
+*.blend1
