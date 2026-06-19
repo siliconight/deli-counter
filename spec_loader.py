@@ -14,7 +14,7 @@ import os
 from spec_types import (
     LevelSpec, ExtWall, Opening, Partition, Stairwell,
     SlabHole, Volume, Parapet, Asset, Placement,
-    Room, VerticalLink, Marker, Objective, LootSpawn, Zone,
+    Room, VerticalLink, Marker, Objective, LootSpawn, Zone, Material,
 )
 
 
@@ -26,13 +26,16 @@ def spec_from_dict(d: dict) -> LevelSpec:
     """Convert a parsed dict into a LevelSpec. Raises KeyError/TypeError on
     malformed input -- run validate.py first for friendly error messages."""
     ext_walls = [
-        ExtWall(wall=w["wall"], story=w["story"], openings=_openings(w.get("openings")))
+        ExtWall(wall=w["wall"], story=w["story"],
+                openings=_openings(w.get("openings")),
+                material=w.get("material"))
         for w in d.get("ext_walls", [])
     ]
     partitions = [
         Partition(
             story=p["story"], axis=p["axis"], pos=p["pos"],
             start=p["start"], end=p["end"], openings=_openings(p.get("openings")),
+            material=p.get("material"),
         )
         for p in d.get("partitions", [])
     ]
@@ -54,20 +57,22 @@ def spec_from_dict(d: dict) -> LevelSpec:
     objectives = [Objective(**o) for o in d.get("objectives", [])]
     loot = [LootSpawn(**l) for l in d.get("loot", [])]
     zones = [Zone(**z) for z in d.get("zones", [])]
+    materials = [Material(**m) for m in d.get("materials", [])]
 
     top = {k: v for k, v in d.items() if k not in (
         "$schema",
         "ext_walls", "partitions", "stairs", "slab_holes", "volumes",
         "parapets", "assets", "placements",
         "rooms", "vertical_links", "markers",
-        "objectives", "loot", "zones",
+        "objectives", "loot", "zones", "materials",
     )}
     return LevelSpec(
         ext_walls=ext_walls, partitions=partitions, stairs=stairs,
         slab_holes=slab_holes, volumes=volumes, parapets=parapets,
         assets=assets, placements=placements,
         rooms=rooms, vertical_links=vertical_links, markers=markers,
-        objectives=objectives, loot=loot, zones=zones, **top,
+        objectives=objectives, loot=loot, zones=zones,
+        materials=materials, **top,
     )
 
 

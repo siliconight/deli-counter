@@ -12,6 +12,14 @@ Axis = Literal["X", "Y"]           # which way a wall runs
 Wall = Literal["N", "S", "E", "W"] # exterior wall, +Y/-Y/+X/-X
 Collision = Literal["convex", "trimesh", "none"]
 
+# gool's AudioMaterial enum names. A Deli Counter material maps to one of
+# these (so the game's audio raycaster can pass it straight to gool), OR
+# supplies explicit absorption/damping floats for finer control.
+AcousticMaterial = Literal[
+    "Default", "Air", "Glass", "Wood", "Drywall",
+    "Concrete", "Metal", "Curtain", "Foliage",
+]
+
 # Collision strategy for an imported (kitbashed) asset:
 #   convex  -> auto convex hull of the asset (default; fast, single shape)
 #   box     -> axis-aligned bounding box (cheapest)
@@ -97,6 +105,7 @@ class ExtWall:
     wall: Wall
     story: int
     openings: list[Opening] = field(default_factory=list)
+    material: Optional[str] = None   # palette id; overrides default_material
 
 
 @dataclass
@@ -108,6 +117,7 @@ class Partition:
     start: float                     # start coord (m) along axis
     end: float                       # end coord (m) along axis
     openings: list[Opening] = field(default_factory=list)
+    material: Optional[str] = None   # palette id; overrides default_material
 
 
 @dataclass
@@ -145,6 +155,7 @@ class Volume:
     size_z: float
     collision: Collision = "convex"
     visual: bool = True
+    material: Optional[str] = None   # palette id; overrides default_material
 
 
 @dataclass
@@ -152,6 +163,23 @@ class Parapet:
     story: int                       # roof level = top story index
     height: float = 1.0
     thick: float = 0.2
+
+
+@dataclass
+class Material:
+    """An acoustic material in the level's palette. Deli Counter does NOT bake
+    visual PBR (you texture in Godot); it writes this acoustic data into
+    gameplay.json keyed by collision-node name, so the game's audio raycaster
+    can hand the right material to gool's IAudioGeometryQuery on a wall hit.
+
+    Specify EITHER `acoustic` (a gool AudioMaterial enum name) OR explicit
+    `absorption`/`damping` floats (0..1). If both are given, the explicit
+    floats win and `acoustic` is kept as a hint.
+    """
+    id: str
+    acoustic: Optional["AcousticMaterial"] = None   # gool enum name
+    absorption: Optional[float] = None              # 0..1 overall gain cut
+    damping: Optional[float] = None                 # 0..1 HF rolloff
 
 
 # ----------------------------------------------------------------------------
@@ -300,6 +328,12 @@ class LevelSpec:
     objectives: list[Objective] = field(default_factory=list)
     loot: list[LootSpawn] = field(default_factory=list)
     zones: list[Zone] = field(default_factory=list)
+
+    # acoustic material palette (for gool). Surfaces reference by id; an
+    # inline `material` on a wall/volume overrides. default_material applies
+    # to any surface that names none.
+    materials: list[Material] = field(default_factory=list)
+    default_material: Optional[str] = None
 
     # if no ext_walls are specified, auto-generate solid exterior walls
     auto_exterior: bool = True

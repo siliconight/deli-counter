@@ -5,6 +5,24 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.8.0]
+### Added — acoustic material palette (audio-engine bridge)
+- `materials` palette: named acoustic materials each mapping to an audio
+  material enum (Default/Air/Glass/Wood/Drywall/Concrete/Metal/Curtain/
+  Foliage) and/or explicit `absorption`/`damping` floats (0..1).
+- Surfaces reference a material by id: `material` field on `ext_walls`,
+  `partitions`, and `volumes`, plus a spec-level `default_material` fallback.
+  Palette + inline override.
+- The build writes a `surfaces` map into `<name>.gameplay.json` — collision
+  node name → resolved acoustic material — so the game's audio raycaster can
+  read the hit body's name and hand the right material to the audio engine's
+  geometry-query seam. **No visual PBR is baked** (texturing happens in the
+  engine); this is the acoustic side only.
+- `validate.py` checks every `material` reference (and `default_material`)
+  resolves to a defined palette entry.
+- `rowhouse_raid.json` updated with a 3-material palette (brick/drywall/glass)
+  as a worked example. Schema 1.4.0.
+
 ## [0.7.0]
 ### Added — second tactical mode: heist (PvE crew play)
 - `mode` field on the spec: `"assault"` (default, the existing

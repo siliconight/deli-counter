@@ -9,6 +9,13 @@
   "has_basement": true,
   "collision": "convex",
   "auto_exterior": true,
+  "default_material": "brick_ext",
+
+  "materials": [
+    { "id": "brick_ext", "acoustic": "Concrete", "absorption": 0.7, "damping": 0.6 },
+    { "id": "drywall", "acoustic": "Drywall" },
+    { "id": "glass", "acoustic": "Glass", "absorption": 0.1, "damping": 0.05 }
+  ],
 
   "ext_walls": [
     { "wall": "S", "story": 0, "openings": [
@@ -26,7 +33,7 @@
   ],
 
   "partitions": [
-    { "story": 0, "axis": "X", "pos": 0.0, "start": -9, "end": 9, "openings": [
+    { "story": 0, "axis": "X", "pos": 0.0, "start": -9, "end": 9, "material": "drywall", "openings": [
       { "kind": "door", "pos": -0.25 },
       { "kind": "breach", "pos": 0.35, "breach_class": "soft_wall", "material": "drywall" }
     ]},

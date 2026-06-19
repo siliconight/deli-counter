@@ -43,7 +43,7 @@ import random
 from spec_types import (
     Axis, Wall, Collision, Opening, ExtWall, Partition, Stairwell,
     SlabHole, Volume, Parapet, LevelSpec, Asset, Placement,
-    Room, VerticalLink, Marker, Objective, LootSpawn, Zone,
+    Room, VerticalLink, Marker, Objective, LootSpawn, Zone, Material,
 )
 
 
@@ -64,6 +64,7 @@ class _Builder:
         self.VISUAL = None
         self.COLLISION = None
         self._asset_index = {a.id: a for a in spec.assets}
+        self._material_index = {m.id: m for m in spec.materials}
 
     # -- helpers ------------------------------------------------------------
     def snap(self, v):
@@ -215,7 +216,8 @@ class _Builder:
         self.MARKERS = self._col("MARKERS")
         self.gameplay = {"mode": self.s.mode, "markers": [], "rooms": [],
                          "vertical_links": [], "openings": [],
-                         "objectives": [], "loot": [], "zones": []}
+                         "objectives": [], "loot": [], "zones": [],
+                         "materials": [], "surfaces": []}
         self._slabs()
         self._exterior()
         self._partitions()
@@ -228,6 +230,7 @@ class _Builder:
         self._rooms()
         self._markers()
         self._heist()
+        self._materials()
         print(f"[deli_counter] built '{self.s.name}' seed={self.s.seed}: "
               f"{len(self.VISUAL.objects)} visual, "
               f"{len(self.COLLISION.objects)} collision, "
@@ -273,10 +276,12 @@ class _Builder:
                     self._record_openings(spec_w.openings, c, axis, run,
                                           f"ext_{s}_{wname}", s)
                 self._box_with_holes(f"ext_{s}_{wname}", c, size, holes, self.VISUAL)
+                col_name = f"ext_col_{s}_{wname}"
                 if holes:
-                    self._wall_collision(f"ext_col_{s}_{wname}", c, size, axis, holes)
+                    self._wall_collision(col_name, c, size, axis, holes)
                 else:
-                    self._col_box(f"ext_col_{s}_{wname}", c, size)
+                    self._col_box(col_name, c, size)
+                self._record_surface(col_name, spec_w.material if spec_w else None)
 
     def _record_openings(self, openings, wall_center, axis, run, wall_name, story):
         """Capture tactical opening metadata (tag/breach_class/material/etc.)
@@ -330,10 +335,12 @@ class _Builder:
             self._record_openings(p.openings, c, axis, length,
                                   f"int_{p.story}_{i}", p.story)
             self._box_with_holes(f"int_{p.story}_{i}", c, size, holes, self.VISUAL)
+            col_name = f"int_col_{p.story}_{i}"
             if holes:
-                self._wall_collision(f"int_col_{p.story}_{i}", c, size, axis, holes)
+                self._wall_collision(col_name, c, size, axis, holes)
             else:
-                self._col_box(f"int_col_{p.story}_{i}", c, size)
+                self._col_box(col_name, c, size)
+            self._record_surface(col_name, p.material)
 
     def _stairs(self):
         H = self.s.story_height
@@ -389,6 +396,7 @@ class _Builder:
                 self._box(v.name, c, size, self.VISUAL)
             if v.collision != "none":
                 self._col_box(f"{v.name}_col", c, size, mode=v.collision)
+                self._record_surface(f"{v.name}_col", v.material)
 
     # ----------------------------------------------------------------------
     # KITBASHING  --  import external models and place instances
@@ -602,6 +610,38 @@ class _Builder:
                 entry["meta"] = m.meta
             self.gameplay["markers"].append(entry)
 
+    # ----------------------------------------------------------------------
+    # MATERIALS  --  acoustic palette + surface map for gool (no visual PBR)
+    # ----------------------------------------------------------------------
+    def _resolve_material(self, material_id):
+        """Resolve a material id (or None) to an acoustic descriptor dict, or
+        None if no material applies. Falls back to spec.default_material."""
+        mid = material_id or self.s.default_material
+        if not mid:
+            return None
+        m = self._material_index.get(mid)
+        if m is None:
+            return {"id": mid, "acoustic": None, "absorption": None,
+                    "damping": None, "unresolved": True}
+        return {"id": m.id, "acoustic": m.acoustic,
+                "absorption": m.absorption, "damping": m.damping}
+
+    def _record_surface(self, node_name, material_id):
+        """Map a collision-node name to its acoustic material in gameplay.json.
+        The game's audio raycaster reads the hit body's name, looks it up here,
+        and hands the material to gool's IAudioGeometryQuery."""
+        desc = self._resolve_material(material_id)
+        if desc is None:
+            return
+        self.gameplay["surfaces"].append({"node": node_name, "material": desc})
+
+    def _materials(self):
+        """Emit the resolved palette into gameplay.json for reference."""
+        for m in self.s.materials:
+            self.gameplay["materials"].append({
+                "id": m.id, "acoustic": m.acoustic,
+                "absorption": m.absorption, "damping": m.damping})
+
     def _heist(self):
         """Emit heist-mode markers: objectives, loot, and zones. These are
         written regardless of mode (so a designer can mix), but the heist
@@ -673,6 +713,8 @@ def write_gameplay_json(builder, path):
         "objectives": builder.gameplay["objectives"],
         "loot": builder.gameplay["loot"],
         "zones": builder.gameplay["zones"],
+        "materials": builder.gameplay["materials"],
+        "surfaces": builder.gameplay["surfaces"],
     }
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)

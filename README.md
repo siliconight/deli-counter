@@ -255,6 +255,37 @@ See `specs/rowhouse_raid.json` for a full tactical level. Sightline analysis
 and an in-engine nav smoke test are a planned Godot-side Phase 2 (they need
 real geometry raycasts).
 
+## Acoustic materials (audio-engine bridge)
+
+Deli Counter doesn't bake visual materials — you texture in your engine. What
+it *does* carry is the **acoustic** side, so a surface's material can feed an
+audio engine's occlusion/reverb system.
+
+Define a palette and reference it per surface:
+
+```json
+"default_material": "brick_ext",
+"materials": [
+  { "id": "brick_ext", "acoustic": "Concrete", "absorption": 0.7, "damping": 0.6 },
+  { "id": "drywall",   "acoustic": "Drywall" },
+  { "id": "glass",     "acoustic": "Glass", "absorption": 0.1, "damping": 0.05 }
+],
+"partitions": [
+  { "story": 0, "axis": "X", "pos": 0, "start": -9, "end": 9, "material": "drywall", "openings": [...] }
+]
+```
+
+Each material maps to an audio-material enum name
+(Default/Air/Glass/Wood/Drywall/Concrete/Metal/Curtain/Foliage) and/or
+explicit `absorption`/`damping` floats. Walls, partitions, and volumes take a
+`material` id; `default_material` covers anything unset.
+
+The build writes a `surfaces` map into `<name>.gameplay.json` — collision
+node name → resolved acoustic material. Your audio raycaster hits a collision
+body, reads its name, looks it up here, and hands the material to the audio
+engine's geometry-query interface. `validate.py` checks every reference
+resolves.
+
 ## Iterating toward real models
 
 1. Describe a building -> a new `specs/<name>.json`.

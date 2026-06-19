@@ -92,6 +92,22 @@ def validate_file(path):
                     print(f"  ASSET-MISSING: '{a.id}' collision_file: {cf}")
                     sem_ok = False
 
+    # material reference checks
+    mat_ids = {m.id for m in spec.materials}
+    def _check_mat(mid, where):
+        nonlocal sem_ok
+        if mid and mid not in mat_ids:
+            print(f"  MATERIAL: {where} references undefined material '{mid}'")
+            sem_ok = False
+    if spec.default_material:
+        _check_mat(spec.default_material, "default_material")
+    for w in spec.ext_walls:
+        _check_mat(w.material, f"ext wall {w.wall}@{w.story}")
+    for i, p in enumerate(spec.partitions):
+        _check_mat(p.material, f"partition #{i}")
+    for v in spec.volumes:
+        _check_mat(v.material, f"volume '{v.name}'")
+
     if hard or not sem_ok:
         print(f"  -> {len(hard)} schema error(s)"
               + ("" if sem_ok else ", semantic errors"))

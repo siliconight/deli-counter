@@ -92,3 +92,27 @@ func _on_charge_detonated(panel: Node) -> void:
   the level scene, and confirm the groups populate (`get_tree()
   .get_nodes_in_group("attacker_spawn")`). GDScript can't be checked outside
   the engine, so an in-editor reimport + a quick play test is the real test.
+
+## Acoustic surfaces (gool bridge)
+
+If a spec defines a `materials` palette, the `<name>.gameplay.json` carries a
+`surfaces` array mapping each collision-node name to an acoustic material:
+
+```json
+"surfaces": [
+  { "node": "int_col_0_0", "material": { "id": "drywall", "acoustic": "Drywall" } },
+  { "node": "ext_col_0_N", "material": { "id": "brick_ext", "acoustic": "Concrete",
+                                          "absorption": 0.7, "damping": 0.6 } }
+]
+```
+
+In your `IAudioGeometryQuery::RaycastAudioOcclusion` implementation, take the
+collision body you hit, read its node name, look it up in this map, and return
+the corresponding `AudioMaterial` (the `acoustic` field maps directly to
+gool's enum) or the explicit `absorption`/`damping` values. That way one
+material tag in the spec drives the level's acoustics without hand-authoring
+per-wall audio data in the engine.
+
+A small autoload that loads the json once and exposes
+`material_for_node(name)` is the usual pattern; the names match the collision
+bodies the glTF importer creates from Deli Counter's `-convcolonly` nodes.
