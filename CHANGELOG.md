@@ -5,6 +5,21 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.13.0]
+### Godot import — hardened the pipeline for first real-engine use
+- Fixed the post-import script's node-owner handling, the known
+  `EditorScenePostImport` gotcha where converted nodes are silently dropped
+  from the saved scene unless their `owner` is the returned scene root. Owner
+  is now set to the root (passed in explicitly) *after* `add_child`, and
+  recursively on any instanced scene's children. Removed the fragile
+  `_scene_root` tree-walk.
+- `godot/IMPORT_GUIDE.md`: a step-by-step import procedure with verification
+  checkpoints (geometry+collision import, then the marker-conversion reimport,
+  then group checks, then a walkable greybox) so the first Godot import is a
+  checklist, not guesswork.
+- `build.py` Blender auto-detect now covers 4.3/4.4/4.5 and the Steam install
+  path, not just 4.1/4.2.
+
 ## [0.12.0]
 ### Added — preset recipes (walk-up authoring)
 - `presets.py`: parameterized recipe generators that emit a complete, playable

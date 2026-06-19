@@ -70,7 +70,7 @@ func _post_import(scene: Node) -> Node:
 			var prefix: String = rule[0]
 			var group: String = rule[1]
 			if upper.begins_with(prefix):
-				_convert_node(node, group, meta_by_name.get(upper, {}))
+				_convert_node(node, group, meta_by_name.get(upper, {}), scene)
 				converted += 1
 				break
 
@@ -84,7 +84,7 @@ func _gather(node: Node, out: Array[Node]) -> void:
 		_gather(child, out)
 
 
-func _convert_node(node: Node, group: String, meta: Dictionary) -> void:
+func _convert_node(node: Node, group: String, meta: Dictionary, root: Node) -> void:
 	# Breach panels stay as their StaticBody3D (they have collision); we just
 	# tag them and attach metadata so a breach can replace/free them at runtime.
 	if group == "breach_panel":
@@ -106,13 +106,24 @@ func _convert_node(node: Node, group: String, meta: Dictionary) -> void:
 
 	replacement.name = node.name
 	replacement.add_to_group(group)
-	_apply_meta(replacement, meta)
 
 	var parent := node.get_parent()
 	parent.add_child(replacement)
-	replacement.owner = node.owner if node.owner else _scene_root(node)
+	# CRITICAL: owner must be the returned scene root, or the node is silently
+	# dropped from the saved import (Godot EditorScenePostImport behavior).
+	# Set it AFTER add_child, and set owner on any instanced children too.
+	_set_owner_recursive(replacement, root)
 	replacement.global_transform = xform
+	_apply_meta(replacement, meta)
 	node.queue_free()
+
+
+func _set_owner_recursive(node: Node, root: Node) -> void:
+	if node == root:
+		return
+	node.owner = root
+	for child in node.get_children():
+		_set_owner_recursive(child, root)
 
 
 func _apply_meta(node: Node, meta: Dictionary) -> void:
@@ -127,13 +138,6 @@ func _global_xform(node: Node) -> Transform3D:
 	if node is Node3D:
 		return (node as Node3D).global_transform
 	return Transform3D.IDENTITY
-
-
-func _scene_root(node: Node) -> Node:
-	var n := node
-	while n.get_parent() != null:
-		n = n.get_parent()
-	return n
 
 
 func _load_gameplay_json() -> Dictionary:

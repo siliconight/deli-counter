@@ -45,11 +45,16 @@ def find_blender(explicit=None):
     found = shutil.which("blender")
     if found:
         return found
-    # common Windows install path guess
-    for guess in [
+    # common Windows install path guesses (newest first)
+    guesses = [
+        r"C:\Program Files\Blender Foundation\Blender 4.5\blender.exe",
+        r"C:\Program Files\Blender Foundation\Blender 4.4\blender.exe",
+        r"C:\Program Files\Blender Foundation\Blender 4.3\blender.exe",
         r"C:\Program Files\Blender Foundation\Blender 4.2\blender.exe",
         r"C:\Program Files\Blender Foundation\Blender 4.1\blender.exe",
-    ]:
+        r"C:\Program Files (x86)\Steam\steamapps\common\Blender\blender.exe",
+    ]
+    for guess in guesses:
         if os.path.exists(guess):
             return guess
     return None
