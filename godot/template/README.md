@@ -44,6 +44,31 @@ res://addons/deli_counter/
 | F4 | bake a NavigationMesh over the level and show it |
 | R | respawn at the first spawn marker |
 
+### Input setup (WASD)
+
+The player works on the **arrow keys** with zero setup (they're bound by
+default). To add **WASD**, define four dedicated actions once in
+**Project → Project Settings → Input Map** — the controller auto-detects and
+prefers them:
+
+| Action | Key |
+|---|---|
+| `move_forward` | W |
+| `move_back` | S |
+| `move_left` | A |
+| `move_right` | D |
+
+(If these actions don't exist, the controller silently falls back to the
+arrow keys, so it always runs.)
+
+### Stairs
+
+Godot's `CharacterBody3D` has no built-in stair-stepping — it stops dead at
+every step edge. This controller adds a step-up: when it's blocked by a
+surface no taller than `max_step_height` (default 0.4 m), it snaps up onto it.
+That's what lets you climb the generated stairs. If a particular level's stairs
+are taller per-step, raise `max_step_height` on the Player node.
+
 **Collision view:** Godot's runtime collision toggle is unreliable, so use the
 editor's **Debug → Visible Collision Shapes** menu (toggle it before/while
 running), or set the harness's **Show Collision Shapes** export on. Either shows

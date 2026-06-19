@@ -5,6 +5,19 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.15.1]
+### Fixed — stair traversal (found by walking the police station in Godot)
+- The stair slab-hole was centered on the stairwell base and sized to the
+  stair footprint, so it stopped right at the top step — a player's body would
+  clip the slab lip cresting the top and get stuck "near the top." The hole now
+  extends ~0.8 m past the top landing in the flight's travel direction and is
+  wider (player radius + margin), so you can walk off onto the upper floor.
+- Test-harness player (`godot/template/player.gd`) gained stair-stepping:
+  `CharacterBody3D` has no built-in step handling and stopped dead at every
+  step edge. It now snaps up onto anything shorter than `max_step_height`
+  (0.4 m default). Also added dedicated `move_*` input actions with a fallback
+  to arrow keys, and the README documents the four WASD bindings to add.
+
 ## [0.15.0]
 ### Added — police_station preset (roadmap Level 7)
 - `police_station` recipe: a dense two-story precinct + roof access. Ground

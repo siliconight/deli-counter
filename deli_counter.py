@@ -406,9 +406,24 @@ class _Builder:
                     self._col_box(f"stair{si}col_{s}_{i}", (st.x, cy, cz),
                                   (st.width, step_d, step_h))
                 if st.cut_slabs:
+                    # The slab hole must clear the *top* of the flight plus the
+                    # player's body so you can walk off onto the landing, not
+                    # just the stair footprint. The top step sits at
+                    # st.y + sign*(run/2); extend the hole ~0.8 m past it in the
+                    # travel direction (player radius + margin), and pad the
+                    # near side and width a bit too.
+                    clear = 0.8
+                    near = st.run / 2 + 0.3        # behind the bottom step
+                    far = st.run / 2 + clear       # past the top landing
+                    if sign >= 0:
+                        hole_y = st.y + (far - near) / 2
+                        hole_len = far + near
+                    else:
+                        hole_y = st.y - (far - near) / 2
+                        hole_len = far + near
                     self.s.slab_holes.append(SlabHole(
-                        story=s + 1, x=st.x, y=st.y,
-                        size_x=st.width + 0.4, size_y=st.run + 0.4))
+                        story=s + 1, x=st.x, y=hole_y,
+                        size_x=st.width + 0.8, size_y=hole_len))
 
     def _ladders(self):
         """Vertical climb: rungs + two side rails, climbing one floor per
