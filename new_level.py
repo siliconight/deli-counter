@@ -79,6 +79,19 @@ def main():
               "you can inspect it.")
         return r.returncode
 
+    # keep CATALOG.md in sync so the CI gate (check.py) stays green — a new
+    # spec without a catalog refresh is the most common way the catalog goes
+    # stale.
+    cat = os.path.join(HERE, "catalog.py")
+    if os.path.exists(cat):
+        cr = subprocess.run([sys.executable, cat], cwd=HERE,
+                            capture_output=True, text=True)
+        if cr.returncode == 0:
+            print("refreshed specs/CATALOG.md")
+        else:
+            print("note: couldn't refresh CATALOG.md automatically — "
+                  "run `python catalog.py` before committing.")
+
     print(f"\nNext: build it ->  python build.py {rel}")
     print(f"      or open specs/{args.name}.json to customize.")
     return 0

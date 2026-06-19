@@ -5,6 +5,17 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.16.2]
+### Added — keep CATALOG.md from going stale
+- `new_level.py` now auto-refreshes `specs/CATALOG.md` after writing a spec, so
+  generating a level can't leave the catalog out of sync (the most common CI
+  failure).
+- `hooks/pre-commit` + `install_hooks.py`: a pre-commit hook that refreshes the
+  catalog (staging it if changed) and runs the `check.py` gate before a commit
+  lands, catching stale catalogs and broken specs — including hand-edited ones
+  — before they reach CI. Install once per clone with `python install_hooks.py`;
+  bypass a single commit with `git commit --no-verify`.
+
 ## [0.16.1]
 ### Changed — docs
 - Refreshed the README for the plugin workflow: the "Import into Godot 4"

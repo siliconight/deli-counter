@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# Deli Counter pre-commit hook
+# ----------------------------------------------------------------------------
+# Keeps specs/CATALOG.md in sync and runs the validation gate before a commit
+# lands, so CI (check.py) doesn't fail on a stale catalog or a broken spec.
+#
+# Install it with:  python install_hooks.py
+# (or copy this file to .git/hooks/pre-commit and chmod +x it)
+
+set -e
+
+# find the repo root (this hook runs from there, but be explicit)
+ROOT="$(git rev-parse --show-toplevel)"
+cd "$ROOT"
+
+PY="${PYTHON:-python}"
+command -v "$PY" >/dev/null 2>&1 || PY=python3
+
+# 1. refresh the catalog so it matches the specs being committed
+if [ -f catalog.py ]; then
+    "$PY" catalog.py >/dev/null 2>&1 || true
+    # if the refresh changed CATALOG.md, stage it so it's part of this commit
+    if ! git diff --quiet -- specs/CATALOG.md 2>/dev/null; then
+        git add specs/CATALOG.md
+        echo "[deli_counter] refreshed and staged specs/CATALOG.md"
+    fi
+fi
+
+# 2. run the gate (validates every spec + confirms catalog freshness)
+if [ -f check.py ]; then
+    if ! "$PY" check.py; then
+        echo ""
+        echo "[deli_counter] pre-commit gate failed — fix the above before committing."
+        echo "               (to bypass once: git commit --no-verify)"
+        exit 1
+    fi
+fi
+
+exit 0

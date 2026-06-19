@@ -129,6 +129,12 @@ python check.py        # validate all specs + confirm catalog is current
 `check.py` exits non-zero on failure, so it drops straight into a pre-commit
 hook or CI job. Neither needs Blender.
 
+**Skip the manual step:** `new_level.py` auto-refreshes `CATALOG.md` after it
+writes a spec, and `python install_hooks.py` installs a pre-commit hook that
+refreshes the catalog and runs the gate before every commit — so a stale
+catalog or a broken spec can't reach CI. Run the installer once per clone.
+(Bypass the hook for a one-off commit with `git commit --no-verify`.)
+
 ### Versioning
 
 `version.py` holds `KIT_VERSION`. Bump it when builder output changes, record
