@@ -390,6 +390,11 @@ class LevelSpec:
     materials: list[Material] = field(default_factory=list)
     default_material: Optional[str] = None
 
+    # if true, drop 1.8 m human-proxy capsules at each spawn marker into a
+    # SCALE_REF collection — a quick visual scale check in Blender. Off by
+    # default; the collection is separate so it never affects export.
+    scale_ref: bool = False
+
     # if no ext_walls are specified, auto-generate solid exterior walls
     auto_exterior: bool = True
 

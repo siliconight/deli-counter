@@ -1,20 +1,32 @@
 """
 _run_in_blender.py  --  executed INSIDE Blender by build.py
 ============================================================
-Not meant to be run in normal Python. build.py invokes:
-    blender --background --python _run_in_blender.py -- <spec> <out>
+Two ways to run this:
 
-It can also be run manually in Blender's Scripting workspace: set SPEC_PATH
-and OUT_PATH below, then Alt+P.
+1. HEADLESS (build.py drives it):
+       blender --background --python _run_in_blender.py -- <spec> <out>
+
+2. MANUAL, to look at the model in Blender's viewport:
+   - Open Blender 4.x, Scripting workspace, open this file.
+   - Set the three paths in the CONFIG block below (at minimum SPEC_PATH
+     and PKG_DIR).
+   - Leave OUT_PATH = "" to just BUILD INTO THE VIEWPORT (no export) so you
+     can orbit the model and inspect the VISUAL / COLLISION / MARKERS
+     collections. Set OUT_PATH to also export a .glb.
+   - Press Run Script (Alt+P).
 """
 
 import sys
 import os
 
-# ---- manual-fallback defaults (used only if no `--` args are passed) -------
-SPEC_PATH = ""   # e.g. r"C:\deli_counter\specs\bank.json"
-OUT_PATH = ""    # e.g. r"C:\deli_counter\build\bank.glb"
-# ----------------------------------------------------------------------------
+# ============================ CONFIG (manual run) ===========================
+# Point SPEC_PATH at the spec you want to build. PKG_DIR must be the folder
+# that contains deli_counter.py / spec_loader.py (this package). It's set
+# explicitly because Blender's text editor can't always resolve __file__.
+SPEC_PATH = r""        # e.g. r"C:\deli_counter\specs\stop_n_go.json"
+PKG_DIR   = r""        # e.g. r"C:\deli_counter"
+OUT_PATH  = r""        # "" = viewport only; or e.g. r"C:\deli_counter\build\stop_n_go.glb"
+# ============================================================================
 
 
 def _parse_argv():
@@ -27,40 +39,72 @@ def _parse_argv():
     return SPEC_PATH, OUT_PATH
 
 
+def _resolve_pkg_dir(spec_path):
+    """Find the folder holding deli_counter.py. Prefer the explicit PKG_DIR;
+    fall back to __file__'s dir, then the spec's parent's parent."""
+    candidates = []
+    if PKG_DIR:
+        candidates.append(PKG_DIR)
+    try:
+        candidates.append(os.path.dirname(os.path.abspath(__file__)))
+    except NameError:
+        pass
+    if spec_path:
+        # specs usually live in <pkg>/specs/, so the pkg is one level up
+        candidates.append(os.path.dirname(os.path.dirname(os.path.abspath(spec_path))))
+    for c in candidates:
+        if c and os.path.isfile(os.path.join(c, "deli_counter.py")):
+            return c
+    return candidates[0] if candidates else os.getcwd()
+
+
 def main():
     spec_path, out_path = _parse_argv()
     if not spec_path:
-        raise SystemExit("No spec path. Pass it after -- or set SPEC_PATH.")
+        raise SystemExit(
+            "No spec path. Set SPEC_PATH (and PKG_DIR) in the CONFIG block, "
+            "or pass the spec after -- on the command line.")
 
+    pkg = _resolve_pkg_dir(spec_path)
     here = os.path.dirname(os.path.abspath(spec_path))
-    pkg = os.path.dirname(os.path.abspath(__file__))
     for p in (pkg, here):
-        if p not in sys.path:
+        if p and p not in sys.path:
             sys.path.append(p)
 
-    from spec_loader import load_spec
-    from deli_counter import build, export, write_gameplay_json
+    try:
+        from spec_loader import load_spec
+        from deli_counter import build, export, write_gameplay_json
+    except ImportError as e:
+        raise SystemExit(
+            f"Could not import the kit from '{pkg}'. Set PKG_DIR in the CONFIG "
+            f"block to the folder containing deli_counter.py. ({e})")
 
     spec = load_spec(spec_path)
-    builder = build(spec, base_dir=os.path.dirname(os.path.abspath(spec_path)))
-    # out_path may be a semicolon-separated list of targets (multi-format)
+    builder = build(spec, base_dir=here)
+
+    if not out_path:
+        # viewport-only: the model is now in the scene. Nothing to export.
+        print(f"[deli_counter] built '{spec.name}' into the viewport — "
+              "inspect the VISUAL / COLLISION / MARKERS collections. "
+              "Set OUT_PATH to also export a .glb.")
+        return
+
     written = []
-    if out_path:
-        for target in out_path.split(";"):
-            target = target.strip()
-            if not target:
-                continue
-            os.makedirs(os.path.dirname(os.path.abspath(target)), exist_ok=True)
-            export(target)
-            written.append(target)
-        # tactical companion json next to the first output
-        g = builder.gameplay
-        if written and (g["markers"] or g["rooms"] or g["vertical_links"]
-                        or g["objectives"] or g["loot"] or g["zones"]
-                        or g["surfaces"]):
-            base = os.path.splitext(written[0])[0]
-            write_gameplay_json(builder, base + ".gameplay.json")
-        _write_manifest(spec_path, written)
+    for target in out_path.split(";"):
+        target = target.strip()
+        if not target:
+            continue
+        os.makedirs(os.path.dirname(os.path.abspath(target)), exist_ok=True)
+        export(target)
+        written.append(target)
+    # tactical companion json next to the first output
+    g = builder.gameplay
+    if written and (g["markers"] or g["rooms"] or g["vertical_links"]
+                    or g["objectives"] or g["loot"] or g["zones"]
+                    or g["surfaces"]):
+        base = os.path.splitext(written[0])[0]
+        write_gameplay_json(builder, base + ".gameplay.json")
+    _write_manifest(spec_path, written)
 
 
 def _write_manifest(spec_path, written):
@@ -81,7 +125,7 @@ def _write_manifest(spec_path, written):
         "schema_version": SCHEMA_VERSION,
         "spec": os.path.basename(spec_path),
         "spec_sha256_16": spec_hash,
-        "built_utc": datetime.datetime.utcnow().isoformat() + "Z",
+        "built_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "outputs": [os.path.basename(p) for p in written],
     }
     if written:

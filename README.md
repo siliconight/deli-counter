@@ -294,6 +294,11 @@ Sizing a level? See `docs/scale_guidelines.md` for meter-based targets —
 player scale, grid sizes, per-mode building/room/route dimensions, and a
 recommended first-prototype canvas.
 
+To eyeball scale in Blender, set `"scale_ref": true` in a spec and rebuild:
+1.8 m human-proxy capsules appear at every spawn in a `SCALE_REF` collection
+(visible in the viewport, never exported). If a doorway towers over the proxy
+and walls clear its head, your scale is right.
+
 1. Describe a building -> a new `specs/<name>.json`.
 2. `validate.py` -> `build.py` -> open the `.glb` in Godot, walk it.
 3. Tweak the spec (move walls, add entries, resize) and rebuild — deterministic.

@@ -22,6 +22,7 @@
     "floor_thick": { "type": "number", "exclusiveMinimum": 0 },
     "collision": { "enum": ["convex", "trimesh", "none"] },
     "auto_exterior": { "type": "boolean" },
+    "scale_ref": { "type": "boolean" },
     "assets_dir": { "type": "string" },
     "default_material": { "type": ["string", "null"] },
 

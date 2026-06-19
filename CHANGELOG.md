@@ -5,6 +5,27 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.11.0]
+### Added — scale-reference proxies
+- `scale_ref` spec flag (default off). When on, the build drops a 1.8 m
+  human-proxy capsule (0.4 m radius, per the scale guidelines) at every spawn
+  marker into a separate `SCALE_REF` collection — a one-glance check in
+  Blender that the level is sized for a human player. Proxies are named after
+  their spawn (`SCALEREF_ATTACKER_SPAWN_A`, …); if a spec has no spawns, one
+  is placed at the origin.
+- `SCALE_REF` stays visible in the viewport for inspection but is excluded
+  from every export format (.glb/.gltf/.obj), so the proxies never leak into
+  the shipped model.
+
+## [0.10.1]
+### Fixed
+- `_run_in_blender.py` manual run (Scripting workspace) is now foolproof:
+  an explicit `PKG_DIR` config (since Blender's text editor can't always
+  resolve `__file__`), a clear import-failure message pointing at it, and
+  leaving `OUT_PATH` empty now builds **into the viewport** for inspection
+  instead of silently doing nothing. Headless `build.py` path unchanged.
+- Replaced deprecated `datetime.utcnow()` in the manifest writer.
+
 ## [0.10.0]
 ### Added — full vertical traversal vocabulary
 - `ladders`: vertical climb between stories (rails + rungs, cuts the slab,

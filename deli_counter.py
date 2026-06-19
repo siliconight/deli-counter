@@ -119,6 +119,46 @@ class _Builder:
             return None
         return self._box(name + suf, center, size, self.COLLISION)
 
+    def _capsule(self, name, base_center, height, radius, collection):
+        """A simple human-proxy: a cylinder standing on its base. Used only for
+        the scale-reference overlay. base_center is the floor point; the proxy
+        rises `height` from there."""
+        mesh = bpy.data.meshes.new(name)
+        obj = bpy.data.objects.new(name, mesh)
+        collection.objects.link(obj)
+        bm = bmesh.new()
+        bmesh.ops.create_cone(bm, cap_ends=True, segments=12,
+                              radius1=1.0, radius2=1.0, depth=1.0)
+        bm.to_mesh(mesh)
+        bm.free()
+        obj.scale = (max(radius, 1e-4), max(radius, 1e-4), max(height, 1e-4))
+        obj.location = (base_center[0], base_center[1],
+                        base_center[2] + height / 2)
+        return obj
+
+    def _scale_ref(self):
+        """If spec.scale_ref, drop a 1.8 m human-proxy at each spawn marker into
+        a separate SCALE_REF collection. Purely a Blender-side visual check —
+        kept out of VISUAL/COLLISION so it never affects export."""
+        if not self.s.scale_ref:
+            return
+        ref = self._col("SCALE_REF")
+        ph, pr = 1.8, 0.4     # player height / capsule radius (m), per guidelines
+        n = 0
+        for m in self.s.markers:
+            if "spawn" not in m.type.lower():
+                continue
+            suffix = ("_" + m.id) if m.id else ""
+            self._capsule(f"SCALEREF_{m.type.upper()}{suffix}",
+                          (m.x, m.y, m.z), ph, pr, ref)
+            n += 1
+        if n == 0:
+            self._capsule("SCALEREF_ORIGIN", (0.0, 0.0, 0.0), ph, pr, ref)
+        # SCALE_REF stays visible in the viewport for the check; export()
+        # excludes it explicitly so it never lands in a .glb/.gltf/.obj.
+        print(f"[deli_counter] scale_ref: {max(n,1)} human proxy(ies) "
+              f"({ph:g} m tall) in SCALE_REF collection (not exported)")
+
     def _box_with_holes(self, name, center, size, holes, collection):
         """Solid box minus rectangular holes (visual). holes: list of dicts
         with u (offset along run), v (offset in Z from wall center), w, h."""
@@ -235,6 +275,7 @@ class _Builder:
         self._markers()
         self._heist()
         self._materials()
+        self._scale_ref()
         print(f"[deli_counter] built '{self.s.name}' seed={self.s.seed}: "
               f"{len(self.VISUAL.objects)} visual, "
               f"{len(self.COLLISION.objects)} collision, "
@@ -828,19 +869,36 @@ def export(path: str, fmt: str = None):
                  format; use GLB for the Godot-collision pipeline.
     """
     ext = (fmt or path.rsplit(".", 1)[-1]).lower()
-    if ext == "glb":
-        bpy.ops.export_scene.gltf(filepath=path, export_format='GLB',
-                                  use_visible=True)
-    elif ext == "gltf":
-        bpy.ops.export_scene.gltf(filepath=path, export_format='GLTF_SEPARATE',
-                                  use_visible=True)
-    elif ext == "obj":
-        # Blender 4.x: bpy.ops.wm.obj_export
-        bpy.ops.wm.obj_export(filepath=path, export_selected_objects=False,
-                              export_materials=True, export_triangulated_mesh=True)
-    else:
-        raise ValueError(f"Unsupported export format: {ext} "
-                         "(use glb, gltf, or obj)")
+    # The SCALE_REF collection is a Blender-only visual aid — never export it.
+    # Temporarily exclude it from the view layer (covers use_visible glTF) and
+    # hide it (covers the OBJ exporter), then restore afterward.
+    _scale_lc = None
+    _prev_exclude = _prev_hide = None
+    try:
+        _scale_lc = bpy.context.view_layer.layer_collection.children.get("SCALE_REF")
+    except Exception:
+        _scale_lc = None
+    if _scale_lc is not None:
+        _prev_exclude = _scale_lc.exclude
+        _scale_lc.exclude = True
+
+    try:
+        if ext == "glb":
+            bpy.ops.export_scene.gltf(filepath=path, export_format='GLB',
+                                      use_visible=True)
+        elif ext == "gltf":
+            bpy.ops.export_scene.gltf(filepath=path, export_format='GLTF_SEPARATE',
+                                      use_visible=True)
+        elif ext == "obj":
+            # Blender 4.x: bpy.ops.wm.obj_export
+            bpy.ops.wm.obj_export(filepath=path, export_selected_objects=False,
+                                  export_materials=True, export_triangulated_mesh=True)
+        else:
+            raise ValueError(f"Unsupported export format: {ext} "
+                             "(use glb, gltf, or obj)")
+    finally:
+        if _scale_lc is not None and _prev_exclude is not None:
+            _scale_lc.exclude = _prev_exclude
     print(f"[deli_counter] exported {path}")
 
 
