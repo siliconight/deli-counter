@@ -5,6 +5,19 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.15.0]
+### Added — police_station preset (roadmap Level 7)
+- `police_station` recipe: a dense two-story precinct + roof access. Ground
+  floor is public lobby + front desk, holding cells, booking, and a garage
+  bay; upstairs are detective offices, interrogation, and a **reinforced
+  armory** as the objective. Exercises every vertical primitive at once — a
+  switchback stairwell (main route), a roof ladder + hatch (flanking entry),
+  and a floor hole over the armory (top-down pressure). Breach-vs-reinforced:
+  soft interior walls breach, the armory door is reinforced. `assault` and
+  `heist` modes both validate; heist emits an armory-raid loot loop with the
+  garage bay as extraction.
+- `python new_level.py --preset police_station --name my_precinct [--mode heist]`.
+
 ## [0.14.0]
 ### Added — Godot level test harness (roadmap #5)
 - `godot/template/`: a drop-in test scene for walking a generated level at
