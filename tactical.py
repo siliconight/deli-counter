@@ -55,18 +55,23 @@ def build_graph(spec):
     for p in spec.partitions:
         if not p.openings:
             continue
-        # sample a point on each side of the partition
         eps = 0.6
-        mid = ((p.start + p.end) / 2)
-        if p.axis == "Y":      # wall runs along Y at x=pos
-            a = _room_at(spec, p.story, p.pos - eps, mid)
-            b = _room_at(spec, p.story, p.pos + eps, mid)
-        else:                  # wall runs along X at y=pos
-            a = _room_at(spec, p.story, mid, p.pos - eps)
-            b = _room_at(spec, p.story, mid, p.pos + eps)
-        if a and b and a != b:
-            adj[a].add(b)
-            adj[b].add(a)
+        length = abs(p.end - p.start)
+        lo = min(p.start, p.end)
+        # sample at each opening's actual position along the run, not the
+        # partition midpoint — a long wall can border different rooms along
+        # its length, and each doorway connects whatever rooms flank it.
+        for op in p.openings:
+            along = lo + (op.pos + 0.5) * length
+            if p.axis == "Y":      # wall runs along Y at x=pos; opening along Y
+                a = _room_at(spec, p.story, p.pos - eps, along)
+                b = _room_at(spec, p.story, p.pos + eps, along)
+            else:                  # wall runs along X at y=pos; opening along X
+                a = _room_at(spec, p.story, along, p.pos - eps)
+                b = _room_at(spec, p.story, along, p.pos + eps)
+            if a and b and a != b:
+                adj[a].add(b)
+                adj[b].add(a)
 
     # vertical links connect rooms across stories at (x,y)
     def _connect_stair_column(lo, hi):

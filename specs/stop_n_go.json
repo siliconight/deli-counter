@@ -1,0 +1,78 @@
+{
+  "$schema": "../schema/level.schema.json",
+  "name": "stop_n_go",
+  "mode": "assault",
+  "seed": 1985,
+  "footprint_x": 22.0,
+  "footprint_y": 16.0,
+  "story_height": 3.6,
+  "n_stories": 1,
+  "has_basement": false,
+  "collision": "convex",
+  "auto_exterior": true,
+  "default_material": "block_wall",
+
+  "materials": [
+    { "id": "block_wall", "acoustic": "Concrete", "absorption": 0.7, "damping": 0.6 },
+    { "id": "storefront_glass", "acoustic": "Glass", "absorption": 0.1, "damping": 0.05 },
+    { "id": "drywall", "acoustic": "Drywall" },
+    { "id": "cooler_panel", "acoustic": "Metal", "absorption": 0.5, "damping": 0.3 }
+  ],
+
+  "ext_walls": [
+    { "wall": "S", "story": 0, "material": "storefront_glass", "openings": [
+      { "kind": "door", "pos": -0.15, "width": 1.8, "tag": "main_entry" },
+      { "kind": "window", "pos": 0.15, "width": 2.4, "sill": 0.9, "vaultable": true },
+      { "kind": "window", "pos": 0.38, "width": 2.4, "sill": 0.9, "vaultable": true }
+    ]},
+    { "wall": "W", "story": 0, "material": "storefront_glass", "openings": [
+      { "kind": "window", "pos": -0.2, "width": 2.0, "sill": 0.9, "vaultable": true }
+    ]},
+    { "wall": "N", "story": 0, "material": "block_wall", "openings": [
+      { "kind": "door", "pos": -0.3, "width": 1.0, "tag": "rear_service" },
+      { "kind": "breach", "pos": 0.25, "width": 1.4, "breach_class": "soft_wall", "material": "cooler_panel" }
+    ]},
+    { "wall": "E", "story": 0, "material": "block_wall", "openings": [
+      { "kind": "door", "pos": 0.3, "width": 1.0, "tag": "side_stock" }
+    ]}
+  ],
+
+  "partitions": [
+    { "story": 0, "axis": "X", "pos": 3.5, "start": -11, "end": 11, "material": "drywall", "openings": [
+      { "kind": "door", "pos": -0.45 },
+      { "kind": "door", "pos": 0.45 }
+    ]},
+    { "story": 0, "axis": "Y", "pos": 2.0, "start": 3.5, "end": 8, "material": "cooler_panel", "openings": [
+      { "kind": "door", "pos": -0.3, "width": 1.0, "tag": "walkin_door" },
+      { "kind": "breach", "pos": 0.4, "width": 1.2, "breach_class": "soft_wall", "material": "cooler_panel" }
+    ]},
+    { "story": 0, "axis": "Y", "pos": -5.0, "start": 3.5, "end": 8, "material": "drywall", "openings": [
+      { "kind": "door", "pos": 0.0 }
+    ]}
+  ],
+
+  "rooms": [
+    { "id": "sales_floor", "story": 0, "bounds": [-11, -8, 11, 3.5], "role": "public_entry", "combat_range": "long" },
+    { "id": "walkin_cooler", "story": 0, "bounds": [2, 3.5, 11, 8], "role": "objective_room", "objective": true, "fortifiable": true, "combat_range": "close" },
+    { "id": "stockroom", "story": 0, "bounds": [-5, 3.5, 2, 8], "role": "fortifiable", "fortifiable": true, "combat_range": "close" },
+    { "id": "back_hall", "story": 0, "bounds": [-11, 3.5, -5, 8], "role": "connector", "combat_range": "medium" }
+  ],
+
+  "volumes": [
+    { "name": "register_counter", "x": -4.0, "y": 1.0, "z": 0.55, "size_x": 5.0, "size_y": 0.9, "size_z": 1.1, "collision": "convex", "material": "drywall" },
+    { "name": "aisle_shelf_1", "x": 0.0, "y": -2.0, "z": 0.8, "size_x": 7.0, "size_y": 0.7, "size_z": 1.6, "collision": "convex", "material": "drywall" },
+    { "name": "aisle_shelf_2", "x": 0.0, "y": -5.0, "z": 0.8, "size_x": 7.0, "size_y": 0.7, "size_z": 1.6, "collision": "convex", "material": "drywall" },
+    { "name": "cooler_backstock", "x": 7.0, "y": 6.0, "z": 1.0, "size_x": 6.0, "size_y": 0.8, "size_z": 2.0, "collision": "convex", "material": "cooler_panel" },
+    { "name": "stock_shelf", "x": -1.5, "y": 6.5, "z": 1.0, "size_x": 0.7, "size_y": 2.5, "size_z": 2.0, "collision": "convex", "material": "drywall" }
+  ],
+
+  "markers": [
+    { "type": "attacker_spawn", "id": "A", "x": -3, "y": -14, "z": 0, "rot_z": 90, "room": "sales_floor" },
+    { "type": "attacker_spawn", "id": "B", "x": -16, "y": -2, "z": 0, "rot_z": 0, "room": "sales_floor" },
+    { "type": "defender_spawn", "x": 6, "y": 6, "z": 0, "rot_z": 270, "room": "walkin_cooler" },
+    { "type": "objective", "id": "A", "x": 6, "y": 6, "z": 0, "room": "walkin_cooler", "meta": { "kind": "secure" } },
+    { "type": "cover_low", "x": -4, "y": 1, "z": 0, "room": "sales_floor" },
+    { "type": "cover_high", "x": 0, "y": -2, "z": 0, "room": "sales_floor" },
+    { "type": "camera_socket", "id": "01", "x": 9, "y": -7, "z": 3.0, "room": "sales_floor" }
+  ]
+}

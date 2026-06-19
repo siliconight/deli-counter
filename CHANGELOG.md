@@ -5,6 +5,28 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.9.0]
+### Added
+- `docs/scale_guidelines.md`: meter-based level-size targets for blockouts —
+  player scale, grid/structural sizes, and per-mode building/room/route
+  dimensions (assault, heist, and a co-op-route style), plus a recommended
+  first-prototype canvas (96×96 m, 60×60 m building, 3 floors) and acceptance
+  criteria. The structural half of the criteria is what `validate.py` already
+  enforces; the in-engine half (navmesh/AI/framerate) is the Godot check.
+
+## [0.8.1]
+### Fixed
+- Room-connectivity graph sampled each partition only at its midpoint, so a
+  long interior wall bordering more than one room recorded just one of those
+  connections. It now samples at each opening's actual position along the
+  wall, so every doorway links whatever rooms flank it. Fixes false
+  "objective room has 1 access path" errors on realistic layouts.
+### Added
+- Example spec `stop_n_go.json`: a gas-station convenience store (assault),
+  built from researched retail-layout conventions — glass storefront,
+  register counter mid-floor, aisle shelving, back-of-house stockroom +
+  walk-in cooler objective, rear service exit, breachable cooler panel.
+
 ## [0.8.0]
 ### Added — acoustic material palette (audio-engine bridge)
 - `materials` palette: named acoustic materials each mapping to an audio

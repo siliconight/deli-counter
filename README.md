@@ -288,6 +288,10 @@ resolves.
 
 ## Iterating toward real models
 
+Sizing a level? See `docs/scale_guidelines.md` for meter-based targets —
+player scale, grid sizes, per-mode building/room/route dimensions, and a
+recommended first-prototype canvas.
+
 1. Describe a building -> a new `specs/<name>.json`.
 2. `validate.py` -> `build.py` -> open the `.glb` in Godot, walk it.
 3. Tweak the spec (move walls, add entries, resize) and rebuild — deterministic.
