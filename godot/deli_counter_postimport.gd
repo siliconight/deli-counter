@@ -64,13 +64,22 @@ func _post_import(scene: Node) -> Node:
 	var all_nodes: Array[Node] = []
 	_gather(scene, all_nodes)
 
+	# Capture each marker's global transform NOW, while every node is still in
+	# the tree. Reading global_transform during/after mutation throws
+	# !is_inside_tree() and returns identity (markers would snap to origin).
+	var xforms := {}
+	for node in all_nodes:
+		if node is Node3D:
+			xforms[node] = (node as Node3D).global_transform
+
 	for node in all_nodes:
 		var upper := node.name.to_upper()
 		for rule in PREFIX_RULES:
 			var prefix: String = rule[0]
 			var group: String = rule[1]
 			if upper.begins_with(prefix):
-				_convert_node(node, group, meta_by_name.get(upper, {}), scene)
+				var xf: Transform3D = xforms.get(node, Transform3D.IDENTITY)
+				_convert_node(node, group, meta_by_name.get(upper, {}), scene, xf)
 				converted += 1
 				break
 
@@ -84,7 +93,7 @@ func _gather(node: Node, out: Array[Node]) -> void:
 		_gather(child, out)
 
 
-func _convert_node(node: Node, group: String, meta: Dictionary, root: Node) -> void:
+func _convert_node(node: Node, group: String, meta: Dictionary, root: Node, xform: Transform3D) -> void:
 	# Breach panels stay as their StaticBody3D (they have collision); we just
 	# tag them and attach metadata so a breach can replace/free them at runtime.
 	if group == "breach_panel":
@@ -95,7 +104,6 @@ func _convert_node(node: Node, group: String, meta: Dictionary, root: Node) -> v
 	# If a project scene is mapped for this tag, instance it at the marker's
 	# transform and replace the placeholder; otherwise keep a Marker3D.
 	var scene_path: String = SCENE_FOR_TAG.get(group, "")
-	var xform := _global_xform(node)
 
 	var replacement: Node3D
 	if scene_path != "" and ResourceLoader.exists(scene_path):
@@ -113,6 +121,7 @@ func _convert_node(node: Node, group: String, meta: Dictionary, root: Node) -> v
 	# dropped from the saved import (Godot EditorScenePostImport behavior).
 	# Set it AFTER add_child, and set owner on any instanced children too.
 	_set_owner_recursive(replacement, root)
+	# xform was captured before any tree mutation, so it's the real position.
 	replacement.global_transform = xform
 	_apply_meta(replacement, meta)
 	node.queue_free()
@@ -132,12 +141,6 @@ func _apply_meta(node: Node, meta: Dictionary) -> void:
 		if key == "name":
 			continue
 		node.set_meta(String(key), meta[key])
-
-
-func _global_xform(node: Node) -> Transform3D:
-	if node is Node3D:
-		return (node as Node3D).global_transform
-	return Transform3D.IDENTITY
 
 
 func _load_gameplay_json() -> Dictionary:

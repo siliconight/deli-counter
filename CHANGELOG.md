@@ -5,6 +5,17 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.13.1]
+### Fixed — post-import marker placement (found during first Godot import)
+- The post-import script read each marker's `global_transform` while mutating
+  the scene tree, which threw `!is_inside_tree()` errors and returned identity
+  — markers converted successfully but could snap to the origin instead of
+  their real positions. Transforms are now captured up front, before any node
+  is reparented or freed, so converted Marker3D nodes land where the spec put
+  them. Confirmed: first real Godot import converts all markers; collision
+  StaticBody3D/CollisionShape3D auto-generate from the suffixes (Checkpoints 2
+  and 3 pass).
+
 ## [0.13.0]
 ### Godot import — hardened the pipeline for first real-engine use
 - Fixed the post-import script's node-owner handling, the known
