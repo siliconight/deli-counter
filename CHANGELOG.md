@@ -5,6 +5,21 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.16.0]
+### Added — Godot editor plugin (kills the per-level file shuffle)
+- `godot/addon/deli_counter/`: a self-contained Godot editor plugin. Install
+  once (copy to `res://addons/deli_counter/`, enable in Project Settings →
+  Plugins) and a **Deli Counter** dock appears. Pick a level `.glb`, click
+  **Set up & Play ▶**, and it assigns the post-import marker script + reimports
+  (no Import-tab dance), builds a walkable test scene under
+  `res://deli_counter_tests/` with the level instanced in the harness, opens
+  it, and runs it. Numbered buttons also expose the steps individually.
+- The addon bundles the post-import script, `deli_level.gd`, and the test
+  harness `template/`, so install is one folder. Supersedes the manual
+  "copy the template + set the import script by hand" workflow.
+- `plugin.cfg` author is "Deli Counter" (the tool names itself, matching how
+  gool authors itself) — no brand reference.
+
 ## [0.15.1]
 ### Fixed — stair traversal (found by walking the police station in Godot)
 - The stair slab-hole was centered on the stairwell base and sized to the
