@@ -133,7 +133,69 @@
           "width": { "type": "number", "exclusiveMinimum": 0 },
           "run": { "type": "number", "exclusiveMinimum": 0 },
           "style": { "enum": ["straight", "switchback"] },
-          "cut_slabs": { "type": "boolean" }
+          "cut_slabs": { "type": "boolean" },
+          "step_rise": { "type": "number", "exclusiveMinimum": 0 },
+          "n_steps": { "type": ["integer", "null"], "minimum": 2 }
+        }
+      }
+    },
+
+    "ladders": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["x", "y", "from_story", "to_story"],
+        "additionalProperties": false,
+        "properties": {
+          "x": { "type": "number" },
+          "y": { "type": "number" },
+          "from_story": { "type": "integer" },
+          "to_story": { "type": "integer" },
+          "width": { "type": "number", "exclusiveMinimum": 0 },
+          "depth": { "type": "number", "exclusiveMinimum": 0 },
+          "rung_spacing": { "type": "number", "exclusiveMinimum": 0 },
+          "cut_slabs": { "type": "boolean" },
+          "facing": { "enum": ["N", "S", "E", "W"] }
+        }
+      }
+    },
+
+    "ramps": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["x", "y", "from_story", "to_story"],
+        "additionalProperties": false,
+        "properties": {
+          "x": { "type": "number" },
+          "y": { "type": "number" },
+          "from_story": { "type": "integer" },
+          "to_story": { "type": "integer" },
+          "run": { "type": "number", "exclusiveMinimum": 0 },
+          "width": { "type": "number", "exclusiveMinimum": 0 },
+          "axis": { "enum": ["X", "Y"] },
+          "thickness": { "type": "number", "exclusiveMinimum": 0 },
+          "cut_slabs": { "type": "boolean" },
+          "max_slope_deg": { "type": "number", "exclusiveMinimum": 0 }
+        }
+      }
+    },
+
+    "vault_ledges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["x", "y", "story"],
+        "additionalProperties": false,
+        "properties": {
+          "x": { "type": "number" },
+          "y": { "type": "number" },
+          "story": { "type": "integer" },
+          "length": { "type": "number", "exclusiveMinimum": 0 },
+          "axis": { "enum": ["X", "Y"] },
+          "height": { "type": "number", "exclusiveMinimum": 0 },
+          "thick": { "type": "number", "exclusiveMinimum": 0 },
+          "material": { "type": ["string", "null"] }
         }
       }
     },

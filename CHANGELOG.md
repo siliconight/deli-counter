@@ -5,6 +5,25 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.10.0]
+### Added — full vertical traversal vocabulary
+- `ladders`: vertical climb between stories (rails + rungs, cuts the slab,
+  emits a `LADDER_*` marker). Pairs with hatches.
+- `ramps`: inclined walkable slab between heights; slope derived from
+  rise/run, with a `max_slope_deg` walkable ceiling.
+- `vault_ledges`: waist-height ledge to vault over within a floor (tagged
+  `VAULTLEDGE_*`); takes a `material`.
+- Ladders and ramps count as vertical access and connect rooms across stories
+  in the reachability graph, same as stairs.
+- `validate.py` warns when a ramp's slope exceeds its walkable max (too steep
+  → use stairs or a longer run).
+### Fixed
+- Stair step count now derives from floor height and a target `step_rise`
+  (default 0.2 m, game-feel; overridable, or set `n_steps` explicitly), so
+  step rise stays consistent across floor heights instead of drifting with a
+  hardcoded 12 steps. Dimensions follow the scale guidelines (exaggerated
+  defaults, per-element override). Schema 1.5.0.
+
 ## [0.9.0]
 ### Added
 - `docs/scale_guidelines.md`: meter-based level-size targets for blockouts —

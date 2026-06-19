@@ -15,6 +15,7 @@ from spec_types import (
     LevelSpec, ExtWall, Opening, Partition, Stairwell,
     SlabHole, Volume, Parapet, Asset, Placement,
     Room, VerticalLink, Marker, Objective, LootSpawn, Zone, Material,
+    Ladder, Ramp, VaultLedge,
 )
 
 
@@ -40,6 +41,9 @@ def spec_from_dict(d: dict) -> LevelSpec:
         for p in d.get("partitions", [])
     ]
     stairs = [Stairwell(**s) for s in d.get("stairs", [])]
+    ladders = [Ladder(**l) for l in d.get("ladders", [])]
+    ramps = [Ramp(**r) for r in d.get("ramps", [])]
+    vault_ledges = [VaultLedge(**v) for v in d.get("vault_ledges", [])]
     slab_holes = [SlabHole(**h) for h in d.get("slab_holes", [])]
     volumes = [Volume(**v) for v in d.get("volumes", [])]
     parapets = [Parapet(**p) for p in d.get("parapets", [])]
@@ -65,9 +69,11 @@ def spec_from_dict(d: dict) -> LevelSpec:
         "parapets", "assets", "placements",
         "rooms", "vertical_links", "markers",
         "objectives", "loot", "zones", "materials",
+        "ladders", "ramps", "vault_ledges",
     )}
     return LevelSpec(
         ext_walls=ext_walls, partitions=partitions, stairs=stairs,
+        ladders=ladders, ramps=ramps, vault_ledges=vault_ledges,
         slab_holes=slab_holes, volumes=volumes, parapets=parapets,
         assets=assets, placements=placements,
         rooms=rooms, vertical_links=vertical_links, markers=markers,

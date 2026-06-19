@@ -87,6 +87,24 @@ def build_graph(spec):
         lo, hi = sorted([st.from_story, st.to_story])
         _connect_stair_column(lo, hi)
 
+    # ladders and ramps connect the rooms at their (x,y) across stories
+    for ld in spec.ladders:
+        lo, hi = sorted([ld.from_story, ld.to_story])
+        for s in range(lo, hi):
+            a = _room_at(spec, s, ld.x, ld.y)
+            b = _room_at(spec, s + 1, ld.x, ld.y)
+            if a and b:
+                adj[a].add(b)
+                adj[b].add(a)
+    for rp in spec.ramps:
+        lo, hi = sorted([rp.from_story, rp.to_story])
+        for s in range(lo, hi):
+            a = _room_at(spec, s, rp.x, rp.y)
+            b = _room_at(spec, s + 1, rp.x, rp.y)
+            if a and b:
+                adj[a].add(b)
+                adj[b].add(a)
+
     for v in spec.vertical_links:
         if v.kind == "stair" and v.from_story is not None:
             lo, hi = sorted([v.from_story, v.to_story])
@@ -204,9 +222,25 @@ def analyze(spec):
     for st in spec.stairs:
         lo, hi = sorted([st.from_story, st.to_story])
         linked_stories.update(range(lo, hi + 1))
+    for ld in spec.ladders:
+        lo, hi = sorted([ld.from_story, ld.to_story])
+        linked_stories.update(range(lo, hi + 1))
+    for rp in spec.ramps:
+        lo, hi = sorted([rp.from_story, rp.to_story])
+        linked_stories.update(range(lo, hi + 1))
     for s in stories:
         if len(stories) > 1 and s not in linked_stories:
             errors.append(f"story {s} has no stair/vertical access")
+
+    # steep ramp warning (too steep to walk -> should be stairs)
+    import math as _m
+    for ri, rp in enumerate(spec.ramps):
+        dz = abs(rp.to_story - rp.from_story) * spec.story_height
+        slope = _m.degrees(_m.atan2(dz, rp.run)) if rp.run else 90.0
+        if slope > rp.max_slope_deg:
+            warnings.append(f"ramp #{ri} slope {slope:.0f}deg exceeds walkable "
+                            f"max {rp.max_slope_deg:.0f}deg (consider stairs or "
+                            "a longer run)")
 
     # opening widths + breach metadata
     def _check_openings(openings, where):

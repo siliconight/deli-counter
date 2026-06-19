@@ -122,7 +122,9 @@ class Partition:
 
 @dataclass
 class Stairwell:
-    """Straight or switchback run connecting a range of stories."""
+    """Straight or switchback run connecting a range of stories. Step count is
+    derived from the floor height and target step_rise (so rise stays
+    consistent regardless of story_height) unless n_steps is set explicitly."""
     x: float
     y: float
     from_story: int
@@ -131,6 +133,56 @@ class Stairwell:
     run: float = 4.0
     style: Literal["straight", "switchback"] = "switchback"
     cut_slabs: bool = True           # punch holes in slabs it passes through
+    step_rise: float = 0.2           # target rise per step (m); game-feel default
+    n_steps: Optional[int] = None    # override; else derived per floor
+
+
+@dataclass
+class Ladder:
+    """A vertical climb between two stories at (x,y). Pairs with a hatch/hole
+    above. Generates rung geometry + side rails; cuts the slab it passes
+    through. The player climbs at a fixed speed (game owns that)."""
+    x: float
+    y: float
+    from_story: int
+    to_story: int
+    width: float = 0.5               # rail-to-rail (m)
+    depth: float = 0.15              # rung depth off the wall (m)
+    rung_spacing: float = 0.3        # vertical gap between rungs (m); exaggerated
+    cut_slabs: bool = True
+    facing: Literal["N", "S", "E", "W"] = "S"   # which way the climber faces
+
+
+@dataclass
+class Ramp:
+    """An inclined walkable surface between two heights. Slope is derived from
+    rise (story span) over run; flagged if it exceeds max_slope_deg (too steep
+    to walk → should be stairs). Good for loot-carry / vehicle routes."""
+    x: float
+    y: float
+    from_story: int
+    to_story: int
+    run: float = 8.0                 # horizontal length (m)
+    width: float = 2.0
+    axis: Literal["X", "Y"] = "Y"    # direction the ramp ascends
+    thickness: float = 0.3
+    cut_slabs: bool = True
+    max_slope_deg: float = 30.0      # walkable ceiling; steeper warns in validate
+
+
+@dataclass
+class VaultLedge:
+    """A waist-height ledge/low wall you can vault over within a floor (cover,
+    counters, half-walls, window sills as obstacles). Solid box; the game
+    treats sub-vault-height collision as vaultable."""
+    x: float
+    y: float
+    story: int
+    length: float = 2.0
+    axis: Literal["X", "Y"] = "X"    # which way the ledge runs
+    height: float = 1.1              # top height off floor (m); vaultable band
+    thick: float = 0.2
+    material: Optional[str] = None
 
 
 @dataclass
@@ -309,6 +361,9 @@ class LevelSpec:
     ext_walls: list[ExtWall] = field(default_factory=list)
     partitions: list[Partition] = field(default_factory=list)
     stairs: list[Stairwell] = field(default_factory=list)
+    ladders: list[Ladder] = field(default_factory=list)
+    ramps: list[Ramp] = field(default_factory=list)
+    vault_ledges: list[VaultLedge] = field(default_factory=list)
     slab_holes: list[SlabHole] = field(default_factory=list)
     volumes: list[Volume] = field(default_factory=list)
     parapets: list[Parapet] = field(default_factory=list)

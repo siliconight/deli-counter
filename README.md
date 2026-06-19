@@ -157,7 +157,9 @@ Top-level: `name`, `seed`, `grid`, `footprint_x/y`, `story_height`,
 `auto_exterior`.
 
 Features: `ext_walls` (+ `openings`: door/window/garage/breach),
-`partitions`, `stairs` (auto-cut slab holes), `slab_holes`, `volumes`
+`partitions`, `stairs` (auto-cut slab holes; step count derives from floor
+height), `ladders` / `ramps` / `vault_ledges` (full vertical traversal set),
+`slab_holes`, `volumes`
 (vaults/counters/cover/mezzanines), `parapets`. Same spec + same `seed`
 always builds the same level. See `specs/CATALOG.md` for what's in each level.
 

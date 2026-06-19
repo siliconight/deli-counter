@@ -44,6 +44,7 @@ from spec_types import (
     Axis, Wall, Collision, Opening, ExtWall, Partition, Stairwell,
     SlabHole, Volume, Parapet, LevelSpec, Asset, Placement,
     Room, VerticalLink, Marker, Objective, LootSpawn, Zone, Material,
+    Ladder, Ramp, VaultLedge,
 )
 
 
@@ -222,6 +223,9 @@ class _Builder:
         self._exterior()
         self._partitions()
         self._stairs()
+        self._ladders()
+        self._ramps()
+        self._vault_ledges()
         self._vertical_links()
         self._slab_holes_cut()
         self._volumes()
@@ -345,11 +349,13 @@ class _Builder:
     def _stairs(self):
         H = self.s.story_height
         for si, st in enumerate(self.s.stairs):
-            n_steps = 12
+            # derive step count so rise stays near st.step_rise regardless of
+            # floor height; explicit n_steps overrides. clamp to a sane range.
+            n_steps = st.n_steps or max(6, min(40, round(H / st.step_rise)))
             step_d = st.run / n_steps
+            step_h = H / n_steps
             for s in range(st.from_story, st.to_story):
                 z = s * H
-                step_h = H / n_steps
                 sign = 1 if ((s - st.from_story) % 2 == 0 or st.style == "straight") else -1
                 for i in range(n_steps):
                     cz = z + step_h * (i + 0.5)
@@ -362,6 +368,92 @@ class _Builder:
                     self.s.slab_holes.append(SlabHole(
                         story=s + 1, x=st.x, y=st.y,
                         size_x=st.width + 0.4, size_y=st.run + 0.4))
+
+    def _ladders(self):
+        """Vertical climb: rungs + two side rails, climbing one floor per
+        story in the range. Cuts the slab it passes through."""
+        H = self.s.story_height
+        for li, ld in enumerate(self.s.ladders):
+            along_x = ld.facing in ("N", "S")   # rails spread along X if facing N/S
+            n_rungs_per_floor = max(3, round(H / ld.rung_spacing))
+            for s in range(ld.from_story, ld.to_story):
+                z = s * H
+                # side rails (two thin vertical posts)
+                half = ld.width / 2
+                for sgn in (-1, 1):
+                    if along_x:
+                        rc = (ld.x + sgn * half, ld.y, z + H / 2)
+                        rs = (0.06, ld.depth, H)
+                    else:
+                        rc = (ld.x, ld.y + sgn * half, z + H / 2)
+                        rs = (ld.depth, 0.06, H)
+                    self._box(f"ladder{li}_rail_{s}_{sgn}", rc, rs, self.VISUAL)
+                # rungs (collision too, so the climb has footing geometry)
+                for r in range(n_rungs_per_floor):
+                    rz = z + ld.rung_spacing * (r + 0.5)
+                    if rz >= z + H:
+                        break
+                    if along_x:
+                        cc, cs = (ld.x, ld.y, rz), (ld.width, ld.depth, 0.05)
+                    else:
+                        cc, cs = (ld.x, ld.y, rz), (ld.depth, ld.width, 0.05)
+                    self._box(f"ladder{li}_rung_{s}_{r}", cc, cs, self.VISUAL)
+                if ld.cut_slabs:
+                    self.s.slab_holes.append(SlabHole(
+                        story=s + 1, x=ld.x, y=ld.y,
+                        size_x=ld.width + 0.6, size_y=ld.width + 0.6))
+            # marker so Godot can treat it as a climb volume
+            zc = ld.from_story * H
+            self._empty(f"LADDER_{li}", (ld.x, ld.y, zc), self.MARKERS)
+
+    def _ramps(self):
+        """Inclined walkable slab between two heights. Flagged steep ramps are
+        still built; validate.py warns. Cuts the slab at the top story."""
+        H = self.s.story_height
+        for ri, rp in enumerate(self.s.ramps):
+            dz = (rp.to_story - rp.from_story) * H
+            z0 = rp.from_story * H
+            # single inclined box: model as a thin slab rotated about its axis
+            import math as _m
+            length3d = _m.sqrt(rp.run ** 2 + dz ** 2)
+            angle = _m.atan2(dz, rp.run)
+            cx, cy = rp.x, rp.y
+            cz = z0 + dz / 2
+            obj = self._box(f"ramp{ri}", (cx, cy, cz),
+                            (rp.width if rp.axis == "Y" else length3d,
+                             length3d if rp.axis == "Y" else rp.width,
+                             rp.thickness), self.VISUAL)
+            # tilt about the horizontal axis perpendicular to ascent
+            if rp.axis == "Y":
+                obj.rotation_euler = (angle, 0.0, 0.0)
+            else:
+                obj.rotation_euler = (0.0, -angle, 0.0)
+            colobj = self._box(f"ramp{ri}_col" + self.col_suffix["convex"],
+                               (cx, cy, cz),
+                               (rp.width if rp.axis == "Y" else length3d,
+                                length3d if rp.axis == "Y" else rp.width,
+                                rp.thickness), self.COLLISION)
+            colobj.rotation_euler = obj.rotation_euler
+            if rp.cut_slabs and rp.to_story > rp.from_story:
+                self.s.slab_holes.append(SlabHole(
+                    story=rp.to_story, x=rp.x,
+                    y=rp.y + (rp.run / 2 if rp.axis == "Y" else 0),
+                    size_x=rp.width + 0.4 if rp.axis == "Y" else rp.run,
+                    size_y=rp.run if rp.axis == "Y" else rp.width + 0.4))
+
+    def _vault_ledges(self):
+        """Waist-height ledge you vault over within a floor. Solid box, tagged
+        VAULTLEDGE so the game can mark sub-height collision as vaultable."""
+        for vi, vl in enumerate(self.s.vault_ledges):
+            z = vl.story * self.s.story_height + vl.height / 2
+            if vl.axis == "X":
+                size = (vl.length, vl.thick, vl.height)
+            else:
+                size = (vl.thick, vl.length, vl.height)
+            name = f"VAULTLEDGE_{vi}"
+            self._box(name, (vl.x, vl.y, z), size, self.VISUAL)
+            self._col_box(name, (vl.x, vl.y, z), size)
+            self._record_surface(name + self.col_suffix["convex"], vl.material)
 
     def _slab_holes_cut(self):
         """Boolean-subtract holes from slabs (visual + collision)."""
