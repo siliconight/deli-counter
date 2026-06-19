@@ -5,6 +5,22 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.6.0]
+### Added — Godot integration (closes the compiler → playable loop)
+- `godot/deli_counter_postimport.gd`: an `EditorScenePostImport` hook that
+  runs at import time and converts baked marker nodes into game nodes —
+  spawns, objectives, camera/door sockets, cover, hatches, and NAV_REGIONs
+  become `Marker3D` nodes in gameplay groups (or instances of your own scenes
+  via the `SCENE_FOR_TAG` map). Breach panels are tagged with metadata.
+  Reads the companion `<name>.gameplay.json` automatically.
+- `godot/deli_level.gd` (`class_name DeliLevel`): runtime helper to query the
+  level (attacker/defender spawns, objectives, cover, breach panels) and a
+  `breach()` call that frees a soft panel and optionally spawns a replacement.
+- `godot/README.md`: install, import-hook setup, customization, runtime usage.
+- CI: `.github/workflows/check.yml` runs `check.py` on push/PR to main.
+- `package.py`: builds versioned `dist/deli_counter-<version>.zip` + `VERSION`
+  stamp. `dist/` gitignored (attach to GitHub Releases).
+
 ## [0.5.0]
 ### Added — tactical layer (turns levels into playable level packages)
 - **Tactical grammar** (all optional; plain building specs still build):

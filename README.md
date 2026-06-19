@@ -38,7 +38,9 @@ deli_counter/
     warehouse.json    worked example: single tall warehouse
     CATALOG.md        auto-generated level index (do not hand-edit)
   build/              outputs (binaries gitignored, manifests tracked)
-  README.md  CHANGELOG.md  .gitignore
+  godot/              Godot 4 import hook + runtime helper (see godot/README.md)
+  .github/workflows/  CI: runs check.py on push/PR
+  README.md  CHANGELOG.md  .gitignore  package.py
 ```
 
 ## Export formats
@@ -136,6 +138,13 @@ Drop the `.glb` into the project. The importer reads collision suffixes:
 
 `VISUAL` meshes import with no collision. `breach` openings produce a tagged
 `*_BREACHPANEL` (visual + collision) to swap for a destructible body.
+
+**Turning markers into game nodes:** the `godot/` folder has an
+`EditorScenePostImport` hook that converts the baked marker empties
+(spawns, objectives, sockets, cover, hatches, NAV_REGIONs) into `Marker3D`
+nodes in gameplay groups — or instances of your own scenes — and tags breach
+panels with metadata. A runtime helper (`DeliLevel`) queries them and breaches
+panels. See `godot/README.md`.
 
 ## Writing a spec
 
