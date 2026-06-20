@@ -5,6 +5,20 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.18.0]
+### Added — compound preset + final_stand example
+- `compound` recipe: a multi-story assault compound with a central atrium (a
+  slab hole punched up through the upper floors as a vertical sightline), two
+  switchback stairs wrapping the core, and an objective room on the top floor —
+  a boss suite to clear in assault mode, or a penthouse vault to crack in heist
+  mode. Parameterized by `mode` (assault default; heist supported), `floors`
+  (2 or 3, default 3 — the atrium, stairs, upper rooms, and objective all adapt
+  to the floor count), and `scale_ref`. `python new_level.py --preset compound
+  --name my_compound [--mode heist] [--floors 2]`.
+- `specs/final_stand.json`: a worked 3-story boss-compound example (assault),
+  the hand-authored spec the preset was derived from — richer per-floor detail
+  than the generated version. Maps to the roadmap's climactic level.
+
 ## [0.17.0]
 ### Added — corner_deli preset
 - `corner_deli` recipe: a 2-story deli/market over a basement, heist-first.

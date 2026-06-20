@@ -656,12 +656,228 @@ def corner_deli(name: str = "corner_deli_preset",
 
 
 # ---------------------------------------------------------------------------
+# COMPOUND  --  multi-story assault compound with a central atrium + boss room
+# ---------------------------------------------------------------------------
+def compound(name: str = "compound_preset",
+             mode: str = "assault",
+             floors: int = 3,
+             scale_ref: bool = False,
+             basement: bool = False) -> dict:
+    """A fortified multi-story compound built for a climactic assault: a wide
+    ground floor (garage, entry hall, main hall, fortifiable security rooms), a
+    central atrium punched up through the upper floors as a vertical sightline,
+    two switchback stairs wrapping the core, and an objective room on the top
+    floor — a boss suite to clear in assault mode, or a penthouse vault to crack
+    in heist mode. floors is 2 or 3 (default 3); the atrium and objective always
+    sit on the top floor. No basement (the arg is accepted but ignored)."""
+    floors = max(2, min(3, int(floors)))
+    top = floors - 1            # index of the top story
+    sh = 3.8
+    fx, fy = 42.0, 30.0
+
+    spec = {
+        "$schema": "../schema/level.schema.json",
+        "name": name,
+        "mode": mode,
+        "seed": 1983,
+        "grid": 0.5,
+        "footprint_x": fx,
+        "footprint_y": fy,
+        "story_height": sh,
+        "n_stories": floors,
+        "has_basement": False,
+        "wall_thick": 0.3,
+        "floor_thick": 0.3,
+        "collision": "convex",
+        "auto_exterior": True,
+        "scale_ref": bool(scale_ref),
+        "default_material": "concrete",
+        "materials": [
+            {"id": "concrete", "acoustic": "Concrete", "absorption": 0.7, "damping": 0.6},
+            {"id": "drywall", "acoustic": "Drywall"},
+            {"id": "glass", "acoustic": "Glass", "absorption": 0.1, "damping": 0.05},
+            {"id": "metal", "acoustic": "Metal", "absorption": 0.5, "damping": 0.3},
+            {"id": "wood", "acoustic": "Wood"},
+        ],
+    }
+
+    # --- exterior walls: solid ground, windowed middle, glass-front top ------
+    ext = [
+        {"wall": "S", "story": 0, "material": "concrete", "openings": [
+            {"kind": "garage", "pos": -0.34, "width": 4.2, "tag": "garage_entry"},
+            {"kind": "door", "pos": 0.0, "width": 1.8, "tag": "front_entry"},
+            {"kind": "window", "pos": 0.28, "width": 2.2, "sill": 1.0, "vaultable": True},
+            {"kind": "window", "pos": 0.42, "width": 2.2, "sill": 1.0, "vaultable": True}]},
+        {"wall": "N", "story": 0, "material": "concrete", "openings": [
+            {"kind": "door", "pos": -0.18, "width": 1.2, "tag": "rear_service"},
+            {"kind": "breach", "pos": 0.22, "width": 1.5, "breach_class": "soft_wall", "material": "drywall", "tag": "rear_breach"}]},
+        {"wall": "W", "story": 0, "material": "concrete", "openings": [
+            {"kind": "door", "pos": -0.10, "width": 1.1, "tag": "west_entry"},
+            {"kind": "window", "pos": 0.28, "width": 2.0, "sill": 1.0, "vaultable": True}]},
+        {"wall": "E", "story": 0, "material": "concrete", "openings": [
+            {"kind": "door", "pos": 0.10, "width": 1.1, "tag": "east_entry"},
+            {"kind": "breach", "pos": -0.25, "width": 1.5, "breach_class": "soft_wall", "material": "drywall", "tag": "east_breach"}]},
+    ]
+    # middle floors (everything between ground and top): windowed on all sides
+    for st in range(1, top):
+        for w in ("S", "N", "W", "E"):
+            ext.append({"wall": w, "story": st, "material": "concrete", "openings": [
+                {"kind": "window", "pos": -0.25, "width": 1.8, "sill": 0.9, "vaultable": True},
+                {"kind": "window", "pos": 0.25, "width": 1.8, "sill": 0.9, "vaultable": True}]})
+    # top floor: glass front (S), windows elsewhere
+    ext += [
+        {"wall": "S", "story": top, "material": "glass", "openings": [
+            {"kind": "window", "pos": -0.28, "width": 2.2, "sill": 0.9, "vaultable": True},
+            {"kind": "window", "pos": 0.0, "width": 2.4, "sill": 0.9, "vaultable": True},
+            {"kind": "window", "pos": 0.28, "width": 2.2, "sill": 0.9, "vaultable": True}]},
+        {"wall": "N", "story": top, "material": "concrete", "openings": [
+            {"kind": "window", "pos": -0.25, "width": 1.8, "sill": 0.9, "vaultable": True},
+            {"kind": "window", "pos": 0.25, "width": 1.8, "sill": 0.9, "vaultable": True}]},
+        {"wall": "W", "story": top, "material": "concrete", "openings": [
+            {"kind": "window", "pos": -0.18, "width": 1.8, "sill": 0.9, "vaultable": True},
+            {"kind": "window", "pos": 0.18, "width": 1.8, "sill": 0.9, "vaultable": True}]},
+        {"wall": "E", "story": top, "material": "concrete", "openings": [
+            {"kind": "window", "pos": -0.18, "width": 1.8, "sill": 0.9, "vaultable": True},
+            {"kind": "window", "pos": 0.18, "width": 1.8, "sill": 0.9, "vaultable": True}]},
+    ]
+    spec["ext_walls"] = ext
+
+    # --- partitions: ground floor split; upper floors get a cross-wall -------
+    parts = [
+        {"story": 0, "axis": "X", "pos": -3.0, "start": -21.0, "end": 21.0, "material": "drywall", "openings": [
+            {"kind": "door", "pos": -0.18}, {"kind": "door", "pos": 0.18}]},
+        {"story": 0, "axis": "X", "pos": 6.5, "start": -21.0, "end": 21.0, "material": "drywall", "openings": [
+            {"kind": "door", "pos": -0.35}, {"kind": "door", "pos": 0.0}, {"kind": "door", "pos": 0.35}]},
+        {"story": 0, "axis": "Y", "pos": -8.0, "start": 6.5, "end": 15.0, "material": "drywall", "openings": [{"kind": "door", "pos": 0.0}]},
+        {"story": 0, "axis": "Y", "pos": 8.0, "start": 6.5, "end": 15.0, "material": "drywall", "openings": [{"kind": "door", "pos": 0.0}]},
+    ]
+    for st in range(1, floors):
+        # cross-wall + two flanking rooms; openings avoid the atrium in the middle
+        parts += [
+            {"story": st, "axis": "X", "pos": (1.0 if st == top else 0.0), "start": -21.0, "end": 21.0, "material": "drywall", "openings": [
+                {"kind": "door", "pos": -0.22}, {"kind": "door", "pos": 0.22}]},
+            {"story": st, "axis": "Y", "pos": -7.0, "start": 1.0, "end": 15.0, "material": "drywall", "openings": [{"kind": "door", "pos": 0.0}]},
+            {"story": st, "axis": "Y", "pos": 7.0, "start": 1.0, "end": 15.0, "material": "drywall", "openings": [{"kind": "door", "pos": 0.0}]},
+        ]
+    spec["partitions"] = parts
+
+    # --- two switchback stairs wrapping the core, climbing to the top --------
+    spec["stairs"] = [
+        {"x": 0.0, "y": 11.0, "from_story": 0, "to_story": top, "style": "switchback", "cut_slabs": True},
+        {"x": -15.0, "y": 10.5, "from_story": 0, "to_story": top, "style": "switchback", "cut_slabs": True},
+    ]
+    # --- central atrium: a slab hole on every floor above ground ------------
+    holes = []
+    for st in range(1, floors):
+        shrink = (st - 1) * 2.0   # atrium tapers slightly as it rises
+        holes.append({"story": st, "x": 0.0, "y": 0.5, "size_x": 10.0 - shrink, "size_y": 8.0 - shrink})
+    spec["slab_holes"] = holes
+    spec["vertical_links"] = [
+        {"kind": "stair", "from_story": 0, "to_story": top, "role": "main_rotation"},
+        {"kind": "stair", "from_story": 0, "to_story": top, "role": "flank_rotation"},
+        {"kind": "floor_hole", "story": 1, "x": 0.0, "y": 0.5, "size_x": 10.0, "size_y": 8.0, "role": "atrium_vertical_sightline"},
+    ]
+    spec["parapets"] = [{"story": floors, "height": 1.1, "thick": 0.3}]
+
+    # --- vault ledges: overlook railings on upper floors ---------------------
+    ledges = []
+    for st in range(1, floors):
+        ledges += [
+            {"x": -10.0, "y": -0.5, "story": st, "length": 6.0, "axis": "X", "height": 1.1, "material": "wood"},
+            {"x": 10.0, "y": -0.5, "story": st, "length": 6.0, "axis": "X", "height": 1.1, "material": "wood"},
+        ]
+    spec["vault_ledges"] = ledges
+
+    # --- volumes: cover on every floor, boss desk + statue up top ------------
+    vols = [
+        {"name": "front_desk", "x": 0.0, "y": -7.5, "z": 0.55, "size_x": 8.0, "size_y": 1.0, "size_z": 1.1, "collision": "convex", "material": "wood"},
+        {"name": "center_bar", "x": 0.0, "y": 1.5, "z": 0.55, "size_x": 10.0, "size_y": 1.2, "size_z": 1.1, "collision": "convex", "material": "wood"},
+        {"name": "garage_cover", "x": -15.0, "y": 10.5, "z": 0.8, "size_x": 4.0, "size_y": 2.0, "size_z": 1.6, "collision": "convex", "material": "metal"},
+        {"name": "security_block", "x": 15.0, "y": 10.0, "z": 0.8, "size_x": 4.0, "size_y": 2.0, "size_z": 1.6, "collision": "convex", "material": "metal"},
+    ]
+    for st in range(1, floors):
+        zbase = st * sh
+        vols += [
+            {"name": f"upper_cover_west_{st}", "x": -12.0, "y": 8.0, "z": zbase + 0.55, "size_x": 3.5, "size_y": 1.0, "size_z": 1.1, "collision": "convex", "material": "wood"},
+            {"name": f"upper_cover_east_{st}", "x": 12.0, "y": 8.0, "z": zbase + 0.55, "size_x": 3.5, "size_y": 1.0, "size_z": 1.1, "collision": "convex", "material": "wood"},
+        ]
+    ztop = top * sh
+    vols += [
+        {"name": "boss_desk", "x": 0.0, "y": 9.0, "z": ztop + 0.55, "size_x": 5.0, "size_y": 1.6, "size_z": 1.2, "collision": "convex", "material": "wood"},
+        {"name": "north_statue", "x": 0.0, "y": 13.0, "z": ztop + 0.9, "size_x": 2.0, "size_y": 2.0, "size_z": 3.0, "collision": "convex", "material": "metal"},
+        {"name": "roof_unit", "x": 15.0, "y": 10.0, "z": floors * sh + 0.7, "size_x": 4.0, "size_y": 3.0, "size_z": 1.4, "collision": "convex", "material": "metal"},
+    ]
+    spec["volumes"] = vols
+
+    # --- rooms: ground fixed; upper floors generated; objective on top -------
+    rooms = [
+        {"id": "entry_hall", "story": 0, "bounds": [-21.0, -15.0, 21.0, -3.0], "role": "public_entry", "combat_range": "long"},
+        {"id": "main_hall", "story": 0, "bounds": [-21.0, -3.0, 21.0, 6.5], "role": "connector", "combat_range": "long"},
+        {"id": "garage", "story": 0, "bounds": [-21.0, 6.5, -8.0, 15.0], "role": "fortifiable", "fortifiable": True, "combat_range": "close"},
+        {"id": "stair_core", "story": 0, "bounds": [-8.0, 6.5, 8.0, 15.0], "role": "connector", "combat_range": "close"},
+        {"id": "east_security", "story": 0, "bounds": [8.0, 6.5, 21.0, 15.0], "role": "fortifiable", "fortifiable": True, "combat_range": "close"},
+    ]
+    for st in range(1, floors):
+        if st == top:
+            rooms += [
+                {"id": "top_balcony", "story": st, "bounds": [-21.0, -15.0, 21.0, 1.0], "role": "connector", "combat_range": "medium"},
+                {"id": "antechamber", "story": st, "bounds": [-21.0, 1.0, -7.5, 15.0], "role": "fortifiable", "fortifiable": True, "combat_range": "close"},
+                {"id": "objective_suite", "story": st, "bounds": [-7.5, 1.0, 7.5, 15.0], "role": "objective_room", "objective": True, "fortifiable": True, "combat_range": "close"},
+                {"id": "trophy_room", "story": st, "bounds": [7.5, 1.0, 21.0, 15.0], "role": "fortifiable", "fortifiable": True, "combat_range": "close"},
+            ]
+        else:
+            rooms += [
+                {"id": f"gallery_{st}", "story": st, "bounds": [-21.0, -15.0, 21.0, 0.0], "role": "connector", "combat_range": "medium"},
+                {"id": f"west_room_{st}", "story": st, "bounds": [-21.0, 0.0, -7.0, 15.0], "role": "fortifiable", "fortifiable": True, "combat_range": "close"},
+                {"id": f"overlook_{st}", "story": st, "bounds": [-7.0, 0.0, 7.0, 15.0], "role": "connector", "combat_range": "medium"},
+                {"id": f"east_room_{st}", "story": st, "bounds": [7.0, 0.0, 21.0, 15.0], "role": "fortifiable", "fortifiable": True, "combat_range": "close"},
+            ]
+    spec["rooms"] = rooms
+
+    # --- markers: attacker spawns + cover always; objective by mode ----------
+    boss_z = ztop + 3.8 - 0.2   # eye-ish height in the top suite
+    markers = [
+        {"type": "attacker_spawn", "id": "A", "x": 0.0, "y": -19.0, "z": 0.0, "rot_z": 90, "room": "entry_hall"},
+        {"type": "attacker_spawn", "id": "B", "x": -26.0, "y": 0.0, "z": 0.0, "rot_z": 0, "room": "entry_hall"},
+        {"type": "attacker_spawn", "id": "C", "x": 26.0, "y": 2.0, "z": 0.0, "rot_z": 180, "room": "entry_hall"},
+        {"type": "cover_high", "x": 0.0, "y": -7.5, "z": 0.0, "room": "entry_hall"},
+        {"type": "cover_high", "x": 0.0, "y": 1.5, "z": 0.0, "room": "main_hall"},
+        {"type": "camera_socket", "id": "01", "x": 18.0, "y": -10.0, "z": 3.2, "room": "entry_hall"},
+        {"type": "camera_socket", "id": "02", "x": -18.0, "y": 10.0, "z": 3.2, "room": "garage"},
+    ]
+    if mode == "assault":
+        markers += [
+            {"type": "defender_spawn", "id": "boss", "x": 0.0, "y": 10.0, "z": ztop, "rot_z": 180, "room": "objective_suite"},
+            {"type": "objective", "id": "final_objective", "x": 0.0, "y": 10.0, "z": ztop, "room": "objective_suite", "meta": {"kind": "eliminate"}},
+            {"type": "cover_high", "x": 0.0, "y": 9.0, "z": ztop, "room": "objective_suite"},
+        ]
+    else:  # heist — top suite becomes a penthouse vault to crack
+        spec["objectives"] = [
+            {"id": "crack_penthouse_vault", "kind": "drill", "x": 0.0, "y": 9.0, "z": ztop + 0.2, "room": "objective_suite", "required": True, "duration": 40.0, "meta": {"phase": "loud"}},
+        ]
+        spec["loot"] = [
+            {"id": "penthouse_cash", "kind": "cash", "x": 0.0, "y": 9.0, "z": ztop + 0.3, "value": 9000, "bags": 3, "room": "objective_suite"},
+        ]
+        spec["zones"] = [
+            {"id": "garage_extract", "kind": "extraction", "story": 0, "bounds": [-21.0, 6.5, -8.0, 15.0], "meta": {"phase": "escape"}},
+        ]
+        markers += [
+            {"type": "objective", "id": "VAULT", "x": 0.0, "y": 9.0, "z": ztop + 0.2, "room": "objective_suite"},
+            {"type": "loot", "id": "PENTHOUSE_CASH", "x": 0.0, "y": 9.0, "z": ztop + 0.3, "room": "objective_suite"},
+            {"type": "extraction", "id": "GARAGE", "x": -15.0, "y": 10.5, "z": 0.0, "rot_z": 0, "room": "garage"},
+        ]
+    spec["markers"] = markers
+    return spec
+
+
+# ---------------------------------------------------------------------------
 # REGISTRY
 # ---------------------------------------------------------------------------
 REGISTRY = {
     "bank": bank,
     "police_station": police_station,
     "corner_deli": corner_deli,
+    "compound": compound,
     # rowhome, warehouse, safehouse -> follow
 }
 
