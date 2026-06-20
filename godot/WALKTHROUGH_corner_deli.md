@@ -9,7 +9,8 @@ If the plugin breaks at any step, jump to **Plan B (manual path)** at the
 bottom — it's the known-good route and still tests the stairs + collision.
 A plugin bug should not block the gameplay test.
 
-Work top to bottom. Each box is pass/fail; note anything weird in the margin.
+We build the spec you already have — `corner_deli_heist_01.json` — so there's
+nothing to generate. Work top to bottom; each box is pass/fail.
 
 ---
 
@@ -18,53 +19,54 @@ Work top to bottom. Each box is pass/fail; note anything weird in the margin.
 The stair fix lives in the builder, so the GLB **must be rebuilt** — an old
 GLB has the old broken stairs.
 
-- [ ] Unzip **0.18.0** over `C:\deli_counter` (replace all).
+- [ ] Unzip **0.18.1** over `C:\deli_counter` (replace all).
 - [ ] **Restart Blender** (module-cache trap — skipping this runs old code).
-- [ ] Generate the spec if you haven't:
-      `python new_level.py --preset corner_deli --name cd_test`
-- [ ] In `_run_in_blender.py`, set the CONFIG block:
-      - `SPEC_PATH = r"C:\deli_counter\specs\cd_test.json"`
-      - `PKG_DIR   = r"C:\deli_counter"`
-      - `OUT_PATH  = r"C:\deli_counter\build\cd_test.glb"`
-- [ ] Run Script. **Expect:** console prints `built 'cd_test' ... 116 visual,
-      90 collision, ...`, and a `cd_test.glb` + `cd_test.gameplay.json` appear
-      in `build\`.
+- [ ] In `_run_in_blender.py`, set the CONFIG block (lines 26-28):
+
+      SPEC_PATH = r"C:\deli_counter\specs\corner_deli_heist_01.json"
+      PKG_DIR   = r"C:\deli_counter"
+      OUT_PATH  = r"C:\deli_counter\build\corner_deli_heist_01.glb"
+
+- [ ] Run Script. **Expect:** console prints `built 'corner_deli_heist_01' ...
+      116 visual, 90 collision, ...`, and a `corner_deli_heist_01.glb` +
+      `corner_deli_heist_01.gameplay.json` appear in `build\`.
 - [ ] Glance at the viewport: you should see a **3-level** building — basement
-      below ground, two floors above, a roof with a parapet. ✦ *Checkpoint 1.*
+      below ground, two floors above, a roof with a parapet. * Checkpoint 1.
 
 ---
 
 ## 1. Get the files into the project
 
-- [ ] Copy **both** `cd_test.glb` and `cd_test.gameplay.json` into your Godot
-      project (e.g. `res://levels/`), keeping them side by side.
+- [ ] Copy **both** `corner_deli_heist_01.glb` and
+      `corner_deli_heist_01.gameplay.json` into your Godot project
+      (e.g. `res://levels/`), keeping them side by side.
 - [ ] Let Godot import the `.glb` once (happens on focus — you'll see it in
       the import dock). If you get a **UID error**, do
-      **Project → Reload Current Project** (known fresh-project hiccup).
+      **Project -> Reload Current Project** (known fresh-project hiccup).
 
 ---
 
 ## 2. Plugin install (one-time, if not already)
 
 - [ ] Copy `godot/addon/deli_counter/` into `res://addons/deli_counter/`.
-- [ ] **Project → Project Settings → Plugins** → enable **Deli Counter**.
-- [ ] **Expect:** a **Deli Counter** dock appears (left side). ✦ *First real
+- [ ] **Project -> Project Settings -> Plugins** -> enable **Deli Counter**.
+- [ ] **Expect:** a **Deli Counter** dock appears (left side). * First real
       in-engine test of the plugin — if no dock appears, the plugin's
-      `_enter_tree`/dock code is the suspect. Note it and go to Plan B.*
+      `_enter_tree`/dock code is the suspect. Note it and go to Plan B.
 
 ---
 
 ## 3. One-click: Set up & Play
 
-- [ ] In the dock, click **Pick level .glb…**, choose `cd_test.glb`.
-      **Expect:** the path shows, and status says it found the gameplay.json
-      companion (not the "not found" warning).
-- [ ] Click **Set up & Play ▶**. Watch the status line + the Output panel.
+- [ ] In the dock, click **Pick level .glb...**, choose
+      `corner_deli_heist_01.glb`. **Expect:** the path shows, and status says
+      it found the gameplay.json companion (not the "not found" warning).
+- [ ] Click **Set up & Play >**. Watch the status line + the Output panel.
       **Expect, in order:**
-      - "Assigned import script and reimported cd_test.glb"
-      - "Built test scene: res://deli_counter_tests/test_cd_test.tscn"
-      - "Playing test_cd_test.tscn" and the game window opens.
-- [ ] ✦ *Checkpoint 2 — the plugin worked end-to-end.* If it errored partway,
+      - "Assigned import script and reimported corner_deli_heist_01.glb"
+      - "Built test scene: res://deli_counter_tests/test_corner_deli_heist_01.tscn"
+      - "Playing test_corner_deli_heist_01.tscn" and the game window opens.
+- [ ] * Checkpoint 2 — the plugin worked end-to-end. If it errored partway,
       note which message was **last** printed (that pinpoints the failing
       step), then go to Plan B.
 
@@ -78,15 +80,15 @@ Controls: **WASD** move, mouse look, **Shift** sprint, **Space** jump,
 ### The headline test — stairs
 - [ ] You spawn at the first spawn marker. Find the **switchback stairwell**
       (NW corner of the building).
-- [ ] Walk **up** from the ground floor to the **second floor**. ✦
+- [ ] Walk **up** from the ground floor to the **second floor**. *
       **THE fix:** you should crest the top and step off cleanly onto floor 2,
       **not** jam near the top step. This is the exact bug from before.
 - [ ] Keep going **up** to the **roof** (the stair spans to story 2).
 - [ ] Walk **down** the full span — ground floor, then down to the
-      **basement**. The basement→ground leg is new territory (first basement
+      **basement**. The basement->ground leg is new territory (first basement
       stair we've walked); watch the bottom transition specifically.
-- [ ] ✦ *If you can travel basement↔roof cleanly in both directions, the stair
-      fix is confirmed on the hardest case.*
+- [ ] * If you can travel basement<->roof cleanly in both directions, the
+      stair fix is confirmed on the hardest case.
 
 ### Collision + scale
 - [ ] You don't fall through any floor or slab.
@@ -97,11 +99,11 @@ Controls: **WASD** move, mouse look, **Shift** sprint, **Space** jump,
       them, can't walk through).
 
 ### Markers converted
-- [ ] Turn on collision view if you want: **Debug menu → Visible Collision
+- [ ] Turn on collision view if you want: **Debug menu -> Visible Collision
       Shapes** (editor toggle is more reliable than runtime).
 - [ ] In the **Scene tree** (or via groups), confirm the marker empties became
       nodes: spawns, the 3 objectives (register on ground, safe in basement,
-      server upstairs), loot, cover, patrol points. ✦ *Checkpoint 3.*
+      server upstairs), loot, cover, patrol points. * Checkpoint 3.
 
 ### The three objectives (reachability in practice)
 - [ ] Physically walk to all three objective spots: **register** (ground,
@@ -112,7 +114,7 @@ Controls: **WASD** move, mouse look, **Shift** sprint, **Space** jump,
 
 ## 5. Verdict
 
-- [ ] **Stairs:** climb cleanly basement↔roof? (the whole point)
+- [ ] **Stairs:** climb cleanly basement<->roof? (the whole point)
 - [ ] **Plugin:** dock appeared + Set up & Play ran end-to-end?
 - [ ] **Collision/scale:** solid floors/walls, human-scale, openings open?
 - [ ] **Markers:** converted to nodes in the right places?
@@ -127,13 +129,13 @@ low-risk. If any fail, note exactly what and we fix it before scaling.
 
 Known-good route; still fully tests stairs + collision + markers.
 
-1. Select `cd_test.glb` in the FileSystem dock → **Import** tab.
+1. Select `corner_deli_heist_01.glb` in the FileSystem dock -> **Import** tab.
 2. Set **Import Script** to
    `res://addons/deli_counter/deli_counter_postimport.gd`
    (or `res://godot/deli_counter_postimport.gd` if you didn't install the
-   addon) → **Reimport**.
+   addon) -> **Reimport**.
 3. Open `res://addons/deli_counter/template/level_test.tscn` (the harness).
-4. Drag `cd_test.glb` into the scene as a child of the root.
+4. Drag `corner_deli_heist_01.glb` into the scene as a child of the root.
 5. Press **F6** (Play Scene) — or F5 if it's the main scene.
 6. Resume at **section 4** above and walk it.
 

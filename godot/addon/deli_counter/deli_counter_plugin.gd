@@ -174,8 +174,13 @@ func _on_build_scene_pressed() -> String:
 	var level := level_scene.instantiate()
 	level.name = _selected_glb.get_file().get_basename()
 	root.add_child(level)
-	# every node we add must be owned by root to be saved
-	_set_owner_recursive(level, root)
+	# The level is an INSTANCED scene (a GLB). To save it into the test scene,
+	# set the owner on the instance node ONLY — its children come along as part
+	# of the instance and must NOT have their owners reassigned (doing so is the
+	# fragile pattern that drops nodes on pack; see Godot issues #32179/#90823).
+	# The earlier bug was the opposite: the level node had no owner at all, so
+	# pack() dropped it and you got the bare harness (ground + light, no level).
+	level.owner = root
 
 	# pack and save it
 	var out_path := "%s/test_%s.tscn" % [TEST_DIR, level.name]
@@ -191,12 +196,6 @@ func _on_build_scene_pressed() -> String:
 	get_editor_interface().get_resource_filesystem().scan()
 	_set_status("Built test scene: %s" % out_path)
 	return out_path
-
-
-func _set_owner_recursive(node: Node, owner: Node) -> void:
-	for child in node.get_children():
-		child.owner = owner
-		_set_owner_recursive(child, owner)
 
 
 func _on_setup_and_play_pressed() -> void:

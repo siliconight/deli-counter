@@ -20,18 +20,23 @@ self-documenting as the level set grows toward real game models.
 
 ## Quick start (no JSON required)
 
+New here? See **[GETTING_STARTED.md](GETTING_STARTED.md)** for the five-minute
+path from a fresh clone to a level you can walk in Godot.
+
 Generate a complete, playable level from a preset recipe:
 
 ```
 python new_level.py --list                          # see available recipes
-python new_level.py --preset bank --name my_bank    # -> specs/my_bank.json
-python new_level.py --preset bank --name vault_job --mode heist --floors 3
+python new_level.py --preset corner_deli --name my_lvl
+python new_level.py --preset compound --name boss --floors 3
 ```
 
-This writes and validates a full spec — tactical layout, materials, spawns,
-and a vertical route — then prints the build command. Add `--scale-ref` to
-include 1.8 m human proxies for a Blender scale check. Edit the generated JSON
-to customize, or build it straight away with `build.py`.
+Presets: **bank**, **police_station**, **corner_deli**, **compound**. Flags:
+`--mode heist|assault`, `--floors N`, `--no-basement`, `--scale-ref` (1.8 m
+human proxies for a Blender scale check). This writes and validates a full spec
+— tactical layout, materials, spawns, vertical routes — then prints the build
+command. Edit the generated JSON to customize, or build it straight away with
+`build.py`.
 
 ## Layout
 

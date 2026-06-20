@@ -5,6 +5,17 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.18.2]
+### Fixed — editor plugin: level now actually appears in the test scene
+- The plugin's "Build test scene" / "Set up & Play" packed the harness but
+  **dropped the instanced level**, leaving only the bare harness (ground +
+  light + player, no building) — found on first real in-engine run. Cause: the
+  level node's `owner` was never set, so `PackedScene.pack()` discarded it.
+  Fix: set `level.owner = root` on the instanced level node (and do NOT recurse
+  owner-setting into its children — that's the fragile pattern that drops
+  instanced-scene nodes; ref Godot issues #32179/#90823). Removed the now-unused
+  `_set_owner_recursive` helper. Plugin version → 0.18.2.
+
 ## [0.18.1]
 ### Docs — stairs and player traversal
 - `godot/README.md` gains a "Stairs and player traversal" section: documents
