@@ -111,6 +111,16 @@ def render(rows):
                          f"{t['extraction_zones']} extraction zone(s)")
             if t.get("phases"):
                 lines.append(f"- Phases: {', '.join(t['phases'])}")
+        elif t and t.get("mode") == "survival":
+            lines.append(f"- **Survival**: {t['safe_rooms']} safe room(s), "
+                         f"{t['finales']} finale(s), "
+                         f"{t['horde_spawns']} horde spawn(s), "
+                         f"finale reachable: {'yes' if t['finale_reachable'] else 'NO'}, "
+                         f"{t['markers']} markers")
+            if s.rooms:
+                rnames = ", ".join(f"{rm.id}" + (" (finale)" if rm.role in ("finale", "holdout") else "")
+                                   for rm in s.rooms)
+                lines.append(f"- Rooms: {rnames}")
         elif t:
             lines.append(f"- **Tactical**: {t['rooms']} rooms, "
                          f"{t['attacker_entries']} entries, "

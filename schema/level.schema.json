@@ -8,7 +8,7 @@
   "properties": {
     "$schema": { "type": "string" },
     "name": { "type": "string" },
-    "mode": { "enum": ["assault", "heist"] },
+    "mode": { "enum": ["assault", "heist", "survival"] },
     "seed": { "type": "integer", "default": 1999 },
     "grid": { "type": "number", "default": 0.5, "exclusiveMinimum": 0 },
 
@@ -363,7 +363,7 @@
         "additionalProperties": false,
         "properties": {
           "id": { "type": "string" },
-          "kind": { "enum": ["extraction", "secure", "drop"] },
+          "kind": { "enum": ["extraction", "secure", "drop", "safe_room", "finale"] },
           "story": { "type": "integer" },
           "bounds": {
             "type": "array",

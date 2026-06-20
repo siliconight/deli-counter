@@ -164,20 +164,25 @@ def _reachable(adj, starts):
 
 def analyze(spec):
     """Return (errors, warnings, scorecard dict). errors are hard failures.
-    Dispatches on spec.mode: 'assault' (default) or 'heist'."""
+    Dispatches on spec.mode: 'assault' (default), 'heist', or 'survival'."""
     errors, warnings = [], []
+    mode = getattr(spec, "mode", "assault")
 
     if not spec.rooms:
-        # heist levels can be valid with zones/objectives but no rooms; only
-        # truly empty tactical specs are "non-tactical".
-        if getattr(spec, "mode", "assault") == "heist" and (
-                spec.objectives or spec.zones or spec.loot):
+        # heist/survival levels can carry tactical meaning via zones/objectives/
+        # markers even without rooms; only truly empty tactical specs are skipped.
+        if mode == "heist" and (spec.objectives or spec.zones or spec.loot):
             return _analyze_heist(spec)
+        if mode == "survival" and (spec.zones or
+                any(m.type in ("survivor_spawn", "horde_spawn") for m in spec.markers)):
+            return _analyze_survival(spec)
         return [], ["non-tactical spec (no rooms defined); tactical rules "
                     "skipped"], {"tactical": False}
 
-    if getattr(spec, "mode", "assault") == "heist":
+    if mode == "heist":
         return _analyze_heist(spec)
+    if mode == "survival":
+        return _analyze_survival(spec)
 
     rooms = _rooms_by_id(spec)
     adj = build_graph(spec)
@@ -373,6 +378,111 @@ def _analyze_heist(spec):
     return errors, warnings, scorecard
 
 
+def _analyze_survival(spec):
+    """Survival mode: co-op PvE horde defense. The level is a directional run —
+    players move from a start safe-room, through the building, to a finale
+    holdout where they survive a final wave (and optionally a rescue/escape).
+    Rules differ from assault/heist: instead of breach rules or a loot loop,
+    validate that (1) there's a start and a finale, (2) the finale is reachable
+    from the start through the building, and (3) there are horde spawns to
+    apply pressure along the way.
+
+    Vocabulary (all reuse existing spec fields — no geometry changes):
+      - zones: kind 'safe_room' (start) and 'finale' (holdout). Optionally an
+        'extraction' zone for the rescue/escape point.
+      - rooms: role 'safe_room', 'finale'/'holdout', 'route_node' read as hints.
+      - markers: type 'survivor_spawn' (where the team starts), 'horde_spawn'
+        (where AI pours in), 'rescue' (escape point). The AI director / wave
+        state machine lives in your game code; the level just provides geometry.
+    """
+    errors, warnings = [], []
+
+    zones = spec.zones
+    safe_rooms = [z for z in zones if z.kind == "safe_room"]
+    finales = [z for z in zones if z.kind == "finale"]
+    rescues = [z for z in zones if z.kind == "extraction"]
+
+    # core survival requirements: a start and a finale holdout
+    if not safe_rooms:
+        # fall back to a survivor_spawn marker if no safe_room zone
+        if not any(m.type == "survivor_spawn" for m in spec.markers):
+            errors.append("survival level has no safe_room zone or "
+                          "survivor_spawn marker (nowhere for the team to start)")
+    if not finales:
+        errors.append("survival level has no finale zone (no holdout to reach)")
+
+    # at least one exterior entry (the team has to be able to enter/exit the run)
+    ext_entries = sum(1 for w in spec.ext_walls for op in w.openings
+                      if op.kind in ("door", "garage", "breach"))
+    if ext_entries < 1:
+        warnings.append("no exterior entry opening; the run is fully interior")
+
+    # horde spawns are what make it a survival level rather than a walk
+    horde_spawns = [m for m in spec.markers if m.type == "horde_spawn"]
+    if not horde_spawns:
+        warnings.append("no horde_spawn markers; the route has no AI pressure")
+    elif len(horde_spawns) < 3:
+        warnings.append(f"only {len(horde_spawns)} horde_spawn marker(s); "
+                        "survival runs usually want spawns spread along the route")
+
+    # THE key check: is the finale reachable from the start through the building?
+    # This is the survival analogue of heist's objective-reachability — the run
+    # has to be traversable start -> finale or the level is unplayable.
+    unreachable_finale = False
+    route_reachable_rooms = set()
+    if spec.rooms:
+        adj = build_graph(spec)
+        # start rooms = entry rooms + any room tagged safe_room + survivor spawns
+        starts = set(_entry_rooms(spec))
+        for r in spec.rooms:
+            if r.role in ("safe_room", "start"):
+                starts.add(r.id)
+        for m in spec.markers:
+            if m.type == "survivor_spawn":
+                rr = m.room or _room_at(spec, _story_of_z(spec, m.z), m.x, m.y)
+                if rr:
+                    starts.add(rr)
+        route_reachable_rooms = _reachable(adj, starts) if starts else set()
+
+        # finale rooms: role-tagged, or the room containing a finale zone's center
+        finale_rooms = set()
+        for r in spec.rooms:
+            if r.role in ("finale", "holdout"):
+                finale_rooms.add(r.id)
+        for z in finales:
+            if z.bounds:
+                cx = (z.bounds[0] + z.bounds[2]) / 2
+                cy = (z.bounds[1] + z.bounds[3]) / 2
+                rr = _room_at(spec, z.story, cx, cy)
+                if rr:
+                    finale_rooms.add(rr)
+
+        if finale_rooms and starts:
+            unreachable = [r for r in finale_rooms if r not in route_reachable_rooms]
+            if unreachable:
+                unreachable_finale = True
+                errors.append("finale holdout not reachable from the start: "
+                              + ", ".join(unreachable))
+
+    scorecard = {
+        "tactical": True,
+        "mode": "survival",
+        "safe_rooms": len(safe_rooms),
+        "finales": len(finales),
+        "rescue_zones": len(rescues),
+        "horde_spawns": len(horde_spawns),
+        "entries": ext_entries,
+        "rooms": len(spec.rooms),
+        "vertical_links": len(spec.vertical_links),
+        "route_reachable_rooms": len(route_reachable_rooms),
+        "finale_reachable": not unreachable_finale,
+        "markers": len(spec.markers),
+        "errors": len(errors),
+        "warnings": len(warnings),
+    }
+    return errors, warnings, scorecard
+
+
 def _story_of_z(spec, z):
     return int(round(z / spec.story_height))
 
@@ -393,6 +503,17 @@ def format_scorecard(spec_name, scorecard):
             f"secure/drop zones: {s['secure_zones']}   "
             f"unreachable objectives: {s['unreachable_objectives']}\n"
             f"    phases: {', '.join(s['phases']) if s['phases'] else '—'}\n"
+            f"    errors: {s['errors']}   warnings: {s['warnings']}"
+        )
+    if s.get("mode") == "survival":
+        return (
+            f"  scorecard for {spec_name} [survival]:\n"
+            f"    safe rooms: {s['safe_rooms']}   finales: {s['finales']}   "
+            f"rescue zones: {s['rescue_zones']}\n"
+            f"    horde spawns: {s['horde_spawns']}   entries: {s['entries']}   "
+            f"markers: {s['markers']}\n"
+            f"    rooms: {s['rooms']}   vertical links: {s['vertical_links']}   "
+            f"finale reachable: {'yes' if s['finale_reachable'] else 'NO'}\n"
             f"    errors: {s['errors']}   warnings: {s['warnings']}"
         )
     return (

@@ -257,7 +257,7 @@ example.
 Beyond geometry, a spec can describe **gameplay meaning**. All of this is
 optional — a plain building spec omits it and still builds.
 
-### Two modes
+### Three modes
 
 A spec's `mode` selects the tactical style; validation and the scorecard
 branch on it:
@@ -270,9 +270,21 @@ branch on it:
   lives in your game code). Validation checks the heist loop is completable
   (extraction exists, objectives reachable, loot deliverable) rather than the
   breach rules.
+- **`survival`** — co-op PvE horde defense, as a directional run *through the
+  building*: the team starts in a `safe_room` zone, moves through the level,
+  and reaches a `finale` holdout zone to survive a final wave (optionally an
+  `extraction` zone for the rescue/escape). New markers: `survivor_spawn`
+  (team start), `horde_spawn` (where AI pours in), `rescue` (escape point).
+  Room roles `safe_room` / `finale` / `route_node` read as hints. Validation
+  checks the run is playable — there's a start and a finale, **the finale is
+  reachable from the start through the building**, and there are horde spawns
+  to apply pressure. The AI director / wave state machine lives in your game
+  code; the level provides the geometry and spawn points. (Scoped to
+  single-building runs — an outdoor path-through-a-town map is the same
+  open-space limitation the tool has for outdoor levels generally.)
 
-Existing assault concepts (`rooms`, `vertical_links`, tactical openings)
-apply to both modes.
+Existing concepts (`rooms`, `vertical_links`, tactical openings) apply to all
+three modes.
 
 - **`rooms`** — named spaces with `bounds` `[min_x, min_y, max_x, max_y]`,
   `role` (`public_entry`, `objective_room`, `connector`, `fortifiable`…),

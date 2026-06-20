@@ -1,0 +1,214 @@
+{
+  "$schema": "../schema/level.schema.json",
+  "name": "survival_demo",
+  "mode": "survival",
+  "footprint_x": 30,
+  "footprint_y": 24,
+  "story_height": 3.3,
+  "n_stories": 2,
+  "has_basement": false,
+  "collision": "convex",
+  "auto_exterior": true,
+  "default_material": "concrete",
+  "materials": [
+    {
+      "id": "concrete",
+      "acoustic": "Concrete"
+    },
+    {
+      "id": "drywall",
+      "acoustic": "Drywall"
+    }
+  ],
+  "ext_walls": [
+    {
+      "wall": "S",
+      "story": 0,
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.3,
+          "width": 1.4,
+          "tag": "entry"
+        }
+      ]
+    },
+    {
+      "wall": "N",
+      "story": 0,
+      "openings": [
+        {
+          "kind": "breach",
+          "pos": 0.2,
+          "width": 1.5,
+          "breach_class": "soft_wall",
+          "material": "drywall"
+        }
+      ]
+    }
+  ],
+  "partitions": [
+    {
+      "story": 0,
+      "axis": "X",
+      "pos": 0,
+      "start": -15,
+      "end": 15,
+      "material": "drywall",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": 0
+        }
+      ]
+    },
+    {
+      "story": 1,
+      "axis": "X",
+      "pos": 0,
+      "start": -15,
+      "end": 15,
+      "material": "drywall",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": 0
+        }
+      ]
+    }
+  ],
+  "stairs": [
+    {
+      "x": -12,
+      "y": 9,
+      "from_story": 0,
+      "to_story": 1,
+      "style": "switchback",
+      "cut_slabs": true
+    }
+  ],
+  "vertical_links": [
+    {
+      "kind": "stair",
+      "from_story": 0,
+      "to_story": 1,
+      "role": "main_route"
+    }
+  ],
+  "rooms": [
+    {
+      "id": "start_lobby",
+      "story": 0,
+      "bounds": [
+        -15,
+        -12,
+        15,
+        0
+      ],
+      "role": "safe_room",
+      "combat_range": "medium"
+    },
+    {
+      "id": "ground_back",
+      "story": 0,
+      "bounds": [
+        -15,
+        0,
+        15,
+        12
+      ],
+      "role": "route_node",
+      "combat_range": "medium"
+    },
+    {
+      "id": "upper_hall",
+      "story": 1,
+      "bounds": [
+        -15,
+        -12,
+        15,
+        0
+      ],
+      "role": "route_node",
+      "combat_range": "medium"
+    },
+    {
+      "id": "roof_holdout",
+      "story": 1,
+      "bounds": [
+        -15,
+        0,
+        15,
+        12
+      ],
+      "role": "finale",
+      "combat_range": "close"
+    }
+  ],
+  "zones": [
+    {
+      "id": "start",
+      "kind": "safe_room",
+      "story": 0,
+      "bounds": [
+        -14,
+        -11,
+        14,
+        -1
+      ]
+    },
+    {
+      "id": "holdout",
+      "kind": "finale",
+      "story": 1,
+      "bounds": [
+        -14,
+        1,
+        14,
+        11
+      ]
+    }
+  ],
+  "markers": [
+    {
+      "type": "survivor_spawn",
+      "id": "START",
+      "x": 0,
+      "y": -8,
+      "z": 0,
+      "room": "start_lobby"
+    },
+    {
+      "type": "horde_spawn",
+      "id": "H1",
+      "x": -10,
+      "y": 8,
+      "z": 0,
+      "room": "ground_back"
+    },
+    {
+      "type": "horde_spawn",
+      "id": "H2",
+      "x": 10,
+      "y": -8,
+      "z": 3.3,
+      "room": "upper_hall"
+    },
+    {
+      "type": "horde_spawn",
+      "id": "H3",
+      "x": 0,
+      "y": 10,
+      "z": 3.3,
+      "room": "roof_holdout"
+    },
+    {
+      "type": "rescue",
+      "id": "CHOPPER",
+      "x": 0,
+      "y": 6,
+      "z": 3.3,
+      "room": "roof_holdout"
+    }
+  ]
+}

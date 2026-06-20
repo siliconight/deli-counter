@@ -5,6 +5,28 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.19.0]
+### Added — survival mode (third tactical default), schema 1.6.0
+- New `mode: survival` — co-op PvE horde defense as a directional run through
+  the building: team starts in a `safe_room` zone, moves through the level, and
+  reaches a `finale` holdout to survive a final wave (optional `extraction` for
+  rescue/escape). New marker types `survivor_spawn` / `horde_spawn` / `rescue`
+  (freeform, no schema change); new zone kinds `safe_room` / `finale`; room
+  roles `safe_room` / `finale` / `route_node` read as hints.
+- Validation (`tactical.py` `_analyze_survival`) checks the run is playable: a
+  start and a finale exist, **the finale is reachable from the start through the
+  building** (hard error if not — the survival analogue of heist objective
+  reachability), and horde spawns apply pressure (warns if missing/sparse). New
+  `[survival]` scorecard. Verified: a reachable run passes; removing the stair
+  to the holdout hard-fails with "finale holdout not reachable from the start".
+- Schema 1.6.0: `mode` enum gains `survival`; zone `kind` enum gains
+  `safe_room` / `finale`. Backward-compatible — all existing assault/heist
+  specs validate unchanged.
+- `specs/survival_demo.json`: a worked 2-story survival example (lobby start →
+  roof holdout, horde spawns along the route).
+- Scoped to single-building runs. An outdoor path-through-a-town survival map is
+  the same open-space limitation the tool has for outdoor levels generally.
+
 ## [0.18.2]
 ### Fixed — editor plugin: level now actually appears in the test scene
 - The plugin's "Build test scene" / "Set up & Play" packed the harness but
