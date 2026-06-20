@@ -5,6 +5,46 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.23.0]
+### Added — warehouse, suburban_safehouse, rowhome, casino_tower presets
+- Completes the single-building preset library (9 total): every roadmap level
+  the tool can honestly build now has a recipe. The two outdoor levels
+  (strip_mall, flooded_underpass) are intentionally NOT presets — they need the
+  outdoor primitive the tool doesn't have, not a building pretending to be one.
+- **warehouse** (L6): assault sandbox — big open single-floor shed, loading
+  docks, sparse crate/rack cover for long sightlines, one fortifiable office
+  (two access paths). Heist mode adds an office safe + goods loot.
+- **suburban_safehouse** (L2): assault, compact multi-story house with a
+  basement (default), central stair, attic objective — tight vertical clears.
+- **rowhome**: assault, narrow deep 3-floor terrace with solid party walls and
+  a single rear stair — stacked front-to-back clears. Heist supported.
+- **casino_tower** (L9): hybrid, default heist — open gaming floor, cashier
+  cage + count room upstairs, basement vault; cage/vault objectives, loot,
+  extraction. Assault mode secures the vault instead.
+- All four validate clean in both modes (caught and fixed a real office-
+  connectivity bug in warehouse during authoring — the validator's >=2-access
+  rule doing its job).
+
+## [0.22.0]
+### Added — hospital preset (first survival-first preset)
+- `hospital` recipe (roadmap L8): a multi-story hospital built survival-first —
+  team starts in the ground-floor lobby (safe_room), fights up through wards
+  floor by floor via two stairwells, reaches a rooftop helipad holdout (finale)
+  with a helicopter extraction. Horde spawns spread across every floor plus an
+  elevator-shaft vertical channel. Params: `mode` (survival default; assault
+  supported — rooftop becomes a capture objective, horde dropped), `floors`
+  (2-4, default 3), `scale_ref`. Proves survival mode translates into
+  *generated* geometry, not just hand-authored specs: the default generates
+  with finale reachable, a 2-hop / 4-route run, 7 horde spawns.
+
+### Fixed — new_level.py overrode preset defaults
+- The CLI passed `--mode assault` and `--floors 2` unconditionally, silently
+  forcing *every* preset to assault/2-floor regardless of its own defaults
+  (so hospital came out assault, corner_deli/compound lost their intended
+  mode/floors when generated via CLI). Now only user-specified args are passed;
+  each preset's own defaults stand otherwise. `--mode` also gains `survival`,
+  and a `--basement` flag complements `--no-basement`.
+
 ## [0.21.0]
 ### Added — offline polygon-budget estimate
 - `polybudget.py`: a pure-Python triangle-count estimator that predicts a

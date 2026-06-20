@@ -871,6 +871,624 @@ def compound(name: str = "compound_preset",
 
 
 # ---------------------------------------------------------------------------
+# HOSPITAL  --  survival-first: fight floor-by-floor up to a rooftop holdout
+# ---------------------------------------------------------------------------
+def hospital(name: str = "hospital_preset",
+             mode: str = "survival",
+             floors: int = 3,
+             scale_ref: bool = False,
+             basement: bool = False) -> dict:
+    """A multi-story hospital built for a survival run: the team starts in the
+    ground-floor lobby (a safe_room), fights up through wards and corridors
+    floor by floor, and reaches a rooftop helipad holdout (the finale) to
+    survive a final wave and extract. Horde spawns are spread across every
+    floor — stairwells, ward backs, elevator shafts — so pressure comes from
+    all sides as you ascend. floors is 2-4 (default 3); the lobby is always the
+    start and the roof is always the finale. In assault mode the rooftop
+    becomes an objective room to take instead, with horde spawns dropped.
+
+    Maps to roadmap L8. The first preset built survival-first — proves the mode
+    translates into generated geometry, not just hand-authored specs."""
+    floors = max(2, min(4, int(floors)))
+    top = floors - 1
+    sh = 3.6
+    fx, fy = 40.0, 30.0
+    half_x, half_y = fx / 2, fy / 2
+
+    spec = {
+        "$schema": "../schema/level.schema.json",
+        "name": name,
+        "mode": mode,
+        "seed": 1985,
+        "grid": 0.5,
+        "footprint_x": fx,
+        "footprint_y": fy,
+        "story_height": sh,
+        "n_stories": floors,
+        "has_basement": bool(basement),
+        "wall_thick": 0.3,
+        "floor_thick": 0.3,
+        "collision": "convex",
+        "auto_exterior": True,
+        "scale_ref": bool(scale_ref),
+        "default_material": "concrete",
+        "materials": [
+            {"id": "concrete", "acoustic": "Concrete", "absorption": 0.7, "damping": 0.6},
+            {"id": "drywall", "acoustic": "Drywall", "absorption": 0.42, "damping": 0.38},
+            {"id": "glass", "acoustic": "Glass", "absorption": 0.1, "damping": 0.05},
+            {"id": "tile", "acoustic": "Concrete", "absorption": 0.6, "damping": 0.5},
+            {"id": "metal", "acoustic": "Metal", "absorption": 0.3, "damping": 0.2},
+        ],
+    }
+
+    # --- exterior: glass-front lobby on ground, windowed wards above ---------
+    ext = [
+        {"wall": "S", "story": 0, "material": "glass", "openings": [
+            {"kind": "door", "pos": -0.1, "width": 2.2, "tag": "main_entrance"},
+            {"kind": "window", "pos": -0.35, "width": 2.4, "sill": 0.9, "vaultable": True, "material": "glass"},
+            {"kind": "window", "pos": 0.3, "width": 2.4, "sill": 0.9, "vaultable": True, "material": "glass"}]},
+        {"wall": "N", "story": 0, "material": "concrete", "openings": [
+            {"kind": "garage", "pos": -0.3, "width": 3.4, "height": 2.8, "tag": "ambulance_bay"},
+            {"kind": "door", "pos": 0.3, "width": 1.2, "tag": "service_entrance"}]},
+        {"wall": "W", "story": 0, "material": "concrete", "openings": [
+            {"kind": "door", "pos": 0.0, "width": 1.2, "tag": "west_entrance"}]},
+        {"wall": "E", "story": 0, "material": "concrete", "openings": [
+            {"kind": "breach", "pos": 0.0, "width": 1.5, "breach_class": "soft_wall", "material": "drywall", "tag": "east_breach"}]},
+    ]
+    for st in range(1, floors):
+        glass = "glass" if st == top else "concrete"
+        for w in ("S", "N", "W", "E"):
+            ext.append({"wall": w, "story": st, "material": "concrete", "openings": [
+                {"kind": "window", "pos": -0.28, "width": 1.6, "sill": 0.9, "vaultable": True, "material": glass},
+                {"kind": "window", "pos": 0.28, "width": 1.6, "sill": 0.9, "vaultable": True, "material": glass}]})
+    spec["ext_walls"] = ext
+
+    # --- partitions: a central corridor spine + ward divisions per floor -----
+    parts = []
+    for st in range(0, floors):
+        # central east-west corridor wall (the spine), doors along it
+        parts.append({"story": st, "axis": "X", "pos": 0.0, "start": -half_x + 1, "end": half_x - 1,
+                      "material": "drywall", "openings": [
+                          {"kind": "door", "pos": -0.3, "width": 1.4, "tag": f"corridor_n_{st}"},
+                          {"kind": "door", "pos": 0.1, "width": 1.4, "tag": f"corridor_s_{st}"},
+                          {"kind": "door", "pos": 0.4, "width": 1.4}]})
+        # ward cross-walls
+        parts.append({"story": st, "axis": "Y", "pos": -8.0, "start": -half_y + 1, "end": half_y - 1,
+                      "material": "drywall", "openings": [
+                          {"kind": "door", "pos": -0.2, "width": 1.2},
+                          {"kind": "breach", "pos": 0.3, "width": 1.4, "breach_class": "soft_wall", "material": "drywall"}]})
+        parts.append({"story": st, "axis": "Y", "pos": 8.0, "start": -half_y + 1, "end": half_y - 1,
+                      "material": "drywall", "openings": [
+                          {"kind": "door", "pos": 0.2, "width": 1.2},
+                          {"kind": "breach", "pos": -0.3, "width": 1.4, "breach_class": "soft_wall", "material": "drywall"}]})
+    spec["partitions"] = parts
+
+    # --- vertical: two stairwells (main + emergency) climb the full height ---
+    spec["stairs"] = [
+        {"x": -15.0, "y": 11.0, "from_story": 0, "to_story": top, "width": 1.4, "style": "switchback", "cut_slabs": True},
+        {"x": 15.0, "y": -11.0, "from_story": 0, "to_story": top, "width": 1.2, "style": "switchback", "cut_slabs": True},
+    ]
+    # an elevator shaft as a vertical horde-spawn channel (floor holes stacked)
+    holes = []
+    for st in range(1, floors):
+        holes.append({"story": st, "x": 0.0, "y": 12.0, "size_x": 2.6, "size_y": 2.6})
+    spec["slab_holes"] = holes
+    spec["vertical_links"] = [
+        {"kind": "stair", "from_story": 0, "to_story": top, "role": "main_route"},
+        {"kind": "stair", "from_story": 0, "to_story": top, "role": "emergency_route"},
+        {"kind": "floor_hole", "story": 1, "x": 0.0, "y": 12.0, "size_x": 2.6, "size_y": 2.6, "role": "elevator_shaft_horde_channel"},
+    ]
+    spec["parapets"] = [{"story": floors, "height": 1.1, "thick": 0.3}]
+
+    # --- cover: nurse stations, gurneys, reception ---------------------------
+    vols = [
+        {"name": "lobby_reception", "x": 0.0, "y": -10.0, "z": 0.55, "size_x": 8.0, "size_y": 1.2, "size_z": 1.1, "collision": "convex", "material": "metal"},
+        {"name": "waiting_seats", "x": -10.0, "y": -10.0, "z": 0.3, "size_x": 5.0, "size_y": 2.0, "size_z": 0.6, "collision": "convex", "material": "metal"},
+    ]
+    for st in range(0, floors):
+        zb = st * sh
+        vols += [
+            {"name": f"nurse_station_{st}", "x": -10.0, "y": 2.0, "z": zb + 0.55, "size_x": 4.0, "size_y": 1.4, "size_z": 1.1, "collision": "convex", "material": "metal"},
+            {"name": f"supply_cart_{st}", "x": 10.0, "y": 4.0, "z": zb + 0.5, "size_x": 1.2, "size_y": 2.4, "size_z": 1.0, "collision": "convex", "material": "metal"},
+        ]
+    # rooftop helipad pad marking + HVAC cover
+    ztop = top * sh
+    vols += [
+        {"name": "helipad_hvac", "x": 12.0, "y": 10.0, "z": floors * sh + 0.7, "size_x": 4.0, "size_y": 3.0, "size_z": 1.4, "collision": "convex", "material": "metal"},
+        {"name": "rooftop_stairhead", "x": -15.0, "y": 11.0, "z": floors * sh + 1.1, "size_x": 3.0, "size_y": 3.0, "size_z": 2.2, "collision": "convex", "material": "concrete"},
+    ]
+    spec["volumes"] = vols
+
+    # --- rooms: lobby (start) on ground, wards on middle, roof (finale) ------
+    rooms = [
+        {"id": "lobby", "story": 0, "bounds": [-half_x, -half_y, half_x, 0.0], "role": "safe_room", "combat_range": "medium"},
+        {"id": "ground_west_ward", "story": 0, "bounds": [-half_x, 0.0, -8.0, half_y], "role": "route_node", "combat_range": "close"},
+        {"id": "ground_central", "story": 0, "bounds": [-8.0, 0.0, 8.0, half_y], "role": "connector", "combat_range": "medium"},
+        {"id": "ground_east_ward", "story": 0, "bounds": [8.0, 0.0, half_x, half_y], "role": "route_node", "combat_range": "close"},
+    ]
+    for st in range(1, floors):
+        if st == top:
+            rooms += [
+                {"id": "roof_helipad", "story": st, "bounds": [-half_x, -half_y, half_x, half_y], "role": "finale", "fortifiable": True, "combat_range": "long"},
+            ]
+        else:
+            rooms += [
+                {"id": f"ward_south_{st}", "story": st, "bounds": [-half_x, -half_y, half_x, 0.0], "role": "route_node", "combat_range": "close"},
+                {"id": f"ward_west_{st}", "story": st, "bounds": [-half_x, 0.0, -8.0, half_y], "role": "route_node", "combat_range": "close"},
+                {"id": f"ward_central_{st}", "story": st, "bounds": [-8.0, 0.0, 8.0, half_y], "role": "connector", "combat_range": "medium"},
+                {"id": f"ward_east_{st}", "story": st, "bounds": [8.0, 0.0, half_x, half_y], "role": "route_node", "combat_range": "close"},
+            ]
+    spec["rooms"] = rooms
+
+    # --- zones + markers: mode-specific --------------------------------------
+    markers = [
+        {"type": "cover_low", "id": "RECEPTION", "x": 0.0, "y": -10.0, "z": 0.0, "room": "lobby"},
+        {"type": "cover_low", "id": "WAITING", "x": -10.0, "y": -10.0, "z": 0.0, "room": "lobby"},
+    ]
+
+    if mode == "survival":
+        spec["zones"] = [
+            {"id": "lobby_safe", "kind": "safe_room", "story": 0, "bounds": [-half_x + 1, -half_y + 1, half_x - 1, -1.0]},
+            {"id": "rooftop_holdout", "kind": "finale", "story": top, "bounds": [-half_x + 1, -half_y + 1, half_x - 1, half_y - 1]},
+            {"id": "helipad_extract", "kind": "extraction", "story": top, "bounds": [8.0, 6.0, half_x - 1, half_y - 1], "meta": {"rescue": "helicopter"}},
+        ]
+        markers += [
+            {"type": "survivor_spawn", "id": "START", "x": 0.0, "y": -12.0, "z": 0.0, "rot_z": 0, "room": "lobby"},
+            {"type": "rescue", "id": "CHOPPER", "x": 12.0, "y": 10.0, "z": ztop, "room": "roof_helipad"},
+        ]
+        # horde spawns: spread across every floor — ward backs + the elevator
+        # shaft + stairheads. This is what makes the ascent a survival run.
+        for st in range(0, floors):
+            zb = st * sh
+            markers.append({"type": "horde_spawn", "id": f"H_W{st}", "x": -16.0, "y": 6.0, "z": zb, "room": ("lobby" if st == 0 else None), "meta": {"floor": st}})
+            markers.append({"type": "horde_spawn", "id": f"H_E{st}", "x": 16.0, "y": 6.0, "z": zb, "meta": {"floor": st}})
+        # elevator-shaft spawn channel (vertical pressure)
+        markers.append({"type": "horde_spawn", "id": "H_SHAFT", "x": 0.0, "y": 12.0, "z": 0.0, "meta": {"channel": "elevator"}})
+    else:  # assault — rooftop becomes the objective to take; no horde
+        # retag the roof room as an objective room
+        for r in rooms:
+            if r["id"] == "roof_helipad":
+                r["role"] = "objective_room"
+                r["objective"] = True
+        markers += [
+            {"type": "attacker_spawn", "id": "A", "x": 0.0, "y": -13.0, "z": 0.0, "rot_z": 0, "room": "lobby"},
+            {"type": "attacker_spawn", "id": "B", "x": -18.0, "y": 0.0, "z": 0.0, "rot_z": 90, "room": "lobby"},
+            {"type": "defender_spawn", "id": "D", "x": 0.0, "y": 8.0, "z": ztop, "rot_z": 180, "room": "roof_helipad"},
+            {"type": "objective", "id": "ROOFTOP", "x": 0.0, "y": 8.0, "z": ztop, "room": "roof_helipad", "meta": {"kind": "capture"}},
+        ]
+
+    spec["markers"] = markers
+    return spec
+
+
+# ---------------------------------------------------------------------------
+# WAREHOUSE  --  assault sandbox: big open interior, catwalks, sparse cover
+# ---------------------------------------------------------------------------
+def warehouse(name: str = "warehouse_preset",
+              mode: str = "assault",
+              floors: int = 1,
+              scale_ref: bool = False,
+              basement: bool = False) -> dict:
+    """A large open warehouse: a single tall main floor with a partial upper
+    catwalk/mezzanine, loading docks, and sparse crate/rack cover for long
+    sightlines and flanking. The classic assault sandbox — multiple entries
+    (roll-up doors, man-doors, a breachable wall), one fortifiable office as a
+    holdable point. `floors` is treated as 1 (the mezzanine is generated
+    regardless); the arg is accepted for CLI uniformity. Heist mode turns the
+    office into a small objective+loot room."""
+    sh = 6.0                 # tall single story
+    fx, fy = 48.0, 34.0
+    half_x, half_y = fx / 2, fy / 2
+
+    spec = {
+        "$schema": "../schema/level.schema.json",
+        "name": name, "mode": mode, "seed": 1986, "grid": 0.5,
+        "footprint_x": fx, "footprint_y": fy, "story_height": sh,
+        "n_stories": 1, "has_basement": False, "wall_thick": 0.35,
+        "floor_thick": 0.3, "collision": "convex", "auto_exterior": True,
+        "scale_ref": bool(scale_ref), "default_material": "metal",
+        "materials": [
+            {"id": "metal", "acoustic": "Metal", "absorption": 0.35, "damping": 0.25},
+            {"id": "concrete", "acoustic": "Concrete", "absorption": 0.7, "damping": 0.6},
+            {"id": "drywall", "acoustic": "Drywall", "absorption": 0.42, "damping": 0.38},
+        ],
+    }
+    spec["ext_walls"] = [
+        {"wall": "S", "story": 0, "material": "metal", "openings": [
+            {"kind": "garage", "pos": -0.3, "width": 4.5, "height": 4.5, "tag": "loading_dock_1"},
+            {"kind": "garage", "pos": 0.2, "width": 4.5, "height": 4.5, "tag": "loading_dock_2"},
+            {"kind": "door", "pos": 0.45, "width": 1.2, "tag": "south_mandoor"}]},
+        {"wall": "N", "story": 0, "material": "metal", "openings": [
+            {"kind": "door", "pos": -0.3, "width": 1.2, "tag": "north_mandoor"},
+            {"kind": "breach", "pos": 0.25, "width": 1.6, "breach_class": "soft_wall", "material": "drywall", "tag": "north_breach"}]},
+        {"wall": "W", "story": 0, "material": "metal", "openings": [
+            {"kind": "door", "pos": 0.0, "width": 1.2, "tag": "west_mandoor"}]},
+        {"wall": "E", "story": 0, "material": "metal", "openings": [
+            {"kind": "door", "pos": 0.2, "width": 1.2, "tag": "east_office_door"},
+            {"kind": "window", "pos": -0.2, "width": 2.0, "sill": 1.0, "vaultable": True}]},
+    ]
+    # partitions: a full-width wall at y=8 splits main floor from the north
+    # strip (doors connect them), then the office is walled off in the NE
+    # corner with two doors so the objective has >=2 access paths.
+    # (axis="X": wall runs along X at y=pos; axis="Y": wall runs along Y at x=pos)
+    spec["partitions"] = [
+        {"story": 0, "axis": "X", "pos": 8.0, "start": -half_x, "end": half_x, "material": "drywall", "openings": [
+            {"kind": "door", "pos": -0.35, "width": 1.4, "tag": "to_north_bay"},
+            {"kind": "door", "pos": 0.0, "width": 1.4},
+            {"kind": "door", "pos": 0.35, "width": 1.4, "tag": "to_office_zone"}]},
+        {"story": 0, "axis": "Y", "pos": 11.0, "start": 8.0, "end": half_y, "material": "drywall", "openings": [
+            {"kind": "door", "pos": -0.4, "width": 1.1, "tag": "office_door_1"},
+            {"kind": "door", "pos": 0.2, "width": 1.1, "tag": "office_door_2"}]},
+    ]
+    # mezzanine catwalk: a proper partial upper story would need n_stories=2;
+    # to keep this a clean single-floor sandbox we use tall stacked cover for
+    # verticality instead of a floating catwalk (the schema attaches stairs and
+    # ledges to stories, not arbitrary heights).
+    spec["stairs"] = []
+    spec["vault_ledges"] = []
+    # sparse cover: crate stacks (some tall, for vertical play) + racks
+    spec["volumes"] = [
+        {"name": "crate_stack_tall_1", "x": -8.0, "y": -4.0, "z": 1.5, "size_x": 3.0, "size_y": 3.0, "size_z": 3.0, "collision": "convex", "material": "concrete"},
+        {"name": "crate_stack_tall_2", "x": 4.0, "y": 3.0, "z": 1.5, "size_x": 3.0, "size_y": 3.0, "size_z": 3.0, "collision": "convex", "material": "concrete"},
+        {"name": "crate_stack_low", "x": -14.0, "y": 6.0, "z": 0.75, "size_x": 2.5, "size_y": 2.5, "size_z": 1.5, "collision": "convex", "material": "concrete"},
+        {"name": "rack_row_1", "x": -2.0, "y": -10.0, "z": 1.5, "size_x": 14.0, "size_y": 1.2, "size_z": 3.0, "collision": "convex", "material": "metal"},
+        {"name": "rack_row_2", "x": -2.0, "y": 4.0, "z": 1.5, "size_x": 14.0, "size_y": 1.2, "size_z": 3.0, "collision": "convex", "material": "metal"},
+        {"name": "forklift_cover", "x": 10.0, "y": -8.0, "z": 0.9, "size_x": 2.5, "size_y": 1.4, "size_z": 1.8, "collision": "convex", "material": "metal"},
+    ]
+    spec["rooms"] = [
+        {"id": "main_floor", "story": 0, "bounds": [-half_x, -half_y, half_x, 8.0], "role": "public_entry", "combat_range": "long"},
+        {"id": "north_bay", "story": 0, "bounds": [-half_x, 8.0, 11.0, half_y], "role": "connector", "combat_range": "long"},
+        {"id": "office", "story": 0, "bounds": [11.0, 8.0, half_x, half_y], "role": "objective_room", "objective": True, "fortifiable": True, "combat_range": "close"},
+    ]
+    markers = [
+        {"type": "cover_high", "id": "CRATE1", "x": -8.0, "y": -4.0, "z": 0.0, "room": "main_floor"},
+        {"type": "cover_high", "id": "CRATE2", "x": 4.0, "y": 3.0, "z": 0.0, "room": "main_floor"},
+        {"type": "cover_low", "id": "FORKLIFT", "x": 10.0, "y": -8.0, "z": 0.0, "room": "main_floor"},
+        {"type": "camera_socket", "id": "01", "x": -20.0, "y": -14.0, "z": 5.0, "room": "main_floor", "rot_z": 45},
+    ]
+    if mode == "heist":
+        spec["objectives"] = [{"id": "crack_office_safe", "kind": "drill", "x": 15.0, "y": 13.0, "z": 0.2, "room": "office", "required": True, "duration": 30.0}]
+        spec["loot"] = [{"id": "warehouse_goods", "kind": "contraband", "x": -2.0, "y": -10.0, "z": 1.0, "value": 5000, "bags": 3, "room": "main_floor"}]
+        spec["zones"] = [{"id": "dock_extract", "kind": "extraction", "story": 0, "bounds": [-half_x, -half_y, 0.0, -10.0]}]
+        markers += [
+            {"type": "objective", "id": "SAFE", "x": 15.0, "y": 13.0, "z": 0.2, "room": "office"},
+            {"type": "loot", "id": "GOODS", "x": -2.0, "y": -10.0, "z": 1.0, "room": "main_floor"},
+            {"type": "extraction", "id": "DOCK", "x": -10.0, "y": -15.0, "z": 0.0, "room": "main_floor"}]
+    else:
+        markers += [
+            {"type": "attacker_spawn", "id": "A", "x": 0.0, "y": -16.0, "z": 0.0, "rot_z": 0, "room": "main_floor"},
+            {"type": "attacker_spawn", "id": "B", "x": -22.0, "y": 0.0, "z": 0.0, "rot_z": 90, "room": "main_floor"},
+            {"type": "defender_spawn", "id": "D", "x": 18.0, "y": 14.0, "z": 0.0, "rot_z": 225, "room": "office"},
+            {"type": "objective", "id": "OFFICE", "x": 16.0, "y": 13.0, "z": 0.0, "room": "office", "meta": {"kind": "capture"}}]
+    spec["markers"] = markers
+    return spec
+
+
+# ---------------------------------------------------------------------------
+# SUBURBAN_SAFEHOUSE  --  assault: compact multi-story house, vertical clears
+# ---------------------------------------------------------------------------
+def suburban_safehouse(name: str = "suburban_safehouse_preset",
+                       mode: str = "assault",
+                       floors: int = 2,
+                       scale_ref: bool = False,
+                       basement: bool = True) -> dict:
+    """A compact suburban house run as a vertical assault: tight rooms, a
+    central stair, an attic objective, and a basement (default on). Close-
+    quarters, room-by-room clears with verticality — the small-footprint
+    counterpart to the bigger presets. floors fixed at 2 above ground; params
+    mode (assault default; heist supported), basement, scale_ref."""
+    sh = 3.0
+    fx, fy = 18.0, 14.0
+    hx, hy = fx / 2, fy / 2
+    spec = {
+        "$schema": "../schema/level.schema.json",
+        "name": name, "mode": mode, "seed": 1987, "grid": 0.5,
+        "footprint_x": fx, "footprint_y": fy, "story_height": sh,
+        "n_stories": 2, "has_basement": bool(basement), "wall_thick": 0.25,
+        "floor_thick": 0.25, "collision": "convex", "auto_exterior": True,
+        "scale_ref": bool(scale_ref), "default_material": "wood",
+        "materials": [
+            {"id": "wood", "acoustic": "Wood", "absorption": 0.35, "damping": 0.3},
+            {"id": "drywall", "acoustic": "Drywall", "absorption": 0.42, "damping": 0.38},
+            {"id": "glass", "acoustic": "Glass", "absorption": 0.1, "damping": 0.05},
+            {"id": "concrete", "acoustic": "Concrete", "absorption": 0.7, "damping": 0.6},
+        ],
+    }
+    spec["ext_walls"] = [
+        {"wall": "S", "story": 0, "material": "wood", "openings": [
+            {"kind": "door", "pos": -0.2, "width": 1.0, "tag": "front_door"},
+            {"kind": "window", "pos": 0.25, "width": 1.4, "sill": 0.9, "vaultable": True, "material": "glass"}]},
+        {"wall": "N", "story": 0, "material": "wood", "openings": [
+            {"kind": "door", "pos": 0.2, "width": 1.0, "tag": "back_door"},
+            {"kind": "breach", "pos": -0.25, "width": 1.3, "breach_class": "soft_wall", "material": "drywall"}]},
+        {"wall": "W", "story": 0, "material": "wood", "openings": [
+            {"kind": "window", "pos": 0.0, "width": 1.3, "sill": 0.9, "vaultable": True, "material": "glass"}]},
+        {"wall": "E", "story": 0, "material": "wood", "openings": [
+            {"kind": "garage", "pos": 0.0, "width": 2.6, "height": 2.2, "tag": "garage"}]},
+        {"wall": "S", "story": 1, "material": "wood", "openings": [
+            {"kind": "window", "pos": -0.2, "width": 1.2, "sill": 1.0, "vaultable": True, "material": "glass"},
+            {"kind": "window", "pos": 0.25, "width": 1.2, "sill": 1.0, "vaultable": True, "material": "glass"}]},
+        {"wall": "N", "story": 1, "material": "wood", "openings": [
+            {"kind": "window", "pos": 0.0, "width": 1.2, "sill": 1.0, "vaultable": True, "material": "glass"},
+            {"kind": "breach", "pos": 0.3, "width": 1.2, "breach_class": "soft_wall", "material": "drywall"}]},
+        {"wall": "W", "story": 1, "material": "wood", "openings": [
+            {"kind": "window", "pos": 0.0, "width": 1.2, "sill": 1.0, "vaultable": True, "material": "glass"}]},
+        {"wall": "E", "story": 1, "material": "wood", "openings": [
+            {"kind": "window", "pos": 0.0, "width": 1.2, "sill": 1.0, "vaultable": True, "material": "glass"}]},
+    ]
+    parts = [
+        {"story": 0, "axis": "X", "pos": -1.0, "start": -hy, "end": hy, "material": "drywall", "openings": [{"kind": "door", "pos": -0.3, "width": 0.9}]},
+        {"story": 0, "axis": "Y", "pos": 2.0, "start": -hx, "end": -1.0, "material": "drywall", "openings": [{"kind": "door", "pos": 0.0, "width": 0.9}]},
+        {"story": 1, "axis": "X", "pos": -1.0, "start": -hy, "end": hy, "material": "drywall", "openings": [{"kind": "door", "pos": 0.3, "width": 0.9}]},
+        {"story": 1, "axis": "Y", "pos": 1.0, "start": 1.0, "end": hx, "material": "drywall", "openings": [{"kind": "door", "pos": 0.0, "width": 0.9}]},
+    ]
+    if basement:
+        parts.append({"story": -1, "axis": "Y", "pos": 0.0, "start": -hx, "end": hx, "material": "concrete", "openings": [{"kind": "door", "pos": 0.0, "width": 1.0}]})
+    spec["partitions"] = parts
+    stair_lo = -1 if basement else 0
+    spec["stairs"] = [{"x": 5.0, "y": 4.0, "from_story": stair_lo, "to_story": 1, "width": 1.0, "run": 3.5, "style": "switchback", "cut_slabs": True}]
+    spec["vertical_links"] = [{"kind": "stair", "from_story": stair_lo, "to_story": 1, "role": "main_route"}]
+    spec["volumes"] = [
+        {"name": "living_sofa", "x": -6.0, "y": -4.0, "z": 0.45, "size_x": 2.6, "size_y": 1.0, "size_z": 0.9, "collision": "convex", "material": "wood"},
+        {"name": "kitchen_island", "x": -6.0, "y": 4.0, "z": 0.5, "size_x": 2.0, "size_y": 1.2, "size_z": 1.0, "collision": "convex", "material": "wood"},
+        {"name": "attic_crates", "x": 5.0, "y": -4.0, "z": sh + 0.5, "size_x": 2.0, "size_y": 2.0, "size_z": 1.0, "collision": "convex", "material": "wood"},
+    ]
+    rooms = [
+        {"id": "living_room", "story": 0, "bounds": [-hx, -hy, -1.0, 2.0], "role": "public_entry", "combat_range": "close"},
+        {"id": "kitchen", "story": 0, "bounds": [-hx, 2.0, -1.0, hy], "role": "connector", "combat_range": "close"},
+        {"id": "garage_stair", "story": 0, "bounds": [-1.0, -hy, hx, hy], "role": "connector", "combat_range": "close"},
+        {"id": "bedroom", "story": 1, "bounds": [-hx, -hy, -1.0, hy], "role": "fortifiable", "fortifiable": True, "combat_range": "close"},
+        {"id": "attic_room", "story": 1, "bounds": [-1.0, -hy, hx, hy], "role": "objective_room", "objective": True, "fortifiable": True, "combat_range": "close"},
+    ]
+    if basement:
+        rooms.append({"id": "basement", "story": -1, "bounds": [-hx, -hy, hx, hy], "role": "fortifiable", "fortifiable": True, "combat_range": "close"})
+    spec["rooms"] = rooms
+    markers = [
+        {"type": "cover_low", "id": "SOFA", "x": -6.0, "y": -4.0, "z": 0.0, "room": "living_room"},
+        {"type": "cover_low", "id": "ISLAND", "x": -6.0, "y": 4.0, "z": 0.0, "room": "kitchen"},
+    ]
+    if mode == "heist":
+        spec["objectives"] = [{"id": "grab_stash", "kind": "bag", "x": 5.0, "y": -4.0, "z": sh + 0.2, "room": "attic_room", "required": True, "duration": 6.0}]
+        spec["loot"] = [{"id": "house_stash", "kind": "cash", "x": 5.0, "y": -4.0, "z": sh + 0.2, "value": 4000, "bags": 2, "room": "attic_room"}]
+        spec["zones"] = [{"id": "front_extract", "kind": "extraction", "story": 0, "bounds": [-hx, -hy, -1.0, -4.0]}]
+        markers += [
+            {"type": "objective", "id": "STASH", "x": 5.0, "y": -4.0, "z": sh + 0.2, "room": "attic_room"},
+            {"type": "extraction", "id": "FRONT", "x": -5.0, "y": -6.0, "z": 0.0, "room": "living_room"}]
+    else:
+        markers += [
+            {"type": "attacker_spawn", "id": "A", "x": -4.0, "y": -8.0, "z": 0.0, "rot_z": 0, "room": "living_room"},
+            {"type": "defender_spawn", "id": "D", "x": 5.0, "y": -4.0, "z": sh, "rot_z": 180, "room": "attic_room"},
+            {"type": "objective", "id": "ATTIC", "x": 5.0, "y": -4.0, "z": sh, "room": "attic_room", "meta": {"kind": "capture"}}]
+    spec["markers"] = markers
+    return spec
+
+
+# ---------------------------------------------------------------------------
+# ROWHOME  --  assault: narrow deep multi-floor terrace, stacked clears
+# ---------------------------------------------------------------------------
+def rowhome(name: str = "rowhome_preset",
+            mode: str = "assault",
+            floors: int = 3,
+            scale_ref: bool = False,
+            basement: bool = False) -> dict:
+    """A narrow, deep terraced rowhouse: a thin footprint run front-to-back
+    over 3 stacked floors, connected by a single rear stair — vertical
+    room-by-room clears with very tight angles. Inspired by the rowhouse_raid
+    example, generalized to a preset. floors fixed at 3; params mode (assault
+    default; heist supported), basement, scale_ref."""
+    sh = 3.0
+    fx, fy = 8.0, 22.0       # narrow + deep
+    hx, hy = fx / 2, fy / 2
+    spec = {
+        "$schema": "../schema/level.schema.json",
+        "name": name, "mode": mode, "seed": 1988, "grid": 0.5,
+        "footprint_x": fx, "footprint_y": fy, "story_height": sh,
+        "n_stories": 3, "has_basement": bool(basement), "wall_thick": 0.3,
+        "floor_thick": 0.25, "collision": "convex", "auto_exterior": True,
+        "scale_ref": bool(scale_ref), "default_material": "brick",
+        "materials": [
+            {"id": "brick", "acoustic": "Concrete", "absorption": 0.7, "damping": 0.6},
+            {"id": "drywall", "acoustic": "Drywall", "absorption": 0.42, "damping": 0.38},
+            {"id": "wood", "acoustic": "Wood", "absorption": 0.35, "damping": 0.3},
+            {"id": "glass", "acoustic": "Glass", "absorption": 0.1, "damping": 0.05},
+        ],
+    }
+    # only front (S) and back (N) walls have openings; sides are party walls
+    ext = []
+    for st in range(0, 3):
+        ext.append({"wall": "S", "story": st, "material": "brick", "openings": (
+            [{"kind": "door", "pos": 0.0, "width": 1.0, "tag": "front_door"}] if st == 0
+            else [{"kind": "window", "pos": -0.2, "width": 1.1, "sill": 1.0, "vaultable": True, "material": "glass"},
+                  {"kind": "window", "pos": 0.2, "width": 1.1, "sill": 1.0, "vaultable": True, "material": "glass"}])})
+        ext.append({"wall": "N", "story": st, "material": "brick", "openings": (
+            [{"kind": "door", "pos": 0.0, "width": 1.0, "tag": "back_door"}] if st == 0
+            else [{"kind": "window", "pos": 0.0, "width": 1.1, "sill": 1.0, "vaultable": True, "material": "glass"},
+                  {"kind": "breach", "pos": 0.3, "width": 1.0, "breach_class": "soft_wall", "material": "drywall"}])})
+        # party walls (W/E) solid — no openings
+        ext.append({"wall": "W", "story": st, "material": "brick", "openings": []})
+        ext.append({"wall": "E", "story": st, "material": "brick", "openings": []})
+    spec["ext_walls"] = ext
+    # one cross-partition per floor splitting front/back room
+    parts = []
+    for st in range(0, 3):
+        parts.append({"story": st, "axis": "X", "pos": 0.0, "start": -hx, "end": hy - 5.0, "material": "drywall", "openings": [{"kind": "door", "pos": -0.2, "width": 0.9}]})
+    spec["partitions"] = parts
+    # single rear stair spanning all floors
+    stair_lo = -1 if basement else 0
+    spec["stairs"] = [{"x": 0.0, "y": hy - 2.5, "from_story": stair_lo, "to_story": 2, "width": 0.9, "run": 3.0, "style": "switchback", "cut_slabs": True}]
+    spec["vertical_links"] = [{"kind": "stair", "from_story": stair_lo, "to_story": 2, "role": "main_route"}]
+    spec["volumes"] = [
+        {"name": "front_sofa", "x": 0.0, "y": -7.0, "z": 0.45, "size_x": 2.2, "size_y": 0.9, "size_z": 0.9, "collision": "convex", "material": "wood"},
+        {"name": "bed_2f", "x": 0.0, "y": -7.0, "z": sh + 0.3, "size_x": 2.0, "size_y": 1.2, "size_z": 0.6, "collision": "convex", "material": "wood"},
+        {"name": "desk_3f", "x": 0.0, "y": -7.0, "z": 2 * sh + 0.4, "size_x": 1.8, "size_y": 0.9, "size_z": 0.8, "collision": "convex", "material": "wood"},
+    ]
+    rooms = []
+    role_by_floor = {0: "public_entry", 1: "connector", 2: "objective_room"}
+    for st in range(0, 3):
+        rooms.append({"id": f"front_{st}", "story": st, "bounds": [-hx, -hy, hx, 0.0],
+                      "role": role_by_floor[st], "combat_range": "close",
+                      **({"objective": True, "fortifiable": True} if st == 2 else {})})
+        rooms.append({"id": f"back_{st}", "story": st, "bounds": [-hx, 0.0, hx, hy], "role": "connector", "combat_range": "close"})
+    spec["rooms"] = rooms
+    markers = [{"type": "cover_low", "id": "SOFA", "x": 0.0, "y": -7.0, "z": 0.0, "room": "front_0"}]
+    if mode == "heist":
+        spec["objectives"] = [{"id": "grab_top", "kind": "bag", "x": 0.0, "y": -7.0, "z": 2 * sh + 0.4, "room": "front_2", "required": True, "duration": 6.0}]
+        spec["loot"] = [{"id": "top_floor_stash", "kind": "cash", "x": 0.0, "y": -7.0, "z": 2 * sh + 0.4, "value": 3500, "bags": 2, "room": "front_2"}]
+        spec["zones"] = [{"id": "front_extract", "kind": "extraction", "story": 0, "bounds": [-hx, -hy, hx, -7.0]}]
+        markers += [
+            {"type": "objective", "id": "TOP", "x": 0.0, "y": -7.0, "z": 2 * sh + 0.4, "room": "front_2"},
+            {"type": "extraction", "id": "FRONT", "x": 0.0, "y": -9.0, "z": 0.0, "room": "front_0"}]
+    else:
+        markers += [
+            {"type": "attacker_spawn", "id": "A", "x": 0.0, "y": -10.0, "z": 0.0, "rot_z": 0, "room": "front_0"},
+            {"type": "attacker_spawn", "id": "B", "x": 0.0, "y": 10.0, "z": 0.0, "rot_z": 180, "room": "back_0"},
+            {"type": "defender_spawn", "id": "D", "x": 0.0, "y": -7.0, "z": 2 * sh, "rot_z": 180, "room": "front_2"},
+            {"type": "objective", "id": "TOPFLOOR", "x": 0.0, "y": -7.0, "z": 2 * sh, "room": "front_2", "meta": {"kind": "capture"}}]
+    spec["markers"] = markers
+    return spec
+
+
+# ---------------------------------------------------------------------------
+# CASINO_TOWER  --  hybrid heist/assault: public floor + secure vault levels
+# ---------------------------------------------------------------------------
+def casino_tower(name: str = "casino_tower_preset",
+                 mode: str = "heist",
+                 floors: int = 3,
+                 scale_ref: bool = False,
+                 basement: bool = True) -> dict:
+    """A casino: a glamorous open gaming floor on the ground, a cashier cage +
+    count room upstairs, and a basement vault — a hybrid that plays as a heist
+    (default: cage + vault objectives, loot, extraction) or an assault (secure
+    the vault). Wide public ground floor, tightening to high-security upper and
+    basement. floors fixed at 2 above ground; params mode (heist default;
+    assault supported), basement (default on — it holds the vault), scale_ref."""
+    sh = 4.0                 # tall glamorous floors
+    fx, fy = 44.0, 32.0
+    hx, hy = fx / 2, fy / 2
+    spec = {
+        "$schema": "../schema/level.schema.json",
+        "name": name, "mode": mode, "seed": 1989, "grid": 0.5,
+        "footprint_x": fx, "footprint_y": fy, "story_height": sh,
+        "n_stories": 2, "has_basement": bool(basement), "wall_thick": 0.35,
+        "floor_thick": 0.3, "collision": "convex", "auto_exterior": True,
+        "scale_ref": bool(scale_ref), "default_material": "concrete",
+        "materials": [
+            {"id": "concrete", "acoustic": "Concrete", "absorption": 0.7, "damping": 0.6},
+            {"id": "glass", "acoustic": "Glass", "absorption": 0.1, "damping": 0.05},
+            {"id": "drywall", "acoustic": "Drywall", "absorption": 0.42, "damping": 0.38},
+            {"id": "metal", "acoustic": "Metal", "absorption": 0.3, "damping": 0.2},
+            {"id": "carpet", "acoustic": "Curtain", "absorption": 0.8, "damping": 0.7},
+        ],
+    }
+    spec["ext_walls"] = [
+        {"wall": "S", "story": 0, "material": "glass", "openings": [
+            {"kind": "door", "pos": -0.1, "width": 2.4, "tag": "grand_entrance"},
+            {"kind": "window", "pos": -0.35, "width": 3.0, "sill": 0.8, "vaultable": True, "material": "glass"},
+            {"kind": "window", "pos": 0.3, "width": 3.0, "sill": 0.8, "vaultable": True, "material": "glass"}]},
+        {"wall": "N", "story": 0, "material": "concrete", "openings": [
+            {"kind": "door", "pos": -0.2, "width": 1.2, "tag": "staff_entrance"},
+            {"kind": "breach", "pos": 0.25, "width": 1.5, "breach_class": "soft_wall", "material": "drywall", "tag": "back_breach"}]},
+        {"wall": "W", "story": 0, "material": "concrete", "openings": [
+            {"kind": "door", "pos": 0.0, "width": 1.2, "tag": "valet_entrance"}]},
+        {"wall": "E", "story": 0, "material": "concrete", "openings": [
+            {"kind": "garage", "pos": 0.0, "width": 3.2, "height": 2.6, "tag": "armored_car_bay"}]},
+        {"wall": "S", "story": 1, "material": "glass", "openings": [
+            {"kind": "window", "pos": -0.25, "width": 2.0, "sill": 0.9, "vaultable": True, "material": "glass"},
+            {"kind": "window", "pos": 0.25, "width": 2.0, "sill": 0.9, "vaultable": True, "material": "glass"}]},
+        {"wall": "N", "story": 1, "material": "concrete", "openings": [
+            {"kind": "breach", "pos": 0.0, "width": 1.4, "breach_class": "reinforceable", "material": "concrete", "reinforceable": True, "tag": "count_room_breach"}]},
+        {"wall": "W", "story": 1, "material": "concrete", "openings": [
+            {"kind": "window", "pos": 0.0, "width": 1.6, "sill": 0.9, "vaultable": True, "material": "glass"}]},
+        {"wall": "E", "story": 1, "material": "concrete", "openings": [
+            {"kind": "window", "pos": 0.0, "width": 1.6, "sill": 0.9, "vaultable": True, "material": "glass"}]},
+    ]
+    parts = [
+        {"story": 0, "axis": "X", "pos": 8.0, "start": -hx, "end": hx, "material": "drywall", "openings": [
+            {"kind": "door", "pos": -0.3, "width": 1.4}, {"kind": "door", "pos": 0.3, "width": 1.4}]},
+        {"story": 0, "axis": "Y", "pos": 10.0, "start": 8.0, "end": hx, "material": "metal", "openings": [
+            {"kind": "door", "pos": 0.0, "width": 1.1, "tag": "cage_door"}]},
+        {"story": 1, "axis": "X", "pos": 0.0, "start": -hx, "end": hx, "material": "drywall", "openings": [
+            {"kind": "door", "pos": -0.25, "width": 1.2}, {"kind": "door", "pos": 0.25, "width": 1.2}]},
+        {"story": 1, "axis": "Y", "pos": 0.0, "start": 0.0, "end": hx, "material": "metal", "openings": [
+            {"kind": "door", "pos": 0.0, "width": 1.1, "tag": "count_room_door"}]},
+    ]
+    if basement:
+        parts.append({"story": -1, "axis": "Y", "pos": 0.0, "start": -hx, "end": hx, "material": "concrete", "openings": [
+            {"kind": "breach", "pos": 0.0, "width": 1.4, "breach_class": "reinforceable", "material": "concrete", "reinforceable": True, "tag": "vault_breach"}]})
+    spec["partitions"] = parts
+    stair_lo = -1 if basement else 0
+    spec["stairs"] = [{"x": -16.0, "y": 12.0, "from_story": stair_lo, "to_story": 1, "width": 1.4, "run": 4.5, "style": "switchback", "cut_slabs": True}]
+    spec["vertical_links"] = [
+        {"kind": "stair", "from_story": stair_lo, "to_story": 1, "role": "main_route"},
+        {"kind": "hatch", "story": 1, "x": 14.0, "y": 8.0, "size_x": 1.4, "size_y": 1.4, "breachable": True, "cut_slab": True, "role": "count_room_skylight"},
+    ]
+    spec["slab_holes"] = [{"story": 1, "x": 14.0, "y": 8.0, "size_x": 1.4, "size_y": 1.4}]
+    spec["parapets"] = [{"story": 2, "height": 1.0, "thick": 0.3}]
+    vols = [
+        {"name": "gaming_tables", "x": -6.0, "y": -4.0, "z": 0.5, "size_x": 12.0, "size_y": 6.0, "size_z": 1.0, "collision": "convex", "material": "carpet"},
+        {"name": "slot_bank_1", "x": 12.0, "y": -8.0, "z": 0.9, "size_x": 6.0, "size_y": 1.2, "size_z": 1.8, "collision": "convex", "material": "metal"},
+        {"name": "bar_cover", "x": -16.0, "y": -6.0, "z": 0.6, "size_x": 1.2, "size_y": 8.0, "size_z": 1.2, "collision": "convex", "material": "metal"},
+        {"name": "cage_counter", "x": 16.0, "y": 12.0, "z": 0.55, "size_x": 6.0, "size_y": 1.0, "size_z": 1.1, "collision": "convex", "material": "metal"},
+        {"name": "count_table", "x": 12.0, "y": 10.0, "z": sh + 0.45, "size_x": 4.0, "size_y": 2.0, "size_z": 0.9, "collision": "convex", "material": "metal"},
+    ]
+    if basement:
+        vols.append({"name": "vault_block", "x": 0.0, "y": 6.0, "z": -sh + 0.7, "size_x": 8.0, "size_y": 6.0, "size_z": 1.4, "collision": "convex", "material": "metal"})
+    spec["volumes"] = vols
+    rooms = [
+        {"id": "gaming_floor", "story": 0, "bounds": [-hx, -hy, hx, 8.0], "role": "public_entry", "combat_range": "long"},
+        {"id": "north_concourse", "story": 0, "bounds": [-hx, 8.0, 10.0, hy], "role": "connector", "combat_range": "medium"},
+        {"id": "cashier_cage", "story": 0, "bounds": [10.0, 8.0, hx, hy], "role": "objective_room", "objective": True, "fortifiable": True, "combat_range": "close"},
+        {"id": "upper_lounge", "story": 1, "bounds": [-hx, -hy, hx, 0.0], "role": "connector", "combat_range": "medium"},
+        {"id": "security_office", "story": 1, "bounds": [-hx, 0.0, 0.0, hy], "role": "fortifiable", "fortifiable": True, "combat_range": "close"},
+        {"id": "count_room", "story": 1, "bounds": [0.0, 0.0, hx, hy], "role": "objective_room", "objective": True, "fortifiable": True, "combat_range": "close"},
+    ]
+    if basement:
+        rooms.append({"id": "vault", "story": -1, "bounds": [-hx, -hy, hx, hy], "role": "objective_room", "objective": True, "fortifiable": True, "combat_range": "close"})
+    spec["rooms"] = rooms
+    markers = [
+        {"type": "cover_high", "id": "TABLES", "x": -6.0, "y": -4.0, "z": 0.0, "room": "gaming_floor"},
+        {"type": "cover_high", "id": "SLOTS", "x": 12.0, "y": -8.0, "z": 0.0, "room": "gaming_floor"},
+        {"type": "camera_socket", "id": "01", "x": 0.0, "y": -14.0, "z": 3.5, "room": "gaming_floor"},
+        {"type": "camera_socket", "id": "02", "x": 16.0, "y": 14.0, "z": 3.5, "room": "cashier_cage"},
+    ]
+    if mode == "heist":
+        objs = [
+            {"id": "rob_cage", "kind": "bag_cash", "x": 16.0, "y": 12.0, "z": 0.9, "room": "cashier_cage", "required": True, "duration": 10.0, "meta": {"phase": "loud"}},
+            {"id": "hack_count_room", "kind": "hack", "x": 12.0, "y": 10.0, "z": sh + 0.9, "room": "count_room", "required": False, "duration": 20.0},
+        ]
+        loot = [{"id": "cage_cash", "kind": "cash", "x": 16.0, "y": 12.0, "z": 0.9, "value": 6000, "bags": 2, "room": "cashier_cage"}]
+        if basement:
+            objs.append({"id": "drill_vault", "kind": "drill", "x": 0.0, "y": 6.0, "z": -sh + 1.0, "room": "vault", "required": True, "duration": 50.0, "meta": {"phase": "loud", "noise_radius": 30}})
+            loot.append({"id": "vault_cash", "kind": "cash", "x": 0.0, "y": 6.0, "z": -sh + 1.2, "value": 20000, "bags": 4, "room": "vault"})
+        spec["objectives"] = objs
+        spec["loot"] = loot
+        spec["zones"] = [
+            {"id": "valet_extract", "kind": "extraction", "story": 0, "bounds": [-hx, -hy, -14.0, 0.0], "meta": {"phase": "escape"}},
+            {"id": "cage_secure", "kind": "secure", "story": 0, "bounds": [10.0, 8.0, hx, hy]},
+        ]
+        markers += [
+            {"type": "objective", "id": "CAGE", "x": 16.0, "y": 12.0, "z": 0.9, "room": "cashier_cage"},
+            {"type": "objective", "id": "COUNT", "x": 12.0, "y": 10.0, "z": sh + 0.9, "room": "count_room"},
+            {"type": "extraction", "id": "VALET", "x": -18.0, "y": -6.0, "z": 0.0, "room": "gaming_floor"}]
+        if basement:
+            markers += [
+                {"type": "objective", "id": "VAULT", "x": 0.0, "y": 6.0, "z": -sh + 1.0, "room": "vault"},
+                {"type": "loot", "id": "VAULT_CASH", "x": 0.0, "y": 6.0, "z": -sh + 1.2, "room": "vault"}]
+    else:  # assault — secure the vault (or count room w/o basement)
+        target_room = "vault" if basement else "count_room"
+        tz = (-sh + 1.0) if basement else (sh)
+        ty = 6.0 if basement else 10.0
+        tx = 0.0 if basement else 12.0
+        markers += [
+            {"type": "attacker_spawn", "id": "A", "x": 0.0, "y": -14.0, "z": 0.0, "rot_z": 0, "room": "gaming_floor"},
+            {"type": "attacker_spawn", "id": "B", "x": -20.0, "y": 0.0, "z": 0.0, "rot_z": 90, "room": "gaming_floor"},
+            {"type": "defender_spawn", "id": "D", "x": tx, "y": ty, "z": tz, "rot_z": 180, "room": target_room},
+            {"type": "objective", "id": "SECURE", "x": tx, "y": ty, "z": tz, "room": target_room, "meta": {"kind": "secure"}}]
+    spec["markers"] = markers
+    return spec
+
+
+# ---------------------------------------------------------------------------
 # REGISTRY
 # ---------------------------------------------------------------------------
 REGISTRY = {
@@ -878,7 +1496,11 @@ REGISTRY = {
     "police_station": police_station,
     "corner_deli": corner_deli,
     "compound": compound,
-    # rowhome, warehouse, safehouse -> follow
+    "hospital": hospital,
+    "warehouse": warehouse,
+    "suburban_safehouse": suburban_safehouse,
+    "rowhome": rowhome,
+    "casino_tower": casino_tower,
 }
 
 

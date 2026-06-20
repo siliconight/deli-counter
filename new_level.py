@@ -28,9 +28,14 @@ def main():
     ap = argparse.ArgumentParser(description="Generate a level spec from a preset.")
     ap.add_argument("--preset", help="recipe name (see --list)")
     ap.add_argument("--name", help="level name -> specs/<name>.json")
-    ap.add_argument("--mode", default="assault", choices=["assault", "heist"])
-    ap.add_argument("--floors", type=int, default=2, help="above-ground stories")
+    ap.add_argument("--mode", default=None,
+                    choices=["assault", "heist", "survival"],
+                    help="tactical mode (default: the preset's own default)")
+    ap.add_argument("--floors", type=int, default=None,
+                    help="above-ground stories (default: the preset's own default)")
     ap.add_argument("--no-basement", action="store_true", help="omit the basement")
+    ap.add_argument("--basement", action="store_true",
+                    help="force-include a basement")
     ap.add_argument("--scale-ref", action="store_true",
                     help="add 1.8 m human proxies at spawns for a Blender scale check")
     ap.add_argument("--list", action="store_true", help="list available presets and exit")
@@ -47,12 +52,21 @@ def main():
     if not args.preset or not args.name:
         ap.error("both --preset and --name are required (or use --list)")
 
+    # Only pass args the user actually set, so each preset's own defaults stand
+    # (e.g. hospital defaults to survival/3 floors; bank to assault). Passing a
+    # blanket --mode assault would wrongly override a survival-first preset.
+    kwargs = {"name": args.name, "scale_ref": args.scale_ref}
+    if args.mode is not None:
+        kwargs["mode"] = args.mode
+    if args.floors is not None:
+        kwargs["floors"] = args.floors
+    if args.no_basement:
+        kwargs["basement"] = False
+    elif args.basement:
+        kwargs["basement"] = True
+
     try:
-        spec = presets.make(
-            args.preset, name=args.name, mode=args.mode,
-            floors=args.floors, basement=not args.no_basement,
-            scale_ref=args.scale_ref,
-        )
+        spec = presets.make(args.preset, **kwargs)
     except KeyError as e:
         print(f"error: {e}")
         return 2
