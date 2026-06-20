@@ -129,6 +129,16 @@ def validate_file(path):
     except Exception as ex:
         print(f"  TACTICAL: analysis skipped ({ex})")
 
+    # poly budget estimate (offline, informational — intel not judgment)
+    try:
+        import polybudget
+        _, psummary = polybudget.estimate(spec)
+        print(polybudget.format_summary(spec.name, psummary))
+        for w in polybudget.budget_warnings(psummary):
+            print(f"  POLY-NOTE: {w}")
+    except Exception as ex:
+        print(f"  POLY: estimate skipped ({ex})")
+
     print("  -> OK")
     return True
 

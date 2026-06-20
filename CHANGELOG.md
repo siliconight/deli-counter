@@ -5,6 +5,25 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.21.0]
+### Added — offline polygon-budget estimate
+- `polybudget.py`: a pure-Python triangle-count estimator that predicts a
+  shell's poly count from the spec *without* running Blender (the geometry is
+  deterministic, so it can be checked offline in CI). Reports total tris and
+  per-piece distribution, surfaced in `validate.py` output.
+- Checks against the **Environment/Module budget** (target 50-500, cap 1,000
+  tris per piece). Intel, not judgment — same principle as the path metrics:
+  the tool makes models, an artist may exceed a target deliberately. It only
+  *notes* (never errors on) pieces over the hard cap, and flags imported
+  kitbash assets whose tri count can't be estimated offline (verify those in
+  Blender).
+- Calibrated against a real exported GLB (corner_deli: estimate within ~90% of
+  actual visual tris). Reports the shippable VISUAL budget; collision proxies
+  are separate and not counted against the Environment budget.
+- Finding: the generated blockout shells are light — whole buildings land at
+  ~150-2,500 tris total, no single piece near the 1,000 cap. The structural
+  shell is a lightweight canvas the art team builds detail onto.
+
 ## [0.20.0]
 ### Added — tactical path metrics (intel, not judgment)
 - `tactical.py` gains offline room-graph path analysis, reported in every
