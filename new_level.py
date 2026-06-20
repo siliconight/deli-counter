@@ -24,6 +24,24 @@ if HERE not in sys.path:
 import presets  # noqa: E402
 
 
+def _strip_material_refs(spec):
+    """Remove material references from a spec so it carries no acoustic data
+    (used by --no-audio). Walks the structures that can name a material and
+    drops the key; the geometry is unchanged, only the gool audio bridge is
+    removed."""
+    def drop_mat(d):
+        if isinstance(d, dict):
+            d.pop("material", None)
+            for v in d.values():
+                drop_mat(v)
+        elif isinstance(d, list):
+            for v in d:
+                drop_mat(v)
+    for key in ("ext_walls", "partitions", "volumes", "vault_ledges",
+                "stairs", "ladders", "ramps"):
+        drop_mat(spec.get(key))
+
+
 def main():
     ap = argparse.ArgumentParser(description="Generate a level spec from a preset.")
     ap.add_argument("--preset", help="recipe name (see --list)")
@@ -38,6 +56,8 @@ def main():
                     help="force-include a basement")
     ap.add_argument("--scale-ref", action="store_true",
                     help="add 1.8 m human proxies at spawns for a Blender scale check")
+    ap.add_argument("--no-audio", action="store_true",
+                    help="strip acoustic materials (the gool audio bridge is optional)")
     ap.add_argument("--list", action="store_true", help="list available presets and exit")
     ap.add_argument("--force", action="store_true", help="overwrite if the spec exists")
     args = ap.parse_args()
@@ -70,6 +90,16 @@ def main():
     except KeyError as e:
         print(f"error: {e}")
         return 2
+
+    # The acoustic-materials / gool audio bridge is OPTIONAL. --no-audio strips
+    # the materials so the spec carries no acoustic data (the gameplay.json
+    # surfaces block comes out empty). A game not using gool ignores it either
+    # way; this is for people who want it gone entirely.
+    if args.no_audio:
+        spec["materials"] = []
+        spec.pop("default_material", None)
+        _strip_material_refs(spec)
+        print("stripped acoustic materials (--no-audio)")
 
     specs_dir = os.path.join(HERE, "specs")
     os.makedirs(specs_dir, exist_ok=True)

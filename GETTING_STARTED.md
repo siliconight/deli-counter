@@ -9,12 +9,32 @@ pip install jsonschema        # full spec validation (recommended)
 python install_hooks.py       # pre-commit hook: auto-refreshes the catalog + gate
 ```
 
-## 2. Generate a level (no JSON to write)
+## 2. Generate a level — three ways in (pick any)
+
+Deli Counter has three independent on-ramps to the same generation core. None
+is required; use whichever fits you.
+
+**a. Describe it** — answer a few questions, get a recommended preset + a spec.
+Good if you don't know the presets yet.
+
+```
+python describe.py
+```
+
+**b. Pick a preset directly** — if you know what you want, skip the interview.
 
 ```
 python new_level.py --list                              # see the preset recipes
 python new_level.py --preset corner_deli --name my_lvl  # -> specs/my_lvl.json
 ```
+
+**c. Hand-author the JSON** — full control. Write a spec straight against
+`schema/level.schema.json` (the `$schema` key gives editor autocomplete) and
+drop it in `specs/`. This is the most powerful path — presets are just recipes
+that emit this same JSON. See any file in `specs/` for a worked example.
+
+All three produce a spec that runs through the same validate → build → import
+pipeline below.
 
 Presets available: **bank**, **police_station**, **corner_deli**, **compound**.
 Common flags: `--mode heist|assault`, `--floors N`, `--no-basement`,

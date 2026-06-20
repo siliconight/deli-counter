@@ -139,6 +139,35 @@ def validate_file(path):
     except Exception as ex:
         print(f"  POLY: estimate skipped ({ex})")
 
+    # hard guards: IP-name (repo integrity) + step-rise (model integrity)
+    try:
+        import guards
+        gerrors, gwarnings = guards.check_all(spec)
+        for w in gwarnings:
+            print(f"  GUARD-WARN: {w}")
+        for e in gerrors:
+            print(f"  GUARD-ERROR: {e}")
+        if gerrors:
+            print(f"  -> {len(gerrors)} guard error(s)")
+            return False
+    except Exception as ex:
+        print(f"  GUARD: checks skipped ({ex})")
+
+    # navigability proxy (offline pre-filter for AI nav; real check = navmesh)
+    try:
+        import navigability
+        nerrors, nwarnings, nsummary = navigability.check(spec)
+        print(navigability.format_summary(spec.name, nsummary))
+        for w in nwarnings:
+            print(f"  NAV-WARN: {w}")
+        for e in nerrors:
+            print(f"  NAV-ERROR: {e}")
+        if nerrors:
+            print(f"  -> {len(nerrors)} navigability error(s)")
+            return False
+    except Exception as ex:
+        print(f"  NAV: proxy skipped ({ex})")
+
     print("  -> OK")
     return True
 

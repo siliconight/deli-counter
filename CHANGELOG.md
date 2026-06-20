@@ -5,6 +5,86 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.27.0]
+### Added — navigability checks ("can AI enemies path to the player?")
+Two layers, because the honest answer needs a real navmesh but a cheap offline
+pre-filter catches the gross failures first.
+- **Offline proxy** (`navigability.py`, in `validate.py`/CI): flags floor-level
+  doorways narrower than a nav agent can pass (~1.1 m for Godot's default 0.5 m
+  radius) and backstops isolated-room detection. Room-graph resolution — a
+  pre-filter, not the truth; reported as warnings (navigation is a gameplay
+  concern), with the standing reminder that the authoritative check is a real
+  navmesh bake. Well-calibrated: only the presets with intentionally tight
+  (1.0 m) residential/shop doors flag; most pass clean.
+- **Godot navmesh check** (`godot/template/level_test.gd` F5 + `NAVMESH_CHECK.md`):
+  the authoritative, capsule-accurate version, to run when you walk a level.
+  F4 bakes the navmesh; **F5** then queries a path from the player to every
+  gameplay marker and reports which an agent can actually reach ("12/12
+  reachable" or names the off-navmesh / no-path anchors). If an enemy can path
+  to an anchor, it can path back to shoot the player. Catches what the offline
+  proxy can't — slivers, stair-bake gaps, sub-room holes.
+
+This stays on the right side of the model/gameplay line: the tool doesn't run
+AI, but it verifies the shell is *navigable* so your AI can. Navigability is
+intel + a real-navmesh tool; only true unreachability (already a hard gate via
+tactical reachability) fails the build.
+
+## [0.26.0]
+### Changed — the acoustic / gool audio bridge is explicitly optional
+- Made clear (and easy) that the acoustic-materials audio bridge is opt-in, not
+  required. A spec with no `materials` block already built fine; now:
+  - `new_level.py --no-audio` strips the acoustic palette + all `material`
+    references from any preset, so the spec carries zero audio data (the
+    `gameplay.json` `surfaces` block comes out empty). Geometry, collision, and
+    markers are identical with or without it.
+  - The README's acoustic section now leads with "this is entirely optional" —
+    a game not using an acoustic audio engine ignores it, and the tool never
+    requires the bridge.
+- No behavior change for the audio path: presets still include a palette by
+  default (harmless if unused), and games that want gool integration get the
+  same surfaces map as before.
+
+## [0.25.1]
+### Changed — docs
+- Clarified that the three on-ramps (describe.py, new_level.py --preset, hand-authored JSON) are co-equal and independent; describe.py is an optional convenience layer, not a required first step. Reframed GETTING_STARTED + noted it in describe.py itself.
+
+## [0.25.0]
+### Added — `describe.py`: guided interview (describe a building, get a level)
+- The on-ramp between "I want a two-story bank with a vault" and
+  `--preset bank --floors 2`. Fully offline, no AI: a short series of questions
+  (playstyle → setting → size → params) whose answers map deterministically to
+  the best-fit preset via a scoring decision tree, then generate + validate.
+- It's a *recommender*, not a generator: it always lands on one of the nine
+  proven presets (validated, budgeted, guarded) — never invents geometry. It
+  explains *why* it picked a preset, shows runner-up options to redirect to,
+  and lets you override the auto-chosen parameters. Falls back to a versatile
+  default when given no signal.
+- Verified the routing: "small shop to rob" → corner_deli, "co-op horde in a
+  hospital" → hospital, "warehouse shootout" → warehouse, "raid a precinct" →
+  police_station, etc. `python describe.py`.
+
+## [0.24.0]
+### Added — offline guards (encode judgment that used to be manual)
+- `guards.py` + wired into `validate.py`/`check.py` (CI). Two hard gates that
+  used to live in a human's head:
+  - **IP-name guard** (repo integrity): scans every author-controlled string in
+    a spec — name, room ids/roles, marker ids/types/meta, zone/objective/loot
+    ids, opening tags — for brand/inspiration terms (delco, payday, scarface,
+    valve, l4d, etc.). A match **fails the build**. Boundary-aware matching
+    catches brand-in-identifier (`payday_vault`, `delco_x`) while skipping
+    embedded-in-a-word false positives (`besieged_corridor` is clean). An
+    `IP_ALLOWLIST` blesses legitimate strings that contain a flagged substring;
+    the error message names the exact string to allowlist.
+  - **Step-rise budget** (model integrity): a stair whose per-step rise exceeds
+    the 0.5 m climb budget is physically unclimbable — a broken model — so it
+    **fails the build** (warns as it approaches 0.4 m). Generated stairs are
+    ~0.18 m and pass with wide margin; this catches hand-authored specs with a
+    large `step_rise` or tiny `n_steps`.
+- These make the tool more self-sufficient: the IP grep and the "can the player
+  climb this?" check now run automatically in CI instead of relying on someone
+  remembering. Reachability, step-rise, and IP are the hard gates; everything
+  else (path metrics, poly budget) stays informational.
+
 ## [0.23.0]
 ### Added — warehouse, suburban_safehouse, rowhome, casino_tower presets
 - Completes the single-building preset library (9 total): every roadmap level

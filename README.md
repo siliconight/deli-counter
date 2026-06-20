@@ -377,11 +377,19 @@ an objective or finale is physically unreachable through the geometry, that's a
 broken model and the build fails. Everything past "can you get there at all" is
 intel the gameplay layer interprets.
 
-## Acoustic materials (audio-engine bridge)
+## Acoustic materials (optional audio-engine bridge)
 
-Deli Counter doesn't bake visual materials — you texture in your engine. What
-it *does* carry is the **acoustic** side, so a surface's material can feed an
-audio engine's occlusion/reverb system.
+**This is entirely optional.** Deli Counter builds the same playable shell with
+or without it. If your game doesn't use an acoustic audio engine, ignore this
+section — omit the `materials` block (or generate with `--no-audio`) and the
+build still produces collision, markers, and geometry exactly the same. The
+`gameplay.json` just carries an empty `surfaces` list, which a game not using it
+simply never reads. Nothing about the tool *requires* the audio bridge.
+
+For games that *do* want it: Deli Counter doesn't bake visual materials — you
+texture in your engine. What it can optionally carry is the **acoustic** side,
+so a surface's material feeds an audio engine's occlusion/reverb system (e.g.
+[gool](https://github.com/siliconight/gool)).
 
 Define a palette and reference it per surface:
 
@@ -407,6 +415,10 @@ node name → resolved acoustic material. Your audio raycaster hits a collision
 body, reads its name, looks it up here, and hands the material to the audio
 engine's geometry-query interface. `validate.py` checks every reference
 resolves.
+
+The presets include an acoustic palette by default (harmless if unused), but
+`python new_level.py --preset X --no-audio` strips it entirely if you'd rather
+the spec carry no audio data at all.
 
 ## Iterating toward real models
 
