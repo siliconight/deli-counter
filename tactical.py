@@ -162,6 +162,137 @@ def _reachable(adj, starts):
     return seen
 
 
+# ---------------------------------------------------------------------------
+# Tactical path analysis (offline, room-graph resolution)
+# ---------------------------------------------------------------------------
+# These work on the room adjacency graph from build_graph(). They answer
+# "design quality" questions, not just "is it connected": how many distinct
+# ways to reach a target, what gets funneled through a single room, how long
+# the route is. Room-resolution (not capsule-accurate) — geometry-accurate
+# navmesh pathfinding is a deferred Godot-side check; this is the offline
+# version that gates CI.
+
+def _shortest_path_len(adj, starts, target):
+    """BFS hop count (rooms traversed) from the nearest start to target.
+    Returns None if unreachable."""
+    if not starts:
+        return None
+    seen = set(starts)
+    frontier = [(s, 0) for s in starts]
+    i = 0
+    while i < len(frontier):
+        node, dist = frontier[i]
+        i += 1
+        if node == target:
+            return dist
+        for m in adj.get(node, ()):
+            if m not in seen:
+                seen.add(m)
+                frontier.append((m, dist + 1))
+    return None
+
+
+def _count_independent_routes(adj, starts, target):
+    """How many node-disjoint paths reach target from the start set — a proxy
+    for 'flanking options'. 1 = single forced route; >=2 = at least one flank.
+    Node-disjoint means the paths share no intermediate room, so two routes that
+    both funnel through one hallway count as one.
+
+    Method: max-flow on a node-split graph. Each room r becomes r_in -> r_out
+    with capacity 1 (so a room is used by at most one path), EXCEPT the target,
+    whose in->out is uncapped (it's the sink side). A super-source connects to
+    the in-node of every start room. Edges between rooms are uncapped (the
+    capacity constraint lives on the nodes, which is what 'node-disjoint'
+    means). Count augmenting paths."""
+    starts = set(s for s in starts if s in adj)
+    if not starts or target not in adj:
+        return 0
+    if target in starts:
+        return 1
+
+    INF = 10 ** 9
+    cap = {}
+
+    def add(u, v, c):
+        cap[(u, v)] = cap.get((u, v), 0) + c
+        cap.setdefault((v, u), 0)
+
+    SRC, SNK = ("SRC",), ("SNK",)
+    for r in adj:
+        # internal node capacity 1 for intermediate rooms; start and target
+        # uncapped (a path may originate from / terminate at them freely — the
+        # disjointness we measure is on the *intermediate* rooms a route is
+        # forced through).
+        add(("in", r), ("out", r), INF if (r == target or r in starts) else 1)
+    for u in adj:
+        for v in adj[u]:
+            add(("out", u), ("in", v), INF)   # inter-room edges uncapped
+    for s in starts:
+        add(SRC, ("in", s), INF)
+    add(("out", target), SNK, INF)
+
+    def bfs_aug():
+        parent = {SRC: None}
+        q = [SRC]; i = 0
+        while i < len(q):
+            u = q[i]; i += 1
+            for (a, b), c in cap.items():
+                if a == u and c > 0 and b not in parent:
+                    parent[b] = u
+                    if b == SNK:
+                        # walk back, bottleneck
+                        path = []
+                        v = SNK
+                        while v is not None:
+                            path.append(v); v = parent[v]
+                        path.reverse()
+                        bott = min(cap[(path[k], path[k + 1])]
+                                   for k in range(len(path) - 1))
+                        for k in range(len(path) - 1):
+                            cap[(path[k], path[k + 1])] -= bott
+                            cap[(path[k + 1], path[k])] += bott
+                        return bott
+                    q.append(b)
+        return 0
+
+    flow = 0
+    while flow < 8:                      # cap the count; "several" is enough
+        f = bfs_aug()
+        if f == 0:
+            break
+        flow += 1 if f >= 1 else 0
+    return flow
+
+
+def _chokepoints(adj, starts, target):
+    """Rooms that EVERY start->target path must pass through (excluding the
+    start rooms and the target). A room r is a chokepoint if removing it makes
+    target unreachable from starts. Returns the list of such room ids."""
+    if not starts:
+        return []
+    base_reach = _reachable(adj, starts)
+    if target not in base_reach:
+        return []
+    choke = []
+    for r in adj:
+        if r in starts or r == target:
+            continue
+        # rebuild adjacency without r
+        sub = {n: set(m for m in nb if m != r) for n, nb in adj.items() if n != r}
+        if target not in _reachable(sub, [s for s in starts if s != r]):
+            choke.append(r)
+    return choke
+
+
+def path_report(adj, starts, target):
+    """Bundle the three metrics for one start-set -> target query."""
+    return {
+        "shortest_hops": _shortest_path_len(adj, starts, target),
+        "routes": _count_independent_routes(adj, starts, target),
+        "chokepoints": _chokepoints(adj, starts, target),
+    }
+
+
 def analyze(spec):
     """Return (errors, warnings, scorecard dict). errors are hard failures.
     Dispatches on spec.mode: 'assault' (default), 'heist', or 'survival'."""
@@ -214,6 +345,22 @@ def analyze(spec):
         if deg < 2:
             errors.append(f"objective room '{r.id}' has {deg} access path(s); "
                           "need >= 2")
+
+    # PATH METRICS (informational): route count + chokepoints from entries to
+    # each objective. These are intel for the gameplay engineer, NOT judgments
+    # — the tool makes models, not gameplay. A single route to an objective may
+    # be exactly what the designer wants; we report it, we don't flag it. Only
+    # reachability (above) is a hard model-integrity gate.
+    obj_routes = {}
+    all_chokepoints = set()
+    single_route_objs = []
+    if entries:
+        for r in objective_rooms:
+            rep = path_report(adj, entries, r.id)
+            obj_routes[r.id] = rep["routes"]
+            all_chokepoints.update(rep["chokepoints"])
+            if rep["routes"] <= 1 and r.id in reachable:
+                single_route_objs.append(r.id)
 
     # every floor has vertical access (stair/link touching it)
     stories = sorted({r.story for r in spec.rooms})
@@ -282,6 +429,10 @@ def analyze(spec):
         "vertical_links": len(spec.vertical_links) + len(spec.stairs),
         "markers": len(spec.markers),
         "unreachable_rooms": len(unreachable),
+        "min_routes_to_objective": (min(obj_routes.values())
+                                    if obj_routes else None),
+        "single_route_objectives": len(single_route_objs),
+        "chokepoints": sorted(all_chokepoints),
         "errors": len(errors),
         "warnings": len(warnings),
         "mode": "assault",
@@ -337,6 +488,8 @@ def _analyze_heist(spec):
 
     # reachability (only if rooms are defined; heist levels may be open-plan)
     unreachable_objs = []
+    obj_min_routes = None
+    heist_chokepoints = []
     if spec.rooms:
         adj = build_graph(spec)
         entries = _entry_rooms(spec)
@@ -351,6 +504,22 @@ def _analyze_heist(spec):
         if unreachable_objs:
             errors.append("objectives in unreachable rooms: "
                           + ", ".join(unreachable_objs))
+
+        # PATH METRICS (informational): route options + chokepoints to
+        # objectives. Intel for the gameplay engineer — a single forced route
+        # may be the intended design (a committed push). Reported, not flagged.
+        if entries:
+            route_counts = []
+            chokes = set()
+            for o in objectives:
+                rr = _obj_room(o)
+                if rr and rr in reachable_rooms:
+                    rep = path_report(adj, entries, rr)
+                    route_counts.append(rep["routes"])
+                    chokes.update(rep["chokepoints"])
+            if route_counts:
+                obj_min_routes = min(route_counts)
+                heist_chokepoints = sorted(chokes)
 
     # phase tags on spawns (informational)
     phases = set()
@@ -372,6 +541,8 @@ def _analyze_heist(spec):
         "phases": sorted(phases),
         "markers": len(spec.markers),
         "unreachable_objectives": len(unreachable_objs),
+        "min_routes_to_objective": obj_min_routes,
+        "chokepoints": heist_chokepoints,
         "errors": len(errors),
         "warnings": len(warnings),
     }
@@ -430,6 +601,9 @@ def _analyze_survival(spec):
     # has to be traversable start -> finale or the level is unplayable.
     unreachable_finale = False
     route_reachable_rooms = set()
+    run_hops = None
+    run_routes = None
+    run_chokepoints = []
     if spec.rooms:
         adj = build_graph(spec)
         # start rooms = entry rooms + any room tagged safe_room + survivor spawns
@@ -464,6 +638,18 @@ def _analyze_survival(spec):
                 errors.append("finale holdout not reachable from the start: "
                               + ", ".join(unreachable))
 
+        # PATH METRICS (informational): run length (hops), route options, and
+        # forced rooms. Intel for the gameplay engineer designing the wave/AI
+        # director — a short or single-route run may be intended. Reported, not
+        # flagged. Only finale-reachability (above) is a hard model gate.
+        for fr in finale_rooms:
+            if fr in route_reachable_rooms:
+                rep = path_report(adj, starts, fr)
+                run_hops = rep["shortest_hops"]
+                run_routes = rep["routes"]
+                run_chokepoints = rep["chokepoints"]
+                break  # report on the primary finale
+
     scorecard = {
         "tactical": True,
         "mode": "survival",
@@ -476,6 +662,9 @@ def _analyze_survival(spec):
         "vertical_links": len(spec.vertical_links),
         "route_reachable_rooms": len(route_reachable_rooms),
         "finale_reachable": not unreachable_finale,
+        "run_hops": run_hops,
+        "run_routes": run_routes,
+        "run_chokepoints": run_chokepoints,
         "markers": len(spec.markers),
         "errors": len(errors),
         "warnings": len(warnings),
@@ -487,11 +676,18 @@ def _story_of_z(spec, z):
     return int(round(z / spec.story_height))
 
 
+def _fmt_choke(ch):
+    if not ch:
+        return "none"
+    return ", ".join(ch[:4]) + (f" (+{len(ch) - 4})" if len(ch) > 4 else "")
+
+
 def format_scorecard(spec_name, scorecard):
     if not scorecard.get("tactical"):
         return "  scorecard: (non-tactical spec — no rooms)"
     s = scorecard
     if s.get("mode") == "heist":
+        routes = s.get("min_routes_to_objective")
         return (
             f"  scorecard for {spec_name} [heist]:\n"
             f"    objectives: {s['objectives']} "
@@ -502,10 +698,15 @@ def format_scorecard(spec_name, scorecard):
             f"    extraction zones: {s['extraction_zones']}   "
             f"secure/drop zones: {s['secure_zones']}   "
             f"unreachable objectives: {s['unreachable_objectives']}\n"
+            f"    routes to objective (min): "
+            f"{routes if routes is not None else '—'}   "
+            f"chokepoints: {_fmt_choke(s.get('chokepoints', []))}\n"
             f"    phases: {', '.join(s['phases']) if s['phases'] else '—'}\n"
             f"    errors: {s['errors']}   warnings: {s['warnings']}"
         )
     if s.get("mode") == "survival":
+        hops = s.get("run_hops")
+        routes = s.get("run_routes")
         return (
             f"  scorecard for {spec_name} [survival]:\n"
             f"    safe rooms: {s['safe_rooms']}   finales: {s['finales']}   "
@@ -514,8 +715,12 @@ def format_scorecard(spec_name, scorecard):
             f"markers: {s['markers']}\n"
             f"    rooms: {s['rooms']}   vertical links: {s['vertical_links']}   "
             f"finale reachable: {'yes' if s['finale_reachable'] else 'NO'}\n"
+            f"    run: {hops if hops is not None else '—'} hops, "
+            f"{routes if routes is not None else '—'} route(s)   "
+            f"chokepoints: {_fmt_choke(s.get('run_chokepoints', []))}\n"
             f"    errors: {s['errors']}   warnings: {s['warnings']}"
         )
+    routes = s.get("min_routes_to_objective")
     return (
         f"  scorecard for {spec_name} [assault]:\n"
         f"    floors: {s['floors']}   rooms: {s['rooms']}   "
@@ -525,5 +730,8 @@ def format_scorecard(spec_name, scorecard):
         f"breach points: {s['breach_points']}\n"
         f"    vertical links: {s['vertical_links']}   "
         f"unreachable rooms: {s['unreachable_rooms']}\n"
+        f"    routes to objective (min): "
+        f"{routes if routes is not None else '—'}   "
+        f"chokepoints: {_fmt_choke(s.get('chokepoints', []))}\n"
         f"    errors: {s['errors']}   warnings: {s['warnings']}"
     )

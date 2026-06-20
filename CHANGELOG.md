@@ -5,6 +5,27 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.20.0]
+### Added — tactical path metrics (intel, not judgment)
+- `tactical.py` gains offline room-graph path analysis, reported in every
+  scorecard: **route count** (node-disjoint paths to each objective/finale, via
+  max-flow on a node-split graph — a flanking measure), **shortest run length**
+  (hops), and **chokepoints** (rooms every route is forced through). Works
+  across all three modes; no engine needed, gates CI like the rest.
+- Framed explicitly as **information for the gameplay layer, not the tool's
+  opinion.** Deli Counter makes models, not gameplay — a single-route vault or
+  a chokepoint may be the intended design. These metrics never warn or fail.
+  The *only* hard path gate remains **reachability**: an unreachable
+  objective/finale is a broken model and fails the build; everything past "can
+  you get there at all" is intel the gameplay engineer interprets.
+- Verified the route counter against canonical graphs (linear=1, diamond=2,
+  double-corridor=2) and fixed two max-flow node-capacity bugs found in
+  testing before they could report confidently-wrong numbers.
+
+### Note
+- 0.19.1 was a docs-only bump (README multiplayer-shell thesis + procedural
+  aspiration note).
+
 ## [0.19.0]
 ### Added — survival mode (third tactical default), schema 1.6.0
 - New `mode: survival` — co-op PvE horde defense as a directional run through

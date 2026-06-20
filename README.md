@@ -6,6 +6,47 @@
 
 _Stack a level like a sandwich: layer the parts, serve the whole._
 
+## What this is, and why it's shaped this way
+
+Deli Counter is a deterministic generator for the **static, replication-free
+shell** of a multiplayer level — the geometry, collision, and traversal that is
+identical on every client and never needs syncing — plus the **anchor points**
+where your game's networked state layer attaches.
+
+That's the whole thesis, and every design choice follows from it. In an online
+multiplayer FPS, the expensive, bug-prone part is *state that has to stay in
+sync across the network*: which doors are open, what's destroyed, where the
+loot is now, who did what. The **building itself isn't that.** Walls, floors,
+stairs, collision — that's immutable geometry, the same on every client
+forever. It never needs replication because it never changes. It's baked.
+
+So Deli Counter generates the part that *doesn't* replicate, and hands off the
+part that does as **markers and metadata, not live objects.** The marker
+empties, the `gameplay.json`, the breach panels, the spawn points — those
+aren't game state. They're anchors that say "a breach *can* happen here, loot
+*spawns* here, the objective socket *is* here." Whether it *has* happened,
+what's *there now*, who *did it* — that's your netcode's job. The tool stops
+exactly where networked state begins.
+
+This is why the tool is the way it is:
+
+- **Monolithic building on flat ground** isn't a limitation to apologize for —
+  it's *correct* for a baked shell. You want one static mesh with baked
+  collision, not a pile of networked pieces. The dynamic, multi-part, outdoor
+  stuff the tool avoids is exactly the state-heavy territory it's deliberately
+  *not* trying to own.
+- **Deterministic seed** is load-bearing: a baked shell must be byte-identical
+  across clients, or you get desync. Same seed → same building → nothing to
+  reconcile.
+- **Markers as anchors, not objects** is the entire interface. The tool emits
+  *where* things attach; your game owns *what they are* at runtime.
+
+(It pairs naturally with [gool](https://github.com/siliconight/gool), which
+applies the same philosophy to audio: the deterministic mix is baked, networked
+events are anchors. Same idea, different subsystem.)
+
+## How it works
+
 Spec-driven Blender level generator. You describe a building as a JSON
 spec; the kit builds a monolithic compound in Blender 4.x with a separate
 collision proxy and exports it for your game. Levels can also **kitbash** from
@@ -319,6 +360,22 @@ present. `validate.py` hard-fails on these and prints a **scorecard**:
 See `specs/rowhouse_raid.json` for a full tactical level. Sightline analysis
 and an in-engine nav smoke test are a planned Godot-side Phase 2 (they need
 real geometry raycasts).
+
+### Path metrics — intel, not judgment
+
+The validator also reports **path-analysis metrics** on the room graph: how
+many node-disjoint routes reach each objective/finale (a flanking measure),
+the shortest run length in hops, and **chokepoints** (rooms every route is
+forced through). These are computed offline and shown in the scorecard.
+
+They are **information for whoever builds gameplay on the model, not the tool's
+opinion.** Deli Counter makes models, not gameplay — a single route to a vault,
+a short run, or a chokepoint at the one stairwell may be exactly the design the
+gameplay engineer intends. The tool reports the shape of the building; it does
+not warn or fail on these. The *only* hard path gate is **reachability** — if
+an objective or finale is physically unreachable through the geometry, that's a
+broken model and the build fails. Everything past "can you get there at all" is
+intel the gameplay layer interprets.
 
 ## Acoustic materials (audio-engine bridge)
 
