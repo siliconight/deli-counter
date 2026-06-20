@@ -430,12 +430,239 @@ def police_station(name: str = "police_station_preset",
 
 
 # ---------------------------------------------------------------------------
+# CORNER DELI  --  2-story deli/market over a basement, heist-first
+# ---------------------------------------------------------------------------
+def corner_deli(name: str = "corner_deli_preset",
+                mode: str = "heist",
+                basement: bool = True,
+                scale_ref: bool = False,
+                floors: int = 2) -> dict:
+    """A corner deli/market: customer floor + deli counter, market aisles,
+    kitchen, and a stockroom/loading bay on the ground; manager office,
+    a back apartment, and a server room upstairs; a vault + cold storage in
+    the basement. Three vertical routes — a switchback stair spanning the
+    whole building (basement->roof), a side ladder to the roof, and a floor
+    hole as a vertical attack angle. Heist mode (default) carries a loot
+    economy across all three levels; assault mode converts to attacker/
+    defender objective play. floors is fixed at 2 above ground (this recipe is
+    inherently a 2-story-over-basement deli); the arg is accepted but ignored
+    so the CLI stays uniform."""
+    fx, fy = 38.0, 28.0
+    sh = 3.3
+    half_x, half_y = fx / 2, fy / 2
+
+    spec = {
+        "$schema": "../schema/level.schema.json",
+        "name": name,
+        "mode": mode,
+        "seed": 1984,
+        "grid": 0.5,
+        "footprint_x": fx,
+        "footprint_y": fy,
+        "story_height": sh,
+        "n_stories": 2,
+        "has_basement": bool(basement),
+        "wall_thick": 0.35,
+        "floor_thick": 0.3,
+        "collision": "convex",
+        "auto_exterior": True,
+        "scale_ref": bool(scale_ref),
+        "default_material": "brick_ext",
+        "materials": [
+            {"id": "brick_ext", "acoustic": "Concrete", "absorption": 0.72, "damping": 0.62},
+            {"id": "drywall", "acoustic": "Drywall", "absorption": 0.42, "damping": 0.38},
+            {"id": "glass", "acoustic": "Glass", "absorption": 0.08, "damping": 0.05},
+            {"id": "metal", "acoustic": "Metal", "absorption": 0.18, "damping": 0.16},
+            {"id": "wood", "acoustic": "Wood", "absorption": 0.35, "damping": 0.3},
+        ],
+    }
+
+    # --- exterior walls ------------------------------------------------------
+    spec["ext_walls"] = [
+        {"wall": "S", "story": 0, "material": "brick_ext", "openings": [
+            {"kind": "door", "pos": -0.28, "width": 1.2, "tag": "front_customer_entry"},
+            {"kind": "window", "pos": 0.0, "width": 2.0, "sill": 0.85, "vaultable": True, "material": "glass"},
+            {"kind": "breach", "pos": 0.34, "width": 1.6, "breach_class": "soft_wall", "material": "drywall", "tag": "south_breach"}]},
+        {"wall": "N", "story": 0, "material": "brick_ext", "openings": [
+            {"kind": "garage", "pos": -0.25, "width": 3.2, "height": 2.7, "tag": "loading_bay"},
+            {"kind": "door", "pos": 0.32, "width": 1.1, "tag": "rear_staff_entry"}]},
+        {"wall": "W", "story": 0, "material": "brick_ext", "openings": [
+            {"kind": "door", "pos": 0.18, "width": 1.0, "tag": "alley_entry"},
+            {"kind": "breach", "pos": -0.32, "width": 1.5, "breach_class": "soft_wall", "material": "drywall", "tag": "alley_soft_wall"}]},
+        {"wall": "E", "story": 0, "material": "brick_ext", "openings": [
+            {"kind": "window", "pos": -0.25, "width": 1.4, "sill": 1.0, "vaultable": True, "material": "glass"},
+            {"kind": "window", "pos": 0.25, "width": 1.4, "sill": 1.0, "vaultable": True, "material": "glass"}]},
+        {"wall": "S", "story": 1, "material": "brick_ext", "openings": [
+            {"kind": "window", "pos": -0.28, "width": 1.3, "sill": 1.0, "vaultable": True, "material": "glass"},
+            {"kind": "window", "pos": 0.28, "width": 1.3, "sill": 1.0, "vaultable": True, "material": "glass"}]},
+        {"wall": "N", "story": 1, "material": "brick_ext", "openings": [
+            {"kind": "window", "pos": 0.0, "width": 1.4, "sill": 1.0, "vaultable": True, "material": "glass"},
+            {"kind": "breach", "pos": 0.34, "width": 1.4, "breach_class": "soft_wall", "material": "drywall", "tag": "roofline_breach"}]},
+        {"wall": "E", "story": 1, "material": "brick_ext", "openings": [
+            {"kind": "window", "pos": 0.2, "width": 1.2, "sill": 1.0, "vaultable": True, "material": "glass"}]},
+    ]
+
+    # --- partitions (ground + upper always; basement only if present) --------
+    parts = [
+        {"story": 0, "axis": "X", "pos": -8.0, "start": -14.0, "end": 14.0, "material": "drywall", "openings": [
+            {"kind": "door", "pos": -0.4, "width": 1.1, "tag": "customer_to_counter"},
+            {"kind": "breach", "pos": 0.38, "width": 1.4, "breach_class": "soft_wall", "material": "drywall"}]},
+        {"story": 0, "axis": "X", "pos": 7.0, "start": -14.0, "end": 14.0, "material": "drywall", "openings": [
+            {"kind": "door", "pos": 0.42, "width": 1.1, "tag": "kitchen_to_loading"},
+            {"kind": "window", "pos": -0.3, "width": 1.4, "sill": 1.1, "material": "glass"}]},
+        {"story": 0, "axis": "Y", "pos": -3.0, "start": -19.0, "end": 19.0, "material": "drywall", "openings": [
+            {"kind": "door", "pos": -0.05, "width": 1.2, "tag": "front_to_back"},
+            {"kind": "breach", "pos": 0.28, "width": 1.5, "breach_class": "soft_wall", "material": "drywall"}]},
+        {"story": 0, "axis": "Y", "pos": 6.0, "start": -19.0, "end": 19.0, "material": "drywall", "openings": [
+            {"kind": "garage", "pos": 0.15, "width": 2.4, "height": 2.5, "tag": "stockroom_gate"},
+            {"kind": "door", "pos": -0.4, "width": 1.0, "tag": "office_stair_door"}]},
+        {"story": 1, "axis": "X", "pos": -2.0, "start": -14.0, "end": 14.0, "material": "drywall", "openings": [
+            {"kind": "door", "pos": 0.0, "width": 1.1, "tag": "hall_to_manager_office"},
+            {"kind": "breach", "pos": 0.36, "width": 1.4, "breach_class": "soft_wall", "material": "drywall"}]},
+        {"story": 1, "axis": "Y", "pos": 2.0, "start": -19.0, "end": 19.0, "material": "drywall", "openings": [
+            {"kind": "door", "pos": -0.25, "width": 1.0, "tag": "apartment_hall"},
+            {"kind": "breach", "pos": 0.28, "width": 1.4, "breach_class": "soft_wall", "material": "drywall"}]},
+    ]
+    if basement:
+        parts += [
+            {"story": -1, "axis": "X", "pos": 1.0, "start": -12.0, "end": 12.0, "material": "brick_ext", "openings": [
+                {"kind": "door", "pos": -0.35, "width": 1.1, "tag": "basement_corridor"},
+                {"kind": "breach", "pos": 0.3, "width": 1.4, "breach_class": "reinforceable", "material": "brick_ext", "reinforceable": True, "tag": "vault_side_breach"}]},
+            {"story": -1, "axis": "Y", "pos": 1.0, "start": -16.0, "end": 16.0, "material": "brick_ext", "openings": [
+                {"kind": "door", "pos": 0.1, "width": 1.1, "tag": "cold_room_door"},
+                {"kind": "breach", "pos": -0.32, "width": 1.4, "breach_class": "reinforceable", "material": "brick_ext", "reinforceable": True}]},
+        ]
+    spec["partitions"] = parts
+
+    # --- vertical: stair spans the whole building; ladder + floor hole + hatch
+    stair_lo = -1 if basement else 0
+    spec["stairs"] = [{
+        "x": -15.0, "y": 9.0, "from_story": stair_lo, "to_story": 2,
+        "width": 1.4, "run": 5.5, "style": "switchback", "cut_slabs": True}]
+    spec["ladders"] = [{
+        "x": 17.5, "y": 9.5, "from_story": 0, "to_story": 2,
+        "width": 0.7, "depth": 0.25, "rung_spacing": 0.3, "cut_slabs": True, "facing": "W"}]
+    spec["slab_holes"] = [{"story": 1, "x": 8.0, "y": -4.0, "size_x": 2.2, "size_y": 2.2}]
+    spec["vertical_links"] = [
+        {"kind": "stair", "from_story": stair_lo, "to_story": 2, "role": "main_internal_rotation"},
+        {"kind": "floor_hole", "story": 1, "x": 8.0, "y": -4.0, "size_x": 2.2, "size_y": 2.2, "role": "vertical_attack_angle"},
+        {"kind": "hatch", "story": 1, "x": -12.0, "y": 8.0, "size_x": 1.4, "size_y": 1.4, "breachable": True, "cut_slab": True, "role": "roof_drop_to_stair"},
+    ]
+    spec["parapets"] = [{"story": 2, "height": 1.0, "thick": 0.35}]
+
+    # --- vault ledges (ground-floor cover) -----------------------------------
+    spec["vault_ledges"] = [
+        {"story": 0, "x": -11.0, "y": -6.0, "length": 5.5, "axis": "Y", "height": 1.05, "thick": 0.35, "material": "wood"},
+        {"story": 0, "x": 10.5, "y": 2.0, "length": 6.0, "axis": "Y", "height": 1.2, "thick": 0.4, "material": "metal"},
+    ]
+
+    # --- volumes (props/cover); basement ones only if basement present -------
+    vols = [
+        {"name": "front_register_counter", "x": -12.0, "y": -7.0, "z": 0.55, "size_x": 6.0, "size_y": 0.9, "size_z": 1.1, "collision": "convex", "material": "wood"},
+        {"name": "deli_case_cover", "x": -10.5, "y": -1.2, "z": 0.65, "size_x": 7.0, "size_y": 1.1, "size_z": 1.3, "collision": "convex", "material": "glass"},
+        {"name": "aisle_shelf_01", "x": -2.0, "y": -9.5, "z": 0.8, "size_x": 1.0, "size_y": 6.0, "size_z": 1.6, "collision": "convex", "material": "metal"},
+        {"name": "aisle_shelf_02", "x": 2.5, "y": -9.5, "z": 0.8, "size_x": 1.0, "size_y": 6.0, "size_z": 1.6, "collision": "convex", "material": "metal"},
+        {"name": "kitchen_prep_table", "x": 12.0, "y": -4.5, "z": 0.45, "size_x": 4.0, "size_y": 1.2, "size_z": 0.9, "collision": "convex", "material": "metal"},
+        {"name": "loading_pallet_stack", "x": 12.0, "y": 10.0, "z": 0.75, "size_x": 4.5, "size_y": 2.5, "size_z": 1.5, "collision": "convex", "material": "wood"},
+        {"name": "stockroom_rack_01", "x": 2.0, "y": 10.5, "z": 1.0, "size_x": 1.0, "size_y": 5.5, "size_z": 2.0, "collision": "convex", "material": "metal"},
+        {"name": "manager_desk", "x": -9.5, "y": -6.5, "z": sh + 0.55, "size_x": 3.0, "size_y": 1.4, "size_z": 1.1, "collision": "convex", "material": "wood"},
+        {"name": "server_rack_cluster", "x": 8.0, "y": 8.0, "z": sh + 0.8, "size_x": 4.0, "size_y": 1.4, "size_z": 2.2, "collision": "convex", "material": "metal"},
+        {"name": "apartment_sofa_cover", "x": 7.5, "y": -8.0, "z": sh + 0.45, "size_x": 4.0, "size_y": 1.2, "size_z": 0.9, "collision": "convex", "material": "wood"},
+    ]
+    if basement:
+        vols += [
+            {"name": "basement_vault_block", "x": 8.5, "y": 6.0, "z": -2.65, "size_x": 7.0, "size_y": 5.0, "size_z": 1.3, "collision": "convex", "material": "metal"},
+            {"name": "basement_cold_room_rack", "x": -8.0, "y": 5.0, "z": -2.5, "size_x": 6.0, "size_y": 1.0, "size_z": 1.6, "collision": "convex", "material": "metal"},
+        ]
+    spec["volumes"] = vols
+
+    # --- rooms ---------------------------------------------------------------
+    rooms = [
+        {"id": "customer_floor", "story": 0, "bounds": [-19.0, -14.0, -8.0, -3.0], "role": "public_entry", "combat_range": "medium"},
+        {"id": "deli_counter", "story": 0, "bounds": [-19.0, -3.0, -8.0, 6.0], "role": "objective_room", "objective": True, "combat_range": "close", "fortifiable": True},
+        {"id": "market_aisles", "story": 0, "bounds": [-8.0, -14.0, 7.0, -3.0], "role": "connector", "combat_range": "medium"},
+        {"id": "kitchen", "story": 0, "bounds": [7.0, -14.0, 19.0, 6.0], "role": "connector", "combat_range": "close"},
+        {"id": "stockroom_loading", "story": 0, "bounds": [-8.0, 6.0, 19.0, 14.0], "role": "public_entry", "combat_range": "long"},
+        {"id": "stairwell", "story": 0, "bounds": [-19.0, 6.0, -8.0, 14.0], "role": "connector", "combat_range": "close"},
+        {"id": "manager_office", "story": 1, "bounds": [-19.0, -14.0, -2.0, 2.0], "role": "objective_room", "objective": True, "combat_range": "medium", "fortifiable": True},
+        {"id": "apartment_hideout", "story": 1, "bounds": [-2.0, -14.0, 19.0, 2.0], "role": "fortifiable", "combat_range": "close", "fortifiable": True},
+        {"id": "server_room", "story": 1, "bounds": [-2.0, 2.0, 19.0, 14.0], "role": "objective_room", "objective": True, "combat_range": "medium", "fortifiable": True},
+        {"id": "upper_hall", "story": 1, "bounds": [-19.0, 2.0, -2.0, 14.0], "role": "connector", "combat_range": "medium"},
+    ]
+    if basement:
+        rooms += [
+            {"id": "basement_corridor", "story": -1, "bounds": [-19.0, -14.0, 1.0, 1.0], "role": "connector", "combat_range": "medium"},
+            {"id": "cold_storage", "story": -1, "bounds": [-19.0, 1.0, 1.0, 14.0], "role": "loot_room", "combat_range": "close"},
+            {"id": "basement_vault", "story": -1, "bounds": [1.0, 1.0, 19.0, 14.0], "role": "objective_room", "objective": True, "combat_range": "close", "fortifiable": True},
+            {"id": "utility_room", "story": -1, "bounds": [1.0, -14.0, 19.0, 1.0], "role": "connector", "combat_range": "medium"},
+        ]
+    spec["rooms"] = rooms
+
+    # --- markers (shared: spawns, cover, cameras, patrols) -------------------
+    markers = [
+        {"type": "attacker_spawn", "id": "STEALTH_FRONT", "x": 0.0, "y": -18.0, "z": 0.0, "rot_z": 0, "meta": {"phase": "stealth"}},
+        {"type": "attacker_spawn", "id": "LOUD_ALLEY", "x": -22.0, "y": 4.0, "z": 0.0, "rot_z": 90, "meta": {"phase": "loud"}},
+        {"type": "cover_low", "id": "AISLE_LEFT", "x": -2.0, "y": -9.5, "z": 0.0, "room": "market_aisles"},
+        {"type": "cover_low", "id": "AISLE_RIGHT", "x": 2.5, "y": -9.5, "z": 0.0, "room": "market_aisles"},
+        {"type": "cover_high", "id": "PALLET_STACK", "x": 12.0, "y": 10.0, "z": 0.0, "room": "stockroom_loading"},
+        {"type": "camera_socket", "id": "CAM_FRONT", "x": -17.5, "y": -12.5, "z": 2.6, "room": "customer_floor", "rot_z": 45},
+        {"type": "camera_socket", "id": "CAM_SERVER", "x": 16.0, "y": 12.0, "z": sh + 2.5, "room": "server_room", "rot_z": -135},
+        {"type": "patrol_point", "id": "P01", "x": -2.0, "y": -11.0, "z": 0.0, "room": "market_aisles"},
+        {"type": "patrol_point", "id": "P02", "x": 12.0, "y": -4.0, "z": 0.0, "room": "kitchen"},
+        {"type": "patrol_point", "id": "P03", "x": 4.0, "y": 10.0, "z": 0.0, "room": "stockroom_loading"},
+    ]
+
+    # --- mode-specific gameplay ---------------------------------------------
+    if mode == "heist":
+        spec["objectives"] = [
+            {"id": "grab_register_cash", "kind": "bag_cash", "x": -12.0, "y": -7.0, "z": 0.9, "room": "deli_counter", "required": True, "duration": 8.0, "meta": {"phase": "stealth_or_loud", "payoff": "fast_cash"}},
+            {"id": "wipe_camera_server", "kind": "hack", "x": 8.0, "y": 8.0, "z": sh + 1.1, "room": "server_room", "required": False, "duration": 18.0, "meta": {"reward": "lower_alarm_pressure"}},
+        ]
+        spec["loot"] = [
+            {"id": "cigarette_case_01", "kind": "contraband_case", "x": 13.5, "y": 10.0, "z": 0.9, "value": 1500, "bags": 1, "room": "stockroom_loading"},
+            {"id": "manager_safe_docs", "kind": "evidence", "x": -9.5, "y": -6.5, "z": sh + 0.9, "value": 3000, "bags": 1, "room": "manager_office"},
+        ]
+        spec["zones"] = [
+            {"id": "south_van_extract", "kind": "extraction", "story": 0, "bounds": [-6.0, -20.0, 6.0, -15.0], "meta": {"phase": "escape"}},
+            {"id": "rear_alley_drop", "kind": "drop", "story": 0, "bounds": [8.0, 15.0, 18.0, 20.0], "meta": {"bag_throw": True}},
+            {"id": "stockroom_secure_area", "kind": "secure", "story": 0, "bounds": [7.0, 6.0, 19.0, 14.0], "meta": {"temporary_loot_hold": True}},
+        ]
+        if basement:
+            spec["objectives"].insert(1, {"id": "drill_basement_safe", "kind": "drill", "x": 8.5, "y": 6.0, "z": -2.2, "room": "basement_vault", "required": True, "duration": 45.0, "meta": {"phase": "loud", "noise_radius": 30}})
+            spec["loot"] += [
+                {"id": "cold_room_rare_meat", "kind": "black_market_food", "x": -8.0, "y": 5.0, "z": -2.1, "value": 2200, "bags": 2, "room": "cold_storage"},
+                {"id": "vault_cash_bags", "kind": "cash", "x": 8.5, "y": 6.0, "z": -2.0, "value": 8000, "bags": 3, "room": "basement_vault"},
+            ]
+        markers += [
+            {"type": "extraction", "id": "VAN", "x": 0.0, "y": -17.0, "z": 0.0, "rot_z": 180, "meta": {"zone": "south_van_extract"}},
+            {"type": "objective", "id": "REGISTER", "x": -12.0, "y": -7.0, "z": 0.9, "room": "deli_counter"},
+            {"type": "objective", "id": "SERVER", "x": 8.0, "y": 8.0, "z": sh + 1.1, "room": "server_room"},
+        ]
+        if basement:
+            markers += [
+                {"type": "objective", "id": "SAFE", "x": 8.5, "y": 6.0, "z": -2.2, "room": "basement_vault"},
+                {"type": "loot", "id": "VAULT_CASH", "x": 8.5, "y": 6.0, "z": -2.0, "room": "basement_vault"},
+                {"type": "patrol_point", "id": "P04", "x": -8.0, "y": 5.0, "z": -sh, "room": "cold_storage"},
+            ]
+    else:  # assault — defender holds the objective rooms; attackers breach in
+        markers += [
+            {"type": "defender_spawn", "x": 8.5, "y": 6.0, "z": (-2.2 if basement else sh + 0.5), "rot_z": 270, "room": ("basement_vault" if basement else "server_room")},
+            {"type": "objective", "id": "DELI", "x": -12.0, "y": -7.0, "z": 0.9, "room": "deli_counter"},
+            {"type": "objective", "id": "SERVER", "x": 8.0, "y": 8.0, "z": sh + 1.1, "room": "server_room"},
+        ]
+
+    spec["markers"] = markers
+    return spec
+
+
+# ---------------------------------------------------------------------------
 # REGISTRY
 # ---------------------------------------------------------------------------
 REGISTRY = {
     "bank": bank,
     "police_station": police_station,
-    # corner_store, rowhome, warehouse, safehouse -> follow
+    "corner_deli": corner_deli,
+    # rowhome, warehouse, safehouse -> follow
 }
 
 

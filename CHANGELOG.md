@@ -5,6 +5,19 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.17.0]
+### Added — corner_deli preset
+- `corner_deli` recipe: a 2-story deli/market over a basement, heist-first.
+  Ground floor is customer floor + deli counter, market aisles, kitchen, and a
+  stockroom/loading bay; upstairs are a manager office, a back apartment, and
+  a server room; the basement holds a vault and cold storage. Three vertical
+  routes (a switchback stair spanning basement→roof, a roof ladder, and a
+  floor hole). Parameterized by `mode` (heist default; assault supported),
+  `basement`, and `scale_ref` — floors fixed at 2. Built from a hand-authored
+  spec that validated and built clean; the preset reproduces that geometry and
+  flexes the basement + mode. `python new_level.py --preset corner_deli
+  --name my_deli [--mode assault] [--no-basement]`.
+
 ## [0.16.2]
 ### Added — keep CATALOG.md from going stale
 - `new_level.py` now auto-refreshes `specs/CATALOG.md` after writing a spec, so
