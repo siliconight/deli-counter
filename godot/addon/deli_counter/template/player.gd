@@ -14,8 +14,13 @@ extends CharacterBody3D
 @export var jump_velocity: float = 5.0
 @export var mouse_sensitivity: float = 0.003
 @export var gravity: float = 18.0
-## Max height the player can step up in one move (covers ~0.2 m stairs with
-## margin). Keep below ~0.6 m or you'll climb things you shouldn't.
+## Max height the player can step up in one move. Generated stairs rise
+## ~0.18 m/step, so 0.4 m clears them with wide margin. Keep below ~0.6 m or
+## you'll climb things you shouldn't.
+## NOTE: this is a lightweight raycast-probe step-up — fine for walk-testing.
+## For a production controller, prefer a body_test_motion step-up (see
+## godot/README.md "Stairs and player traversal"): it's more robust on edges,
+## walls, and slopes. The harness player is a test rig, not a shipping char.
 @export var max_step_height: float = 0.4
 
 var _pitch: float = 0.0

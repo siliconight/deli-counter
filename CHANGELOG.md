@@ -5,6 +5,18 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.18.1]
+### Docs — stairs and player traversal
+- `godot/README.md` gains a "Stairs and player traversal" section: documents
+  that generated steps rise ~0.18 m (well under a 0.5 m step-up budget, so any
+  reasonable step-up algorithm clears them); points to the robust
+  `body_test_motion` stair-step technique (Godot Stair-Step Demo, asset 2481,
+  MIT — credits Majikayo Games / Myria666) for production controllers vs. the
+  harness's lightweight raycast probe; and notes the Jolt-vs-default physics
+  caveat (default physics can mis-detect a flat floor as a step / jitter).
+- `template/player.gd` comment now points to that section. No behavior change —
+  the harness step-up is unchanged and still clears generated stairs.
+
 ## [0.18.0]
 ### Added — compound preset + final_stand example
 - `compound` recipe: a multi-story assault compound with a central atrium (a

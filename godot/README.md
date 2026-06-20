@@ -93,6 +93,69 @@ func _on_charge_detonated(panel: Node) -> void:
   .get_nodes_in_group("attacker_spawn")`). GDScript can't be checked outside
   the engine, so an in-editor reimport + a quick play test is the real test.
 
+## Stairs and player traversal
+
+Deli Counter generates stairs as a run of individual step boxes (visual +
+collision), with the step count derived from floor height. Godot's
+`CharacterBody3D` has **no built-in stair-stepping** — a character walks into a
+flat run of steps and stops dead unless the controller explicitly handles it.
+This matters for the tool because a level can be geometrically perfect and
+still feel un-walkable if the player controller doesn't step up.
+
+### Step rise is well under any sane step-up budget
+
+The builder targets `step_rise` (default 0.2 m) and rounds to an integer step
+count, so the **actual rise per step lands around 0.18 m** across the floor
+heights the presets use (3.3–3.8 m → ~0.18 m/step). That's comfortably under
+the common step-up budgets:
+
+| Budget (`MAX_STEP_UP`) | Our actual rise | Margin |
+|---|---|---|
+| 0.5 m (community-standard demo default) | ~0.18 m | ~0.32 m slack |
+| 0.4 m (this repo's harness default) | ~0.18 m | ~0.22 m slack |
+
+So any reasonable step-up algorithm clears our generated stairs easily. The
+only way to exceed the budget is to hand-author a spec with a large explicit
+`step_rise` or a tiny explicit `n_steps` — if you do that, keep the resulting
+rise under your controller's `MAX_STEP_UP`, or no algorithm will save you.
+**Recommended budget: 0.5 m.**
+
+### Two ways to do the player stair-stepping
+
+The harness `template/player.gd` ships a lightweight raycast-probe step-up so
+the test player can climb generated stairs out of the box. It's adequate for
+walk-testing. For your **production** controller, the more robust and
+community-favored technique is a `body_test_motion` step-up — it tests the
+whole collider (forward → up by `MAX_STEP_UP` → forward by the remainder →
+back down onto the step) and checks the step's surface normal against
+`floor_max_angle` so it won't climb a slope it shouldn't. Two well-known
+references:
+
+- **Separation-ray approach** — add a `SeparationRayShape3D` to the player,
+  positioned forward and dropping from your max step height to the floor. The
+  simplest method; some find it inconsistent in practice.
+- **`stair_step_up()` from the Godot Stair-Step Demo**
+  (`godotengine.org/asset-library/asset/2481`, MIT; credits Majikayo Games and
+  Myria666's Quake-movement doc) — the body-test method above. Copy its
+  `stair_step_up()` / `stair_step_down()` into your character script.
+
+Deli Counter doesn't ship or mandate a production controller — it generates
+the static stair geometry; your game owns the character. The harness player is
+a test rig, not a shipping character.
+
+### Physics-engine note (Jolt vs default)
+
+The stair-step demo recommends **Jolt Physics** over Godot's default physics,
+and the reason is relevant to walk-testing generated levels: default Godot
+physics can (1) block a character from passing through small gaps that should
+fit, and (2) push the character down slightly when walking into some objects,
+which causes jitter and can make a *flat floor* get mis-detected as a step.
+That second one can make a correctly-generated level feel subtly broken in a
+way that looks like a geometry bug but isn't. If a level feels jittery or
+"sticky" underfoot during a walk test, try switching the project to Jolt
+before suspecting the geometry. This is a project/physics choice your game
+makes — the tool doesn't depend on either backend.
+
 ## Acoustic surfaces (gool bridge)
 
 If a spec defines a `materials` palette, the `<name>.gameplay.json` carries a
