@@ -78,6 +78,50 @@ def _out_paths(build_dir, name, formats, explicit_out):
     return [os.path.join(build_dir, f"{name}.{fmt}") for fmt in formats]
 
 
+def _watch_loop(blender, build_dir, formats, single_spec=None, interval=1.0):
+    """Poll specs/ mtimes and rebuild changed specs on save. Stdlib only — no
+    watchdog dependency. Watches a single spec if given, else every spec in
+    specs/. Ctrl-C to stop. New specs that appear while watching are picked up."""
+    import time
+
+    def current_specs():
+        if single_spec:
+            return [single_spec]
+        return sorted(glob.glob(os.path.join(HERE, "specs", "*.json")) +
+                      glob.glob(os.path.join(HERE, "specs", "*.yaml")) +
+                      glob.glob(os.path.join(HERE, "specs", "*.yml")))
+
+    mtimes = {}
+    # seed mtimes WITHOUT building, so we only react to changes from here on
+    for sp in current_specs():
+        try:
+            mtimes[sp] = os.path.getmtime(sp)
+        except OSError:
+            pass
+    target = (os.path.basename(single_spec) if single_spec
+              else f"{len(mtimes)} spec(s) in specs/")
+    print(f"[watch] watching {target} — save a spec to rebuild it, Ctrl-C to stop")
+    try:
+        while True:
+            time.sleep(interval)
+            for sp in current_specs():
+                try:
+                    mt = os.path.getmtime(sp)
+                except OSError:
+                    continue
+                if sp not in mtimes:
+                    print(f"[watch] new spec: {os.path.basename(sp)}")
+                if mtimes.get(sp) != mt:
+                    mtimes[sp] = mt
+                    name = os.path.splitext(os.path.basename(sp))[0]
+                    outs = _out_paths(build_dir, name, formats, None)
+                    ok = build_one(blender, sp, outs)
+                    print(f"[watch] {'rebuilt' if ok else 'FAILED'} "
+                          f"{os.path.basename(sp)} — waiting for next change")
+    except KeyboardInterrupt:
+        print("\n[watch] stopped")
+
+
 def main():
     ap = argparse.ArgumentParser(description="Build levels from specs.")
     ap.add_argument("spec", nargs="?", help="path to a .json/.yaml spec")
@@ -87,6 +131,9 @@ def main():
                     help="comma-separated formats: glb,gltf,obj (default glb)")
     ap.add_argument("--all", action="store_true",
                     help="build every spec in specs/")
+    ap.add_argument("--watch", action="store_true",
+                    help="watch specs/ and rebuild on save (a spec path limits "
+                         "the watch to that one); Godot auto-reimports the .glb")
     ap.add_argument("--blender", help="path to the Blender executable")
     args = ap.parse_args()
 
@@ -103,6 +150,11 @@ def main():
 
     build_dir = os.path.join(HERE, "build")
     os.makedirs(build_dir, exist_ok=True)
+
+    if args.watch:
+        _watch_loop(blender, build_dir, formats,
+                    single_spec=args.spec if args.spec else None)
+        return
 
     if args.all:
         specs = sorted(glob.glob(os.path.join(HERE, "specs", "*.json")) +

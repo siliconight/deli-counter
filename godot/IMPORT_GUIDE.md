@@ -105,4 +105,36 @@ If the spec defined materials, `stop_n_go.gameplay.json` has a `surfaces` array
 mapping collision-node names to acoustic materials. See `README.md` here for
 the `material_for_node` autoload pattern that feeds gool's
 `IAudioGeometryQuery`. That's independent of the steps above — it reads the
-same JSON.
+same JSON. (Optional — omit materials or build with `--no-audio` and there's
+nothing to wire.)
+
+## Import-step audit — what's automated vs. manual
+
+A quick honest inventory of every step in the spec → walkable loop, so nothing
+stays tribal knowledge:
+
+| Step | Status |
+|------|--------|
+| Collision bodies (StaticBody3D + shapes from `-convcolonly`/`-colonly`) | **Automatic** — Godot's glTF importer, with "Use Name/Node Type Suffixes" on (default). No action. |
+| Marker conversion (empties → grouped Node3D, transforms preserved) | **Automatic** — `deli_counter_postimport.gd`, assigned as the .glb's Import Script (the plugin's "Assign import script" / Set up & Play does this). |
+| Marker-snap-to-origin bug (global_transform during tree mutation) | **Fixed in postimport** (captures transforms before mutating). No action. |
+| Stair slab-hole sizing (player stuck near top) | **Fixed in the builder** (hole extends past the top landing). No action. |
+| Assigning the import script + reimport | **One-time setup**, automated by the plugin. Manual only if you import by hand (set Import Script on the .glb, Reimport). |
+| `OUT_PATH` in `_run_in_blender.py` (GUI Blender path only) | **Manual config**, only when building via the Blender GUI instead of `build.py`. `build.py` handles paths itself. |
+| UID load error after dropping in a new .glb | **Occasional manual:** if Godot shows a UID/load error on a freshly-replaced .glb, **Project → Reload Current Project** clears it. This is a Godot resource-cache quirk, not a Deli Counter step — the "↻ Rebuild last level" dock button's `scan()` + `reimport_files()` avoids it in the normal loop. |
+
+Net: in the normal plugin loop (Pick → Set up & Play, then **↻ Rebuild last
+level** after each spec edit) there are **no manual steps**. The only manual
+touch is the rare UID-cache reload, and that's a Godot quirk with a one-click
+menu fix, now documented rather than tribal.
+
+## Fast iteration loop
+
+Once a level is imported once:
+
+1. `python build.py specs/<name>.json --watch` in a terminal — rebuilds the
+   `.glb` every time you save the spec (stdlib polling, no extra deps).
+2. Edit the spec, save. The `.glb` regenerates; Godot auto-reimports it.
+3. Hit **↻ Rebuild last level** in the dock — reimports the fresh geometry and
+   replays, no file picker. Spec-edit to playtest in one click.
+

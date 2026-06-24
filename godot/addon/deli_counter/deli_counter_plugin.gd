@@ -84,6 +84,19 @@ func _build_dock() -> Control:
 
 	root.add_child(HSeparator.new())
 
+	# Iteration shortcut: after the first Set up & Play, this re-runs the whole
+	# chain on the SAME level with no file picker — for the edit-spec ->
+	# rebuild-glb (build.py --watch) -> reimport -> replay loop.
+	var rebuild_btn := Button.new()
+	rebuild_btn.text = "↻ Rebuild last level"
+	rebuild_btn.tooltip_text = ("Re-run import + build + play on the last-picked "
+		+ ".glb, skipping the file picker. Use after build.py --watch "
+		+ "regenerates the .glb from an edited spec.")
+	rebuild_btn.pressed.connect(_on_rebuild_last_pressed)
+	root.add_child(rebuild_btn)
+
+	root.add_child(HSeparator.new())
+
 	_status = Label.new()
 	_status.text = ""
 	_status.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
@@ -211,3 +224,22 @@ func _on_setup_and_play_pressed() -> void:
 	# play_custom_scene, which isn't available on all 4.x versions.)
 	get_editor_interface().play_current_scene()
 	_set_status("Playing %s" % scene_path.get_file())
+
+
+func _on_rebuild_last_pressed() -> void:
+	# Iteration shortcut: no file picker. The .glb on disk has just been
+	# regenerated (e.g. by build.py --watch from an edited spec), so force a
+	# fresh reimport before rebuilding the scene — otherwise Godot serves the
+	# cached old import and you replay stale geometry.
+	if _selected_glb == "":
+		_set_status("No level picked yet — use 'Pick level .glb' once first.", false)
+		return
+	var fs := get_editor_interface().get_resource_filesystem()
+	fs.scan()                               # notice the changed file on disk
+	fs.reimport_files([_selected_glb])      # re-import the fresh geometry
+	var scene_path := _on_build_scene_pressed()
+	if scene_path == "":
+		return
+	get_editor_interface().open_scene_from_path(scene_path)
+	get_editor_interface().play_current_scene()
+	_set_status("Rebuilt & playing %s" % _selected_glb.get_file())

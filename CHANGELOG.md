@@ -5,6 +5,25 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.29.0]
+### Added — tighter spec→walk iteration loop (roadmap I-2)
+- `build.py --watch`: polls `specs/` mtimes (stdlib only, no watchdog dep) and
+  rebuilds a spec the moment you save it; Godot auto-reimports the changed
+  `.glb`. Pass a spec path to watch just that one, or none to watch all. Seeds
+  mtimes without an initial build, so it only reacts to changes. (Watch loop
+  logic verified offline with a stubbed builder.)
+- Editor dock **"↻ Rebuild last level"** button: re-runs reimport → build scene
+  → play on the last-picked `.glb` with no file picker — the one-click other
+  half of the `--watch` loop. Forces `scan()` + `reimport_files()` first so the
+  fresh geometry replaces Godot's cached import (avoids replaying stale
+  geometry, and sidesteps the UID-cache reload quirk). *Editor `@tool` GDScript
+  — first run is in-engine; drafted against existing plugin patterns.*
+- **Import-step audit** in `godot/IMPORT_GUIDE.md`: an honest table of every
+  step (collision, markers, transforms, stairs, UID reload…) marked Automatic /
+  one-time setup / manual. Net: the normal plugin loop has no manual steps; the
+  only manual touch is the rare UID-cache reload (a Godot quirk, one-click menu
+  fix), now documented rather than tribal knowledge.
+
 ## [0.28.0]
 ### Added — top-down floorplan intel map (roadmap I-1)
 - `floorplan.py` (bpy-free): renders an annotated top-down SVG per story —
