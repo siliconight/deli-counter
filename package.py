@@ -28,13 +28,13 @@ EXCLUDE_BUILD_BINARIES = (".glb", ".gltf", ".bin", ".obj", ".mtl")
 
 def _included(relpath):
     parts = relpath.split(os.sep)
-    # drop build/ binaries but keep build/.gitkeep and manifests
+    # build/ is regenerated output: keep only .gitkeep and manifests, drop
+    # everything else (binaries, floorplan SVGs, etc.)
     if parts and parts[0] == "build":
         base = os.path.basename(relpath)
         if base == ".gitkeep" or base.endswith(".manifest.json"):
             return True
-        if relpath.lower().endswith(EXCLUDE_BUILD_BINARIES):
-            return False
+        return False
     if relpath.lower().endswith(".pyc"):
         return False
     return True

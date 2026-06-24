@@ -168,6 +168,16 @@ def validate_file(path):
     except Exception as ex:
         print(f"  NAV: proxy skipped ({ex})")
 
+    # floorplan SVGs (offline visual intel — one per story)
+    try:
+        import floorplan
+        fp_dir = os.path.join(HERE, "build", "floorplans")
+        paths = floorplan.write_floorplans(spec, fp_dir)
+        rels = ", ".join(os.path.basename(p) for p in paths)
+        print(f"  floorplan: {len(paths)} story SVG(s) -> build/floorplans/ ({rels})")
+    except Exception as ex:
+        print(f"  FLOORPLAN: skipped ({ex})")
+
     print("  -> OK")
     return True
 

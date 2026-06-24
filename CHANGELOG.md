@@ -5,6 +5,25 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.28.0]
+### Added — top-down floorplan intel map (roadmap I-1)
+- `floorplan.py` (bpy-free): renders an annotated top-down SVG per story —
+  rooms as labelled, role-colored boxes; exterior + partition walls with gaps
+  at doorways/openings; gameplay markers (spawns, objectives, loot, cover,
+  cameras…) as icons; legend + north arrow. Pure-Python SVG strings, no
+  Pillow/cairo/matplotlib — offline, deterministic, dependency-free, runs
+  without Blender. Canvas auto-widens to show markers outside the footprint
+  (e.g. attacker spawns breaching from outside).
+- Addresses the review's sharpest finding: the tool computed rich spatial intel
+  and produced *zero visual output*. Numbers in a table don't communicate a
+  space; a designer can now see the layout and judge feel.
+- Wired into `validate.py` (and thus `check.py`/CI): every validated spec writes
+  its per-story SVGs to `build/floorplans/`. Also runnable standalone:
+  `python floorplan.py specs/<name>.json <outdir>`.
+- This is the read-half; the planned tactical overlays (graph edges,
+  chokepoints, single-route-objective flags in red) layer on in a later pass,
+  and a 2D authoring surface (roadmap I-6) would be the write-half companion.
+
 ## [0.27.0]
 ### Added — navigability checks ("can AI enemies path to the player?")
 Two layers, because the honest answer needs a real navmesh but a cheap offline
