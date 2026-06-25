@@ -5,6 +5,14 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.31.1]
+### Added — docs
+- `docs/CUSTOMIZING.md`: how to take a level the last 20% without breaking
+  determinism — the ".glb is disposable, iterate the spec" model, the fast
+  watch+rebuild loop, and a decision tree for the rare detail the spec cannot
+  express (kitbash part, Godot overlay layer, or a knowingly-hand-owned copy).
+  README points to it from the iterating section. Docs only, no behavior change.
+
 ## [0.31.0]
 ### Added — authoritative surface-role metadata (from external pipeline review)
 - The builder now records an authoritative role for every VISUAL mesh

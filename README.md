@@ -497,6 +497,13 @@ the spec carry no audio data at all.
 
 ## Iterating toward real models
 
+**Hit ~80% of what you want and need manual adjustments?** See
+`docs/CUSTOMIZING.md` for how to close the gap without breaking determinism. The
+short version: the `.glb` is disposable, the spec is what you iterate — edit the
+spec and rebuild rather than hand-editing the model, so every build stays
+reproducible. The doc has a full decision tree for the rare detail the spec can't
+express.
+
 Sizing a level? See `docs/scale_guidelines.md` for meter-based targets —
 player scale, grid sizes, per-mode building/room/route dimensions, and a
 recommended first-prototype canvas.
