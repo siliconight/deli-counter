@@ -72,12 +72,19 @@ python new_level.py --preset corner_deli --name my_lvl
 python new_level.py --preset compound --name boss --floors 3
 ```
 
-Presets: **bank**, **police_station**, **corner_deli**, **compound**. Flags:
-`--mode heist|assault`, `--floors N`, `--no-basement`, `--scale-ref` (1.8 m
-human proxies for a Blender scale check). This writes and validates a full spec
-— tactical layout, materials, spawns, vertical routes — then prints the build
-command. Edit the generated JSON to customize, or build it straight away with
-`build.py`.
+Presets: **bank**, **police_station**, **corner_deli**, **compound**,
+**hospital**, **warehouse**, **suburban_safehouse**, **rowhome**,
+**casino_tower** (run `--list` for modes each supports). Flags:
+`--mode heist|assault|survival`, `--floors N`, `--no-basement`, `--scale-ref`
+(1.8 m human proxies for a Blender scale check), `--no-audio` (strip the
+acoustic bridge), `--vertex-nuance` (optional anti-flatness pass). This writes
+and validates a full spec — tactical layout, materials, spawns, vertical routes
+— then prints the build command. Edit the generated JSON to customize, or build
+it straight away with `build.py`.
+
+There are three co-equal on-ramps, all optional: this **preset** path, a guided
+**interview** (`python describe.py`), or **hand-authored JSON**. Nothing depends
+on the others — use whichever fits.
 
 ## Layout
 
@@ -87,25 +94,33 @@ deli_counter/
   spec_types.py       spec dataclasses (pure Python, no bpy)
   spec_loader.py      JSON/YAML -> LevelSpec
   version.py          KIT_VERSION / SCHEMA_VERSION (stamped into manifests)
-  build.py            CLI: drives Blender headless        (normal Python)
+  build.py            CLI: drives Blender headless (--all, --watch)  (normal Python)
   validate.py         check a spec without Blender         (normal Python)
+  tactical.py         reachability graph + path metrics + mode scorecards
+  polybudget.py       offline triangle-budget estimator    (normal Python)
+  guards.py           hard gates: IP-name + step-rise      (normal Python)
+  navigability.py     offline nav proxy (doorway width + connectivity)
+  floorplan.py        top-down floorplan SVG per story      (normal Python)
+  meshlib_kit.py      manifest for the optional GridMap parts-kit
+  presets.py          parametric level recipes (see --list)
+  new_level.py        CLI: generate a spec from a preset   (normal Python)
+  describe.py         optional guided interview -> spec     (normal Python)
   catalog.py          generate specs/CATALOG.md            (normal Python)
-  check.py            validate + catalog gate for CI       (normal Python)
+  check.py            full gate for CI                     (normal Python)
+  install_hooks.py    install the pre-commit IP-name guard
   _run_in_blender.py  executed inside Blender by build.py
   schema/
     level.schema.json JSON Schema (editor autocomplete + validation)
-  specs/
-    bank.json         worked example: 2-story bank + basement vault
-    warehouse.json    worked example: single tall warehouse
-    CATALOG.md        auto-generated level index (do not hand-edit)
-  build/              outputs (binaries gitignored, manifests tracked)
+  specs/              worked examples + presets; CATALOG.md (auto-generated)
+  build/              outputs (binaries + floorplans gitignored, manifests tracked)
   godot/              Godot 4 integration (see godot/README.md):
                         deli_counter_postimport.gd  import hook (markers->nodes)
                         deli_level.gd               runtime query/breach helper
                         template/                   walkable test harness scene
                         addon/deli_counter/         editor plugin (one-click play)
+                        IMPORT_GUIDE.md NAVMESH_CHECK.md VERTEX_NUANCE.md MESHLIB_KIT.md
   .github/workflows/  CI: runs check.py on push/PR
-  README.md  CHANGELOG.md  .gitignore  package.py
+  README.md  CHANGELOG.md  GETTING_STARTED.md  .gitignore  package.py
 ```
 
 ## Export formats
@@ -376,6 +391,66 @@ not warn or fail on these. The *only* hard path gate is **reachability** — if
 an objective or finale is physically unreachable through the geometry, that's a
 broken model and the build fails. Everything past "can you get there at all" is
 intel the gameplay layer interprets.
+
+### Poly budget — intel, not judgment
+
+`validate.py` prints an **offline triangle-budget estimate** per build: the
+total tri count and the heaviest single piece, against the Environment budget
+(~50-500 target, 1000 cap per piece). Like path metrics, it's information, not a
+gate — Deli Counter shells are deliberately light blockouts. It's there so you
+can see at a glance whether a level is in the expected range before you ever open
+Blender.
+
+### Navigability — offline proxy + a real navmesh check
+
+Two layers answer "can an AI agent (and therefore an enemy) actually path
+through this?":
+
+- **Offline proxy** (`navigability.py`, runs in `validate.py`/CI): flags
+  floor-level doorways narrower than a nav agent can pass (~1.1 m for a 0.5 m
+  agent) and backstops isolated-room detection. It's a room-graph pre-filter —
+  reported as warnings, since narrow doors are a legitimate choice if your agents
+  are smaller. A cheap "no obvious blocker" check before Blender.
+- **Real navmesh check** (Godot harness): press **F4** to bake a navmesh, then
+  **F5** to query a path from the player to every gameplay marker and report what
+  an agent can actually reach. This is the authoritative answer — it catches what
+  the offline proxy can't (slivers, stair-bake gaps). See
+  `godot/NAVMESH_CHECK.md`.
+
+### Floorplan intel maps
+
+Every validated spec writes an annotated **top-down SVG per story** to
+`build/floorplans/` — rooms as role-colored boxes, walls with gaps at doorways,
+gameplay markers as icons, a legend and north arrow. Pure-Python SVG (no
+Pillow/cairo), so it's offline and deterministic. It turns the spatial intel the
+tool computes into something a designer can actually *see* and pass around to
+discuss flow. Also runnable standalone: `python floorplan.py specs/<name>.json
+<outdir>`.
+
+## Optional visual passes
+
+Both of these are **off by default** — the pure, honest greybox is the default
+output. Reach for them when you want them.
+
+### Vertex nuance (anti-flatness)
+
+`--vertex-nuance` (or `"vertex_nuance": true` in a spec) applies a visual-only
+pass that makes a blockout read less like a flat CG box — densify visual faces to
+grid scale, bevel hard edges so light catches, and bake procedural vertex colors
+(geometry-derived fake AO, a floor-grime gradient, and a floor/wall/ceiling base
+tint). No UVs, no textures, no hand-painting; the color ships in the `.glb`.
+Collision is never touched. It's for *readability, not beauty* — just enough to
+communicate the space. To display it in Godot, enable Vertex Color → Use as
+Albedo on the material. See `godot/VERTEX_NUANCE.md`.
+
+### GridMap parts-kit
+
+An optional `MeshLibrary` of grid-aligned modular pieces (wall, doorway, floor,
+stair, counter, crate…) you can paint with in a Godot `GridMap` to hand-greybox a
+fresh layout by eye. It's the loosest on-ramp — a quick-sketch tool beside the
+spec-driven pipeline, not a replacement (a live GridMap is not the deterministic
+baked shell). Generate it by running `addons/deli_counter/meshlib_kit.gd` in
+Godot. See `godot/MESHLIB_KIT.md`.
 
 ## Acoustic materials (optional audio-engine bridge)
 

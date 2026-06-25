@@ -5,6 +5,19 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.30.1]
+### Changed — README brought current (docs only, no behavior change)
+- The README had not been touched since 0.27.0 and was missing four releases of
+  features. Updated to cover everything through 0.30.0:
+  - Layout file list now lists all current modules (tactical, polybudget, guards,
+    navigability, floorplan, presets, new_level, describe, meshlib_kit, etc.).
+  - Quick start lists all 9 presets (was 4) and the current flags (--mode incl.
+    survival, --no-audio, --vertex-nuance), and names the three co-equal on-ramps.
+  - New sections: poly budget (intel), navigability (offline proxy + F4/F5
+    navmesh check), floorplan intel maps, and an "Optional visual passes" section
+    covering --vertex-nuance and the GridMap parts-kit.
+- No code, schema, or builder changes. Output is byte-identical to 0.30.0.
+
 ## [0.30.0]
 ### Added — optional anti-flatness vertex-nuance pass
 - `--vertex-nuance` (CLI flag) / `"vertex_nuance": true` (spec field): an opt-in,
