@@ -5,6 +5,27 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.31.0]
+### Added — authoritative surface-role metadata (from external pipeline review)
+- The builder now records an authoritative role for every VISUAL mesh
+  (floor / ceiling / wall / stair / ramp / ladder / prop) at creation time and
+  emits it as `surface_roles` (node name → role) in `gameplay.json`. Downstream
+  tools — Patina styling, the `--vertex-nuance` pass — should consume these
+  labels instead of inferring floor/wall/ceiling from geometry, which is
+  error-prone across Blender/glTF/world-axis conventions (it misclassified
+  shelves as ceilings, slabs as walls). The builder knows what it placed; it now
+  shares that knowledge instead of throwing it away.
+- `--vertex-nuance` now uses the authoritative role for its base tint (falling
+  back to a normal-based guess only for unroled meshes) — so the fix improves two
+  consumers at once.
+- `docs/GAMEPLAY_JSON_CONTRACT.md` — formally documents `gameplay.json` as the
+  canonical companion contract (all fields, plus the new `surface_roles`), and
+  states the marker-preservation requirement: a tool that re-emits the `.glb`
+  must preserve marker Empties or document that consumers read marker placement
+  from `gameplay.json` (which stays authoritative regardless). Addresses the
+  review's "make gameplay.json the formal contract" and marker-drop findings on
+  the Deli Counter side.
+
 ## [0.30.1]
 ### Changed — README brought current (docs only, no behavior change)
 - The README had not been touched since 0.27.0 and was missing four releases of

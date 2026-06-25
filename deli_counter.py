@@ -89,7 +89,7 @@ class _Builder:
             bpy.context.scene.collection.children.link(c)
         return c
 
-    def _box(self, name, center, size, collection):
+    def _box(self, name, center, size, collection, role=None):
         mesh = bpy.data.meshes.new(name)
         obj = bpy.data.objects.new(name, mesh)
         collection.objects.link(obj)
@@ -99,6 +99,14 @@ class _Builder:
         bm.free()
         obj.scale = (max(size[0], 1e-4), max(size[1], 1e-4), max(size[2], 1e-4))
         obj.location = center
+        # Record the authoritative surface role for VISUAL meshes so downstream
+        # tools (Patina styling, the vertex-nuance pass) consume a label instead
+        # of re-inferring floor/wall/ceiling from geometry (which is error-prone
+        # across Blender/glTF/world-axis conventions). Collision meshes don't
+        # need a role. The role -> node-name map is emitted into gameplay.json
+        # as "surface_roles".
+        if role is not None and collection is self.VISUAL:
+            self.surface_roles[obj.name] = role
         return obj
 
     def _empty(self, name, location, collection, rot_z=0.0, size=0.4):
@@ -162,7 +170,7 @@ class _Builder:
     def _box_with_holes(self, name, center, size, holes, collection):
         """Solid box minus rectangular holes (visual). holes: list of dicts
         with u (offset along run), v (offset in Z from wall center), w, h."""
-        wall = self._box(name, center, size, collection)
+        wall = self._box(name, center, size, collection, role="wall")
         if not holes:
             return wall
         long_axis = 0 if size[0] >= size[1] else 1
@@ -317,6 +325,17 @@ class _Builder:
                                     segments=1, clamp_overlap=True)
             bm.normal_update()
 
+            # base tint: prefer the AUTHORITATIVE role recorded at build time
+            # (slab->floor/ceiling, walls, etc.) over guessing from the normal.
+            # Per-object role, with a per-face normal fallback for meshes that
+            # carry no role (or mixed-orientation faces).
+            obj_role = getattr(self, "surface_roles", {}).get(obj.name)
+            role_tint = {
+                "floor": FLOOR_TINT, "ceiling": CEIL_TINT, "wall": WALL_TINT,
+                "stair": FLOOR_TINT, "ramp": FLOOR_TINT, "ladder": WALL_TINT,
+                "prop": WALL_TINT,
+            }
+
             # local z-extent for the height-grime gradient
             zs = [v.co.z for v in bm.verts]
             zmin = min(zs) if zs else 0.0
@@ -325,17 +344,17 @@ class _Builder:
             color_layer = (bm.loops.layers.color.get("Col")
                            or bm.loops.layers.color.new("Col"))
             for face in bm.faces:
-                n = face.normal
-                # classify surface by dominant normal axis
-                if n.z > 0.7:
-                    base = CEIL_TINT if face.calc_center_median().z > (zmin + 0.1) else FLOOR_TINT
-                    # an upward-facing face high up is a ceiling underside? rare;
-                    # default upward = floor top
-                    base = FLOOR_TINT
-                elif n.z < -0.7:
-                    base = CEIL_TINT
+                if obj_role in role_tint:
+                    base = role_tint[obj_role]
                 else:
-                    base = WALL_TINT
+                    # no authoritative role — fall back to normal-based guess
+                    n = face.normal
+                    if n.z > 0.7:
+                        base = FLOOR_TINT
+                    elif n.z < -0.7:
+                        base = CEIL_TINT
+                    else:
+                        base = WALL_TINT
                 for loop in face.loops:
                     v = loop.vert
                     # fake AO: concave/edge vertices (many linked faces, normal
@@ -358,6 +377,7 @@ class _Builder:
         self.VISUAL = self._col("VISUAL")
         self.COLLISION = self._col("COLLISION")
         self.MARKERS = self._col("MARKERS")
+        self.surface_roles = {}   # node name -> authoritative surface role
         self.gameplay = {"mode": self.s.mode, "markers": [], "rooms": [],
                          "vertical_links": [], "openings": [],
                          "objectives": [], "loot": [], "zones": [],
@@ -395,8 +415,12 @@ class _Builder:
         ft = self.s.floor_thick
         for s in range(base, top + 1):
             z = s * self.s.story_height
+            # a slab's top face is the floor of story s; the topmost slab caps
+            # the building (roof) and reads as a ceiling/roof surface.
+            role = "ceiling" if s == top else "floor"
             self._box(f"slab_{s}", (0, 0, z - ft / 2),
-                      (self.s.footprint_x, self.s.footprint_y, ft), self.VISUAL)
+                      (self.s.footprint_x, self.s.footprint_y, ft), self.VISUAL,
+                      role=role)
             self._col_box(f"slab_col_{s}", (0, 0, z - ft / 2),
                           (self.s.footprint_x, self.s.footprint_y, ft))
 
@@ -516,7 +540,8 @@ class _Builder:
                     cz = z + step_h * (i + 0.5)
                     cy = st.y + sign * (step_d * (i + 0.5) - st.run / 2)
                     self._box(f"stair{si}_{s}_{i}", (sx, cy, cz),
-                              (st.width, step_d, step_h), self.VISUAL)
+                              (st.width, step_d, step_h), self.VISUAL,
+                              role="stair")
                     self._col_box(f"stair{si}col_{s}_{i}", (sx, cy, cz),
                                   (st.width, step_d, step_h))
                 # landing at the top of each leg (except the final one) bridges
@@ -528,7 +553,8 @@ class _Builder:
                     land_w = st.width + 2 * x_offset      # covers both runs
                     self._box(f"stair{si}_land_{s}",
                               (st.x, top_y, land_z),
-                              (land_w, step_d * 1.4, step_h), self.VISUAL)
+                              (land_w, step_d * 1.4, step_h), self.VISUAL,
+                              role="stair")
                     self._col_box(f"stair{si}col_land_{s}",
                                   (st.x, top_y, land_z),
                                   (land_w, step_d * 1.4, step_h))
@@ -572,7 +598,8 @@ class _Builder:
                     else:
                         rc = (ld.x, ld.y + sgn * half, z + H / 2)
                         rs = (ld.depth, 0.06, H)
-                    self._box(f"ladder{li}_rail_{s}_{sgn}", rc, rs, self.VISUAL)
+                    self._box(f"ladder{li}_rail_{s}_{sgn}", rc, rs, self.VISUAL,
+                              role="ladder")
                     self._col_box(f"ladder{li}col_rail_{s}_{sgn}", rc, rs)
                 # rungs — collision too, so they're footing geometry and the
                 # ladder reads as solid (the climb itself is a gameplay mechanic
@@ -585,7 +612,8 @@ class _Builder:
                         cc, cs = (ld.x, ld.y, rz), (ld.width, ld.depth, 0.05)
                     else:
                         cc, cs = (ld.x, ld.y, rz), (ld.depth, ld.width, 0.05)
-                    self._box(f"ladder{li}_rung_{s}_{r}", cc, cs, self.VISUAL)
+                    self._box(f"ladder{li}_rung_{s}_{r}", cc, cs, self.VISUAL,
+                              role="ladder")
                     self._col_box(f"ladder{li}col_rung_{s}_{r}", cc, cs)
                 if ld.cut_slabs:
                     self.s.slab_holes.append(SlabHole(
@@ -611,7 +639,7 @@ class _Builder:
             obj = self._box(f"ramp{ri}", (cx, cy, cz),
                             (rp.width if rp.axis == "Y" else length3d,
                              length3d if rp.axis == "Y" else rp.width,
-                             rp.thickness), self.VISUAL)
+                             rp.thickness), self.VISUAL, role="ramp")
             # tilt about the horizontal axis perpendicular to ascent
             if rp.axis == "Y":
                 obj.rotation_euler = (angle, 0.0, 0.0)
@@ -640,7 +668,7 @@ class _Builder:
             else:
                 size = (vl.thick, vl.length, vl.height)
             name = f"VAULTLEDGE_{vi}"
-            self._box(name, (vl.x, vl.y, z), size, self.VISUAL)
+            self._box(name, (vl.x, vl.y, z), size, self.VISUAL, role="floor")
             self._col_box(name, (vl.x, vl.y, z), size)
             self._record_surface(name + self.col_suffix["convex"], vl.material)
 
@@ -674,7 +702,7 @@ class _Builder:
             c = (v.x, v.y, v.z)
             size = (v.size_x, v.size_y, v.size_z)
             if v.visual:
-                self._box(v.name, c, size, self.VISUAL)
+                self._box(v.name, c, size, self.VISUAL, role="prop")
             if v.collision != "none":
                 self._col_box(f"{v.name}_col", c, size, mode=v.collision)
                 self._record_surface(f"{v.name}_col", v.material)
@@ -966,7 +994,7 @@ class _Builder:
                 ("W", (-hx + t / 2, 0, cz), (t, self.s.footprint_y, p.height)),
             ]
             for n, c, size in segs:
-                self._box(f"parapet_{n}", c, size, self.VISUAL)
+                self._box(f"parapet_{n}", c, size, self.VISUAL, role="wall")
                 self._col_box(f"parapet_{n}_col", c, size)
 
 
@@ -996,6 +1024,10 @@ def write_gameplay_json(builder, path):
         "zones": builder.gameplay["zones"],
         "materials": builder.gameplay["materials"],
         "surfaces": builder.gameplay["surfaces"],
+        # authoritative node-name -> surface role map (floor/ceiling/wall/stair/
+        # ramp/ladder/prop). Downstream tools (Patina styling, vertex nuance)
+        # should consume this instead of inferring roles from geometry.
+        "surface_roles": getattr(builder, "surface_roles", {}),
     }
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
