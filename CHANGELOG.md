@@ -5,6 +5,26 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.29.1]
+### Fixed — switchback stairs built overlapping legs (unwalkable)
+- Switchback stairs generated every flight at the SAME x, so an up-leg and the
+  next (reversed) leg occupied the same footprint — their steps interpenetrated
+  into smeared, unclimbable geometry. Found by walking corner_deli in Godot
+  (the geometry validated fine offline; only physical overlap breaks it, which
+  only a walk catches). Fix: reversed legs now offset sideways by the stair
+  width into a parallel run, with a landing bridging the two runs at each turn.
+  Affects every preset using switchback stairs (corner_deli, compound, hospital,
+  casino_tower, suburban_safehouse, rowhome). Rebuild GLBs to get the fix.
+
+### Fixed — ladders had no collision (walk-through ghost)
+- Ladder rails and rungs were emitted to the VISUAL collection only, never as
+  collision — despite a code comment claiming otherwise — so the player walked
+  straight through every ladder. Also found by walking corner_deli. Fix: rails
+  and rungs now generate `-convcolonly` collision so the ladder is a solid
+  physical object. Climbing remains a gameplay mechanic the game wires to the
+  `LADDER_` marker (the shell provides solid geometry + the climb anchor; the
+  game moves the player up the volume).
+
 ## [0.29.0]
 ### Added — tighter spec→walk iteration loop (roadmap I-2)
 - `build.py --watch`: polls `specs/` mtimes (stdlib only, no watchdog dep) and

@@ -395,23 +395,46 @@ class _Builder:
             n_steps = st.n_steps or max(6, min(40, round(H / st.step_rise)))
             step_d = st.run / n_steps
             step_h = H / n_steps
+            # A switchback's reversed legs must sit in PARALLEL runs, offset
+            # sideways by the stair width — otherwise an up-leg and the next
+            # (reversed) leg occupy the same footprint and their steps
+            # interpenetrate into unwalkable smeared geometry. Straight stairs
+            # keep a single run (no offset).
+            x_offset = 0.0 if st.style == "straight" else st.width / 2
             for s in range(st.from_story, st.to_story):
                 z = s * H
-                sign = 1 if ((s - st.from_story) % 2 == 0 or st.style == "straight") else -1
+                leg = s - st.from_story
+                sign = 1 if (leg % 2 == 0 or st.style == "straight") else -1
+                # reversed legs shift to the parallel run beside the main one
+                sx = st.x + (x_offset if sign > 0 else -x_offset)
                 for i in range(n_steps):
                     cz = z + step_h * (i + 0.5)
                     cy = st.y + sign * (step_d * (i + 0.5) - st.run / 2)
-                    self._box(f"stair{si}_{s}_{i}", (st.x, cy, cz),
+                    self._box(f"stair{si}_{s}_{i}", (sx, cy, cz),
                               (st.width, step_d, step_h), self.VISUAL)
-                    self._col_box(f"stair{si}col_{s}_{i}", (st.x, cy, cz),
+                    self._col_box(f"stair{si}col_{s}_{i}", (sx, cy, cz),
                                   (st.width, step_d, step_h))
+                # landing at the top of each leg (except the final one) bridges
+                # this run to the parallel run the next leg starts from, so you
+                # can turn the corner. Spans both runs in X, one step deep.
+                if st.style != "straight" and s < st.to_story - 1:
+                    top_y = st.y + sign * (st.run / 2)
+                    land_z = z + H - step_h / 2
+                    land_w = st.width + 2 * x_offset      # covers both runs
+                    self._box(f"stair{si}_land_{s}",
+                              (st.x, top_y, land_z),
+                              (land_w, step_d * 1.4, step_h), self.VISUAL)
+                    self._col_box(f"stair{si}col_land_{s}",
+                                  (st.x, top_y, land_z),
+                                  (land_w, step_d * 1.4, step_h))
                 if st.cut_slabs:
                     # The slab hole must clear the *top* of the flight plus the
                     # player's body so you can walk off onto the landing, not
                     # just the stair footprint. The top step sits at
                     # st.y + sign*(run/2); extend the hole ~0.8 m past it in the
                     # travel direction (player radius + margin), and pad the
-                    # near side and width a bit too.
+                    # near side and width a bit too. Widened in X to cover both
+                    # parallel switchback runs + the landing.
                     clear = 0.8
                     near = st.run / 2 + 0.3        # behind the bottom step
                     far = st.run / 2 + clear       # past the top landing
@@ -423,7 +446,7 @@ class _Builder:
                         hole_len = far + near
                     self.s.slab_holes.append(SlabHole(
                         story=s + 1, x=st.x, y=hole_y,
-                        size_x=st.width + 0.8, size_y=hole_len))
+                        size_x=st.width + 2 * x_offset + 0.8, size_y=hole_len))
 
     def _ladders(self):
         """Vertical climb: rungs + two side rails, climbing one floor per
@@ -434,7 +457,8 @@ class _Builder:
             n_rungs_per_floor = max(3, round(H / ld.rung_spacing))
             for s in range(ld.from_story, ld.to_story):
                 z = s * H
-                # side rails (two thin vertical posts)
+                # side rails (two thin vertical posts) — solid collision so the
+                # ladder is a real physical object, not a walk-through ghost.
                 half = ld.width / 2
                 for sgn in (-1, 1):
                     if along_x:
@@ -444,7 +468,10 @@ class _Builder:
                         rc = (ld.x, ld.y + sgn * half, z + H / 2)
                         rs = (ld.depth, 0.06, H)
                     self._box(f"ladder{li}_rail_{s}_{sgn}", rc, rs, self.VISUAL)
-                # rungs (collision too, so the climb has footing geometry)
+                    self._col_box(f"ladder{li}col_rail_{s}_{sgn}", rc, rs)
+                # rungs — collision too, so they're footing geometry and the
+                # ladder reads as solid (the climb itself is a gameplay mechanic
+                # the game wires to the LADDER_ marker; the shell stays solid).
                 for r in range(n_rungs_per_floor):
                     rz = z + ld.rung_spacing * (r + 0.5)
                     if rz >= z + H:
@@ -454,6 +481,7 @@ class _Builder:
                     else:
                         cc, cs = (ld.x, ld.y, rz), (ld.depth, ld.width, 0.05)
                     self._box(f"ladder{li}_rung_{s}_{r}", cc, cs, self.VISUAL)
+                    self._col_box(f"ladder{li}col_rung_{s}_{r}", cc, cs)
                 if ld.cut_slabs:
                     self.s.slab_holes.append(SlabHole(
                         story=s + 1, x=ld.x, y=ld.y,
