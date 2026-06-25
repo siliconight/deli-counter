@@ -250,6 +250,109 @@ class _Builder:
             self._col_box(f"{name}_BREACHPANEL", bc, bs)
 
     # -- top-level build steps ---------------------------------------------
+    def _vertex_nuance(self,
+                       target_edge=0.6,   # ~grid; densify to roughly this edge
+                       bevel_width=0.015,  # ~1.5cm hard-edge bevel
+                       max_subdiv=4):      # safety clamp on subdivision cuts
+        """OPTIONAL anti-flatness pass (--vertex-nuance). VISUAL ONLY — never
+        touches COLLISION. For each visual mesh: apply its scale (so we work in
+        real metres, dodging the non-uniform-scale UV/texel trap), densify to
+        ~target_edge so vertex color has resolution, bevel hard edges so light
+        catches, then bake procedural vertex colors derived purely from
+        geometry (deterministic — preserves byte-identical output):
+          - fake AO: darken by local concavity (approx via vertex normal vs
+            face spread) and by proximity to the mesh's lower/inner extents
+          - height grime: subtle darkening near the floor (low local z)
+          - per-normal tint: floor / wall / ceiling get distinct base tints
+        Readability, not beauty. Needs a vertex-color-reading material in Godot
+        (StandardMaterial3D.vertex_color_use_as_albedo) to display.
+        """
+        import mathutils  # noqa: F401  (Blender-only; available at runtime)
+
+        FLOOR_TINT = (0.62, 0.60, 0.58)
+        WALL_TINT = (0.74, 0.74, 0.76)
+        CEIL_TINT = (0.68, 0.68, 0.70)
+        AO_STRENGTH = 0.45
+        GRIME_HEIGHT = 0.6   # metres above local floor where grime fades out
+        GRIME_STRENGTH = 0.25
+
+        # iterate a snapshot — we don't add/remove objects, just edit meshes
+        for obj in list(self.VISUAL.objects):
+            if obj.type != 'MESH' or obj.data is None:
+                continue
+            mesh = obj.data
+
+            # 1) bake scale into the mesh so all geometry math is in real metres
+            sx, sy, sz = obj.scale
+            if (sx, sy, sz) != (1.0, 1.0, 1.0):
+                for v in mesh.vertices:
+                    v.co.x *= sx
+                    v.co.y *= sy
+                    v.co.z *= sz
+                obj.scale = (1.0, 1.0, 1.0)
+
+            bm = bmesh.new()
+            bm.from_mesh(mesh)
+
+            # 2) densify: subdivide edges longer than target_edge, clamped
+            for _ in range(max_subdiv):
+                long_edges = [e for e in bm.edges
+                              if e.calc_length() > target_edge * 1.5]
+                if not long_edges:
+                    break
+                bmesh.ops.subdivide_edges(bm, edges=long_edges, cuts=1,
+                                          use_grid_fill=False)
+                bm.normal_update()
+
+            # 3) bevel hard edges (visual only). Small width; clamp prevents
+            # self-intersection on thin boxes.
+            hard = [e for e in bm.edges if e.is_contiguous and len(e.link_faces) == 2]
+            if hard and bevel_width > 0:
+                try:
+                    bmesh.ops.bevel(bm, geom=hard, offset=bevel_width,
+                                    affect='EDGES', segments=1, clamp_overlap=True)
+                except TypeError:
+                    # older bmesh.ops.bevel signature fallback
+                    bmesh.ops.bevel(bm, geom=hard, offset=bevel_width,
+                                    segments=1, clamp_overlap=True)
+            bm.normal_update()
+
+            # local z-extent for the height-grime gradient
+            zs = [v.co.z for v in bm.verts]
+            zmin = min(zs) if zs else 0.0
+
+            # 4) vertex colors — bmesh color layer
+            color_layer = (bm.loops.layers.color.get("Col")
+                           or bm.loops.layers.color.new("Col"))
+            for face in bm.faces:
+                n = face.normal
+                # classify surface by dominant normal axis
+                if n.z > 0.7:
+                    base = CEIL_TINT if face.calc_center_median().z > (zmin + 0.1) else FLOOR_TINT
+                    # an upward-facing face high up is a ceiling underside? rare;
+                    # default upward = floor top
+                    base = FLOOR_TINT
+                elif n.z < -0.7:
+                    base = CEIL_TINT
+                else:
+                    base = WALL_TINT
+                for loop in face.loops:
+                    v = loop.vert
+                    # fake AO: concave/edge vertices (many linked faces, normal
+                    # divergence) darker. Approx: more linked faces -> deeper.
+                    valence = len(v.link_faces)
+                    ao = 1.0 - min(AO_STRENGTH, max(0.0, (valence - 4) * 0.06))
+                    # height grime near floor
+                    h = v.co.z - zmin
+                    grime = 1.0 - (GRIME_STRENGTH * max(0.0, 1.0 - h / GRIME_HEIGHT))
+                    shade = ao * grime
+                    loop[color_layer] = (base[0] * shade, base[1] * shade,
+                                         base[2] * shade, 1.0)
+
+            bm.to_mesh(mesh)
+            bm.free()
+            mesh.update()
+
     def build(self):
         self._clear()
         self.VISUAL = self._col("VISUAL")
@@ -276,6 +379,8 @@ class _Builder:
         self._heist()
         self._materials()
         self._scale_ref()
+        if getattr(self.s, "vertex_nuance", False):
+            self._vertex_nuance()
         print(f"[deli_counter] built '{self.s.name}' seed={self.s.seed}: "
               f"{len(self.VISUAL.objects)} visual, "
               f"{len(self.COLLISION.objects)} collision, "

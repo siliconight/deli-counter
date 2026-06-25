@@ -5,6 +5,51 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.30.0]
+### Added — optional anti-flatness vertex-nuance pass
+- `--vertex-nuance` (CLI flag) / `"vertex_nuance": true` (spec field): an opt-in,
+  **visual-only** builder pass that makes a blockout read less like a flat CG
+  box — for readability, not beauty. Off by default; the pure honest greybox
+  stays the default output. Three geometry-derived (deterministic) effects:
+  densify visual faces to ~grid edge length (gives vertex color resolution +
+  tames affine-mapping swim), bevel hard edges ~1.5 cm (light catches them), and
+  bake procedural vertex colors — fake AO in crevices, a height/grime gradient
+  near the floor, and a per-surface floor/wall/ceiling base tint. No UVs, no
+  textures, no hand-painting; the color ships in the `.glb`.
+- COLLISION is never touched — the pass applies object scale into the mesh first
+  (dodging the non-uniform-scale trap) then edits VISUAL meshes only. Markers and
+  the gameplay.json are untouched.
+- `godot/VERTEX_NUANCE.md` — what it does, and how to display it in Godot
+  (StandardMaterial3D → Vertex Color → Use as Albedo). Pairs naturally with a
+  PS1-style vertex-lit shader.
+- Builder-side (Blender) code: offline-verified that it parses, the default path
+  is byte-identical (no behavior change when off), the flag plumbs through schema
+  → loader → builder, and the pass executes its full sequence. The actual beveled
+  + colored geometry is walk-to-verify in Blender/Godot (can't render Blender in
+  CI).
+
+### Added — optional GridMap parts-kit MeshLibrary
+- A standard, grid-aligned modular parts-kit (wall / half-wall / doorway /
+  window / floor / pillar / counter / stair / crate) you can paint with in a
+  Godot `GridMap` to hand-greybox a fresh layout. **Purely optional and
+  additive — the baked `.glb` remains the primary, replication-free output;
+  this changes nothing in the core pipeline.** It's a quick-sketch on-ramp that
+  sits beside the spec-driven ones, not a replacement (a live GridMap is not the
+  deterministic baked shell).
+- `godot/addon/deli_counter/meshlib_kit.gd` — an `@tool` EditorScript that
+  builds the MeshLibrary **in-engine** (via SurfaceTool + BoxShape3D, saved with
+  ResourceSaver) so the mesh and collision data is always valid. Chosen over
+  hand-packing a `.tres` after finding Godot itself can silently drop meshes on
+  malformed library data (godot#85085); building in-engine sidesteps that.
+  Editor-only, first run is in Godot.
+- `meshlib_kit.py` — the offline half: the canonical kit manifest (module names,
+  grid dimensions, collision) sized to the scale guidelines, kept in sync with
+  the GDScript generator and fully verifiable without Blender/Godot. Run it for
+  the kit catalog.
+- `godot/MESHLIB_KIT.md` — how to generate and paint with the kit, and where it
+  sits among the on-ramps. Delete both `meshlib_kit.*` files and nothing else
+  changes.
+
 ## [0.29.1]
 ### Fixed — switchback stairs built overlapping legs (unwalkable)
 - Switchback stairs generated every flight at the SAME x, so an up-leg and the

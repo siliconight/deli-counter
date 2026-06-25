@@ -58,6 +58,9 @@ def main():
                     help="add 1.8 m human proxies at spawns for a Blender scale check")
     ap.add_argument("--no-audio", action="store_true",
                     help="strip acoustic materials (the gool audio bridge is optional)")
+    ap.add_argument("--vertex-nuance", action="store_true",
+                    help="enable the optional anti-flatness pass (densify+bevel+"
+                         "procedural vertex color; visual-only, off by default)")
     ap.add_argument("--list", action="store_true", help="list available presets and exit")
     ap.add_argument("--force", action="store_true", help="overwrite if the spec exists")
     args = ap.parse_args()
@@ -100,6 +103,11 @@ def main():
         spec.pop("default_material", None)
         _strip_material_refs(spec)
         print("stripped acoustic materials (--no-audio)")
+
+    if args.vertex_nuance:
+        spec["vertex_nuance"] = True
+        print("enabled --vertex-nuance (anti-flatness pass; build in Blender to "
+              "see it, and use a vertex-color material in Godot to display it)")
 
     specs_dir = os.path.join(HERE, "specs")
     os.makedirs(specs_dir, exist_ok=True)

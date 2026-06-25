@@ -398,4 +398,12 @@ class LevelSpec:
     # if no ext_walls are specified, auto-generate solid exterior walls
     auto_exterior: bool = True
 
+    # OPTIONAL anti-flatness pass (see --vertex-nuance). When true, the VISUAL
+    # meshes get densified to ~grid edge length, hard edges beveled, and
+    # procedural vertex colors baked (geometry-derived fake AO + height grime +
+    # per-normal floor/wall/ceiling tint). COLLISION is never touched. Off by
+    # default — the pure honest greybox stays the default output. Readability,
+    # not beauty. Needs a vertex-color-reading material in Godot to display.
+    vertex_nuance: bool = False
+
 
