@@ -406,4 +406,13 @@ class LevelSpec:
     # not beauty. Needs a vertex-color-reading material in Godot to display.
     vertex_nuance: bool = False
 
+    # OPTIONAL building rarity (None | common | uncommon | rare | epic |
+    # legendary). A single contract value, not a visual effect: when set, the
+    # build stamps the tier and its one canonical colour onto gameplay.json's
+    # top level and onto every breachable door/breach anchor, so a networked
+    # door can "pop" the right colour when it opens. The reveal itself (light,
+    # sound, HUD banner) is game code reading this value. None = no rarity
+    # (current behaviour, no rarity fields emitted). See rarity.py / docs/RARITY.md.
+    rarity: Optional[str] = None
+
 

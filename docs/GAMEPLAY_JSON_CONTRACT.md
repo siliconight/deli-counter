@@ -17,6 +17,9 @@ states it.
 {
   "level": "corner_deli_heist_01",
   "mode": "heist",
+  "rarity": "legendary",
+  "rarity_color": { "tier": "legendary", "rank": 4, "color_name": "yellow",
+                    "hex": "#FFD700", "rgb": [1.0, 0.8431, 0.0] },
   "markers": [ ... ],
   "rooms": [ ... ],
   "vertical_links": [ ... ],
@@ -35,6 +38,18 @@ states it.
 **`level`** / **`mode`** — the spec name and one of `assault` / `heist` /
 `survival`.
 
+**`rarity`** / **`rarity_color`** — OPTIONAL building rarity. `rarity` is the
+tier string (`common` / `uncommon` / `rare` / `epic` / `legendary`) or `null`
+when the spec declares none. `rarity_color` is the resolved colour record for
+that tier — `{ "tier", "rank", "color_name", "hex", "rgb": [r,g,b] }`, with
+`rgb` in Godot's 0..1 range — or `null`. **This is the single source of truth
+for the building's rarity.** It is a contract value, not a baked effect: the
+reveal (light burst, sound cue, HUD banner when a networked door opens) is game
+code that reads this. Every *breachable* opening below carries the same colour
+so a door can pop it locally. The five tiers and their canonical colours live in
+`rarity.py`; see `docs/RARITY.md` for the wiring. Older builds (and buildings
+with no declared rarity) emit `null` for both — treat that as "no rarity."
+
 **`markers`** — gameplay anchors. Each: `{ "name", "type", "x", "y", "z",
 "room"? , "rot_z"? }`. Types include spawns (`attacker_spawn`,
 `defender_spawn`, `survivor_spawn`, `horde_spawn`), `objective`, `loot`,
@@ -50,7 +65,11 @@ preserve the Empty nodes. (See "Marker preservation" below.)
 ramps / floor-holes / hatches connecting stories.
 
 **`openings`** — tagged doorways/windows/breaches: `{ "wall", "story", "kind",
-"pos", "width", "height" }`.
+"pos", "width", "height" }`. When the building has a rarity, each *breachable*
+opening (`door` / `garage` / `breach` — the entries a squad reveals the building
+through; windows are excluded) also carries `"rarity"` and `"rarity_color"`,
+matching the top-level values, so a networked door instanced at that opening pops
+the right colour without looking up the building root.
 
 **`objectives`** / **`loot`** / **`zones`** — mode-specific gameplay data
 (objective rooms, loot spawns with value, extraction/secure/drop zones).

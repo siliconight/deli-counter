@@ -1,0 +1,27 @@
+{
+  "$schema": "../schema/level.schema.json",
+  "name": "rarity_demo",
+  "seed": 1999,
+  "rarity": "legendary",
+  "footprint_x": 18.0,
+  "footprint_y": 14.0,
+  "story_height": 3.5,
+  "n_stories": 1,
+  "ext_walls": [
+    {
+      "wall": "S",
+      "story": 0,
+      "openings": [
+        { "kind": "door", "pos": -0.25, "tag": "main_entry" },
+        { "kind": "breach", "pos": 0.25, "breach_class": "soft_wall" }
+      ]
+    },
+    {
+      "wall": "E",
+      "story": 0,
+      "openings": [
+        { "kind": "window", "pos": 0.0 }
+      ]
+    }
+  ]
+}

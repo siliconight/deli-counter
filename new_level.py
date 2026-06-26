@@ -61,6 +61,11 @@ def main():
     ap.add_argument("--vertex-nuance", action="store_true",
                     help="enable the optional anti-flatness pass (densify+bevel+"
                          "procedural vertex color; visual-only, off by default)")
+    ap.add_argument("--rarity", default=None,
+                    choices=["common", "uncommon", "rare", "epic", "legendary"],
+                    help="optional building rarity; stamps the tier + its "
+                         "canonical colour onto gameplay.json and every door/"
+                         "breach anchor for the networked-door reveal")
     ap.add_argument("--list", action="store_true", help="list available presets and exit")
     ap.add_argument("--force", action="store_true", help="overwrite if the spec exists")
     args = ap.parse_args()
@@ -108,6 +113,11 @@ def main():
         spec["vertex_nuance"] = True
         print("enabled --vertex-nuance (anti-flatness pass; build in Blender to "
               "see it, and use a vertex-color material in Godot to display it)")
+
+    if args.rarity:
+        spec["rarity"] = args.rarity
+        print(f"set rarity = {args.rarity} (door/breach anchors will carry its "
+              "colour; the reveal itself is game code -- see docs/RARITY.md)")
 
     specs_dir = os.path.join(HERE, "specs")
     os.makedirs(specs_dir, exist_ok=True)

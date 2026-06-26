@@ -77,7 +77,9 @@ Presets: **bank**, **police_station**, **corner_deli**, **compound**,
 **casino_tower** (run `--list` for modes each supports). Flags:
 `--mode heist|assault|survival`, `--floors N`, `--no-basement`, `--scale-ref`
 (1.8 m human proxies for a Blender scale check), `--no-audio` (strip the
-acoustic bridge), `--vertex-nuance` (optional anti-flatness pass). This writes
+acoustic bridge), `--vertex-nuance` (optional anti-flatness pass), `--rarity
+common|uncommon|rare|epic|legendary` (optional building rarity for the
+networked-door reveal). This writes
 and validates a full spec — tactical layout, materials, spawns, vertical routes
 — then prints the build command. Edit the generated JSON to customize, or build
 it straight away with `build.py`.
@@ -93,6 +95,7 @@ deli_counter/
   deli_counter.py     core builder (needs Blender's bpy)
   spec_types.py       spec dataclasses (pure Python, no bpy)
   spec_loader.py      JSON/YAML -> LevelSpec
+  rarity.py           canonical building-rarity tier+colour table (pure Python, no bpy)
   version.py          KIT_VERSION / SCHEMA_VERSION (stamped into manifests)
   build.py            CLI: drives Blender headless (--all, --watch)  (normal Python)
   validate.py         check a spec without Blender         (normal Python)
@@ -375,6 +378,19 @@ present. `validate.py` hard-fails on these and prints a **scorecard**:
 See `specs/rowhouse_raid.json` for a full tactical level. Sightline analysis
 and an in-engine nav smoke test are a planned Godot-side Phase 2 (they need
 real geometry raycasts).
+
+### Building rarity — value for the door reveal (optional)
+
+A building can declare one `rarity` (`common` / `uncommon` / `rare` / `epic` /
+`legendary`), e.g. `"rarity": "legendary"` in the spec or
+`--rarity legendary` on `new_level.py`. The build stamps the tier and its one
+canonical colour (white / green / blue / purple / yellow) onto `gameplay.json`
+and onto every breachable door/breach anchor, so a networked door can pop the
+right colour the instant it opens — the "open a Legendary chest, but it's a whole
+building" reveal. It's a contract *value*, not a baked effect: the reveal itself
+(light, sound, HUD banner) and any rarity-driven enemy/loot budgets are game code
+that reads the value. Off by default. See **`docs/RARITY.md`** for the tier table
+and the Godot wiring.
 
 ### Path metrics — intel, not judgment
 

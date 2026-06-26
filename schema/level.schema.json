@@ -3,395 +3,1051 @@
   "$id": "https://delicounter/level.schema.json",
   "title": "Deli Counter level spec",
   "type": "object",
-  "required": ["name"],
+  "required": [
+    "name"
+  ],
   "additionalProperties": false,
   "properties": {
-    "$schema": { "type": "string" },
-    "name": { "type": "string" },
-    "mode": { "enum": ["assault", "heist", "survival"] },
-    "seed": { "type": "integer", "default": 1999 },
-    "grid": { "type": "number", "default": 0.5, "exclusiveMinimum": 0 },
-
-    "footprint_x": { "type": "number", "exclusiveMinimum": 0 },
-    "footprint_y": { "type": "number", "exclusiveMinimum": 0 },
-    "story_height": { "type": "number", "exclusiveMinimum": 0 },
-    "n_stories": { "type": "integer", "minimum": 1 },
-    "has_basement": { "type": "boolean" },
-
-    "wall_thick": { "type": "number", "exclusiveMinimum": 0 },
-    "floor_thick": { "type": "number", "exclusiveMinimum": 0 },
-    "collision": { "enum": ["convex", "trimesh", "none"] },
-    "auto_exterior": { "type": "boolean" },
-    "scale_ref": { "type": "boolean" },
-    "vertex_nuance": { "type": "boolean" },
-    "assets_dir": { "type": "string" },
-    "default_material": { "type": ["string", "null"] },
-
+    "$schema": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "mode": {
+      "enum": [
+        "assault",
+        "heist",
+        "survival"
+      ]
+    },
+    "seed": {
+      "type": "integer",
+      "default": 1999
+    },
+    "grid": {
+      "type": "number",
+      "default": 0.5,
+      "exclusiveMinimum": 0
+    },
+    "footprint_x": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "footprint_y": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "story_height": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "n_stories": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "has_basement": {
+      "type": "boolean"
+    },
+    "wall_thick": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "floor_thick": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "collision": {
+      "enum": [
+        "convex",
+        "trimesh",
+        "none"
+      ]
+    },
+    "auto_exterior": {
+      "type": "boolean"
+    },
+    "scale_ref": {
+      "type": "boolean"
+    },
+    "vertex_nuance": {
+      "type": "boolean"
+    },
+    "rarity": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "common",
+        "uncommon",
+        "rare",
+        "epic",
+        "legendary",
+        null
+      ],
+      "description": "Optional building rarity tier. When set, the build stamps the tier + its canonical colour onto gameplay.json and every breachable door/breach anchor for the networked-door reveal. null/omitted = no rarity."
+    },
+    "assets_dir": {
+      "type": "string"
+    },
+    "default_material": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
     "materials": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id"],
+        "required": [
+          "id"
+        ],
         "additionalProperties": false,
         "properties": {
-          "id": { "type": "string" },
-          "acoustic": {
-            "enum": ["Default", "Air", "Glass", "Wood", "Drywall",
-                     "Concrete", "Metal", "Curtain", "Foliage", null]
+          "id": {
+            "type": "string"
           },
-          "absorption": { "type": ["number", "null"], "minimum": 0, "maximum": 1 },
-          "damping": { "type": ["number", "null"], "minimum": 0, "maximum": 1 }
+          "acoustic": {
+            "enum": [
+              "Default",
+              "Air",
+              "Glass",
+              "Wood",
+              "Drywall",
+              "Concrete",
+              "Metal",
+              "Curtain",
+              "Foliage",
+              null
+            ]
+          },
+          "absorption": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 1
+          },
+          "damping": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "minimum": 0,
+            "maximum": 1
+          }
         }
       }
     },
-
     "assets": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "file"],
+        "required": [
+          "id",
+          "file"
+        ],
         "additionalProperties": false,
         "properties": {
-          "id": { "type": "string" },
-          "file": { "type": "string" },
-          "fmt": { "enum": ["glb", "gltf", "obj", "blend"] },
-          "collision": { "enum": ["convex", "box", "file", "trimesh", "none"] },
-          "collision_file": { "type": ["string", "null"] },
-          "blend_object": { "type": ["string", "null"] }
+          "id": {
+            "type": "string"
+          },
+          "file": {
+            "type": "string"
+          },
+          "fmt": {
+            "enum": [
+              "glb",
+              "gltf",
+              "obj",
+              "blend"
+            ]
+          },
+          "collision": {
+            "enum": [
+              "convex",
+              "box",
+              "file",
+              "trimesh",
+              "none"
+            ]
+          },
+          "collision_file": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "blend_object": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
         }
       }
     },
-
     "placements": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["asset"],
+        "required": [
+          "asset"
+        ],
         "additionalProperties": false,
         "properties": {
-          "asset": { "type": "string" },
-          "x": { "type": "number" },
-          "y": { "type": "number" },
-          "z": { "type": "number" },
-          "rot_x": { "type": "number" },
-          "rot_y": { "type": "number" },
-          "rot_z": { "type": "number" },
-          "scale": { "type": "number", "exclusiveMinimum": 0 },
-          "scale_xyz": {
-            "type": ["array", "null"],
-            "items": { "type": "number" },
-            "minItems": 3, "maxItems": 3
+          "asset": {
+            "type": "string"
           },
-          "collision": { "enum": ["convex", "box", "file", "trimesh", "none"] },
-          "name": { "type": ["string", "null"] }
+          "x": {
+            "type": "number"
+          },
+          "y": {
+            "type": "number"
+          },
+          "z": {
+            "type": "number"
+          },
+          "rot_x": {
+            "type": "number"
+          },
+          "rot_y": {
+            "type": "number"
+          },
+          "rot_z": {
+            "type": "number"
+          },
+          "scale": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "scale_xyz": {
+            "type": [
+              "array",
+              "null"
+            ],
+            "items": {
+              "type": "number"
+            },
+            "minItems": 3,
+            "maxItems": 3
+          },
+          "collision": {
+            "enum": [
+              "convex",
+              "box",
+              "file",
+              "trimesh",
+              "none"
+            ]
+          },
+          "name": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
         }
       }
     },
-
     "ext_walls": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["wall", "story"],
+        "required": [
+          "wall",
+          "story"
+        ],
         "additionalProperties": false,
         "properties": {
-          "wall": { "enum": ["N", "S", "E", "W"] },
-          "story": { "type": "integer" },
-          "openings": { "type": "array", "items": { "$ref": "#/$defs/opening" } },
-          "material": { "type": ["string", "null"] }
+          "wall": {
+            "enum": [
+              "N",
+              "S",
+              "E",
+              "W"
+            ]
+          },
+          "story": {
+            "type": "integer"
+          },
+          "openings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/opening"
+            }
+          },
+          "material": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
         }
       }
     },
-
     "partitions": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["story", "axis", "pos", "start", "end"],
+        "required": [
+          "story",
+          "axis",
+          "pos",
+          "start",
+          "end"
+        ],
         "additionalProperties": false,
         "properties": {
-          "story": { "type": "integer" },
-          "axis": { "enum": ["X", "Y"] },
-          "pos": { "type": "number" },
-          "start": { "type": "number" },
-          "end": { "type": "number" },
-          "openings": { "type": "array", "items": { "$ref": "#/$defs/opening" } },
-          "material": { "type": ["string", "null"] }
+          "story": {
+            "type": "integer"
+          },
+          "axis": {
+            "enum": [
+              "X",
+              "Y"
+            ]
+          },
+          "pos": {
+            "type": "number"
+          },
+          "start": {
+            "type": "number"
+          },
+          "end": {
+            "type": "number"
+          },
+          "openings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/opening"
+            }
+          },
+          "material": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
         }
       }
     },
-
     "stairs": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["x", "y", "from_story", "to_story"],
+        "required": [
+          "x",
+          "y",
+          "from_story",
+          "to_story"
+        ],
         "additionalProperties": false,
         "properties": {
-          "x": { "type": "number" },
-          "y": { "type": "number" },
-          "from_story": { "type": "integer" },
-          "to_story": { "type": "integer" },
-          "width": { "type": "number", "exclusiveMinimum": 0 },
-          "run": { "type": "number", "exclusiveMinimum": 0 },
-          "style": { "enum": ["straight", "switchback"] },
-          "cut_slabs": { "type": "boolean" },
-          "step_rise": { "type": "number", "exclusiveMinimum": 0 },
-          "n_steps": { "type": ["integer", "null"], "minimum": 2 }
+          "x": {
+            "type": "number"
+          },
+          "y": {
+            "type": "number"
+          },
+          "from_story": {
+            "type": "integer"
+          },
+          "to_story": {
+            "type": "integer"
+          },
+          "width": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "run": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "style": {
+            "enum": [
+              "straight",
+              "switchback"
+            ]
+          },
+          "cut_slabs": {
+            "type": "boolean"
+          },
+          "step_rise": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "n_steps": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 2
+          }
         }
       }
     },
-
     "ladders": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["x", "y", "from_story", "to_story"],
+        "required": [
+          "x",
+          "y",
+          "from_story",
+          "to_story"
+        ],
         "additionalProperties": false,
         "properties": {
-          "x": { "type": "number" },
-          "y": { "type": "number" },
-          "from_story": { "type": "integer" },
-          "to_story": { "type": "integer" },
-          "width": { "type": "number", "exclusiveMinimum": 0 },
-          "depth": { "type": "number", "exclusiveMinimum": 0 },
-          "rung_spacing": { "type": "number", "exclusiveMinimum": 0 },
-          "cut_slabs": { "type": "boolean" },
-          "facing": { "enum": ["N", "S", "E", "W"] }
+          "x": {
+            "type": "number"
+          },
+          "y": {
+            "type": "number"
+          },
+          "from_story": {
+            "type": "integer"
+          },
+          "to_story": {
+            "type": "integer"
+          },
+          "width": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "depth": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "rung_spacing": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "cut_slabs": {
+            "type": "boolean"
+          },
+          "facing": {
+            "enum": [
+              "N",
+              "S",
+              "E",
+              "W"
+            ]
+          }
         }
       }
     },
-
     "ramps": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["x", "y", "from_story", "to_story"],
+        "required": [
+          "x",
+          "y",
+          "from_story",
+          "to_story"
+        ],
         "additionalProperties": false,
         "properties": {
-          "x": { "type": "number" },
-          "y": { "type": "number" },
-          "from_story": { "type": "integer" },
-          "to_story": { "type": "integer" },
-          "run": { "type": "number", "exclusiveMinimum": 0 },
-          "width": { "type": "number", "exclusiveMinimum": 0 },
-          "axis": { "enum": ["X", "Y"] },
-          "thickness": { "type": "number", "exclusiveMinimum": 0 },
-          "cut_slabs": { "type": "boolean" },
-          "max_slope_deg": { "type": "number", "exclusiveMinimum": 0 }
+          "x": {
+            "type": "number"
+          },
+          "y": {
+            "type": "number"
+          },
+          "from_story": {
+            "type": "integer"
+          },
+          "to_story": {
+            "type": "integer"
+          },
+          "run": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "width": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "axis": {
+            "enum": [
+              "X",
+              "Y"
+            ]
+          },
+          "thickness": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "cut_slabs": {
+            "type": "boolean"
+          },
+          "max_slope_deg": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          }
         }
       }
     },
-
     "vault_ledges": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["x", "y", "story"],
+        "required": [
+          "x",
+          "y",
+          "story"
+        ],
         "additionalProperties": false,
         "properties": {
-          "x": { "type": "number" },
-          "y": { "type": "number" },
-          "story": { "type": "integer" },
-          "length": { "type": "number", "exclusiveMinimum": 0 },
-          "axis": { "enum": ["X", "Y"] },
-          "height": { "type": "number", "exclusiveMinimum": 0 },
-          "thick": { "type": "number", "exclusiveMinimum": 0 },
-          "material": { "type": ["string", "null"] }
+          "x": {
+            "type": "number"
+          },
+          "y": {
+            "type": "number"
+          },
+          "story": {
+            "type": "integer"
+          },
+          "length": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "axis": {
+            "enum": [
+              "X",
+              "Y"
+            ]
+          },
+          "height": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "thick": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "material": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
         }
       }
     },
-
     "slab_holes": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["story", "x", "y", "size_x", "size_y"],
+        "required": [
+          "story",
+          "x",
+          "y",
+          "size_x",
+          "size_y"
+        ],
         "additionalProperties": false,
         "properties": {
-          "story": { "type": "integer" },
-          "x": { "type": "number" },
-          "y": { "type": "number" },
-          "size_x": { "type": "number", "exclusiveMinimum": 0 },
-          "size_y": { "type": "number", "exclusiveMinimum": 0 }
+          "story": {
+            "type": "integer"
+          },
+          "x": {
+            "type": "number"
+          },
+          "y": {
+            "type": "number"
+          },
+          "size_x": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "size_y": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          }
         }
       }
     },
-
     "volumes": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["name", "x", "y", "z", "size_x", "size_y", "size_z"],
+        "required": [
+          "name",
+          "x",
+          "y",
+          "z",
+          "size_x",
+          "size_y",
+          "size_z"
+        ],
         "additionalProperties": false,
         "properties": {
-          "name": { "type": "string" },
-          "x": { "type": "number" },
-          "y": { "type": "number" },
-          "z": { "type": "number" },
-          "size_x": { "type": "number", "exclusiveMinimum": 0 },
-          "size_y": { "type": "number", "exclusiveMinimum": 0 },
-          "size_z": { "type": "number", "exclusiveMinimum": 0 },
-          "collision": { "enum": ["convex", "trimesh", "none"] },
-          "visual": { "type": "boolean" },
-          "material": { "type": ["string", "null"] }
+          "name": {
+            "type": "string"
+          },
+          "x": {
+            "type": "number"
+          },
+          "y": {
+            "type": "number"
+          },
+          "z": {
+            "type": "number"
+          },
+          "size_x": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "size_y": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "size_z": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "collision": {
+            "enum": [
+              "convex",
+              "trimesh",
+              "none"
+            ]
+          },
+          "visual": {
+            "type": "boolean"
+          },
+          "material": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
         }
       }
     },
-
     "parapets": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["story"],
+        "required": [
+          "story"
+        ],
         "additionalProperties": false,
         "properties": {
-          "story": { "type": "integer" },
-          "height": { "type": "number", "exclusiveMinimum": 0 },
-          "thick": { "type": "number", "exclusiveMinimum": 0 }
+          "story": {
+            "type": "integer"
+          },
+          "height": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "thick": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          }
         }
       }
     },
-
     "rooms": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "story", "bounds"],
+        "required": [
+          "id",
+          "story",
+          "bounds"
+        ],
         "additionalProperties": false,
         "properties": {
-          "id": { "type": "string" },
-          "story": { "type": "integer" },
+          "id": {
+            "type": "string"
+          },
+          "story": {
+            "type": "integer"
+          },
           "bounds": {
             "type": "array",
-            "items": { "type": "number" },
-            "minItems": 4, "maxItems": 4
+            "items": {
+              "type": "number"
+            },
+            "minItems": 4,
+            "maxItems": 4
           },
-          "role": { "type": ["string", "null"] },
-          "combat_range": { "enum": ["close", "medium", "long", null] },
-          "fortifiable": { "type": ["boolean", "null"] },
-          "objective": { "type": "boolean" }
+          "role": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "combat_range": {
+            "enum": [
+              "close",
+              "medium",
+              "long",
+              null
+            ]
+          },
+          "fortifiable": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "objective": {
+            "type": "boolean"
+          }
         }
       }
     },
-
     "vertical_links": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["kind"],
+        "required": [
+          "kind"
+        ],
         "additionalProperties": false,
         "properties": {
-          "kind": { "enum": ["stair", "floor_hole", "hatch"] },
-          "role": { "type": ["string", "null"] },
-          "from_story": { "type": ["integer", "null"] },
-          "to_story": { "type": ["integer", "null"] },
-          "story": { "type": ["integer", "null"] },
-          "x": { "type": ["number", "null"] },
-          "y": { "type": ["number", "null"] },
-          "size_x": { "type": ["number", "null"], "exclusiveMinimum": 0 },
-          "size_y": { "type": ["number", "null"], "exclusiveMinimum": 0 },
-          "breachable": { "type": ["boolean", "null"] },
-          "cut_slab": { "type": "boolean" }
+          "kind": {
+            "enum": [
+              "stair",
+              "floor_hole",
+              "hatch"
+            ]
+          },
+          "role": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "from_story": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "to_story": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "story": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "x": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "y": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "size_x": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "exclusiveMinimum": 0
+          },
+          "size_y": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "exclusiveMinimum": 0
+          },
+          "breachable": {
+            "type": [
+              "boolean",
+              "null"
+            ]
+          },
+          "cut_slab": {
+            "type": "boolean"
+          }
         }
       }
     },
-
     "markers": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["type"],
+        "required": [
+          "type"
+        ],
         "additionalProperties": false,
         "properties": {
-          "type": { "type": "string" },
-          "x": { "type": "number" },
-          "y": { "type": "number" },
-          "z": { "type": "number" },
-          "rot_z": { "type": "number" },
-          "id": { "type": ["string", "null"] },
-          "room": { "type": ["string", "null"] },
-          "meta": { "type": ["object", "null"] }
+          "type": {
+            "type": "string"
+          },
+          "x": {
+            "type": "number"
+          },
+          "y": {
+            "type": "number"
+          },
+          "z": {
+            "type": "number"
+          },
+          "rot_z": {
+            "type": "number"
+          },
+          "id": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "room": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "meta": {
+            "type": [
+              "object",
+              "null"
+            ]
+          }
         }
       }
     },
-
     "objectives": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id"],
+        "required": [
+          "id"
+        ],
         "additionalProperties": false,
         "properties": {
-          "id": { "type": "string" },
-          "x": { "type": "number" },
-          "y": { "type": "number" },
-          "z": { "type": "number" },
-          "kind": { "type": "string" },
-          "room": { "type": ["string", "null"] },
-          "required": { "type": "boolean" },
-          "duration": { "type": ["number", "null"], "exclusiveMinimum": 0 },
-          "meta": { "type": ["object", "null"] }
+          "id": {
+            "type": "string"
+          },
+          "x": {
+            "type": "number"
+          },
+          "y": {
+            "type": "number"
+          },
+          "z": {
+            "type": "number"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "room": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "required": {
+            "type": "boolean"
+          },
+          "duration": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "exclusiveMinimum": 0
+          },
+          "meta": {
+            "type": [
+              "object",
+              "null"
+            ]
+          }
         }
       }
     },
-
     "loot": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id"],
+        "required": [
+          "id"
+        ],
         "additionalProperties": false,
         "properties": {
-          "id": { "type": "string" },
-          "x": { "type": "number" },
-          "y": { "type": "number" },
-          "z": { "type": "number" },
-          "value": { "type": "number", "minimum": 0 },
-          "bags": { "type": "integer", "minimum": 1 },
-          "kind": { "type": "string" },
-          "room": { "type": ["string", "null"] },
-          "meta": { "type": ["object", "null"] }
+          "id": {
+            "type": "string"
+          },
+          "x": {
+            "type": "number"
+          },
+          "y": {
+            "type": "number"
+          },
+          "z": {
+            "type": "number"
+          },
+          "value": {
+            "type": "number",
+            "minimum": 0
+          },
+          "bags": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "kind": {
+            "type": "string"
+          },
+          "room": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "meta": {
+            "type": [
+              "object",
+              "null"
+            ]
+          }
         }
       }
     },
-
     "zones": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["id", "kind", "bounds"],
+        "required": [
+          "id",
+          "kind",
+          "bounds"
+        ],
         "additionalProperties": false,
         "properties": {
-          "id": { "type": "string" },
-          "kind": { "enum": ["extraction", "secure", "drop", "safe_room", "finale"] },
-          "story": { "type": "integer" },
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "extraction",
+              "secure",
+              "drop",
+              "safe_room",
+              "finale"
+            ]
+          },
+          "story": {
+            "type": "integer"
+          },
           "bounds": {
             "type": "array",
-            "items": { "type": "number" },
-            "minItems": 4, "maxItems": 4
+            "items": {
+              "type": "number"
+            },
+            "minItems": 4,
+            "maxItems": 4
           },
-          "meta": { "type": ["object", "null"] }
+          "meta": {
+            "type": [
+              "object",
+              "null"
+            ]
+          }
         }
       }
     }
   },
-
   "$defs": {
     "opening": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "kind": { "enum": ["door", "window", "garage", "breach"] },
-        "pos": { "type": "number", "minimum": -0.5, "maximum": 0.5 },
-        "width": { "type": ["number", "null"], "exclusiveMinimum": 0 },
-        "height": { "type": ["number", "null"], "exclusiveMinimum": 0 },
-        "sill": { "type": ["number", "null"], "minimum": 0 },
-        "tag": { "type": ["string", "null"] },
-        "breach_class": { "type": ["string", "null"] },
-        "material": { "type": ["string", "null"] },
-        "vaultable": { "type": ["boolean", "null"] },
-        "reinforceable": { "type": ["boolean", "null"] }
+        "kind": {
+          "enum": [
+            "door",
+            "window",
+            "garage",
+            "breach"
+          ]
+        },
+        "pos": {
+          "type": "number",
+          "minimum": -0.5,
+          "maximum": 0.5
+        },
+        "width": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "exclusiveMinimum": 0
+        },
+        "height": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "exclusiveMinimum": 0
+        },
+        "sill": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "tag": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "breach_class": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "material": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "vaultable": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "reinforceable": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "rarity": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "rarity_color": {
+          "type": [
+            "object",
+            "null"
+          ]
+        }
       }
     }
   }

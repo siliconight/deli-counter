@@ -5,6 +5,28 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.32.0]
+### Added — optional building rarity (for the networked-door reveal)
+- A building can declare one `rarity` (`common` / `uncommon` / `rare` / `epic` /
+  `legendary`). Off by default; specs that omit it are byte-identical to before.
+- New `rarity.py` — the single canonical tier→colour table (white / green /
+  blue / purple / yellow, the proposal's colours as genre-standard loot hues),
+  exposing hex + Godot-ready `rgb`. One source of truth so the colour can't
+  drift into hard-coded hex strings across game code.
+- `gameplay.json` now emits `rarity` + `rarity_color` at the top level (the
+  source of truth), and stamps the same colour onto every *breachable* opening
+  (`door` / `garage` / `breach`; windows excluded). The `DOOR_SOCKET_*` /
+  `BREACH_PANEL_*` anchors also carry the rarity as custom properties → glTF
+  `extras` → Godot node metadata, so a networked door instanced at a socket pops
+  the right colour with no lookup back to the building root.
+- `new_level.py --rarity <tier>` stamps a generated level. `specs/rarity_demo.json`
+  demonstrates it.
+- Contract is the *value*, not the effect: the reveal (light/sound/HUD) and any
+  rarity-driven enemy/loot budgets stay game code that reads this value — see the
+  new `docs/RARITY.md` (with Godot wiring) and the updated
+  `docs/GAMEPLAY_JSON_CONTRACT.md`. `SCHEMA_VERSION` → 1.7.0 (additive: a new
+  optional top-level field + two optional opening fields; old specs still load).
+
 ## [0.31.1]
 ### Added — docs
 - `docs/CUSTOMIZING.md`: how to take a level the last 20% without breaking

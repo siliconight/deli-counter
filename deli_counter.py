@@ -46,6 +46,7 @@ from spec_types import (
     Room, VerticalLink, Marker, Objective, LootSpawn, Zone, Material,
     Ladder, Ramp, VaultLedge,
 )
+from rarity import resolve_rarity
 
 
 # ============================================================================
@@ -382,6 +383,14 @@ class _Builder:
                          "vertical_links": [], "openings": [],
                          "objectives": [], "loot": [], "zones": [],
                          "materials": [], "surfaces": []}
+        # OPTIONAL building rarity: resolve once, expose as the single source of
+        # truth on the gameplay.json top level. None when unset (no rarity).
+        # _record_openings stamps the same colour onto each breachable door so a
+        # networked door can pop it on open. resolve_rarity raises on a bad tier
+        # -> a typo fails the build instead of shipping an uncolourable building.
+        self.rarity_info = resolve_rarity(self.s.rarity)
+        self.gameplay["rarity"] = self.s.rarity
+        self.gameplay["rarity_color"] = self.rarity_info
         self._slabs()
         self._exterior()
         self._partitions()
@@ -474,21 +483,47 @@ class _Builder:
                 wx, wy = wall_center[0], wall_center[1] + u
             has_meta = any([op.tag, op.breach_class, op.material,
                             op.vaultable, op.reinforceable])
-            self.gameplay["openings"].append({
+            entry = {
                 "wall": wall_name, "kind": op.kind, "story": story,
                 "x": round(wx, 3), "y": round(wy, 3), "z": round(cz, 3),
                 "width": r["width"], "height": r["height"], "sill": r["sill"],
                 "tag": op.tag, "breach_class": op.breach_class,
                 "material": op.material, "vaultable": bool(op.vaultable),
                 "reinforceable": bool(op.reinforceable),
-            })
+            }
+            # If the building has a rarity, stamp the tier + its canonical colour
+            # onto every *breachable* opening (door / garage / breach) -- the
+            # "networked doors" that reveal the building when opened. Windows are
+            # not entry reveals, so they stay uncoloured. The game's door scene
+            # reads opening.rarity_color (or the socket-anchor meta below) and
+            # pops that colour; the kit only supplies the value.
+            breachable = op.kind in ("door", "garage", "breach")
+            if self.rarity_info and breachable:
+                entry["rarity"] = self.rarity_info["tier"]
+                entry["rarity_color"] = self.rarity_info
+            self.gameplay["openings"].append(entry)
             # socket markers for door/breach so Godot can swap in scenes
             if op.kind == "door":
                 nm = f"DOOR_SOCKET_{wall_name}_{j}".upper()
-                self._empty(nm, (wx, wy, cz), self.MARKERS)
+                sock = self._empty(nm, (wx, wy, cz), self.MARKERS)
+                self._tag_rarity_anchor(sock)
             elif op.kind == "breach":
                 nm = f"BREACH_PANEL_{wall_name}_{j}".upper()
-                self._empty(nm, (wx, wy, cz), self.MARKERS)
+                sock = self._empty(nm, (wx, wy, cz), self.MARKERS)
+                self._tag_rarity_anchor(sock)
+
+    def _tag_rarity_anchor(self, obj):
+        """Write the building's rarity onto a door/breach socket Empty as custom
+        properties, which export to glTF node `extras` -> Godot node metadata.
+        Lets a networked door scene instanced AT this socket read its pop colour
+        locally (obj.get_meta("rarity_rgb")) without joining back to the
+        building root. gameplay.json stays authoritative; this is convenience.
+        No-op when the building has no rarity."""
+        if not self.rarity_info:
+            return
+        obj["rarity"] = self.rarity_info["tier"]
+        obj["rarity_color_hex"] = self.rarity_info["hex"]
+        obj["rarity_rgb"] = self.rarity_info["rgb"]
 
     def _partitions(self):
         H, wt = self.s.story_height, self.s.wall_thick
@@ -1015,6 +1050,12 @@ def write_gameplay_json(builder, path):
     data = {
         "level": builder.s.name,
         "mode": builder.s.mode,
+        # OPTIONAL building rarity: the single source of truth. `rarity` is the
+        # tier string (or null); `rarity_color` is the resolved colour record
+        # ({tier, rank, color_name, hex, rgb}) or null. The networked-door
+        # reveal reads this; breachable openings below carry the same colour.
+        "rarity": builder.gameplay.get("rarity"),
+        "rarity_color": builder.gameplay.get("rarity_color"),
         "markers": builder.gameplay["markers"],
         "rooms": builder.gameplay["rooms"],
         "vertical_links": builder.gameplay["vertical_links"],
