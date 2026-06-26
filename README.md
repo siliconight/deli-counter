@@ -102,6 +102,7 @@ deli_counter/
   tactical.py         reachability graph + path metrics + mode scorecards
   polybudget.py       offline triangle-budget estimator    (normal Python)
   guards.py           hard gates: IP-name + step-rise      (normal Python)
+  enterability.py     hard gate: is there a usable way IN? (sealed-box check)
   navigability.py     offline nav proxy (doorway width + connectivity)
   floorplan.py        top-down floorplan SVG per story      (normal Python)
   meshlib_kit.py      manifest for the optional GridMap parts-kit
@@ -407,10 +408,14 @@ They are **information for whoever builds gameplay on the model, not the tool's
 opinion.** Deli Counter makes models, not gameplay — a single route to a vault,
 a short run, or a chokepoint at the one stairwell may be exactly the design the
 gameplay engineer intends. The tool reports the shape of the building; it does
-not warn or fail on these. The *only* hard path gate is **reachability** — if
-an objective or finale is physically unreachable through the geometry, that's a
-broken model and the build fails. Everything past "can you get there at all" is
-intel the gameplay layer interprets.
+not warn or fail on these. The hard path gates are **reachability** — if an
+objective or finale is physically unreachable through the geometry, that's a
+broken model and the build fails — and **enterability**: if there's no opening a
+player can actually fit through (a sealed box), nobody can get inside, so that
+fails too. Awkward-but-possible entries (crouch-only, breach-only, a tight
+squeeze) warn rather than fail. Whether the swing/vault space is physically clear
+is a walk-test fact the offline check flags but can't certify. Everything past
+"can you get in, and get there at all" is intel the gameplay layer interprets.
 
 ### Poly budget — intel, not judgment
 

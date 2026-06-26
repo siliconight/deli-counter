@@ -5,6 +5,25 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.34.0]
+### Added — enterability gate (can a body actually get IN?)
+- New `enterability.py` + a gate in `validate.py` / `check.py`: the entry-side
+  sibling of the reachability gate. A shell with no opening a player fits through
+  is a sealed box — it validates clean (rooms reachable from each other) yet
+  can't be played because nobody gets inside. Nothing caught that before.
+- GATE THE CLEAR-CUT CASE, WARN THE REST: HARD ERROR when there's no usable
+  ground-level exterior entry at all (too small / too high a sill / only fixed
+  windows). WARN when there's a way in but it's awkward — crouch-only,
+  breach-only, vault-only, or a tight squeeze. Always prints a walk-to-verify
+  note that swing/vault clearance can't be confirmed offline.
+- Body-fit thresholds come from `docs/scale_guidelines.md` (passable width
+  >= 0.7 m, comfortable >= 0.9 m; crouch >= 1.1 m, standing >= 1.8 m; a sill
+  within 1.2 m is vault-reachable; a window counts as an entry only if it's
+  vaultable or low). The scorecard now reports usable-entry counts.
+- `gameplay.json` now emits `footprint: [x, y]` (metres), so a site assembler
+  (Lot) can test approach space in front of each entry against neighbours.
+  No schema change (output-only addition; `SCHEMA_VERSION` stays 1.8.0).
+
 ## [0.33.0]
 ### Changed — rarity now multi-entry aware + aligned to the updated Delco proposal
 - **Every** opening (door / window / breach — not just breachable kinds) now

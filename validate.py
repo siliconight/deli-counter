@@ -153,6 +153,25 @@ def validate_file(path):
     except Exception as ex:
         print(f"  GUARD: checks skipped ({ex})")
 
+    # enterability (can a body actually get IN? — entry-side of reachability)
+    try:
+        import enterability
+        eerrors, ewarnings = enterability.check(spec)
+        esum = enterability.summary(spec)
+        print(f"  enterability: {esum['valid_entries']} usable entry(s) "
+              f"({esum['doors']} door/garage, {esum['standing_entries']} "
+              f"standing) on walls {esum['entry_walls'] or '—'}")
+        for w in ewarnings:
+            print(f"  ENTRY-WARN: {w}")
+        for e in eerrors:
+            print(f"  ENTRY-ERROR: {e}")
+        print(f"  ENTRY-NOTE: {enterability.CLEARANCE_NOTE}")
+        if eerrors:
+            print(f"  -> {len(eerrors)} enterability error(s)")
+            return False
+    except Exception as ex:
+        print(f"  ENTRY: checks skipped ({ex})")
+
     # navigability proxy (offline pre-filter for AI nav; real check = navmesh)
     try:
         import navigability

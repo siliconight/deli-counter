@@ -1060,6 +1060,9 @@ def write_gameplay_json(builder, path):
         # For a single DC build this is the level name; every opening/anchor
         # carries the same value so any entry point resolves to this building.
         "building_id": builder.s.name,
+        # building footprint (x, y in metres) — lets a site assembler (Lot)
+        # test approach space in front of each entry against neighbours.
+        "footprint": [builder.s.footprint_x, builder.s.footprint_y],
         # OPTIONAL building rarity: the single source of truth. `rarity` is the
         # tier string (or null); `rarity_color` is the resolved colour record
         # ({tier, rank, color_name, hex, rgb}) or null. The networked-door
