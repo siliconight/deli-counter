@@ -207,56 +207,79 @@ class _Builder:
                     sill=r["sill"])
 
     def _wall_collision(self, name, center, size, axis, holes):
-        """Emit convex collision segments flanking door-height openings.
-        Window-height openings (sill>0) keep the wall solid (impassable),
-        which is correct. 'breach' openings get a tagged removable panel."""
-        H = self.s.story_height
-        passables = [h for h in holes if h["sill"] <= 0.05]
-        if not passables:
-            self._col_box(name, center, size)
-            return
-        # support a single passable opening per wall robustly
-        h0 = passables[0]
-        u, w, hh = h0["u"], h0["w"], h0["h"]
+        """Emit convex collision for a wall pierced by any number of openings.
+
+        Each opening carves a vertical void the width of the opening; the wall
+        stays solid everywhere else. Per kind:
+          - door / garage  -> void left open (walkable)
+          - breach         -> void filled with a tagged removable BREACHPANEL
+                              (visual + collision) so the shell reads solid in
+                              the greybox; game code deletes the panel to open it
+          - window (sill>0) -> NOT a void: the wall stays solid behind the
+                              (visually cut) window. Vaulting through is game code.
+        Each opening also gets a lintel above and, when sill>0, a sill wall
+        below. Handles multiple openings on one wall (e.g. two front doors, or a
+        door + a breach) -- the previous version only resolved the first one,
+        which left every other opening as a dead hole you couldn't pass.
+        """
         full = size[0] if axis == 0 else size[1]
         thick_idx = 1 if axis == 0 else 0
         thick = size[thick_idx]
         cz = center[2]
+        H = size[2]
+        ft = self.s.floor_thick
 
-        def seg(suffix, cu, clen):
+        # Only doors/garages/breaches carve the wall. Windows stay solid.
+        carve = sorted((h for h in holes if h["kind"] in ("door", "garage", "breach")),
+                       key=lambda h: h["u"])
+        if not carve:
+            self._col_box(name, center, size)
+            return
+
+        def box(suffix, cu, clen, vcz=None, vh=None, mode_col=True, visual=False):
+            """One axis-aligned chunk. cu/clen run along the wall axis;
+            vcz/vh override the vertical centre/height (default: full height)."""
             if clen <= 0.05:
                 return
+            zc = cz if vcz is None else vcz
+            zh = size[2] if vh is None else vh
+            if zh <= 0.05:
+                return
             if axis == 0:
-                c = (center[0] + cu, center[1], cz)
-                sz = (clen, thick, size[2])
+                c = (center[0] + cu, center[1], zc)
+                sz = (clen, thick, zh)
             else:
-                c = (center[0], center[1] + cu, cz)
-                sz = (thick, clen, size[2])
-            self._col_box(f"{name}_{suffix}", c, sz)
+                c = (center[0], center[1] + cu, zc)
+                sz = (thick, clen, zh)
+            if visual:
+                self._box(f"{name}_{suffix}", c, sz, self.VISUAL)
+            if mode_col:
+                self._col_box(f"{name}_{suffix}", c, sz)
 
-        left_w = (full / 2 + u) - w / 2
-        seg("L", -full / 2 + left_w / 2, left_w)
-        right_w = (full / 2 - u) - w / 2
-        seg("R", full / 2 - right_w / 2, right_w)
-        lintel_h = size[2] - hh - self.s.floor_thick
-        if lintel_h > 0.05:
-            lz = cz + size[2] / 2 - lintel_h / 2
-            if axis == 0:
-                self._col_box(f"{name}_T", (center[0] + u, center[1], lz),
-                              (w, thick, lintel_h))
-            else:
-                self._col_box(f"{name}_T", (center[0], center[1] + u, lz),
-                              (thick, w, lintel_h))
-        # breach panel: a separate, tagged removable collision+visual chunk
-        if h0["kind"] == "breach":
-            if axis == 0:
-                bc = (center[0] + u, center[1], cz - size[2] / 2 + self.s.floor_thick / 2 + hh / 2)
-                bs = (w, thick, hh)
-            else:
-                bc = (center[0], center[1] + u, cz - size[2] / 2 + self.s.floor_thick / 2 + hh / 2)
-                bs = (thick, w, hh)
-            self._box(f"{name}_BREACHPANEL", bc, bs, self.VISUAL)
-            self._col_box(f"{name}_BREACHPANEL", bc, bs)
+        # 1) full-height jambs in the gaps between (and flanking) openings
+        cursor = -full / 2
+        for i, h in enumerate(carve):
+            left = h["u"] - h["w"] / 2
+            box(f"jamb{i}", (cursor + left) / 2, left - cursor)
+            cursor = max(cursor, h["u"] + h["w"] / 2)
+        box("jambN", (cursor + full / 2) / 2, full / 2 - cursor)
+
+        # 2) per-opening sill (below), lintel (above), and breach panel (fill)
+        wall_bottom = cz - H / 2
+        wall_top = cz + H / 2
+        for i, h in enumerate(carve):
+            u, w, hh, sill = h["u"], h["w"], h["h"], h["sill"]
+            open_bottom = wall_bottom + ft / 2 + sill
+            open_top = open_bottom + hh
+            if sill > 0.05:
+                sill_h = open_bottom - wall_bottom
+                box(f"sill{i}", u, w, vcz=wall_bottom + sill_h / 2, vh=sill_h)
+            lintel_h = wall_top - open_top
+            if lintel_h > 0.05:
+                box(f"lintel{i}", u, w, vcz=open_top + lintel_h / 2, vh=lintel_h)
+            if h["kind"] == "breach":
+                box(f"BREACHPANEL{i}", u, w, vcz=(open_bottom + open_top) / 2,
+                    vh=hh, mode_col=True, visual=True)
 
     # -- top-level build steps ---------------------------------------------
     def _vertex_nuance(self,

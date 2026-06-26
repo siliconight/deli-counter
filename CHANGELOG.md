@@ -5,6 +5,25 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.34.1]
+### Fixed — walls now support any number of openings (multi-door / multi-breach)
+- `_wall_collision` only resolved the FIRST passable opening on a wall. Any
+  additional opening on the same wall had its hole cut in the visual mesh but
+  left solid behind it — so it read as a doorway you couldn't walk through.
+  This silently broke two real cases: a wall with **two doors** (only one was
+  enterable) and a wall with a **door + a breach** (the breach was a dead hole).
+  Found by walking a gas-station model with two front entrances.
+- The collision now carves a void for every door/garage/breach on a wall, with
+  a jamb between each, a lintel above each, and a sill wall below windowed
+  openings. Every door on a wall is now walkable.
+- Every `breach` opening now gets its own removable `BREACHPANEL` (visual +
+  collision) filling the hole, so the shell reads **solid** in the greybox and
+  the panel is what game code deletes to open the breach. Previously only a
+  lone first-opening breach was panelled. Breaches remain a deliberate authoring
+  choice — the kit never adds them on its own; a plain building has none.
+- Geometry-output change (PATCH): rebuilt `.glb`s differ for any level whose
+  walls carry more than one opening (most presets). Walk-test affected levels.
+
 ## [0.34.0]
 ### Added — enterability gate (can a body actually get IN?)
 - New `enterability.py` + a gate in `validate.py` / `check.py`: the entry-side
