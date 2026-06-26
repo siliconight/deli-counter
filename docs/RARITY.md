@@ -1,9 +1,9 @@
 # Building rarity — the contract value behind the door-reveal
 
-A building can carry one **rarity** (`common` / `uncommon` / `rare` / `epic` /
+A building can carry one **rarity** (`common` / `uncommon` / `rare` / `very_rare` /
 `legendary`). When set, the build stamps that tier and its one canonical colour
-onto `gameplay.json` and onto every breachable door/breach anchor, so a networked
-door can **pop the right colour the instant it opens** — the "open a Legendary
+onto `gameplay.json` and onto **every** entry anchor (any door / window /
+breach), so a networked door can **pop the right colour the instant it opens** — the "open a Legendary
 chest, but it's a whole building" reveal.
 
 This page is about the seam between the kit and your game.
@@ -17,8 +17,9 @@ not a baked effect. So:
 - one `rarity` per building (or none),
 - the single canonical colour for that tier (hex + Godot `rgb`), in one place
   (`rarity.py`) so it can't drift into five hard-coded hex strings,
-- that colour stamped onto `gameplay.json` (top level) and onto each breachable
-  opening + its `DOOR_SOCKET` / `BREACH_PANEL` anchor.
+- that colour stamped onto `gameplay.json` (top level) and onto **every**
+  opening (door/window/breach — any of them can be the entry) + the
+  `DOOR_SOCKET` / `BREACH_PANEL` anchors, each also tagged with its `building`.
 
 **Your game does the reveal** — the light burst, the rarity sound cue, the HUD
 banner, the music swell, the AI barks, the controller rumble. All of it reads the
@@ -38,8 +39,8 @@ The kit hands you the source of truth; it doesn't generate encounters.
 | `common` | white | `#FFFFFF` | `1, 1, 1` |
 | `uncommon` | green | `#1EFF00` | `0.1176, 1, 0` |
 | `rare` | blue | `#0070DD` | `0, 0.4392, 0.8667` |
-| `epic` | purple | `#A335EE` | `0.6392, 0.2078, 0.9333` |
-| `legendary` | yellow | `#FFD700` | `1, 0.8431, 0` |
+| `very_rare` | purple | `#A335EE` | `0.6392, 0.2078, 0.9333` |
+| `legendary` | gold | `#FFD700` | `1, 0.8431, 0` |
 
 `rarity.py` is the source of truth. If you want different hues, change them there
 once and everything downstream agrees.
@@ -74,7 +75,7 @@ pass ever drops the marker Empties:
 var gp = JSON.parse_string(FileAccess.get_file_as_string(gameplay_path))
 if gp.rarity != null:
     var c = gp.rarity_color
-    var pop := Color(c.rgb[0], c.rgb[1], c.rgb[2])   # legendary -> yellow
+    var pop := Color(c.rgb[0], c.rgb[1], c.rgb[2])   # legendary -> gold
     # hand `pop` to whatever stages the reveal for this building
 ```
 
@@ -98,7 +99,50 @@ func _pop_rarity() -> void:
 The anchor also carries `rarity` (tier string) and `rarity_color_hex` if you
 prefer those.
 
-### "Hidden until breach" is door state, not kit state
+### Multiple entry points — one building, one rarity
+
+A building can have several doors, plus windows and breachable walls. They all
+belong to **one building with one rarity**, so:
+
+- Every opening carries the same `rarity` / `rarity_color` **and** a `building`
+  id. There's also a top-level `building_id` (= the level name for a single DC
+  build). So whichever entry the squad hits first, it resolves to the same
+  building and the same colour — there's no "which door is the real one."
+- The reveal-on-**first**-entry, **once**, shared across the squad is the
+  `is_revealed`-per-`building_id` flip from the proposal's server spec. The kit
+  doesn't own that (it's networked runtime state); it gives the server what the
+  spec needs: a stable `building_id`, the `rarity`, and every entry anchor tagged
+  with that `building_id`. The flow matches the proposal directly:
+
+  1. world gen has the `building_id` + `rarity` (baked here, or server-rolled —
+     see below),
+  2. an entry attempt at any door/window/breach reports its `building_id`,
+  3. the server flips `is_revealed[building_id]` exactly once,
+  4. broadcasts state + timestamp,
+  5. clients pop the same colour on every entry of that building.
+
+In a **Lot** compound the same holds across many buildings: every opening and
+every door-socket marker carries its own `building` id, so "all entries of
+building X" groups unambiguously and each building reveals independently.
+
+### Baked rarity vs. per-run rolled rarity
+
+What the kit bakes is a **fixed** rarity — the building *is* `very_rare`, every
+run. That's exactly right for handcrafted "named Legendary" locations and for
+testing the reveal.
+
+The proposal's roguelike reshuffle is different: rarity is **rolled per run from
+the run seed**, within design parameters (reveal odds, the rarity mix, the
+Legendary cap), so the same authored block plays differently every time. That
+roll is **server code** — per-run, authoritative, seed-driven — the same layer as
+`is_revealed`. The authored level's job is to supply the *inputs* to that roll:
+which buildings are **eligible** to pop, and the mix/odds/cap knobs. Those are
+authored data the kit can carry when you want them — a per-building eligibility
+flag in Deli Counter and a mission-level rarity table in Lot — but they're not
+built yet. Today: set a fixed `rarity` for the buildings you want pinned; leave it
+off for the rest. (Ask and I'll wire the eligibility + mission-table path.)
+
+
 
 The kit always knows the colour; *hiding* it until the breach is your door's job.
 The door shows neutral while closed, then pops the stamped colour on open. The

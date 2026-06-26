@@ -62,7 +62,7 @@ def main():
                     help="enable the optional anti-flatness pass (densify+bevel+"
                          "procedural vertex color; visual-only, off by default)")
     ap.add_argument("--rarity", default=None,
-                    choices=["common", "uncommon", "rare", "epic", "legendary"],
+                    choices=["common", "uncommon", "rare", "very_rare", "legendary"],
                     help="optional building rarity; stamps the tier + its "
                          "canonical colour onto gameplay.json and every door/"
                          "breach anchor for the networked-door reveal")

@@ -491,14 +491,18 @@ class _Builder:
                 "material": op.material, "vaultable": bool(op.vaultable),
                 "reinforceable": bool(op.reinforceable),
             }
+            # building_id on every opening so any entry point resolves to its
+            # building (uniform with Lot compounds, where openings carry the
+            # building id). For a single DC build this is the level name.
+            entry["building"] = self.s.name
             # If the building has a rarity, stamp the tier + its canonical colour
-            # onto every *breachable* opening (door / garage / breach) -- the
-            # "networked doors" that reveal the building when opened. Windows are
-            # not entry reveals, so they stay uncoloured. The game's door scene
-            # reads opening.rarity_color (or the socket-anchor meta below) and
-            # pops that colour; the kit only supplies the value.
-            breachable = op.kind in ("door", "garage", "breach")
-            if self.rarity_info and breachable:
+            # onto EVERY opening. The design counts a door / window / breach as a
+            # valid entry attempt, so any of them must resolve to the building's
+            # rarity -- the kit doesn't pre-judge which openings the game treats
+            # as entries. (A window carrying a rarity does NOT make it glow on the
+            # curb; the reveal only fires when the game registers an entry. The
+            # game reads opening.rarity_color or the socket-anchor meta below.)
+            if self.rarity_info:
                 entry["rarity"] = self.rarity_info["tier"]
                 entry["rarity_color"] = self.rarity_info
             self.gameplay["openings"].append(entry)
@@ -513,12 +517,14 @@ class _Builder:
                 self._tag_rarity_anchor(sock)
 
     def _tag_rarity_anchor(self, obj):
-        """Write the building's rarity onto a door/breach socket Empty as custom
-        properties, which export to glTF node `extras` -> Godot node metadata.
-        Lets a networked door scene instanced AT this socket read its pop colour
-        locally (obj.get_meta("rarity_rgb")) without joining back to the
-        building root. gameplay.json stays authoritative; this is convenience.
-        No-op when the building has no rarity."""
+        """Tag a door/breach socket Empty with its building (and rarity, if any)
+        as custom properties, which export to glTF node `extras` -> Godot node
+        metadata. The building tag is always written (server-authoritative
+        is_revealed keys on building_id); the rarity props only when the building
+        has a rarity. Lets a networked door scene instanced AT this socket resolve
+        its building and pop the colour locally, without joining back to the
+        building root. gameplay.json stays authoritative; this is convenience."""
+        obj["building"] = self.s.name
         if not self.rarity_info:
             return
         obj["rarity"] = self.rarity_info["tier"]
@@ -1050,6 +1056,10 @@ def write_gameplay_json(builder, path):
     data = {
         "level": builder.s.name,
         "mode": builder.s.mode,
+        # Stable building id the server keys is_revealed + the rarity roll on.
+        # For a single DC build this is the level name; every opening/anchor
+        # carries the same value so any entry point resolves to this building.
+        "building_id": builder.s.name,
         # OPTIONAL building rarity: the single source of truth. `rarity` is the
         # tier string (or null); `rarity_color` is the resolved colour record
         # ({tier, rank, color_name, hex, rgb}) or null. The networked-door

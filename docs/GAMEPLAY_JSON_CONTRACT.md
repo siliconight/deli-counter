@@ -17,8 +17,9 @@ states it.
 {
   "level": "corner_deli_heist_01",
   "mode": "heist",
+  "building_id": "corner_deli_heist_01",
   "rarity": "legendary",
-  "rarity_color": { "tier": "legendary", "rank": 4, "color_name": "yellow",
+  "rarity_color": { "tier": "legendary", "rank": 4, "color_name": "gold",
                     "hex": "#FFD700", "rgb": [1.0, 0.8431, 0.0] },
   "markers": [ ... ],
   "rooms": [ ... ],
@@ -38,17 +39,24 @@ states it.
 **`level`** / **`mode`** — the spec name and one of `assault` / `heist` /
 `survival`.
 
+**`building_id`** — stable id the server keys `is_revealed` (and any per-run
+rarity roll) on. For a single Deli Counter build it equals `level`; every opening
+and door-socket anchor carries the same value (as `building`), so any entry point
+resolves to this one building. In a Lot compound each building keeps its own id.
+
 **`rarity`** / **`rarity_color`** — OPTIONAL building rarity. `rarity` is the
-tier string (`common` / `uncommon` / `rare` / `epic` / `legendary`) or `null`
-when the spec declares none. `rarity_color` is the resolved colour record for
-that tier — `{ "tier", "rank", "color_name", "hex", "rgb": [r,g,b] }`, with
-`rgb` in Godot's 0..1 range — or `null`. **This is the single source of truth
-for the building's rarity.** It is a contract value, not a baked effect: the
-reveal (light burst, sound cue, HUD banner when a networked door opens) is game
-code that reads this. Every *breachable* opening below carries the same colour
-so a door can pop it locally. The five tiers and their canonical colours live in
-`rarity.py`; see `docs/RARITY.md` for the wiring. Older builds (and buildings
-with no declared rarity) emit `null` for both — treat that as "no rarity."
+tier string (`common` / `uncommon` / `rare` / `very_rare` / `legendary`) or
+`null` when the spec declares none. `rarity_color` is the resolved colour record
+for that tier — `{ "tier", "rank", "color_name", "hex", "rgb": [r,g,b] }`, with
+`rgb` in Godot's 0..1 range — or `null`. **This is the single source of truth for
+the building's rarity** (tier strings match the proposal's server enum:
+`COMMON`/`UNCOMMON`/`RARE`/`VERY_RARE`/`LEGENDARY`). It is a contract value, not a
+baked effect: the reveal (light/sound/HUD when an entry is registered) is game
+code that reads this. **Every** opening below carries the same colour so any entry
+the game registers pops it. The five tiers and their canonical colours live in
+`rarity.py`; see `docs/RARITY.md` for the wiring, the multi-entry model, and the
+baked-vs-server-rolled distinction. Buildings with no declared rarity emit `null`
+for both — treat that as "no rarity."
 
 **`markers`** — gameplay anchors. Each: `{ "name", "type", "x", "y", "z",
 "room"? , "rot_z"? }`. Types include spawns (`attacker_spawn`,
@@ -65,11 +73,13 @@ preserve the Empty nodes. (See "Marker preservation" below.)
 ramps / floor-holes / hatches connecting stories.
 
 **`openings`** — tagged doorways/windows/breaches: `{ "wall", "story", "kind",
-"pos", "width", "height" }`. When the building has a rarity, each *breachable*
-opening (`door` / `garage` / `breach` — the entries a squad reveals the building
-through; windows are excluded) also carries `"rarity"` and `"rarity_color"`,
-matching the top-level values, so a networked door instanced at that opening pops
-the right colour without looking up the building root.
+"pos", "width", "height" }`. Each opening also carries a `"building"` id. When the
+building has a rarity, **every** opening additionally carries `"rarity"` and
+`"rarity_color"` matching the top-level values — because the proposal treats a
+door, window, or wall breach as a valid entry attempt, so any of them must
+resolve to the building's rarity. The game decides which openings count as entry
+points (it has `kind`, `breach_class`, `vaultable`, `reinforceable`); the kit just
+guarantees each one knows its building and rarity.
 
 **`objectives`** / **`loot`** / **`zones`** — mode-specific gameplay data
 (objective rooms, loot spawns with value, extraction/secure/drop zones).

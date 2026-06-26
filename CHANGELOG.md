@@ -5,6 +5,30 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.33.0]
+### Changed — rarity now multi-entry aware + aligned to the updated Delco proposal
+- **Every** opening (door / window / breach — not just breachable kinds) now
+  carries the building's `rarity` + `rarity_color`. The proposal counts a door,
+  window, or wall breach as a valid entry attempt, so any of them must resolve to
+  the building's rarity. Windows were excluded in 0.32.0; that was wrong.
+- Each opening and door-socket anchor now carries a `building` id, and
+  `gameplay.json` emits a top-level `building_id` (= level name for a single
+  build). So a building with several doors is unambiguous: any entry resolves to
+  the same `building_id` + rarity, and the server keys `is_revealed` on it. This
+  is what makes the "open its *first* door, reveal once, shared across the squad"
+  flow land for multi-door buildings.
+- Tier `epic` renamed to `very_rare`, and `legendary`'s colour name yellow ->
+  gold (hex unchanged `#FFD700`), to match the proposal's server enum
+  `COMMON / UNCOMMON / RARE / VERY_RARE / LEGENDARY`. Colours otherwise unchanged.
+  `SCHEMA_VERSION` 1.7.0 -> 1.8.0 (enum value changed + `building_id` /
+  `opening.building` added).
+- Docs: `docs/RARITY.md` gains a multi-entry / one-building-one-rarity section
+  and a baked-vs-server-rolled section (the proposal's per-run roll from the run
+  seed is server code; the kit bakes a fixed rarity, good for handcrafted "named
+  Legendary" buildings and testing — per-building eligibility + a mission-level
+  rarity table are the authored hooks for rolling, offered not yet built).
+  Contract doc + README updated.
+
 ## [0.32.0]
 ### Added — optional building rarity (for the networked-door reveal)
 - A building can declare one `rarity` (`common` / `uncommon` / `rare` / `epic` /

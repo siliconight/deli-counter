@@ -78,7 +78,7 @@ Presets: **bank**, **police_station**, **corner_deli**, **compound**,
 `--mode heist|assault|survival`, `--floors N`, `--no-basement`, `--scale-ref`
 (1.8 m human proxies for a Blender scale check), `--no-audio` (strip the
 acoustic bridge), `--vertex-nuance` (optional anti-flatness pass), `--rarity
-common|uncommon|rare|epic|legendary` (optional building rarity for the
+common|uncommon|rare|very_rare|legendary` (optional building rarity for the
 networked-door reveal). This writes
 and validates a full spec — tactical layout, materials, spawns, vertical routes
 — then prints the build command. Edit the generated JSON to customize, or build
@@ -381,16 +381,20 @@ real geometry raycasts).
 
 ### Building rarity — value for the door reveal (optional)
 
-A building can declare one `rarity` (`common` / `uncommon` / `rare` / `epic` /
+A building can declare one `rarity` (`common` / `uncommon` / `rare` / `very_rare` /
 `legendary`), e.g. `"rarity": "legendary"` in the spec or
 `--rarity legendary` on `new_level.py`. The build stamps the tier and its one
-canonical colour (white / green / blue / purple / yellow) onto `gameplay.json`
-and onto every breachable door/breach anchor, so a networked door can pop the
-right colour the instant it opens — the "open a Legendary chest, but it's a whole
-building" reveal. It's a contract *value*, not a baked effect: the reveal itself
-(light, sound, HUD banner) and any rarity-driven enemy/loot budgets are game code
-that reads the value. Off by default. See **`docs/RARITY.md`** for the tier table
-and the Godot wiring.
+canonical colour (white / green / blue / purple / gold) onto `gameplay.json`
+and onto **every** entry anchor of the building (any door / window / breach), so a
+networked door can pop the right colour the instant it opens — the "open a
+Legendary chest, but it's a whole building" reveal. One building has one rarity:
+every entry carries it plus the building's id, so whichever door the squad opens
+first, they all resolve to the same building and colour (the reveal-on-first,
+once, shared across the squad is server state — game code). It's a contract
+*value*, not a baked effect: the reveal itself (light, sound, HUD banner) and any
+rarity-driven enemy/loot budgets are game code that reads the value. Off by
+default. See **`docs/RARITY.md`** for the tier table, the multi-entry model, and
+the Godot wiring.
 
 ### Path metrics — intel, not judgment
 

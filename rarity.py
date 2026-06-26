@@ -11,7 +11,7 @@ game does the show. (See docs/RARITY.md.)
 
 This module is the single source of truth for the five tiers and their colours
 so game code, the door reveal, and any sibling tool (Lot) all agree on what
-"legendary yellow" actually is, instead of five hard-coded hex strings drifting
+"legendary gold" actually is, instead of five hard-coded hex strings drifting
 apart across a codebase.
 
 Colours follow the design proposal's tier -> colour names (white / green / blue
@@ -26,7 +26,7 @@ from __future__ import annotations
 from typing import Optional
 
 # Ordered low -> high. Order is meaningful (a tier's index is its rank).
-RARITY_TIERS = ["common", "uncommon", "rare", "epic", "legendary"]
+RARITY_TIERS = ["common", "uncommon", "rare", "very_rare", "legendary"]
 
 # tier -> (human colour name from the proposal, canonical sRGB hex).
 # Hex is the single source; rgb is derived from it so the two never drift.
@@ -34,8 +34,8 @@ _RARITY = {
     "common":    ("white",  "#FFFFFF"),
     "uncommon":  ("green",  "#1EFF00"),
     "rare":      ("blue",   "#0070DD"),
-    "epic":      ("purple", "#A335EE"),
-    "legendary": ("yellow", "#FFD700"),
+    "very_rare":  ("purple", "#A335EE"),
+    "legendary":  ("gold",   "#FFD700"),
 }
 
 

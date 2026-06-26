@@ -82,11 +82,18 @@
         "common",
         "uncommon",
         "rare",
-        "epic",
+        "very_rare",
         "legendary",
         null
       ],
       "description": "Optional building rarity tier. When set, the build stamps the tier + its canonical colour onto gameplay.json and every breachable door/breach anchor for the networked-door reveal. null/omitted = no rarity."
+    },
+    "building_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "Stable id for the building. For a single DC build = the level name; the server keys is_revealed and the rarity roll on this. Emitted automatically; rarely hand-authored."
     },
     "assets_dir": {
       "type": "string"
@@ -1045,6 +1052,12 @@
         "rarity_color": {
           "type": [
             "object",
+            "null"
+          ]
+        },
+        "building": {
+          "type": [
+            "string",
             "null"
           ]
         }
