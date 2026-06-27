@@ -73,6 +73,30 @@ class _Builder:
         g = self.s.grid
         return round(v / g) * g
 
+    # -- modular wall config -----------------------------------------------
+    # Modular emission is OPT-IN. Resolve it from the spec when present
+    # (spec.modular / spec.module), else fall back to the DC_MODULAR /
+    # DC_MODULE env vars so it can be tried without a spec_types change.
+    # Default: OFF -> existing specs rebuild byte-identical.
+    def _modular_on(self):
+        v = getattr(self.s, "modular", None)
+        if v is not None:
+            return bool(v)
+        return os.environ.get("DC_MODULAR", "").strip().lower() in (
+            "1", "true", "yes", "on")
+
+    def _module_size(self):
+        """Module width in metres for tiling solid spans. <= 0 disables tiling
+        (pure opening-decomposition, 'Phase A'); > 0 tiles each solid span into
+        whole modules + an end remainder ('Phase B')."""
+        m = getattr(self.s, "module", None)
+        if m is None:
+            m = os.environ.get("DC_MODULE", "")
+        try:
+            return float(m) if str(m).strip() != "" else 2.0
+        except (TypeError, ValueError):
+            return 2.0
+
     def _clear(self):
         if bpy.context.object and bpy.context.object.mode != 'OBJECT':
             bpy.ops.object.mode_set(mode='OBJECT')
@@ -281,6 +305,122 @@ class _Builder:
                 box(f"BREACHPANEL{i}", u, w, vcz=(open_bottom + open_top) / 2,
                     vh=hh, mode_col=True, visual=True)
 
+    # -- modular wall emitter ----------------------------------------------
+    # Opt-in (_modular_on). Replaces the boolean _box_with_holes + chunked
+    # _wall_collision pair: decompose a wall run into solid wall segments and
+    # per-opening pieces, each its OWN named visual+collision object (a swap
+    # slot for the art pass). See docs/WALL_SEGMENTATION.md + ASSET_SWAP_CONTRACT.md.
+    def _seg_box(self, vname, cname, center, size, axis, cu, clen, vcz, vh,
+                 role=None, visual=True, collide=True, material=None):
+        """One axis-aligned wall chunk emitted as a matched visual+collision
+        pair. cu = centre offset along the run axis; clen = length along the
+        run; vcz/vh = vertical centre/height. Skips slivers."""
+        if clen <= 0.05 or vh <= 0.05:
+            return
+        thick = size[1] if axis == 0 else size[0]
+        if axis == 0:
+            c = (center[0] + cu, center[1], vcz)
+            sz = (clen, thick, vh)
+        else:
+            c = (center[0], center[1] + cu, vcz)
+            sz = (thick, clen, vh)
+        if visual:
+            self._box(vname, c, sz, self.VISUAL, role=role)
+        if collide:
+            cob = self._col_box(cname, c, sz)
+            if cob is not None:
+                # record acoustic surface against the base name, matching the
+                # convention _exterior already uses (suffix stripped on import).
+                self._record_surface(cname, material)
+
+    def _wall_span(self, vbase, cbase, center, size, axis, a, b, k, material):
+        """Emit a solid wall span between run-offsets a..b (from the wall
+        centre) as one box, or — when a module size is set — a row of whole
+        module tiles plus an end remainder. Returns the next segment index k."""
+        L = b - a
+        if L <= 0.05:
+            return k
+        H = size[2]
+        cz = center[2]
+        M = self._module_size()
+        if M <= 0:                       # Phase A: one box per solid span
+            self._seg_box(f"{vbase}_seg{k}", f"{cbase}_seg{k}", center, size,
+                          axis, (a + b) / 2.0, L, cz, H, role="wall",
+                          material=material)
+            return k + 1
+        n = int((L + 1e-6) // M)         # whole modules
+        x = a
+        for _ in range(n):
+            self._seg_box(f"{vbase}_seg{k}", f"{cbase}_seg{k}", center, size,
+                          axis, x + M / 2.0, M, cz, H, role="wall",
+                          material=material)
+            x += M
+            k += 1
+        rem = b - x
+        if rem > 0.05:                   # end remainder (a 'wallEnd' partial)
+            self._seg_box(f"{vbase}_seg{k}", f"{cbase}_seg{k}", center, size,
+                          axis, x + rem / 2.0, rem, cz, H, role="wall",
+                          material=material)
+            k += 1
+        return k
+
+    def _opening_piece(self, vbase, cbase, center, size, axis, h, j, material):
+        """Emit the pieces belonging to ONE opening, grouped under
+        {base}_open{j}: lintel above (all kinds), sill below (raised/window),
+        and the aperture fill — door/garage = void (walkable), window = sealed
+        pane, breach = removable panel. role -> surface_roles for the swap."""
+        H = size[2]
+        cz = center[2]
+        ft = self.s.floor_thick
+        u, w, hh, sill, kind = h["u"], h["w"], h["h"], h["sill"], h["kind"]
+        wall_bottom = cz - H / 2.0
+        wall_top = cz + H / 2.0
+        open_bottom = wall_bottom + ft / 2.0 + sill
+        open_top = open_bottom + hh
+        vb, cb = f"{vbase}_open{j}", f"{cbase}_open{j}"
+        role = {"door": "doorway", "garage": "doorway",
+                "window": "window", "breach": "breach"}.get(kind, "doorway")
+
+        lintel_h = wall_top - open_top
+        if lintel_h > 0.05:
+            self._seg_box(f"{vb}_lintel", f"{cb}_lintel", center, size, axis,
+                          u, w, open_top + lintel_h / 2.0, lintel_h,
+                          role=role, material=material)
+        if sill > 0.05:
+            sill_h = open_bottom - wall_bottom
+            self._seg_box(f"{vb}_sill", f"{cb}_sill", center, size, axis,
+                          u, w, wall_bottom + sill_h / 2.0, sill_h,
+                          role=role, material=material)
+        if kind == "window":
+            # sealed pane: full-thickness solid so the shell stays as sealed as
+            # the pre-modular wall (vaulting through is game code, unchanged).
+            # A themed window prefab replaces this piece in the art pass.
+            self._seg_box(f"{vb}_pane", f"{cb}_pane", center, size, axis,
+                          u, w, (open_bottom + open_top) / 2.0, hh,
+                          role="window", material=material)
+        elif kind == "breach":
+            self._seg_box(f"{vb}_BREACHPANEL", f"{cb}_BREACHPANEL", center,
+                          size, axis, u, w, (open_bottom + open_top) / 2.0, hh,
+                          role="breach", material=material)
+        # door / garage: aperture left void (walkable) -> nothing in the span
+
+    def _emit_wall_run(self, vbase, cbase, center, size, axis, holes, material):
+        """Walk the run left->right: solid spans become wall segment(s),
+        each opening becomes its own piece. Every emitted object is a named
+        visual+collision pair = an art-pass swap slot."""
+        full = size[0] if axis == 0 else size[1]
+        carve = sorted(holes, key=lambda hh: hh["u"])
+        cursor = -full / 2.0
+        k = 0
+        for j, h in enumerate(carve):
+            left = h["u"] - h["w"] / 2.0
+            k = self._wall_span(vbase, cbase, center, size, axis,
+                                cursor, left, k, material)
+            self._opening_piece(vbase, cbase, center, size, axis, h, j, material)
+            cursor = max(cursor, h["u"] + h["w"] / 2.0)
+        self._wall_span(vbase, cbase, center, size, axis,
+                        cursor, full / 2.0, k, material)
+
     # -- top-level build steps ---------------------------------------------
     def _vertex_nuance(self,
                        target_edge=0.6,   # ~grid; densify to roughly this edge
@@ -481,13 +621,18 @@ class _Builder:
                     holes = [self._opening_to_hole(op, run) for op in spec_w.openings]
                     self._record_openings(spec_w.openings, c, axis, run,
                                           f"ext_{s}_{wname}", s)
-                self._box_with_holes(f"ext_{s}_{wname}", c, size, holes, self.VISUAL)
+                name = f"ext_{s}_{wname}"
                 col_name = f"ext_col_{s}_{wname}"
-                if holes:
-                    self._wall_collision(col_name, c, size, axis, holes)
+                mat = spec_w.material if spec_w else None
+                if self._modular_on():
+                    self._emit_wall_run(name, col_name, c, size, axis, holes, mat)
                 else:
-                    self._col_box(col_name, c, size)
-                self._record_surface(col_name, spec_w.material if spec_w else None)
+                    self._box_with_holes(name, c, size, holes, self.VISUAL)
+                    if holes:
+                        self._wall_collision(col_name, c, size, axis, holes)
+                    else:
+                        self._col_box(col_name, c, size)
+                    self._record_surface(col_name, mat)
 
     def _record_openings(self, openings, wall_center, axis, run, wall_name, story):
         """Capture tactical opening metadata (tag/breach_class/material/etc.)
@@ -572,13 +717,17 @@ class _Builder:
             holes = [self._opening_to_hole(op, length) for op in p.openings]
             self._record_openings(p.openings, c, axis, length,
                                   f"int_{p.story}_{i}", p.story)
-            self._box_with_holes(f"int_{p.story}_{i}", c, size, holes, self.VISUAL)
+            name = f"int_{p.story}_{i}"
             col_name = f"int_col_{p.story}_{i}"
-            if holes:
-                self._wall_collision(col_name, c, size, axis, holes)
+            if self._modular_on():
+                self._emit_wall_run(name, col_name, c, size, axis, holes, p.material)
             else:
-                self._col_box(col_name, c, size)
-            self._record_surface(col_name, p.material)
+                self._box_with_holes(name, c, size, holes, self.VISUAL)
+                if holes:
+                    self._wall_collision(col_name, c, size, axis, holes)
+                else:
+                    self._col_box(col_name, c, size)
+                self._record_surface(col_name, p.material)
 
     def _stairs(self):
         H = self.s.story_height

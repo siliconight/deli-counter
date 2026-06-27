@@ -477,6 +477,43 @@ spec-driven pipeline, not a replacement (a live GridMap is not the deterministic
 baked shell). Generate it by running `addons/deli_counter/meshlib_kit.gd` in
 Godot. See `godot/MESHLIB_KIT.md`.
 
+## Modular walls (opt-in, for the art pass)
+
+**Off by default** — the default build still emits each wall as one solid box, so
+existing specs rebuild byte-identical. Turn this on when you're ready to take a
+locked greybox toward a themed art pass.
+
+With modular emission, each wall *run* is decomposed into separate named pieces
+instead of one boolean-cut box: a row of solid wall segments plus one piece per
+opening — `[wall][doorway][wall]`, `[wall][window][wall]`. Every piece is its own
+visual+collision object — a **swap slot** a fixed themed prefab can replace 1:1
+(`wall_greybox_01` → `wall_gasStation_01`) at the same transform, so you art-pass a
+kit of parts once and reuse it. Openings become their own pieces (`surface_roles`
+`doorway` / `window` / `breach`): doors leave the aperture walkable, windows keep a
+sealed pane (the shell stays as sealed as before — vaulting is still game code),
+breaches keep the removable panel.
+
+Enable it per build:
+
+- **Env var** (no spec change): `DC_MODULAR=1` (optionally `DC_MODULE=2.0`). In
+  PowerShell, `$env:DC_MODULAR=1` in the shell you build from — or, for a GUI
+  build, set `os.environ["DC_MODULAR"] = "1"` near the top of `_run_in_blender.py`.
+- **Per spec**: `"modular": true` (and `"module": 2.0`), once those fields are added
+  to `LevelSpec` / the schema. The builder reads them defensively, so the env vars
+  work today regardless.
+
+`module` (default 2.0 m) tiles each solid span into whole module segments plus an
+end remainder; set `module` ≤ 0 for opening-decomposition only (no tiling). The
+monolith-per-wall path is untouched when this is off.
+
+**Walk it after enabling.** Segment seams are exactly where gaps, double-walls, or
+z-fighting hide — the class of thing offline checks can't catch — so build one
+preset modular and walk the wall lines and door thresholds before relying on it.
+
+See `docs/WALL_SEGMENTATION.md` for how the decomposition works and
+`docs/ASSET_SWAP_CONTRACT.md` for the naming and fit rules a themed prefab must
+satisfy to drop into a slot.
+
 ## Acoustic materials (optional audio-engine bridge)
 
 **This is entirely optional.** Deli Counter builds the same playable shell with

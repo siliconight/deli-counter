@@ -5,6 +5,29 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.35.0]
+### Added — opt-in modular wall emitter (art-pass swap support)
+- New `_emit_wall_run` decomposes each wall run into separate named pieces — a
+  row of solid wall segments plus one piece per opening — instead of one
+  boolean-cut box. Each piece is a matched visual+collision pair (a swap slot),
+  so a fixed themed prefab can replace it 1:1 in the art pass.
+- `[wall][doorway][wall]` / `[wall][window][wall]`: openings are their own
+  pieces with `surface_roles` `doorway` / `window` / `breach` (wall segments
+  stay `wall`). Doors leave the aperture void (walkable); windows get a sealed
+  full-thickness pane so the shell stays exactly as sealed as before (vaulting
+  is still game code — enterability semantics unchanged); breaches keep the
+  removable `BREACHPANEL`.
+- `module` (default 2.0 m) tiles each solid span into whole module segments + an
+  end remainder. Set `module <= 0` for opening-decomposition only (no tiling).
+- **OFF by default.** Enable per-spec (`spec.modular` / `spec.module`) or via the
+  `DC_MODULAR=1` / `DC_MODULE=2.0` env vars (no spec_types change needed to try
+  it). Existing specs rebuild byte-identical. `_exterior` and `_partitions` route
+  to the new emitter only when modular is on; otherwise the boolean path is
+  untouched.
+- NOTE: to drive modular from a spec JSON, add `modular: bool` + `module: float`
+  to `LevelSpec` / the schema (not included here — the builder reads them
+  defensively via `getattr`, and the env vars work today regardless).
+
 ## [0.34.1]
 ### Fixed — walls now support any number of openings (multi-door / multi-breach)
 - `_wall_collision` only resolved the FIRST passable opening on a wall. Any
