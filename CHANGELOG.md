@@ -5,8 +5,67 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
-## [0.35.0]
-### Added — opt-in modular wall emitter (art-pass swap support)
+## [0.38.0]
+### Added — module resolver (the art-pass swap, at build time)
+- When a **module library** is configured (`spec.module_library` /
+  `DC_MODULE_LIB`) and a **theme** is set (`spec.theme` / `DC_THEME`), the
+  modular emitter resolves each wall and opening slot to an authored module —
+  `<type>_<theme>_<style>.glb`, falling back to `<type>_greybox_<style>.glb` —
+  and **instances that module** at the slot transform instead of generating a
+  box. Nothing resolves → it generates the greybox box as before, so the art
+  pass is **progressive** (cover roles one at a time; uncovered roles stay grey).
+- Modules are imported **once** and instanced via the shared-mesh cache (one mesh
+  in VRAM), with visual and collision parts routed to their collections by the
+  node-name suffix — so an opening module keeps its authored aperture collision
+  rather than a sealing convex hull. Placement (rotation) comes from the slot's
+  `rot_y`; modules are authored origin-centered.
+- The slot manifest records the **resolved** ref (`wall_gasstation_01`) and a new
+  `coverage` block (per role/kit: theme / greybox / generated) — the art-pass
+  progress meter.
+- **Opt-in and reversible:** no `module_library` → resolver off, geometry
+  byte-identical to 0.37.0. This is the swap happening at DC build time, in
+  Blender, producing the themed building GLB directly.
+
+
+- The modular build now emits a **slot manifest**: one record per swappable
+  module — every wall segment, every opening, and every placement — written as a
+  sidecar next to the `.glb` / `.gameplay.json`. Each slot carries `slot_id`,
+  `role`, `size_mod`, `style`, `current_ref` (the greybox module there now),
+  `kit_axis` (`theme` for structural, `material` for props), a `transform`
+  (translation + `rot_y` degrees + scale), and a `fit` block (dims, pivot,
+  openings, collision) a themed replacement must match. See
+  `docs/SLOT_MANIFEST.md`.
+- This is the concrete **art-pass input**: lock the building, then author
+  `<type>_<theme>_<style>.glb` files and the manifest is the work list +
+  swap recipe (resolve `role`→theme module, fall back to greybox, instance).
+  Wall modules and openings come from the modular emitter; placements (kitbash)
+  are recorded too, so the manifest describes the **whole** building — grey and
+  kitbash alike — uniformly.
+- **Output-only — no geometry change.** The `.glb` is byte-identical to 0.36.0;
+  this adds a sidecar (written only when the modular emitter produced slots) and
+  threads a non-geometric `record_slot` flag through the wall emitter.
+
+
+- Identical pieces now link a **single mesh datablock** instead of duplicating
+  geometry, so the glTF export carries one mesh + N nodes. Godot imports that as
+  one `Mesh` resource instanced by N `MeshInstance3D`s — one mesh and one texture
+  in VRAM (the rest are just transforms), and editing the shared module updates
+  every instance. New `share_key` on `_box` / `_col_box`; a shared module is
+  baked to **real size** (object scale stays 1) so an art pass on the module
+  isn't stretched differently per instance.
+- **Modular walls:** repeated full-width wall segments collapse to one shared
+  visual mesh + one shared collider (keyed by role + dims). Unique span
+  remainders and opening pieces keep their own meshes. Only active on the opt-in
+  modular path; the boolean wall path and any non-modular spec export
+  byte-identically to 0.35.0.
+- **Placements (durable reuse):** `_placements` now imports + joins each asset
+  **once** and links the cached mesh for every later placement (was: a fresh
+  import per instance). Author a wall/prop module as its own `.glb`, place it N
+  times, art-pass the source file — the art pass persists across DC regeneration
+  and is reused across every building, with one mesh/texture in VRAM. Fixes the
+  per-placement duplication noted in 0.34.1.
+
+
 - New `_emit_wall_run` decomposes each wall run into separate named pieces — a
   row of solid wall segments plus one piece per opening — instead of one
   boolean-cut box. Each piece is a matched visual+collision pair (a swap slot),

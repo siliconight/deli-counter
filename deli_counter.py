@@ -67,6 +67,13 @@ class _Builder:
         self.COLLISION = None
         self._asset_index = {a.id: a for a in spec.assets}
         self._material_index = {m.id: m for m in spec.materials}
+        # Shared-mesh cache for module reuse. Identical modular segments (keyed
+        # by role+dims) and repeated placement assets (keyed by asset id) link a
+        # SINGLE mesh datablock instead of duplicating geometry, so the glTF
+        # export carries one mesh + N nodes -> Godot loads one Mesh resource
+        # instanced N times (one mesh/texture in VRAM; edit the shared module and
+        # every instance follows). Populated lazily by _box / _placements.
+        self._module_cache = {}
 
     # -- helpers ------------------------------------------------------------
     def snap(self, v):
@@ -97,6 +104,89 @@ class _Builder:
         except (TypeError, ValueError):
             return 2.0
 
+    def _module_lib(self):
+        """Absolute path to the module library (the zoo of
+        <type>_<theme>_<style>.glb), or None when unset -> resolver OFF and the
+        emitter generates greybox boxes exactly as before."""
+        lib = getattr(self.s, "module_library", None)
+        if lib is None:
+            lib = os.environ.get("DC_MODULE_LIB", "").strip() or None
+        if not lib:
+            return None
+        if not os.path.isabs(lib):
+            lib = os.path.normpath(os.path.join(self.base_dir, lib))
+        return lib
+
+    def _theme(self):
+        t = getattr(self.s, "theme", None) or os.environ.get("DC_THEME", "").strip()
+        return t or "greybox"
+
+    def _resolve_module(self, typename, style=1):
+        """Resolve a slot type to a module file: active theme first, greybox
+        fallback. Returns (path, kit) or None when neither exists (-> the caller
+        generates a box, so the art pass is progressive)."""
+        lib = self._module_lib()
+        if lib is None:
+            return None
+        seen = []
+        for kit in (self._theme(), "greybox"):
+            if kit in seen:
+                continue
+            seen.append(kit)
+            path = os.path.join(lib, f"{typename}_{kit}_{style:02d}.glb")
+            if os.path.exists(path):
+                return path, kit
+        return None
+
+    def _instance_module(self, path, name, loc, rot_y, role=None):
+        """Import a module GLB ONCE (cache each part's mesh datablock + local
+        transform + collision suffix), then instance it: objects link the cached
+        meshes, placed at the slot transform (loc + rot_y about up). Visual and
+        collision parts route to their collections by the node-name suffix, so
+        the module brings its own authored collision (apertures stay open). N
+        instances of one module share one mesh -> one mesh in VRAM."""
+        import mathutils
+        key = ("module", path)
+        parts = self._module_cache.get(key)
+        if parts is None:
+            before = set(bpy.data.objects)
+            bpy.ops.import_scene.gltf(filepath=path)
+            new = [o for o in bpy.data.objects
+                   if o not in before and o.type == 'MESH']
+            parts = []
+            for o in new:
+                nm = o.name.lower()
+                if "convcol" in nm:
+                    suf = self.col_suffix["convex"]      # -convcolonly
+                elif "colonly" in nm or nm.endswith("-col"):
+                    suf = self.col_suffix["trimesh"]     # -colonly
+                else:
+                    suf = None                            # visual
+                o.data.use_fake_user = True               # survive purges
+                parts.append((o.data, suf, o.matrix_world.copy()))
+            for o in new:                                 # drop objects, keep data
+                for c in list(o.users_collection):
+                    c.objects.unlink(o)
+            self._module_cache[key] = parts
+        slot_m = (mathutils.Matrix.Translation(loc)
+                  @ mathutils.Matrix.Rotation(math.radians(rot_y), 4, 'Z'))
+        for i, (mesh_data, suf, local_m) in enumerate(parts):
+            if suf:
+                obj = bpy.data.objects.new(f"{name}_{i}{suf}", mesh_data)
+                self.COLLISION.objects.link(obj)
+            else:
+                obj = bpy.data.objects.new(f"{name}_{i}", mesh_data)
+                self.VISUAL.objects.link(obj)
+                if role:
+                    self.surface_roles[obj.name] = role
+            obj.matrix_world = slot_m @ local_m
+        return True
+
+    def _cover(self, role, kit):
+        """Tally art-pass coverage: which roles resolved to a theme/greybox
+        module vs fell back to generated geometry."""
+        self._coverage[(role, kit)] = self._coverage.get((role, kit), 0) + 1
+
     def _clear(self):
         if bpy.context.object and bpy.context.object.mode != 'OBJECT':
             bpy.ops.object.mode_set(mode='OBJECT')
@@ -114,16 +204,39 @@ class _Builder:
             bpy.context.scene.collection.children.link(c)
         return c
 
-    def _box(self, name, center, size, collection, role=None):
-        mesh = bpy.data.meshes.new(name)
-        obj = bpy.data.objects.new(name, mesh)
-        collection.objects.link(obj)
-        bm = bmesh.new()
-        bmesh.ops.create_cube(bm, size=1.0)
-        bm.to_mesh(mesh)
-        bm.free()
-        obj.scale = (max(size[0], 1e-4), max(size[1], 1e-4), max(size[2], 1e-4))
-        obj.location = center
+    def _box(self, name, center, size, collection, role=None, share_key=None):
+        # share_key set -> identical modules link ONE cached mesh datablock
+        # (baked to real size, object carries position only) so the export
+        # instances one module N times. share_key None -> original behaviour:
+        # a private unit-cube mesh sized by object scale.
+        cache = self._module_cache
+        if share_key is not None and share_key in cache:
+            mesh = cache[share_key]
+            obj = bpy.data.objects.new(name, mesh)
+            collection.objects.link(obj)
+            obj.location = center
+        else:
+            mesh = bpy.data.meshes.new(name)
+            obj = bpy.data.objects.new(name, mesh)
+            collection.objects.link(obj)
+            bm = bmesh.new()
+            bmesh.ops.create_cube(bm, size=1.0)
+            bm.to_mesh(mesh)
+            bm.free()
+            sx = max(size[0], 1e-4)
+            sy = max(size[1], 1e-4)
+            sz = max(size[2], 1e-4)
+            if share_key is not None:
+                # Bake the size into the shared mesh (verts at real dimensions),
+                # leave object scale at 1 so an art pass on the module isn't
+                # stretched differently per instance. Cache for reuse.
+                import mathutils
+                mesh.transform(mathutils.Matrix.Diagonal((sx, sy, sz, 1.0)))
+                obj.location = center
+                cache[share_key] = mesh
+            else:
+                obj.scale = (sx, sy, sz)
+                obj.location = center
         # Record the authoritative surface role for VISUAL meshes so downstream
         # tools (Patina styling, the vertex-nuance pass) consume a label instead
         # of re-inferring floor/wall/ceiling from geometry (which is error-prone
@@ -145,12 +258,13 @@ class _Builder:
         collection.objects.link(obj)
         return obj
 
-    def _col_box(self, name, center, size, mode=None):
+    def _col_box(self, name, center, size, mode=None, share_key=None):
         mode = mode or self.s.collision
         suf = self.col_suffix[mode]
         if suf == "":
             return None
-        return self._box(name + suf, center, size, self.COLLISION)
+        return self._box(name + suf, center, size, self.COLLISION,
+                         share_key=share_key)
 
     def _capsule(self, name, base_center, height, radius, collection):
         """A simple human-proxy: a cylinder standing on its base. Used only for
@@ -310,8 +424,80 @@ class _Builder:
     # _wall_collision pair: decompose a wall run into solid wall segments and
     # per-opening pieces, each its OWN named visual+collision object (a swap
     # slot for the art pass). See docs/WALL_SEGMENTATION.md + ASSET_SWAP_CONTRACT.md.
+    @staticmethod
+    def _slot_typename(role, size_mod):
+        # size folded into the type token (naming law): a wall remainder is its
+        # own type so a themed kit can author a dedicated end piece.
+        if role == "wall":
+            return "wallEnd" if size_mod == "end" else "wall"
+        return role  # doorway / window / breach
+
+    def _slot_orient(self, wall_name, axis):
+        """Facing + Y-rotation (deg) that brings a canonically-authored module
+        (along X) onto this wall, plus the story index parsed from the name.
+        ext_{story}_{N|S|E|W}; int_{story}_{i} (partition -> axis-derived)."""
+        parts = wall_name.split("_")
+        if parts and parts[0] == "ext" and len(parts) >= 3:
+            story = int(parts[1]) if parts[1].lstrip("-").isdigit() else None
+            facing = parts[2]
+            rot = {"N": 0, "E": 90, "S": 180, "W": 270}.get(facing, 0)
+        elif parts and parts[0] == "int" and len(parts) >= 2:
+            story = int(parts[1]) if parts[1].lstrip("-").isdigit() else None
+            facing = "X" if axis == 0 else "Y"
+            rot = 0 if axis == 0 else 90
+        else:
+            story = None
+            facing = "X" if axis == 0 else "Y"
+            rot = 0 if axis == 0 else 90
+        return facing, rot, story
+
+    def _record_wall_slot(self, vname, c, sz, axis, role, size_mod, ref=None):
+        wall_name = vname.rsplit("_seg", 1)[0]
+        facing, rot_y, story = self._slot_orient(wall_name, axis)
+        typ = self._slot_typename(role, size_mod)
+        self.slots.append({
+            "slot_id": vname, "role": role, "size_mod": size_mod, "style": 1,
+            "current_ref": ref or f"{typ}_greybox_01", "kit_axis": "theme",
+            "wall": wall_name, "story": story, "facing": facing,
+            "transform": {"translation": [round(c[0], 4), round(c[1], 4),
+                                          round(c[2], 4)],
+                          "rot_y": rot_y, "scale": [1.0, 1.0, 1.0]},
+            "fit": {"dims": [round(sz[0], 4), round(sz[1], 4), round(sz[2], 4)],
+                    "pivot": "center", "openings": [], "collision": "convex"},
+        })
+
+    def _record_opening_slot(self, vb, center, size, axis, h, ref=None):
+        """One slot for the WHOLE opening (the swap unit), carrying aperture
+        dims so a themed doorway/window prefab can replace its frame 1:1."""
+        facing, rot_y, story = self._slot_orient(vb, axis)
+        kind = h["kind"]
+        role = {"door": "doorway", "garage": "doorway",
+                "window": "window", "breach": "breach"}.get(kind, "doorway")
+        u, w, hh, sill = h["u"], h["w"], h["h"], h["sill"]
+        if axis == 0:
+            oc = (center[0] + u, center[1], center[2])
+            wall_thick = size[1]
+        else:
+            oc = (center[0], center[1] + u, center[2])
+            wall_thick = size[0]
+        self.slots.append({
+            "slot_id": vb, "role": role, "size_mod": "full", "style": 1,
+            "current_ref": ref or f"{role}_greybox_01", "kit_axis": "theme",
+            "wall": vb.rsplit("_open", 1)[0], "story": story, "facing": facing,
+            "transform": {"translation": [round(oc[0], 4), round(oc[1], 4),
+                                          round(oc[2], 4)],
+                          "rot_y": rot_y, "scale": [1.0, 1.0, 1.0]},
+            "fit": {"dims": [round(w, 4), round(wall_thick, 4),
+                             round(size[2], 4)],
+                    "pivot": "center",
+                    "openings": [{"kind": kind, "width": round(w, 4),
+                                  "height": round(hh, 4), "sill": round(sill, 4)}],
+                    "collision": "convex"},
+        })
+
     def _seg_box(self, vname, cname, center, size, axis, cu, clen, vcz, vh,
-                 role=None, visual=True, collide=True, material=None):
+                 role=None, visual=True, collide=True, material=None,
+                 record_slot=True, size_mod="full"):
         """One axis-aligned wall chunk emitted as a matched visual+collision
         pair. cu = centre offset along the run axis; clen = length along the
         run; vcz/vh = vertical centre/height. Skips slivers."""
@@ -324,14 +510,39 @@ class _Builder:
         else:
             c = (center[0], center[1] + cu, vcz)
             sz = (thick, clen, vh)
+        # Identical modules share one mesh: key by role + rounded dims (visual)
+        # and rounded dims (collision). Repeated full-width wall modules collapse
+        # to a single shared mesh; unique remainders / openings keep their own.
+        dkey = (round(sz[0], 4), round(sz[1], 4), round(sz[2], 4))
+        vkey = ("Vseg", role, dkey)
+        ckey = ("Cseg", dkey)
+        # RESOLVER FORK: if a module library is configured and a module exists for
+        # this wall type (theme, then greybox), instance that authored module at
+        # the slot transform instead of generating a box. Falls through to the
+        # generated box when nothing resolves, so the art pass is progressive.
+        if record_slot and role:
+            typ = self._slot_typename(role, size_mod)
+            resolved = self._resolve_module(typ)
+            if resolved:
+                path, kit = resolved
+                wall_name = vname.rsplit("_seg", 1)[0]
+                _, rot_y, _ = self._slot_orient(wall_name, axis)
+                self._instance_module(path, vname, c, rot_y, role=role)
+                self._record_wall_slot(vname, c, sz, axis, role, size_mod,
+                                       ref=f"{typ}_{kit}_01")
+                self._cover(role, kit)
+                return
         if visual:
-            self._box(vname, c, sz, self.VISUAL, role=role)
+            self._box(vname, c, sz, self.VISUAL, role=role, share_key=vkey)
         if collide:
-            cob = self._col_box(cname, c, sz)
+            cob = self._col_box(cname, c, sz, share_key=ckey)
             if cob is not None:
                 # record acoustic surface against the base name, matching the
                 # convention _exterior already uses (suffix stripped on import).
                 self._record_surface(cname, material)
+        if record_slot and role:
+            self._record_wall_slot(vname, c, sz, axis, role, size_mod)
+            self._cover(role, "generated")
 
     def _wall_span(self, vbase, cbase, center, size, axis, a, b, k, material):
         """Emit a solid wall span between run-offsets a..b (from the wall
@@ -346,21 +557,21 @@ class _Builder:
         if M <= 0:                       # Phase A: one box per solid span
             self._seg_box(f"{vbase}_seg{k}", f"{cbase}_seg{k}", center, size,
                           axis, (a + b) / 2.0, L, cz, H, role="wall",
-                          material=material)
+                          material=material, size_mod="span")
             return k + 1
         n = int((L + 1e-6) // M)         # whole modules
         x = a
         for _ in range(n):
             self._seg_box(f"{vbase}_seg{k}", f"{cbase}_seg{k}", center, size,
                           axis, x + M / 2.0, M, cz, H, role="wall",
-                          material=material)
+                          material=material, size_mod="full")
             x += M
             k += 1
         rem = b - x
         if rem > 0.05:                   # end remainder (a 'wallEnd' partial)
             self._seg_box(f"{vbase}_seg{k}", f"{cbase}_seg{k}", center, size,
                           axis, x + rem / 2.0, rem, cz, H, role="wall",
-                          material=material)
+                          material=material, size_mod="end")
             k += 1
         return k
 
@@ -380,28 +591,46 @@ class _Builder:
         vb, cb = f"{vbase}_open{j}", f"{cbase}_open{j}"
         role = {"door": "doorway", "garage": "doorway",
                 "window": "window", "breach": "breach"}.get(kind, "doorway")
+        # RESOLVER FORK: a themed opening module replaces the whole frame at once.
+        resolved = self._resolve_module(role)
+        if resolved:
+            path, kit = resolved
+            _, rot_y, _ = self._slot_orient(vb, axis)
+            if axis == 0:
+                oc = (center[0] + u, center[1], center[2])
+            else:
+                oc = (center[0], center[1] + u, center[2])
+            self._instance_module(path, vb, oc, rot_y, role=role)
+            self._record_opening_slot(vb, center, size, axis, h,
+                                      ref=f"{role}_{kit}_01")
+            self._cover(role, kit)
+            return
+        # one swap slot for the whole opening (the frame pieces below are its
+        # geometry, not separate slots).
+        self._record_opening_slot(vb, center, size, axis, h)
+        self._cover(role, "generated")
 
         lintel_h = wall_top - open_top
         if lintel_h > 0.05:
             self._seg_box(f"{vb}_lintel", f"{cb}_lintel", center, size, axis,
                           u, w, open_top + lintel_h / 2.0, lintel_h,
-                          role=role, material=material)
+                          role=role, material=material, record_slot=False)
         if sill > 0.05:
             sill_h = open_bottom - wall_bottom
             self._seg_box(f"{vb}_sill", f"{cb}_sill", center, size, axis,
                           u, w, wall_bottom + sill_h / 2.0, sill_h,
-                          role=role, material=material)
+                          role=role, material=material, record_slot=False)
         if kind == "window":
             # sealed pane: full-thickness solid so the shell stays as sealed as
             # the pre-modular wall (vaulting through is game code, unchanged).
             # A themed window prefab replaces this piece in the art pass.
             self._seg_box(f"{vb}_pane", f"{cb}_pane", center, size, axis,
                           u, w, (open_bottom + open_top) / 2.0, hh,
-                          role="window", material=material)
+                          role="window", material=material, record_slot=False)
         elif kind == "breach":
             self._seg_box(f"{vb}_BREACHPANEL", f"{cb}_BREACHPANEL", center,
                           size, axis, u, w, (open_bottom + open_top) / 2.0, hh,
-                          role="breach", material=material)
+                          role="breach", material=material, record_slot=False)
         # door / garage: aperture left void (walkable) -> nothing in the span
 
     def _emit_wall_run(self, vbase, cbase, center, size, axis, holes, material):
@@ -542,6 +771,8 @@ class _Builder:
         self.COLLISION = self._col("COLLISION")
         self.MARKERS = self._col("MARKERS")
         self.surface_roles = {}   # node name -> authoritative surface role
+        self.slots = []           # art-pass swap slots (one per swappable module)
+        self._coverage = {}       # (role, kit|'generated') -> count, for intel
         self.gameplay = {"mode": self.s.mode, "markers": [], "rooms": [],
                          "vertical_links": [], "openings": [],
                          "objectives": [], "loot": [], "zones": [],
@@ -1040,14 +1271,41 @@ class _Builder:
                                f"id '{p.asset}'")
             base = p.name or f"{asset.id}_{i}"
 
-            imported = self._import_asset_objects(asset)
-            visual = self._join_objects(imported, base)
-            if visual is None:
-                continue
-            for c in list(visual.users_collection):
-                c.objects.unlink(visual)
-            self.VISUAL.objects.link(visual)
+            # Durable module reuse: import + join each asset ONCE, then link the
+            # cached mesh datablock for every later placement (object carries only
+            # its transform). The artist art-passes the source asset file; on the
+            # next build DC re-imports it once and instances it N times -> the art
+            # pass persists across regeneration and one mesh/texture lives in VRAM.
+            akey = ("asset", asset.id)
+            if akey in self._module_cache:
+                visual = bpy.data.objects.new(base, self._module_cache[akey])
+                self.VISUAL.objects.link(visual)
+            else:
+                imported = self._import_asset_objects(asset)
+                visual = self._join_objects(imported, base)
+                if visual is None:
+                    continue
+                for c in list(visual.users_collection):
+                    c.objects.unlink(visual)
+                self.VISUAL.objects.link(visual)
+                self._module_cache[akey] = visual.data
             self._apply_transform(visual, p)
+
+            pmode = p.collision or asset.collision
+            # placements are already module references — record them as slots too
+            # so the manifest is the WHOLE building (grey + kitbash), uniform.
+            self.slots.append({
+                "slot_id": base, "role": "prop", "size_mod": "full", "style": 1,
+                "current_ref": asset.id, "kit_axis": "material",
+                "wall": None, "story": None, "facing": None,
+                "transform": {"translation": [round(p.x, 4), round(p.y, 4),
+                                              round(p.z, 4)],
+                              "rot_y": round(p.rot_z, 4),
+                              "scale": list(p.scale_xyz) if p.scale_xyz
+                                       else [p.scale, p.scale, p.scale]},
+                "fit": {"dims": None, "pivot": "asset", "openings": [],
+                        "collision": pmode},
+            })
 
             mode = p.collision or asset.collision
             if mode == "none":
@@ -1218,6 +1476,38 @@ def build(spec: LevelSpec, base_dir: str = "."):
     b = _Builder(spec, base_dir=base_dir)
     b.build()
     return b
+
+
+def write_slot_manifest(builder, path):
+    """Write <name>.slots.json -- the art-pass input. One record per swappable
+    module (wall segment / opening / placement): what kind it is, where it sits,
+    and the fit a themed replacement must match (dims, pivot, openings,
+    collision). Theme resolution + instancing consume this; the artist authors
+    `<type>_<theme>_<style>.glb` files and the manifest pulls them in. Output-only
+    -- no schema change. See docs/SLOT_MANIFEST.md."""
+    import json
+    data = {
+        "slot_manifest_version": "1.0.0",
+        "building_id": builder.s.name,
+        "theme": getattr(builder.s, "theme", None) or "greybox",
+        "module_library": getattr(builder.s, "module_library", None) or "art/zoo",
+        "module_size": builder._module_size(),
+        # transforms are raw spec/Blender space (Z-up), same as gameplay.json;
+        # rot_y is degrees about up to orient a canonically-authored module.
+        "space": "spec/Blender Z-up raw coords; rot_y = degrees about up",
+        # art-pass coverage: per role/kit, how many slots resolved to a theme
+        # module, a greybox module, or fell back to generated geometry.
+        "coverage": {f"{r}/{k}": n
+                     for (r, k), n in sorted(builder._coverage.items())},
+        "slots": builder.slots,
+    }
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2)
+    cov = ", ".join(f"{r}/{k}:{n}"
+                    for (r, k), n in sorted(builder._coverage.items())) or "none"
+    print(f"[deli_counter] slot manifest -> {path} "
+          f"({len(builder.slots)} slots; coverage {cov})")
+    return data
 
 
 def write_gameplay_json(builder, path):

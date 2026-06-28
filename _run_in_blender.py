@@ -73,7 +73,8 @@ def main():
 
     try:
         from spec_loader import load_spec
-        from deli_counter import build, export, write_gameplay_json
+        from deli_counter import (build, export, write_gameplay_json,
+                                  write_slot_manifest)
     except ImportError as e:
         raise SystemExit(
             f"Could not import the kit from '{pkg}'. Set PKG_DIR in the CONFIG "
@@ -99,11 +100,14 @@ def main():
         written.append(target)
     # tactical companion json next to the first output
     g = builder.gameplay
-    if written and (g["markers"] or g["rooms"] or g["vertical_links"]
-                    or g["objectives"] or g["loot"] or g["zones"]
-                    or g["surfaces"]):
+    if written:
         base = os.path.splitext(written[0])[0]
-        write_gameplay_json(builder, base + ".gameplay.json")
+        if (g["markers"] or g["rooms"] or g["vertical_links"]
+                or g["objectives"] or g["loot"] or g["zones"] or g["surfaces"]):
+            write_gameplay_json(builder, base + ".gameplay.json")
+        # art-pass slot manifest (only when the modular emitter produced slots)
+        if builder.slots:
+            write_slot_manifest(builder, base + ".slots.json")
     _write_manifest(spec_path, written)
 
 
