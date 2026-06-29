@@ -6,6 +6,11 @@ scene by hand, you pick a `.glb` and click one button.
 
 ## Install (once per project)
 
+**From a Release (no clone):** download `deli_counter-godot-addon-<version>.zip`
+from the repo's Releases page and unzip it at your Godot **project root** — it
+lands at `res://addons/deli_counter/`. Then enable the plugin (step 2 below).
+
+**From the repo:**
 1. Copy this entire `deli_counter/` folder into your project at
    `res://addons/deli_counter/`. It's self-contained — it already includes the
    post-import script, `deli_level.gd`, and the test harness under `template/`.

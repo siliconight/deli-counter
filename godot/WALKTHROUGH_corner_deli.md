@@ -131,9 +131,7 @@ Known-good route; still fully tests stairs + collision + markers.
 
 1. Select `corner_deli_heist_01.glb` in the FileSystem dock -> **Import** tab.
 2. Set **Import Script** to
-   `res://addons/deli_counter/deli_counter_postimport.gd`
-   (or `res://godot/deli_counter_postimport.gd` if you didn't install the
-   addon) -> **Reimport**.
+   `res://addons/deli_counter/deli_counter_postimport.gd` -> **Reimport**.
 3. Open `res://addons/deli_counter/template/level_test.tscn` (the harness).
 4. Drag `corner_deli_heist_01.glb` into the scene as a child of the root.
 5. Press **F6** (Play Scene) — or F5 if it's the main scene.

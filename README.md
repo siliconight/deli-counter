@@ -221,13 +221,22 @@ package.py --check` prints the version that would be packaged.
 
 ## Import into Godot 4
 
-**Easiest path — the editor plugin.** Install the plugin once
-(`godot/addon/deli_counter/` → `res://addons/deli_counter/`, then enable
-**Deli Counter** in Project Settings → Plugins). A dock appears: drop a
-level's `.glb` + `.gameplay.json` into your project, click **Pick level
-.glb…**, then **Set up & Play ▶**. It assigns the import hook, reimports,
-builds a walkable test scene, and runs it — no Import-tab steps, no manual
-scene wiring. See `godot/addon/deli_counter/README.md`.
+**Easiest path — the editor plugin.** Two ways to install it once:
+
+- **From a Release (no clone):** grab `deli_counter-godot-addon-<version>.zip`
+  from the [Releases](https://github.com/siliconight/deli-counter/releases) page
+  and unzip it at your Godot **project root** — it lands at
+  `res://addons/deli_counter/`. Then enable **Deli Counter** in Project Settings
+  → Plugins.
+- **From the repo:** copy `godot/addon/deli_counter/` → `res://addons/deli_counter/`
+  and enable it. (Build that zip yourself anytime with `python package.py --addon`.)
+
+A dock appears: drop a level's `.glb` + `.gameplay.json` into your project, click
+**Pick level .glb…**, then **Set up & Play ▶**. It assigns the import hook,
+reimports, builds a walkable test scene, and runs it — no Import-tab steps, no
+manual scene wiring. The harness walks at player scale (WASD/arrows, mouse look),
+with **F4** to bake and view a navmesh and **R** to respawn at a spawn marker.
+See `godot/addon/deli_counter/README.md`.
 
 **What import does under the hood** (the plugin automates this; you can also
 do it by hand). Dropping the `.glb` in, the importer reads collision suffixes:
@@ -246,8 +255,7 @@ own scenes — and tags breach panels with metadata. A runtime helper
 for you; to do it manually, set it as the `.glb`'s Import Script and reimport.
 See `godot/README.md` and `godot/IMPORT_GUIDE.md`.
 
-**Walking a level:** the plugin's test scene (or `godot/template/`
-`level_test.tscn` by hand) gives you a player sized to the scale guidelines
+**Walking a level:** the plugin's test scene gives you a player sized to the scale guidelines
 (1.8 m capsule, 1.6 m eye), with stair-stepping so generated stairs are
 climbable, plus a navmesh-bake key and respawn-at-spawn-marker. Use it to
 confirm scale and collision before dressing the level.
@@ -509,6 +517,22 @@ monolith-per-wall path is untouched when this is off.
 **Walk it after enabling.** Segment seams are exactly where gaps, double-walls, or
 z-fighting hide — the class of thing offline checks can't catch — so build one
 preset modular and walk the wall lines and door thresholds before relying on it.
+
+**Theming the slots (two paths).** Point the resolver at a kit and it swaps
+matching modules in at build time: set `DC_THEME=<name>` and `DC_MODULE_LIB=<dir>`,
+and each slot resolves to `<type>_<theme>_<style>.glb` — dims-aware, so a
+`<type>_<theme>_<style>_w<cm>.glb` variant wins for that exact width — falling back
+to greybox, then generated geometry. Theming is progressive: one module themes
+every slot of its type. That's the **baked** path (one shippable GLB; rebuild to
+re-theme). The **primary** path instead emits a Godot scene (`--format tscn`) and
+themes it live in the editor via `theme_swap.gd` (visual-only overlays in
+`res://art/zoo/`; greybox keeps collision) — edit a module and every instance
+updates with no rebuild.
+
+**Validation status (0.42):** the baked resolver — module selection and in-engine
+placement (rotation + collision routing) — is walked and validated. The `.tscn` +
+`theme_swap.gd` live-theming path is implemented but **not yet walked in-engine;
+treat it as experimental** until it has been.
 
 See `docs/WALL_SEGMENTATION.md` for how the decomposition works and
 `docs/ASSET_SWAP_CONTRACT.md` for the naming and fit rules a themed prefab must

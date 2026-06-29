@@ -1,0 +1,42 @@
+name: deli-counter-release
+
+# On a version tag (e.g. v0.42.0): validate, build the full source zip and the
+# drop-in Godot addon zip, and publish them as a GitHub Release so new users can
+# download either without cloning. No Blender needed — the gate is pure Python.
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install validation deps
+        run: pip install jsonschema
+
+      - name: Gate (validate specs + catalog freshness)
+        run: python check.py
+
+      - name: Build release artifacts
+        run: |
+          python package.py            # dist/deli_counter-<KIT_VERSION>.zip (full source)
+          python package.py --addon    # dist/deli_counter-godot-addon-<plugin>.zip (drop-in)
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.zip
+          generate_release_notes: true

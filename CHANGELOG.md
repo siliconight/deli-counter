@@ -5,7 +5,48 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.42.0]
+### Added — addon distribution + automated releases
+- `package.py --addon` builds a **drop-in Godot addon zip**
+  (`dist/deli_counter-godot-addon-<plugin>.zip`) rooted at `addons/deli_counter/`,
+  so a new user unzips it at their project root and enables the plugin — no need
+  to clone the whole tool repo. (`package.py` with no args still builds the full
+  source zip.)
+- Release workflow (`.github/workflows/release.yml`): on a version tag (`v*`) it
+  validates, builds the full source zip and the addon zip, and publishes them as
+  a GitHub Release. README documents installing the addon from a Release.
+
+### Editor addon (plugin 0.18.5) — carried into this release
+- Harness `player.gd`: WASD works with zero Input-Map setup (reads keys directly;
+  still prefers dedicated `move_*` actions if defined).
+- Harness `level_test.gd`: F4 navmesh bake fixed — parses the level's STATIC
+  COLLIDERS (walls import as collision, not visual meshes), bakes from them, and
+  renders a visible overlay with a HUD poly count.
+- Single source of truth: removed the vestigial duplicate copies at `godot/` root
+  (`godot/template/`, `godot/deli_counter_postimport.gd`, `godot/deli_level.gd`);
+  `godot/addon/deli_counter/` is the only copy. Docs updated.
+
+### Validation
+- Walked the modular/resolver pipeline in-engine (Godot 4.7): deterministic build,
+  collision, navmesh, and the baked resolver placing a module with correct rotation
+  + collision (`_instance_module`) all confirmed on `fuel_stop_heist`. The `.tscn`
+  + `theme_swap.gd` live-theming path is implemented but not yet walked — flagged
+  experimental in the README.
+
 ## [0.41.0]
+### Editor addon (plugin 0.18.5) + repo consolidation
+- Test harness `player.gd`: WASD now works with zero Input-Map setup (reads
+  W/A/S/D and arrows directly; still prefers dedicated `move_*` actions if a
+  project defines them). Previously WASD was dead unless you hand-added actions.
+- Test harness `level_test.gd`: F4 navmesh bake fixed — it baked an empty mesh
+  (the level wasn't a source). Now parses the level's STATIC COLLIDERS (walls
+  import as -convcolonly collision, not visual meshes), bakes from them, and
+  renders the result as a visible overlay with a HUD poly count.
+- Single source of truth for the addon: removed the vestigial duplicate copies
+  at `godot/` root (`godot/template/`, `godot/deli_counter_postimport.gd`,
+  `godot/deli_level.gd`). The self-contained `godot/addon/deli_counter/` is now
+  the only copy. Docs updated to stop referencing the removed paths.
+
 ### Added — dims-aware module variants (per-width art-pass modules), both paths
 - **Baked path** (`deli_counter.py`): `_resolve_module` now takes the slot
   `width` and tries a width-specific module first —

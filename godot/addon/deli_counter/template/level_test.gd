@@ -25,6 +25,8 @@ extends Node3D
 
 var _level: Node3D
 var _nav_region: NavigationRegion3D
+var _nav_dbg: MeshInstance3D
+var _nav_polys: int = -1
 
 
 func _ready() -> void:
@@ -89,15 +91,53 @@ func _bake_navmesh() -> void:
 		return
 	if _nav_region == null:
 		_nav_region = NavigationRegion3D.new()
-		var nm := NavigationMesh.new()
-		nm.agent_radius = 0.4
-		nm.agent_height = 1.8
-		nm.cell_size = 0.25
-		_nav_region.navigation_mesh = nm
 		add_child(_nav_region)
-	# bake using the level geometry as source
-	_nav_region.bake_navigation_mesh()
+	var nm := NavigationMesh.new()
+	nm.agent_radius = 0.4
+	nm.agent_height = 1.8
+	nm.agent_max_climb = 0.5
+	nm.cell_size = 0.25
+	# Walls/props import as -convcolonly COLLISION shapes (Godot strips their
+	# visual mesh), so parse static colliders, not visual meshes — otherwise the
+	# bake only sees the floor slab and produces one big empty quad.
+	nm.geometry_parsed_geometry_type = NavigationMesh.PARSED_GEOMETRY_STATIC_COLLIDERS
+	nm.geometry_collision_mask = 0xFFFFFFFF
+	# A bare bake_navigation_mesh() finds nothing because the level isn't a child
+	# of the region. Parse the level's geometry explicitly, then bake from it.
+	var src := NavigationMeshSourceGeometryData3D.new()
+	NavigationServer3D.parse_source_geometry_data(nm, src, _level)
+	NavigationServer3D.bake_from_source_geometry_data(nm, src)
+	_nav_region.navigation_mesh = nm
+	_nav_polys = nm.get_polygon_count()
+	_show_nav_debug(nm)            # render it ourselves so it shows without the debug flag
 	_update_hud()
+
+
+func _show_nav_debug(nm: NavigationMesh) -> void:
+	if _nav_dbg:
+		_nav_dbg.queue_free()
+		_nav_dbg = null
+	if nm.get_polygon_count() == 0:
+		return
+	var verts := nm.get_vertices()
+	var st := SurfaceTool.new()
+	st.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for i in nm.get_polygon_count():
+		var poly := nm.get_polygon(i)
+		for k in range(1, poly.size() - 1):     # fan-triangulate the polygon
+			st.add_vertex(verts[poly[0]])
+			st.add_vertex(verts[poly[k]])
+			st.add_vertex(verts[poly[k + 1]])
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = Color(0.1, 0.8, 1.0, 0.45)
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	st.set_material(mat)
+	_nav_dbg = MeshInstance3D.new()
+	_nav_dbg.mesh = st.commit()
+	_nav_dbg.position.y += 0.05               # lift so it doesn't z-fight the floor
+	add_child(_nav_dbg)
 
 
 func _update_hud() -> void:
@@ -107,5 +147,6 @@ func _update_hud() -> void:
 		"DELI COUNTER — level test harness",
 		"WASD/arrows move   mouse look   Shift sprint   Space jump   Esc free mouse",
 		"F1 help   F3 scale proxies   F4 bake navmesh   R respawn",
+		("navmesh: %d polys" % _nav_polys) if _nav_polys >= 0 else "navmesh: press F4 to bake",
 		"collision view: editor Debug menu -> Visible Collision Shapes",
 	])

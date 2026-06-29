@@ -10,31 +10,29 @@
   "rarity_color": null,
   "markers": [
     {
-      "name": "ATTACKER_SPAWN_PUMP_LEFT",
+      "name": "ATTACKER_SPAWN_STEALTH_FRONT",
       "type": "attacker_spawn",
-      "id": "PUMP_LEFT",
-      "x": -4.0,
-      "y": -24.0,
+      "id": "STEALTH_FRONT",
+      "x": 0.0,
+      "y": -30.0,
       "z": 0.0,
       "rot_z": 0,
       "room": null,
       "meta": {
-        "phase": "approach",
-        "note": "at the fuel pumps"
+        "phase": "stealth"
       }
     },
     {
-      "name": "ATTACKER_SPAWN_PUMP_RIGHT",
+      "name": "ATTACKER_SPAWN_LOUD_WEST",
       "type": "attacker_spawn",
-      "id": "PUMP_RIGHT",
-      "x": 4.0,
-      "y": -24.0,
+      "id": "LOUD_WEST",
+      "x": -22.0,
+      "y": -5.0,
       "z": 0.0,
-      "rot_z": 0,
+      "rot_z": 90,
       "room": null,
       "meta": {
-        "phase": "approach",
-        "note": "at the fuel pumps"
+        "phase": "loud"
       }
     },
     {
@@ -297,9 +295,9 @@
         7.0,
         11.0
       ],
-      "role": "fortifiable",
+      "role": "public_entry",
       "combat_range": "long",
-      "fortifiable": true,
+      "fortifiable": false,
       "objective": false,
       "center": [
         0.5,
@@ -329,6 +327,40 @@
   ],
   "vertical_links": [],
   "openings": [
+    {
+      "wall": "ext_0_N",
+      "kind": "garage",
+      "story": 0,
+      "x": -9.6,
+      "y": 11.0,
+      "z": 1.65,
+      "width": 3.2,
+      "height": 3.0,
+      "sill": 0.0,
+      "tag": "loading_bay",
+      "breach_class": null,
+      "material": null,
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "fuel_stop_heist"
+    },
+    {
+      "wall": "ext_0_N",
+      "kind": "door",
+      "story": 0,
+      "x": 3.2,
+      "y": 11.0,
+      "z": 1.25,
+      "width": 1.1,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": "rear_staff_entry",
+      "breach_class": null,
+      "material": null,
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "fuel_stop_heist"
+    },
     {
       "wall": "ext_0_S",
       "kind": "door",
@@ -369,14 +401,14 @@
       "story": 0,
       "x": -12.8,
       "y": -11.0,
-      "z": 2.55,
+      "z": 1.95,
       "width": 3.0,
       "height": 2.4,
-      "sill": 1.2,
+      "sill": 0.6,
       "tag": null,
       "breach_class": null,
       "material": "storefront_glass",
-      "vaultable": false,
+      "vaultable": true,
       "reinforceable": false,
       "building": "fuel_stop_heist"
     },
@@ -386,14 +418,14 @@
       "story": 0,
       "x": 12.8,
       "y": -11.0,
-      "z": 2.55,
+      "z": 1.95,
       "width": 3.0,
       "height": 2.4,
-      "sill": 1.2,
+      "sill": 0.6,
       "tag": null,
       "breach_class": null,
       "material": "storefront_glass",
-      "vaultable": false,
+      "vaultable": true,
       "reinforceable": false,
       "building": "fuel_stop_heist"
     },
@@ -403,14 +435,14 @@
       "story": 0,
       "x": 16.0,
       "y": -6.6,
-      "z": 2.55,
+      "z": 1.95,
       "width": 2.4,
       "height": 2.4,
-      "sill": 1.2,
+      "sill": 0.6,
       "tag": "dining_window_1",
       "breach_class": null,
       "material": "storefront_glass",
-      "vaultable": false,
+      "vaultable": true,
       "reinforceable": false,
       "building": "fuel_stop_heist"
     },
@@ -420,14 +452,14 @@
       "story": 0,
       "x": 16.0,
       "y": -2.2,
-      "z": 2.55,
+      "z": 1.95,
       "width": 2.4,
       "height": 2.4,
-      "sill": 1.2,
+      "sill": 0.6,
       "tag": "dining_window_2",
       "breach_class": null,
       "material": "storefront_glass",
-      "vaultable": false,
+      "vaultable": true,
       "reinforceable": false,
       "building": "fuel_stop_heist"
     },
@@ -437,14 +469,14 @@
       "story": 0,
       "x": -16.0,
       "y": -6.6,
-      "z": 2.35,
+      "z": 2.15,
       "width": 2.0,
       "height": 2.0,
-      "sill": 1.2,
+      "sill": 1.0,
       "tag": "sales_side_window",
       "breach_class": null,
       "material": "storefront_glass",
-      "vaultable": false,
+      "vaultable": true,
       "reinforceable": false,
       "building": "fuel_stop_heist"
     },
@@ -454,13 +486,30 @@
       "story": 0,
       "x": -16.0,
       "y": 8.36,
-      "z": 2.35,
+      "z": 2.15,
       "width": 1.2,
       "height": 2.0,
-      "sill": 1.2,
+      "sill": 1.0,
       "tag": "office_window",
       "breach_class": null,
       "material": "storefront_glass",
+      "vaultable": true,
+      "reinforceable": false,
+      "building": "fuel_stop_heist"
+    },
+    {
+      "wall": "int_0_0",
+      "kind": "door",
+      "story": 0,
+      "x": 7.0,
+      "y": -8.6,
+      "z": 1.25,
+      "width": 1.4,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": "sales_to_food_1",
+      "breach_class": null,
+      "material": null,
       "vaultable": false,
       "reinforceable": false,
       "building": "fuel_stop_heist"
@@ -470,12 +519,12 @@
       "kind": "door",
       "story": 0,
       "x": 7.0,
-      "y": -5.0,
+      "y": -1.4,
       "z": 1.25,
-      "width": 1.8,
+      "width": 1.4,
       "height": 2.2,
       "sill": 0.0,
-      "tag": "sales_to_food",
+      "tag": "sales_to_food_2",
       "breach_class": null,
       "material": null,
       "vaultable": false,
@@ -527,6 +576,23 @@
       "height": 2.2,
       "sill": 0.0,
       "tag": "cooler_door_1",
+      "breach_class": null,
+      "material": "cooler_panel",
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "fuel_stop_heist"
+    },
+    {
+      "wall": "int_0_1",
+      "kind": "door",
+      "story": 0,
+      "x": 12.8,
+      "y": 1.0,
+      "z": 1.25,
+      "width": 1.2,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": "cooler_door_2",
       "breach_class": null,
       "material": "cooler_panel",
       "vaultable": false,
@@ -692,6 +758,26 @@
       }
     },
     {
+      "name": "DROP_ZONE_REAR_LOADING_DROP",
+      "id": "rear_loading_drop",
+      "kind": "drop",
+      "story": 0,
+      "bounds": [
+        -12.0,
+        11.5,
+        -6.0,
+        14.0
+      ],
+      "center": [
+        -9.0,
+        12.75,
+        0.0
+      ],
+      "meta": {
+        "bag_throw": true
+      }
+    },
+    {
       "name": "SECURE_ZONE_STOCKROOM_SECURE",
       "id": "stockroom_secure",
       "kind": "secure",
@@ -758,205 +844,7 @@
   ],
   "surfaces": [
     {
-      "node": "ext_col_0_S_seg0",
-      "material": {
-        "id": "storefront_glass",
-        "acoustic": "Glass",
-        "absorption": 0.08,
-        "damping": 0.05
-      }
-    },
-    {
-      "node": "ext_col_0_S_open0_lintel",
-      "material": {
-        "id": "storefront_glass",
-        "acoustic": "Glass",
-        "absorption": 0.08,
-        "damping": 0.05
-      }
-    },
-    {
-      "node": "ext_col_0_S_open0_sill",
-      "material": {
-        "id": "storefront_glass",
-        "acoustic": "Glass",
-        "absorption": 0.08,
-        "damping": 0.05
-      }
-    },
-    {
-      "node": "ext_col_0_S_open0_pane",
-      "material": {
-        "id": "storefront_glass",
-        "acoustic": "Glass",
-        "absorption": 0.08,
-        "damping": 0.05
-      }
-    },
-    {
-      "node": "ext_col_0_S_seg3",
-      "material": {
-        "id": "storefront_glass",
-        "acoustic": "Glass",
-        "absorption": 0.08,
-        "damping": 0.05
-      }
-    },
-    {
-      "node": "ext_col_0_S_open1_lintel",
-      "material": {
-        "id": "storefront_glass",
-        "acoustic": "Glass",
-        "absorption": 0.08,
-        "damping": 0.05
-      }
-    },
-    {
-      "node": "ext_col_0_S_seg9",
-      "material": {
-        "id": "storefront_glass",
-        "acoustic": "Glass",
-        "absorption": 0.08,
-        "damping": 0.05
-      }
-    },
-    {
-      "node": "ext_col_0_S_open2_lintel",
-      "material": {
-        "id": "storefront_glass",
-        "acoustic": "Glass",
-        "absorption": 0.08,
-        "damping": 0.05
-      }
-    },
-    {
-      "node": "ext_col_0_S_seg12",
-      "material": {
-        "id": "storefront_glass",
-        "acoustic": "Glass",
-        "absorption": 0.08,
-        "damping": 0.05
-      }
-    },
-    {
-      "node": "ext_col_0_S_open3_lintel",
-      "material": {
-        "id": "storefront_glass",
-        "acoustic": "Glass",
-        "absorption": 0.08,
-        "damping": 0.05
-      }
-    },
-    {
-      "node": "ext_col_0_S_open3_sill",
-      "material": {
-        "id": "storefront_glass",
-        "acoustic": "Glass",
-        "absorption": 0.08,
-        "damping": 0.05
-      }
-    },
-    {
-      "node": "ext_col_0_S_open3_pane",
-      "material": {
-        "id": "storefront_glass",
-        "acoustic": "Glass",
-        "absorption": 0.08,
-        "damping": 0.05
-      }
-    },
-    {
-      "node": "ext_col_0_S_seg13",
-      "material": {
-        "id": "storefront_glass",
-        "acoustic": "Glass",
-        "absorption": 0.08,
-        "damping": 0.05
-      }
-    },
-    {
-      "node": "ext_col_0_E_seg1",
-      "material": {
-        "id": "storefront_glass",
-        "acoustic": "Glass",
-        "absorption": 0.08,
-        "damping": 0.05
-      }
-    },
-    {
-      "node": "ext_col_0_E_open0_lintel",
-      "material": {
-        "id": "storefront_glass",
-        "acoustic": "Glass",
-        "absorption": 0.08,
-        "damping": 0.05
-      }
-    },
-    {
-      "node": "ext_col_0_E_open0_sill",
-      "material": {
-        "id": "storefront_glass",
-        "acoustic": "Glass",
-        "absorption": 0.08,
-        "damping": 0.05
-      }
-    },
-    {
-      "node": "ext_col_0_E_open0_pane",
-      "material": {
-        "id": "storefront_glass",
-        "acoustic": "Glass",
-        "absorption": 0.08,
-        "damping": 0.05
-      }
-    },
-    {
-      "node": "ext_col_0_E_seg3",
-      "material": {
-        "id": "storefront_glass",
-        "acoustic": "Glass",
-        "absorption": 0.08,
-        "damping": 0.05
-      }
-    },
-    {
-      "node": "ext_col_0_E_open1_lintel",
-      "material": {
-        "id": "storefront_glass",
-        "acoustic": "Glass",
-        "absorption": 0.08,
-        "damping": 0.05
-      }
-    },
-    {
-      "node": "ext_col_0_E_open1_sill",
-      "material": {
-        "id": "storefront_glass",
-        "acoustic": "Glass",
-        "absorption": 0.08,
-        "damping": 0.05
-      }
-    },
-    {
-      "node": "ext_col_0_E_open1_pane",
-      "material": {
-        "id": "storefront_glass",
-        "acoustic": "Glass",
-        "absorption": 0.08,
-        "damping": 0.05
-      }
-    },
-    {
-      "node": "ext_col_0_E_seg9",
-      "material": {
-        "id": "storefront_glass",
-        "acoustic": "Glass",
-        "absorption": 0.08,
-        "damping": 0.05
-      }
-    },
-    {
-      "node": "ext_col_0_W_seg1",
+      "node": "ext_col_0_N",
       "material": {
         "id": "stone_ext",
         "acoustic": "Concrete",
@@ -965,7 +853,25 @@
       }
     },
     {
-      "node": "ext_col_0_W_open0_lintel",
+      "node": "ext_col_0_S",
+      "material": {
+        "id": "storefront_glass",
+        "acoustic": "Glass",
+        "absorption": 0.08,
+        "damping": 0.05
+      }
+    },
+    {
+      "node": "ext_col_0_E",
+      "material": {
+        "id": "storefront_glass",
+        "acoustic": "Glass",
+        "absorption": 0.08,
+        "damping": 0.05
+      }
+    },
+    {
+      "node": "ext_col_0_W",
       "material": {
         "id": "stone_ext",
         "acoustic": "Concrete",
@@ -974,70 +880,7 @@
       }
     },
     {
-      "node": "ext_col_0_W_open0_sill",
-      "material": {
-        "id": "stone_ext",
-        "acoustic": "Concrete",
-        "absorption": 0.72,
-        "damping": 0.62
-      }
-    },
-    {
-      "node": "ext_col_0_W_open0_pane",
-      "material": {
-        "id": "stone_ext",
-        "acoustic": "Concrete",
-        "absorption": 0.72,
-        "damping": 0.62
-      }
-    },
-    {
-      "node": "ext_col_0_W_seg8",
-      "material": {
-        "id": "stone_ext",
-        "acoustic": "Concrete",
-        "absorption": 0.72,
-        "damping": 0.62
-      }
-    },
-    {
-      "node": "ext_col_0_W_open1_lintel",
-      "material": {
-        "id": "stone_ext",
-        "acoustic": "Concrete",
-        "absorption": 0.72,
-        "damping": 0.62
-      }
-    },
-    {
-      "node": "ext_col_0_W_open1_sill",
-      "material": {
-        "id": "stone_ext",
-        "acoustic": "Concrete",
-        "absorption": 0.72,
-        "damping": 0.62
-      }
-    },
-    {
-      "node": "ext_col_0_W_open1_pane",
-      "material": {
-        "id": "stone_ext",
-        "acoustic": "Concrete",
-        "absorption": 0.72,
-        "damping": 0.62
-      }
-    },
-    {
-      "node": "ext_col_0_W_seg9",
-      "material": {
-        "id": "stone_ext",
-        "acoustic": "Concrete",
-        "absorption": 0.72,
-        "damping": 0.62
-      }
-    },
-    {
-      "node": "int_col_0_0_seg2",
+      "node": "int_col_0_0",
       "material": {
         "id": "drywall",
         "acoustic": "Drywall",
@@ -1046,7 +889,7 @@
       }
     },
     {
-      "node": "int_col_0_0_open0_lintel",
+      "node": "int_col_0_1",
       "material": {
         "id": "drywall",
         "acoustic": "Drywall",
@@ -1055,7 +898,7 @@
       }
     },
     {
-      "node": "int_col_0_0_seg5",
+      "node": "int_col_0_2",
       "material": {
         "id": "drywall",
         "acoustic": "Drywall",
@@ -1064,97 +907,7 @@
       }
     },
     {
-      "node": "int_col_0_1_seg2",
-      "material": {
-        "id": "drywall",
-        "acoustic": "Drywall",
-        "absorption": 0.42,
-        "damping": 0.38
-      }
-    },
-    {
-      "node": "int_col_0_1_open0_lintel",
-      "material": {
-        "id": "drywall",
-        "acoustic": "Drywall",
-        "absorption": 0.42,
-        "damping": 0.38
-      }
-    },
-    {
-      "node": "int_col_0_1_seg7",
-      "material": {
-        "id": "drywall",
-        "acoustic": "Drywall",
-        "absorption": 0.42,
-        "damping": 0.38
-      }
-    },
-    {
-      "node": "int_col_0_1_open1_lintel",
-      "material": {
-        "id": "drywall",
-        "acoustic": "Drywall",
-        "absorption": 0.42,
-        "damping": 0.38
-      }
-    },
-    {
-      "node": "int_col_0_1_seg12",
-      "material": {
-        "id": "drywall",
-        "acoustic": "Drywall",
-        "absorption": 0.42,
-        "damping": 0.38
-      }
-    },
-    {
-      "node": "int_col_0_1_open2_lintel",
-      "material": {
-        "id": "drywall",
-        "acoustic": "Drywall",
-        "absorption": 0.42,
-        "damping": 0.38
-      }
-    },
-    {
-      "node": "int_col_0_1_seg15",
-      "material": {
-        "id": "drywall",
-        "acoustic": "Drywall",
-        "absorption": 0.42,
-        "damping": 0.38
-      }
-    },
-    {
-      "node": "int_col_0_2_seg0",
-      "material": {
-        "id": "drywall",
-        "acoustic": "Drywall",
-        "absorption": 0.42,
-        "damping": 0.38
-      }
-    },
-    {
-      "node": "int_col_0_2_open0_lintel",
-      "material": {
-        "id": "drywall",
-        "acoustic": "Drywall",
-        "absorption": 0.42,
-        "damping": 0.38
-      }
-    },
-    {
-      "node": "int_col_0_2_seg4",
-      "material": {
-        "id": "drywall",
-        "acoustic": "Drywall",
-        "absorption": 0.42,
-        "damping": 0.38
-      }
-    },
-    {
-      "node": "int_col_0_3_seg2",
+      "node": "int_col_0_3",
       "material": {
         "id": "cooler_panel",
         "acoustic": "Metal",
@@ -1163,43 +916,7 @@
       }
     },
     {
-      "node": "int_col_0_3_open0_lintel",
-      "material": {
-        "id": "cooler_panel",
-        "acoustic": "Metal",
-        "absorption": 0.5,
-        "damping": 0.3
-      }
-    },
-    {
-      "node": "int_col_0_3_seg5",
-      "material": {
-        "id": "cooler_panel",
-        "acoustic": "Metal",
-        "absorption": 0.5,
-        "damping": 0.3
-      }
-    },
-    {
-      "node": "int_col_0_4_seg2",
-      "material": {
-        "id": "drywall",
-        "acoustic": "Drywall",
-        "absorption": 0.42,
-        "damping": 0.38
-      }
-    },
-    {
-      "node": "int_col_0_4_open0_lintel",
-      "material": {
-        "id": "drywall",
-        "acoustic": "Drywall",
-        "absorption": 0.42,
-        "damping": 0.38
-      }
-    },
-    {
-      "node": "int_col_0_4_seg5",
+      "node": "int_col_0_4",
       "material": {
         "id": "drywall",
         "acoustic": "Drywall",
@@ -1472,122 +1189,15 @@
   "surface_roles": {
     "slab_0": "floor",
     "slab_1": "ceiling",
-    "ext_0_N_seg0_0": "wall",
-    "ext_0_N_seg1_0": "wall",
-    "ext_0_N_seg2_0": "wall",
-    "ext_0_N_seg3_0": "wall",
-    "ext_0_N_seg4_0": "wall",
-    "ext_0_N_seg5_0": "wall",
-    "ext_0_N_seg6_0": "wall",
-    "ext_0_N_seg7_0": "wall",
-    "ext_0_N_seg8_0": "wall",
-    "ext_0_N_seg9_0": "wall",
-    "ext_0_N_seg10_0": "wall",
-    "ext_0_N_seg11_0": "wall",
-    "ext_0_N_seg12_0": "wall",
-    "ext_0_N_seg13_0": "wall",
-    "ext_0_N_seg14_0": "wall",
-    "ext_0_N_seg15_0": "wall",
-    "ext_0_S_seg0": "wall",
-    "ext_0_S_open0_lintel": "window",
-    "ext_0_S_open0_sill": "window",
-    "ext_0_S_open0_pane": "window",
-    "ext_0_S_seg1_0": "wall",
-    "ext_0_S_seg2_0": "wall",
-    "ext_0_S_seg3": "wall",
-    "ext_0_S_open1_lintel": "doorway",
-    "ext_0_S_seg4_0": "wall",
-    "ext_0_S_seg5_0": "wall",
-    "ext_0_S_seg6_0": "wall",
-    "ext_0_S_seg7_0": "wall",
-    "ext_0_S_seg8_0": "wall",
-    "ext_0_S_seg9": "wall",
-    "ext_0_S_open2_lintel": "doorway",
-    "ext_0_S_seg10_0": "wall",
-    "ext_0_S_seg11_0": "wall",
-    "ext_0_S_seg12": "wall",
-    "ext_0_S_open3_lintel": "window",
-    "ext_0_S_open3_sill": "window",
-    "ext_0_S_open3_pane": "window",
-    "ext_0_S_seg13": "wall",
-    "ext_0_E_seg0_0": "wall",
-    "ext_0_E_seg1": "wall",
-    "ext_0_E_open0_lintel": "window",
-    "ext_0_E_open0_sill": "window",
-    "ext_0_E_open0_pane": "window",
-    "ext_0_E_seg2_0": "wall",
-    "ext_0_E_seg3": "wall",
-    "ext_0_E_open1_lintel": "window",
-    "ext_0_E_open1_sill": "window",
-    "ext_0_E_open1_pane": "window",
-    "ext_0_E_seg4_0": "wall",
-    "ext_0_E_seg5_0": "wall",
-    "ext_0_E_seg6_0": "wall",
-    "ext_0_E_seg7_0": "wall",
-    "ext_0_E_seg8_0": "wall",
-    "ext_0_E_seg9": "wall",
-    "ext_0_W_seg0_0": "wall",
-    "ext_0_W_seg1": "wall",
-    "ext_0_W_open0_lintel": "window",
-    "ext_0_W_open0_sill": "window",
-    "ext_0_W_open0_pane": "window",
-    "ext_0_W_seg2_0": "wall",
-    "ext_0_W_seg3_0": "wall",
-    "ext_0_W_seg4_0": "wall",
-    "ext_0_W_seg5_0": "wall",
-    "ext_0_W_seg6_0": "wall",
-    "ext_0_W_seg7_0": "wall",
-    "ext_0_W_seg8": "wall",
-    "ext_0_W_open1_lintel": "window",
-    "ext_0_W_open1_sill": "window",
-    "ext_0_W_open1_pane": "window",
-    "ext_0_W_seg9": "wall",
-    "int_0_0_seg0_0": "wall",
-    "int_0_0_seg1_0": "wall",
-    "int_0_0_seg2": "wall",
-    "int_0_0_open0_lintel": "doorway",
-    "int_0_0_seg3_0": "wall",
-    "int_0_0_seg4_0": "wall",
-    "int_0_0_seg5": "wall",
-    "int_0_1_seg0_0": "wall",
-    "int_0_1_seg1_0": "wall",
-    "int_0_1_seg2": "wall",
-    "int_0_1_open0_lintel": "doorway",
-    "int_0_1_seg3_0": "wall",
-    "int_0_1_seg4_0": "wall",
-    "int_0_1_seg5_0": "wall",
-    "int_0_1_seg6_0": "wall",
-    "int_0_1_seg7": "wall",
-    "int_0_1_open1_lintel": "doorway",
-    "int_0_1_seg8_0": "wall",
-    "int_0_1_seg9_0": "wall",
-    "int_0_1_seg10_0": "wall",
-    "int_0_1_seg11_0": "wall",
-    "int_0_1_seg12": "wall",
-    "int_0_1_open2_lintel": "doorway",
-    "int_0_1_seg13_0": "wall",
-    "int_0_1_seg14_0": "wall",
-    "int_0_1_seg15": "wall",
-    "int_0_2_seg0": "wall",
-    "int_0_2_open0_lintel": "doorway",
-    "int_0_2_seg1_0": "wall",
-    "int_0_2_seg2_0": "wall",
-    "int_0_2_seg3_0": "wall",
-    "int_0_2_seg4": "wall",
-    "int_0_3_seg0_0": "wall",
-    "int_0_3_seg1_0": "wall",
-    "int_0_3_seg2": "wall",
-    "int_0_3_open0_lintel": "doorway",
-    "int_0_3_seg3_0": "wall",
-    "int_0_3_seg4_0": "wall",
-    "int_0_3_seg5": "wall",
-    "int_0_4_seg0_0": "wall",
-    "int_0_4_seg1_0": "wall",
-    "int_0_4_seg2": "wall",
-    "int_0_4_open0_lintel": "doorway",
-    "int_0_4_seg3_0": "wall",
-    "int_0_4_seg4_0": "wall",
-    "int_0_4_seg5": "wall",
+    "ext_0_N": "wall",
+    "ext_0_S": "wall",
+    "ext_0_E": "wall",
+    "ext_0_W": "wall",
+    "int_0_0": "wall",
+    "int_0_1": "wall",
+    "int_0_2": "wall",
+    "int_0_3": "wall",
+    "int_0_4": "wall",
     "register_counter": "prop",
     "gondola_aisle_1": "prop",
     "gondola_aisle_2": "prop",

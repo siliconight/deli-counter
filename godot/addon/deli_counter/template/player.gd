@@ -5,7 +5,7 @@ extends CharacterBody3D
 ## capsule, eye at ~1.6 m), with stair-stepping so it can actually climb the
 ## generated stairs (Godot's CharacterBody3D has no built-in step handling).
 ##
-## Input: uses dedicated actions move_forward/back/left/right if you've defined
+## Input: WASD and arrow keys both work with zero setup. If you define dedicated
 ## them (recommended), and falls back to the built-in ui_* arrow keys so it
 ## still runs in a fresh project with zero setup.
 
@@ -46,14 +46,19 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _move_axis() -> Vector2:
-	# dedicated actions if present, else fall back to ui_* (arrow keys)
+	# Respect dedicated actions if the project defined them...
 	if InputMap.has_action("move_left"):
 		return Vector2(
 			Input.get_action_strength("move_right") - Input.get_action_strength("move_left"),
 			Input.get_action_strength("move_back") - Input.get_action_strength("move_forward"))
-	return Vector2(
-		Input.get_action_strength("ui_right") - Input.get_action_strength("ui_left"),
-		Input.get_action_strength("ui_down") - Input.get_action_strength("ui_up"))
+	# ...otherwise read WASD AND arrow keys directly, so both work with zero setup.
+	var x := 0.0
+	var y := 0.0
+	if Input.is_key_pressed(KEY_D) or Input.is_key_pressed(KEY_RIGHT): x += 1.0
+	if Input.is_key_pressed(KEY_A) or Input.is_key_pressed(KEY_LEFT):  x -= 1.0
+	if Input.is_key_pressed(KEY_S) or Input.is_key_pressed(KEY_DOWN):  y += 1.0
+	if Input.is_key_pressed(KEY_W) or Input.is_key_pressed(KEY_UP):    y -= 1.0
+	return Vector2(x, y)
 
 
 func _physics_process(delta: float) -> void:
