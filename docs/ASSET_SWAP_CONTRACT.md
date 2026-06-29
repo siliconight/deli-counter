@@ -56,7 +56,7 @@ floats, clips, or ghosts.
 The swap tool keys entirely off names, so the axes are closed and ordered. Canonical filename:
 
 ```
-<role>_<kit>_<style>[_<sizemod>].glb
+<role>_<kit>_<style>[_<sizemod>][_w<cm>][_<state>].glb
 ```
 
 - **role** — structural class. Closed vocabulary: `wall`, `doorway`, `window`, `floor`, `ceiling`,
@@ -66,9 +66,20 @@ The swap tool keys entirely off names, so the axes are closed and ordered. Canon
   **theme** (`greybox`, `gasstation`, `diner`, `bank`, …). For **material-defined props** it's a
   **material** (`wood`, `metal`, `glass`, …). The slot declares which (`kit_axis: "theme" | "material"`)
   so the tool knows whether the active *theme* selector or a *material* selector drives the swap.
-- **style** — integer variant within the kit (`1`, `2`, …).
+- **style** — integer variant within the kit (`1`, `2`, …), written 2-digit in filenames (`01`).
 - **sizemod** — optional module variant. Closed vocabulary: omitted = `full`; else `half`, `wide`,
-  `narrow`, `corner_in`, `corner_out`, `end`, `plain`.
+  `narrow`, `corner_in`, `corner_out`, `end`, `plain`. Note: the wall remainder is folded into the
+  **role** as its own type (`wallEnd`) rather than a sizemod, so a kit can author a dedicated end piece.
+- **width** — optional `w<cm>` token (cm = round(width × 100), e.g. `w90`). Modules are instanced at
+  authored size and never scaled, so this lets varied-width openings each get an exact-fit module.
+- **state** — optional model state, free token (`damaged`, `weathered`, …). Cosmetic to resolution;
+  it's recorded in the slot manifest's `current_ref` and (on the `.tscn` path) set as `dc_state`
+  metadata on the overlay, so game code can act on it.
+
+**Resolution precedence** (per kit, active theme then `greybox`, most specific first):
+`…_w<cm>_<state>` → `…_w<cm>` → `…_<state>` → `…`. Selectors: `DC_THEME` / spec `theme` picks the kit;
+`DC_STATE` / spec `state` picks the state. Backward compatible — with neither width nor state files
+present, resolution is the plain `<role>_<kit>_<style>` name.
 
 Mapping the examples:
 

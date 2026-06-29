@@ -398,6 +398,26 @@ class LevelSpec:
     # if no ext_walls are specified, auto-generate solid exterior walls
     auto_exterior: bool = True
 
+    # --- art-pass pipeline (all optional; None = fall back to the matching
+    # DC_* env var, so unset == byte-identical output). See README "Modular
+    # walls" / "Theming the slots" and docs/ASSET_SWAP_CONTRACT.md. ---
+    # decompose walls into named swap-slots (modular art-pass) instead of one
+    # solid box per run. None -> DC_MODULAR env -> off. new_level.py writes
+    # this true for new specs so fresh work is art-pass-ready by default.
+    modular: Optional[bool] = None
+    # module tile width (m) for tiling solid spans when modular. None ->
+    # DC_MODULE env -> 2.0. <= 0 disables tiling (opening-decomposition only).
+    module: Optional[float] = None
+    # resolver theme/kit: slots resolve to <type>_<theme>_<style>...glb.
+    # None -> DC_THEME env -> "greybox".
+    theme: Optional[str] = None
+    # optional model state (e.g. "damaged"); prefers a _<state> module variant.
+    # None -> DC_STATE env -> none.
+    state: Optional[str] = None
+    # path to the module library (the zoo of swap modules), relative to the
+    # spec. None -> DC_MODULE_LIB env -> resolver off (generate greybox boxes).
+    module_library: Optional[str] = None
+
     # OPTIONAL anti-flatness pass (see --vertex-nuance). When true, the VISUAL
     # meshes get densified to ~grid edge length, hard edges beveled, and
     # procedural vertex colors baked (geometry-derived fake AO + height grime +

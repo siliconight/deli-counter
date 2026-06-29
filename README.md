@@ -506,9 +506,13 @@ Enable it per build:
 - **Env var** (no spec change): `DC_MODULAR=1` (optionally `DC_MODULE=2.0`). In
   PowerShell, `$env:DC_MODULAR=1` in the shell you build from — or, for a GUI
   build, set `os.environ["DC_MODULAR"] = "1"` near the top of `_run_in_blender.py`.
-- **Per spec**: `"modular": true` (and `"module": 2.0`), once those fields are added
-  to `LevelSpec` / the schema. The builder reads them defensively, so the env vars
-  work today regardless.
+- **Per spec**: `"modular": true` (and optionally `"module": 2.0`, `"theme"`,
+  `"state"`, `"module_library"`) — these are first-class spec fields. The builder
+  reads the spec field first and falls back to the `DC_*` env var when it's
+  omitted, so env still works and specs that omit the field rebuild
+  byte-identical. **`new_level.py` writes `"modular": true` into new specs by
+  default** (pass `--monolith` to opt out), so fresh work is art-pass-ready;
+  existing specs are untouched until you add the field.
 
 `module` (default 2.0 m) tiles each solid span into whole module segments plus an
 end remainder; set `module` ≤ 0 for opening-decomposition only (no tiling). The
@@ -520,14 +524,18 @@ preset modular and walk the wall lines and door thresholds before relying on it.
 
 **Theming the slots (two paths).** Point the resolver at a kit and it swaps
 matching modules in at build time: set `DC_THEME=<name>` and `DC_MODULE_LIB=<dir>`,
-and each slot resolves to `<type>_<theme>_<style>.glb` — dims-aware, so a
-`<type>_<theme>_<style>_w<cm>.glb` variant wins for that exact width — falling back
-to greybox, then generated geometry. Theming is progressive: one module themes
-every slot of its type. That's the **baked** path (one shippable GLB; rebuild to
-re-theme). The **primary** path instead emits a Godot scene (`--format tscn`) and
-themes it live in the editor via `theme_swap.gd` (visual-only overlays in
-`res://art/zoo/`; greybox keeps collision) — edit a module and every instance
-updates with no rebuild.
+and each slot resolves by the canonical name
+`<type>_<descriptor>_<variant>[_w<cm>][_<state>].glb` — dims-aware (a `_w<cm>`
+variant wins for that exact width) and state-aware (`DC_STATE=<state>`, or a spec
+`state`, prefers a `_<state>` variant like `damaged`/`weathered`), falling back
+most-specific-first to greybox, then generated geometry. Theming is progressive:
+one module themes every slot of its type. That's the **baked** path (one shippable
+GLB; rebuild to re-theme). The **primary** path instead emits a Godot scene
+(`--format tscn`) and themes it live in the editor via `theme_swap.gd` (set its
+`theme` and optional `state`; visual-only overlays in `res://art/zoo/`, greybox
+keeps collision, state passed through as `dc_state` metadata) — edit a module and
+every instance updates with no rebuild. See `docs/ASSET_SWAP_CONTRACT.md` for the
+full naming grammar.
 
 **Validation status (0.42):** the baked resolver — module selection and in-engine
 placement (rotation + collision routing) — is walked and validated. The `.tscn` +
@@ -537,6 +545,42 @@ treat it as experimental** until it has been.
 See `docs/WALL_SEGMENTATION.md` for how the decomposition works and
 `docs/ASSET_SWAP_CONTRACT.md` for the naming and fit rules a themed prefab must
 satisfy to drop into a slot.
+
+## Instancing & memory (shared meshes)
+
+When the same geometry appears many times, Deli Counter emits it so the engine
+keeps **one copy in memory** and gives every repeat just a transform — the
+memory win you'd expect from prefabs. This happens for three things:
+
+- **Modular wall segments** (with modular emit on) — identical tiles link one
+  mesh datablock, so a 66-tile wall is one mesh, not 66.
+- **Resolver-instanced modules** — a module GLB is imported once and linked to
+  every slot it fills.
+- **Repeated placements of an asset** — a kitbashed asset (`placements`) is
+  imported and joined once; every later placement links the cached mesh, and the
+  sharing persists across rebuilds (re-art-pass the source file, rebuild, still
+  one copy).
+
+How it survives the pipeline: a shared Blender mesh datablock exports to **one
+glTF mesh referenced by N nodes**, and Godot's importer turns that into **one
+`Mesh` resource shared by N `MeshInstance3D`** — so one vertex buffer and one
+material/texture set live in VRAM, and each extra instance costs only its
+position. (Verify in Blender: Outliner → Blender File → Meshes; the shared mesh
+shows a high user count.)
+
+**Caveat — procedural volumes are *not* shared.** A `volumes` box (the greybox
+stand-in used for props like the fuel pumps) gets its own mesh every time, even
+when identical, so a row of eight pump *volumes* is eight meshes. To get the
+one-in-VRAM behavior for a repeated prop, author it as a single **asset placed N
+times via `placements`** (or as a module), not as N volumes — that's the form
+that instances.
+
+One precision: this is **resource/VRAM sharing** (one geometry + one texture in
+memory), not automatic single-draw-call GPU instancing. Deli Counter doesn't emit
+`MultiMesh`, so the renderer still issues a draw per instance (Godot 4 Forward+
+may batch identical mesh+material on its own, but that's renderer-side). The
+memory savings hold regardless; if you need one draw call for a huge count,
+convert those instances to a `MultiMeshInstance3D` in-engine.
 
 ## Acoustic materials (optional audio-engine bridge)
 

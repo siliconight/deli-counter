@@ -5,6 +5,54 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.44.0]
+### Added — art-pass fields are first-class on the spec; modular default-on for new specs
+- `LevelSpec` (and the JSON schema) gain first-class optional fields: `modular`,
+  `module`, `theme`, `state`, `module_library`. Each defaults to `null` and falls
+  back to its `DC_*` env var when unset, so the builder reads spec-first then env
+  and existing specs that omit them still rebuild byte-identical. A spec can now
+  declare `"modular": true` (and a theme/state/library) reproducibly without env
+  vars.
+- `new_level.py` writes `"modular": true` into generated specs by default, so
+  fresh work is art-pass-ready out of the box; `--monolith` opts out to the
+  one-solid-box-per-wall path. Existing/hand-authored specs are unaffected.
+- Decision (vs flipping the global default): modular stays OFF when unspecified
+  to preserve byte-identical output; "default-on" lives at the new-spec on-ramp
+  and the explicit field, not in a silent global change.
+
+## [0.43.1]
+### Docs + repo hygiene (no builder/geometry change — output identical to 0.43.0)
+- README: new "Instancing & memory (shared meshes)" section — documents that
+  modular segments, resolver modules, and repeated `placements` of an asset all
+  share one mesh datablock (one glTF mesh / N nodes -> one Godot `Mesh` / N
+  `MeshInstance3D` -> one geometry + texture in VRAM). Notes the caveat that
+  procedural `volumes` are NOT shared (author repeated props as placements/modules
+  to instance them) and that this is resource/VRAM sharing, not MultiMesh
+  single-draw-call instancing.
+- Relocated the reusable baked-path test-module recipe to
+  `docs/themes/gasstation/make_wall_module.py` (writes to `DC_MODULE_LIB`; names
+  its mesh datablock so it's not "Cube"), sibling to make_gasstation_modules.py.
+- `.gitignore`: ignore one-off walk scratch (`/phase4_walk.*`, `/resolver_check.py`,
+  `/make_wall_module.py`, `/walk_test.gd`, root-anchored so the tracked recipe is
+  unaffected) and the `/dc-modules/` test library.
+
+## [0.43.0]
+### Added — state-aware module variants (full kit-naming convention)
+- The resolver and `theme_swap.gd` now honor the canonical kit name
+  `<type>_<descriptor>_<variant>[_w<cm>][_<state>].glb`. A `_<state>` token
+  (e.g. `damaged`, `weathered`) selects a state variant, chosen via `DC_STATE`
+  (baked) or the `theme_swap` node's `state` property (live). State is cosmetic
+  to resolution: it's recorded in the slot manifest `current_ref`, and on the
+  `.tscn` path the overlay gets `dc_state` metadata for game code to act on.
+- Precedence, per kit (active theme then greybox), most specific first:
+  `…_w<cm>_<state>` -> `…_w<cm>` -> `…_<state>` -> `…`.
+- `theme_swap.gd` width-token detection tightened to `w`+digits so a non-width
+  4th token is never mistaken for a width.
+- Strictly additive / backward compatible: with no `_<state>` files and no
+  `DC_STATE`, resolution is identical to 0.42. `docs/ASSET_SWAP_CONTRACT.md`
+  updated to the implemented grammar (width + state; `wallEnd` noted as a role,
+  not a sizemod).
+
 ## [0.42.0]
 ### Added — addon distribution + automated releases
 - `package.py --addon` builds a **drop-in Godot addon zip**

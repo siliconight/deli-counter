@@ -66,6 +66,10 @@ def main():
                     help="optional building rarity; stamps the tier + its "
                          "canonical colour onto gameplay.json and every door/"
                          "breach anchor for the networked-door reveal")
+    ap.add_argument("--monolith", action="store_true",
+                    help="emit one solid box per wall run instead of modular "
+                         "swap-slots (new specs are modular by default, ready "
+                         "for an art pass)")
     ap.add_argument("--list", action="store_true", help="list available presets and exit")
     ap.add_argument("--force", action="store_true", help="overwrite if the spec exists")
     args = ap.parse_args()
@@ -118,6 +122,15 @@ def main():
         spec["rarity"] = args.rarity
         print(f"set rarity = {args.rarity} (door/breach anchors will carry its "
               "colour; the reveal itself is game code -- see docs/RARITY.md)")
+
+    # Modular swap-slots are the default for NEW specs so fresh work is
+    # art-pass-ready; --monolith opts out to the one-box-per-wall path. (Existing
+    # hand-authored specs that omit the field still fall back to DC_MODULAR/off,
+    # so they rebuild byte-identical.)
+    spec["modular"] = not args.monolith
+    print("modular swap-slots: ON (default; pass --monolith for one solid box "
+          "per wall run)" if not args.monolith
+          else "modular swap-slots: OFF (--monolith) -- one solid box per wall run")
 
     specs_dir = os.path.join(HERE, "specs")
     os.makedirs(specs_dir, exist_ok=True)

@@ -17,3 +17,12 @@ __pycache__/
 
 # Versioned release zips — build artifacts, attach to GitHub Releases instead.
 dist/
+
+# Local validation scratch (one-off walk drivers — not part of the tool).
+# Root-anchored so the tracked recipe at docs/themes/gasstation/ is unaffected.
+/phase4_walk.*
+/resolver_check.py
+/make_wall_module.py
+/walk_test.gd
+# Test module library the resolver walk writes into.
+/dc-modules/

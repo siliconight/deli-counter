@@ -121,33 +121,53 @@ class _Builder:
         t = getattr(self.s, "theme", None) or os.environ.get("DC_THEME", "").strip()
         return t or "greybox"
 
-    def _resolve_module(self, typename, style=1, width=None):
-        """Resolve a slot type (optionally a specific width) to a module file.
+    def _state(self):
+        """Optional model 'state' (e.g. damaged, weathered). From DC_STATE or a
+        spec `state` field; None when unset. Honors the kit-naming convention
+        <type>_<descriptor>_<variant>[_w<cm>][_<state>]."""
+        s = getattr(self.s, "state", None) or os.environ.get("DC_STATE", "").strip()
+        return s or None
 
-        Search order, per kit (active theme, then greybox):
-            1. width-specific:  <type>_<kit>_<style>_w<cm>.glb   (cm = width*100)
-            2. generic:         <type>_<kit>_<style>.glb
-        The width-specific name wins so varied-width slots can each get an
-        exact-fit module -- modules are instanced at their authored size and
-        never scaled, so a single generic file only fits slots whose width
-        matches it (fine for uniform-width `wall` tiles, not for mixed openings).
-        Returns (path, kit, stem) or None (-> caller generates the greybox box,
-        keeping the art pass progressive). Backward compatible: with no width
-        passed or no _w<cm> files present, resolution is exactly as before."""
+    def _resolve_module(self, typename, style=1, width=None, state=None):
+        """Resolve a slot to a module file, honoring the kit-naming convention
+        <type>_<descriptor>_<variant>[_w<cm>][_<state>].glb.
+
+        Per kit (active theme, then greybox), tries the most specific name first:
+            1. <type>_<kit>_<style>_w<cm>_<state>   (width + state)
+            2. <type>_<kit>_<style>_w<cm>           (width)
+            3. <type>_<kit>_<style>_<state>         (state)
+            4. <type>_<kit>_<style>                 (generic)
+        width = the slot's exact width in cm (modules are instanced at authored
+        size, never scaled). state = an optional model state (DC_STATE / spec),
+        cosmetic to resolution and recorded in the slot manifest's current_ref so
+        game code can act on it. Returns (path, kit, stem) or None (-> caller
+        generates the greybox box). Backward compatible: no width and no state ->
+        resolution is exactly as before."""
         lib = self._module_lib()
         if lib is None:
             return None
+        if state is None:
+            state = self._state()
         wtok = f"w{int(round(width * 100))}" if width else None
+
+        def _stems(kit):
+            base = f"{typename}_{kit}_{style:02d}"
+            out = []
+            if wtok and state:
+                out.append(f"{base}_{wtok}_{state}")
+            if wtok:
+                out.append(f"{base}_{wtok}")
+            if state:
+                out.append(f"{base}_{state}")
+            out.append(base)
+            return out
+
         seen = []
         for kit in (self._theme(), "greybox"):
             if kit in seen:
                 continue
             seen.append(kit)
-            stems = []
-            if wtok:
-                stems.append(f"{typename}_{kit}_{style:02d}_{wtok}")
-            stems.append(f"{typename}_{kit}_{style:02d}")
-            for stem in stems:
+            for stem in _stems(kit):
                 path = os.path.join(lib, stem + ".glb")
                 if os.path.exists(path):
                     return path, kit, stem

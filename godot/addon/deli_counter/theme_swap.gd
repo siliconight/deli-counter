@@ -26,6 +26,16 @@ extends Node3D
 		if is_inside_tree():
 			apply_theme()
 
+## Optional model state (e.g. "damaged", "weathered"). When set, a
+## <type>_<theme>_<style>[_wNN]_<state>.glb variant wins over the stateless one,
+## falling back to stateless, then greybox. Honors the kit-naming convention
+## <type>_<descriptor>_<variant>[_w<cm>][_<state>].
+@export var state: String = "":
+	set(value):
+		state = value
+		if is_inside_tree():
+			apply_theme()
+
 @export_dir var library_path: String = "res://art/zoo"
 
 const _OVERLAY_GROUP := "_dc_theme_overlay"
@@ -50,14 +60,22 @@ func apply_theme() -> void:
 		var typ := parts[0]
 		var style := parts[2]
 		var wtok := ""
-		if parts.size() >= 4 and parts[3].begins_with("w"):
-			wtok = parts[3]                   # width token, e.g. w180 (cm)
-		# Width-specific themed variant wins (modules are never scaled), then the
-		# generic name; nothing exists -> stays greybox.
+		# width token is `w` followed by digits (w180) — guard so a non-width
+		# 4th token never gets mistaken for one.
+		if parts.size() >= 4 and parts[3].begins_with("w") and parts[3].substr(1).is_valid_int():
+			wtok = parts[3]
+		# Most specific themed variant wins (modules are never scaled), then less
+		# specific; nothing exists -> stays greybox. Order:
+		#   w+state  ->  w  ->  state  ->  generic
+		var base := "%s/%s_%s_%s" % [library_path, typ, theme, style]
 		var candidates: Array[String] = []
+		if wtok != "" and state != "":
+			candidates.append("%s_%s_%s.glb" % [base, wtok, state])
 		if wtok != "":
-			candidates.append("%s/%s_%s_%s_%s.glb" % [library_path, typ, theme, style, wtok])
-		candidates.append("%s/%s_%s_%s.glb" % [library_path, typ, theme, style])
+			candidates.append("%s_%s.glb" % [base, wtok])
+		if state != "":
+			candidates.append("%s_%s.glb" % [base, state])
+		candidates.append("%s.glb" % base)
 		var themed := ""
 		for cand in candidates:
 			if ResourceLoader.exists(cand):
@@ -68,6 +86,8 @@ func apply_theme() -> void:
 		_set_meshes_visible(module, false)    # hide greybox visual (keep collision)
 		var overlay: Node = (load(themed) as PackedScene).instantiate()
 		overlay.add_to_group(_OVERLAY_GROUP)
+		if state != "":
+			overlay.set_meta("dc_state", state)   # pass-through for game code
 		_strip_collision(overlay)             # cosmetic only; greybox owns collision
 		module.add_child(overlay)
 		# owner left null on purpose: overlay is generated, not saved into the scene
