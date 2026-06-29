@@ -121,21 +121,36 @@ class _Builder:
         t = getattr(self.s, "theme", None) or os.environ.get("DC_THEME", "").strip()
         return t or "greybox"
 
-    def _resolve_module(self, typename, style=1):
-        """Resolve a slot type to a module file: active theme first, greybox
-        fallback. Returns (path, kit) or None when neither exists (-> the caller
-        generates a box, so the art pass is progressive)."""
+    def _resolve_module(self, typename, style=1, width=None):
+        """Resolve a slot type (optionally a specific width) to a module file.
+
+        Search order, per kit (active theme, then greybox):
+            1. width-specific:  <type>_<kit>_<style>_w<cm>.glb   (cm = width*100)
+            2. generic:         <type>_<kit>_<style>.glb
+        The width-specific name wins so varied-width slots can each get an
+        exact-fit module -- modules are instanced at their authored size and
+        never scaled, so a single generic file only fits slots whose width
+        matches it (fine for uniform-width `wall` tiles, not for mixed openings).
+        Returns (path, kit, stem) or None (-> caller generates the greybox box,
+        keeping the art pass progressive). Backward compatible: with no width
+        passed or no _w<cm> files present, resolution is exactly as before."""
         lib = self._module_lib()
         if lib is None:
             return None
+        wtok = f"w{int(round(width * 100))}" if width else None
         seen = []
         for kit in (self._theme(), "greybox"):
             if kit in seen:
                 continue
             seen.append(kit)
-            path = os.path.join(lib, f"{typename}_{kit}_{style:02d}.glb")
-            if os.path.exists(path):
-                return path, kit
+            stems = []
+            if wtok:
+                stems.append(f"{typename}_{kit}_{style:02d}_{wtok}")
+            stems.append(f"{typename}_{kit}_{style:02d}")
+            for stem in stems:
+                path = os.path.join(lib, stem + ".glb")
+                if os.path.exists(path):
+                    return path, kit, stem
         return None
 
     def _instance_module(self, path, name, loc, rot_y, role=None):
@@ -522,14 +537,14 @@ class _Builder:
         # generated box when nothing resolves, so the art pass is progressive.
         if record_slot and role:
             typ = self._slot_typename(role, size_mod)
-            resolved = self._resolve_module(typ)
+            resolved = self._resolve_module(typ, width=clen)
             if resolved:
-                path, kit = resolved
+                path, kit, stem = resolved
                 wall_name = vname.rsplit("_seg", 1)[0]
                 _, rot_y, _ = self._slot_orient(wall_name, axis)
                 self._instance_module(path, vname, c, rot_y, role=role)
                 self._record_wall_slot(vname, c, sz, axis, role, size_mod,
-                                       ref=f"{typ}_{kit}_01")
+                                       ref=stem)
                 self._cover(role, kit)
                 return
         if visual:
@@ -592,17 +607,16 @@ class _Builder:
         role = {"door": "doorway", "garage": "doorway",
                 "window": "window", "breach": "breach"}.get(kind, "doorway")
         # RESOLVER FORK: a themed opening module replaces the whole frame at once.
-        resolved = self._resolve_module(role)
+        resolved = self._resolve_module(role, width=w)
         if resolved:
-            path, kit = resolved
+            path, kit, stem = resolved
             _, rot_y, _ = self._slot_orient(vb, axis)
             if axis == 0:
                 oc = (center[0] + u, center[1], center[2])
             else:
                 oc = (center[0], center[1] + u, center[2])
             self._instance_module(path, vb, oc, rot_y, role=role)
-            self._record_opening_slot(vb, center, size, axis, h,
-                                      ref=f"{role}_{kit}_01")
+            self._record_opening_slot(vb, center, size, axis, h, ref=stem)
             self._cover(role, kit)
             return
         # one swap slot for the whole opening (the frame pieces below are its

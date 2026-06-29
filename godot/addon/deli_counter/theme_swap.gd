@@ -43,12 +43,27 @@ func apply_theme() -> void:
 		var src: String = module.scene_file_path
 		if not src.ends_with(".glb"):
 			continue
-		var parts := src.get_file().get_basename().split("_")   # type_kit_style
+		# greybox stem is `type_kit_style` or `type_kit_style_wNN` (dims-aware).
+		var parts := src.get_file().get_basename().split("_")
 		if parts.size() < 3:
 			continue
-		var themed := "%s/%s_%s_%s.glb" % [
-			library_path, parts[0], theme, parts[parts.size() - 1]]
-		if not ResourceLoader.exists(themed):
+		var typ := parts[0]
+		var style := parts[2]
+		var wtok := ""
+		if parts.size() >= 4 and parts[3].begins_with("w"):
+			wtok = parts[3]                   # width token, e.g. w180 (cm)
+		# Width-specific themed variant wins (modules are never scaled), then the
+		# generic name; nothing exists -> stays greybox.
+		var candidates: Array[String] = []
+		if wtok != "":
+			candidates.append("%s/%s_%s_%s_%s.glb" % [library_path, typ, theme, style, wtok])
+		candidates.append("%s/%s_%s_%s.glb" % [library_path, typ, theme, style])
+		var themed := ""
+		for cand in candidates:
+			if ResourceLoader.exists(cand):
+				themed = cand
+				break
+		if themed == "":
 			continue                          # no theme art -> stays greybox
 		_set_meshes_visible(module, false)    # hide greybox visual (keep collision)
 		var overlay: Node = (load(themed) as PackedScene).instantiate()

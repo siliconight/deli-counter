@@ -5,6 +5,30 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.41.0]
+### Added — dims-aware module variants (per-width art-pass modules), both paths
+- **Baked path** (`deli_counter.py`): `_resolve_module` now takes the slot
+  `width` and tries a width-specific module first —
+  `<type>_<theme>_<style>_w<cm>.glb` (cm = round(width*100)) — falling back to
+  the generic `<type>_<theme>_<style>.glb`, then greybox. The slot manifest's
+  `current_ref` records the actual resolved stem.
+- **Primary path** (`godot/addon/deli_counter/theme_swap.gd`): the game-side
+  overlay now carries a width token through the lookup. It parses the greybox
+  module stem (`type_kit_style` or `type_kit_style_wNN`) and resolves the themed
+  variant width-specific-first, then generic, then leaves greybox. So per-width
+  theming works whether you ship a baked GLB or theme a live `.tscn`.
+- Why: the resolver/overlay is type-keyed and instances modules at authored size
+  (never scaled), so one generic file only fits slots whose width matches it —
+  fine for uniform `wall` tiles, but mixed-width openings/remainders need
+  per-width modules. (Alternative to authoring many widths: keep specs on a fixed
+  opening-width palette so one module per type fits everywhere.)
+- Strictly additive / backward compatible: no `_w<cm>` files present (or no theme
+  set) -> byte-identical to 0.40.0. No schema change. Themed modules remain
+  VISUAL-ONLY (greybox owns collision) and live in the Godot project
+  (`res://art/zoo/`), not this repo.
+- PARKED pending the in-engine walk of the 0.35–0.40 modular arc — do not tag
+  until `_instance_module` rotation/collision is verified in Blender first.
+
 ## [0.40.0]
 ### Added — zoo generator (`build.py --zoo`)
 - Generate a Godot "zoo" scene from a folder of module GLBs: every module knolled
