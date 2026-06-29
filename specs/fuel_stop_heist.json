@@ -81,18 +81,18 @@
           "pos": -0.4,
           "width": 3.0,
           "height": 2.4,
-          "sill": 0.6,
-          "vaultable": true,
-          "material": "storefront_glass"
+          "sill": 1.2,
+          "material": "storefront_glass",
+          "vaultable": false
         },
         {
           "kind": "window",
           "pos": 0.4,
           "width": 3.0,
           "height": 2.4,
-          "sill": 0.6,
-          "vaultable": true,
-          "material": "storefront_glass"
+          "sill": 1.2,
+          "material": "storefront_glass",
+          "vaultable": false
         }
       ]
     },
@@ -100,21 +100,7 @@
       "wall": "N",
       "story": 0,
       "material": "stone_ext",
-      "openings": [
-        {
-          "kind": "garage",
-          "pos": -0.3,
-          "width": 3.2,
-          "height": 3.0,
-          "tag": "loading_bay"
-        },
-        {
-          "kind": "door",
-          "pos": 0.1,
-          "width": 1.1,
-          "tag": "rear_staff_entry"
-        }
-      ]
+      "openings": []
     },
     {
       "wall": "E",
@@ -126,20 +112,20 @@
           "pos": -0.3,
           "width": 2.4,
           "height": 2.4,
-          "sill": 0.6,
-          "vaultable": true,
+          "sill": 1.2,
           "material": "storefront_glass",
-          "tag": "dining_window_1"
+          "tag": "dining_window_1",
+          "vaultable": false
         },
         {
           "kind": "window",
           "pos": -0.1,
           "width": 2.4,
           "height": 2.4,
-          "sill": 0.6,
-          "vaultable": true,
+          "sill": 1.2,
           "material": "storefront_glass",
-          "tag": "dining_window_2"
+          "tag": "dining_window_2",
+          "vaultable": false
         }
       ]
     },
@@ -153,20 +139,20 @@
           "pos": -0.3,
           "width": 2.0,
           "height": 2.0,
-          "sill": 1.0,
-          "vaultable": true,
+          "sill": 1.2,
           "material": "storefront_glass",
-          "tag": "sales_side_window"
+          "tag": "sales_side_window",
+          "vaultable": false
         },
         {
           "kind": "window",
           "pos": 0.38,
           "width": 1.2,
           "height": 2.0,
-          "sill": 1.0,
-          "vaultable": true,
+          "sill": 1.2,
           "material": "storefront_glass",
-          "tag": "office_window"
+          "tag": "office_window",
+          "vaultable": false
         }
       ]
     }
@@ -182,15 +168,9 @@
       "openings": [
         {
           "kind": "door",
-          "pos": -0.3,
-          "width": 1.4,
-          "tag": "sales_to_food_1"
-        },
-        {
-          "kind": "door",
-          "pos": 0.3,
-          "width": 1.4,
-          "tag": "sales_to_food_2"
+          "pos": 0.0,
+          "width": 1.8,
+          "tag": "sales_to_food"
         }
       ]
     },
@@ -219,13 +199,6 @@
           "pos": 0.3,
           "width": 1.2,
           "tag": "cooler_door_1",
-          "material": "cooler_panel"
-        },
-        {
-          "kind": "door",
-          "pos": 0.4,
-          "width": 1.2,
-          "tag": "cooler_door_2",
           "material": "cooler_panel"
         }
       ]
@@ -341,8 +314,9 @@
         7.0,
         11.0
       ],
-      "role": "public_entry",
-      "combat_range": "long"
+      "role": "fortifiable",
+      "combat_range": "long",
+      "fortifiable": true
     },
     {
       "id": "walk_in_cooler",
@@ -772,20 +746,6 @@
       }
     },
     {
-      "id": "rear_loading_drop",
-      "kind": "drop",
-      "story": 0,
-      "bounds": [
-        -12.0,
-        11.5,
-        -6.0,
-        14.0
-      ],
-      "meta": {
-        "bag_throw": true
-      }
-    },
-    {
       "id": "stockroom_secure",
       "kind": "secure",
       "story": 0,
@@ -803,24 +763,26 @@
   "markers": [
     {
       "type": "attacker_spawn",
-      "id": "STEALTH_FRONT",
-      "x": 0.0,
-      "y": -30.0,
+      "id": "PUMP_LEFT",
+      "x": -4.0,
+      "y": -24.0,
       "z": 0.0,
       "rot_z": 0,
       "meta": {
-        "phase": "stealth"
+        "phase": "approach",
+        "note": "at the fuel pumps"
       }
     },
     {
       "type": "attacker_spawn",
-      "id": "LOUD_WEST",
-      "x": -22.0,
-      "y": -5.0,
+      "id": "PUMP_RIGHT",
+      "x": 4.0,
+      "y": -24.0,
       "z": 0.0,
-      "rot_z": 90,
+      "rot_z": 0,
       "meta": {
-        "phase": "loud"
+        "phase": "approach",
+        "note": "at the fuel pumps"
       }
     },
     {
