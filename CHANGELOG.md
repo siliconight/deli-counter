@@ -5,6 +5,24 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.46.0]
+### Added
+- Three new presets, bringing the library to **twelve**:
+  - **gas_station** — heist convenience store (sales floor + market aisles + stockroom + manager office safe) fronted by a pump forecourt under a lit canopy; modeled on the walked fuel_stop layout.
+  - **office** — multi-story corporate tower: glass-curtain-wall block, central stair/elevator core serving every floor, open bullpen floors, top-floor executive suite as the objective (assault: holdable; heist: exec safe + server pull). `floors`/`basement` parametric.
+  - **parking_garage** — enclosed multi-level deck linked by a drivable ramp + pedestrian stair core, structural column grid, sealed perimeter with vehicle openings as entries, glassed attendant booth objective. `floors` parametric (min 2).
+  All three are registered for `new_level.py --list` / `describe.py`, validate clean, pass `check.py`, and are indexed in `specs/CATALOG.md`. Each fills a genuine genre gap (fuel / corporate / vehicle-structure) rather than a variation of the existing nine.
+### Notes
+- These pass the **offline gates** (reachability, enterability, objective-room >=2 access, step/slope, poly budget, IP guard) but each still needs a **build + in-engine walk** before it's trusted — the offline checks are a proxy, not the authority.
+- gas_station's canopy columns/pumps and parking_garage's column grid are emitted as repeated **volumes**; per docs/AUTHORING.md they're the textbook candidates to promote to a single placed asset (`placements`) at art-pass time.
+
+## [0.45.3]
+### Changed (docs only)
+- README: added a **"Concepts (the vocabulary)"** section right after the thesis
+  — the preset -> spec -> build -> model pipeline plus the catalog as an index,
+  with plain-language definitions and an analogy, so a newcomer isn't decoding
+  preset/spec/catalog/mode/volume from context. No builder/geometry change.
+
 ## [0.45.2]
 ### Changed (docs only)
 - README: added a **"Using it in your game"** section — the output-file contract

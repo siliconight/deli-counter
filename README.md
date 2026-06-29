@@ -45,6 +45,34 @@ This is why the tool is the way it is:
 applies the same philosophy to audio: the deterministic mix is baked, networked
 events are anchors. Same idea, different subsystem.)
 
+## Concepts (the vocabulary)
+
+The pieces sit at different stages of one pipeline, not side by side:
+
+**preset → spec → build → model**, with the **catalog** as an index off to the side.
+
+- **Preset** — a *recipe*, not a file you keep. A parametric template (`bank`,
+  `warehouse`, `corner_deli`, …) that *generates* a spec when you invoke it
+  (`new_level.py --preset bank`). There are nine.
+- **Spec** — one JSON file in `specs/` describing one building: footprint, walls,
+  rooms, openings, props, markers. The **source of truth** — the thing you edit
+  and rebuild. A preset's whole job is to write one of these for you.
+- **Build** — running `build.py` on a spec; it bakes the spec into geometry.
+- **Model** — the built output (`build/<name>.glb` + `gameplay.json`). "We make
+  models, not levels" refers to this.
+- **Catalog** (`specs/CATALOG.md`) — an auto-generated index of every spec in
+  `specs/` (footprint, floors, entries, breach points, …). `catalog.py` writes
+  it; you read it, never hand-edit it.
+
+Analogy: a **preset** is a recipe template, a **spec** is the filled-in recipe
+card for one dish, **build** cooks it, the **model** is the dish, and the
+**catalog** is the index listing every recipe card in your box.
+
+Terms you'll meet *inside* a spec: **mode** (`assault` / `heist` / `survival` —
+the gameplay flavor a spec declares), **volume / placement / asset** (the three
+ways to put a prop in a building — see [docs/AUTHORING.md](docs/AUTHORING.md)),
+and **module / slot / kit** (the art-pass swap vocabulary).
+
 ## How to build with it (read this first)
 
 The mental model: **a Deli Counter greybox isn't a rough sketch — it's the final

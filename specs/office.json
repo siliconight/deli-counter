@@ -1,0 +1,626 @@
+{
+  "$schema": "../schema/level.schema.json",
+  "name": "office",
+  "mode": "assault",
+  "seed": 2001,
+  "grid": 0.5,
+  "footprint_x": 34.0,
+  "footprint_y": 24.0,
+  "story_height": 3.6,
+  "n_stories": 3,
+  "has_basement": false,
+  "wall_thick": 0.3,
+  "floor_thick": 0.3,
+  "collision": "convex",
+  "auto_exterior": true,
+  "scale_ref": false,
+  "default_material": "concrete",
+  "materials": [
+    {
+      "id": "concrete",
+      "acoustic": "Concrete",
+      "absorption": 0.7,
+      "damping": 0.6
+    },
+    {
+      "id": "drywall",
+      "acoustic": "Drywall"
+    },
+    {
+      "id": "glass",
+      "acoustic": "Glass",
+      "absorption": 0.1,
+      "damping": 0.05
+    },
+    {
+      "id": "metal",
+      "acoustic": "Metal",
+      "absorption": 0.5,
+      "damping": 0.3
+    },
+    {
+      "id": "wood",
+      "acoustic": "Wood"
+    }
+  ],
+  "ext_walls": [
+    {
+      "wall": "S",
+      "story": 0,
+      "material": "glass",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.1,
+          "width": 2.0,
+          "tag": "lobby_main_west"
+        },
+        {
+          "kind": "door",
+          "pos": 0.1,
+          "width": 2.0,
+          "tag": "lobby_main_east"
+        },
+        {
+          "kind": "window",
+          "pos": -0.38,
+          "width": 4.0,
+          "height": 2.6,
+          "sill": 0.4,
+          "material": "glass"
+        },
+        {
+          "kind": "window",
+          "pos": 0.38,
+          "width": 4.0,
+          "height": 2.6,
+          "sill": 0.4,
+          "material": "glass"
+        }
+      ]
+    },
+    {
+      "wall": "N",
+      "story": 0,
+      "material": "concrete",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.35,
+          "width": 1.2,
+          "tag": "service_north"
+        },
+        {
+          "kind": "breach",
+          "pos": 0.3,
+          "width": 1.6,
+          "breach_class": "soft_wall",
+          "material": "drywall",
+          "tag": "north_breach"
+        }
+      ]
+    },
+    {
+      "wall": "W",
+      "story": 0,
+      "material": "concrete",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": 0.0,
+          "width": 1.2,
+          "tag": "west_service"
+        }
+      ]
+    },
+    {
+      "wall": "E",
+      "story": 0,
+      "material": "glass",
+      "openings": [
+        {
+          "kind": "window",
+          "pos": 0.0,
+          "width": 3.0,
+          "height": 2.6,
+          "sill": 0.4,
+          "material": "glass",
+          "vaultable": true
+        }
+      ]
+    },
+    {
+      "wall": "S",
+      "story": 1,
+      "material": "glass",
+      "openings": [
+        {
+          "kind": "window",
+          "pos": -0.25,
+          "width": 5.0,
+          "height": 2.4,
+          "sill": 0.6,
+          "material": "glass",
+          "vaultable": true
+        },
+        {
+          "kind": "window",
+          "pos": 0.25,
+          "width": 5.0,
+          "height": 2.4,
+          "sill": 0.6,
+          "material": "glass",
+          "vaultable": true
+        }
+      ]
+    },
+    {
+      "wall": "N",
+      "story": 1,
+      "material": "glass",
+      "openings": [
+        {
+          "kind": "window",
+          "pos": 0.0,
+          "width": 5.0,
+          "height": 2.4,
+          "sill": 0.6,
+          "material": "glass"
+        }
+      ]
+    },
+    {
+      "wall": "S",
+      "story": 2,
+      "material": "glass",
+      "openings": [
+        {
+          "kind": "window",
+          "pos": -0.25,
+          "width": 5.0,
+          "height": 2.4,
+          "sill": 0.6,
+          "material": "glass",
+          "vaultable": true
+        },
+        {
+          "kind": "window",
+          "pos": 0.25,
+          "width": 5.0,
+          "height": 2.4,
+          "sill": 0.6,
+          "material": "glass",
+          "vaultable": true
+        }
+      ]
+    },
+    {
+      "wall": "N",
+      "story": 2,
+      "material": "glass",
+      "openings": [
+        {
+          "kind": "window",
+          "pos": 0.0,
+          "width": 5.0,
+          "height": 2.4,
+          "sill": 0.6,
+          "material": "glass"
+        }
+      ]
+    }
+  ],
+  "partitions": [
+    {
+      "story": 0,
+      "axis": "Y",
+      "pos": -3.0,
+      "start": -4.0,
+      "end": 4.0,
+      "material": "drywall",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": 0.0,
+          "width": 1.4,
+          "tag": "core_w_0"
+        }
+      ]
+    },
+    {
+      "story": 0,
+      "axis": "Y",
+      "pos": 3.0,
+      "start": -4.0,
+      "end": 4.0,
+      "material": "drywall",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": 0.0,
+          "width": 1.4,
+          "tag": "core_e_0"
+        }
+      ]
+    },
+    {
+      "story": 1,
+      "axis": "Y",
+      "pos": -3.0,
+      "start": -4.0,
+      "end": 4.0,
+      "material": "drywall",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": 0.0,
+          "width": 1.4,
+          "tag": "core_w_1"
+        }
+      ]
+    },
+    {
+      "story": 1,
+      "axis": "Y",
+      "pos": 3.0,
+      "start": -4.0,
+      "end": 4.0,
+      "material": "drywall",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": 0.0,
+          "width": 1.4,
+          "tag": "core_e_1"
+        }
+      ]
+    },
+    {
+      "story": 2,
+      "axis": "Y",
+      "pos": -3.0,
+      "start": -4.0,
+      "end": 4.0,
+      "material": "drywall",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": 0.0,
+          "width": 1.4,
+          "tag": "core_w_2"
+        }
+      ]
+    },
+    {
+      "story": 2,
+      "axis": "Y",
+      "pos": 3.0,
+      "start": -4.0,
+      "end": 4.0,
+      "material": "drywall",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": 0.0,
+          "width": 1.4,
+          "tag": "core_e_2"
+        }
+      ]
+    },
+    {
+      "story": 2,
+      "axis": "Y",
+      "pos": 8.0,
+      "start": 4.0,
+      "end": 12.0,
+      "material": "drywall",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": 0.0,
+          "width": 1.1,
+          "tag": "exec_w"
+        }
+      ]
+    },
+    {
+      "story": 2,
+      "axis": "X",
+      "pos": 4.0,
+      "start": 8.0,
+      "end": 17.0,
+      "material": "drywall",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": 0.0,
+          "width": 1.1,
+          "tag": "exec_s"
+        }
+      ]
+    }
+  ],
+  "stairs": [
+    {
+      "x": 0.0,
+      "y": 0.0,
+      "from_story": 0,
+      "to_story": 2,
+      "style": "switchback",
+      "cut_slabs": true
+    }
+  ],
+  "vault_ledges": [
+    {
+      "x": 0.0,
+      "y": -8.0,
+      "story": 0,
+      "length": 5.0,
+      "axis": "X",
+      "height": 1.1,
+      "material": "wood"
+    }
+  ],
+  "volumes": [
+    {
+      "name": "elevator_block",
+      "x": 0.0,
+      "y": 0.0,
+      "z": 1.5,
+      "size_x": 2.0,
+      "size_y": 2.0,
+      "size_z": 3.0,
+      "collision": "convex",
+      "material": "metal"
+    },
+    {
+      "name": "reception_desk",
+      "x": 0.0,
+      "y": -8.0,
+      "z": 0.5,
+      "size_x": 5.0,
+      "size_y": 1.2,
+      "size_z": 1.0,
+      "collision": "convex",
+      "material": "wood"
+    },
+    {
+      "name": "cubicles_w_0",
+      "x": -10.0,
+      "y": 6.0,
+      "z": 0.6,
+      "size_x": 8.0,
+      "size_y": 6.0,
+      "size_z": 1.2,
+      "collision": "convex",
+      "material": "drywall"
+    },
+    {
+      "name": "cubicles_e_0",
+      "x": 10.0,
+      "y": -6.0,
+      "z": 0.6,
+      "size_x": 8.0,
+      "size_y": 6.0,
+      "size_z": 1.2,
+      "collision": "convex",
+      "material": "drywall"
+    },
+    {
+      "name": "cubicles_w_1",
+      "x": -10.0,
+      "y": 6.0,
+      "z": 4.2,
+      "size_x": 8.0,
+      "size_y": 6.0,
+      "size_z": 1.2,
+      "collision": "convex",
+      "material": "drywall"
+    },
+    {
+      "name": "cubicles_e_1",
+      "x": 10.0,
+      "y": -6.0,
+      "z": 4.2,
+      "size_x": 8.0,
+      "size_y": 6.0,
+      "size_z": 1.2,
+      "collision": "convex",
+      "material": "drywall"
+    },
+    {
+      "name": "cubicles_w_2",
+      "x": -10.0,
+      "y": 6.0,
+      "z": 7.8,
+      "size_x": 8.0,
+      "size_y": 6.0,
+      "size_z": 1.2,
+      "collision": "convex",
+      "material": "drywall"
+    },
+    {
+      "name": "cubicles_e_2",
+      "x": 10.0,
+      "y": -6.0,
+      "z": 7.8,
+      "size_x": 8.0,
+      "size_y": 6.0,
+      "size_z": 1.2,
+      "collision": "convex",
+      "material": "drywall"
+    },
+    {
+      "name": "exec_desk",
+      "x": 12.0,
+      "y": 8.0,
+      "z": 7.6000000000000005,
+      "size_x": 2.4,
+      "size_y": 1.1,
+      "size_z": 0.8,
+      "collision": "convex",
+      "material": "wood"
+    },
+    {
+      "name": "exec_safe",
+      "x": 15.0,
+      "y": 10.0,
+      "z": 7.7,
+      "size_x": 0.9,
+      "size_y": 0.9,
+      "size_z": 1.0,
+      "collision": "convex",
+      "material": "metal"
+    }
+  ],
+  "rooms": [
+    {
+      "id": "lobby",
+      "story": 0,
+      "bounds": [
+        -17.0,
+        -12.0,
+        17.0,
+        0.0
+      ],
+      "role": "public_entry",
+      "combat_range": "long"
+    },
+    {
+      "id": "ground_bullpen",
+      "story": 0,
+      "bounds": [
+        -17.0,
+        0.0,
+        17.0,
+        12.0
+      ],
+      "role": "connector",
+      "combat_range": "long"
+    },
+    {
+      "id": "floor_1",
+      "story": 1,
+      "bounds": [
+        -17.0,
+        -12.0,
+        17.0,
+        12.0
+      ],
+      "role": "connector",
+      "combat_range": "long"
+    },
+    {
+      "id": "exec_lobby",
+      "story": 2,
+      "bounds": [
+        -17.0,
+        -12.0,
+        8.0,
+        12.0
+      ],
+      "role": "connector",
+      "combat_range": "long"
+    },
+    {
+      "id": "exec_anteroom",
+      "story": 2,
+      "bounds": [
+        8.0,
+        -12.0,
+        17.0,
+        4.0
+      ],
+      "role": "connector",
+      "combat_range": "close"
+    },
+    {
+      "id": "exec_suite",
+      "story": 2,
+      "bounds": [
+        8.0,
+        4.0,
+        17.0,
+        12.0
+      ],
+      "role": "objective_room",
+      "objective": true,
+      "fortifiable": true,
+      "combat_range": "close"
+    }
+  ],
+  "markers": [
+    {
+      "type": "cover_high",
+      "id": "CUBE_W0",
+      "x": -10.0,
+      "y": 6.0,
+      "z": 0.0,
+      "room": "ground_bullpen"
+    },
+    {
+      "type": "cover_high",
+      "id": "CUBE_E0",
+      "x": 10.0,
+      "y": -6.0,
+      "z": 0.0,
+      "room": "lobby"
+    },
+    {
+      "type": "cover_low",
+      "id": "RECEPTION",
+      "x": 0.0,
+      "y": -8.0,
+      "z": 0.0,
+      "room": "lobby"
+    },
+    {
+      "type": "camera_socket",
+      "id": "01",
+      "x": -15.0,
+      "y": -10.0,
+      "z": 3.0,
+      "room": "lobby",
+      "rot_z": -45
+    },
+    {
+      "type": "attacker_spawn",
+      "id": "A",
+      "x": -4.0,
+      "y": -10.0,
+      "z": 0.0,
+      "rot_z": 0,
+      "room": "lobby"
+    },
+    {
+      "type": "attacker_spawn",
+      "id": "B",
+      "x": 4.0,
+      "y": -10.0,
+      "z": 0.0,
+      "rot_z": 0,
+      "room": "lobby"
+    },
+    {
+      "type": "defender_spawn",
+      "id": "D",
+      "x": 13.0,
+      "y": 9.0,
+      "z": 7.2,
+      "rot_z": 200,
+      "room": "exec_suite"
+    },
+    {
+      "type": "objective",
+      "id": "EXEC",
+      "x": 12.0,
+      "y": 8.0,
+      "z": 7.2,
+      "room": "exec_suite",
+      "meta": {
+        "kind": "capture"
+      }
+    }
+  ],
+  "modular": true
+}
