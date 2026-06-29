@@ -582,6 +582,10 @@ may batch identical mesh+material on its own, but that's renderer-side). The
 memory savings hold regardless; if you need one draw call for a huge count,
 convert those instances to a `MultiMeshInstance3D` in-engine.
 
+> For the full workflow — how to author good, fun, dress-ready greyboxes that get
+> this sharing (the structure / repeated-prop / one-off bucket model, the swap
+> contract, and the build→walk→art-pass loop) — see **[docs/AUTHORING.md](docs/AUTHORING.md)**.
+
 ## Acoustic materials (optional audio-engine bridge)
 
 **This is entirely optional.** Deli Counter builds the same playable shell with

@@ -5,6 +5,27 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.45.1]
+### Changed (docs only)
+- docs/AUTHORING.md: reframed the closing "two levers" section as **one invariant
+  (collision/nav live on the greybox) and one convention (a fixed width palette)**
+  -- they read as a property to rely on and a habit to adopt once, not a pair of
+  per-building toggles. No builder/geometry change.
+
+## [0.45.0]
+### Added — authoring guide + the volumes->placements best-practice example
+- `docs/AUTHORING.md`: the canonical "how to build good buildings" guide. Covers
+  the golden rule (an art pass never touches collision/nav), the
+  structure / repeated-prop / one-off bucket model (match the primitive to the
+  job), why that discipline gets you fun + dress-ability + VRAM sharing at once,
+  what instances vs not, the build->walk->art-pass loop, and a worked example
+  converting the fuel-station pumps from `volumes` to instanced `placements`.
+- `assets/props/make_pump_greybox.py`: Blender recipe authoring the two greybox
+  prop assets (pump 1.0x1.2x1.4, island 1.6x8.0x0.3) for that worked example.
+- README links the authoring guide from the Instancing section.
+- No builder/geometry change: existing specs build identically; this is docs +
+  a reusable recipe.
+
 ## [0.44.0]
 ### Added — art-pass fields are first-class on the spec; modular default-on for new specs
 - `LevelSpec` (and the JSON schema) gain first-class optional fields: `modular`,
