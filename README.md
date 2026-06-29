@@ -45,6 +45,20 @@ This is why the tool is the way it is:
 applies the same philosophy to audio: the deterministic mix is baked, networked
 events are anchors. Same idea, different subsystem.)
 
+## How to build with it (read this first)
+
+The mental model: **a Deli Counter greybox isn't a rough sketch — it's the final
+building already standing, just wearing boxes.** Each box is a stand-in for a
+specific themed piece, so the same file is at once a function-locked playable
+level, a kit-of-parts an artist can dress, and an already-instanced scene. The
+loop is: generate a greybox → **walk it** to lock the fun and the function →
+hand it to an artist who swaps the looks (and *can't* touch collision or nav).
+
+**[docs/AUTHORING.md](docs/AUTHORING.md)** is the full guide — the
+structure / repeated-prop / one-off bucket model, the one invariant and one
+convention that make the whole thing work, and a worked example. Read it before
+authoring your first real building; the rest of this README is reference.
+
 ## How it works
 
 Spec-driven Blender level generator. You describe a building as a JSON
@@ -264,6 +278,85 @@ confirm scale and collision before dressing the level.
 > (collision + markers) is confirmed working in a real Godot project; the
 > plugin's one-click flow is written against the Godot 4.x editor API and
 > should be smoke-tested in your engine.
+
+## Using it in your game
+
+This is the part that turns a generated building into *part of your game*. The
+tool's whole contract is **geometry you bake, anchors your game owns** — here's
+how you actually consume those anchors.
+
+### What a build emits
+
+```
+build/<name>.glb            the building: visual + collision meshes + marker empties
+build/<name>.gameplay.json  the anchor metadata (the authoritative sidecar)
+build/<name>.manifest.json  build provenance (seed, KIT_VERSION, counts)
+build/<name>.slots.json     swap-slot manifest (modular builds only — the art-pass handoff)
+build/floorplans/*.svg      per-story intel maps
+```
+
+Ship the `.glb` **and** its `.gameplay.json` together, side by side — the import
+reads the companion json by name to attach metadata to nodes.
+
+### Markers become typed nodes in groups
+
+On import, the plugin's post-import script turns the baked marker empties into
+typed Godot nodes, **already in Godot space** (no coordinate conversion — that's
+handled on glTF import), and drops each into a group:
+
+| Marker | Becomes | Group |
+| --- | --- | --- |
+| `ATTACKER_SPAWN_*` / `DEFENDER_SPAWN_*` | `Marker3D` | `attacker_spawn` / `defender_spawn` |
+| `OBJECTIVE_*` | `Marker3D` (+ json meta) | `objective` |
+| `CAMERA_SOCKET_*`, `DOOR_SOCKET_*`, `HATCH_*` | `Marker3D` | `camera_socket` / `door_socket` / `hatch` |
+| `COVER_LOW_*` / `COVER_HIGH_*` | `Marker3D` | `ai_cover` |
+| `NAV_REGION_*` (room center) | `Marker3D` | `nav_region` |
+| `BREACH_PANEL_*` | `StaticBody3D` (kept solid, + meta) | `breach_panel` |
+
+Collision is already live via the glTF importer (the `-convcolonly` / `-colonly`
+suffixes); the script doesn't touch it.
+
+### Wire your own logic at the anchors
+
+`DeliLevel` (ships with the addon) is a thin static helper over those groups.
+Your game decides what each anchor *means* — the tool only says *where*:
+
+```gdscript
+# Spawn your players at the attacker spawn anchors
+for spawn in DeliLevel.attacker_spawns(get_tree()):
+    var player := PlayerScene.instantiate()
+    add_child(player)
+    player.global_position = (spawn as Marker3D).global_position
+
+# Hook your objective logic — meta carries id / kind / required / room from the json
+for obj in DeliLevel.objectives(get_tree()):
+    var meta := DeliLevel.meta_of(obj)        # {"id": "vault", "kind": "drill", "required": true, ...}
+    spawn_objective(meta, (obj as Marker3D).global_position)
+
+# A breach charge goes off: free the soft panel so the wall is passable
+func on_breach_charge(panel: Node) -> void:
+    var hole_pos := DeliLevel.breach(panel, DebrisScene)   # returns the panel's position for VFX
+    rpc("net_mark_breached", panel.name)                   # YOUR netcode owns "it's open now"
+```
+
+Other helpers: `defender_spawns`, `camera_sockets`, `door_sockets`,
+`breach_panels`, `hatches`, `cover_points`, `nav_regions`, and `meta_of(node)`.
+None of it is mandatory — it's a convenience layer over `get_nodes_in_group(...)`,
+so you can ignore `DeliLevel` and read the groups (or parse `gameplay.json`)
+directly. (Loot is one anchor type the import doesn't auto-group: `LOOT_*` nodes
+are in the `.glb` and the `gameplay.json` `loot` array carries their
+`value` / `bags` / `kind` — read those directly to place loot.)
+
+The dividing line is the whole point: the tool emits *a breach can happen here*,
+*loot spawns here*, *the objective socket is here*. Whether it **has** breached,
+what's **there now**, who **did it** — that's your networked state layer. Want
+your own door / camera / objective scenes instead of plain markers? The
+post-import script's `SCENE_FOR_TAG` map instances them at the right anchors.
+
+> If you parse `gameplay.json` yourself instead of using the imported nodes, note
+> its coordinates are in the spec's Blender frame (Z-up); the importer already
+> converted the in-scene nodes to Godot's Y-up, which is why using the nodes
+> needs no conversion.
 
 ## Writing a spec
 

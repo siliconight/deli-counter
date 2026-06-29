@@ -5,6 +5,18 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.45.2]
+### Changed (docs only)
+- README: added a **"Using it in your game"** section — the output-file contract
+  (.glb / .gameplay.json / .manifest.json / .slots.json), the import-time
+  marker->group mapping, and the `DeliLevel` runtime API with a worked GDScript
+  example (spawn players, wire objectives, breach a panel). This documents the
+  anchors->your-netcode handoff the tool's thesis rests on, which existed in code
+  but was never shown.
+- README: surfaced the conceptual workflow up front with a "How to build with it
+  (read this first)" pointer to docs/AUTHORING.md, right after the thesis.
+- No builder/geometry change.
+
 ## [0.45.1]
 ### Changed (docs only)
 - docs/AUTHORING.md: reframed the closing "two levers" section as **one invariant
