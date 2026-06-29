@@ -72,6 +72,21 @@ def build_one(blender, spec_path, out_paths):
     return result.returncode == 0
 
 
+def _emit_tscn(build_dir, name, res_root):
+    """Write <name>.tscn from the slot manifest the build produced. The manifest
+    only exists for a modular build, so skip (with a note) otherwise."""
+    slots_json = os.path.join(build_dir, name + ".slots.json")
+    if not os.path.exists(slots_json):
+        print(f"[build] no slot manifest for {name} -- run a modular build "
+              f"(DC_MODULAR=1) to emit a .tscn; skipping")
+        return False
+    import tscn_export
+    out = os.path.join(build_dir, name + ".tscn")
+    tscn_export.tscn_from_manifest(slots_json, out, res_root)
+    print(f"[build] scene -> {out}")
+    return True
+
+
 def _out_paths(build_dir, name, formats, explicit_out):
     if explicit_out:
         return [explicit_out]
@@ -135,21 +150,49 @@ def main():
                     help="watch specs/ and rebuild on save (a spec path limits "
                          "the watch to that one); Godot auto-reimports the .glb")
     ap.add_argument("--blender", help="path to the Blender executable")
+    ap.add_argument("--tscn-res-root", default=os.environ.get(
+        "DC_TSCN_RES_ROOT", "res://"),
+        help="res:// root where the module GLBs live in your Godot project "
+             "(for --format tscn). e.g. res://art/zoo")
+    ap.add_argument("--zoo", action="store_true",
+        help="generate a zoo .tscn (every module knolled with scale refs + "
+             "labels) from --zoo-dir and exit")
+    ap.add_argument("--zoo-dir", default="art/zoo",
+        help="local folder of module .glb files to lay out for --zoo")
     args = ap.parse_args()
 
     formats = [f.strip().lower() for f in args.format.split(",") if f.strip()]
-    valid = {"glb", "gltf", "obj"}
+    valid = {"glb", "gltf", "obj", "tscn"}
     bad = set(formats) - valid
     if bad:
         sys.exit(f"Unknown format(s): {', '.join(bad)}. Use glb, gltf, obj.")
+
+    build_dir = os.path.join(HERE, "build")
+    os.makedirs(build_dir, exist_ok=True)
+
+    # --zoo needs no Blender or spec: it just lays out a folder of module GLBs.
+    if args.zoo:
+        import zoo_export
+        out = os.path.join(build_dir, "zoo.tscn")
+        try:
+            zoo_export.zoo_from_dir(args.zoo_dir, args.tscn_res_root, out)
+            print(f"[build] zoo -> {out}")
+            sys.exit(0)
+        except FileNotFoundError as e:
+            print(f"[build] {e}")
+            sys.exit(1)
 
     blender = find_blender(args.blender)
     if not blender:
         sys.exit("Blender not found. Set $BLENDER, use --blender, or add it "
                  "to PATH.")
 
-    build_dir = os.path.join(HERE, "build")
-    os.makedirs(build_dir, exist_ok=True)
+    # .tscn is not a Blender export -- it's a serialization of the slot manifest
+    # the build writes. Strip it from the formats Blender handles; emit it after.
+    want_tscn = "tscn" in formats
+    formats = [f for f in formats if f != "tscn"]
+    if want_tscn and not formats:
+        formats = ["glb"]   # still need a geometry build so slots.json is written
 
     if args.watch:
         _watch_loop(blender, build_dir, formats,
@@ -167,6 +210,8 @@ def main():
             name = os.path.splitext(os.path.basename(sp))[0]
             outs = _out_paths(build_dir, name, formats, None)
             ok = build_one(blender, sp, outs) and ok
+            if want_tscn:
+                _emit_tscn(build_dir, name, args.tscn_res_root)
         sys.exit(0 if ok else 1)
 
     if not args.spec:
@@ -175,6 +220,8 @@ def main():
     name = os.path.splitext(os.path.basename(args.spec))[0]
     outs = _out_paths(build_dir, name, formats, args.out)
     ok = build_one(blender, args.spec, outs)
+    if want_tscn:
+        _emit_tscn(build_dir, name, args.tscn_res_root)
     sys.exit(0 if ok else 1)
 
 

@@ -5,6 +5,40 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.40.0]
+### Added — zoo generator (`build.py --zoo`)
+- Generate a Godot "zoo" scene from a folder of module GLBs: every module knolled
+  on a grid, each with a billboarded name label, plus scale references (a 2 m cube
+  and a 1.8 m player pillar) so you read real scale at a glance instead of
+  guessing from asset-browser thumbnails. The in-game asset catalogue from the
+  gym/zoo/museum workflow.
+- `python build.py --zoo --zoo-dir art\zoo --tscn-res-root res://art/zoo` ->
+  `build/zoo.tscn`. Needs no Blender and no spec -- it's a pure layout over the
+  folder. New `zoo_export.py` (bpy-free, also runnable standalone:
+  `python zoo_export.py art/zoo`).
+- A team/dev documentation artifact, not a mission shell -- DC generates it, the
+  editor consumes it. Same instancing model as `--format tscn` (one PackedScene
+  per module, reused), so editing a module updates its zoo entry too.
+
+## [0.39.0]
+### Added — Godot scene output (`--format tscn`)
+- A second way to emit a building: instead of one baked `.glb`, write a Godot
+  `.tscn` that **instances** the module GLBs -- one node per slot, each
+  referencing `res://<root>/<ref>.glb`, positioned by the slot transform. Because
+  every instance points at the one `PackedScene` resource, editing a module
+  updates every instance in the editor (native Godot prefab behaviour) -- and the
+  building scene instantiates into a mission scene as a unit.
+- Both outputs read the **same slot manifest**, so the baked `.glb` and the
+  `.tscn` never disagree about what goes where. New `tscn_export.py` is **bpy-free**
+  and runs as a post-build step over `<name>.slots.json` (no Blender needed for
+  the serialization itself).
+- Usage: `build.py <spec> --format glb,tscn` (or `tscn` alone -- forces a `glb`
+  build so the manifest exists). `--tscn-res-root res://art/zoo` (or
+  `DC_TSCN_RES_ROOT`) sets where the module GLBs live in your project. Requires a
+  modular build (`DC_MODULAR=1`) so slots exist; transforms convert Blender Z-up ->
+  Godot Y-up to match the baked export.
+- Baked-GLB path unchanged; this is purely additive.
+
 ## [0.38.0]
 ### Added — module resolver (the art-pass swap, at build time)
 - When a **module library** is configured (`spec.module_library` /
