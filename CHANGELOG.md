@@ -5,6 +5,31 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.51.0] - Stairs you can WALK up (smooth ramp collider, not boxy risers)
+Fixes the long-standing "stairs don't work — you stick on them and have to jump"
+problem, which hit every multi-story building.
+
+- ROOT CAUSE: each stair step shipped its own box collider, so a CharacterBody3D
+  caught on every riser. FIX: the visual steps stay stepped, but COLLISION is now
+  a single smooth incline (a thin convex ramp at the flight's pitch, tilted like
+  `_ramps` does) under the steps. Any controller walks straight up — no per-step
+  catching, no jump, and no player-script step logic required. Switchback legs get
+  one ramp each (reversed legs tilt the other way); landings keep their flat
+  collider. `_stairs()` in deli_counter.py.
+- PITCH MATTERS: the ramp only walks if the flight is under the controller's
+  floor_max_angle (Godot default 45deg). A short `run` against a tall story can
+  exceed that. NEW steep-stair warning in tactical.py (mode-agnostic): warns past
+  ~38deg (steep), flags >=44deg as not climbable, and suggests run >=
+  story_height*1.4 (~35deg). Same wrapper also makes the existing steep-RAMP
+  warning fire for heist/survival specs (it was assault-only before).
+- Preset audit: most stairs are ~42deg (walkable but steep) at the default run 4;
+  corner_deli (run 5.5) is a comfortable 31deg; rowhome (run 3.0) is 45deg and
+  needs a longer run or a controller step-up. Lengthen runs toward
+  story_height*1.4 for a nicer climb.
+- GEOMETRY/COLLISION CHANGE -> KIT_VERSION 0.50.0 -> 0.51.0. Existing built .glbs
+  must be REBUILT to pick up the ramp collider (regenerating a spec isn't enough —
+  the geometry is baked in Blender).
+
 ## [0.50.0] - Facade shells: non-enterable filler-building presets (`facade_*`)
 New `facade` building type + a starter family of presets for the filler
 buildings that wall a street and channel the player toward the real heist

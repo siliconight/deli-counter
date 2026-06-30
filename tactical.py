@@ -293,7 +293,43 @@ def path_report(adj, starts, target):
     }
 
 
+def _traversal_warnings(spec):
+    """Mode-agnostic geometry-traversal warnings: steep ramps and steep stairs.
+    Stairs walk via a smooth ramp collider under the visual steps (see
+    deli_counter._stairs), so a flight is only climbable if its PITCH is under
+    the controller's floor_max_angle (Godot default 45deg). These run for every
+    mode (the per-mode analyzers used to skip them on heist/survival)."""
+    import math as _m
+    out = []
+    for ri, rp in enumerate(spec.ramps):
+        dz = abs(rp.to_story - rp.from_story) * spec.story_height
+        slope = _m.degrees(_m.atan2(dz, rp.run)) if rp.run else 90.0
+        if slope > rp.max_slope_deg:
+            out.append(f"ramp #{ri} slope {slope:.0f}deg exceeds walkable max "
+                       f"{rp.max_slope_deg:.0f}deg (consider stairs or a longer run)")
+    for si, st in enumerate(spec.stairs):
+        pitch = _m.degrees(_m.atan2(spec.story_height, st.run)) if st.run else 90.0
+        gentle = spec.story_height * 1.4
+        if pitch >= 44.0:
+            out.append(f"stair #{si} pitch {pitch:.0f}deg is at/over the 45deg "
+                       f"walkable limit -- the ramp collider won't be climbable. "
+                       f"Lengthen run (>= {gentle:.1f}m for ~35deg) or add a "
+                       "controller step-up.")
+        elif pitch > 38.0:
+            out.append(f"stair #{si} pitch {pitch:.0f}deg is steep (walkable but "
+                       f"uncomfortable); run >= {gentle:.1f}m gives a gentler ~35deg.")
+    return out
+
+
 def analyze(spec):
+    """Return (errors, warnings, scorecard). Wraps the per-mode analyzer and
+    appends mode-agnostic traversal-steepness warnings (stairs/ramps)."""
+    errors, warnings, scorecard = _analyze_modes(spec)
+    warnings = list(warnings) + _traversal_warnings(spec)
+    return errors, warnings, scorecard
+
+
+def _analyze_modes(spec):
     """Return (errors, warnings, scorecard dict). errors are hard failures.
     Dispatches on spec.mode: 'assault' (default), 'heist', or 'survival'."""
     errors, warnings = [], []
@@ -383,16 +419,6 @@ def analyze(spec):
     for s in stories:
         if len(stories) > 1 and s not in linked_stories:
             errors.append(f"story {s} has no stair/vertical access")
-
-    # steep ramp warning (too steep to walk -> should be stairs)
-    import math as _m
-    for ri, rp in enumerate(spec.ramps):
-        dz = abs(rp.to_story - rp.from_story) * spec.story_height
-        slope = _m.degrees(_m.atan2(dz, rp.run)) if rp.run else 90.0
-        if slope > rp.max_slope_deg:
-            warnings.append(f"ramp #{ri} slope {slope:.0f}deg exceeds walkable "
-                            f"max {rp.max_slope_deg:.0f}deg (consider stairs or "
-                            "a longer run)")
 
     # opening widths + breach metadata
     def _check_openings(openings, where):

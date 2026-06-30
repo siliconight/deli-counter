@@ -1048,8 +1048,21 @@ class _Builder:
                     self._box(f"stair{si}_{s}_{i}", (sx, cy, cz),
                               (st.width, step_d, step_h), self.VISUAL,
                               role="stair")
-                    self._col_box(f"stair{si}col_{s}_{i}", (sx, cy, cz),
-                                  (st.width, step_d, step_h))
+                # COLLISION is a single smooth ramp under the visual steps, NOT a
+                # box per step. Boxy per-step colliders catch a CharacterBody3D on
+                # every riser (you stick / have to jump); a flush incline at the
+                # flight's pitch lets any controller walk straight up with no step
+                # logic. Visual stays stepped. The ramp ascends along +/-Y with
+                # `sign`, tilted about X like _ramps does. Sat half a step proud so
+                # its surface rides the step nosings.
+                import math as _m
+                length3d = _m.sqrt(st.run ** 2 + H ** 2)
+                angle = _m.atan2(H, st.run)
+                ramp = self._box(
+                    f"stair{si}ramp_{s}" + self.col_suffix["convex"],
+                    (sx, st.y, z + H / 2 + step_h / 2),
+                    (st.width, length3d, 0.25), self.COLLISION)
+                ramp.rotation_euler = (sign * angle, 0.0, 0.0)
                 # landing at the top of each leg (except the final one) bridges
                 # this run to the parallel run the next leg starts from, so you
                 # can turn the corner. Spans both runs in X, one step deep.
