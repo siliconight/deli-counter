@@ -39,6 +39,11 @@ static func breach_panels(tree: SceneTree) -> Array[Node]:
 static func hatches(tree: SceneTree) -> Array[Node]:
 	return _in_group(tree, "hatch")
 
+## Ladder climb VOLUMES (Area3D). A player body overlapping one of these should
+## enter climb mode (see the harness player.gd for a reference implementation).
+static func ladders(tree: SceneTree) -> Array[Node]:
+	return _in_group(tree, "ladder")
+
 static func cover_points(tree: SceneTree) -> Array[Node]:
 	return _in_group(tree, "ai_cover")
 

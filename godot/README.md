@@ -46,6 +46,7 @@ matching nodes via `set_meta`.
 | `DOOR_SOCKET_*` | Marker3D (or your scene) | `door_socket` |
 | `BREACH_PANEL_*` | kept StaticBody3D, tagged | `breach_panel` |
 | `HATCH_*` | Marker3D | `hatch` |
+| `LADDER_*` | Area3D climb volume | `ladder` |
 | `NAV_REGION_*` | Marker3D (room center) | `nav_region` |
 | `COVER_LOW_* / COVER_HIGH_*` | Marker3D | `ai_cover` |
 

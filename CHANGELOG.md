@@ -5,6 +5,33 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.52.0] - Climbable ladders (climb volume + harness climb logic)
+The other half of the traversal fix: ladders you can actually climb. Same root
+cause as stairs -- a solid rung catches a capsule on the way up -- so the fix is
+the ladder equivalent of the stair ramp: stop fighting the mesh, drive traversal
+off a volume.
+
+- DC (`_ladders`): rungs + rails are now VISUAL ONLY (collision removed). Each
+  ladder emits a climb-volume anchor -- a `LADDER_<i>` marker carrying meta
+  (climb_height, width, depth, facing) -- alongside the slab hole it already cut.
+  Ladders still count as vertical access in validation (spec-graph connectivity
+  is unchanged), so the reachability gate still holds.
+- Addon post-import: `LADDER_*` now builds an `Area3D` climb volume (group
+  "ladder", sized from the meta with a 1 m dismount lip on top) instead of a
+  bare marker. `DeliLevel.ladders(tree)` returns them.
+- Harness player (`template/player.gd`): real ladder climbing. Overlap a ladder
+  volume to enter climb mode -- move along where you look (look up + forward to
+  ascend, down to descend, level + forward to step off at the top), gravity off
+  so no input clings in place, Space drops off. This is a reference climb for the
+  test rig; wire your own controller to the same `ladder` group + meta.
+- WHY a volume and not geometry: unlike a stair (a slope you can walk), a vertical
+  ladder can't be traversed by any pure-geometry trick -- climbing is necessarily
+  a controller mechanic. DC's job is the WHERE (the climb volume); the HOW lives
+  in the player, same contract as objectives/breaches.
+- GEOMETRY/ANCHOR CHANGE -> KIT_VERSION 0.51.0 -> 0.52.0; addon plugin 0.18.5 ->
+  0.18.6 (post-import + player + DeliLevel). Rebuild buildings with ladders to
+  pick up the visual-only geometry + climb-volume marker.
+
 ## [0.51.0] - Stairs you can WALK up (smooth ramp collider, not boxy risers)
 Fixes the long-standing "stairs don't work — you stick on them and have to jump"
 problem, which hit every multi-story building.

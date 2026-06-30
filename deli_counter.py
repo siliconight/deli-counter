@@ -1099,16 +1099,19 @@ class _Builder:
                         size_x=st.width + 2 * x_offset + 0.8, size_y=hole_len))
 
     def _ladders(self):
-        """Vertical climb: rungs + two side rails, climbing one floor per
-        story in the range. Cuts the slab it passes through."""
+        """Vertical climb: rungs + two side rails (VISUAL), climbing one floor
+        per story in the range. Cuts the slab it passes through, and emits a
+        climb-volume anchor (LADDER_ marker + meta) the post-import turns into an
+        Area3D. The geometry is visual-only: a solid rung catches a capsule on
+        the way up exactly like a boxy stair riser, so traversal is the climb
+        volume's job, not the mesh's (the game/harness owns the climb mechanic)."""
         H = self.s.story_height
         for li, ld in enumerate(self.s.ladders):
             along_x = ld.facing in ("N", "S")   # rails spread along X if facing N/S
             n_rungs_per_floor = max(3, round(H / ld.rung_spacing))
             for s in range(ld.from_story, ld.to_story):
                 z = s * H
-                # side rails (two thin vertical posts) — solid collision so the
-                # ladder is a real physical object, not a walk-through ghost.
+                # side rails (two thin vertical posts) -- VISUAL only.
                 half = ld.width / 2
                 for sgn in (-1, 1):
                     if along_x:
@@ -1119,10 +1122,7 @@ class _Builder:
                         rs = (ld.depth, 0.06, H)
                     self._box(f"ladder{li}_rail_{s}_{sgn}", rc, rs, self.VISUAL,
                               role="ladder")
-                    self._col_box(f"ladder{li}col_rail_{s}_{sgn}", rc, rs)
-                # rungs — collision too, so they're footing geometry and the
-                # ladder reads as solid (the climb itself is a gameplay mechanic
-                # the game wires to the LADDER_ marker; the shell stays solid).
+                # rungs -- VISUAL only (no collision; the climb is volume-driven).
                 for r in range(n_rungs_per_floor):
                     rz = z + ld.rung_spacing * (r + 0.5)
                     if rz >= z + H:
@@ -1133,14 +1133,20 @@ class _Builder:
                         cc, cs = (ld.x, ld.y, rz), (ld.depth, ld.width, 0.05)
                     self._box(f"ladder{li}_rung_{s}_{r}", cc, cs, self.VISUAL,
                               role="ladder")
-                    self._col_box(f"ladder{li}col_rung_{s}_{r}", cc, cs)
                 if ld.cut_slabs:
                     self.s.slab_holes.append(SlabHole(
                         story=s + 1, x=ld.x, y=ld.y,
                         size_x=ld.width + 0.6, size_y=ld.width + 0.6))
-            # marker so Godot can treat it as a climb volume
+            # climb-volume anchor: the marker + the climb metadata the post-import
+            # needs to build an Area3D the player climbs (height, footprint, facing).
             zc = ld.from_story * H
             self._empty(f"LADDER_{li}", (ld.x, ld.y, zc), self.MARKERS)
+            self.gameplay["markers"].append({
+                "name": f"LADDER_{li}", "type": "ladder", "id": f"ladder_{li}",
+                "x": ld.x, "y": ld.y, "z": zc,
+                "climb_height": (ld.to_story - ld.from_story) * H,
+                "width": ld.width, "depth": ld.depth, "facing": ld.facing,
+            })
 
     def _ramps(self):
         """Inclined walkable slab between two heights. Flagged steep ramps are

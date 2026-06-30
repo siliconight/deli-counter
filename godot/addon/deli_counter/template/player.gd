@@ -23,6 +23,13 @@ extends CharacterBody3D
 ## walls, and slopes. The harness player is a test rig, not a shipping char.
 @export var max_step_height: float = 0.4
 
+## Vertical climb speed on ladders (m/s). You climb along where you LOOK: look up
+## + hold forward to ascend, look down to descend, look level + forward to step
+## off at the top. No input = cling in place (gravity is off on the ladder).
+## Press Space to let go and drop. The post-import builds the ladder Area3D
+## climb volumes (group "ladder"); see deli_counter_postimport.gd.
+@export var climb_speed: float = 3.0
+
 var _pitch: float = 0.0
 @onready var _camera: Camera3D = $Camera3D
 
@@ -62,6 +69,11 @@ func _move_axis() -> Vector2:
 
 
 func _physics_process(delta: float) -> void:
+	# On a ladder volume? Climb instead of walking (Space drops off).
+	if _current_ladder() != null and not Input.is_key_pressed(KEY_SPACE):
+		_climb(delta)
+		return
+
 	if not is_on_floor():
 		velocity.y -= gravity * delta
 	elif Input.is_key_pressed(KEY_SPACE):
@@ -112,3 +124,25 @@ func _move_with_stairs(delta: float) -> void:
 		# snap onto the step and nudge forward past its riser
 		global_position.y = step_top_y + 0.02
 		global_position += horiz.normalized() * (speed * delta * 0.5)
+
+
+func _current_ladder() -> Area3D:
+	# The ladder climb volumes are Area3Ds in the "ladder" group (built by the
+	# post-import from each LADDER_ marker). We're "on" one if our body overlaps.
+	for a in get_tree().get_nodes_in_group("ladder"):
+		if a is Area3D and self in (a as Area3D).get_overlapping_bodies():
+			return a
+	return null
+
+
+func _climb(delta: float) -> void:
+	# Move along the camera's look direction: look up + forward to ascend, look
+	# down to descend, look level + forward to step off at the top. Gravity is
+	# off here so no input means you cling in place instead of sliding down.
+	var axis := _move_axis()           # axis.y < 0 == forward (W / up-arrow)
+	var wish := -axis.y                # forward press -> +1
+	var look := -_camera.global_transform.basis.z if _camera else -transform.basis.z
+	velocity = look * wish * climb_speed
+	# small strafe so you can line up with the hole at the top
+	velocity += transform.basis.x * axis.x * (speed * 0.5)
+	move_and_slide()

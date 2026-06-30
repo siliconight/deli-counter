@@ -18,6 +18,7 @@ extends EditorScenePostImport
 ##   BREACH_PANEL_*    -> StaticBody3D kept, added to group "breach_panel"
 ##                        with metadata so a breach can free/replace it
 ##   HATCH_*           -> Marker3D in group "hatch"
+##   LADDER_*          -> Area3D climb volume in group "ladder"
 ##   NAV_REGION_*      -> Marker3D in group "nav_region" (room center)
 ##   COVER_LOW_* / COVER_HIGH_* -> Marker3D in group "ai_cover"
 ##   LANDMARK_*        -> Marker3D in group "landmark" (callout/orientation anchor)
@@ -47,6 +48,7 @@ const PREFIX_RULES := [
 	["DOOR_SOCKET_",    "door_socket"],
 	["BREACH_PANEL_",   "breach_panel"],
 	["HATCH_",          "hatch"],
+	["LADDER_",         "ladder"],
 	["NAV_REGION_",     "nav_region"],
 	["COVER_LOW_",      "ai_cover"],
 	["COVER_HIGH_",     "ai_cover"],
@@ -103,6 +105,32 @@ func _convert_node(node: Node, group: String, meta: Dictionary, root: Node, xfor
 	if group == "breach_panel":
 		node.add_to_group("breach_panel")
 		_apply_meta(node, meta)
+		return
+
+	# Ladders become a climb VOLUME, not a plain marker: an Area3D the player
+	# overlaps to enter climb mode. Sized from the marker meta (climb_height +
+	# footprint), with a lip above the top floor so you can climb off the edge.
+	if group == "ladder":
+		var area := Area3D.new()
+		area.name = node.name
+		area.add_to_group("ladder")
+		area.monitoring = true
+		area.monitorable = true
+		var ch: float = float(meta.get("climb_height", 3.0))
+		var w: float = maxf(float(meta.get("width", 0.5)) + 0.8, 1.0)
+		var d: float = float(meta.get("depth", 0.15)) + 1.0
+		var cs := CollisionShape3D.new()
+		var box := BoxShape3D.new()
+		box.size = Vector3(w, ch + 1.0, maxf(w, d))   # +1 m dismount lip on top
+		cs.shape = box
+		cs.position = Vector3(0.0, ch * 0.5, 0.0)     # marker sits at the base
+		area.add_child(cs)
+		var p := node.get_parent()
+		p.add_child(area)
+		_set_owner_recursive(area, root)
+		area.global_transform = xform
+		_apply_meta(area, meta)
+		node.queue_free()
 		return
 
 	# If a project scene is mapped for this tag, instance it at the marker's
