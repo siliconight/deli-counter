@@ -828,6 +828,18 @@ class _Builder:
         self.rarity_info = resolve_rarity(self.s.rarity)
         self.gameplay["rarity"] = self.s.rarity
         self.gameplay["rarity_color"] = self.rarity_info
+        if getattr(self.s, "facade", False):
+            # FACADE shell: exterior + roof + theme only. No interior, no
+            # gameplay -- a non-enterable filler you reuse and art-pass later.
+            self._slabs()
+            self._exterior()
+            self._parapets()
+            self._materials()
+            self._scale_ref()
+            print(f"[deli_counter] built FACADE '{self.s.name}': "
+                  f"{len(self.VISUAL.objects)} visual, "
+                  f"{len(self.COLLISION.objects)} collision (shell only)")
+            return
         self._slabs()
         self._exterior()
         self._partitions()

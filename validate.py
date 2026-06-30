@@ -113,6 +113,12 @@ def validate_file(path):
               + ("" if sem_ok else ", semantic errors"))
         return False
 
+    # facade shells are intentionally non-enterable and carry no gameplay, so
+    # the tactical / guard / enterability / navigability analyzers don't apply.
+    if getattr(spec, "facade", False):
+        print("  FACADE shell: exterior-only, gameplay analyzers skipped. OK")
+        return True
+
     # tactical analysis (only meaningful if the spec defines rooms)
     try:
         from tactical import analyze, format_scorecard

@@ -1878,6 +1878,70 @@ def parking_garage(name: str = "parking_garage_preset",
 
 
 # ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# FACADE shells -- non-enterable filler buildings: exterior + roof + collision
+# + theme ONLY (no interior, no gameplay). They emit no tactical data and are
+# meant to be REUSED all over a block and art-passed later by resolving their
+# modular wall slots into themed window/brick modules. Pair with Lot's
+# `blocker` (give the blocker this shell's .glb/.tscn) to wall a street.
+# ---------------------------------------------------------------------------
+def _facade(name, fx, fy, stories, sh, material, mats, parapet_h=0.8, seed=1999):
+    return {
+        "$schema": "../schema/level.schema.json",
+        "name": name, "mode": "heist", "seed": seed, "grid": 0.5,
+        "facade": True,
+        "footprint_x": fx, "footprint_y": fy, "story_height": sh,
+        "n_stories": stories, "has_basement": False,
+        "wall_thick": 0.3, "floor_thick": 0.3, "collision": "convex",
+        "auto_exterior": True,       # solid sealed exterior shell (no openings)
+        "modular": True,             # art-pass-ready: walls become swap slots
+        "scale_ref": False,
+        "default_material": material,
+        "materials": mats,
+        "parapets": [{"story": stories, "height": parapet_h, "thick": 0.3}],
+    }
+
+
+def facade_rowhome(name: str = "facade_rowhome", floors: int = 2,
+                   scale_ref: bool = False) -> dict:
+    """Narrow 2-storey rowhome shell -- the DELCO/Philly street-wall unit. Reuse
+    it in a run down a block (vary the height a touch per instance). Non-enterable
+    filler; art-pass resolves the slots to brick + windows + a stoop door."""
+    s = _facade(name, 8.0, 11.0, floors, 3.1, "concrete", [
+        {"id": "concrete", "acoustic": "Concrete", "absorption": 0.7, "damping": 0.6},
+        {"id": "wood", "acoustic": "Wood", "absorption": 0.5, "damping": 0.45},
+    ], parapet_h=0.7, seed=1901)
+    s["scale_ref"] = bool(scale_ref)
+    return s
+
+
+def facade_storefront(name: str = "facade_storefront", floors: int = 2,
+                      scale_ref: bool = False) -> dict:
+    """Wider commercial storefront shell (shop below, apartment above) for main-
+    street frontage. Non-enterable filler; art-pass resolves the ground floor to
+    glazing + a sign band, the upper floor to apartment windows."""
+    s = _facade(name, 14.0, 12.0, floors, 3.4, "concrete", [
+        {"id": "concrete", "acoustic": "Concrete", "absorption": 0.7, "damping": 0.6},
+        {"id": "glass", "acoustic": "Glass", "absorption": 0.1, "damping": 0.1},
+    ], parapet_h=0.9, seed=1902)
+    s["scale_ref"] = bool(scale_ref)
+    return s
+
+
+def facade_industrial(name: str = "facade_industrial", floors: int = 1,
+                      scale_ref: bool = False) -> dict:
+    """Big single-storey industrial wall shell -- caps a block or backs an alley.
+    Tall, blank, cheap. Non-enterable filler; art-pass adds corrugated metal +
+    a roll-up door + clerestory strip."""
+    s = _facade(name, 30.0, 20.0, floors, 6.0, "metal", [
+        {"id": "metal", "acoustic": "Metal", "absorption": 0.35, "damping": 0.25},
+        {"id": "concrete", "acoustic": "Concrete", "absorption": 0.7, "damping": 0.6},
+    ], parapet_h=0.6, seed=1903)
+    s["scale_ref"] = bool(scale_ref)
+    return s
+
+
+# ---------------------------------------------------------------------------
 # REGISTRY
 # ---------------------------------------------------------------------------
 REGISTRY = {
@@ -1893,6 +1957,9 @@ REGISTRY = {
     "gas_station": gas_station,
     "office": office,
     "parking_garage": parking_garage,
+    "facade_rowhome": facade_rowhome,
+    "facade_storefront": facade_storefront,
+    "facade_industrial": facade_industrial,
 }
 
 
@@ -1905,6 +1972,6 @@ def make(preset: str, enrich: bool = True, **kwargs) -> dict:
         raise KeyError(f"unknown preset '{preset}'. "
                        f"available: {', '.join(sorted(REGISTRY))}")
     spec = REGISTRY[preset](**kwargs)
-    if enrich:
+    if enrich and not spec.get("facade"):
         level_design.enrich(spec)
     return spec

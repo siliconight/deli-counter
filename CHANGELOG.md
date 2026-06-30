@@ -5,6 +5,28 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.50.0] - Facade shells: non-enterable filler-building presets (`facade_*`)
+New `facade` building type + a starter family of presets for the filler
+buildings that wall a street and channel the player toward the real heist
+buildings (pairs with Lot's `blocker`, which can now point at a facade .glb).
+
+- `facade_rowhome`, `facade_storefront`, `facade_industrial` (names carry
+  "facade" so it's unmistakable they aren't enterable). Each returns a solid
+  exterior SHELL: walls + roof/parapet + collision + a theme, and nothing else.
+- New spec field `facade: true`. The builder runs exterior-only passes (slabs,
+  exterior, parapets, materials) and skips all interior + tactical passes
+  (partitions, stairs, rooms, markers, objectives, loot, zones, nav). It emits
+  no gameplay data; `validate.py` skips the tactical/guard/enterability/
+  navigability analyzers for a facade (a shell legitimately has no objective).
+  `presets.make` skips enrichment for facades.
+- Non-enterable by construction: `auto_exterior` builds a sealed solid shell
+  with no door/window holes. `modular: true` is on, so the walls are art-pass
+  swap slots — resolve them later into brick + windows + a stoop/glazing, and
+  reuse the same shell up and down a block. The shells are deliberately cheap
+  (heavy instancing for the 4-player netcode).
+- Schema: `facade` boolean added (SCHEMA_VERSION 1.8.0 -> 1.9.0). All existing
+  presets and specs are byte-identical; this is purely additive.
+
 ## [0.49.0]
 ### Changed — build better levels, not validate them better
 - **Heist is the default mode.** DELCO-style play is a PAYDAY-flavored 4-player PvE

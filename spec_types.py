@@ -399,6 +399,15 @@ class LevelSpec:
     # if no ext_walls are specified, auto-generate solid exterior walls
     auto_exterior: bool = True
 
+    # FACADE shell: a non-enterable filler building -- exterior shell + roof +
+    # collision + theme ONLY. No interior (partitions/stairs/volumes), no
+    # gameplay (rooms/markers/objectives/loot/zones), no nav. The build runs
+    # exterior-only passes and emits no tactical data; the gameplay validators
+    # are skipped (a shell legitimately has no objective). Pair with modular=True
+    # so the walls are art-pass-ready swap slots -- the windows/brick come later
+    # by resolving the slots, and the same shell is reused all over a block.
+    facade: bool = False
+
     # --- art-pass pipeline (all optional; None = fall back to the matching
     # DC_* env var, so unset == byte-identical output). See README "Modular
     # walls" / "Theming the slots" and docs/ASSET_SWAP_CONTRACT.md. ---

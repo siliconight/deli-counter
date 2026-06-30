@@ -74,23 +74,38 @@
       "type": "boolean"
     },
     "modular": {
-      "type": ["boolean", "null"],
+      "type": [
+        "boolean",
+        "null"
+      ],
       "description": "Decompose walls into named swap-slots (modular art-pass) instead of one solid box per run. Omitted/null -> DC_MODULAR env -> off. new_level.py defaults new specs to true."
     },
     "module": {
-      "type": ["number", "null"],
+      "type": [
+        "number",
+        "null"
+      ],
       "description": "Module tile width (m) for tiling solid spans when modular. Omitted/null -> DC_MODULE env -> 2.0. <= 0 disables tiling (opening-decomposition only)."
     },
     "theme": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "description": "Resolver theme/kit: slots resolve to <type>_<theme>_<style>[_w<cm>][_<state>].glb. Omitted/null -> DC_THEME env -> greybox."
     },
     "state": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "description": "Optional model state (e.g. damaged, weathered); prefers a _<state> module variant. Omitted/null -> DC_STATE env -> none."
     },
     "module_library": {
-      "type": ["string", "null"],
+      "type": [
+        "string",
+        "null"
+      ],
       "description": "Path to the module library (zoo of swap modules), relative to the spec. Omitted/null -> DC_MODULE_LIB env -> resolver off."
     },
     "rarity": {
@@ -992,6 +1007,10 @@
           }
         }
       }
+    },
+    "facade": {
+      "type": "boolean",
+      "description": "non-enterable facade shell: exterior+roof+collision only, no interior/gameplay"
     }
   },
   "$defs": {
