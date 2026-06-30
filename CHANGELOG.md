@@ -5,6 +5,24 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.47.0]
+### Fixed
+- **Modular .tscn/instancing path: greybox wall remainders now fit.** The slot emit
+  (`_record_wall_slot`) wrote `scale [1,1,1]` for every slot, so the `wallEnd` remainder
+  slots (23 in a typical build, ~16 distinct sizes) all referenced one `wallEnd_greybox_01`
+  at one fixed size -- which a single instanced mesh cannot fill. The BAKED path was fine
+  (it generates each box at exact size); the `.tscn` path would show overlaps + gaps.
+  Remainder slots now emit against a **unit (1x1x1) module** with the size carried as a
+  per-slot `scale = fit.dims`; one module fills every remainder exactly. Full walls,
+  doorways, and windows are untouched -- they stay exact-fit (`scale [1,1,1]`) so themed
+  art is never stretched. (Proven in-engine: unit box x fit.dims reproduces the baked shell 1:1.)
+### Changed
+- docs/ASSET_SWAP_CONTRACT.md: documented the one exception to "modules are never scaled" --
+  greybox `wallEnd` filler is authored as a unit cube and scaled per slot.
+### Module-authoring note
+- Author `wallEnd_greybox_01.glb` as a **1 m cube centered at origin** (not a fixed-width
+  strip). All other greybox/themed modules stay authored at their real dimensions.
+
 ## [0.46.0]
 ### Added
 - Three new presets, bringing the library to **twelve**:

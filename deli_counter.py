@@ -490,14 +490,23 @@ class _Builder:
         wall_name = vname.rsplit("_seg", 1)[0]
         facing, rot_y, story = self._slot_orient(wall_name, axis)
         typ = self._slot_typename(role, size_mod)
+        dims = [round(sz[0], 4), round(sz[1], 4), round(sz[2], 4)]
+        # Greybox wall REMAINDERS (wallEnd) come in many sizes but share one
+        # ref -- a single fixed mesh can't fill them. They are plain solid
+        # filler (no opening, never themed), so the module is authored as a
+        # UNIT box and the size rides as a per-slot scale: one module fits every
+        # remainder. Full-width walls and openings stay exact-fit (scale 1) so
+        # themed art is never stretched. (Verified in-engine: unit box * fit.dims
+        # reproduces the baked shell 1:1.)
+        scale = dims[:] if size_mod == "end" else [1.0, 1.0, 1.0]
         self.slots.append({
             "slot_id": vname, "role": role, "size_mod": size_mod, "style": 1,
             "current_ref": ref or f"{typ}_greybox_01", "kit_axis": "theme",
             "wall": wall_name, "story": story, "facing": facing,
             "transform": {"translation": [round(c[0], 4), round(c[1], 4),
                                           round(c[2], 4)],
-                          "rot_y": rot_y, "scale": [1.0, 1.0, 1.0]},
-            "fit": {"dims": [round(sz[0], 4), round(sz[1], 4), round(sz[2], 4)],
+                          "rot_y": rot_y, "scale": scale},
+            "fit": {"dims": dims,
                     "pivot": "center", "openings": [], "collision": "convex"},
         })
 

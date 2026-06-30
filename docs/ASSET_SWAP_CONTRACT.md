@@ -72,6 +72,14 @@ The swap tool keys entirely off names, so the axes are closed and ordered. Canon
   **role** as its own type (`wallEnd`) rather than a sizemod, so a kit can author a dedicated end piece.
 - **width** — optional `w<cm>` token (cm = round(width × 100), e.g. `w90`). Modules are instanced at
   authored size and never scaled, so this lets varied-width openings each get an exact-fit module.
+  - **One exception — greybox wall remainders (`wallEnd`).** A wall run rarely divides evenly into
+    full modules, so it leaves a solid filler strip whose size varies slot to slot (a single run can
+    leave a 1.5 m, a 0.6 m, and a 0.2 m piece). These are plain solid boxes, never themed, so instead
+    of authoring a module per width the builder emits them against a **unit (1×1×1) module** and
+    carries the size as a per-slot `scale` in the manifest transform. Author `wallEnd_greybox_01.glb`
+    as a 1 m cube centered at origin; one module then fills every remainder exactly. This is the *only*
+    slot type that scales — full walls, doorways, and windows stay exact-fit so themed art is never
+    stretched. (`scale ≠ [1,1,1]` in the manifest is the signal that a slot is unit-scaled filler.)
 - **state** — optional model state, free token (`damaged`, `weathered`, …). Cosmetic to resolution;
   it's recorded in the slot manifest's `current_ref` and (on the `.tscn` path) set as `dc_state`
   metadata on the overlay, so game code can act on it.
