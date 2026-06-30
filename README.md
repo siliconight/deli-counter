@@ -116,7 +116,13 @@ python new_level.py --preset compound --name boss --floors 3
 
 Presets: **bank**, **police_station**, **corner_deli**, **compound**,
 **hospital**, **warehouse**, **suburban_safehouse**, **rowhome**,
-**casino_tower** (run `--list` for modes each supports). Flags:
+**casino_tower**, **gas_station**, **office**, **parking_garage**, and
+**auto_shop** / **pawn_shop** (two-storey set-pieces with a walkable stair
+*and* a roof-access ladder). Plus three non-enterable **facade shells** —
+**facade_rowhome**, **facade_storefront**, **facade_industrial** — exterior-
+only filler buildings for street frontage (they pair with Lot's blockers and
+art-pass later; no interior, no gameplay). Run `--list` for the modes each
+supports. Flags:
 `--mode heist|assault|survival`, `--floors N`, `--no-basement`, `--scale-ref`
 (1.8 m human proxies for a Blender scale check), `--no-audio` (strip the
 acoustic bridge), `--vertex-nuance` (optional anti-flatness pass), `--rarity
@@ -298,8 +304,8 @@ for you; to do it manually, set it as the `.glb`'s Import Script and reimport.
 See `godot/README.md` and `godot/IMPORT_GUIDE.md`.
 
 **Walking a level:** the plugin's test scene gives you a player sized to the scale guidelines
-(1.8 m capsule, 1.6 m eye), with stair-stepping so generated stairs are
-climbable, plus a navmesh-bake key and respawn-at-spawn-marker. Use it to
+(1.8 m capsule, 1.6 m eye), with stair-stepping and ladder-climb so generated
+stairs and ladders are traversable, plus a navmesh-bake key and respawn-at-spawn-marker. Use it to
 confirm scale and collision before dressing the level.
 
 > The Godot plugin and test harness are the newest pieces. The import pipeline
@@ -397,8 +403,11 @@ Top-level: `name`, `seed`, `grid`, `footprint_x/y`, `story_height`,
 `auto_exterior`.
 
 Features: `ext_walls` (+ `openings`: door/window/garage/breach),
-`partitions`, `stairs` (auto-cut slab holes; step count derives from floor
-height), `ladders` / `ramps` / `vault_ledges` (full vertical traversal set),
+`partitions`, `stairs` (auto-cut slab holes; a smooth ramp collider under the
+visual steps so **any controller walks up** with no per-riser catching),
+`ladders` (visual rungs + an **Area3D climb volume** the player climbs — see the
+harness player for a reference climb) / `ramps` / `vault_ledges` (the full
+vertical traversal set; stairs walk and ladders climb out of the box),
 `slab_holes`, `volumes`
 (vaults/counters/cover/mezzanines), `parapets`. Same spec + same `seed`
 always builds the same level. See `specs/CATALOG.md` for what's in each level.
@@ -449,16 +458,18 @@ optional — a plain building spec omits it and still builds.
 ### Three modes
 
 A spec's `mode` selects the tactical style; validation and the scorecard
-branch on it:
+branch on it. **The default is `heist`** (this is a PvE co-op heist kit; pass
+`--mode assault` for symmetric attacker/defender play):
 
-- **`assault`** (default) — symmetric attacker/defender play: multiple entry
-  routes, breachable walls, objective rooms to take and hold, verticality.
-- **`heist`** — PvE crew play: independent `objectives` (any order), a `loot`
+- **`heist`** (default) — PvE crew play (the kit's primary mode): independent
+  `objectives` (any order), a `loot`
   economy (`value`/`bags`/`kind`), `zones` (`extraction`/`secure`/`drop`),
   and `phase`-tagged spawns (stealth/alarm/loud/escape — the state machine
   lives in your game code). Validation checks the heist loop is completable
   (extraction exists, objectives reachable, loot deliverable) rather than the
   breach rules.
+- **`assault`** — symmetric attacker/defender play: multiple entry routes,
+  breachable walls, objective rooms to take and hold, verticality.
 - **`survival`** — co-op PvE horde defense, as a directional run *through the
   building*: the team starts in a `safe_room` zone, moves through the level,
   and reaches a `finale` holdout zone to survive a final wave (optionally an
