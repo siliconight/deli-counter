@@ -867,8 +867,15 @@ class _Builder:
             self._box(f"slab_{s}", (0, 0, z - ft / 2),
                       (self.s.footprint_x, self.s.footprint_y, ft), self.VISUAL,
                       role=role)
+            # Slabs use TRIMESH collision regardless of the spec default, which
+            # is convex. Stairwells, ramps, and hatches boolean-cut holes in the
+            # slab; a CONVEX hull fills any hole straight back in, capping the
+            # opening with invisible collision (you see the gap but can't pass).
+            # A flat slab as trimesh is cheap and is the only shape that keeps
+            # the hole.
             self._col_box(f"slab_col_{s}", (0, 0, z - ft / 2),
-                          (self.s.footprint_x, self.s.footprint_y, ft))
+                          (self.s.footprint_x, self.s.footprint_y, ft),
+                          mode="trimesh")
 
     def _exterior(self):
         base, top = self._story_range()

@@ -5,6 +5,16 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.47.1]
+### Fixed
+- **Stairs / ramps / hatches: invisible collision capping the upper floor.** Floor and
+  ceiling slabs were built with the spec default `convex` collision. Stairwell/ramp/hatch
+  holes are boolean-cut from the slab mesh, but a CONVEX hull fills the hole straight back
+  in on import -- so you saw the opening yet hit an invisible collider at the top of the
+  stairs and could not reach the next floor. Slabs now use `trimesh` collision (`-colonly`)
+  so the cut hole survives. Affects EVERY multi-story build (foundry-type specs, `office`,
+  `parking_garage`, any spec with stairs/ramps/hatches). Rebuild affected levels to pick it up.
+
 ## [0.47.0]
 ### Fixed
 - **Modular .tscn/instancing path: greybox wall remainders now fit.** The slot emit

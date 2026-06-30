@@ -1,0 +1,1503 @@
+{
+  "$schema": "../schema/level.schema.json",
+  "name": "foundry_heist_vertical",
+  "mode": "heist",
+  "seed": 22051997,
+  "grid": 0.5,
+  "footprint_x": 42.0,
+  "footprint_y": 30.0,
+  "story_height": 3.4,
+  "n_stories": 3,
+  "has_basement": true,
+  "wall_thick": 0.3,
+  "floor_thick": 0.3,
+  "collision": "convex",
+  "auto_exterior": true,
+  "scale_ref": true,
+  "default_material": "poured_concrete",
+  "materials": [
+    {
+      "id": "poured_concrete",
+      "acoustic": "Concrete",
+      "absorption": 0.45,
+      "damping": 0.35
+    },
+    {
+      "id": "rusted_metal",
+      "acoustic": "Metal",
+      "absorption": 0.2,
+      "damping": 0.15
+    },
+    {
+      "id": "drywall",
+      "acoustic": "Drywall",
+      "absorption": 0.65,
+      "damping": 0.55
+    },
+    {
+      "id": "security_glass",
+      "acoustic": "Glass",
+      "absorption": 0.1,
+      "damping": 0.05
+    },
+    {
+      "id": "wood_pallet",
+      "acoustic": "Wood",
+      "absorption": 0.4,
+      "damping": 0.3
+    }
+  ],
+  "ext_walls": [
+    {
+      "wall": "S",
+      "story": 0,
+      "material": "rusted_metal",
+      "openings": [
+        {
+          "kind": "garage",
+          "pos": 0.0,
+          "width": 4.0,
+          "height": 3.0,
+          "tag": "front_rollup"
+        },
+        {
+          "kind": "door",
+          "pos": -0.35,
+          "width": 1.2,
+          "tag": "lobby_service_door"
+        },
+        {
+          "kind": "window",
+          "pos": 0.32,
+          "width": 1.4,
+          "sill": 1.0,
+          "vaultable": true,
+          "tag": "low_office_window"
+        }
+      ]
+    },
+    {
+      "wall": "W",
+      "story": 0,
+      "material": "poured_concrete",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.2,
+          "width": 1.2,
+          "tag": "alley_door"
+        },
+        {
+          "kind": "breach",
+          "pos": 0.3,
+          "width": 1.6,
+          "breach_class": "soft_wall",
+          "material": "drywall",
+          "tag": "alley_soft_panel"
+        }
+      ]
+    },
+    {
+      "wall": "E",
+      "story": 0,
+      "material": "rusted_metal",
+      "openings": [
+        {
+          "kind": "garage",
+          "pos": 0.25,
+          "width": 4.2,
+          "height": 3.0,
+          "tag": "loading_dock"
+        },
+        {
+          "kind": "door",
+          "pos": -0.25,
+          "width": 1.2,
+          "tag": "east_personnel"
+        }
+      ]
+    },
+    {
+      "wall": "N",
+      "story": 0,
+      "material": "poured_concrete",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": 0.25,
+          "width": 1.2,
+          "tag": "north_service"
+        },
+        {
+          "kind": "breach",
+          "pos": -0.35,
+          "width": 1.6,
+          "breach_class": "soft_wall",
+          "material": "drywall",
+          "tag": "north_soft_panel"
+        }
+      ]
+    },
+    {
+      "wall": "S",
+      "story": 1,
+      "material": "rusted_metal",
+      "openings": [
+        {
+          "kind": "window",
+          "pos": -0.3,
+          "width": 1.4,
+          "sill": 1.0,
+          "vaultable": true,
+          "tag": "catwalk_south_window_a"
+        },
+        {
+          "kind": "window",
+          "pos": 0.3,
+          "width": 1.4,
+          "sill": 1.0,
+          "vaultable": true,
+          "tag": "catwalk_south_window_b"
+        }
+      ]
+    },
+    {
+      "wall": "N",
+      "story": 1,
+      "material": "rusted_metal",
+      "openings": [
+        {
+          "kind": "window",
+          "pos": -0.3,
+          "width": 1.4,
+          "sill": 1.0,
+          "vaultable": true,
+          "tag": "control_north_window"
+        },
+        {
+          "kind": "window",
+          "pos": 0.3,
+          "width": 1.4,
+          "sill": 1.0,
+          "vaultable": true,
+          "tag": "archive_north_window"
+        }
+      ]
+    },
+    {
+      "wall": "E",
+      "story": 1,
+      "material": "rusted_metal",
+      "openings": [
+        {
+          "kind": "window",
+          "pos": 0.2,
+          "width": 1.4,
+          "sill": 1.0,
+          "vaultable": true,
+          "tag": "archive_fire_escape_window"
+        }
+      ]
+    },
+    {
+      "wall": "W",
+      "story": 1,
+      "material": "rusted_metal",
+      "openings": [
+        {
+          "kind": "window",
+          "pos": 0.2,
+          "width": 1.4,
+          "sill": 1.0,
+          "vaultable": true,
+          "tag": "control_fire_escape_window"
+        }
+      ]
+    },
+    {
+      "wall": "S",
+      "story": 2,
+      "material": "poured_concrete",
+      "openings": [
+        {
+          "kind": "window",
+          "pos": 0.0,
+          "width": 1.8,
+          "sill": 1.0,
+          "vaultable": true,
+          "tag": "roof_machine_window"
+        }
+      ]
+    },
+    {
+      "wall": "E",
+      "story": 2,
+      "material": "poured_concrete",
+      "openings": [
+        {
+          "kind": "window",
+          "pos": 0.1,
+          "width": 1.6,
+          "sill": 1.0,
+          "vaultable": true,
+          "tag": "skylight_room_window"
+        }
+      ]
+    }
+  ],
+  "partitions": [
+    {
+      "story": -1,
+      "axis": "Y",
+      "pos": -5.0,
+      "start": -15.0,
+      "end": 15.0,
+      "material": "poured_concrete",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.2667,
+          "width": 1.2,
+          "tag": "sewer_to_approach_south"
+        },
+        {
+          "kind": "door",
+          "pos": 0.2667,
+          "width": 1.2,
+          "tag": "sewer_to_approach_north"
+        }
+      ]
+    },
+    {
+      "story": -1,
+      "axis": "Y",
+      "pos": 7.0,
+      "start": -15.0,
+      "end": 15.0,
+      "material": "rusted_metal",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.2667,
+          "width": 1.2,
+          "tag": "vault_cage_south"
+        },
+        {
+          "kind": "breach",
+          "pos": 0.0,
+          "width": 1.5,
+          "breach_class": "reinforced_gate",
+          "material": "rusted_metal",
+          "reinforceable": true,
+          "tag": "vault_cage_breach"
+        },
+        {
+          "kind": "door",
+          "pos": 0.2667,
+          "width": 1.2,
+          "tag": "vault_cage_north"
+        }
+      ]
+    },
+    {
+      "story": 0,
+      "axis": "Y",
+      "pos": -5.0,
+      "start": -15.0,
+      "end": 15.0,
+      "material": "drywall",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.3333,
+          "width": 1.2,
+          "tag": "lobby_to_machine"
+        },
+        {
+          "kind": "door",
+          "pos": 0.2,
+          "width": 1.2,
+          "tag": "maintenance_to_central"
+        }
+      ]
+    },
+    {
+      "story": 0,
+      "axis": "Y",
+      "pos": 5.0,
+      "start": -15.0,
+      "end": 15.0,
+      "material": "rusted_metal",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.3333,
+          "width": 1.2,
+          "tag": "machine_to_loading"
+        },
+        {
+          "kind": "door",
+          "pos": 0.2,
+          "width": 1.2,
+          "tag": "central_to_east_floor"
+        }
+      ]
+    },
+    {
+      "story": 0,
+      "axis": "X",
+      "pos": -4.0,
+      "start": -21.0,
+      "end": 21.0,
+      "material": "drywall",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.3333,
+          "width": 1.2,
+          "tag": "lobby_to_maintenance"
+        },
+        {
+          "kind": "door",
+          "pos": 0.0,
+          "width": 1.2,
+          "tag": "machine_to_central"
+        },
+        {
+          "kind": "door",
+          "pos": 0.3333,
+          "width": 1.2,
+          "tag": "loading_south_to_north"
+        }
+      ]
+    },
+    {
+      "story": 1,
+      "axis": "X",
+      "pos": -5.0,
+      "start": -21.0,
+      "end": 21.0,
+      "material": "drywall",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.2857,
+          "width": 1.2,
+          "tag": "catwalk_to_control"
+        },
+        {
+          "kind": "door",
+          "pos": 0.0,
+          "width": 1.2,
+          "tag": "catwalk_to_bridge"
+        },
+        {
+          "kind": "door",
+          "pos": 0.2857,
+          "width": 1.2,
+          "tag": "catwalk_to_archive"
+        }
+      ]
+    },
+    {
+      "story": 1,
+      "axis": "Y",
+      "pos": -5.0,
+      "start": -5.0,
+      "end": 15.0,
+      "material": "security_glass",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.05,
+          "width": 1.2,
+          "tag": "control_to_bridge"
+        }
+      ]
+    },
+    {
+      "story": 1,
+      "axis": "Y",
+      "pos": 5.0,
+      "start": -5.0,
+      "end": 15.0,
+      "material": "security_glass",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.05,
+          "width": 1.2,
+          "tag": "bridge_to_archive"
+        },
+        {
+          "kind": "breach",
+          "pos": 0.3,
+          "width": 1.5,
+          "breach_class": "office_glass",
+          "material": "security_glass",
+          "tag": "archive_glass_breach"
+        }
+      ]
+    },
+    {
+      "story": 2,
+      "axis": "Y",
+      "pos": 0.0,
+      "start": -15.0,
+      "end": 15.0,
+      "material": "poured_concrete",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.2667,
+          "width": 1.2,
+          "tag": "roof_south_to_comms"
+        },
+        {
+          "kind": "door",
+          "pos": 0.2667,
+          "width": 1.2,
+          "tag": "roof_north_to_skylight"
+        }
+      ]
+    },
+    {
+      "story": 2,
+      "axis": "X",
+      "pos": 0.0,
+      "start": -21.0,
+      "end": 21.0,
+      "material": "poured_concrete",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.2857,
+          "width": 1.2,
+          "tag": "roof_south_to_north"
+        },
+        {
+          "kind": "door",
+          "pos": 0.2857,
+          "width": 1.2,
+          "tag": "comms_to_skylight"
+        }
+      ]
+    }
+  ],
+  "stairs": [
+    {
+      "x": 0.0,
+      "y": 7.0,
+      "from_story": -1,
+      "to_story": 3,
+      "width": 1.8,
+      "run": 5.0,
+      "style": "switchback",
+      "cut_slabs": true,
+      "step_rise": 0.19
+    },
+    {
+      "x": -15.0,
+      "y": -11.0,
+      "from_story": 0,
+      "to_story": 2,
+      "width": 1.4,
+      "run": 4.5,
+      "style": "straight",
+      "cut_slabs": true,
+      "step_rise": 0.19
+    }
+  ],
+  "ladders": [
+    {
+      "x": 18.0,
+      "y": 8.0,
+      "from_story": 0,
+      "to_story": 2,
+      "width": 0.55,
+      "depth": 0.18,
+      "rung_spacing": 0.3,
+      "cut_slabs": true,
+      "facing": "E"
+    },
+    {
+      "x": -18.0,
+      "y": 6.0,
+      "from_story": -1,
+      "to_story": 0,
+      "width": 0.55,
+      "depth": 0.18,
+      "rung_spacing": 0.3,
+      "cut_slabs": true,
+      "facing": "W"
+    },
+    {
+      "x": -16.0,
+      "y": 12.0,
+      "from_story": 1,
+      "to_story": 2,
+      "width": 0.55,
+      "depth": 0.18,
+      "rung_spacing": 0.3,
+      "cut_slabs": true,
+      "facing": "N"
+    }
+  ],
+  "ramps": [
+    {
+      "x": 14.0,
+      "y": -10.0,
+      "from_story": -1,
+      "to_story": 0,
+      "run": 12.0,
+      "width": 3.0,
+      "axis": "Y",
+      "thickness": 0.3,
+      "cut_slabs": true,
+      "max_slope_deg": 30.0
+    }
+  ],
+  "vault_ledges": [
+    {
+      "x": 0.0,
+      "y": -9.0,
+      "story": 0,
+      "length": 5.0,
+      "axis": "X",
+      "height": 1.1,
+      "thick": 0.25,
+      "material": "rusted_metal"
+    },
+    {
+      "x": -12.0,
+      "y": 6.0,
+      "story": 0,
+      "length": 6.0,
+      "axis": "Y",
+      "height": 1.0,
+      "thick": 0.25,
+      "material": "poured_concrete"
+    },
+    {
+      "x": 0.0,
+      "y": -5.5,
+      "story": 1,
+      "length": 22.0,
+      "axis": "X",
+      "height": 1.0,
+      "thick": 0.2,
+      "material": "rusted_metal"
+    },
+    {
+      "x": 13.0,
+      "y": 2.0,
+      "story": 2,
+      "length": 7.0,
+      "axis": "Y",
+      "height": 1.1,
+      "thick": 0.2,
+      "material": "poured_concrete"
+    }
+  ],
+  "slab_holes": [
+    {
+      "story": 1,
+      "x": 0.0,
+      "y": -9.0,
+      "size_x": 5.0,
+      "size_y": 3.0
+    },
+    {
+      "story": 2,
+      "x": 16.0,
+      "y": 10.0,
+      "size_x": 2.2,
+      "size_y": 2.2
+    }
+  ],
+  "vertical_links": [
+    {
+      "kind": "stair",
+      "from_story": -1,
+      "to_story": 3,
+      "role": "main_stack_rotation"
+    },
+    {
+      "kind": "stair",
+      "from_story": 0,
+      "to_story": 2,
+      "role": "side_stair_rush"
+    },
+    {
+      "kind": "floor_hole",
+      "story": 1,
+      "x": 0.0,
+      "y": -9.0,
+      "size_x": 5.0,
+      "size_y": 3.0,
+      "role": "drop_angle"
+    },
+    {
+      "kind": "hatch",
+      "story": 2,
+      "x": 16.0,
+      "y": 10.0,
+      "size_x": 2.2,
+      "size_y": 2.2,
+      "breachable": true,
+      "role": "roof_to_archive_drop"
+    }
+  ],
+  "rooms": [
+    {
+      "id": "sewer_entry",
+      "story": -1,
+      "bounds": [
+        -21,
+        -15,
+        -5,
+        15
+      ],
+      "role": "public_entry",
+      "combat_range": "medium"
+    },
+    {
+      "id": "vault_approach",
+      "story": -1,
+      "bounds": [
+        -5,
+        -15,
+        7,
+        15
+      ],
+      "role": "connector",
+      "combat_range": "medium"
+    },
+    {
+      "id": "vault_cage",
+      "story": -1,
+      "bounds": [
+        7,
+        -15,
+        21,
+        15
+      ],
+      "role": "objective_room",
+      "objective": true,
+      "fortifiable": true,
+      "combat_range": "close"
+    },
+    {
+      "id": "lobby",
+      "story": 0,
+      "bounds": [
+        -21,
+        -15,
+        -5,
+        -4
+      ],
+      "role": "public_entry",
+      "combat_range": "close"
+    },
+    {
+      "id": "south_machine",
+      "story": 0,
+      "bounds": [
+        -5,
+        -15,
+        5,
+        -4
+      ],
+      "role": "connector",
+      "combat_range": "medium"
+    },
+    {
+      "id": "loading_dock",
+      "story": 0,
+      "bounds": [
+        5,
+        -15,
+        21,
+        -4
+      ],
+      "role": "public_entry",
+      "combat_range": "long"
+    },
+    {
+      "id": "west_maintenance",
+      "story": 0,
+      "bounds": [
+        -21,
+        -4,
+        -5,
+        15
+      ],
+      "role": "connector",
+      "combat_range": "medium"
+    },
+    {
+      "id": "central_floor",
+      "story": 0,
+      "bounds": [
+        -5,
+        -4,
+        5,
+        15
+      ],
+      "role": "connector",
+      "combat_range": "medium"
+    },
+    {
+      "id": "east_floor",
+      "story": 0,
+      "bounds": [
+        5,
+        -4,
+        21,
+        15
+      ],
+      "role": "public_entry",
+      "combat_range": "long"
+    },
+    {
+      "id": "catwalk_south",
+      "story": 1,
+      "bounds": [
+        -21,
+        -15,
+        21,
+        -5
+      ],
+      "role": "connector",
+      "combat_range": "long"
+    },
+    {
+      "id": "control_room",
+      "story": 1,
+      "bounds": [
+        -21,
+        -5,
+        -5,
+        15
+      ],
+      "role": "objective_room",
+      "objective": true,
+      "fortifiable": true,
+      "combat_range": "medium"
+    },
+    {
+      "id": "bridge_core",
+      "story": 1,
+      "bounds": [
+        -5,
+        -5,
+        5,
+        15
+      ],
+      "role": "connector",
+      "combat_range": "medium"
+    },
+    {
+      "id": "archive_room",
+      "story": 1,
+      "bounds": [
+        5,
+        -5,
+        21,
+        15
+      ],
+      "role": "objective_room",
+      "objective": true,
+      "fortifiable": true,
+      "combat_range": "medium"
+    },
+    {
+      "id": "roof_south",
+      "story": 2,
+      "bounds": [
+        -21,
+        -15,
+        0,
+        0
+      ],
+      "role": "connector",
+      "combat_range": "long"
+    },
+    {
+      "id": "roof_north",
+      "story": 2,
+      "bounds": [
+        -21,
+        0,
+        0,
+        15
+      ],
+      "role": "connector",
+      "combat_range": "long"
+    },
+    {
+      "id": "comms_room",
+      "story": 2,
+      "bounds": [
+        0,
+        -15,
+        21,
+        0
+      ],
+      "role": "objective_room",
+      "objective": true,
+      "fortifiable": true,
+      "combat_range": "medium"
+    },
+    {
+      "id": "skylight_room",
+      "story": 2,
+      "bounds": [
+        0,
+        0,
+        21,
+        15
+      ],
+      "role": "connector",
+      "combat_range": "medium"
+    }
+  ],
+  "volumes": [
+    {
+      "name": "vault_safe_block",
+      "x": 14.5,
+      "y": 0.0,
+      "z": -2.55,
+      "size_x": 5.0,
+      "size_y": 5.0,
+      "size_z": 1.7,
+      "collision": "convex",
+      "material": "rusted_metal"
+    },
+    {
+      "name": "basement_generator_cover",
+      "x": 1.0,
+      "y": -8.0,
+      "z": -2.75,
+      "size_x": 3.5,
+      "size_y": 1.4,
+      "size_z": 1.3,
+      "collision": "convex",
+      "material": "rusted_metal"
+    },
+    {
+      "name": "sewer_pipe_run_west",
+      "x": -15.0,
+      "y": 8.0,
+      "z": -2.95,
+      "size_x": 7.0,
+      "size_y": 0.8,
+      "size_z": 0.9,
+      "collision": "convex",
+      "material": "rusted_metal"
+    },
+    {
+      "name": "machine_press_a",
+      "x": 0.0,
+      "y": -10.5,
+      "z": 0.8,
+      "size_x": 3.0,
+      "size_y": 2.2,
+      "size_z": 1.6,
+      "collision": "convex",
+      "material": "rusted_metal"
+    },
+    {
+      "name": "forklift_cover",
+      "x": 12.0,
+      "y": -10.0,
+      "z": 0.7,
+      "size_x": 2.6,
+      "size_y": 1.5,
+      "size_z": 1.4,
+      "collision": "convex",
+      "material": "rusted_metal"
+    },
+    {
+      "name": "loading_crate_stack_a",
+      "x": 17.0,
+      "y": -7.0,
+      "z": 1.0,
+      "size_x": 3.0,
+      "size_y": 2.0,
+      "size_z": 2.0,
+      "collision": "convex",
+      "material": "wood_pallet"
+    },
+    {
+      "name": "maintenance_boiler",
+      "x": -14.0,
+      "y": 8.0,
+      "z": 1.1,
+      "size_x": 3.0,
+      "size_y": 2.0,
+      "size_z": 2.2,
+      "collision": "convex",
+      "material": "rusted_metal"
+    },
+    {
+      "name": "catwalk_console_bank",
+      "x": -12.0,
+      "y": 6.0,
+      "z": 3.95,
+      "size_x": 4.0,
+      "size_y": 1.2,
+      "size_z": 1.1,
+      "collision": "convex",
+      "material": "rusted_metal"
+    },
+    {
+      "name": "archive_shelves_a",
+      "x": 14.0,
+      "y": 6.0,
+      "z": 4.35,
+      "size_x": 5.0,
+      "size_y": 1.0,
+      "size_z": 1.9,
+      "collision": "convex",
+      "material": "wood_pallet"
+    },
+    {
+      "name": "archive_shelves_b",
+      "x": 14.0,
+      "y": 11.0,
+      "z": 4.35,
+      "size_x": 5.0,
+      "size_y": 1.0,
+      "size_z": 1.9,
+      "collision": "convex",
+      "material": "wood_pallet"
+    },
+    {
+      "name": "bridge_server_rack",
+      "x": 0.0,
+      "y": 9.0,
+      "z": 4.25,
+      "size_x": 2.0,
+      "size_y": 1.0,
+      "size_z": 1.7,
+      "collision": "convex",
+      "material": "rusted_metal"
+    },
+    {
+      "name": "roof_ac_block_a",
+      "x": -14.0,
+      "y": -9.0,
+      "z": 7.5,
+      "size_x": 4.0,
+      "size_y": 2.0,
+      "size_z": 1.4,
+      "collision": "convex",
+      "material": "rusted_metal"
+    },
+    {
+      "name": "roof_ac_block_b",
+      "x": 8.0,
+      "y": -9.0,
+      "z": 7.5,
+      "size_x": 3.5,
+      "size_y": 2.0,
+      "size_z": 1.4,
+      "collision": "convex",
+      "material": "rusted_metal"
+    },
+    {
+      "name": "comms_antenna_base",
+      "x": 13.0,
+      "y": -8.0,
+      "z": 7.55,
+      "size_x": 3.0,
+      "size_y": 3.0,
+      "size_z": 1.5,
+      "collision": "convex",
+      "material": "rusted_metal"
+    },
+    {
+      "name": "skylight_box",
+      "x": 16.0,
+      "y": 10.0,
+      "z": 7.2,
+      "size_x": 3.0,
+      "size_y": 3.0,
+      "size_z": 0.8,
+      "collision": "convex",
+      "material": "security_glass"
+    }
+  ],
+  "parapets": [
+    {
+      "story": 3,
+      "height": 1.1,
+      "thick": 0.25
+    }
+  ],
+  "objectives": [
+    {
+      "id": "cut_power",
+      "x": 1.0,
+      "y": -8.0,
+      "z": -3.4,
+      "kind": "interact",
+      "room": "vault_approach",
+      "required": true,
+      "duration": 8.0,
+      "meta": {
+        "label": "Cut power to cameras",
+        "phase_hint": "stealth"
+      }
+    },
+    {
+      "id": "hack_security",
+      "x": -12.0,
+      "y": 6.0,
+      "z": 3.4,
+      "kind": "hack",
+      "room": "control_room",
+      "required": true,
+      "duration": 35.0,
+      "meta": {
+        "label": "Hack security terminal",
+        "phase_hint": "alarm"
+      }
+    },
+    {
+      "id": "open_vault_cage",
+      "x": 9.5,
+      "y": 0.0,
+      "z": -3.4,
+      "kind": "drill",
+      "room": "vault_cage",
+      "required": true,
+      "duration": 90.0,
+      "meta": {
+        "label": "Open vault cage",
+        "noise": "loud"
+      }
+    },
+    {
+      "id": "steal_manifest",
+      "x": 14.0,
+      "y": 11.0,
+      "z": 3.4,
+      "kind": "grab",
+      "room": "archive_room",
+      "required": false,
+      "duration": 4.0,
+      "meta": {
+        "label": "Optional manifest pickup",
+        "bonus": "better loot valuation"
+      }
+    },
+    {
+      "id": "uplink_roof_comms",
+      "x": 13.0,
+      "y": -8.0,
+      "z": 6.8,
+      "kind": "interact",
+      "room": "comms_room",
+      "required": false,
+      "duration": 20.0,
+      "meta": {
+        "label": "Optional roof uplink",
+        "bonus": "delayed escape wave"
+      }
+    }
+  ],
+  "loot": [
+    {
+      "id": "vault_cash_01",
+      "x": 15.0,
+      "y": -3.0,
+      "z": -3.4,
+      "value": 50000,
+      "bags": 4,
+      "kind": "cash",
+      "room": "vault_cage",
+      "meta": {
+        "weight": "medium"
+      }
+    },
+    {
+      "id": "vault_gold_01",
+      "x": 17.0,
+      "y": 8.0,
+      "z": -3.4,
+      "value": 90000,
+      "bags": 3,
+      "kind": "gold",
+      "room": "vault_cage",
+      "meta": {
+        "weight": "heavy"
+      }
+    },
+    {
+      "id": "archive_art_01",
+      "x": 12.0,
+      "y": 6.0,
+      "z": 3.4,
+      "value": 45000,
+      "bags": 2,
+      "kind": "art",
+      "room": "archive_room",
+      "meta": {
+        "fragile": true
+      }
+    },
+    {
+      "id": "loading_weapons_01",
+      "x": 12.0,
+      "y": -9.0,
+      "z": 0.0,
+      "value": 30000,
+      "bags": 2,
+      "kind": "cargo",
+      "room": "loading_dock",
+      "meta": {
+        "contraband": true
+      }
+    },
+    {
+      "id": "server_drives_01",
+      "x": 10.0,
+      "y": -9.0,
+      "z": 6.8,
+      "value": 70000,
+      "bags": 1,
+      "kind": "data",
+      "room": "comms_room",
+      "meta": {
+        "small_bag": true
+      }
+    }
+  ],
+  "zones": [
+    {
+      "id": "crew_van_extract",
+      "kind": "extraction",
+      "story": 0,
+      "bounds": [
+        -4.0,
+        -25.0,
+        4.0,
+        -19.0
+      ],
+      "meta": {
+        "label": "Crew van extraction"
+      }
+    },
+    {
+      "id": "crew_van_secure",
+      "kind": "secure",
+      "story": 0,
+      "bounds": [
+        -6.0,
+        -24.0,
+        6.0,
+        -18.0
+      ],
+      "meta": {
+        "label": "Secure loot at the van"
+      }
+    },
+    {
+      "id": "loading_truck_drop",
+      "kind": "drop",
+      "story": 0,
+      "bounds": [
+        12.0,
+        -15.0,
+        20.0,
+        -9.0
+      ],
+      "meta": {
+        "label": "Fast bag drop, exposed loading lane"
+      }
+    },
+    {
+      "id": "roof_zipline_drop",
+      "kind": "drop",
+      "story": 2,
+      "bounds": [
+        -20.0,
+        10.0,
+        -13.0,
+        15.0
+      ],
+      "meta": {
+        "label": "Optional roof bag zipline"
+      }
+    }
+  ],
+  "markers": [
+    {
+      "type": "attacker_spawn",
+      "id": "CREW_VAN_A",
+      "x": -2.0,
+      "y": -22.0,
+      "z": 0.0,
+      "rot_z": 0.0,
+      "meta": {
+        "phase": "stealth",
+        "role": "player_start"
+      }
+    },
+    {
+      "type": "attacker_spawn",
+      "id": "CREW_VAN_B",
+      "x": 2.0,
+      "y": -22.0,
+      "z": 0.0,
+      "rot_z": 0.0,
+      "meta": {
+        "phase": "stealth",
+        "role": "player_start"
+      }
+    },
+    {
+      "type": "extraction",
+      "id": "VAN",
+      "x": 0.0,
+      "y": -22.0,
+      "z": 0.0,
+      "rot_z": 180.0,
+      "meta": {
+        "zone": "crew_van_extract"
+      }
+    },
+    {
+      "type": "defender_spawn",
+      "id": "STEALTH_LOBBY_PATROL",
+      "x": -14.0,
+      "y": -9.0,
+      "z": 0.0,
+      "rot_z": 45.0,
+      "room": "lobby",
+      "meta": {
+        "phase": "stealth",
+        "group": "patrol"
+      }
+    },
+    {
+      "type": "defender_spawn",
+      "id": "STEALTH_CATWALK_PATROL",
+      "x": -2.0,
+      "y": -10.0,
+      "z": 3.4,
+      "rot_z": 180.0,
+      "room": "catwalk_south",
+      "meta": {
+        "phase": "stealth",
+        "group": "patrol"
+      }
+    },
+    {
+      "type": "defender_spawn",
+      "id": "ALARM_CONTROL_RESPONSE",
+      "x": -12.0,
+      "y": 8.0,
+      "z": 3.4,
+      "rot_z": -90.0,
+      "room": "control_room",
+      "meta": {
+        "phase": "alarm",
+        "group": "response"
+      }
+    },
+    {
+      "type": "defender_spawn",
+      "id": "ALARM_LOADING_RESPONSE",
+      "x": 17.0,
+      "y": -7.0,
+      "z": 0.0,
+      "rot_z": -90.0,
+      "room": "loading_dock",
+      "meta": {
+        "phase": "alarm",
+        "group": "response"
+      }
+    },
+    {
+      "type": "defender_spawn",
+      "id": "LOUD_VAULT_PUSH",
+      "x": 8.5,
+      "y": 9.0,
+      "z": -3.4,
+      "rot_z": 180.0,
+      "room": "vault_cage",
+      "meta": {
+        "phase": "loud",
+        "group": "heavy_push"
+      }
+    },
+    {
+      "type": "defender_spawn",
+      "id": "LOUD_ROOF_DROP",
+      "x": 13.0,
+      "y": -8.0,
+      "z": 6.8,
+      "rot_z": 180.0,
+      "room": "comms_room",
+      "meta": {
+        "phase": "loud",
+        "group": "roof_team"
+      }
+    },
+    {
+      "type": "defender_spawn",
+      "id": "ESCAPE_NORTH_PINCH",
+      "x": -14.0,
+      "y": 14.0,
+      "z": 0.0,
+      "rot_z": -90.0,
+      "room": "west_maintenance",
+      "meta": {
+        "phase": "escape",
+        "group": "pinch"
+      }
+    },
+    {
+      "type": "defender_spawn",
+      "id": "ESCAPE_LOADING_PINCH",
+      "x": 20.0,
+      "y": -8.0,
+      "z": 0.0,
+      "rot_z": -120.0,
+      "room": "loading_dock",
+      "meta": {
+        "phase": "escape",
+        "group": "pinch"
+      }
+    },
+    {
+      "type": "patrol_point",
+      "id": "LOBBY_LOOP_01",
+      "x": -15.0,
+      "y": -10.0,
+      "z": 0.0,
+      "room": "lobby",
+      "meta": {
+        "phase": "stealth"
+      }
+    },
+    {
+      "type": "patrol_point",
+      "id": "GROUND_LOOP_02",
+      "x": 0.0,
+      "y": -10.0,
+      "z": 0.0,
+      "room": "south_machine",
+      "meta": {
+        "phase": "stealth"
+      }
+    },
+    {
+      "type": "patrol_point",
+      "id": "CATWALK_LOOP_03",
+      "x": 0.0,
+      "y": -10.0,
+      "z": 3.4,
+      "room": "catwalk_south",
+      "meta": {
+        "phase": "stealth"
+      }
+    },
+    {
+      "type": "camera_socket",
+      "id": "CAM_LOBBY",
+      "x": -19.0,
+      "y": -13.0,
+      "z": 2.4,
+      "rot_z": 45.0,
+      "room": "lobby",
+      "meta": {
+        "phase": "stealth"
+      }
+    },
+    {
+      "type": "camera_socket",
+      "id": "CAM_VAULT_APPROACH",
+      "x": 2.0,
+      "y": -13.0,
+      "z": -1.0,
+      "rot_z": 20.0,
+      "room": "vault_approach",
+      "meta": {
+        "phase": "stealth"
+      }
+    },
+    {
+      "type": "camera_socket",
+      "id": "CAM_ARCHIVE",
+      "x": 19.0,
+      "y": 13.0,
+      "z": 5.8,
+      "rot_z": 225.0,
+      "room": "archive_room",
+      "meta": {
+        "phase": "alarm"
+      }
+    },
+    {
+      "type": "cover_low",
+      "id": "COVER_MACHINE_A",
+      "x": 0.0,
+      "y": -9.0,
+      "z": 0.0,
+      "room": "south_machine"
+    },
+    {
+      "type": "cover_low",
+      "id": "COVER_LOADING_A",
+      "x": 17.0,
+      "y": -7.0,
+      "z": 0.0,
+      "room": "loading_dock"
+    },
+    {
+      "type": "cover_high",
+      "id": "COVER_ROOF_AC_A",
+      "x": -14.0,
+      "y": -9.0,
+      "z": 6.8,
+      "room": "roof_south"
+    },
+    {
+      "type": "cover_high",
+      "id": "COVER_VAULT_SAFE",
+      "x": 14.5,
+      "y": 0.0,
+      "z": -3.4,
+      "room": "vault_cage"
+    },
+    {
+      "type": "door_socket",
+      "id": "DOOR_VAULT_CAGE",
+      "x": 7.0,
+      "y": 0.0,
+      "z": -3.4,
+      "rot_z": 90.0,
+      "room": "vault_cage",
+      "meta": {
+        "locks_on_phase": "stealth",
+        "opens_after": "open_vault_cage"
+      }
+    },
+    {
+      "type": "door_socket",
+      "id": "DOOR_CONTROL_ROOM",
+      "x": -5.0,
+      "y": 4.0,
+      "z": 3.4,
+      "rot_z": 90.0,
+      "room": "control_room",
+      "meta": {
+        "keycard": true
+      }
+    }
+  ]
+}
