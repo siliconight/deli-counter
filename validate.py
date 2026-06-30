@@ -197,6 +197,18 @@ def validate_file(path):
     except Exception as ex:
         print(f"  FLOORPLAN: skipped ({ex})")
 
+    # sightlines (tactical geometry intel — death lanes, exposure, cover,
+    # intent mismatch; a GUIDE to better buildings, never a gate)
+    try:
+        import sightlines
+        sl_dir = os.path.join(HERE, "build", "floorplans")
+        for line in sightlines.report(spec).splitlines()[1:]:  # skip name header
+            print(f"  {line}")
+        spaths = sightlines.write_overlays(spec, sl_dir)
+        print(f"  sightlines: {len(spaths)} overlay SVG(s) -> build/floorplans/")
+    except Exception as ex:
+        print(f"  SIGHTLINES: skipped ({ex})")
+
     print("  -> OK")
     return True
 

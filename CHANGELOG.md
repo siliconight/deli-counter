@@ -5,6 +5,33 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.48.1]
+### Fixed
+- **Loader crash on `vertical_links` with `meta`.** `VerticalLink` was the only spec
+  dataclass missing the `meta` field that Marker/Objective/LootSpawn/Zone all have, so any
+  spec whose `vertical_links` carried `meta` (e.g. a multi-story heist spec) crashed
+  `spec_from_dict` -> `validate`/`catalog --check` -> the whole pre-commit gate. Added
+  `meta: Optional[dict] = None` to `VerticalLink`. No other change.
+
+## [0.48.0]
+### Added
+- **sightlines.py -- tactical geometry intel (offline, bpy-free).** Reads the same
+  wall/partition/opening/volume geometry the floorplan draws, casts 2D rays at eye height,
+  and reports the metrics that catch gameplay problems in a greybox BEFORE you build/walk:
+  - **death lane** -- the longest unobstructed sightline on a floor (the angle that
+    dominates fights near it).
+  - **exposed run** -- the longest stretch of the spawn->objective approach with no cover
+    marker within reach (where you get caught in the open).
+  - **weak cover** -- cover markers with clear line of sight from attacker spawns (cover
+    that isn't really cover).
+  - **intent mismatch** -- a room's authored `combat_range` vs the sightlines its geometry
+    actually produces (a "close" room that plays "long").
+  - **objective entries** -- independent ways into the objective room (1 = a funnel).
+  INTEL only -- never fails a build; a GUIDE to authoring better-playing buildings. Runs
+  inside validate/check per spec and writes annotated `<name>.sightlines<story>.svg` overlays
+  next to the floorplans (death lane in red, exposed approach in orange, weak cover ringed).
+  CLI: `python sightlines.py <spec.json> [outdir]`.
+
 ## [0.47.1]
 ### Fixed
 - **Stairs / ramps / hatches: invisible collision capping the upper floor.** Floor and

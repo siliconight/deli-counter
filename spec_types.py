@@ -268,6 +268,7 @@ class VerticalLink:
     size_y: Optional[float] = None
     breachable: Optional[bool] = None      # hatch
     cut_slab: bool = True                  # floor_hole/hatch punch the slab
+    meta: Optional[dict] = None            # arbitrary extra data -> gameplay.json
 
 
 @dataclass

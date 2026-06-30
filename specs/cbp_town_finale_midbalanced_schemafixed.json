@@ -1,0 +1,3090 @@
+{
+  "$schema": "../schema/level.schema.json",
+  "name": "cbp_town_finale_midbalanced",
+  "mode": "heist",
+  "seed": 20260630,
+  "grid": 0.5,
+  "footprint_x": 86.0,
+  "footprint_y": 68.0,
+  "story_height": 4.0,
+  "n_stories": 3,
+  "has_basement": false,
+  "wall_thick": 0.3,
+  "floor_thick": 0.3,
+  "collision": "convex",
+  "auto_exterior": true,
+  "scale_ref": true,
+  "default_material": "stadium_concrete",
+  "materials": [
+    {
+      "id": "stadium_concrete",
+      "acoustic": "Concrete",
+      "absorption": 0.42,
+      "damping": 0.32
+    },
+    {
+      "id": "painted_steel",
+      "acoustic": "Metal",
+      "absorption": 0.18,
+      "damping": 0.14
+    },
+    {
+      "id": "club_glass",
+      "acoustic": "Glass",
+      "absorption": 0.12,
+      "damping": 0.06
+    },
+    {
+      "id": "seat_plastic",
+      "acoustic": "Default",
+      "absorption": 0.24,
+      "damping": 0.2
+    },
+    {
+      "id": "turf",
+      "acoustic": "Foliage",
+      "absorption": 0.68,
+      "damping": 0.55
+    },
+    {
+      "id": "wood_kiosk",
+      "acoustic": "Wood",
+      "absorption": 0.38,
+      "damping": 0.26
+    }
+  ],
+  "ext_walls": [
+    {
+      "wall": "S",
+      "story": 0,
+      "material": "stadium_concrete",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.5,
+          "width": 1.6,
+          "tag": "third_base_public_gate"
+        },
+        {
+          "kind": "garage",
+          "pos": 0.0,
+          "width": 7.0,
+          "height": 3.4,
+          "tag": "home_plate_public_gate"
+        },
+        {
+          "kind": "door",
+          "pos": 0.5,
+          "width": 1.6,
+          "tag": "first_base_public_gate"
+        }
+      ]
+    },
+    {
+      "wall": "N",
+      "story": 0,
+      "material": "stadium_concrete",
+      "openings": [
+        {
+          "kind": "garage",
+          "pos": 0.0,
+          "width": 7.0,
+          "height": 3.4,
+          "tag": "center_field_loading_gate"
+        },
+        {
+          "kind": "door",
+          "pos": -0.5,
+          "width": 1.3,
+          "tag": "left_field_staff_exit"
+        },
+        {
+          "kind": "door",
+          "pos": 0.5,
+          "width": 1.3,
+          "tag": "right_field_staff_exit"
+        }
+      ]
+    },
+    {
+      "wall": "W",
+      "story": 0,
+      "material": "stadium_concrete",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.5,
+          "width": 1.2,
+          "tag": "third_base_staff_entry"
+        },
+        {
+          "kind": "garage",
+          "pos": 0.45,
+          "width": 4.0,
+          "height": 3.0,
+          "tag": "left_field_service_bay"
+        }
+      ]
+    },
+    {
+      "wall": "E",
+      "story": 0,
+      "material": "stadium_concrete",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.5,
+          "width": 1.2,
+          "tag": "first_base_staff_entry"
+        },
+        {
+          "kind": "garage",
+          "pos": 0.45,
+          "width": 4.0,
+          "height": 3.0,
+          "tag": "right_field_service_bay"
+        }
+      ]
+    },
+    {
+      "wall": "S",
+      "story": 1,
+      "material": "club_glass",
+      "openings": [
+        {
+          "kind": "window",
+          "pos": -0.5,
+          "width": 4.0,
+          "sill": 1.0,
+          "vaultable": true,
+          "tag": "club_level_south_glass_w"
+        },
+        {
+          "kind": "window",
+          "pos": 0.0,
+          "width": 5.0,
+          "sill": 1.0,
+          "vaultable": true,
+          "tag": "club_level_south_glass_c"
+        },
+        {
+          "kind": "window",
+          "pos": 0.5,
+          "width": 4.0,
+          "sill": 1.0,
+          "vaultable": true,
+          "tag": "club_level_south_glass_e"
+        }
+      ]
+    },
+    {
+      "wall": "N",
+      "story": 1,
+      "material": "painted_steel",
+      "openings": [
+        {
+          "kind": "window",
+          "pos": -0.35,
+          "width": 3.0,
+          "sill": 1.0,
+          "vaultable": true,
+          "tag": "outfield_deck_window_w"
+        },
+        {
+          "kind": "window",
+          "pos": 0.35,
+          "width": 3.0,
+          "sill": 1.0,
+          "vaultable": true,
+          "tag": "outfield_deck_window_e"
+        }
+      ]
+    },
+    {
+      "wall": "S",
+      "story": 2,
+      "material": "club_glass",
+      "openings": [
+        {
+          "kind": "window",
+          "pos": -0.35,
+          "width": 3.5,
+          "sill": 1.0,
+          "vaultable": true,
+          "tag": "press_level_south_glass_w"
+        },
+        {
+          "kind": "window",
+          "pos": 0.0,
+          "width": 5.5,
+          "sill": 1.0,
+          "vaultable": true,
+          "tag": "broadcast_booth_south_glass"
+        },
+        {
+          "kind": "window",
+          "pos": 0.35,
+          "width": 3.5,
+          "sill": 1.0,
+          "vaultable": true,
+          "tag": "press_level_south_glass_e"
+        }
+      ]
+    },
+    {
+      "wall": "N",
+      "story": 2,
+      "material": "painted_steel",
+      "openings": [
+        {
+          "kind": "window",
+          "pos": 0.0,
+          "width": 3.0,
+          "sill": 1.0,
+          "vaultable": true,
+          "tag": "scoreboard_maintenance_window"
+        }
+      ]
+    }
+  ],
+  "partitions": [
+    {
+      "story": 0,
+      "axis": "Y",
+      "pos": -20.0,
+      "start": -43.0,
+      "end": 43.0,
+      "material": "painted_steel",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.5,
+          "width": 1.6,
+          "tag": "third_gate_to_concourse"
+        },
+        {
+          "kind": "door",
+          "pos": 0.0,
+          "width": 2.4,
+          "tag": "home_gate_to_main_concourse"
+        },
+        {
+          "kind": "door",
+          "pos": 0.5,
+          "width": 1.6,
+          "tag": "first_gate_to_concourse"
+        }
+      ]
+    },
+    {
+      "story": 0,
+      "axis": "Y",
+      "pos": -8.0,
+      "start": -43.0,
+      "end": 43.0,
+      "material": "stadium_concrete",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.5,
+          "width": 2.0,
+          "tag": "third_vomitory"
+        },
+        {
+          "kind": "door",
+          "pos": 0.0,
+          "width": 2.8,
+          "tag": "home_plate_vomitory"
+        },
+        {
+          "kind": "door",
+          "pos": 0.5,
+          "width": 2.0,
+          "tag": "first_vomitory"
+        }
+      ]
+    },
+    {
+      "story": 0,
+      "axis": "Y",
+      "pos": 10.0,
+      "start": -43.0,
+      "end": 43.0,
+      "material": "painted_steel",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.5,
+          "width": 1.1,
+          "tag": "left_field_service_tunnel"
+        },
+        {
+          "kind": "door",
+          "pos": 0.0,
+          "width": 2.2,
+          "tag": "field_service_spine"
+        },
+        {
+          "kind": "door",
+          "pos": 0.5,
+          "width": 1.1,
+          "tag": "right_field_service_tunnel"
+        }
+      ]
+    },
+    {
+      "story": 0,
+      "axis": "Y",
+      "pos": 24.0,
+      "start": -43.0,
+      "end": 43.0,
+      "material": "painted_steel",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.35,
+          "width": 1.4,
+          "tag": "left_outfield_to_loading"
+        },
+        {
+          "kind": "garage",
+          "pos": 0.0,
+          "width": 4.0,
+          "height": 3.0,
+          "tag": "center_field_loading_lane"
+        },
+        {
+          "kind": "door",
+          "pos": 0.35,
+          "width": 1.4,
+          "tag": "right_outfield_to_loading"
+        }
+      ]
+    },
+    {
+      "story": 0,
+      "axis": "X",
+      "pos": -18.0,
+      "start": -34.0,
+      "end": 34.0,
+      "material": "stadium_concrete",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.2,
+          "width": 1.8,
+          "tag": "third_concourse_split"
+        },
+        {
+          "kind": "door",
+          "pos": 0.25,
+          "width": 1.8,
+          "tag": "third_seat_aisle"
+        }
+      ]
+    },
+    {
+      "story": 0,
+      "axis": "X",
+      "pos": 18.0,
+      "start": -34.0,
+      "end": 34.0,
+      "material": "stadium_concrete",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.2,
+          "width": 1.8,
+          "tag": "first_concourse_split"
+        },
+        {
+          "kind": "door",
+          "pos": 0.25,
+          "width": 1.8,
+          "tag": "first_seat_aisle"
+        }
+      ]
+    },
+    {
+      "story": 1,
+      "axis": "Y",
+      "pos": -18.0,
+      "start": -43.0,
+      "end": 43.0,
+      "material": "club_glass",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.5,
+          "width": 1.5,
+          "tag": "west_club_security_door"
+        },
+        {
+          "kind": "door",
+          "pos": 0.0,
+          "width": 2.0,
+          "tag": "club_lobby_to_ring"
+        },
+        {
+          "kind": "door",
+          "pos": 0.5,
+          "width": 1.5,
+          "tag": "cash_counting_door"
+        }
+      ]
+    },
+    {
+      "story": 1,
+      "axis": "Y",
+      "pos": -4.0,
+      "start": -43.0,
+      "end": 43.0,
+      "material": "painted_steel",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.5,
+          "width": 1.5,
+          "tag": "west_suite_to_ring"
+        },
+        {
+          "kind": "door",
+          "pos": 0.0,
+          "width": 2.0,
+          "tag": "club_ring_to_bowl_view"
+        },
+        {
+          "kind": "door",
+          "pos": 0.5,
+          "width": 1.5,
+          "tag": "east_suite_to_ring"
+        }
+      ]
+    },
+    {
+      "story": 1,
+      "axis": "Y",
+      "pos": 14.0,
+      "start": -43.0,
+      "end": 43.0,
+      "material": "painted_steel",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.5,
+          "width": 1.4,
+          "tag": "left_club_to_outfield_deck"
+        },
+        {
+          "kind": "door",
+          "pos": 0.0,
+          "width": 1.8,
+          "tag": "club_center_to_scoreboard_back"
+        },
+        {
+          "kind": "door",
+          "pos": 0.5,
+          "width": 1.4,
+          "tag": "right_club_to_outfield_deck"
+        }
+      ]
+    },
+    {
+      "story": 1,
+      "axis": "X",
+      "pos": -18.0,
+      "start": -34.0,
+      "end": 34.0,
+      "material": "club_glass",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.5,
+          "width": 1.4,
+          "tag": "west_security_to_lobby"
+        },
+        {
+          "kind": "door",
+          "pos": 0.0,
+          "width": 1.4,
+          "tag": "west_suite_ring_split"
+        },
+        {
+          "kind": "door",
+          "pos": 0.5,
+          "width": 1.4,
+          "tag": "left_deck_split"
+        }
+      ]
+    },
+    {
+      "story": 1,
+      "axis": "X",
+      "pos": 18.0,
+      "start": -34.0,
+      "end": 34.0,
+      "material": "club_glass",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.5,
+          "width": 1.4,
+          "tag": "east_cash_to_lobby"
+        },
+        {
+          "kind": "door",
+          "pos": 0.0,
+          "width": 1.4,
+          "tag": "east_suite_ring_split"
+        },
+        {
+          "kind": "door",
+          "pos": 0.5,
+          "width": 1.4,
+          "tag": "right_deck_split"
+        }
+      ]
+    },
+    {
+      "story": 2,
+      "axis": "Y",
+      "pos": -12.0,
+      "start": -43.0,
+      "end": 43.0,
+      "material": "club_glass",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.5,
+          "width": 1.2,
+          "tag": "west_press_booth_door"
+        },
+        {
+          "kind": "door",
+          "pos": 0.0,
+          "width": 1.4,
+          "tag": "broadcast_booth_door"
+        },
+        {
+          "kind": "door",
+          "pos": 0.5,
+          "width": 1.2,
+          "tag": "east_press_booth_door"
+        }
+      ]
+    },
+    {
+      "story": 2,
+      "axis": "Y",
+      "pos": 8.0,
+      "start": -43.0,
+      "end": 43.0,
+      "material": "painted_steel",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.45,
+          "width": 1.2,
+          "tag": "west_press_to_maintenance"
+        },
+        {
+          "kind": "door",
+          "pos": 0.0,
+          "width": 1.2,
+          "tag": "broadcast_to_scoreboard_maintenance"
+        },
+        {
+          "kind": "door",
+          "pos": 0.45,
+          "width": 1.2,
+          "tag": "east_press_to_maintenance"
+        }
+      ]
+    },
+    {
+      "story": 2,
+      "axis": "X",
+      "pos": -18.0,
+      "start": -34.0,
+      "end": 34.0,
+      "material": "painted_steel",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.45,
+          "width": 1.2,
+          "tag": "west_press_crossflow"
+        },
+        {
+          "kind": "door",
+          "pos": 0.45,
+          "width": 1.2,
+          "tag": "west_maintenance_crossflow"
+        }
+      ]
+    },
+    {
+      "story": 2,
+      "axis": "X",
+      "pos": 18.0,
+      "start": -34.0,
+      "end": 34.0,
+      "material": "painted_steel",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.45,
+          "width": 1.2,
+          "tag": "east_press_crossflow"
+        },
+        {
+          "kind": "door",
+          "pos": 0.45,
+          "width": 1.2,
+          "tag": "east_maintenance_crossflow"
+        }
+      ]
+    }
+  ],
+  "stairs": [
+    {
+      "x": -34.0,
+      "y": -22.0,
+      "from_story": 0,
+      "to_story": 2,
+      "width": 2.2,
+      "run": 6.5,
+      "style": "switchback",
+      "cut_slabs": true,
+      "step_rise": 0.19
+    },
+    {
+      "x": 34.0,
+      "y": -22.0,
+      "from_story": 0,
+      "to_story": 2,
+      "width": 2.2,
+      "run": 6.5,
+      "style": "switchback",
+      "cut_slabs": true,
+      "step_rise": 0.19
+    },
+    {
+      "x": -28.0,
+      "y": 18.0,
+      "from_story": 0,
+      "to_story": 1,
+      "width": 1.8,
+      "run": 5.0,
+      "style": "straight",
+      "cut_slabs": true,
+      "step_rise": 0.19
+    },
+    {
+      "x": 28.0,
+      "y": 18.0,
+      "from_story": 0,
+      "to_story": 1,
+      "width": 1.8,
+      "run": 5.0,
+      "style": "straight",
+      "cut_slabs": true,
+      "step_rise": 0.19
+    }
+  ],
+  "ladders": [
+    {
+      "x": 0.0,
+      "y": 28.0,
+      "from_story": 1,
+      "to_story": 3,
+      "width": 0.55,
+      "depth": 0.18,
+      "rung_spacing": 0.3,
+      "cut_slabs": true,
+      "facing": "N"
+    },
+    {
+      "x": -39.0,
+      "y": 18.0,
+      "from_story": 0,
+      "to_story": 1,
+      "width": 0.55,
+      "depth": 0.18,
+      "rung_spacing": 0.3,
+      "cut_slabs": true,
+      "facing": "W"
+    },
+    {
+      "x": 39.0,
+      "y": 18.0,
+      "from_story": 0,
+      "to_story": 1,
+      "width": 0.55,
+      "depth": 0.18,
+      "rung_spacing": 0.3,
+      "cut_slabs": true,
+      "facing": "E"
+    }
+  ],
+  "ramps": [
+    {
+      "x": -30.0,
+      "y": -6.0,
+      "from_story": 0,
+      "to_story": 1,
+      "run": 16.0,
+      "width": 3.5,
+      "axis": "Y",
+      "thickness": 0.3,
+      "cut_slabs": true,
+      "max_slope_deg": 18.0
+    },
+    {
+      "x": 30.0,
+      "y": -6.0,
+      "from_story": 0,
+      "to_story": 1,
+      "run": 16.0,
+      "width": 3.5,
+      "axis": "Y",
+      "thickness": 0.3,
+      "cut_slabs": true,
+      "max_slope_deg": 18.0
+    },
+    {
+      "x": 0.0,
+      "y": 16.0,
+      "from_story": 0,
+      "to_story": 1,
+      "run": 12.0,
+      "width": 4.0,
+      "axis": "Y",
+      "thickness": 0.3,
+      "cut_slabs": true,
+      "max_slope_deg": 18.0
+    }
+  ],
+  "vault_ledges": [
+    {
+      "x": -22.0,
+      "y": -2.0,
+      "story": 0,
+      "length": 18.0,
+      "axis": "Y",
+      "height": 1.0,
+      "thick": 0.2,
+      "material": "painted_steel"
+    },
+    {
+      "x": 22.0,
+      "y": -2.0,
+      "story": 0,
+      "length": 18.0,
+      "axis": "Y",
+      "height": 1.0,
+      "thick": 0.2,
+      "material": "painted_steel"
+    },
+    {
+      "x": 0.0,
+      "y": 3.0,
+      "story": 1,
+      "length": 34.0,
+      "axis": "X",
+      "height": 1.0,
+      "thick": 0.2,
+      "material": "painted_steel"
+    },
+    {
+      "x": 0.0,
+      "y": 18.0,
+      "story": 1,
+      "length": 26.0,
+      "axis": "X",
+      "height": 1.0,
+      "thick": 0.2,
+      "material": "painted_steel"
+    },
+    {
+      "x": 0.0,
+      "y": 12.0,
+      "story": 2,
+      "length": 22.0,
+      "axis": "X",
+      "height": 1.1,
+      "thick": 0.2,
+      "material": "painted_steel"
+    }
+  ],
+  "slab_holes": [
+    {
+      "story": 1,
+      "x": 0.0,
+      "y": 4.0,
+      "size_x": 28.0,
+      "size_y": 22.0
+    },
+    {
+      "story": 2,
+      "x": 0.0,
+      "y": 4.0,
+      "size_x": 22.0,
+      "size_y": 18.0
+    }
+  ],
+  "vertical_links": [
+    {
+      "kind": "stair",
+      "from_story": 0,
+      "to_story": 2,
+      "role": "third_base_public_stair_stack"
+    },
+    {
+      "kind": "stair",
+      "from_story": 0,
+      "to_story": 2,
+      "role": "first_base_public_stair_stack"
+    }
+  ],
+  "rooms": [
+    {
+      "id": "third_base_gate_plaza",
+      "story": 0,
+      "bounds": [
+        -43,
+        -34,
+        -18,
+        -20
+      ],
+      "role": "public_entry",
+      "combat_range": "medium"
+    },
+    {
+      "id": "home_plate_gate_plaza",
+      "story": 0,
+      "bounds": [
+        -18,
+        -34,
+        18,
+        -20
+      ],
+      "role": "public_entry",
+      "combat_range": "medium"
+    },
+    {
+      "id": "first_base_gate_plaza",
+      "story": 0,
+      "bounds": [
+        18,
+        -34,
+        43,
+        -20
+      ],
+      "role": "public_entry",
+      "combat_range": "medium"
+    },
+    {
+      "id": "third_base_concourse",
+      "story": 0,
+      "bounds": [
+        -43,
+        -20,
+        -18,
+        -8
+      ],
+      "role": "connector",
+      "combat_range": "medium"
+    },
+    {
+      "id": "main_concourse",
+      "story": 0,
+      "bounds": [
+        -18,
+        -20,
+        18,
+        -8
+      ],
+      "role": "connector",
+      "combat_range": "medium"
+    },
+    {
+      "id": "first_base_concourse",
+      "story": 0,
+      "bounds": [
+        18,
+        -20,
+        43,
+        -8
+      ],
+      "role": "connector",
+      "combat_range": "medium"
+    },
+    {
+      "id": "third_base_vomitory",
+      "story": 0,
+      "bounds": [
+        -43,
+        -8,
+        -18,
+        10
+      ],
+      "role": "connector",
+      "combat_range": "long"
+    },
+    {
+      "id": "infield_bowl",
+      "story": 0,
+      "bounds": [
+        -18,
+        -8,
+        18,
+        10
+      ],
+      "role": "connector",
+      "combat_range": "long"
+    },
+    {
+      "id": "first_base_vomitory",
+      "story": 0,
+      "bounds": [
+        18,
+        -8,
+        43,
+        10
+      ],
+      "role": "connector",
+      "combat_range": "long"
+    },
+    {
+      "id": "left_field_service_ring",
+      "story": 0,
+      "bounds": [
+        -43,
+        10,
+        -18,
+        24
+      ],
+      "role": "objective_room",
+      "combat_range": "medium",
+      "objective": true
+    },
+    {
+      "id": "center_field_service_ring",
+      "story": 0,
+      "bounds": [
+        -18,
+        10,
+        18,
+        24
+      ],
+      "role": "connector",
+      "combat_range": "long"
+    },
+    {
+      "id": "right_field_service_ring",
+      "story": 0,
+      "bounds": [
+        18,
+        10,
+        43,
+        24
+      ],
+      "role": "connector",
+      "combat_range": "medium"
+    },
+    {
+      "id": "left_field_loading",
+      "story": 0,
+      "bounds": [
+        -43,
+        24,
+        -18,
+        34
+      ],
+      "role": "connector",
+      "combat_range": "medium"
+    },
+    {
+      "id": "center_field_loading_dock",
+      "story": 0,
+      "bounds": [
+        -18,
+        24,
+        18,
+        34
+      ],
+      "role": "public_entry",
+      "combat_range": "medium"
+    },
+    {
+      "id": "right_field_loading",
+      "story": 0,
+      "bounds": [
+        18,
+        24,
+        43,
+        34
+      ],
+      "role": "connector",
+      "combat_range": "medium"
+    },
+    {
+      "id": "west_club_security",
+      "story": 1,
+      "bounds": [
+        -43,
+        -34,
+        -18,
+        -18
+      ],
+      "role": "objective_room",
+      "combat_range": "medium",
+      "objective": true,
+      "fortifiable": true
+    },
+    {
+      "id": "club_lobby",
+      "story": 1,
+      "bounds": [
+        -18,
+        -34,
+        18,
+        -18
+      ],
+      "role": "connector",
+      "combat_range": "medium"
+    },
+    {
+      "id": "east_cash_counting",
+      "story": 1,
+      "bounds": [
+        18,
+        -34,
+        43,
+        -18
+      ],
+      "role": "objective_room",
+      "combat_range": "medium",
+      "objective": true,
+      "fortifiable": true
+    },
+    {
+      "id": "west_suite_concourse",
+      "story": 1,
+      "bounds": [
+        -43,
+        -18,
+        -18,
+        -4
+      ],
+      "role": "connector",
+      "combat_range": "medium"
+    },
+    {
+      "id": "club_ring_overlook",
+      "story": 1,
+      "bounds": [
+        -18,
+        -18,
+        18,
+        -4
+      ],
+      "role": "connector",
+      "combat_range": "long"
+    },
+    {
+      "id": "east_suite_concourse",
+      "story": 1,
+      "bounds": [
+        18,
+        -18,
+        43,
+        -4
+      ],
+      "role": "connector",
+      "combat_range": "medium"
+    },
+    {
+      "id": "west_upper_bowl_walk",
+      "story": 1,
+      "bounds": [
+        -43,
+        -4,
+        -18,
+        14
+      ],
+      "role": "connector",
+      "combat_range": "long"
+    },
+    {
+      "id": "home_plate_overlook",
+      "story": 1,
+      "bounds": [
+        -18,
+        -4,
+        18,
+        14
+      ],
+      "role": "connector",
+      "combat_range": "long"
+    },
+    {
+      "id": "east_upper_bowl_walk",
+      "story": 1,
+      "bounds": [
+        18,
+        -4,
+        43,
+        14
+      ],
+      "role": "connector",
+      "combat_range": "long"
+    },
+    {
+      "id": "left_outfield_deck",
+      "story": 1,
+      "bounds": [
+        -43,
+        14,
+        -18,
+        34
+      ],
+      "role": "connector",
+      "combat_range": "long"
+    },
+    {
+      "id": "scoreboard_back_of_house",
+      "story": 1,
+      "bounds": [
+        -18,
+        14,
+        18,
+        34
+      ],
+      "role": "objective_room",
+      "combat_range": "medium",
+      "objective": true,
+      "fortifiable": true
+    },
+    {
+      "id": "right_outfield_deck",
+      "story": 1,
+      "bounds": [
+        18,
+        14,
+        43,
+        34
+      ],
+      "role": "connector",
+      "combat_range": "long"
+    },
+    {
+      "id": "west_press_booths",
+      "story": 2,
+      "bounds": [
+        -43,
+        -34,
+        -18,
+        -12
+      ],
+      "role": "connector",
+      "combat_range": "medium"
+    },
+    {
+      "id": "broadcast_booth",
+      "story": 2,
+      "bounds": [
+        -18,
+        -34,
+        18,
+        -12
+      ],
+      "role": "objective_room",
+      "combat_range": "medium",
+      "objective": true
+    },
+    {
+      "id": "east_press_booths",
+      "story": 2,
+      "bounds": [
+        18,
+        -34,
+        43,
+        -12
+      ],
+      "role": "connector",
+      "combat_range": "medium"
+    },
+    {
+      "id": "west_press_hall",
+      "story": 2,
+      "bounds": [
+        -43,
+        -12,
+        -18,
+        8
+      ],
+      "role": "connector",
+      "combat_range": "medium"
+    },
+    {
+      "id": "press_service_hall",
+      "story": 2,
+      "bounds": [
+        -18,
+        -12,
+        18,
+        8
+      ],
+      "role": "connector",
+      "combat_range": "medium"
+    },
+    {
+      "id": "east_press_hall",
+      "story": 2,
+      "bounds": [
+        18,
+        -12,
+        43,
+        8
+      ],
+      "role": "connector",
+      "combat_range": "medium"
+    },
+    {
+      "id": "left_scoreboard_maintenance",
+      "story": 2,
+      "bounds": [
+        -43,
+        8,
+        -18,
+        34
+      ],
+      "role": "connector",
+      "combat_range": "long"
+    },
+    {
+      "id": "scoreboard_control_catwalk",
+      "story": 2,
+      "bounds": [
+        -18,
+        8,
+        18,
+        34
+      ],
+      "role": "objective_room",
+      "combat_range": "medium",
+      "objective": true,
+      "fortifiable": true
+    },
+    {
+      "id": "right_scoreboard_maintenance",
+      "story": 2,
+      "bounds": [
+        18,
+        8,
+        43,
+        34
+      ],
+      "role": "connector",
+      "combat_range": "long"
+    }
+  ],
+  "volumes": [
+    {
+      "name": "home_plate_turnstile_bank",
+      "x": 0,
+      "y": -25.5,
+      "z": 1.0,
+      "size_x": 10,
+      "size_y": 2.0,
+      "size_z": 1.8,
+      "collision": "convex",
+      "material": "painted_steel"
+    },
+    {
+      "name": "third_base_concession_kiosk",
+      "x": -29,
+      "y": -14,
+      "z": 1.2,
+      "size_x": 6,
+      "size_y": 2.5,
+      "size_z": 2.4,
+      "collision": "convex",
+      "material": "wood_kiosk"
+    },
+    {
+      "name": "first_base_concession_kiosk",
+      "x": 29,
+      "y": -14,
+      "z": 1.2,
+      "size_x": 6,
+      "size_y": 2.5,
+      "size_z": 2.4,
+      "collision": "convex",
+      "material": "wood_kiosk"
+    },
+    {
+      "name": "third_base_vomitory_wall_cover",
+      "x": -18,
+      "y": -3,
+      "z": 1.0,
+      "size_x": 1.2,
+      "size_y": 8,
+      "size_z": 2.0,
+      "collision": "convex",
+      "material": "stadium_concrete"
+    },
+    {
+      "name": "first_base_vomitory_wall_cover",
+      "x": 18,
+      "y": -3,
+      "z": 1.0,
+      "size_x": 1.2,
+      "size_y": 8,
+      "size_z": 2.0,
+      "collision": "convex",
+      "material": "stadium_concrete"
+    },
+    {
+      "name": "lower_bowl_seats_left_arc_a",
+      "x": -31,
+      "y": -2,
+      "z": 1.2,
+      "size_x": 10,
+      "size_y": 7,
+      "size_z": 2.0,
+      "collision": "convex",
+      "material": "seat_plastic"
+    },
+    {
+      "name": "lower_bowl_seats_left_arc_b",
+      "x": -27,
+      "y": 6,
+      "z": 1.5,
+      "size_x": 9,
+      "size_y": 6,
+      "size_z": 2.4,
+      "collision": "convex",
+      "material": "seat_plastic"
+    },
+    {
+      "name": "lower_bowl_seats_right_arc_a",
+      "x": 31,
+      "y": -2,
+      "z": 1.2,
+      "size_x": 10,
+      "size_y": 7,
+      "size_z": 2.0,
+      "collision": "convex",
+      "material": "seat_plastic"
+    },
+    {
+      "name": "lower_bowl_seats_right_arc_b",
+      "x": 27,
+      "y": 6,
+      "z": 1.5,
+      "size_x": 9,
+      "size_y": 6,
+      "size_z": 2.4,
+      "collision": "convex",
+      "material": "seat_plastic"
+    },
+    {
+      "name": "infield_mound_turf",
+      "x": 0,
+      "y": 3,
+      "z": 0.15,
+      "size_x": 9,
+      "size_y": 7,
+      "size_z": 0.3,
+      "collision": "convex",
+      "material": "turf"
+    },
+    {
+      "name": "dugout_roof_left",
+      "x": -10,
+      "y": 4,
+      "z": 0.9,
+      "size_x": 5,
+      "size_y": 2.2,
+      "size_z": 1.4,
+      "collision": "convex",
+      "material": "painted_steel"
+    },
+    {
+      "name": "dugout_roof_right",
+      "x": 10,
+      "y": 4,
+      "z": 0.9,
+      "size_x": 5,
+      "size_y": 2.2,
+      "size_z": 1.4,
+      "collision": "convex",
+      "material": "painted_steel"
+    },
+    {
+      "name": "rolled_tarp_cart_left",
+      "x": -6,
+      "y": 8,
+      "z": 0.55,
+      "size_x": 5,
+      "size_y": 2.0,
+      "size_z": 1.1,
+      "collision": "convex",
+      "material": "turf"
+    },
+    {
+      "name": "rolled_tarp_cart_right",
+      "x": 6,
+      "y": 8,
+      "z": 0.55,
+      "size_x": 5,
+      "size_y": 2.0,
+      "size_z": 1.1,
+      "collision": "convex",
+      "material": "turf"
+    },
+    {
+      "name": "left_field_power_cabinet",
+      "x": -31,
+      "y": 17,
+      "z": 1.4,
+      "size_x": 5,
+      "size_y": 2.5,
+      "size_z": 2.8,
+      "collision": "convex",
+      "material": "painted_steel"
+    },
+    {
+      "name": "center_field_batters_eye",
+      "x": 0,
+      "y": 20,
+      "z": 2.0,
+      "size_x": 12,
+      "size_y": 2.5,
+      "size_z": 4.0,
+      "collision": "convex",
+      "material": "painted_steel"
+    },
+    {
+      "name": "center_field_loading_truck_cover",
+      "x": -7,
+      "y": 29,
+      "z": 1.3,
+      "size_x": 6.5,
+      "size_y": 2.8,
+      "size_z": 2.6,
+      "collision": "convex",
+      "material": "painted_steel"
+    },
+    {
+      "name": "center_field_tv_truck_cover",
+      "x": 7,
+      "y": 29,
+      "z": 1.3,
+      "size_x": 6.5,
+      "size_y": 2.8,
+      "size_z": 2.6,
+      "collision": "convex",
+      "material": "painted_steel"
+    },
+    {
+      "name": "security_console_cluster",
+      "x": -30,
+      "y": -25,
+      "z": 4.9,
+      "size_x": 6,
+      "size_y": 2.4,
+      "size_z": 1.8,
+      "collision": "convex",
+      "material": "painted_steel"
+    },
+    {
+      "name": "cash_counting_tables",
+      "x": 30,
+      "y": -25,
+      "z": 4.8,
+      "size_x": 7,
+      "size_y": 3.0,
+      "size_z": 1.6,
+      "collision": "convex",
+      "material": "wood_kiosk"
+    },
+    {
+      "name": "cash_room_rolling_cage",
+      "x": 23,
+      "y": -25,
+      "z": 5.2,
+      "size_x": 1.0,
+      "size_y": 5.0,
+      "size_z": 2.4,
+      "collision": "convex",
+      "material": "painted_steel"
+    },
+    {
+      "name": "club_display_case",
+      "x": 0,
+      "y": -25,
+      "z": 5.1,
+      "size_x": 8,
+      "size_y": 2.0,
+      "size_z": 2.2,
+      "collision": "convex",
+      "material": "club_glass"
+    },
+    {
+      "name": "scoreboard_service_hoist",
+      "x": 0,
+      "y": 25,
+      "z": 5.5,
+      "size_x": 5,
+      "size_y": 2.2,
+      "size_z": 3.0,
+      "collision": "convex",
+      "material": "painted_steel"
+    },
+    {
+      "name": "broadcast_booth_desk",
+      "x": 0,
+      "y": -24,
+      "z": 8.9,
+      "size_x": 10,
+      "size_y": 2.0,
+      "size_z": 1.8,
+      "collision": "convex",
+      "material": "wood_kiosk"
+    },
+    {
+      "name": "scoreboard_control_rack",
+      "x": 0,
+      "y": 19,
+      "z": 8.9,
+      "size_x": 8,
+      "size_y": 2.5,
+      "size_z": 1.8,
+      "collision": "convex",
+      "material": "painted_steel"
+    },
+    {
+      "name": "scoreboard_catwalk_crates_left",
+      "x": -8,
+      "y": 17,
+      "z": 8.7,
+      "size_x": 3,
+      "size_y": 1.2,
+      "size_z": 1.4,
+      "collision": "convex",
+      "material": "painted_steel"
+    },
+    {
+      "name": "scoreboard_catwalk_crates_right",
+      "x": 8,
+      "y": 17,
+      "z": 8.7,
+      "size_x": 3,
+      "size_y": 1.2,
+      "size_z": 1.4,
+      "collision": "convex",
+      "material": "painted_steel"
+    },
+    {
+      "name": "security_keycard_wall_box",
+      "x": -31.0,
+      "y": -26.0,
+      "z": 5.0,
+      "size_x": 0.8,
+      "size_y": 0.3,
+      "size_z": 1.0,
+      "collision": "convex",
+      "material": "painted_steel"
+    },
+    {
+      "name": "cash_cage_keycard_reader",
+      "x": 22.5,
+      "y": -25.0,
+      "z": 5.0,
+      "size_x": 0.8,
+      "size_y": 0.3,
+      "size_z": 1.0,
+      "collision": "convex",
+      "material": "painted_steel"
+    },
+    {
+      "name": "field_service_locked_rollgate",
+      "x": 0.0,
+      "y": 10.0,
+      "z": 1.6,
+      "size_x": 5.0,
+      "size_y": 0.7,
+      "size_z": 3.2,
+      "collision": "convex",
+      "material": "painted_steel"
+    },
+    {
+      "name": "field_service_key_cabinet",
+      "x": -31.0,
+      "y": 17.0,
+      "z": 1.4,
+      "size_x": 1.0,
+      "size_y": 0.5,
+      "size_z": 1.8,
+      "collision": "convex",
+      "material": "painted_steel"
+    },
+    {
+      "name": "scoreboard_skill_route_ladder_guardrail",
+      "x": 0.0,
+      "y": 28.0,
+      "z": 6.0,
+      "size_x": 3.0,
+      "size_y": 0.4,
+      "size_z": 1.3,
+      "collision": "convex",
+      "material": "painted_steel"
+    },
+    {
+      "name": "press_route_reward_case",
+      "x": 0.0,
+      "y": -22.0,
+      "z": 8.8,
+      "size_x": 3.0,
+      "size_y": 1.0,
+      "size_z": 1.5,
+      "collision": "convex",
+      "material": "club_glass"
+    },
+    {
+      "name": "mid_home_plate_backstop_stronghold",
+      "x": 0.0,
+      "y": -2.0,
+      "z": 1.15,
+      "size_x": 6.5,
+      "size_y": 1.0,
+      "size_z": 2.3,
+      "collision": "convex",
+      "material": "painted_steel"
+    },
+    {
+      "name": "mid_left_pinch_pillar",
+      "x": -9.0,
+      "y": 1.5,
+      "z": 1.5,
+      "size_x": 1.4,
+      "size_y": 2.2,
+      "size_z": 3.0,
+      "collision": "convex",
+      "material": "stadium_concrete"
+    },
+    {
+      "name": "mid_right_pinch_pillar",
+      "x": 9.0,
+      "y": 1.5,
+      "z": 1.5,
+      "size_x": 1.4,
+      "size_y": 2.2,
+      "size_z": 3.0,
+      "collision": "convex",
+      "material": "stadium_concrete"
+    },
+    {
+      "name": "mid_service_cart_left_readable_cover",
+      "x": -5.5,
+      "y": 5.5,
+      "z": 0.65,
+      "size_x": 3.2,
+      "size_y": 1.4,
+      "size_z": 1.3,
+      "collision": "convex",
+      "material": "painted_steel"
+    },
+    {
+      "name": "mid_service_cart_right_readable_cover",
+      "x": 5.5,
+      "y": 5.5,
+      "z": 0.65,
+      "size_x": 3.2,
+      "size_y": 1.4,
+      "size_z": 1.3,
+      "collision": "convex",
+      "material": "painted_steel"
+    },
+    {
+      "name": "left_staging_concession_signage",
+      "x": -27.0,
+      "y": -17.5,
+      "z": 2.0,
+      "size_x": 4.0,
+      "size_y": 0.5,
+      "size_z": 1.0,
+      "collision": "convex",
+      "material": "wood_kiosk"
+    },
+    {
+      "name": "right_staging_concession_signage",
+      "x": 27.0,
+      "y": -17.5,
+      "z": 2.0,
+      "size_x": 4.0,
+      "size_y": 0.5,
+      "size_z": 1.0,
+      "collision": "convex",
+      "material": "wood_kiosk"
+    },
+    {
+      "name": "center_field_exit_landmark_sign",
+      "x": 0.0,
+      "y": 25.5,
+      "z": 2.2,
+      "size_x": 7.0,
+      "size_y": 0.5,
+      "size_z": 1.2,
+      "collision": "convex",
+      "material": "painted_steel"
+    },
+    {
+      "name": "press_info_window_frame",
+      "x": 0.0,
+      "y": -8.5,
+      "z": 8.8,
+      "size_x": 4.0,
+      "size_y": 0.4,
+      "size_z": 1.4,
+      "collision": "convex",
+      "material": "club_glass"
+    }
+  ],
+  "parapets": [
+    {
+      "story": 3,
+      "height": 1.1,
+      "thick": 0.25
+    }
+  ],
+  "objectives": [
+    {
+      "id": "enter_under_disguise",
+      "x": 0,
+      "y": -28,
+      "z": 0,
+      "kind": "interact",
+      "room": "home_plate_gate_plaza",
+      "required": true,
+      "duration": 4.0,
+      "meta": {
+        "label": "Enter through the disguised medical/service route",
+        "phase_hint": "stealth",
+        "sequence": "01_intro",
+        "gate_type": "literal_gate",
+        "key_type": "disguise",
+        "motivation_targets": [
+          "Immersion",
+          "Social"
+        ],
+        "design_note": "Soft entry gate: the crew enters cleanly if they commit to the disguised service route."
+      }
+    },
+    {
+      "id": "loop_security_feed",
+      "x": -30,
+      "y": -25,
+      "z": 4.0,
+      "kind": "hack",
+      "room": "west_club_security",
+      "required": true,
+      "duration": 30.0,
+      "meta": {
+        "label": "Loop club security feed",
+        "phase_hint": "stealth",
+        "sequence": "02_setup",
+        "gate_type": "literal_gate",
+        "grants_key": "security_feed_looped",
+        "motivation_targets": [
+          "Mastery",
+          "Social"
+        ],
+        "design_note": "Supports crew-split play: one player can create safety while others move toward cash."
+      }
+    },
+    {
+      "id": "steal_security_keycard",
+      "x": -31.0,
+      "y": -26.0,
+      "z": 4.0,
+      "kind": "grab",
+      "room": "west_club_security",
+      "required": true,
+      "duration": 4.0,
+      "meta": {
+        "label": "Steal the security keycard",
+        "gate_type": "key",
+        "grants_key": "security_keycard",
+        "unlocks": "open_cash_counting_room",
+        "motivation_targets": [
+          "Achiever",
+          "Mastery"
+        ],
+        "sequence": "02b_key",
+        "design_note": "Concrete key before the cash cage, making the gate readable."
+      }
+    },
+    {
+      "id": "open_cash_counting_room",
+      "x": 23,
+      "y": -25,
+      "z": 4.0,
+      "kind": "drill",
+      "room": "east_cash_counting",
+      "required": true,
+      "duration": 75.0,
+      "meta": {
+        "label": "Open the cash counting room cage",
+        "noise": "loud",
+        "sequence": "03_score",
+        "gate_type": "literal_gate",
+        "requires_key": "security_keycard",
+        "motivation_targets": [
+          "Achiever"
+        ],
+        "design_note": "Hard cash reward is behind a clear keycard gate."
+      }
+    },
+    {
+      "id": "bag_gate_receipts",
+      "x": 30,
+      "y": -25,
+      "z": 4.0,
+      "kind": "grab",
+      "room": "east_cash_counting",
+      "required": true,
+      "duration": 6.0,
+      "meta": {
+        "label": "Bag the gate receipts",
+        "phase_hint": "loud",
+        "sequence": "04_bag",
+        "gate_type": "reward",
+        "requires_key": "cash_cage_open",
+        "motivation_targets": [
+          "Achiever"
+        ],
+        "design_note": "Primary reward after passing the cash-counting gate."
+      }
+    },
+    {
+      "id": "pull_field_service_key",
+      "x": -31.0,
+      "y": 17.0,
+      "z": 0.0,
+      "kind": "interact",
+      "room": "left_field_service_ring",
+      "required": true,
+      "duration": 8.0,
+      "meta": {
+        "label": "Pull the field service key from the power cabinet",
+        "gate_type": "key",
+        "grants_key": "field_service_key",
+        "unlocks": "unlock_field_service_spine",
+        "motivation_targets": [
+          "Explorer",
+          "Social"
+        ],
+        "sequence": "04b_route_key",
+        "design_note": "Encourages route split: one player can open the escape path while others bag cash.",
+        "route_pressure": "split_or_commit",
+        "staging_options": [
+          "STAGING_THIRD_BASE_CONCOURSE",
+          "STAGING_FIRST_BASE_CONCOURSE"
+        ]
+      }
+    },
+    {
+      "id": "unlock_field_service_spine",
+      "x": 0,
+      "y": 10,
+      "z": 0,
+      "kind": "interact",
+      "room": "center_field_service_ring",
+      "required": true,
+      "duration": 10.0,
+      "meta": {
+        "label": "Unlock the field service spine",
+        "phase_hint": "loud",
+        "sequence": "05_cross_bowl",
+        "gate_type": "literal_gate",
+        "requires_key": "field_service_key",
+        "motivation_targets": [
+          "Social",
+          "Mastery"
+        ],
+        "design_note": "Turns the map from interior heist to exposed bowl-crossing escape.",
+        "mid_control_required": true,
+        "encounter_zone": "MID_INFIELD_CONTEST",
+        "design_rule": "mid_control_unlocks_rotation"
+      }
+    },
+    {
+      "id": "override_loading_dock_gate",
+      "x": 0,
+      "y": 29,
+      "z": 0,
+      "kind": "hack",
+      "room": "center_field_loading_dock",
+      "required": true,
+      "duration": 25.0,
+      "meta": {
+        "label": "Override the center-field loading gate",
+        "phase_hint": "escape",
+        "sequence": "06_escape_unlock",
+        "gate_type": "literal_gate",
+        "requires_key": "service_spine_unlocked",
+        "motivation_targets": [
+          "Achiever",
+          "Social"
+        ],
+        "design_note": "Final escape gate. Prevents the level from ending before the loud traversal phase.",
+        "requires_mid_escape_crossing": true,
+        "encounter_zone": "PINCH_FIELD_SERVICE_SPINE",
+        "design_rule": "mid_control_to_final_objective"
+      }
+    },
+    {
+      "id": "grab_broadcast_drives",
+      "x": 0,
+      "y": -24,
+      "z": 8.0,
+      "kind": "grab",
+      "room": "broadcast_booth",
+      "required": false,
+      "duration": 5.0,
+      "meta": {
+        "label": "Optional broadcast booth drive grab",
+        "bonus": "small high-value loot",
+        "sequence": "optional",
+        "gate_type": "skill_gate_reward",
+        "requires_skill_route": "press_level_upper_route",
+        "motivation_targets": [
+          "Explorer",
+          "Achiever"
+        ],
+        "design_note": "Optional high-value loot for players who take the upper-route risk."
+      }
+    },
+    {
+      "id": "activate_service_hoist",
+      "x": 0,
+      "y": 25,
+      "z": 4.0,
+      "kind": "interact",
+      "room": "scoreboard_back_of_house",
+      "required": false,
+      "duration": 18.0,
+      "meta": {
+        "label": "Optional maintenance hoist for faster bag movement",
+        "bonus": "bag shortcut",
+        "sequence": "optional",
+        "gate_type": "skill_gate_shortcut",
+        "requires_skill_route": "scoreboard_maintenance_ladder",
+        "motivation_targets": [
+          "Explorer",
+          "Mastery",
+          "Social"
+        ],
+        "design_note": "Optional team shortcut: risky climb creates easier bag movement."
+      }
+    }
+  ],
+  "loot": [
+    {
+      "id": "gate_receipts_main",
+      "x": 30,
+      "y": -25,
+      "z": 4.0,
+      "value": 170000,
+      "bags": 6,
+      "kind": "cash",
+      "room": "east_cash_counting",
+      "meta": {
+        "weight": "medium",
+        "route": "club_to_vomitory_to_center_field"
+      }
+    },
+    {
+      "id": "gate_receipts_overflow",
+      "x": 26,
+      "y": -25,
+      "z": 4.0,
+      "value": 85000,
+      "bags": 3,
+      "kind": "cash",
+      "room": "east_cash_counting",
+      "meta": {
+        "weight": "medium",
+        "optional": true
+      }
+    },
+    {
+      "id": "club_display_collectibles",
+      "x": 0,
+      "y": -25,
+      "z": 4.0,
+      "value": 65000,
+      "bags": 2,
+      "kind": "art",
+      "room": "club_lobby",
+      "meta": {
+        "fragile": true,
+        "optional": true
+      }
+    },
+    {
+      "id": "broadcast_drives",
+      "x": 0,
+      "y": -24,
+      "z": 8.0,
+      "value": 90000,
+      "bags": 1,
+      "kind": "data",
+      "room": "broadcast_booth",
+      "meta": {
+        "small_bag": true,
+        "optional": true
+      }
+    },
+    {
+      "id": "service_electronics_crate",
+      "x": 0,
+      "y": 19,
+      "z": 8.0,
+      "value": 55000,
+      "bags": 2,
+      "kind": "electronics",
+      "room": "scoreboard_control_catwalk",
+      "meta": {
+        "weight": "medium",
+        "optional": true
+      }
+    },
+    {
+      "id": "mid_service_cash_drop",
+      "x": 0.0,
+      "y": 4.5,
+      "z": 0.0,
+      "value": 35000,
+      "bags": 1,
+      "kind": "cash",
+      "room": "infield_bowl",
+      "meta": {
+        "optional": true,
+        "reward_for_mid_control": true,
+        "small_bag": true
+      }
+    }
+  ],
+  "zones": [
+    {
+      "id": "south_disguise_entry",
+      "kind": "drop",
+      "story": 0,
+      "bounds": [
+        -6,
+        -32,
+        6,
+        -27
+      ],
+      "meta": {
+        "label": "Disguised ambulance staging"
+      }
+    },
+    {
+      "id": "cash_counting_temp_drop",
+      "kind": "drop",
+      "story": 1,
+      "bounds": [
+        23,
+        -30,
+        36,
+        -22
+      ],
+      "meta": {
+        "label": "Temporary cash-room bag stack"
+      }
+    },
+    {
+      "id": "dugout_rally_secure",
+      "kind": "secure",
+      "story": 0,
+      "bounds": [
+        -9,
+        2,
+        9,
+        8
+      ],
+      "meta": {
+        "label": "Midfield dugout rally secure"
+      }
+    },
+    {
+      "id": "scoreboard_service_hoist_drop",
+      "kind": "drop",
+      "story": 1,
+      "bounds": [
+        -5,
+        22,
+        5,
+        30
+      ],
+      "meta": {
+        "label": "Maintenance hoist bag drop"
+      }
+    },
+    {
+      "id": "center_field_secure",
+      "kind": "secure",
+      "story": 0,
+      "bounds": [
+        -11,
+        27,
+        11,
+        34
+      ],
+      "meta": {
+        "label": "Secure loot at center-field loading"
+      }
+    },
+    {
+      "id": "center_field_extract",
+      "kind": "extraction",
+      "story": 0,
+      "bounds": [
+        -7,
+        30,
+        7,
+        34
+      ],
+      "meta": {
+        "label": "Getaway truck at center-field loading dock"
+      }
+    },
+    {
+      "id": "press_upper_route_reward",
+      "kind": "drop",
+      "story": 2,
+      "bounds": [
+        -5.0,
+        -26.0,
+        5.0,
+        -20.0
+      ],
+      "meta": {
+        "label": "Upper-route optional loot pickup",
+        "gate_type": "skill_gate_reward",
+        "motivation_targets": [
+          "Explorer",
+          "Achiever"
+        ]
+      }
+    },
+    {
+      "id": "field_service_split_rally",
+      "kind": "secure",
+      "story": 0,
+      "bounds": [
+        -36.0,
+        14.0,
+        -25.0,
+        21.0
+      ],
+      "meta": {
+        "label": "Crew-split rally after field service key",
+        "gate_type": "cooperative_route_gate",
+        "motivation_targets": [
+          "Social",
+          "Mastery"
+        ]
+      }
+    },
+    {
+      "id": "mid_bowl_rally_secure",
+      "kind": "secure",
+      "story": 0,
+      "bounds": [
+        -8.0,
+        -1.0,
+        8.0,
+        5.5
+      ],
+      "meta": {
+        "label": "Bowl rally secure point",
+        "purpose": "mid-control reward before final field-service push",
+        "risk": "visible from upper defensive positions"
+      }
+    }
+  ],
+  "markers": [
+    {
+      "type": "attacker_spawn",
+      "id": "CREW_AMBULANCE_A",
+      "x": -2,
+      "y": -30,
+      "z": 0,
+      "rot_z": 0,
+      "meta": {
+        "phase": "stealth",
+        "role": "player_start"
+      }
+    },
+    {
+      "type": "attacker_spawn",
+      "id": "CREW_AMBULANCE_B",
+      "x": 2,
+      "y": -30,
+      "z": 0,
+      "rot_z": 0,
+      "meta": {
+        "phase": "stealth",
+        "role": "player_start"
+      }
+    },
+    {
+      "type": "extraction",
+      "id": "CENTER_FIELD_TRUCK",
+      "x": 0,
+      "y": 31.5,
+      "z": 0,
+      "rot_z": 180,
+      "meta": {
+        "zone": "center_field_extract",
+        "arrives_after": "override_loading_dock_gate"
+      }
+    },
+    {
+      "type": "defender_spawn",
+      "id": "STEALTH_GATE_SUPERVISOR",
+      "x": 0,
+      "y": -25,
+      "z": 0,
+      "rot_z": 180,
+      "room": "home_plate_gate_plaza",
+      "meta": {
+        "phase": "stealth",
+        "group": "thin_patrol"
+      }
+    },
+    {
+      "type": "defender_spawn",
+      "id": "STEALTH_SECURITY_DESK",
+      "x": -30,
+      "y": -25,
+      "z": 4,
+      "rot_z": 90,
+      "room": "west_club_security",
+      "meta": {
+        "phase": "stealth",
+        "group": "keycard_guard"
+      }
+    },
+    {
+      "type": "defender_spawn",
+      "id": "STEALTH_CASH_ROOM_PATROL",
+      "x": 26,
+      "y": -23,
+      "z": 4,
+      "rot_z": -90,
+      "room": "east_cash_counting",
+      "meta": {
+        "phase": "stealth",
+        "group": "cash_patrol"
+      }
+    },
+    {
+      "type": "defender_spawn",
+      "id": "STEALTH_FIELD_PATROL",
+      "x": 0,
+      "y": 6,
+      "z": 0,
+      "rot_z": 180,
+      "room": "infield_bowl",
+      "meta": {
+        "phase": "stealth",
+        "group": "field_patrol"
+      }
+    },
+    {
+      "type": "defender_spawn",
+      "id": "ALARM_HOME_GATE_LOCKDOWN",
+      "x": 0,
+      "y": -28,
+      "z": 0,
+      "rot_z": 0,
+      "room": "home_plate_gate_plaza",
+      "meta": {
+        "phase": "alarm",
+        "group": "lockdown",
+        "blocks_backtracking": true
+      }
+    },
+    {
+      "type": "defender_spawn",
+      "id": "ALARM_WEST_CLUB_FLANK",
+      "x": -24,
+      "y": -10,
+      "z": 4,
+      "rot_z": 45,
+      "room": "west_suite_concourse",
+      "meta": {
+        "phase": "alarm",
+        "group": "flank"
+      }
+    },
+    {
+      "type": "defender_spawn",
+      "id": "ALARM_EAST_CLUB_FLANK",
+      "x": 24,
+      "y": -10,
+      "z": 4,
+      "rot_z": 135,
+      "room": "east_suite_concourse",
+      "meta": {
+        "phase": "alarm",
+        "group": "flank"
+      }
+    },
+    {
+      "type": "defender_spawn",
+      "id": "ALARM_PRESS_BOX_OVERWATCH",
+      "x": 0,
+      "y": -22,
+      "z": 8,
+      "rot_z": 180,
+      "room": "broadcast_booth",
+      "meta": {
+        "phase": "alarm",
+        "group": "overwatch"
+      }
+    },
+    {
+      "type": "defender_spawn",
+      "id": "LOUD_HOME_VOMITORY_PUSH",
+      "x": 0.0,
+      "y": -6.5,
+      "z": 0,
+      "rot_z": 0,
+      "room": "infield_bowl",
+      "meta": {
+        "phase": "loud",
+        "group": "front_push",
+        "role": "early_mid_defense",
+        "covers": [
+          "home_plate_vomitory"
+        ],
+        "cannot_cover": [
+          "third_base_vomitory",
+          "first_base_vomitory"
+        ],
+        "clearable_from": [
+          "third_base_vomitory",
+          "first_base_vomitory"
+        ],
+        "defender_arrives_seconds_before_crew": 2.0
+      }
+    },
+    {
+      "type": "defender_spawn",
+      "id": "LOUD_THIRD_BASE_SEATING_CROSS",
+      "x": -30,
+      "y": 3,
+      "z": 0,
+      "rot_z": 45,
+      "room": "third_base_vomitory",
+      "meta": {
+        "phase": "loud",
+        "group": "crossfire",
+        "supports": "LOUD_HOME_VOMITORY_PUSH",
+        "covers": [
+          "third_base_vomitory"
+        ],
+        "cannot_cover": [
+          "first_base_vomitory",
+          "field_service_spine"
+        ],
+        "weakness_count": 2
+      }
+    },
+    {
+      "type": "defender_spawn",
+      "id": "LOUD_FIRST_BASE_SEATING_CROSS",
+      "x": 30,
+      "y": 3,
+      "z": 0,
+      "rot_z": 135,
+      "room": "first_base_vomitory",
+      "meta": {
+        "phase": "loud",
+        "group": "crossfire",
+        "supports": "LOUD_HOME_VOMITORY_PUSH",
+        "covers": [
+          "first_base_vomitory"
+        ],
+        "cannot_cover": [
+          "third_base_vomitory",
+          "field_service_spine"
+        ],
+        "weakness_count": 2
+      }
+    },
+    {
+      "type": "defender_spawn",
+      "id": "LOUD_PRESS_HALL_MARKSMAN_W",
+      "x": -26,
+      "y": 10,
+      "z": 8,
+      "rot_z": 135,
+      "room": "left_scoreboard_maintenance",
+      "meta": {
+        "phase": "loud",
+        "group": "marksman"
+      }
+    },
+    {
+      "type": "defender_spawn",
+      "id": "LOUD_PRESS_HALL_MARKSMAN_E",
+      "x": 26,
+      "y": 10,
+      "z": 8,
+      "rot_z": 225,
+      "room": "right_scoreboard_maintenance",
+      "meta": {
+        "phase": "loud",
+        "group": "marksman"
+      }
+    },
+    {
+      "type": "defender_spawn",
+      "id": "LOUD_CENTER_FIELD_HEAVY_PUSH",
+      "x": 0,
+      "y": 23,
+      "z": 0,
+      "rot_z": 180,
+      "room": "center_field_service_ring",
+      "meta": {
+        "phase": "loud",
+        "group": "heavy_push"
+      }
+    },
+    {
+      "type": "defender_spawn",
+      "id": "ESCAPE_LEFT_FIELD_PINCH",
+      "x": -12,
+      "y": 30,
+      "z": 0,
+      "rot_z": 90,
+      "room": "center_field_loading_dock",
+      "meta": {
+        "phase": "escape",
+        "group": "final_pinch"
+      }
+    },
+    {
+      "type": "defender_spawn",
+      "id": "ESCAPE_RIGHT_FIELD_PINCH",
+      "x": 12,
+      "y": 30,
+      "z": 0,
+      "rot_z": -90,
+      "room": "center_field_loading_dock",
+      "meta": {
+        "phase": "escape",
+        "group": "final_pinch"
+      }
+    },
+    {
+      "type": "defender_spawn",
+      "id": "ESCAPE_SCOREBOARD_DROP",
+      "x": 0,
+      "y": 20,
+      "z": 8,
+      "rot_z": 180,
+      "room": "scoreboard_control_catwalk",
+      "meta": {
+        "phase": "escape",
+        "group": "maintenance_drop"
+      }
+    },
+    {
+      "type": "patrol_point",
+      "id": "ROUTE_GATE",
+      "x": 0,
+      "y": -25,
+      "z": 0,
+      "room": "home_plate_gate_plaza",
+      "meta": {
+        "phase": "stealth"
+      }
+    },
+    {
+      "type": "patrol_point",
+      "id": "ROUTE_MAIN_CONCOURSE",
+      "x": 0,
+      "y": -13,
+      "z": 0,
+      "room": "main_concourse",
+      "meta": {
+        "phase": "stealth"
+      }
+    },
+    {
+      "type": "patrol_point",
+      "id": "ROUTE_CLUB_SECURITY",
+      "x": -30,
+      "y": -25,
+      "z": 4,
+      "room": "west_club_security",
+      "meta": {
+        "phase": "stealth"
+      }
+    },
+    {
+      "type": "patrol_point",
+      "id": "ROUTE_CASH_ROOM",
+      "x": 30,
+      "y": -25,
+      "z": 4,
+      "room": "east_cash_counting",
+      "meta": {
+        "phase": "stealth"
+      }
+    },
+    {
+      "type": "patrol_point",
+      "id": "ROUTE_FIELD_RING",
+      "x": 0,
+      "y": 16,
+      "z": 0,
+      "room": "center_field_service_ring",
+      "meta": {
+        "phase": "stealth"
+      }
+    },
+    {
+      "type": "camera_socket",
+      "id": "CAM_HOME_GATE",
+      "x": 10,
+      "y": -31,
+      "z": 2.8,
+      "rot_z": 160,
+      "room": "home_plate_gate_plaza",
+      "meta": {
+        "phase": "stealth"
+      }
+    },
+    {
+      "type": "camera_socket",
+      "id": "CAM_CASH_COUNTING",
+      "x": 38,
+      "y": -31,
+      "z": 6.5,
+      "rot_z": 225,
+      "room": "east_cash_counting",
+      "meta": {
+        "phase": "stealth"
+      }
+    },
+    {
+      "type": "camera_socket",
+      "id": "CAM_FIELD_WIDE",
+      "x": 0,
+      "y": -5,
+      "z": 6.5,
+      "rot_z": 0,
+      "room": "infield_bowl",
+      "meta": {
+        "phase": "alarm"
+      }
+    },
+    {
+      "type": "cover_low",
+      "id": "COVER_THIRD_KIOSK",
+      "x": -29,
+      "y": -14,
+      "z": 0,
+      "room": "third_base_concourse"
+    },
+    {
+      "type": "cover_low",
+      "id": "COVER_FIRST_KIOSK",
+      "x": 29,
+      "y": -14,
+      "z": 0,
+      "room": "first_base_concourse"
+    },
+    {
+      "type": "cover_high",
+      "id": "COVER_DUGOUT_LEFT",
+      "x": -10,
+      "y": 4,
+      "z": 0,
+      "room": "infield_bowl"
+    },
+    {
+      "type": "cover_high",
+      "id": "COVER_DUGOUT_RIGHT",
+      "x": 10,
+      "y": 4,
+      "z": 0,
+      "room": "infield_bowl"
+    },
+    {
+      "type": "cover_low",
+      "id": "COVER_TARP_LEFT",
+      "x": -6,
+      "y": 8,
+      "z": 0,
+      "room": "infield_bowl"
+    },
+    {
+      "type": "cover_low",
+      "id": "COVER_TARP_RIGHT",
+      "x": 6,
+      "y": 8,
+      "z": 0,
+      "room": "infield_bowl"
+    },
+    {
+      "type": "cover_high",
+      "id": "COVER_LOADING_TRUCK",
+      "x": -7,
+      "y": 29,
+      "z": 0,
+      "room": "center_field_loading_dock"
+    },
+    {
+      "type": "cover_high",
+      "id": "COVER_TV_TRUCK",
+      "x": 7,
+      "y": 29,
+      "z": 0,
+      "room": "center_field_loading_dock"
+    },
+    {
+      "type": "cover_high",
+      "id": "COVER_SCOREBOARD_RACK",
+      "x": 0,
+      "y": 19,
+      "z": 8,
+      "room": "scoreboard_control_catwalk"
+    },
+    {
+      "type": "door_socket",
+      "id": "DOOR_CASH_COUNTING",
+      "x": 23,
+      "y": -25,
+      "z": 4,
+      "rot_z": 90,
+      "room": "east_cash_counting",
+      "meta": {
+        "locks_on_phase": "stealth",
+        "opens_after": "open_cash_counting_room",
+        "requires_key": "security_keycard",
+        "gate_type": "literal_gate"
+      }
+    },
+    {
+      "type": "door_socket",
+      "id": "DOOR_FIELD_SERVICE_SPINE",
+      "x": 0,
+      "y": 10,
+      "z": 0,
+      "rot_z": 0,
+      "room": "center_field_service_ring",
+      "meta": {
+        "opens_after": "unlock_field_service_spine",
+        "requires_key": "field_service_key",
+        "gate_type": "literal_gate"
+      }
+    },
+    {
+      "type": "door_socket",
+      "id": "DOOR_CENTER_FIELD_LOADING",
+      "x": 0,
+      "y": 24,
+      "z": 0,
+      "rot_z": 180,
+      "room": "center_field_loading_dock",
+      "meta": {
+        "opens_after": "override_loading_dock_gate",
+        "requires_key": "service_spine_unlocked",
+        "gate_type": "final_literal_gate"
+      }
+    },
+    {
+      "type": "key_socket",
+      "id": "KEY_SECURITY_CARD",
+      "x": -31.0,
+      "y": -26.0,
+      "z": 4.0,
+      "rot_z": 90.0,
+      "room": "west_club_security",
+      "meta": {
+        "phase": "stealth",
+        "grants_key": "security_keycard",
+        "unlocks": "DOOR_CASH_COUNTING",
+        "motivation_targets": [
+          "Achiever",
+          "Mastery"
+        ]
+      }
+    },
+    {
+      "type": "key_socket",
+      "id": "KEY_FIELD_SERVICE",
+      "x": -31.0,
+      "y": 17.0,
+      "z": 0.0,
+      "rot_z": 90.0,
+      "room": "left_field_service_ring",
+      "meta": {
+        "phase": "alarm",
+        "grants_key": "field_service_key",
+        "unlocks": "DOOR_FIELD_SERVICE_SPINE",
+        "motivation_targets": [
+          "Explorer",
+          "Social"
+        ]
+      }
+    },
+    {
+      "type": "gate_hint",
+      "id": "GATE_HINT_CASH_CAGE",
+      "x": 23.0,
+      "y": -25.0,
+      "z": 4.0,
+      "rot_z": 90.0,
+      "room": "east_cash_counting",
+      "meta": {
+        "requires_key": "security_keycard",
+        "reads_as": "literal_gate"
+      }
+    },
+    {
+      "type": "gate_hint",
+      "id": "GATE_HINT_FIELD_SPINE",
+      "x": 0.0,
+      "y": 10.0,
+      "z": 0.0,
+      "rot_z": 0.0,
+      "room": "center_field_service_ring",
+      "meta": {
+        "requires_key": "field_service_key",
+        "reads_as": "literal_gate"
+      }
+    },
+    {
+      "type": "skill_gate_hint",
+      "id": "SKILL_GATE_SCOREBOARD_LADDER",
+      "x": 0.0,
+      "y": 28.0,
+      "z": 4.0,
+      "rot_z": 180.0,
+      "room": "scoreboard_back_of_house",
+      "meta": {
+        "route": "scoreboard_maintenance_ladder",
+        "reward": "activate_service_hoist",
+        "risk": "high_ground_escape_spawn",
+        "motivation_targets": [
+          "Explorer",
+          "Mastery"
+        ]
+      }
+    },
+    {
+      "type": "defender_spawn",
+      "id": "ALARM_FIELD_KEY_RESPONSE",
+      "x": -34.0,
+      "y": 18.0,
+      "z": 0.0,
+      "rot_z": 45.0,
+      "room": "left_field_service_ring",
+      "meta": {
+        "phase": "alarm",
+        "group": "key_response",
+        "triggered_by": "pull_field_service_key",
+        "role": "information_pressure",
+        "sound_cue_range": "left_field_service_ring",
+        "does_not_cover_all_mid": true
+      }
+    },
+    {
+      "type": "defender_spawn",
+      "id": "LOUD_CASH_GATE_RESPONSE",
+      "x": 34.0,
+      "y": -24.0,
+      "z": 4.0,
+      "rot_z": -90.0,
+      "room": "east_cash_counting",
+      "meta": {
+        "phase": "loud",
+        "group": "cash_gate_response",
+        "triggered_by": "open_cash_counting_room"
+      }
+    },
+    {
+      "type": "staging_area",
+      "id": "STAGING_THIRD_BASE_CONCOURSE",
+      "x": -27.0,
+      "y": -17.0,
+      "z": 0.0,
+      "rot_z": 0.0,
+      "room": "third_base_concourse",
+      "meta": {
+        "phase": "stealth",
+        "safe_from_mid_sightline": true,
+        "supports_utility_setup": true,
+        "route_options_visible": [
+          "third_vomitory",
+          "home_plate_vomitory"
+        ],
+        "design_rule": "staging_before_mid"
+      }
+    },
+    {
+      "type": "staging_area",
+      "id": "STAGING_FIRST_BASE_CONCOURSE",
+      "x": 27.0,
+      "y": -17.0,
+      "z": 0.0,
+      "rot_z": 0.0,
+      "room": "first_base_concourse",
+      "meta": {
+        "phase": "stealth",
+        "safe_from_mid_sightline": true,
+        "supports_utility_setup": true,
+        "route_options_visible": [
+          "first_vomitory",
+          "home_plate_vomitory"
+        ],
+        "design_rule": "staging_before_mid"
+      }
+    },
+    {
+      "type": "encounter_zone",
+      "id": "MID_INFIELD_CONTEST",
+      "x": 0.0,
+      "y": 3.0,
+      "z": 0.0,
+      "rot_z": 0.0,
+      "room": "infield_bowl",
+      "meta": {
+        "phase": "loud",
+        "role": "primary_mid",
+        "target_connection_count": 5,
+        "immediate_options_from_entry_max": 3,
+        "pinch_points": [
+          "home_plate_backstop",
+          "left_pinch_pillar",
+          "right_pinch_pillar",
+          "field_service_spine"
+        ],
+        "cannot_be_bypassed_for_required_escape": true
+      }
+    },
+    {
+      "type": "stronghold",
+      "id": "STRONGHOLD_HOME_BACKSTOP",
+      "x": 0.0,
+      "y": -2.0,
+      "z": 0.0,
+      "rot_z": 0.0,
+      "room": "infield_bowl",
+      "meta": {
+        "usable_by": [
+          "crew",
+          "defenders"
+        ],
+        "reliable_cover_face": "south",
+        "clearable_from": [
+          "third_base_vomitory",
+          "first_base_vomitory",
+          "field_service_spine"
+        ],
+        "weakness_count": 3,
+        "not_round_cover": true,
+        "design_rule": "contestable_stronghold"
+      }
+    },
+    {
+      "type": "stronghold",
+      "id": "STRONGHOLD_DUGOUT_LEFT",
+      "x": -10.0,
+      "y": 4.0,
+      "z": 0.0,
+      "rot_z": 0.0,
+      "room": "infield_bowl",
+      "meta": {
+        "usable_by": [
+          "crew",
+          "defenders"
+        ],
+        "reliable_cover_face": "west",
+        "clearable_from": [
+          "home_plate_vomitory",
+          "field_service_spine"
+        ],
+        "weakness_count": 2,
+        "design_rule": "contestable_stronghold"
+      }
+    },
+    {
+      "type": "stronghold",
+      "id": "STRONGHOLD_DUGOUT_RIGHT",
+      "x": 10.0,
+      "y": 4.0,
+      "z": 0.0,
+      "rot_z": 0.0,
+      "room": "infield_bowl",
+      "meta": {
+        "usable_by": [
+          "crew",
+          "defenders"
+        ],
+        "reliable_cover_face": "east",
+        "clearable_from": [
+          "home_plate_vomitory",
+          "field_service_spine"
+        ],
+        "weakness_count": 2,
+        "design_rule": "contestable_stronghold"
+      }
+    },
+    {
+      "type": "info_window",
+      "id": "PRESS_INFO_WINDOW_TO_MID",
+      "x": 0.0,
+      "y": -8.5,
+      "z": 8.0,
+      "rot_z": 0.0,
+      "room": "broadcast_booth",
+      "meta": {
+        "phase": "alarm",
+        "info_only": true,
+        "lethal_sightline": false,
+        "observes": [
+          "home_plate_vomitory",
+          "infield_bowl"
+        ],
+        "blind_spots": [
+          "third_base_vomitory",
+          "first_base_vomitory"
+        ],
+        "design_rule": "partial_sightline_for_information"
+      }
+    },
+    {
+      "type": "sightline_probe",
+      "id": "SIGHTLINE_SHORT_HOME_TO_BACKSTOP",
+      "x": 0.0,
+      "y": -7.0,
+      "z": 1.6,
+      "rot_z": 0.0,
+      "room": "infield_bowl",
+      "meta": {
+        "range": "short",
+        "purpose": "shotgun_smg_entry_fight",
+        "broken_by": "mid_home_plate_backstop_stronghold"
+      }
+    },
+    {
+      "type": "sightline_probe",
+      "id": "SIGHTLINE_MEDIUM_DUGOUT_TO_SERVICE",
+      "x": 0.0,
+      "y": 5.0,
+      "z": 1.6,
+      "rot_z": 0.0,
+      "room": "infield_bowl",
+      "meta": {
+        "range": "medium",
+        "purpose": "rifle_crossfire",
+        "broken_by": [
+          "mid_left_pinch_pillar",
+          "mid_right_pinch_pillar"
+        ]
+      }
+    },
+    {
+      "type": "sightline_probe",
+      "id": "SIGHTLINE_LONG_PRESS_TO_FIELD",
+      "x": 0.0,
+      "y": -8.5,
+      "z": 8.0,
+      "rot_z": 0.0,
+      "room": "broadcast_booth",
+      "meta": {
+        "range": "long",
+        "purpose": "limited_marksman_info_angle",
+        "counterable_from": [
+          "left_scoreboard_maintenance",
+          "right_scoreboard_maintenance",
+          "field_service_spine"
+        ],
+        "not_full_map_control": true
+      }
+    },
+    {
+      "type": "pinch_point",
+      "id": "PINCH_FIELD_SERVICE_SPINE",
+      "x": 0.0,
+      "y": 10.0,
+      "z": 0.0,
+      "rot_z": 0.0,
+      "room": "center_field_service_ring",
+      "meta": {
+        "phase": "loud",
+        "forced_for_required_escape": true,
+        "defender_arrives_slightly_first": true,
+        "attacker_has_two_staging_options": true
+      }
+    },
+    {
+      "type": "conveyance_marker",
+      "id": "SIGN_CENTER_FIELD_EXIT",
+      "x": 0.0,
+      "y": 25.5,
+      "z": 0.0,
+      "rot_z": 180.0,
+      "room": "center_field_loading_dock",
+      "meta": {
+        "label": "CENTER FIELD LOADING",
+        "purpose": "orientation_under_pressure",
+        "distinguishes_area": "extraction"
+      }
+    },
+    {
+      "type": "conveyance_marker",
+      "id": "SIGN_LEFT_SERVICE_KEY",
+      "x": -31.0,
+      "y": 17.0,
+      "z": 0.0,
+      "rot_z": 90.0,
+      "room": "left_field_service_ring",
+      "meta": {
+        "label": "SERVICE POWER",
+        "purpose": "objective_readability",
+        "distinguishes_area": "route_key"
+      }
+    },
+    {
+      "type": "conveyance_marker",
+      "id": "SIGN_CASH_COUNTING",
+      "x": 30.0,
+      "y": -25.0,
+      "z": 4.0,
+      "rot_z": -90.0,
+      "room": "east_cash_counting",
+      "meta": {
+        "label": "CASH COUNTING",
+        "purpose": "objective_readability",
+        "distinguishes_area": "primary_loot"
+      }
+    }
+  ]
+}
