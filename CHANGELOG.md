@@ -5,6 +5,23 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.53.0] - Two vertical heist presets: `auto_shop` + `pawn_shop`
+First presets authored against the fixed stairs (0.51) and ladders (0.52) -- each
+is multi-storey with a comfortable stair AND a roof-access ladder, so they double
+as walk-tests for both traversal fixes.
+
+- `auto_shop` (26x18, 2 storeys): open ground service bay (roll-up door, lifts,
+  parts racks) + an upper office holding the safe, joined by a ~36deg stair; a
+  roof-access ladder off the upper floor for a flank/escape. Medium-range
+  industrial set-piece. Objective = crack the office safe; extract via the bay.
+- `pawn_shop` (16x14, 2 storeys): glass-front shop floor with display-case cover
+  + a back safe room, an upper storage/apartment up a ~35deg stair, roof ladder
+  for escape. Tight close-quarters safe job in a small footprint.
+- Both use run = story_height*1.4 so the stair ramp sits at a comfortable ~35deg
+  (no steep warning), and both place a ladder 1->roof to exercise the 0.52 climb
+  volume. Registry is now 17 presets. Both validate clean (0 errors/0 warnings);
+  interior doors widened to 1.1 m to clear the nav-agent proxy.
+
 ## [0.52.0] - Climbable ladders (climb volume + harness climb logic)
 The other half of the traversal fix: ladders you can actually climb. Same root
 cause as stairs -- a solid rung catches a capsule on the way up -- so the fix is
