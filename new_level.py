@@ -85,7 +85,7 @@ def main():
         ap.error("both --preset and --name are required (or use --list)")
 
     # Only pass args the user actually set, so each preset's own defaults stand
-    # (e.g. hospital defaults to survival/3 floors; bank to assault). Passing a
+    # (e.g. hospital defaults to survival/3 floors; most presets to heist). Passing a
     # blanket --mode assault would wrongly override a survival-first preset.
     kwargs = {"name": args.name, "scale_ref": args.scale_ref}
     if args.mode is not None:

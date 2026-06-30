@@ -1,6 +1,7 @@
 {
   "$schema": "../schema/level.schema.json",
   "name": "rarity_demo",
+  "mode": "assault",
   "seed": 1999,
   "rarity": "legendary",
   "footprint_x": 18.0,
@@ -12,15 +13,26 @@
       "wall": "S",
       "story": 0,
       "openings": [
-        { "kind": "door", "pos": -0.25, "tag": "main_entry" },
-        { "kind": "breach", "pos": 0.25, "breach_class": "soft_wall" }
+        {
+          "kind": "door",
+          "pos": -0.25,
+          "tag": "main_entry"
+        },
+        {
+          "kind": "breach",
+          "pos": 0.25,
+          "breach_class": "soft_wall"
+        }
       ]
     },
     {
       "wall": "E",
       "story": 0,
       "openings": [
-        { "kind": "window", "pos": 0.0 }
+        {
+          "kind": "window",
+          "pos": 0.0
+        }
       ]
     }
   ]

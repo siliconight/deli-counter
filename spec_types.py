@@ -347,7 +347,7 @@ class LevelSpec:
     # tactical style: "assault" = symmetric attacker/defender breach play;
     # "heist" = PvE crew objectives + loot + extraction. Drives which
     # validation rules and scorecard apply. Default keeps old specs valid.
-    mode: str = "assault"
+    mode: str = "heist"
 
     footprint_x: float = 24.0
     footprint_y: float = 18.0

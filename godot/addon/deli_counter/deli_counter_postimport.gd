@@ -20,6 +20,8 @@ extends EditorScenePostImport
 ##   HATCH_*           -> Marker3D in group "hatch"
 ##   NAV_REGION_*      -> Marker3D in group "nav_region" (room center)
 ##   COVER_LOW_* / COVER_HIGH_* -> Marker3D in group "ai_cover"
+##   LANDMARK_*        -> Marker3D in group "landmark" (callout/orientation anchor)
+##   STAGING_*         -> Marker3D in group "staging" (screened regroup before contest)
 ##
 ## Collision is already handled by the glTF importer via the -convcolonly /
 ## -colonly suffixes on the COLLISION meshes; this script does NOT touch those.
@@ -48,6 +50,8 @@ const PREFIX_RULES := [
 	["NAV_REGION_",     "nav_region"],
 	["COVER_LOW_",      "ai_cover"],
 	["COVER_HIGH_",     "ai_cover"],
+	["LANDMARK_",       "landmark"],
+	["STAGING_",        "staging"],
 ]
 
 

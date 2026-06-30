@@ -5,6 +5,43 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.49.0]
+### Changed — build better levels, not validate them better
+- **Heist is the default mode.** DELCO-style play is a PAYDAY-flavored 4-player PvE
+  co-op heist loop, not a PvP-symmetric shooter, so a fresh building is a heist by
+  default. All presets except `hospital` (survival) now default to `mode="heist"`, and
+  `LevelSpec.mode` itself defaults to `"heist"`. `--mode assault` still produces the
+  symmetric attacker/defender variant for tools users who want it.
+- **`level_design.py` — felt-space enrichment, applied by construction.** `make()` now
+  runs every finished spec through `level_design.enrich()` (pass `enrich=False` for the
+  raw recipe). The layer is additive, idempotent, and never touches geometry — it only
+  appends anchors:
+  - **Cover cadence from real geometry.** Cover-like volumes (counters, aisles, racks,
+    desks…) that had no cover marker are tagged as engagement points, so contested rooms
+    reach a readable 3-5 (capped per room — the thesis lesson is *don't over-cover*). This
+    also fixes heist branches that rebuilt the marker list and silently dropped cover, and
+    gives objective rooms holdout cover they previously lacked.
+  - **Callout landmarks.** One `landmark` anchor at the centroid of each major zone
+    (objective / entry / loot / safe / vault / staging) so a crew can read and call the
+    space at a glance (Foreman: landmarks first; thesis: distinct callout areas).
+### Added
+- **`staging` room role + `landmark` marker type** — both free-string vocab (no schema or
+  dataclass change). `deli_counter_postimport.gd` routes `LANDMARK_*` → group `landmark`
+  and `STAGING_*` → group `staging`.
+- **gas_station: the forecourt is now a `staging` zone.** Making the pump court a real
+  room means the pumps register as approach cover and the crew gets a screened regroup
+  before the glass front. Result (sightlines diff): exposed crew approach **39 m → 22.5 m**,
+  the back-office objective room gains holdout cover, and three callout landmarks
+  (FORECOURT / SALES_FLOOR / BACK_OFFICE) appear. This is the worked exemplar of the new
+  layer on the one preset that's been walked; the other eleven get the same enrichment by
+  construction and deeper per-building tuning as they're walked.
+### Migration
+- Five committed example specs omitted `mode` and so relied on the old `assault` default
+  (`bank`, `warehouse`, `kitbash_demo`, `rarity_demo`, `rowhouse_raid`). They're now pinned
+  to `mode="assault"` so the default flip doesn't silently reclassify the frozen demos.
+  `specs/CATALOG.md` regenerated. Committed example specs stay frozen; regenerate your own
+  working specs via `new_level` to pull the enrichment.
+
 ## [0.48.1]
 ### Fixed
 - **Loader crash on `vertical_links` with `meta`.** `VerticalLink` was the only spec

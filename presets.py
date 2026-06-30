@@ -16,6 +16,8 @@ parallel so the set stays consistent.
 
 from typing import Optional
 
+import level_design
+
 
 # common acoustic palette presets can draw from. Acoustic-only (gool enum +
 # absorption/damping); visuals are textured in Godot.
@@ -37,7 +39,7 @@ def _mats(*names):
 # BANK  --  reference recipe
 # ---------------------------------------------------------------------------
 def bank(name: str = "bank_preset",
-         mode: str = "assault",
+         mode: str = "heist",
          floors: int = 2,
          basement: bool = True,
          scale_ref: bool = False) -> dict:
@@ -233,7 +235,7 @@ def bank(name: str = "bank_preset",
 # POLICE STATION  --  dense tactical interior, 2 floors + roof access
 # ---------------------------------------------------------------------------
 def police_station(name: str = "police_station_preset",
-                   mode: str = "assault",
+                   mode: str = "heist",
                    floors: int = 2,
                    basement: bool = False,
                    scale_ref: bool = False) -> dict:
@@ -659,7 +661,7 @@ def corner_deli(name: str = "corner_deli_preset",
 # COMPOUND  --  multi-story assault compound with a central atrium + boss room
 # ---------------------------------------------------------------------------
 def compound(name: str = "compound_preset",
-             mode: str = "assault",
+             mode: str = "heist",
              floors: int = 3,
              scale_ref: bool = False,
              basement: bool = False) -> dict:
@@ -1065,7 +1067,7 @@ def hospital(name: str = "hospital_preset",
 # WAREHOUSE  --  assault sandbox: big open interior, catwalks, sparse cover
 # ---------------------------------------------------------------------------
 def warehouse(name: str = "warehouse_preset",
-              mode: str = "assault",
+              mode: str = "heist",
               floors: int = 1,
               scale_ref: bool = False,
               basement: bool = False) -> dict:
@@ -1168,7 +1170,7 @@ def warehouse(name: str = "warehouse_preset",
 # SUBURBAN_SAFEHOUSE  --  assault: compact multi-story house, vertical clears
 # ---------------------------------------------------------------------------
 def suburban_safehouse(name: str = "suburban_safehouse_preset",
-                       mode: str = "assault",
+                       mode: str = "heist",
                        floors: int = 2,
                        scale_ref: bool = False,
                        basement: bool = True) -> dict:
@@ -1267,7 +1269,7 @@ def suburban_safehouse(name: str = "suburban_safehouse_preset",
 # ROWHOME  --  assault: narrow deep multi-floor terrace, stacked clears
 # ---------------------------------------------------------------------------
 def rowhome(name: str = "rowhome_preset",
-            mode: str = "assault",
+            mode: str = "heist",
             floors: int = 3,
             scale_ref: bool = False,
             basement: bool = False) -> dict:
@@ -1574,6 +1576,7 @@ def gas_station(name: str = "gas_station_preset",
         {"name": "pump_6", "x": 8.0, "y": -16.0, "z": 0.7, "size_x": 1.0, "size_y": 1.2, "size_z": 1.4, "collision": "convex", "material": "metal"},
     ]
     spec["rooms"] = [
+        {"id": "forecourt", "story": 0, "bounds": [-14.0, -24.0, 14.0, -half_y], "role": "staging", "combat_range": "medium"},
         {"id": "sales_floor", "story": 0, "bounds": [-half_x, -half_y, 6.0, half_y], "role": "public_entry", "combat_range": "long"},
         {"id": "stockroom", "story": 0, "bounds": [6.0, -half_y, half_x, 2.0], "role": "connector", "combat_range": "close"},
         {"id": "back_office", "story": 0, "bounds": [6.0, 2.0, half_x, half_y], "role": "objective_room", "objective": True, "fortifiable": True, "combat_range": "close"},
@@ -1617,7 +1620,7 @@ def gas_station(name: str = "gas_station_preset",
 # OFFICE  --  assault/heist: multi-story corporate tower, central core
 # ---------------------------------------------------------------------------
 def office(name: str = "office_preset",
-           mode: str = "assault",
+           mode: str = "heist",
            floors: int = 3,
            basement: bool = False,
            scale_ref: bool = False) -> dict:
@@ -1757,7 +1760,7 @@ def office(name: str = "office_preset",
 # PARKING_GARAGE  --  assault: enclosed multi-level deck, ramp + column grid
 # ---------------------------------------------------------------------------
 def parking_garage(name: str = "parking_garage_preset",
-                   mode: str = "assault",
+                   mode: str = "heist",
                    floors: int = 2,
                    basement: bool = False,
                    scale_ref: bool = False) -> dict:
@@ -1893,8 +1896,15 @@ REGISTRY = {
 }
 
 
-def make(preset: str, **kwargs) -> dict:
+def make(preset: str, enrich: bool = True, **kwargs) -> dict:
+    """Build a preset spec. By default the finished spec is run through
+    level_design.enrich() so every building comes out with readable cover
+    cadence and callout landmarks (better by construction). Pass enrich=False
+    for the raw recipe output."""
     if preset not in REGISTRY:
         raise KeyError(f"unknown preset '{preset}'. "
                        f"available: {', '.join(sorted(REGISTRY))}")
-    return REGISTRY[preset](**kwargs)
+    spec = REGISTRY[preset](**kwargs)
+    if enrich:
+        level_design.enrich(spec)
+    return spec
