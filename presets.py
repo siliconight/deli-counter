@@ -1180,6 +1180,8 @@ def warehouse(name: str = "warehouse_preset",
             {"type": "defender_spawn", "id": "D", "x": 18.0, "y": 14.0, "z": 0.0, "rot_z": 225, "room": "office"},
             {"type": "objective", "id": "OFFICE", "x": 16.0, "y": 13.0, "z": 0.0, "room": "office", "meta": {"kind": "capture"}}]
     spec["markers"] = markers
+    # low big-box parapet band
+    spec["parapets"] = [{"story": 1, "height": 0.8, "thick": 0.3}]
     return spec
 
 
@@ -1390,6 +1392,9 @@ def rowhome(name: str = "rowhome_preset",
     spec.setdefault("ladders", []).append(
         {"x": -3.0, "y": 1.0, "from_story": 1, "to_story": 2,
          "facing": "N", "cut_slabs": True})
+    # flat Philly roof: low front parapet/cornice line, matching
+    # facade_rowhome (0.7) so mixed blocks read as one street
+    spec["parapets"] = [{"story": 3, "height": 0.7, "thick": 0.3}]
     return spec
 
 
@@ -1820,6 +1825,8 @@ def office(name: str = "office_preset",
     spec.setdefault("ladders", []).append(
         {"x": -16.0, "y": -11.0, "from_story": 1, "to_story": 2,
          "facing": "E", "cut_slabs": True})
+    # standard commercial parapet band for the skyline
+    spec["parapets"] = [{"story": 3, "height": 1.1, "thick": 0.3}]
     return spec
 
 
@@ -1941,6 +1948,9 @@ def parking_garage(name: str = "parking_garage_preset",
             {"type": "defender_spawn", "id": "D", "x": -14.0, "y": -11.0, "z": 0.0, "rot_z": 45, "room": "attendant_booth"},
             {"type": "objective", "id": "BOOTH", "x": -14.0, "y": -11.0, "z": 0.0, "room": "attendant_booth", "meta": {"kind": "capture"}}]
     spec["markers"] = markers
+    # skyline parapet on the (capped) roof slab; the upper deck itself
+    # is an enclosed level, so no interior barrier is needed
+    spec["parapets"] = [{"story": 2, "height": 1.1, "thick": 0.35}]
     return spec
 
 
@@ -2050,6 +2060,9 @@ def auto_shop(name: str = "auto_shop_preset", mode: str = "heist",
     spec.setdefault("ladders", []).append(
         {"x": -12.0, "y": -8.0, "from_story": 0, "to_story": 1,
          "facing": "E", "cut_slabs": True})
+    # roof-ladder building: the rooftop is a fighting position, so the
+    # edge gets a lip -- cover at the parapet, no naked fall-off
+    spec["parapets"] = [{"story": 2, "height": 1.0, "thick": 0.3}]
     return spec
 
 
@@ -2150,6 +2163,8 @@ def pawn_shop(name: str = "pawn_shop_preset", mode: str = "heist",
     spec.setdefault("ladders", []).append(
         {"x": -7.0, "y": -6.0, "from_story": 0, "to_story": 1,
          "facing": "E", "cut_slabs": True})
+    # roof-ladder building: parapet lip = rooftop cover + edge safety
+    spec["parapets"] = [{"story": 2, "height": 0.9, "thick": 0.3}]
     return spec
 
 

@@ -1,3 +1,26 @@
+## [0.57.0] - Roof hygiene: parapets where roofs are stood on or seen
+Every building already gets a roof (the top slab caps it; facades too). The
+gap was parapets, in two tiers:
+
+- Tactical: auto_shop (1.0 m) and pawn_shop (0.9 m) have roof ladders --
+  players stand up there. The parapet lip turns a naked kill platform into
+  a fighting position with edge cover, and kills the fall-off QA hazard.
+  (police_station and corner_deli already had both.)
+- Skyline/consistency: rowhome (0.7 m cornice line, matching facade_rowhome
+  so mixed blocks read as one street), office (1.1 m commercial band),
+  warehouse (0.8 m big-box band), parking_garage (1.1 m on the capped roof
+  slab -- the upper deck itself is an enclosed level by design, no interior
+  barrier needed).
+- specs/gs_auto_shop.json gets the parapet too (that glb is being rebuilt
+  for the 0.56.0 axis fix anyway).
+
+Deliberately NOT touched: gas_station (fine as-is) and suburban_safehouse
+-- a flat roof + parapet would make a Delco single-family read as a
+commercial box. The right fix there is a gable/pitched-roof primitive,
+which the kit does not have yet; that is a real builder feature (inclined
+roof planes, gable end walls, slab interaction) and should be its own
+build-and-walk pass, not a volume hack.
+
 ## [0.56.0] - The combat-audit fix batch: presets sweep 0 HIGH / 0 MED
 Addresses every finding from the 0.55.0 audit. Enriched presets (the
 shipping path) now sweep clean: 4 HIGH / 49 MED -> 0 / 0. Raw recipes keep
