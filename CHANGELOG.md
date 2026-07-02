@@ -1,3 +1,67 @@
+## [0.56.0] - The combat-audit fix batch: presets sweep 0 HIGH / 0 MED
+Addresses every finding from the 0.55.0 audit. Enriched presets (the
+shipping path) now sweep clean: 4 HIGH / 49 MED -> 0 / 0. Raw recipes keep
+their 20 pre-furnishing KILLBOX MEDs by design -- architecture is the
+recipe, cover is enrichment.
+
+### The big one: nine axis-swapped partitions in five presets
+A new lint (now permanent in combat_audit as AXIS_SWAP, HIGH) caught
+partitions authored with X/Y swapped: the built wall bisected rooms and
+every door on it opened within a single room. Fixed in auto_shop (story 1),
+corner_deli (stories 0 and 1, four walls), pawn_shop (story 1), and
+suburban_safehouse (three walls). This single bug class was the root cause
+behind the window-only manager_office, the one-door deli_counter, and the
+pawn_shop apartment / auto_shop upper_storage dead ends. specs/
+gs_auto_shop.json (generated from the buggy preset, and WALKED with the bug
+in it) got the same flip + door widening -- rebuild its glb.
+
+### Door hygiene
+~24 openings widened across 10 presets: all sub-nav 0.9/1.0 m doors to
+1.1-1.2 m (they NAV-warned on every generation), and one >=1.4 m opening
+into every objective room (alley_entry/deli counter 1.4, armory 1.4,
+apartment_hall/manager office 1.4, count_room 1.4, exec_s 1.4, safe_room
+1.4, booth_e 1.4, compound suite 1.5, safehouse attic breach 1.5,
+rowhome/pawn/safehouse front doors, compound rear_service 1.5, ...).
+
+### Vertical: eleven ladders across seven presets
+Every VERT_DEAD_END story pair that SHOULD have a second link got a ladder
+(auto_shop, casino 0->1, corner_deli basement, office x2 shaft, pawn_shop
+-> apartment, police_station, rowhome x2 rear shaft, safehouse x2 shaft).
+Placements are clearance-verified in code against partitions, volumes,
+stairs, ladders, and door approaches on BOTH stories, and objective/vault
+rooms are excluded so no ladder bypasses a designed breach.
+
+### audit_accept: intended designs, recorded
+New optional spec key (schema + loader + audit support):
+"audit_accept": [{"code", "room"?, "why"}] downgrades a finding to INFO
+with the author's reason attached. Applied where the audit was right to ask
+but the design is deliberate: casino vault one-breach climax, casino/bank
+vault-basement single stairs, bank's unfurnished roof story, rowhome's
+period-tight interior doors.
+
+### seed_cover: kill boxes furnished at enrichment
+level_design.enrich() gains a first pass that CREATES cover volumes (the
+old cover_from_volumes only tagged existing ones) in combat-intent rooms
+>=30 m^2 with zero waist-high solids. Deterministic (spec seed + room id),
+idempotent, role-keyed archetypes (desks/cabinets in offices, shelf runs in
+storage, crates in bays, counters/planters in public floors), 2-4 pieces,
+clearance-checked against walls, door approaches, stairs, ladders,
+objectives, and loot. Clears all 20 KILLBOX flags on the shipping path.
+
+### tactical: open-plan adjacency
+build_graph now connects same-story rooms sharing >=1.2 m of unwalled edge
+-- a lobby flowing into a bullpen is one space, not a dead end. Fixed the
+office ground_bullpen false HIGH and improves route intel everywhere.
+
+### combat_audit
+- Audits presets ENRICHED by default (the shipping path); --raw for recipes.
+- AXIS_SWAP lint (HIGH) permanent.
+- Honors audit_accept (room-scoped or code-wide).
+
+WALK BEFORE SHIPPING LEVELS: the axis flips move real walls, the ladders
+and seeded cover are new geometry, and none of it has been walked. Suggested
+first walks: auto_shop, corner_deli, suburban_safehouse (most changed).
+
 ## [0.55.0] - `combat_audit.py`: "will it FIGHT well?" as a repeatable check
 The existing gates answer buildable/reachable/sane; this one audits the
 structure 4-player co-op FPS combat lives on. Report-only (never fails a

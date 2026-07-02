@@ -1011,6 +1011,28 @@
     "facade": {
       "type": "boolean",
       "description": "non-enterable facade shell: exterior+roof+collision only, no interior/gameplay"
+    },
+    "audit_accept": {
+      "type": "array",
+      "description": "Author-declared intended designs the combat audit reports as accepted instead of flagging (e.g. a one-breach vault as the designed climax).",
+      "items": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "room": {
+            "type": "string"
+          },
+          "why": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "code"
+        ],
+        "additionalProperties": false
+      }
     }
   },
   "$defs": {

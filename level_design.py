@@ -38,6 +38,7 @@ Tunables live in the module-level constants so a preset author can reason about
 them. enrich(spec) is the single entry point; make() calls it by default.
 """
 
+import math
 from typing import Optional
 
 # A volume reads as cover if its name suggests furniture/props you'd shelter
@@ -239,6 +240,151 @@ def add_landmarks(spec):
     return added
 
 
+# room role/id keywords -> the furniture archetype seeded there
+_SEED_ARCHETYPES = (
+    (("office", "manager", "exec", "admin", "suite"),
+     [("desk", 1.6, 0.8, 0.75), ("cabinet", 0.9, 0.5, 1.4)]),
+    (("storage", "stock", "back", "parts", "ware"),
+     [("shelf_run", 2.6, 0.6, 1.7), ("pallet_stack", 1.2, 1.2, 1.0)]),
+    (("bay", "garage", "loading", "deck"),
+     [("crate_stack", 1.2, 1.2, 1.0), ("pallet_stack", 1.2, 1.2, 0.9)]),
+    (("lobby", "floor", "hall", "concourse", "public", "booking", "ward"),
+     [("counter_island", 2.2, 0.8, 1.05), ("planter_box", 1.4, 0.7, 0.9)]),
+)
+_SEED_DEFAULT = [("crate_stack", 1.1, 1.1, 0.95)]
+_SEED_MIN_AREA = 30.0     # below this a bare room still reads fine
+_SEED_MAX_PIECES = 4      # thesis: don't over-cover
+
+
+def _seed_archetype(room):
+    key = ((room.get("role") or "") + " " + room["id"]).lower()
+    for words, arch in _SEED_ARCHETYPES:
+        if any(w in key for w in words):
+            return arch
+    return _SEED_DEFAULT
+
+
+def _room_has_cover(spec, room):
+    x0, y0, x1, y1 = room["bounds"]
+    sh = _story_height(spec)
+    for v in spec.get("volumes", []):
+        if v.get("size_z", 0) < 0.6 or min(v.get("size_x", 0), v.get("size_y", 0)) < 0.3:
+            continue
+        if x0 <= v["x"] <= x1 and y0 <= v["y"] <= y1 and                 abs(v.get("z", 0) - (room.get("story", 0) * sh + v.get("size_z", 0) / 2)) < sh:
+            return True
+    for m in spec.get("markers", []):
+        if m.get("type") in ("cover_low", "cover_high") and                 x0 <= m.get("x", 1e9) <= x1 and y0 <= m.get("y", 1e9) <= y1:
+            return True
+    return False
+
+
+def _seed_clear(spec, room, px, py, placed):
+    """Candidate point clear of walls, openings, verticals, props, markers."""
+    story = room.get("story", 0)
+    for p in spec.get("partitions", []):
+        if p.get("story", 0) != story:
+            continue
+        if p["axis"] == "Y":
+            cy = max(p["start"], min(py, p["end"]))
+            d = math.hypot(px - p["pos"], py - cy)
+        else:
+            cx = max(p["start"], min(px, p["end"]))
+            d = math.hypot(px - cx, py - p["pos"])
+        if d < 1.0:
+            return False
+    for v in spec.get("volumes", []):
+        if abs(v["x"] - px) < v.get("size_x", 1) / 2 + 0.9 and                 abs(v["y"] - py) < v.get("size_y", 1) / 2 + 0.9:
+            return False
+    for s in spec.get("stairs", []):
+        if math.hypot(s["x"] - px, s["y"] - py) < 2.6:
+            return False
+    for l in spec.get("ladders", []):
+        if math.hypot(l["x"] - px, l["y"] - py) < 1.6:
+            return False
+    for m in spec.get("markers", []):
+        if m.get("type") in ("objective", "loot") and                 math.hypot(m.get("x", 1e9) - px, m.get("y", 1e9) - py) < 1.2:
+            return False
+    # exterior + partition opening approach clearance
+    hx = spec.get("footprint_x", 20) / 2
+    hy = spec.get("footprint_y", 20) / 2
+    for w in spec.get("ext_walls", []):
+        if w.get("story", 0) != story:
+            continue
+        run = spec.get("footprint_x", 20) if w["wall"] in ("N", "S") else spec.get("footprint_y", 20)
+        for op in w.get("openings", []):
+            u = op.get("pos", 0.0) * run
+            ox, oy = {"N": (u, hy), "S": (u, -hy), "E": (hx, u), "W": (-hx, u)}[w["wall"]]
+            if math.hypot(ox - px, oy - py) < 1.5:
+                return False
+    for p in spec.get("partitions", []):
+        if p.get("story", 0) != story:
+            continue
+        run = abs(p["end"] - p["start"])
+        for op in p.get("openings", []):
+            u = p["start"] + (op.get("pos", 0.0) + 0.5) * run
+            ox, oy = (p["pos"], u) if p["axis"] == "Y" else (u, p["pos"])
+            if math.hypot(ox - px, oy - py) < 1.5:
+                return False
+    for (qx, qy) in placed:
+        if math.hypot(qx - px, qy - py) < 2.2:
+            return False
+    return True
+
+
+def seed_cover(spec):
+    """Create actual cover VOLUMES in combat-intent rooms that have none --
+    the audit calls these kill boxes: big rooms with combat_range and not one
+    solid to shelter behind. Deterministic (spec seed + room id), additive,
+    idempotent (rooms that already have any waist-high solid are untouched),
+    and respectful of the over-cover thesis (2-4 pieces, spread out, never
+    near a door, an objective, a stair, or a ladder). cover_from_volumes then
+    tags the new pieces as engagement points like any authored furniture.
+
+    Returns the number of volumes created.
+    """
+    import random
+    base_seed = spec.get("seed", 0)
+    added = 0
+    for room in spec.get("rooms", []):
+        if not room.get("combat_range"):
+            continue
+        x0, y0, x1, y1 = room["bounds"]
+        area = max(0.0, x1 - x0) * max(0.0, y1 - y0)
+        if area < _SEED_MIN_AREA or _room_has_cover(spec, room):
+            continue
+        rng = random.Random(f"{base_seed}:{room['id']}:seed_cover")
+        arch = _seed_archetype(room)
+        want = min(_SEED_MAX_PIECES, max(2, int(area // 45) + 1))
+        # jittered grid candidates, then greedy spread
+        cands = []
+        for i in range(6):
+            for j in range(6):
+                px = x0 + 1.2 + (i + rng.random() * 0.6) * (x1 - x0 - 2.4) / 6
+                py = y0 + 1.2 + (j + rng.random() * 0.6) * (y1 - y0 - 2.4) / 6
+                cands.append((px, py))
+        rng.shuffle(cands)
+        placed = []
+        sh = _story_height(spec)
+        for (px, py) in cands:
+            if len(placed) >= want:
+                break
+            if not _seed_clear(spec, room, px, py, placed):
+                continue
+            name, sx, sy, sz = arch[len(placed) % len(arch)]
+            if rng.random() < 0.5:
+                sx, sy = sy, sx      # vary orientation
+            spec.setdefault("volumes", []).append({
+                "name": f"{name}_{room['id']}_{len(placed)}",
+                "x": round(px, 2), "y": round(py, 2),
+                "z": round(room.get("story", 0) * sh + sz / 2, 3),
+                "size_x": sx, "size_y": sy, "size_z": sz,
+                "collision": "convex",
+            })
+            placed.append((px, py))
+            added += 1
+    return added
+
+
 def enrich(spec):
     """Apply the full felt-space layer to a finished spec, in place.
 
@@ -246,6 +392,7 @@ def enrich(spec):
     see what was added.
     """
     report = {
+        "cover_seeded": seed_cover(spec),
         "cover_added": cover_from_volumes(spec),
         "landmarks_added": add_landmarks(spec),
     }

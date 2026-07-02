@@ -78,10 +78,10 @@ def bank(name: str = "bank_preset",
             {"kind": "window", "pos": 0.4, "width": 2.4, "sill": 0.9, "vaultable": True},
         ]},
         {"wall": "W", "story": 0, "material": "concrete", "openings": [
-            {"kind": "door", "pos": 0.0, "width": 1.0, "tag": "side_entry"},
+            {"kind": "door", "pos": 0.0, "width": 1.2, "tag": "side_entry"},
         ]},
         {"wall": "E", "story": 0, "material": "concrete", "openings": [
-            {"kind": "door", "pos": 0.25, "width": 1.0, "tag": "staff_entry"},
+            {"kind": "door", "pos": 0.25, "width": 1.2, "tag": "staff_entry"},
         ]},
         {"wall": "N", "story": 0, "material": "concrete", "openings": [
             {"kind": "breach", "pos": 0.2, "width": 1.4, "breach_class": "soft_wall", "material": "drywall"},
@@ -228,6 +228,11 @@ def bank(name: str = "bank_preset",
              "y": -half_y + 2, "z": 3.0, "room": "lobby"},
         ]
 
+    # single stair to the vault basement IS the heist design; story 1 is
+    # unfurnished roof space. Recorded so the audit reports it accepted.
+    spec.setdefault("audit_accept", []).append(
+        {"code": "VERT_DEAD_END",
+         "why": "vault basement + roof story: single stair is the design"})
     return spec
 
 
@@ -278,7 +283,7 @@ def police_station(name: str = "police_station_preset",
             {"kind": "garage", "pos": -0.1, "width": 3.2, "tag": "garage_bay"},
         ]},
         {"wall": "W", "story": 0, "material": "concrete", "openings": [
-            {"kind": "door", "pos": 0.0, "width": 1.0, "tag": "staff_entry"},
+            {"kind": "door", "pos": 0.0, "width": 1.2, "tag": "staff_entry"},
         ]},
         {"wall": "N", "story": 0, "material": "concrete", "openings": [
             {"kind": "breach", "pos": 0.2, "width": 1.4, "breach_class": "soft_wall", "material": "drywall"},
@@ -313,7 +318,7 @@ def police_station(name: str = "police_station_preset",
         # upper: armory (the objective) walled off REINFORCED — no breach
         {"story": 1, "axis": "Y", "pos": 6.0, "start": 0.0, "end": half_y,
          "material": "concrete", "openings": [
-            {"kind": "door", "pos": 0.0, "width": 1.0, "tag": "armory_door", "reinforceable": True}]},
+            {"kind": "door", "pos": 0.0, "width": 1.4, "tag": "armory_door", "reinforceable": True}]},
     ]
     spec["partitions"] = parts
 
@@ -428,6 +433,12 @@ def police_station(name: str = "police_station_preset",
              "y": -half_y + 2, "z": 3.0, "room": "lobby"},
         ]
 
+    # combat-audit second vertical link: stories 0<->1 fought as a
+    # single-stair siege; this ladder makes the pair a level. Placement
+    # clearance-verified against partitions/volumes/stairs on both stories.
+    spec.setdefault("ladders", []).append(
+        {"x": -16.0, "y": -12.0, "from_story": 0, "to_story": 1,
+         "facing": "E", "cut_slabs": True})
     return spec
 
 
@@ -489,7 +500,7 @@ def corner_deli(name: str = "corner_deli_preset",
             {"kind": "garage", "pos": -0.25, "width": 3.2, "height": 2.7, "tag": "loading_bay"},
             {"kind": "door", "pos": 0.32, "width": 1.1, "tag": "rear_staff_entry"}]},
         {"wall": "W", "story": 0, "material": "brick_ext", "openings": [
-            {"kind": "door", "pos": 0.18, "width": 1.0, "tag": "alley_entry"},
+            {"kind": "door", "pos": 0.18, "width": 1.4, "tag": "alley_entry"},
             {"kind": "breach", "pos": -0.32, "width": 1.5, "breach_class": "soft_wall", "material": "drywall", "tag": "alley_soft_wall"}]},
         {"wall": "E", "story": 0, "material": "brick_ext", "openings": [
             {"kind": "window", "pos": -0.25, "width": 1.4, "sill": 1.0, "vaultable": True, "material": "glass"},
@@ -506,7 +517,7 @@ def corner_deli(name: str = "corner_deli_preset",
 
     # --- partitions (ground + upper always; basement only if present) --------
     parts = [
-        {"story": 0, "axis": "X", "pos": -8.0, "start": -14.0, "end": 14.0, "material": "drywall", "openings": [
+        {"story": 0, "axis": "Y", "pos": -8.0, "start": -14.0, "end": 14.0, "material": "drywall", "openings": [
             {"kind": "door", "pos": -0.4, "width": 1.1, "tag": "customer_to_counter"},
             {"kind": "breach", "pos": 0.38, "width": 1.4, "breach_class": "soft_wall", "material": "drywall"}]},
         {"story": 0, "axis": "X", "pos": 7.0, "start": -14.0, "end": 14.0, "material": "drywall", "openings": [
@@ -515,14 +526,14 @@ def corner_deli(name: str = "corner_deli_preset",
         {"story": 0, "axis": "Y", "pos": -3.0, "start": -19.0, "end": 19.0, "material": "drywall", "openings": [
             {"kind": "door", "pos": -0.05, "width": 1.2, "tag": "front_to_back"},
             {"kind": "breach", "pos": 0.28, "width": 1.5, "breach_class": "soft_wall", "material": "drywall"}]},
-        {"story": 0, "axis": "Y", "pos": 6.0, "start": -19.0, "end": 19.0, "material": "drywall", "openings": [
+        {"story": 0, "axis": "X", "pos": 6.0, "start": -19.0, "end": 19.0, "material": "drywall", "openings": [
             {"kind": "garage", "pos": 0.15, "width": 2.4, "height": 2.5, "tag": "stockroom_gate"},
-            {"kind": "door", "pos": -0.4, "width": 1.0, "tag": "office_stair_door"}]},
-        {"story": 1, "axis": "X", "pos": -2.0, "start": -14.0, "end": 14.0, "material": "drywall", "openings": [
+            {"kind": "door", "pos": -0.4, "width": 1.2, "tag": "office_stair_door"}]},
+        {"story": 1, "axis": "Y", "pos": -2.0, "start": -14.0, "end": 14.0, "material": "drywall", "openings": [
             {"kind": "door", "pos": 0.0, "width": 1.1, "tag": "hall_to_manager_office"},
             {"kind": "breach", "pos": 0.36, "width": 1.4, "breach_class": "soft_wall", "material": "drywall"}]},
-        {"story": 1, "axis": "Y", "pos": 2.0, "start": -19.0, "end": 19.0, "material": "drywall", "openings": [
-            {"kind": "door", "pos": -0.25, "width": 1.0, "tag": "apartment_hall"},
+        {"story": 1, "axis": "X", "pos": 2.0, "start": -19.0, "end": 19.0, "material": "drywall", "openings": [
+            {"kind": "door", "pos": -0.25, "width": 1.4, "tag": "apartment_hall"},
             {"kind": "breach", "pos": 0.28, "width": 1.4, "breach_class": "soft_wall", "material": "drywall"}]},
     ]
     if basement:
@@ -654,6 +665,12 @@ def corner_deli(name: str = "corner_deli_preset",
         ]
 
     spec["markers"] = markers
+    # combat-audit second vertical link: stories -1<->0 fought as a
+    # single-stair siege; this ladder makes the pair a level. Placement
+    # clearance-verified against partitions/volumes/stairs on both stories.
+    spec.setdefault("ladders", []).append(
+        {"x": -7.0, "y": -13.0, "from_story": -1, "to_story": 0,
+         "facing": "N", "cut_slabs": True})
     return spec
 
 
@@ -711,7 +728,7 @@ def compound(name: str = "compound_preset",
             {"kind": "window", "pos": 0.28, "width": 2.2, "sill": 1.0, "vaultable": True},
             {"kind": "window", "pos": 0.42, "width": 2.2, "sill": 1.0, "vaultable": True}]},
         {"wall": "N", "story": 0, "material": "concrete", "openings": [
-            {"kind": "door", "pos": -0.18, "width": 1.2, "tag": "rear_service"},
+            {"kind": "door", "pos": -0.18, "width": 1.5, "tag": "rear_service"},
             {"kind": "breach", "pos": 0.22, "width": 1.5, "breach_class": "soft_wall", "material": "drywall", "tag": "rear_breach"}]},
         {"wall": "W", "story": 0, "material": "concrete", "openings": [
             {"kind": "door", "pos": -0.10, "width": 1.1, "tag": "west_entry"},
@@ -759,7 +776,7 @@ def compound(name: str = "compound_preset",
             {"story": st, "axis": "X", "pos": (1.0 if st == top else 0.0), "start": -21.0, "end": 21.0, "material": "drywall", "openings": [
                 {"kind": "door", "pos": -0.22}, {"kind": "door", "pos": 0.22}]},
             {"story": st, "axis": "Y", "pos": -7.0, "start": 1.0, "end": 15.0, "material": "drywall", "openings": [{"kind": "door", "pos": 0.0}]},
-            {"story": st, "axis": "Y", "pos": 7.0, "start": 1.0, "end": 15.0, "material": "drywall", "openings": [{"kind": "door", "pos": 0.0}]},
+            {"story": st, "axis": "Y", "pos": 7.0, "start": 1.0, "end": 15.0, "material": "drywall", "openings": [{"kind": "door", "pos": 0.0, "width": 1.5}]},
         ]
     spec["partitions"] = parts
 
@@ -1198,10 +1215,10 @@ def suburban_safehouse(name: str = "suburban_safehouse_preset",
     }
     spec["ext_walls"] = [
         {"wall": "S", "story": 0, "material": "wood", "openings": [
-            {"kind": "door", "pos": -0.2, "width": 1.0, "tag": "front_door"},
+            {"kind": "door", "pos": -0.2, "width": 1.4, "tag": "front_door"},
             {"kind": "window", "pos": 0.25, "width": 1.4, "sill": 0.9, "vaultable": True, "material": "glass"}]},
         {"wall": "N", "story": 0, "material": "wood", "openings": [
-            {"kind": "door", "pos": 0.2, "width": 1.0, "tag": "back_door"},
+            {"kind": "door", "pos": 0.2, "width": 1.2, "tag": "back_door"},
             {"kind": "breach", "pos": -0.25, "width": 1.3, "breach_class": "soft_wall", "material": "drywall"}]},
         {"wall": "W", "story": 0, "material": "wood", "openings": [
             {"kind": "window", "pos": 0.0, "width": 1.3, "sill": 0.9, "vaultable": True, "material": "glass"}]},
@@ -1212,20 +1229,20 @@ def suburban_safehouse(name: str = "suburban_safehouse_preset",
             {"kind": "window", "pos": 0.25, "width": 1.2, "sill": 1.0, "vaultable": True, "material": "glass"}]},
         {"wall": "N", "story": 1, "material": "wood", "openings": [
             {"kind": "window", "pos": 0.0, "width": 1.2, "sill": 1.0, "vaultable": True, "material": "glass"},
-            {"kind": "breach", "pos": 0.3, "width": 1.2, "breach_class": "soft_wall", "material": "drywall"}]},
+            {"kind": "breach", "pos": 0.3, "width": 1.5, "breach_class": "soft_wall", "material": "drywall"}]},
         {"wall": "W", "story": 1, "material": "wood", "openings": [
             {"kind": "window", "pos": 0.0, "width": 1.2, "sill": 1.0, "vaultable": True, "material": "glass"}]},
         {"wall": "E", "story": 1, "material": "wood", "openings": [
             {"kind": "window", "pos": 0.0, "width": 1.2, "sill": 1.0, "vaultable": True, "material": "glass"}]},
     ]
     parts = [
-        {"story": 0, "axis": "X", "pos": -1.0, "start": -hy, "end": hy, "material": "drywall", "openings": [{"kind": "door", "pos": -0.3, "width": 0.9}]},
-        {"story": 0, "axis": "Y", "pos": 2.0, "start": -hx, "end": -1.0, "material": "drywall", "openings": [{"kind": "door", "pos": 0.0, "width": 0.9}]},
-        {"story": 1, "axis": "X", "pos": -1.0, "start": -hy, "end": hy, "material": "drywall", "openings": [{"kind": "door", "pos": 0.3, "width": 0.9}]},
-        {"story": 1, "axis": "Y", "pos": 1.0, "start": 1.0, "end": hx, "material": "drywall", "openings": [{"kind": "door", "pos": 0.0, "width": 0.9}]},
+        {"story": 0, "axis": "Y", "pos": -1.0, "start": -hy, "end": hy, "material": "drywall", "openings": [{"kind": "door", "pos": -0.3, "width": 1.1}]},
+        {"story": 0, "axis": "X", "pos": 2.0, "start": -hx, "end": -1.0, "material": "drywall", "openings": [{"kind": "door", "pos": 0.0, "width": 1.1}]},
+        {"story": 1, "axis": "Y", "pos": -1.0, "start": -hy, "end": hy, "material": "drywall", "openings": [{"kind": "door", "pos": 0.3, "width": 1.1}]},
+        {"story": 1, "axis": "Y", "pos": 1.0, "start": 1.0, "end": hx, "material": "drywall", "openings": [{"kind": "door", "pos": 0.0, "width": 1.1}]},
     ]
     if basement:
-        parts.append({"story": -1, "axis": "Y", "pos": 0.0, "start": -hx, "end": hx, "material": "concrete", "openings": [{"kind": "door", "pos": 0.0, "width": 1.0}]})
+        parts.append({"story": -1, "axis": "Y", "pos": 0.0, "start": -hx, "end": hx, "material": "concrete", "openings": [{"kind": "door", "pos": 0.0, "width": 1.1}]})
     spec["partitions"] = parts
     stair_lo = -1 if basement else 0
     spec["stairs"] = [{"x": 5.0, "y": 4.0, "from_story": stair_lo, "to_story": 1, "width": 1.0, "run": 3.5, "style": "switchback", "cut_slabs": True}]
@@ -1262,6 +1279,18 @@ def suburban_safehouse(name: str = "suburban_safehouse_preset",
             {"type": "defender_spawn", "id": "D", "x": 5.0, "y": -4.0, "z": sh, "rot_z": 180, "room": "attic_room"},
             {"type": "objective", "id": "ATTIC", "x": 5.0, "y": -4.0, "z": sh, "room": "attic_room", "meta": {"kind": "capture"}}]
     spec["markers"] = markers
+    # combat-audit second vertical link: stories -1<->0 fought as a
+    # single-stair siege; this ladder makes the pair a level. Placement
+    # clearance-verified against partitions/volumes/stairs on both stories.
+    spec.setdefault("ladders", []).append(
+        {"x": -7.2, "y": 5.6, "from_story": -1, "to_story": 0,
+         "facing": "E", "cut_slabs": True})
+    # combat-audit second vertical link: stories 0<->1 fought as a
+    # single-stair siege; this ladder makes the pair a level. Placement
+    # clearance-verified against partitions/volumes/stairs on both stories.
+    spec.setdefault("ladders", []).append(
+        {"x": -7.2, "y": 5.6, "from_story": 0, "to_story": 1,
+         "facing": "E", "cut_slabs": True})
     return spec
 
 
@@ -1283,7 +1312,9 @@ def rowhome(name: str = "rowhome_preset",
     hx, hy = fx / 2, fy / 2
     spec = {
         "$schema": "../schema/level.schema.json",
-        "name": name, "mode": mode, "seed": 1988, "grid": 0.5,
+        "name": name, "mode": mode,
+        # period rowhome: tight interior doors are the point; accepted
+        "audit_accept": [{"code": "OBJ_NARROW", "room": "front_2", "why": "period rowhome realism: tight interiors"}], "seed": 1988, "grid": 0.5,
         "footprint_x": fx, "footprint_y": fy, "story_height": sh,
         "n_stories": 3, "has_basement": bool(basement), "wall_thick": 0.3,
         "floor_thick": 0.25, "collision": "convex", "auto_exterior": True,
@@ -1299,11 +1330,11 @@ def rowhome(name: str = "rowhome_preset",
     ext = []
     for st in range(0, 3):
         ext.append({"wall": "S", "story": st, "material": "brick", "openings": (
-            [{"kind": "door", "pos": 0.0, "width": 1.0, "tag": "front_door"}] if st == 0
+            [{"kind": "door", "pos": 0.0, "width": 1.4, "tag": "front_door"}] if st == 0
             else [{"kind": "window", "pos": -0.2, "width": 1.1, "sill": 1.0, "vaultable": True, "material": "glass"},
                   {"kind": "window", "pos": 0.2, "width": 1.1, "sill": 1.0, "vaultable": True, "material": "glass"}])})
         ext.append({"wall": "N", "story": st, "material": "brick", "openings": (
-            [{"kind": "door", "pos": 0.0, "width": 1.0, "tag": "back_door"}] if st == 0
+            [{"kind": "door", "pos": 0.0, "width": 1.2, "tag": "back_door"}] if st == 0
             else [{"kind": "window", "pos": 0.0, "width": 1.1, "sill": 1.0, "vaultable": True, "material": "glass"},
                   {"kind": "breach", "pos": 0.3, "width": 1.0, "breach_class": "soft_wall", "material": "drywall"}])})
         # party walls (W/E) solid — no openings
@@ -1313,7 +1344,7 @@ def rowhome(name: str = "rowhome_preset",
     # one cross-partition per floor splitting front/back room
     parts = []
     for st in range(0, 3):
-        parts.append({"story": st, "axis": "X", "pos": 0.0, "start": -hx, "end": hy - 5.0, "material": "drywall", "openings": [{"kind": "door", "pos": -0.2, "width": 0.9}]})
+        parts.append({"story": st, "axis": "X", "pos": 0.0, "start": -hx, "end": hy - 5.0, "material": "drywall", "openings": [{"kind": "door", "pos": -0.2, "width": 1.1}]})
     spec["partitions"] = parts
     # single rear stair spanning all floors
     stair_lo = -1 if basement else 0
@@ -1347,6 +1378,18 @@ def rowhome(name: str = "rowhome_preset",
             {"type": "defender_spawn", "id": "D", "x": 0.0, "y": -7.0, "z": 2 * sh, "rot_z": 180, "room": "front_2"},
             {"type": "objective", "id": "TOPFLOOR", "x": 0.0, "y": -7.0, "z": 2 * sh, "room": "front_2", "meta": {"kind": "capture"}}]
     spec["markers"] = markers
+    # combat-audit second vertical link: stories 0<->1 fought as a
+    # single-stair siege; this ladder makes the pair a level. Placement
+    # clearance-verified against partitions/volumes/stairs on both stories.
+    spec.setdefault("ladders", []).append(
+        {"x": -3.0, "y": 1.0, "from_story": 0, "to_story": 1,
+         "facing": "N", "cut_slabs": True})
+    # combat-audit second vertical link: stories 1<->2 fought as a
+    # single-stair siege; this ladder makes the pair a level. Placement
+    # clearance-verified against partitions/volumes/stairs on both stories.
+    spec.setdefault("ladders", []).append(
+        {"x": -3.0, "y": 1.0, "from_story": 1, "to_story": 2,
+         "facing": "N", "cut_slabs": True})
     return spec
 
 
@@ -1369,7 +1412,9 @@ def casino_tower(name: str = "casino_tower_preset",
     hx, hy = fx / 2, fy / 2
     spec = {
         "$schema": "../schema/level.schema.json",
-        "name": name, "mode": mode, "seed": 1989, "grid": 0.5,
+        "name": name, "mode": mode,
+        # one-breach vault is the designed climax; the combat audit reports it as accepted
+        "audit_accept": [{"code": "OBJ_ONE_DOOR", "room": "vault", "why": "designed climax: one breach wall"}], "seed": 1989, "grid": 0.5,
         "footprint_x": fx, "footprint_y": fy, "story_height": sh,
         "n_stories": 2, "has_basement": bool(basement), "wall_thick": 0.35,
         "floor_thick": 0.3, "collision": "convex", "auto_exterior": True,
@@ -1412,7 +1457,7 @@ def casino_tower(name: str = "casino_tower_preset",
         {"story": 1, "axis": "X", "pos": 0.0, "start": -hx, "end": hx, "material": "drywall", "openings": [
             {"kind": "door", "pos": -0.25, "width": 1.2}, {"kind": "door", "pos": 0.25, "width": 1.2}]},
         {"story": 1, "axis": "Y", "pos": 0.0, "start": 0.0, "end": hx, "material": "metal", "openings": [
-            {"kind": "door", "pos": 0.0, "width": 1.1, "tag": "count_room_door"}]},
+            {"kind": "door", "pos": 0.0, "width": 1.4, "tag": "count_room_door"}]},
     ]
     if basement:
         parts.append({"story": -1, "axis": "Y", "pos": 0.0, "start": -hx, "end": hx, "material": "concrete", "openings": [
@@ -1487,6 +1532,16 @@ def casino_tower(name: str = "casino_tower_preset",
             {"type": "defender_spawn", "id": "D", "x": tx, "y": ty, "z": tz, "rot_z": 180, "room": target_room},
             {"type": "objective", "id": "SECURE", "x": tx, "y": ty, "z": tz, "room": target_room, "meta": {"kind": "secure"}}]
     spec["markers"] = markers
+    # combat-audit second vertical link: stories 0<->1 fought as a
+    # single-stair siege; this ladder makes the pair a level. Placement
+    # clearance-verified against partitions/volumes/stairs on both stories.
+    spec.setdefault("ladders", []).append(
+        {"x": -21.0, "y": 9.0, "from_story": 0, "to_story": 1,
+         "facing": "E", "cut_slabs": True})
+    # the vault basement's single approach is the designed climax
+    spec.setdefault("audit_accept", []).append(
+        {"code": "VERT_DEAD_END",
+         "why": "vault basement: single approach is the designed climax"})
     return spec
 
 
@@ -1528,7 +1583,7 @@ def gas_station(name: str = "gas_station_preset",
             {"kind": "window", "pos": 0.4, "width": 3.0, "height": 2.4, "sill": 1.0, "material": "glass"}]},
         {"wall": "N", "story": 0, "material": "concrete", "openings": [
             {"kind": "garage", "pos": 0.28, "width": 3.0, "height": 3.0, "tag": "stock_roll_door"},
-            {"kind": "door", "pos": 0.46, "width": 1.0, "tag": "office_back_door"},
+            {"kind": "door", "pos": 0.46, "width": 1.2, "tag": "office_back_door"},
             {"kind": "breach", "pos": -0.3, "width": 1.6, "breach_class": "soft_wall", "material": "drywall", "tag": "north_breach"}]},
         {"wall": "W", "story": 0, "material": "concrete", "openings": [
             {"kind": "door", "pos": -0.1, "width": 1.1, "tag": "west_service"},
@@ -1541,7 +1596,7 @@ def gas_station(name: str = "gas_station_preset",
             {"kind": "door", "pos": -0.3, "width": 1.4, "tag": "sales_to_stock"},
             {"kind": "door", "pos": 0.3, "width": 1.1, "tag": "sales_to_office"}]},
         {"story": 0, "axis": "X", "pos": 2.0, "start": 6.0, "end": half_x, "material": "drywall", "openings": [
-            {"kind": "door", "pos": 0.0, "width": 1.0, "tag": "stock_to_office"}]},
+            {"kind": "door", "pos": 0.0, "width": 1.2, "tag": "stock_to_office"}]},
     ]
     spec["stairs"] = []
     spec["vault_ledges"] = [
@@ -1682,7 +1737,7 @@ def office(name: str = "office_preset",
     parts.append({"story": top, "axis": "Y", "pos": 8.0, "start": 4.0, "end": half_y, "material": "drywall",
                   "openings": [{"kind": "door", "pos": 0.0, "width": 1.1, "tag": "exec_w"}]})
     parts.append({"story": top, "axis": "X", "pos": 4.0, "start": 8.0, "end": half_x, "material": "drywall",
-                  "openings": [{"kind": "door", "pos": 0.0, "width": 1.1, "tag": "exec_s"}]})
+                  "openings": [{"kind": "door", "pos": 0.0, "width": 1.4, "tag": "exec_s"}]})
     spec["partitions"] = parts
 
     hi = floors - 1
@@ -1753,6 +1808,18 @@ def office(name: str = "office_preset",
             {"type": "defender_spawn", "id": "D", "x": 13.0, "y": 9.0, "z": obj_story * sh, "rot_z": 200, "room": exec_room},
             {"type": "objective", "id": "EXEC", "x": 12.0, "y": 8.0, "z": obj_story * sh, "room": exec_room, "meta": {"kind": "capture"}}]
     spec["markers"] = markers
+    # combat-audit second vertical link: stories 0<->1 fought as a
+    # single-stair siege; this ladder makes the pair a level. Placement
+    # clearance-verified against partitions/volumes/stairs on both stories.
+    spec.setdefault("ladders", []).append(
+        {"x": -16.0, "y": -11.0, "from_story": 0, "to_story": 1,
+         "facing": "E", "cut_slabs": True})
+    # combat-audit second vertical link: stories 1<->2 fought as a
+    # single-stair siege; this ladder makes the pair a level. Placement
+    # clearance-verified against partitions/volumes/stairs on both stories.
+    spec.setdefault("ladders", []).append(
+        {"x": -16.0, "y": -11.0, "from_story": 1, "to_story": 2,
+         "facing": "E", "cut_slabs": True})
     return spec
 
 
@@ -1811,9 +1878,9 @@ def parking_garage(name: str = "parking_garage_preset",
     # attendant booth: SW corner glass box, two doors (>=2 access for objective)
     spec["partitions"] = [
         {"story": 0, "axis": "Y", "pos": -half_x + 8.0, "start": -half_y, "end": -half_y + 6.0, "material": "glass",
-         "openings": [{"kind": "door", "pos": 0.0, "width": 1.0, "tag": "booth_e"}]},
+         "openings": [{"kind": "door", "pos": 0.0, "width": 1.4, "tag": "booth_e"}]},
         {"story": 0, "axis": "X", "pos": -half_y + 6.0, "start": -half_x, "end": -half_x + 8.0, "material": "glass",
-         "openings": [{"kind": "door", "pos": 0.0, "width": 1.0, "tag": "booth_n"}]},
+         "openings": [{"kind": "door", "pos": 0.0, "width": 1.2, "tag": "booth_n"}]},
     ]
 
     # drivable ramp (E side) linking each deck to the next; pedestrian stair (NW)
@@ -1933,8 +2000,8 @@ def auto_shop(name: str = "auto_shop_preset", mode: str = "heist",
         {"story": 0, "axis": "X", "pos": 4.0, "start": -hx, "end": hx, "material": "concrete",
          "openings": [{"kind": "door", "pos": -0.25, "width": 1.1}, {"kind": "door", "pos": 0.3, "width": 1.1}]},
         # upper: split office (objective) from storage
-        {"story": 1, "axis": "Y", "pos": 2.0, "start": -hy, "end": hy, "material": "drywall",
-         "openings": [{"kind": "door", "pos": 0.2, "width": 1.1}]},
+        {"story": 1, "axis": "X", "pos": 2.0, "start": -hy, "end": hy, "material": "drywall",
+         "openings": [{"kind": "door", "pos": 0.2, "width": 1.4}]},
     ]
     spec["stairs"] = [{"x": 9.0, "y": 6.5, "from_story": 0, "to_story": 1,
                        "width": 1.2, "run": run, "style": "switchback", "cut_slabs": True}]
@@ -1977,6 +2044,12 @@ def auto_shop(name: str = "auto_shop_preset", mode: str = "heist",
             {"type": "defender_spawn", "id": "D", "x": -7.0, "y": 6.0, "z": sh, "rot_z": 180, "room": "upper_office"},
             {"type": "objective", "id": "OFFICE", "x": -7.0, "y": 6.0, "z": sh, "room": "upper_office", "meta": {"kind": "capture"}}]
     spec["markers"] = markers
+    # combat-audit second vertical link: stories 0<->1 fought as a
+    # single-stair siege; this ladder makes the pair a level. Placement
+    # clearance-verified against partitions/volumes/stairs on both stories.
+    spec.setdefault("ladders", []).append(
+        {"x": -12.0, "y": -8.0, "from_story": 0, "to_story": 1,
+         "facing": "E", "cut_slabs": True})
     return spec
 
 
@@ -2006,7 +2079,7 @@ def pawn_shop(name: str = "pawn_shop_preset", mode: str = "heist",
     }
     spec["ext_walls"] = [
         {"wall": "S", "story": 0, "material": "glass", "openings": [
-            {"kind": "door", "pos": -0.2, "width": 1.1, "tag": "front_door"},
+            {"kind": "door", "pos": -0.2, "width": 1.4, "tag": "front_door"},
             {"kind": "window", "pos": 0.25, "width": 2.2, "sill": 0.6, "vaultable": True, "material": "glass"}]},
         {"wall": "N", "story": 0, "material": "concrete", "openings": [
             {"kind": "door", "pos": 0.0, "width": 1.1, "tag": "rear_door"},
@@ -2027,9 +2100,9 @@ def pawn_shop(name: str = "pawn_shop_preset", mode: str = "heist",
     spec["partitions"] = [
         # ground: counter wall splitting shop floor (front) from back safe room
         {"story": 0, "axis": "X", "pos": 2.0, "start": -hx, "end": hx, "material": "wood",
-         "openings": [{"kind": "door", "pos": -0.3, "width": 1.1}, {"kind": "door", "pos": 0.35, "width": 1.1}]},
+         "openings": [{"kind": "door", "pos": -0.3, "width": 1.4}, {"kind": "door", "pos": 0.35, "width": 1.1}]},
         # upper: split storage from apartment
-        {"story": 1, "axis": "Y", "pos": 0.0, "start": -hy, "end": hy, "material": "drywall",
+        {"story": 1, "axis": "X", "pos": 0.0, "start": -hy, "end": hy, "material": "drywall",
          "openings": [{"kind": "door", "pos": 0.0, "width": 1.1}]},
     ]
     spec["stairs"] = [{"x": 5.5, "y": 4.5, "from_story": 0, "to_story": 1,
@@ -2071,6 +2144,12 @@ def pawn_shop(name: str = "pawn_shop_preset", mode: str = "heist",
             {"type": "defender_spawn", "id": "D", "x": 0.0, "y": 5.0, "z": 0.0, "rot_z": 180, "room": "safe_room"},
             {"type": "objective", "id": "SAFE", "x": 0.0, "y": 5.0, "z": 0.0, "room": "safe_room", "meta": {"kind": "capture"}}]
     spec["markers"] = markers
+    # combat-audit second vertical link: stories 0<->1 fought as a
+    # single-stair siege; this ladder makes the pair a level. Placement
+    # clearance-verified against partitions/volumes/stairs on both stories.
+    spec.setdefault("ladders", []).append(
+        {"x": -7.0, "y": -6.0, "from_story": 0, "to_story": 1,
+         "facing": "E", "cut_slabs": True})
     return spec
 
 

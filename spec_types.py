@@ -362,6 +362,9 @@ class LevelSpec:
     ext_walls: list[ExtWall] = field(default_factory=list)
     partitions: list[Partition] = field(default_factory=list)
     stairs: list[Stairwell] = field(default_factory=list)
+    # author-declared intended designs the combat audit should report as
+    # accepted instead of flagging: [{"code","room","why"}]
+    audit_accept: list = field(default_factory=list)
     ladders: list[Ladder] = field(default_factory=list)
     ramps: list[Ramp] = field(default_factory=list)
     vault_ledges: list[VaultLedge] = field(default_factory=list)

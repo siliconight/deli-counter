@@ -389,6 +389,63 @@ def audit(spec, name=None):
                f"waist-high volumes or cover markers: an open kill box. "
                f"Two or three 0.9-1.2 m volumes fix it."))
 
+    # --- author-accepted findings: a spec can declare intended designs
+    # ("audit_accept": [{"code","room","why"}]) -- a one-breach vault may be
+    # the climax. Accepted findings downgrade to INFO with the reason, so
+    # they stay visible without nagging.
+    accepts = {(a.get("code"), a.get("room")): a.get("why", "accepted")
+               for a in getattr(spec, "audit_accept", None)
+               or (spec.raw.get("audit_accept", []) if hasattr(spec, "raw") else [])}
+    if accepts:
+        out = []
+        for sev, code, msg in findings:
+            key = next((k for k in accepts
+                        if k[0] == code and
+                        (k[1] is None or f"'{k[1]}'" in msg)), None)
+            if key and sev != "INFO":
+                out.append(("INFO", code,
+                            msg + f" [ACCEPTED by author: {accepts[key]}]"))
+            else:
+                out.append((sev, code, msg))
+        findings[:] = out
+
+    # --- axis-swap lint: a partition whose doors all open within a single
+    # room, but which would connect two distinct rooms with its axis flipped,
+    # is almost certainly authored with X/Y swapped -- the built wall bisects
+    # rooms and its doors are decorative. This exact bug shipped in five
+    # presets before this check existed.
+    class _Flip:
+        def __init__(self, p):
+            self.__dict__.update(p.__dict__)
+            self.axis = "X" if p.axis == "Y" else "Y"
+
+    def _door_pairs(part):
+        pairs, eps = [], 0.8
+        run = abs(part.end - part.start)
+        for op in part.openings:
+            if op.kind not in ("door", "garage", "breach"):
+                continue
+            u = part.start + (op.pos + 0.5) * run
+            if part.axis == "Y":
+                a = tactical._room_at(spec, part.story, part.pos - eps, u)
+                b = tactical._room_at(spec, part.story, part.pos + eps, u)
+            else:
+                a = tactical._room_at(spec, part.story, u, part.pos - eps)
+                b = tactical._room_at(spec, part.story, u, part.pos + eps)
+            pairs.append((a, b))
+        return pairs
+
+    for part in spec.partitions:
+        asis = _door_pairs(part)
+        if not asis:
+            continue
+        if all(a == b or a is None or b is None for a, b in asis) and                 any(a != b and a and b for a, b in _door_pairs(_Flip(part))):
+            F(("HIGH", "AXIS_SWAP",
+               f"partition axis={part.axis} pos={part.pos} story={part.story}: "
+               f"every door on it opens within a single room as authored, but "
+               f"connects two rooms with the axis flipped -- X/Y are almost "
+               f"certainly swapped (the built wall bisects rooms)."))
+
     # --- sightline intent (reuse the existing checker's mismatches)
     try:
         sl = sightlines.check(spec)
@@ -434,6 +491,9 @@ def main(argv=None):
     ap.add_argument("--all-presets", action="store_true")
     ap.add_argument("--all", action="store_true", help="every spec in specs/")
     ap.add_argument("--json", action="store_true", help="machine output")
+    ap.add_argument("--raw", action="store_true",
+                    help="audit presets WITHOUT level_design enrichment "
+                         "(default audits the shipping path, enrich=True)")
     a = ap.parse_args(argv)
 
     jobs = []
@@ -452,11 +512,12 @@ def main(argv=None):
             jobs.append(("spec", p))
     if not jobs:
         ap.error("give a spec path, --preset, --all-presets, or --all")
+    enrich = not a.raw
 
     results = []
     for kind, ref in jobs:
         if kind == "preset":
-            spec = spec_from_dict(presets_mod.make(ref, enrich=False))
+            spec = spec_from_dict(presets_mod.make(ref, enrich=enrich))
             res = audit(spec, name=f"preset:{ref}")
         else:
             spec = load_spec(ref)

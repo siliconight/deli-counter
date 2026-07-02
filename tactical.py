@@ -101,6 +101,54 @@ def build_graph(spec):
                 adj[a].add(b)
                 adj[b].add(a)
 
+    # open-plan adjacency: two same-story rooms whose rects share an edge
+    # with NO partition covering it are one continuous space (a lobby flowing
+    # into a bullpen). Without this, open floor plans read as disconnected
+    # and open-plan rooms false-flag as dead ends. Additive only.
+    def _shared_open_edge(ra, rb):
+        ax0, ay0, ax1, ay1 = ra.bounds
+        bx0, by0, bx1, by1 = rb.bounds
+        # vertical shared edge (ra right == rb left or vice versa)
+        for x_edge, lo, hi in ((ax1, max(ay0, by0), min(ay1, by1))
+                               if abs(ax1 - bx0) < 0.05 else (None, 0, 0),
+                               (bx1, max(ay0, by0), min(ay1, by1))
+                               if abs(bx1 - ax0) < 0.05 else (None, 0, 0)):
+            if x_edge is not None and hi - lo >= 1.2:
+                covered = 0.0
+                for p in spec.partitions:
+                    if p.story != ra.story or p.axis != "Y":
+                        continue
+                    if abs(p.pos - x_edge) < 0.05:
+                        covered += max(0.0, min(p.end, hi) - max(p.start, lo))
+                if (hi - lo) - covered >= 1.2:
+                    return True
+        # horizontal shared edge
+        for y_edge, lo, hi in ((ay1, max(ax0, bx0), min(ax1, bx1))
+                               if abs(ay1 - by0) < 0.05 else (None, 0, 0),
+                               (by1, max(ax0, bx0), min(ax1, bx1))
+                               if abs(by1 - ay0) < 0.05 else (None, 0, 0)):
+            if y_edge is not None and hi - lo >= 1.2:
+                covered = 0.0
+                for p in spec.partitions:
+                    if p.story != ra.story or p.axis != "X":
+                        continue
+                    if abs(p.pos - y_edge) < 0.05:
+                        covered += max(0.0, min(p.end, hi) - max(p.start, lo))
+                if (hi - lo) - covered >= 1.2:
+                    return True
+        return False
+
+    room_list = list(spec.rooms)
+    for i, ra in enumerate(room_list):
+        for rb in room_list[i + 1:]:
+            if ra.story != rb.story or ra.id == rb.id:
+                continue
+            if rb.id in adj.get(ra.id, ()):
+                continue
+            if _shared_open_edge(ra, rb):
+                adj[ra.id].add(rb.id)
+                adj[rb.id].add(ra.id)
+
     # vertical links connect rooms across stories at (x,y)
     def _connect_stair_column(lo, hi):
         for s in range(lo, hi):
