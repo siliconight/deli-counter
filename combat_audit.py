@@ -270,7 +270,423 @@ def _vertical_links(spec):
 # ---------------------------------------------------------------------------
 # the audit
 # ---------------------------------------------------------------------------
-def audit(spec, name=None):
+# ===========================================================================
+# genre rule packs -- PayDay 2 / Ready or Not / Left 4 Dead 2 grammars
+# Enabled with --rules; "auto" picks packs by spec mode. Full rationale and
+# authoring guidance in docs/DESIGN_RULES.md.
+# ===========================================================================
+
+def _opening_points(spec, room_id):
+    """World-space points of every opening bordering room_id:
+    (x, y, width, kind, other_room_or_None, is_ext)."""
+    out = []
+    hx, hy = spec.footprint_x / 2, spec.footprint_y / 2
+    eps = 0.8
+    for p in spec.partitions:
+        run = abs(p.end - p.start)
+        for op in p.openings:
+            if op.kind not in ("door", "garage", "breach"):
+                continue
+            u = p.start + (op.pos + 0.5) * run
+            if p.axis == "Y":
+                a = tactical._room_at(spec, p.story, p.pos - eps, u)
+                b = tactical._room_at(spec, p.story, p.pos + eps, u)
+                pt = (p.pos, u)
+            else:
+                a = tactical._room_at(spec, p.story, u, p.pos - eps)
+                b = tactical._room_at(spec, p.story, u, p.pos + eps)
+                pt = (u, p.pos)
+            if room_id in (a, b):
+                other = b if a == room_id else a
+                out.append((pt[0], pt[1], _op_width(op), op.kind, other, False))
+    for w in spec.ext_walls:
+        run = spec.footprint_x if w.wall in ("N", "S") else spec.footprint_y
+        for op in w.openings:
+            if op.kind not in ("door", "garage", "breach") and \
+                    not getattr(op, "vaultable", False):
+                continue
+            u = op.pos * run
+            x, y = {"N": (u, hy), "S": (u, -hy),
+                    "E": (hx, u), "W": (-hx, u)}[w.wall]
+            ex, ey = {"N": (u, hy - eps), "S": (u, -hy + eps),
+                      "E": (hx - eps, u), "W": (-hx + eps, u)}[w.wall]
+            if tactical._room_at(spec, w.story, ex, ey) == room_id:
+                out.append((x, y, _op_width(op), op.kind, None, True))
+    return out
+
+
+def _seg_hits_rect(x1, y1, x2, y2, rx0, ry0, rx1, ry1):
+    """Does segment (x1,y1)-(x2,y2) intersect axis-aligned rect?"""
+    # trivial accept if either end inside
+    if rx0 <= x1 <= rx1 and ry0 <= y1 <= ry1:
+        return True
+    if rx0 <= x2 <= rx1 and ry0 <= y2 <= ry1:
+        return True
+    def _cross(ax, ay, bx, by, cx, cy):
+        return (bx - ax) * (cy - ay) - (by - ay) * (cx - ax)
+    def _seg_seg(ax, ay, bx, by, cx, cy, dx, dy):
+        d1 = _cross(cx, cy, dx, dy, ax, ay)
+        d2 = _cross(cx, cy, dx, dy, bx, by)
+        d3 = _cross(ax, ay, bx, by, cx, cy)
+        d4 = _cross(ax, ay, bx, by, dx, dy)
+        return ((d1 > 0) != (d2 > 0)) and ((d3 > 0) != (d4 > 0))
+    edges = (((rx0, ry0), (rx1, ry0)), ((rx1, ry0), (rx1, ry1)),
+             ((rx1, ry1), (rx0, ry1)), ((rx0, ry1), (rx0, ry0)))
+    return any(_seg_seg(x1, y1, x2, y2, a[0], a[1], b[0], b[1])
+               for a, b in edges)
+
+
+def _threshold_visibility(spec, room, door_pt):
+    """Fraction of the room's floor visible from a point 0.5 m inside the
+    threshold, occluded by solid volumes (>= 0.9 m tall) in the room.
+    The Ready or Not 'first slice' number: how much of the room can be
+    cleared from the doorway before committing."""
+    x0, y0, x1, y1 = room.bounds
+    cx = min(max(door_pt[0], x0 + 0.5), x1 - 0.5)
+    cy = min(max(door_pt[1], y0 + 0.5), y1 - 0.5)
+    blockers = []
+    sh = spec.story_height
+    for v in spec.volumes:
+        if v.size_z < 0.9:
+            continue
+        base = getattr(v, "z", 0.0) - v.size_z / 2
+        if abs(base - room.story * sh) > 1.0:
+            continue
+        if x0 <= v.x <= x1 and y0 <= v.y <= y1:
+            blockers.append((v.x - v.size_x / 2, v.y - v.size_y / 2,
+                             v.x + v.size_x / 2, v.y + v.size_y / 2))
+    # nudge the vantage toward the room centroid (an entering player steps
+    # in, not stands in the frame) and never count a blocker the vantage is
+    # inside of -- that's the ray-caster blinding itself
+    mx, my = (x0 + x1) / 2, (y0 + y1) / 2
+    dx, dy = mx - cx, my - cy
+    d = max(0.001, (dx * dx + dy * dy) ** 0.5)
+    cx, cy = cx + dx / d * 0.8, cy + dy / d * 0.8
+    blockers = [b for b in blockers
+                if not (b[0] <= cx <= b[2] and b[1] <= cy <= b[3])]
+    n = vis = 0
+    for i in range(8):
+        for j in range(8):
+            px = x0 + (i + 0.5) * (x1 - x0) / 8
+            py = y0 + (j + 0.5) * (y1 - y0) / 8
+            n += 1
+            if not any(_seg_hits_rect(cx, cy, px, py, *b) for b in blockers):
+                vis += 1
+    return vis / max(1, n)
+
+
+def _width_graph(spec, min_w):
+    """Room adjacency using only openings >= min_w (open-plan edges count
+    as infinitely wide). The loot-carry graph."""
+    adj = {r.id: set() for r in spec.rooms}
+    for r in spec.rooms:
+        for (x, y, w, kind, other, is_ext) in _opening_points(spec, r.id):
+            if other and w >= min_w:
+                adj[r.id].add(other)
+                adj[other].add(r.id)
+    full = tactical.build_graph(spec)
+    for a, ns in full.items():
+        for b in ns:
+            if a in adj and b in adj[a]:
+                continue
+            # keep edges that come from open-plan sharing or verticals only
+            # if they aren't width-limited doors -- open plan is carry-wide;
+            # verticals: stairs carry bags, ladders don't
+            pass
+    # open-plan edges: recompute cheaply via bounds sharing (mirrors tactical)
+    rl = list(spec.rooms)
+    for i, ra in enumerate(rl):
+        for rb in rl[i + 1:]:
+            if ra.story != rb.story:
+                continue
+            ax0, ay0, ax1, ay1 = ra.bounds
+            bx0, by0, bx1, by1 = rb.bounds
+            share = 0.0
+            if abs(ax1 - bx0) < 0.05 or abs(bx1 - ax0) < 0.05:
+                share = min(ay1, by1) - max(ay0, by0)
+            if abs(ay1 - by0) < 0.05 or abs(by1 - ay0) < 0.05:
+                share = max(share, min(ax1, bx1) - max(ax0, bx0))
+            if share >= 1.2 and rb.id in tactical.build_graph(spec).get(ra.id, ()):
+                adj[ra.id].add(rb.id)
+                adj[rb.id].add(ra.id)
+    # stairs carry bags
+    for s in spec.stairs:
+        lo, hi = sorted((s.from_story, s.to_story))
+        for st in range(lo, hi):
+            a = tactical._room_at(spec, st, s.x, s.y)
+            b = tactical._room_at(spec, st + 1, s.x, s.y)
+            if a and b and a in adj and b in adj:
+                adj[a].add(b)
+                adj[b].add(a)
+    return adj
+
+
+def _disjoint_paths2(adj, srcs, dst):
+    """Are there >= 2 interior-node-disjoint routes from any sources to dst?
+    Greedy: find one BFS path, delete its interior, search again."""
+    def bfs(block):
+        prev = {}
+        seen = set(s for s in srcs if s in adj and s not in block)
+        q = list(seen)
+        while q:
+            u = q.pop(0)
+            if u == dst:
+                path = [u]
+                while path[-1] in prev:
+                    path.append(prev[path[-1]])
+                return path
+            for v in adj.get(u, ()):
+                if v in seen or v in block:
+                    continue
+                seen.add(v)
+                prev[v] = u
+                q.append(v)
+        return None
+    p1 = bfs(set())
+    if not p1:
+        return 0
+    interior = set(p1) - set(srcs) - {dst}
+    return 2 if bfs(interior) else 1
+
+
+# --- PayDay 2: the heist grammar ------------------------------------------
+def _pack_heist(spec, ctx, F):
+    adj, entries, objectives, rooms = (ctx["adj"], ctx["entries"],
+                                       ctx["objectives"], ctx["rooms"])
+    for ob in sorted(objectives):
+        if ob not in adj:
+            continue
+        n = _disjoint_paths2(adj, entries, ob)
+        if n == 1 and len(adj) >= 4:
+            F(("MED", "H_ONE_ROUTE",
+               f"[heist] every route to objective '{ob}' funnels through the "
+               f"same rooms: one crew plan, no split assault. A second "
+               f"disjoint approach (breach wall, window vault, vertical) "
+               f"makes plans differ."))
+        # holdout: the drill-defense space -- objective room or a neighbor
+        # with 2-3 coverable ways in and something to hide behind
+        cands = [ob] + sorted(adj.get(ob, ()))
+        best = None
+        for c in cands:
+            r = rooms.get(c)
+            if not r:
+                continue
+            ops = _openings_into(spec, c)
+            n_in = len(ops)
+            if 2 <= n_in <= 3 and _room_area(r) >= 12 and \
+                    (_cover_in_room(spec, r) > 0 or
+                     (r.role or "") == "fortifiable"):
+                best = c
+                break
+        if best is None:
+            F(("MED", "H_NO_HOLDOUT",
+               f"[heist] no defensible holdout at/next to objective '{ob}' "
+               f"(want a room with 2-3 coverable entries, >= 12 m^2, and "
+               f"cover): the drill/objective-wait phase has nowhere to "
+               f"fight from."))
+    # loot carry: from each objective, a >= 1.2 m route must reach a
+    # >= 1.4 m exterior egress (bags don't fit through squeezes)
+    wg = _width_graph(spec, 1.2)
+    wide_exits = set()
+    for r in spec.rooms:
+        for (x, y, w, kind, other, is_ext) in _opening_points(spec, r.id):
+            if is_ext and w >= 1.4:
+                wide_exits.add(r.id)
+    for ob in sorted(objectives):
+        if ob not in wg:
+            continue
+        seen, q = {ob}, [ob]
+        hit = ob in wide_exits
+        while q and not hit:
+            u = q.pop(0)
+            for v in wg.get(u, ()):
+                if v not in seen:
+                    seen.add(v)
+                    q.append(v)
+                    if v in wide_exits:
+                        hit = True
+                        break
+        if not hit:
+            F(("MED", "H_CARRY_PINCH",
+               f"[heist] no bag-carry route from objective '{ob}' to a "
+               f">= 1.4 m exterior egress using only >= 1.2 m openings: "
+               f"the loot leaves single-file through a pinch."))
+    if getattr(spec, "mode", None) == "heist":
+        cams = sum(1 for m in spec.markers
+                   if getattr(m, "type", "") == "camera_socket")
+        pats = sum(1 for m in spec.markers
+                   if getattr(m, "type", "") == "patrol_point")
+        if cams == 0 and pats == 0:
+            F(("INFO", "H_NO_STEALTH",
+               "[heist] no camera_socket or patrol_point markers: the map "
+               "has no stealth layer to beat -- loud-only by construction."))
+
+
+# --- Ready or Not: the CQB grammar ----------------------------------------
+def _pack_cqb(spec, ctx, F):
+    rooms, objectives = ctx["rooms"], ctx["objectives"]
+    hot = [r for r in spec.rooms
+           if r.id in objectives or (r.role or "") == "fortifiable"]
+    for r in hot:
+        x0, y0, x1, y1 = r.bounds
+        for (dx, dy, w, kind, other, is_ext) in _opening_points(spec, r.id):
+            if kind not in ("door", "breach"):
+                continue
+            # feed type: distance from the door to the nearest corner along
+            # its wall. Corner-fed doors give the entry team one hard angle;
+            # center-fed doors expose them to both flanks at once.
+            on_x_wall = min(abs(dy - y0), abs(dy - y1)) < 0.3
+            along = dx if on_x_wall else dy
+            lo, hi = (x0, x1) if on_x_wall else (y0, y1)
+            corner_d = min(along - lo, hi - along)
+            fed = "corner" if corner_d <= 1.5 else "center"
+            # pie standoff: room to work the angle from outside the door
+            if not is_ext and other in rooms:
+                o = rooms[other]
+                ox0, oy0, ox1, oy1 = o.bounds
+                depth = min(dx - ox0, ox1 - dx) if not on_x_wall else \
+                        min(dy - oy0, oy1 - dy)
+                room_depth = min(ox1 - ox0, oy1 - oy0)
+                if room_depth < 1.6:
+                    F(("MED", "C_NO_PIE",
+                       f"[cqb] the approach to '{r.id}' via '{other}' is "
+                       f"{room_depth:.1f} m deep at the door: no room to pie "
+                       f"the threshold -- the stack breaches blind."))
+            # (threshold visibility judged per-room below, on the best door)
+    # threshold visibility per room, judged on the BEST door: the entry
+    # team picks its threshold, so a room is only blind if EVERY way in is
+    # blind, and only naked if every way in sees everything.
+    for r in hot:
+        doors = [(dx, dy) for (dx, dy, w, k, o, e) in
+                 _opening_points(spec, r.id) if k in ("door", "breach")]
+        if not doors:
+            continue
+        vises = [_threshold_visibility(spec, r, d) for d in doors]
+        best = max(vises)
+        if best > 0.97 and _room_area(r) >= 25 and \
+                _cover_in_room(spec, r) == 0:
+            F(("MED", "C_NAKED_ROOM",
+               f"[cqb] '{r.id}': every doorway sees "
+               f"{best * 100:.0f}% of the room -- nothing to clear, nowhere "
+               f"to hide. One or two hard corners or tall blockers give the "
+               f"entry a decision."))
+        elif best < 0.35:
+            F(("MED", "C_BLIND_ROOM",
+               f"[cqb] '{r.id}': the BEST doorway sees only "
+               f"{best * 100:.0f}% of the room -- every entry commits blind "
+               f"into hard corners, grenade-bait. Open the first slice from "
+               f"at least one threshold to ~50-90%."))
+
+    # census: all-center-fed maps play monotone
+    feeds = {"corner": 0, "center": 0}
+    for r in spec.rooms:
+        x0, y0, x1, y1 = r.bounds
+        for (dx, dy, w, kind, other, is_ext) in _opening_points(spec, r.id):
+            if kind != "door" or is_ext:
+                continue
+            on_x_wall = min(abs(dy - y0), abs(dy - y1)) < 0.3
+            along = dx if on_x_wall else dy
+            lo, hi = (x0, x1) if on_x_wall else (y0, y1)
+            fed = "corner" if min(along - lo, hi - along) <= 1.5 else "center"
+            feeds[fed] += 1
+    tot = feeds["corner"] + feeds["center"]
+    if tot >= 6 and (feeds["corner"] == 0 or feeds["center"] == 0):
+        only = "corner" if feeds["center"] == 0 else "center"
+        F(("INFO", "C_FEED_MONOTONE",
+           f"[cqb] all {tot} interior doors are {only}-fed: every room "
+           f"clears the same way. Mixing feed types varies the entries."))
+
+
+# --- Left 4 Dead 2: the flow grammar --------------------------------------
+def _pack_flow(spec, ctx, F):
+    adj, entries, objectives, rooms = (ctx["adj"], ctx["entries"],
+                                       ctx["objectives"], ctx["rooms"])
+    # golden path: entries -> primary objective (BFS)
+    dst = next(iter(sorted(objectives)), None)
+    path = None
+    if dst and dst in adj:
+        prev, seen = {}, set(s for s in entries if s in adj)
+        q = list(seen)
+        while q:
+            u = q.pop(0)
+            if u == dst:
+                path = [u]
+                while path[-1] in prev:
+                    path.append(prev[path[-1]])
+                path.reverse()
+                break
+            for v in adj.get(u, ()):
+                if v not in seen:
+                    seen.add(v)
+                    prev[v] = u
+                    q.append(v)
+    if path and len(path) >= 4:
+        areas = [_room_area(rooms[r]) for r in path if r in rooms]
+        import math as _m
+        monotone = all(abs(_m.log(max(areas[i + 1], 1) / max(areas[i], 1)))
+                       < 0.35 for i in range(len(areas) - 1))
+        if monotone:
+            F(("MED", "F_FLAT_RHYTHM",
+               f"[flow] the entry->objective path "
+               f"({' -> '.join(path)}) never changes scale: no "
+               f"compression/release rhythm, the run reads as one long "
+               f"corridor. Alternate tight connectors with open rooms."))
+        for rid in path:
+            if len(adj.get(rid, ())) >= 5:
+                F(("INFO", "F_BRANCH_OVERLOAD",
+                   f"[flow] '{rid}' on the main path has "
+                   f"{len(adj[rid])} connections: heavy wayfinding load at "
+                   f"one decision point."))
+    # holdout arenas need horde ingress: >= 3 ways in, not all one face
+    # horde-arena rules apply to horde contexts: finale rooms always, and
+    # fortifiable/objective rooms only in survival/assault modes. A heist
+    # drill room WANTS 2-3 coverable entries (the PayDay holdout rule);
+    # demanding >= 3 ingress there would contradict the heist grammar.
+    horde_mode = getattr(spec, "mode", "") in ("survival", "assault")
+    arena_ids = set()
+    for r in spec.rooms:
+        if (r.role or "") == "finale" or \
+                (horde_mode and ((r.role or "") == "fortifiable"
+                                 or r.id in objectives)):
+            arena_ids.add(r.id)
+    for a in sorted(arena_ids):
+        r = rooms.get(a)
+        if not r:
+            continue
+        ops = _opening_points(spec, a)
+        n_in = len(ops) + sum(1 for s in spec.stairs
+                              if tactical._room_at(spec, s.to_story, s.x, s.y) == a
+                              or tactical._room_at(spec, s.from_story, s.x, s.y) == a)
+        if n_in < 3:
+            F(("MED", "F_ARENA_STARVED",
+               f"[flow] holdout room '{a}' has only {n_in} way(s) in: the "
+               f"horde single-files and the holdout is a shooting gallery. "
+               f"Arenas want >= 3 ingress vectors from >= 2 directions."))
+    if getattr(spec, "mode", "") == "survival":
+        hs = sum(1 for m in spec.markers
+                 if getattr(m, "type", "") == "horde_spawn")
+        if hs < 3:
+            F(("INFO", "F_FEW_HORDE_SPAWNS",
+               f"[flow] only {hs} horde_spawn marker(s): director has few "
+               f"ingress choices; waves will feel same-y."))
+
+
+RULE_PACKS = {"heist": _pack_heist, "cqb": _pack_cqb, "flow": _pack_flow}
+
+
+def packs_for(spec, rules_arg):
+    if rules_arg in (None, "", "none"):
+        return []
+    if rules_arg == "all":
+        return list(RULE_PACKS)
+    if rules_arg == "auto":
+        mode = getattr(spec, "mode", None) or "heist"
+        return (["heist", "cqb", "flow"] if mode == "heist"
+                else ["flow", "cqb"])
+    return [r.strip() for r in rules_arg.split(",") if r.strip() in RULE_PACKS]
+
+
+def audit(spec, name=None, rules=None):
     name = name or spec.name
     findings = []          # (severity, code, message)
     F = findings.append
@@ -389,26 +805,6 @@ def audit(spec, name=None):
                f"waist-high volumes or cover markers: an open kill box. "
                f"Two or three 0.9-1.2 m volumes fix it."))
 
-    # --- author-accepted findings: a spec can declare intended designs
-    # ("audit_accept": [{"code","room","why"}]) -- a one-breach vault may be
-    # the climax. Accepted findings downgrade to INFO with the reason, so
-    # they stay visible without nagging.
-    accepts = {(a.get("code"), a.get("room")): a.get("why", "accepted")
-               for a in getattr(spec, "audit_accept", None)
-               or (spec.raw.get("audit_accept", []) if hasattr(spec, "raw") else [])}
-    if accepts:
-        out = []
-        for sev, code, msg in findings:
-            key = next((k for k in accepts
-                        if k[0] == code and
-                        (k[1] is None or f"'{k[1]}'" in msg)), None)
-            if key and sev != "INFO":
-                out.append(("INFO", code,
-                            msg + f" [ACCEPTED by author: {accepts[key]}]"))
-            else:
-                out.append((sev, code, msg))
-        findings[:] = out
-
     # --- axis-swap lint: a partition whose doors all open within a single
     # room, but which would connect two distinct rooms with its axis flipped,
     # is almost certainly authored with X/Y swapped -- the built wall bisects
@@ -455,6 +851,33 @@ def audit(spec, name=None):
     except Exception:
         pass
 
+    # --- genre rule packs (--rules): PayDay 2 / Ready or Not / L4D2
+    ctx = {"adj": adj, "entries": entries, "objectives": objectives,
+           "rooms": rooms}
+    for pk in packs_for(spec, rules):
+        RULE_PACKS[pk](spec, ctx, F)
+
+    # --- author-accepted findings: a spec can declare intended designs
+    # ("audit_accept": [{"code","room","why"}]) -- a one-breach vault may be
+    # the climax. Accepted findings downgrade to INFO with the reason, so
+    # they stay visible without nagging.
+    accepts = {(a.get("code"), a.get("room")): a.get("why", "accepted")
+               for a in getattr(spec, "audit_accept", None)
+               or (spec.raw.get("audit_accept", []) if hasattr(spec, "raw") else [])}
+    if accepts:
+        out = []
+        for sev, code, msg in findings:
+            key = next((k for k in accepts
+                        if k[0] == code and
+                        (k[1] is None or f"'{k[1]}'" in msg)), None)
+            if key and sev != "INFO":
+                out.append(("INFO", code,
+                            msg + f" [ACCEPTED by author: {accepts[key]}]"))
+            else:
+                out.append((sev, code, msg))
+        findings[:] = out
+
+
     return {"name": name, "rooms": n_nodes, "edges": n_edges, "loops": loops,
             "dead_ends": sorted(dead), "chokepoints": sorted(chokes),
             "entry_faces": sorted(faces), "objective_rooms": sorted(objectives),
@@ -491,6 +914,9 @@ def main(argv=None):
     ap.add_argument("--all-presets", action="store_true")
     ap.add_argument("--all", action="store_true", help="every spec in specs/")
     ap.add_argument("--json", action="store_true", help="machine output")
+    ap.add_argument("--rules", default=None,
+                    help="genre rule packs: auto | all | heist,cqb,flow "
+                         "(PayDay 2 / Ready or Not / L4D2 grammars)")
     ap.add_argument("--raw", action="store_true",
                     help="audit presets WITHOUT level_design enrichment "
                          "(default audits the shipping path, enrich=True)")
@@ -518,13 +944,13 @@ def main(argv=None):
     for kind, ref in jobs:
         if kind == "preset":
             spec = spec_from_dict(presets_mod.make(ref, enrich=enrich))
-            res = audit(spec, name=f"preset:{ref}")
+            res = audit(spec, name=f"preset:{ref}", rules=a.rules)
         else:
             spec = load_spec(ref)
             d = json.load(open(ref))
             if d.get("facade"):
                 continue
-            res = audit(spec, name=os.path.basename(ref))
+            res = audit(spec, name=os.path.basename(ref), rules=a.rules)
         results.append(res)
 
     if a.json:

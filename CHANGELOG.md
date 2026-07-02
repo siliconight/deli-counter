@@ -1,3 +1,35 @@
+## [0.58.0] - Genre rule packs: PayDay 2 / Ready or Not / L4D2 grammars
+`combat_audit --rules auto|all|heist,cqb,flow` layers three measurable
+design grammars over the core audit. Full doc: docs/DESIGN_RULES.md.
+
+- HEIST (PayDay 2): H_ONE_ROUTE interior-disjoint routes to each objective
+  (one route = one crew plan); H_NO_HOLDOUT drill-defense room at/next to
+  the objective (2-3 coverable entries, >= 12 m^2, cover); H_CARRY_PINCH
+  bag-carry exfil on a width-filtered graph (>= 1.2 m route to a >= 1.4 m
+  exterior egress; stairs carry bags, ladders don't); H_NO_STEALTH
+  camera/patrol marker presence (INFO).
+- CQB (Ready or Not): door feed classification (corner-fed vs center-fed)
+  with C_FEED_MONOTONE census; C_NO_PIE threshold standoff on the approach
+  side; C_NAKED_ROOM / C_BLIND_ROOM first-slice threshold visibility via
+  2-D raycast against >= 0.9 m solids, judged on the BEST door into each
+  hot room (the team picks its threshold; band ~35-97%).
+- FLOW (L4D2): F_FLAT_RHYTHM compression/release along the golden path;
+  F_BRANCH_OVERLOAD decision-point degree; F_ARENA_STARVED horde ingress
+  (>= 3 ways in) for finale rooms always and objective/fortifiable rooms in
+  survival/assault modes ONLY -- heist drill rooms are exempt because the
+  heist grammar wants 2-3 entries there and the rules would fight;
+  F_FEW_HORDE_SPAWNS director choice (INFO).
+- `--rules auto` picks packs by spec mode. Pack findings respect
+  audit_accept (the accept filter now runs LAST over all findings,
+  including AXIS_SWAP and sightline reuse).
+- Calibration: threshold visibility nudges the vantage into the room and
+  never counts a blocker the vantage stands inside (the walked gas_station
+  passes the CQB pack clean, which is the calibration story again).
+- Sweep with packs on: 0 HIGH / 2 MED across 14 presets. The two are real
+  design findings, reported not auto-fixed: office/exec_suite funnels
+  through one spine (H_ONE_ROUTE) and warehouse has no drill holdout
+  (H_NO_HOLDOUT). Both have concrete fixes listed in DESIGN_RULES.md.
+
 ## [0.57.0] - Roof hygiene: parapets where roofs are stood on or seen
 Every building already gets a roof (the top slab caps it; facades too). The
 gap was parapets, in two tiers:

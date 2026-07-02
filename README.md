@@ -222,6 +222,13 @@ python combat_audit.py --all --json             # every spec, machine output
 Severity: HIGH structural combat problem / MED costs fun / INFO context.
 Structural estimate, not a measure of fun -- walk it.
 
+Genre rule packs layer on top with `--rules auto|all|heist,cqb,flow`:
+the PayDay 2 heist grammar (disjoint routes, drill holdouts, bag-carry
+exfil, stealth layer), the Ready or Not CQB grammar (door feed types, pie
+standoff, first-slice threshold visibility), and the Left 4 Dead 2 flow
+grammar (compression/release rhythm, branching discipline, horde-arena
+ingress). Full rationale and authoring guidance: docs/DESIGN_RULES.md.
+
 ## The build commands
 
 ```
