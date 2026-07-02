@@ -1,0 +1,41 @@
+{
+  "$schema": "../schema/level.schema.json",
+  "name": "gs_facade_storefront",
+  "mode": "heist",
+  "seed": 1902,
+  "grid": 0.5,
+  "facade": true,
+  "footprint_x": 14.0,
+  "footprint_y": 12.0,
+  "story_height": 3.4,
+  "n_stories": 2,
+  "has_basement": false,
+  "wall_thick": 0.3,
+  "floor_thick": 0.3,
+  "collision": "convex",
+  "auto_exterior": true,
+  "modular": true,
+  "scale_ref": false,
+  "default_material": "concrete",
+  "materials": [
+    {
+      "id": "concrete",
+      "acoustic": "Concrete",
+      "absorption": 0.7,
+      "damping": 0.6
+    },
+    {
+      "id": "glass",
+      "acoustic": "Glass",
+      "absorption": 0.1,
+      "damping": 0.1
+    }
+  ],
+  "parapets": [
+    {
+      "story": 2,
+      "height": 0.9,
+      "thick": 0.3
+    }
+  ]
+}

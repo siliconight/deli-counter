@@ -73,6 +73,34 @@ def build_graph(spec):
                 adj[a].add(b)
                 adj[b].add(a)
 
+    # exterior openings connect the room just inside to a declared outdoor
+    # room just outside the wall (a forecourt, yard, or lot apron). Outdoor
+    # rooms are real route-graph nodes — the front doors of a gas station
+    # genuinely connect the sales floor to the forecourt.
+    ehx, ehy = spec.footprint_x / 2, spec.footprint_y / 2
+    for w in spec.ext_walls:
+        run = spec.footprint_x if w.wall in ("N", "S") else spec.footprint_y
+        eps = 0.8
+        for op in w.openings:
+            if op.kind not in ("door", "garage", "breach"):
+                continue
+            u = op.pos * run
+            if w.wall == "N":
+                a = _room_at(spec, w.story, u, ehy - eps)
+                b = _room_at(spec, w.story, u, ehy + eps)
+            elif w.wall == "S":
+                a = _room_at(spec, w.story, u, -ehy + eps)
+                b = _room_at(spec, w.story, u, -ehy - eps)
+            elif w.wall == "E":
+                a = _room_at(spec, w.story, ehx - eps, u)
+                b = _room_at(spec, w.story, ehx + eps, u)
+            else:
+                a = _room_at(spec, w.story, -ehx + eps, u)
+                b = _room_at(spec, w.story, -ehx - eps, u)
+            if a and b and a != b:
+                adj[a].add(b)
+                adj[b].add(a)
+
     # vertical links connect rooms across stories at (x,y)
     def _connect_stair_column(lo, hi):
         for s in range(lo, hi):
@@ -147,6 +175,21 @@ def _entry_rooms(spec):
                 rid = _room_at(spec, w.story, -hx + eps, u)
             if rid:
                 entries.add(rid)
+    # a grade-level room lying (essentially) outside the footprint — a
+    # forecourt, yard, or lot apron — is open ground: reachable from outside
+    # by definition, so it is itself an entry room. Without this, any preset
+    # that declares its outdoor staging space as a room false-flags it as
+    # AI-unreachable.
+    hx, hy = spec.footprint_x / 2, spec.footprint_y / 2
+    for r in spec.rooms:
+        if r.story != 0:
+            continue
+        x0, y0, x1, y1 = r.bounds
+        ix = max(0.0, min(x1, hx) - max(x0, -hx))
+        iy = max(0.0, min(y1, hy) - max(y0, -hy))
+        area = max(1e-9, (x1 - x0) * (y1 - y0))
+        if (ix * iy) / area < 0.1:
+            entries.add(r.id)
     return entries
 
 

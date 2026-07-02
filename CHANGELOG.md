@@ -5,6 +5,31 @@
 All notable changes to the kit. Bump `KIT_VERSION` in `version.py` with each
 entry. See that file for the versioning convention.
 
+## [0.54.0] - Outdoor rooms join the route graph + the gas-station-corner spec set
+The `gas_station` preset's declared `forecourt` room false-flagged as
+AI-unreachable: the tactical checker modeled every room as interior, so an
+outdoor staging room (a forecourt, yard, or lot apron) could never be an entry
+and never got a graph edge. Fixed in the checker, not the preset — outdoor
+rooms are legitimate authoring.
+
+- `tactical.build_graph`: exterior door/garage/breach openings now connect the
+  room just inside the wall to a declared room just OUTSIDE it (probe mirrors
+  `_entry_rooms`). The gas station's front doors genuinely link sales floor ->
+  forecourt in route intel, approaches, and funnel analysis.
+- `tactical._entry_rooms`: a grade-level room lying (essentially, <10% area
+  overlap) outside the footprint is open ground — reachable from outside by
+  definition, so it is itself an entry room. Kills the forecourt NAV-ERROR.
+- Both changes are strictly additive (only ever ADD entries/edges), so no
+  existing spec can newly fail.
+- New spec set for the Lot `gs_heist` site (gas-station street corner, per the
+  level requirements doc): `gs_corner_station` (gas_station preset + a carved
+  restroom/utility closet in the stockroom SE corner + the two 1.0 m doors
+  widened to 1.2 m for the nav agent — validates 0 errors, 0 isolated rooms,
+  10 usable entries), `gs_auto_shop` (auto_shop preset, `--rarity very_rare`,
+  its safe objective flipped to `required: false` — it is this site's OPTIONAL
+  side score), `gs_facade_rowhome` + `gs_facade_storefront` (facade shells for
+  Lot's street wall).
+
 ## [0.53.0] - Two vertical heist presets: `auto_shop` + `pawn_shop`
 First presets authored against the fixed stairs (0.51) and ladders (0.52) -- each
 is multi-storey with a comfortable stair AND a roof-access ladder, so they double

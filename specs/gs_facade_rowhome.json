@@ -1,0 +1,41 @@
+{
+  "$schema": "../schema/level.schema.json",
+  "name": "gs_facade_rowhome",
+  "mode": "heist",
+  "seed": 1901,
+  "grid": 0.5,
+  "facade": true,
+  "footprint_x": 8.0,
+  "footprint_y": 11.0,
+  "story_height": 3.1,
+  "n_stories": 2,
+  "has_basement": false,
+  "wall_thick": 0.3,
+  "floor_thick": 0.3,
+  "collision": "convex",
+  "auto_exterior": true,
+  "modular": true,
+  "scale_ref": false,
+  "default_material": "concrete",
+  "materials": [
+    {
+      "id": "concrete",
+      "acoustic": "Concrete",
+      "absorption": 0.7,
+      "damping": 0.6
+    },
+    {
+      "id": "wood",
+      "acoustic": "Wood",
+      "absorption": 0.5,
+      "damping": 0.45
+    }
+  ],
+  "parapets": [
+    {
+      "story": 2,
+      "height": 0.7,
+      "thick": 0.3
+    }
+  ]
+}
