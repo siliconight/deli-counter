@@ -203,6 +203,25 @@ format. Both come from the same build.
 - Optional: `pip install jsonschema` (full validation), `pip install pyyaml`
   (YAML specs).
 
+## The combat audit (will it FIGHT well?)
+
+`check.py` gates buildable/reachable/sane; `combat_audit.py` reports on the
+structure co-op FPS combat lives on: route-graph loops and chokepoints,
+dead-end and single-door objective rooms, entry-face spread (can anyone
+flank?), one-stair stories, single-file doors toward objectives, and empty
+combat rooms (no cover solids). Report-only -- a one-breach vault might be
+your designed climax, so nothing here fails a build.
+
+```
+python combat_audit.py --preset gas_station     # one preset, fresh
+python combat_audit.py specs/bank.json          # one spec
+python combat_audit.py --all-presets            # the whole registry
+python combat_audit.py --all --json             # every spec, machine output
+```
+
+Severity: HIGH structural combat problem / MED costs fun / INFO context.
+Structural estimate, not a measure of fun -- walk it.
+
 ## The build commands
 
 ```

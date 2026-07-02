@@ -1,3 +1,28 @@
+## [0.55.0] - `combat_audit.py`: "will it FIGHT well?" as a repeatable check
+The existing gates answer buildable/reachable/sane; this one audits the
+structure 4-player co-op FPS combat lives on. Report-only (never fails a
+build) -- deliberate designs like a one-breach vault are why it reports
+instead of gates.
+
+- Metrics: route-graph loops (cyclomatic) + articulation chokepoints +
+  non-utility dead ends (outdoor rooms exempt, mirroring the 0.54 tactical
+  rule); entry-face spread (ONE_FACE = no exterior flank); per-objective-room
+  opening count + widest width (single-file objectives flagged) + BFS entry
+  depth; vertical links per story pair (one stair = the floor plays as a
+  siege); cover census (any solid >= 0.6 m counts -- crates, counters,
+  pillars, the vault box); cramped combat rooms; sightline-intent
+  mismatches reused from sightlines.py.
+- `--all-presets` / `--all` / `--preset X` / single spec path; `--json` for
+  machine use. Facades skipped.
+- First sweep results (July 2026): presets 4 HIGH / 49 MED, shipped specs
+  11 HIGH / 53 MED. Patterns: empty combat rooms (20x KILLBOX), one stair
+  per story (10x), single-file objective doors (8x, incl. seven 0.9 m
+  doors below the nav minimum), a dead-end objective (office
+  ground_bullpen), two legacy ONE_FACE specs. gas_station -- the one
+  walked-and-iterated preset -- audits clean, which is the calibration
+  story in one line. Full findings + prioritized fix plan in the audit
+  report (delivered separately; regenerate anytime with --all-presets).
+
 # Changelog
 
 **Deli Counter** — a spec-driven Blender level kit for Godot 4.
