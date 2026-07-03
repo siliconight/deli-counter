@@ -172,8 +172,13 @@ def _objective_rooms(spec):
             out.add(r.id)
     for m in spec.markers:
         if getattr(m, "type", None) == "objective":
-            rid = tactical._room_at(spec, 0, m.x, m.y) \
-                or tactical._room_at(spec, getattr(m, "story", 0) or 0, m.x, m.y)
+            # the marker's own room wins; else derive the story from z --
+            # never guess story 0 (a count room above a kitchen would claim
+            # the kitchen too)
+            rid = getattr(m, "room", None)
+            if not rid:
+                st = int(round(getattr(m, "z", 0.0) // max(spec.story_height, 1)))
+                rid = tactical._room_at(spec, st, m.x, m.y)
             if rid:
                 out.add(rid)
     return out

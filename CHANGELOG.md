@@ -1,3 +1,20 @@
+## [0.59.0] - primos_pizza: the showcase spec + an audit marker-room fix
+- specs/primos_pizza.json + NOTES.md: "Primo's Pizza & Social Club" -- a
+  1997 Delco pizzeria with the card room and cash count upstairs, authored
+  as the kit's proof-of-concept building. Every feature in one spec
+  (basement->roof, switchback stair, cellar/dumbwaiter/roof ladders,
+  breachable roof hatch, parapet, all opening kinds incl. two soft walls,
+  rarity, objective/loot/extraction/camera/patrol markers, secure +
+  extraction zones, 25 authored volumes) and every gate green: check.py
+  0 errors / 0 warnings, combat_audit --rules all 0 HIGH / 0 MED / 0 INFO
+  with zero audit_accepts. The count room has three ways in and each is a
+  different plan: the count door (loud), the club soft wall (breach), the
+  kitchen dumbwaiter ladder (quiet). NOT WALKED -- checklist in NOTES.md.
+- combat_audit fix: _objective_rooms resolved objective markers by
+  guessing story 0, so an upstairs objective claimed the room BELOW it
+  too (primos' count room claimed the kitchen). Markers' own "room" field
+  now wins; otherwise the story derives from z. Preset sweep unchanged.
+
 ## [0.58.0] - Genre rule packs: PayDay 2 / Ready or Not / L4D2 grammars
 `combat_audit --rules auto|all|heist,cqb,flow` layers three measurable
 design grammars over the core audit. Full doc: docs/DESIGN_RULES.md.
