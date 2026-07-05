@@ -115,6 +115,31 @@ This gives the three properties of the art pass:
 - **Progressive** — an uncovered role falls back to greybox, so the pass fills in role by role.
 - **Cheap** — every slot of a role points at one file: one mesh + one texture in VRAM, edit-one-update-all.
 
+## Interactive fixtures (`interactive` block)
+
+A door, breachable wall, or breakable-window slot carries an extra `interactive`
+block — the art-facing view of its state machine:
+
+```json
+"interactive": {
+  "id": "primos_pizza:if:2cf6a380",
+  "kind": "breach_wall",
+  "states": ["intact", "breached"],
+  "default": "intact",
+  "state_geometry": { "intact": "wall", "breached": "breach" },
+  "collision_per_state": { "intact": true, "breached": false }
+}
+```
+
+Zoo reads this to build a **per-state art variant** (`_<state>` naming law):
+the default state is the base module; each non-default state whose geometry
+differs is a `<stem>_<state>` variant, built with its `state_geometry` species.
+That is what makes a breachable wall the `breached` STATE of a wall slot
+(`intact` → wall geometry, `breached` → breach geometry), not a separate module.
+The same `id` appears in `gameplay.json`'s `interactives` array (the netcode
+side). Doors/breaches get this by inference; a window only when authored
+`breakable`. Full contract: `docs/INTERACTIVES.md`.
+
 ## What DC does / doesn't
 
 - **DC emits** the manifest from the locked layout — the deterministic recipe of *what module, what

@@ -6,7 +6,7 @@ validation and loading work in normal Python; only the builder needs bpy.
 """
 
 from dataclasses import dataclass, field
-from typing import Optional, Literal
+from typing import Any, Optional, Literal
 
 Axis = Literal["X", "Y"]           # which way a wall runs
 Wall = Literal["N", "S", "E", "W"] # exterior wall, +Y/-Y/+X/-X
@@ -84,6 +84,13 @@ class Opening:
     material: Optional[str] = None         # e.g. "drywall", "brick"
     vaultable: Optional[bool] = None       # window/low opening you can climb through
     reinforceable: Optional[bool] = None   # defenders can reinforce this
+    # --- interactive fixture (networked state; see docs/INTERACTIVES.md) ---
+    # Doors/garages and breach openings are interactive by INFERENCE (no
+    # authoring needed). A window is interactive only when breakable=True.
+    # `interactive` overrides the inference: False forces it off; a dict authors
+    # a custom machine merged over the inferred one.
+    breakable: Optional[bool] = None       # a window that can be broken/shot out
+    interactive: Any = None                # None | False | dict override
 
     def resolved(self):
         d = dict(width=self.width, height=self.height, sill=self.sill)

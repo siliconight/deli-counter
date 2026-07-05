@@ -25,6 +25,7 @@ states it.
   "rooms": [ ... ],
   "vertical_links": [ ... ],
   "openings": [ ... ],
+  "interactives": [ ... ],
   "objectives": [ ... ],
   "loot": [ ... ],
   "zones": [ ... ],
@@ -80,6 +81,20 @@ door, window, or wall breach as a valid entry attempt, so any of them must
 resolve to the building's rarity. The game decides which openings count as entry
 points (it has `kind`, `breach_class`, `vaultable`, `reinforceable`); the kit just
 guarantees each one knows its building and rarity.
+
+**`interactives`** — fixtures whose state all players must agree on (doors,
+breachable walls, breakable windows), one per interactive opening. Each is a
+replicable **state machine**: `{ "id", "kind", "slot_ref", "transform",
+"states": [...], "default", "transitions": [{event,from,to}], "reversible"?,
+"source", "building" }`. `id` is a **stable, position-derived** handle (not an
+array index — see `docs/INTERACTIVES.md`) that matches the `interactive.id` on
+the same slot in `slots.json`. This is the **entire networked surface**: it
+describes STATE, never synchronization, so it maps onto any netcode (server
+snapshot / event-RPC / lockstep / rollback). The game spawns one replicated node
+per `id` and drives which art variant renders; `reversible` is advisory. Doors
+and breach openings are interactive by inference; a window only when authored
+`breakable`. Empty when the building has no interactive openings. See
+`docs/INTERACTIVES.md` for the full contract.
 
 **`objectives`** / **`loot`** / **`zones`** — mode-specific gameplay data
 (objective rooms, loot spawns with value, extraction/secure/drop zones).

@@ -8,6 +8,27 @@ things at once: a function-locked playable level, a kit-of-parts an artist can
 dress, and an already-instanced scene. Author it as a pile of unique boxes and
 you get none of those.
 
+## Interactive openings (doors, breachable walls, breakable windows)
+
+Openings whose state all players must agree on in the online game are emitted as
+replicable state machines (into `gameplay.json`'s `interactives` and each slot's
+`interactive` block). You usually author **nothing** — it's inferred:
+
+- a `door` / `garage` → a `door` fixture (`closed` / `open`)
+- a `breach` opening → a `breach_wall` (`intact` / `breached`)
+
+Opt a window in, or override a case, per opening:
+
+```json
+{ "kind": "window", "pos": 0.2, "breakable": true }    // glass can break
+{ "kind": "door",   "pos": 0.4, "interactive": false } // fixed/decorative door
+{ "kind": "door",   "pos": 0.0, "interactive": { "states": ["closed","ajar","open"] } }
+```
+
+`interactive: false` forces it off; a dict merges over the inferred machine. The
+full contract (states, transitions, stable ids, the breach reframe) is in
+`docs/INTERACTIVES.md`.
+
 ## The one golden rule
 
 **An art pass never touches collision or nav.** Collision and navigation live on

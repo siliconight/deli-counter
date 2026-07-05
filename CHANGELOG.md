@@ -1,4 +1,33 @@
-## [Unreleased] - lights.json: the lighting contract (Lux bridge)
+## [0.61.0] - Interactive fixtures: networked doors + breachable walls
+
+- New `interactives.py` (pure + tested): turns an authored opening into a
+  replicable STATE MACHINE `(id, states[], default, transitions[])` — the entire
+  networked surface. It describes STATE, never synchronization, so it stays
+  network-solution agnostic (server snapshot / event-RPC / lockstep / rollback).
+  Doors/garages infer a `door` (`closed`/`open`); a `breach` opening infers a
+  `breach_wall` (`intact`/`breached`) carrying `state_geometry {intact: wall,
+  breached: breach}`; a window is interactive only when authored `breakable`.
+- Emitted into BOTH contracts, sharing one id: `slots.json` slots gain an
+  art-facing `interactive` block (Zoo builds a `_<state>` art variant per state;
+  the breach reframe means a breachable wall is the `breached` STATE of a wall
+  slot, not a standalone module), and `gameplay.json` gains an `interactives`
+  array (the netcode-facing machine: id, slot_ref, transform, states, default,
+  transitions, reversible). The game spawns one replicated node per id.
+- Stable ids derive from the fixture's PLACE (`sha1(building, wall, story, kind,
+  round(pos,4))`), never an array index — the geometry pass re-sorts openings by
+  position, so an index-based id would break saved/replicated references on a
+  re-greybox. slot_ref reconstructs the same `{wall}_open{k}` the emitter names.
+- Authoring: new optional `Opening.breakable` and `Opening.interactive` (None |
+  false | dict override, merged over the inference). `interactive: false` forces
+  a fixture off; a dict authors a custom machine. Schema `$defs.opening` gains
+  the two optional props (SCHEMA_VERSION 1.9.0 -> 1.10.0, additive/back-compat).
+- slot_manifest_version 1.0.0 -> 1.1.0. docs/INTERACTIVES.md (shared with the
+  zoo repo), plus interactive sections in SLOT_MANIFEST / GAMEPLAY_JSON_CONTRACT
+  / AUTHORING. test_interactives.py (11 tests, no Blender). Validated on
+  primos_pizza -> 13 fixtures (11 doors incl. a garage, 2 soft-wall breaches),
+  all unique position-derived ids.
+
+## [0.60.0] - lights.json: the lighting contract (Lux bridge)
 - New light-anchor emitter (lights.py, pure + tested): derives one fluorescent
   ceiling row per room (along the longer axis, at story ceiling height) and one
   area light per window opening (sized + facing inward), and writes

@@ -47,6 +47,7 @@ from spec_types import (
     Ladder, Ramp, VaultLedge,
 )
 from rarity import resolve_rarity
+import interactives
 
 
 # ============================================================================
@@ -371,13 +372,25 @@ class _Builder:
         return wall
 
     # -- openings -> hole dicts + collision segments ------------------------
-    def _opening_to_hole(self, op: Opening, run_len):
+    def _machine_for(self, op, wall_name, story):
+        """The interactive state machine for an opening (or None). Derived
+        purely from the AUTHORED opening + its wall, so both the hole/slot pass
+        and the gameplay pass compute the SAME stable id independently. See
+        interactives.py + docs/INTERACTIVES.md."""
+        return interactives.derive_interactive(
+            self.s.name, wall_name, story, op.kind, op.pos,
+            breakable=bool(getattr(op, "breakable", False)),
+            override=getattr(op, "interactive", None))
+
+    def _opening_to_hole(self, op: Opening, run_len, wall_name=None,
+                         story=None):
         r = op.resolved()
         u = self.snap(op.pos * run_len)
         H = self.s.story_height
         v = -H / 2.0 + r["sill"] + r["height"] / 2.0 + self.s.floor_thick / 2.0
         return dict(u=u, v=v, w=r["width"], h=r["height"], kind=op.kind,
-                    sill=r["sill"])
+                    sill=r["sill"],
+                    interactive=self._machine_for(op, wall_name, story))
 
     def _wall_collision(self, name, center, size, axis, holes):
         """Emit convex collision for a wall pierced by any number of openings.
@@ -524,7 +537,7 @@ class _Builder:
         else:
             oc = (center[0], center[1] + u, center[2])
             wall_thick = size[0]
-        self.slots.append({
+        slot = {
             "slot_id": vb, "role": role, "size_mod": "full", "style": 1,
             "current_ref": ref or f"{role}_greybox_01", "kit_axis": "theme",
             "wall": vb.rsplit("_open", 1)[0], "story": story, "facing": facing,
@@ -537,7 +550,14 @@ class _Builder:
                     "openings": [{"kind": kind, "width": round(w, 4),
                                   "height": round(hh, 4), "sill": round(sill, 4)}],
                     "collision": "convex"},
-        })
+        }
+        # if this opening is an interactive fixture (door / breachable wall /
+        # breakable window), carry the art-facing state-machine block so Zoo
+        # builds a per-state art variant. Same id as the gameplay entry.
+        machine = h.get("interactive")
+        if machine:
+            slot["interactive"] = interactives.slot_interactive(machine)
+        self.slots.append(slot)
 
     def _seg_box(self, vname, cname, center, size, axis, cu, clen, vcz, vh,
                  role=None, visual=True, collide=True, material=None,
@@ -819,7 +839,7 @@ class _Builder:
         self.gameplay = {"mode": self.s.mode, "markers": [], "rooms": [],
                          "vertical_links": [], "openings": [],
                          "objectives": [], "loot": [], "zones": [],
-                         "materials": [], "surfaces": []}
+                         "materials": [], "surfaces": [], "interactives": []}
         # OPTIONAL building rarity: resolve once, expose as the single source of
         # truth on the gameplay.json top level. None when unset (no rarity).
         # _record_openings stamps the same colour onto each breachable door so a
@@ -911,7 +931,8 @@ class _Builder:
                 run = size[0] if axis == 0 else size[1]
                 holes = []
                 if spec_w:
-                    holes = [self._opening_to_hole(op, run) for op in spec_w.openings]
+                    holes = [self._opening_to_hole(op, run, f"ext_{s}_{wname}", s)
+                             for op in spec_w.openings]
                     self._record_openings(spec_w.openings, c, axis, run,
                                           f"ext_{s}_{wname}", s)
                 name = f"ext_{s}_{wname}"
@@ -931,8 +952,17 @@ class _Builder:
         """Capture tactical opening metadata (tag/breach_class/material/etc.)
         into gameplay.json, with the opening's world position. Also emits a
         DOOR_SOCKET / BREACH_PANEL marker empty when tactical tags are present
-        so Godot can replace baked openings with reusable scenes."""
+        so Godot can replace baked openings with reusable scenes, and one
+        INTERACTIVES entry (the replicable state machine) per interactive
+        opening -- see interactives.py + docs/INTERACTIVES.md."""
         H = self.s.story_height
+        _facing, wall_rot, _st = self._slot_orient(wall_name, axis)
+        # slot_ref must match the modular pass's slot id: _emit_wall_run walks
+        # openings sorted by their run-position u, naming each {wall}_open{k}.
+        # Reproduce that order here so a gameplay entry points at its slot.
+        order = sorted(range(len(openings)),
+                       key=lambda idx: self.snap(openings[idx].pos * run))
+        slot_index = {orig: k for k, orig in enumerate(order)}
         for j, op in enumerate(openings):
             r = op.resolved()
             u = op.pos * run
@@ -977,6 +1007,21 @@ class _Builder:
                 sock = self._empty(nm, (wx, wy, cz), self.MARKERS)
                 self._tag_rarity_anchor(sock)
 
+            # INTERACTIVE fixture: the replicable state machine for a door /
+            # breachable wall / breakable window. slot_ref points at the modular
+            # slot (same {wall}_open{k} the geometry pass names); id matches the
+            # slots.json interactive block. Netcode owns replication; this is
+            # network-solution agnostic (state, not synchronization).
+            machine = self._machine_for(op, wall_name, story)
+            if machine:
+                slot_ref = f"{wall_name}_open{slot_index[j]}"
+                self.gameplay["interactives"].append(
+                    interactives.gameplay_interactive(
+                        machine, slot_ref,
+                        {"translation": [round(wx, 3), round(wy, 3),
+                                         round(cz, 3)], "rot_y": wall_rot},
+                        building=self.s.name))
+
     def _tag_rarity_anchor(self, obj):
         """Tag a door/breach socket Empty with its building (and rarity, if any)
         as custom properties, which export to glTF node `extras` -> Godot node
@@ -1007,7 +1052,8 @@ class _Builder:
                 c = (mid, p.pos, cz)
                 size = (length, wt, H)
                 axis = 0
-            holes = [self._opening_to_hole(op, length) for op in p.openings]
+            holes = [self._opening_to_hole(op, length, f"int_{p.story}_{i}",
+                                           p.story) for op in p.openings]
             self._record_openings(p.openings, c, axis, length,
                                   f"int_{p.story}_{i}", p.story)
             name = f"int_{p.story}_{i}"
@@ -1568,7 +1614,7 @@ def write_slot_manifest(builder, path):
     -- no schema change. See docs/SLOT_MANIFEST.md."""
     import json
     data = {
-        "slot_manifest_version": "1.0.0",
+        "slot_manifest_version": "1.1.0",
         "building_id": builder.s.name,
         "theme": getattr(builder.s, "theme", None) or "greybox",
         "module_library": getattr(builder.s, "module_library", None) or "art/zoo",
@@ -1644,6 +1690,10 @@ def write_gameplay_json(builder, path):
         "zones": builder.gameplay["zones"],
         "materials": builder.gameplay["materials"],
         "surfaces": builder.gameplay["surfaces"],
+        # interactive fixtures (doors / breachable walls / breakable windows):
+        # one replicable state machine per id. The game spawns a networked node
+        # per entry and drives which art variant renders. See docs/INTERACTIVES.md.
+        "interactives": builder.gameplay["interactives"],
         # authoritative node-name -> surface role map (floor/ceiling/wall/stair/
         # ramp/ladder/prop). Downstream tools (Patina styling, vertex nuance)
         # should consume this instead of inferring roles from geometry.
