@@ -1591,6 +1591,29 @@ def write_slot_manifest(builder, path):
     return data
 
 
+def write_light_manifest(builder, path):
+    """Write <name>.lights.json -- the lighting contract. One anchor per light
+    (a fluorescent ceiling row per room, an area light per window), derived from
+    the rooms and openings the build computed. The renderer (Lux) instances a
+    rig per anchor and tunes it from the active preset. Output-only -- no schema
+    change. See docs/LIGHT_MANIFEST.md."""
+    import json
+    import lights as _lights
+    data = _lights.build_light_manifest(
+        builder.s.name,
+        builder.gameplay.get("rooms", []),
+        builder.gameplay.get("openings", []),
+        builder.s.story_height,
+        authored=getattr(builder.s, "lights", None),
+        theme=getattr(builder.s, "theme", None),
+    )
+    with open(path, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2)
+    print(f"[deli_counter] light manifest -> {path} "
+          f"({len(data['anchors'])} anchors)")
+    return data
+
+
 def write_gameplay_json(builder, path):
     """Write the tactical companion file (<name>.gameplay.json) next to the
     GLB. Holds markers, rooms, vertical links, and tagged openings so Godot

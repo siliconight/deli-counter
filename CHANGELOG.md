@@ -1,3 +1,14 @@
+## [Unreleased] - lights.json: the lighting contract (Lux bridge)
+- New light-anchor emitter (lights.py, pure + tested): derives one fluorescent
+  ceiling row per room (along the longer axis, at story ceiling height) and one
+  area light per window opening (sized + facing inward), and writes
+  <name>.lights.json next to the gameplay/slot manifests. Typed anchors say
+  WHERE a light belongs and WHAT kind; Lux instances a rig per anchor and tunes
+  it from the active preset. Output-only, no level.schema.json change.
+- Optional spec `lights` list for authored overrides (replaces a derived anchor
+  by id; absent by default, so existing specs are unaffected).
+- docs/LIGHT_MANIFEST.md; test_lights.py (5 tests, no Blender needed).
+
 ## [0.59.0] - primos_pizza: the showcase spec + an audit marker-room fix
 - specs/primos_pizza.json + NOTES.md: "Primo's Pizza & Social Club" -- a
   1997 Delco pizzeria with the card room and cash count upstairs, authored

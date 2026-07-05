@@ -74,7 +74,7 @@ def main():
     try:
         from spec_loader import load_spec
         from deli_counter import (build, export, write_gameplay_json,
-                                  write_slot_manifest)
+                                  write_slot_manifest, write_light_manifest)
     except ImportError as e:
         raise SystemExit(
             f"Could not import the kit from '{pkg}'. Set PKG_DIR in the CONFIG "
@@ -108,6 +108,10 @@ def main():
         # art-pass slot manifest (only when the modular emitter produced slots)
         if builder.slots:
             write_slot_manifest(builder, base + ".slots.json")
+        # lighting contract (whenever there are rooms or windows to light)
+        if g["rooms"] or any(o.get("kind") == "window"
+                             for o in g.get("openings", [])):
+            write_light_manifest(builder, base + ".lights.json")
     _write_manifest(spec_path, written)
 
 
