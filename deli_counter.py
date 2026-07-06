@@ -48,6 +48,7 @@ from spec_types import (
 )
 from rarity import resolve_rarity
 import interactives
+import roofs
 
 
 # ============================================================================
@@ -890,24 +891,45 @@ class _Builder:
 
     def _slabs(self):
         base, top = self._story_range()
-        ft = self.s.floor_thick
         for s in range(base, top + 1):
+            is_roof = (s == top)
+            # roof uses roof_thick (defaults to floor_thick); interior floors
+            # always use floor_thick.
+            ft = (self.s.roof_thick or self.s.floor_thick) if is_roof \
+                else self.s.floor_thick
             z = s * self.s.story_height
+            # roof=="none" drops the top cap entirely (no visual, no collision).
+            if is_roof and self.s.roof == "none":
+                continue
             # a slab's top face is the floor of story s; the topmost slab caps
             # the building (roof) and reads as a ceiling/roof surface.
-            role = "ceiling" if s == top else "floor"
-            self._box(f"slab_{s}", (0, 0, z - ft / 2),
-                      (self.s.footprint_x, self.s.footprint_y, ft), self.VISUAL,
-                      role=role)
+            role = "ceiling" if is_roof else "floor"
+            # VISUAL: skip only the roof mesh when authoring open-top; the
+            # collision below is unaffected, so grenades/projectiles still bounce.
+            if not (is_roof and self.s.roof == "open"):
+                self._box(f"slab_{s}", (0, 0, z - ft / 2),
+                          (self.s.footprint_x, self.s.footprint_y, ft),
+                          self.VISUAL, role=role)
             # Slabs use TRIMESH collision regardless of the spec default, which
             # is convex. Stairwells, ramps, and hatches boolean-cut holes in the
             # slab; a CONVEX hull fills any hole straight back in, capping the
             # opening with invisible collision (you see the gap but can't pass).
             # A flat slab as trimesh is cheap and is the only shape that keeps
-            # the hole.
+            # the hole. The roof keeps collision even when its visual is hidden.
             self._col_box(f"slab_col_{s}", (0, 0, z - ft / 2),
                           (self.s.footprint_x, self.s.footprint_y, ft),
                           mode="trimesh")
+            # ALWAYS emit the roof as an art-pass swap-slot (when modular) so
+            # Zoo can dress it -- present even in "open" mode, since the slot is
+            # the always-there hook that lets a roof be added after the fun test.
+            if is_roof and self._modular_on():
+                self._record_roof_slots(top, z - ft / 2, ft)
+
+    def _record_roof_slots(self, story, cz, ft):
+        """Emit the roof swap-slots (see roofs.roof_slots -- pure & tested) so
+        Zoo can dress the roof. footprint = one slot; per_room = one per
+        top-story room honoring Room.roofed."""
+        self.slots.extend(roofs.roof_slots(self.s, story, cz, ft))
 
     def _exterior(self):
         base, top = self._story_range()
@@ -1614,7 +1636,7 @@ def write_slot_manifest(builder, path):
     -- no schema change. See docs/SLOT_MANIFEST.md."""
     import json
     data = {
-        "slot_manifest_version": "1.1.0",
+        "slot_manifest_version": "1.2.0",
         "building_id": builder.s.name,
         "theme": getattr(builder.s, "theme", None) or "greybox",
         "module_library": getattr(builder.s, "module_library", None) or "art/zoo",

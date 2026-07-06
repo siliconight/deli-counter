@@ -49,6 +49,18 @@
     "has_basement": {
       "type": "boolean"
     },
+    "roof": {
+      "type": "string",
+      "enum": ["solid", "open", "none"]
+    },
+    "roof_mode": {
+      "type": "string",
+      "enum": ["footprint", "per_room"]
+    },
+    "roof_thick": {
+      "type": ["number", "null"],
+      "exclusiveMinimum": 0
+    },
     "wall_thick": {
       "type": "number",
       "exclusiveMinimum": 0
@@ -741,6 +753,9 @@
             ]
           },
           "objective": {
+            "type": "boolean"
+          },
+          "roofed": {
             "type": "boolean"
           }
         }

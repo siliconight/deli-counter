@@ -257,6 +257,7 @@ class Room:
     combat_range: Optional[str] = None     # "close", "medium", "long"
     fortifiable: Optional[bool] = None
     objective: bool = False                # convenience flag; role may also imply it
+    roofed: bool = True                    # roof_mode="per_room": False = open-air (no roof slot)
 
 
 @dataclass
@@ -365,6 +366,19 @@ class LevelSpec:
     wall_thick: float = 0.3
     floor_thick: float = 0.3
     collision: Collision = "convex"  # default for walls/slabs
+
+    # ROOF (the top-story ceiling slab, already baked by _slabs). Controls how
+    # it presents; derivation reads only frozen structure, so changing it never
+    # re-solves layout -- a passed greybox stays byte-identical below the roof.
+    #   "solid" = today: baked visual + trimesh collision.
+    #   "open"  = suppress the roof VISUAL for top-down authoring but KEEP
+    #             collision (grenades/projectiles still bounce -- the fun-test view).
+    #   "none"  = no top cap at all (visual + collision dropped).
+    roof: str = "solid"
+    # "footprint" = one slab over the whole plan (today). "per_room" = one roof
+    # slot per top-story room, honoring Room.roofed (open-air rooms opt out).
+    roof_mode: str = "footprint"
+    roof_thick: Optional[float] = None   # None -> floor_thick
 
     ext_walls: list[ExtWall] = field(default_factory=list)
     partitions: list[Partition] = field(default_factory=list)

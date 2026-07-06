@@ -1,3 +1,26 @@
+## [0.62.0] - Roof: authorable, swappable, collision-retaining
+
+- The top-story ceiling slab that `_slabs()` already bakes becomes a first-class
+  surface you can author, dress, and add after the greybox passes. New spec
+  fields (additive, defaults reproduce 0.61.0 byte-for-byte): `roof`
+  (`solid` = today | `open` = drop the roof VISUAL for top-down authoring but
+  KEEP collision so grenades/projectiles still bounce | `none` = no cap),
+  `roof_mode` (`footprint` | `per_room`), `roof_thick`, and `Room.roofed`
+  (per-room open-air opt-out).
+- `_slabs()` now splits the roof's visual from its collision (the collision box
+  is emitted regardless of `roof` visual mode) and, when modular, ALWAYS emits a
+  roof swap-slot so the art pass has a hook even in `open` mode.
+- New pure module `roofs.py` (`roof_slots`, no bpy, like `lights.py` /
+  `interactives.py`) derives the roof slot(s): one over the footprint, or one per
+  top-story room honoring `Room.roofed`. `slots.json` gains `role: "roof"`,
+  `facing: "up"` records. `test_roofs.py` (4 tests).
+- Consumers (Godot loader / Zoo / Lot) key on these: hide-mesh/keep-collision
+  toggle, roof/skylight art modules, site roofline merge. See docs/ROOF_PLAN.md.
+- Roof derivation reads only frozen structure (footprint, story_height, room
+  bounds); it never re-solves layout, so a passed greybox stays byte-identical
+  below the roof. `slot_manifest_version` 1.1.0 → 1.2.0;
+  `SCHEMA_VERSION` 1.10.0 → 1.11.0; `KIT_VERSION` 0.61.0 → 0.62.0.
+
 ## [0.61.0] - Interactive fixtures: networked doors + breachable walls
 
 - New `interactives.py` (pure + tested): turns an authored opening into a
