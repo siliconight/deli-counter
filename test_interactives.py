@@ -41,6 +41,40 @@ def test_window_not_interactive_unless_breakable():
     assert m["states"] == ["intact", "broken"]
 
 
+# --- vault door: a hero portal, closed by default --------------------------
+
+def test_vault_is_inferred_as_a_vault_door():
+    m = I.derive_interactive("gs_bank", "ext_0_N", 0, "vault", 0.0)
+    assert m["kind"] == "vault_door"
+    assert m["states"] == ["locked", "unlocked", "open", "breached"]
+    assert m["default"] == "locked"          # closed by default
+    # the closed door is its own art; open/breached reuse doorway/breach
+    assert m["state_geometry"] == {
+        "locked": "vault_door", "unlocked": "vault_door",
+        "open": "doorway", "breached": "breach"}
+
+
+def test_vault_can_be_breached_from_either_closed_state():
+    m = I.derive_interactive("gs_bank", "ext_0_N", 0, "vault", 0.0)
+    breach = {(t["from"], t["to"]) for t in m["transitions"]
+              if t["event"] == "breach"}
+    assert breach == {("locked", "breached"), ("unlocked", "breached")}
+    # the lock/open cycle is reachable both ways
+    events = {t["event"] for t in m["transitions"]}
+    assert {"unlock", "lock", "open", "close", "breach"} == events
+
+
+def test_vault_slot_view_carries_the_state_geometry_for_zoo():
+    m = I.derive_interactive("gs_bank", "ext_0_N", 0, "vault", 0.0)
+    sv = I.slot_interactive(m)
+    assert sv["kind"] == "vault_door"
+    assert sv["state_geometry"]["open"] == "doorway"
+    assert sv["state_geometry"]["breached"] == "breach"
+    # closed states block, open/breached don't (advisory)
+    assert sv["collision_per_state"] == {
+        "locked": True, "unlocked": True, "open": False, "breached": False}
+
+
 # --- authored override ------------------------------------------------------
 
 def test_override_false_forces_non_interactive():

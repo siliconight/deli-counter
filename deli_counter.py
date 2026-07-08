@@ -416,8 +416,9 @@ class _Builder:
         H = size[2]
         ft = self.s.floor_thick
 
-        # Only doors/garages/breaches carve the wall. Windows stay solid.
-        carve = sorted((h for h in holes if h["kind"] in ("door", "garage", "breach")),
+        # Only doors/garages/breaches/vaults carve the wall. Windows stay solid.
+        carve = sorted((h for h in holes
+                        if h["kind"] in ("door", "garage", "breach", "vault")),
                        key=lambda h: h["u"])
         if not carve:
             self._col_box(name, center, size)
@@ -466,6 +467,11 @@ class _Builder:
                 box(f"lintel{i}", u, w, vcz=open_top + lintel_h / 2, vh=lintel_h)
             if h["kind"] == "breach":
                 box(f"BREACHPANEL{i}", u, w, vcz=(open_bottom + open_top) / 2,
+                    vh=hh, mode_col=True, visual=True)
+            elif h["kind"] == "vault":
+                # default state is LOCKED (closed) -> a solid armored panel fills
+                # the portal, like a breach panel. Zoo's vault_door art swaps in.
+                box(f"VAULTDOOR{i}", u, w, vcz=(open_bottom + open_top) / 2,
                     vh=hh, mode_col=True, visual=True)
 
     # -- modular wall emitter ----------------------------------------------
@@ -529,8 +535,8 @@ class _Builder:
         dims so a themed doorway/window prefab can replace its frame 1:1."""
         facing, rot_y, story = self._slot_orient(vb, axis)
         kind = h["kind"]
-        role = {"door": "doorway", "garage": "doorway",
-                "window": "window", "breach": "breach"}.get(kind, "doorway")
+        role = {"door": "doorway", "garage": "doorway", "window": "window",
+                "breach": "breach", "vault": "vault_door"}.get(kind, "doorway")
         u, w, hh, sill = h["u"], h["w"], h["h"], h["sill"]
         if axis == 0:
             oc = (center[0] + u, center[1], center[2])
@@ -654,8 +660,8 @@ class _Builder:
         open_bottom = wall_bottom + ft / 2.0 + sill
         open_top = open_bottom + hh
         vb, cb = f"{vbase}_open{j}", f"{cbase}_open{j}"
-        role = {"door": "doorway", "garage": "doorway",
-                "window": "window", "breach": "breach"}.get(kind, "doorway")
+        role = {"door": "doorway", "garage": "doorway", "window": "window",
+                "breach": "breach", "vault": "vault_door"}.get(kind, "doorway")
         # RESOLVER FORK: a themed opening module replaces the whole frame at once.
         resolved = self._resolve_module(role, width=w)
         if resolved:
@@ -695,6 +701,14 @@ class _Builder:
             self._seg_box(f"{vb}_BREACHPANEL", f"{cb}_BREACHPANEL", center,
                           size, axis, u, w, (open_bottom + open_top) / 2.0, hh,
                           role="breach", material=material, record_slot=False)
+        elif kind == "vault":
+            # closed by default (locked) -> a solid armored panel fills the
+            # portal, so the greybox reads shut and blocks. Zoo's vault_door
+            # module swaps in; its open/breached states unseal it.
+            self._seg_box(f"{vb}_VAULTDOOR", f"{cb}_VAULTDOOR", center,
+                          size, axis, u, w, (open_bottom + open_top) / 2.0, hh,
+                          role="vault_door", material=material,
+                          record_slot=False)
         # door / garage: aperture left void (walkable) -> nothing in the span
 
     def _emit_wall_run(self, vbase, cbase, center, size, axis, holes, material):
@@ -1026,6 +1040,10 @@ class _Builder:
                 self._tag_rarity_anchor(sock)
             elif op.kind == "breach":
                 nm = f"BREACH_PANEL_{wall_name}_{j}".upper()
+                sock = self._empty(nm, (wx, wy, cz), self.MARKERS)
+                self._tag_rarity_anchor(sock)
+            elif op.kind == "vault":
+                nm = f"VAULT_DOOR_{wall_name}_{j}".upper()
                 sock = self._empty(nm, (wx, wy, cz), self.MARKERS)
                 self._tag_rarity_anchor(sock)
 

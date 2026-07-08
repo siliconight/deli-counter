@@ -51,14 +51,24 @@
     },
     "roof": {
       "type": "string",
-      "enum": ["solid", "open", "none"]
+      "enum": [
+        "solid",
+        "open",
+        "none"
+      ]
     },
     "roof_mode": {
       "type": "string",
-      "enum": ["footprint", "per_room"]
+      "enum": [
+        "footprint",
+        "per_room"
+      ]
     },
     "roof_thick": {
-      "type": ["number", "null"],
+      "type": [
+        "number",
+        "null"
+      ],
       "exclusiveMinimum": 0
     },
     "wall_thick": {
@@ -1060,7 +1070,8 @@
             "door",
             "window",
             "garage",
-            "breach"
+            "breach",
+            "vault"
           ]
         },
         "pos": {

@@ -51,7 +51,8 @@ import sightlines                                   # noqa: E402
 from spec_loader import spec_from_dict, load_spec   # noqa: E402
 
 WIDE_DOOR = 1.4          # >= passes two agents / a loot carry comfortably
-KIND_DEFAULT_W = {"door": 1.2, "window": 1.6, "garage": 3.5, "breach": 1.5}
+KIND_DEFAULT_W = {"door": 1.2, "window": 1.6, "garage": 3.5, "breach": 1.5,
+                  "vault": 1.4}
 
 
 def _op_width(op):

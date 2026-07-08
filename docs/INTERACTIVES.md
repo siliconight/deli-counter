@@ -126,6 +126,7 @@ Deli Counter infers the common cases and lets the author override:
 |----------------|---------------|---------------------|
 | `door`, `garage` | `door` — `[closed, open]` | **inferred** (always) |
 | `breach`       | `breach_wall` — `[intact, breached]`, `state_geometry {intact: wall, breached: breach}` | **inferred** (always) |
+| `vault`        | `vault_door` — `[locked, unlocked, open, breached]`, `state_geometry {locked: vault_door, unlocked: vault_door, open: doorway, breached: breach}` | **inferred** (always) |
 | `window`       | `window` — `[intact, broken]` | only when authored `breakable: true` |
 
 Per-opening override in the spec:

@@ -16,6 +16,11 @@ replicable state machines (into `gameplay.json`'s `interactives` and each slot's
 
 - a `door` / `garage` → a `door` fixture (`closed` / `open`)
 - a `breach` opening → a `breach_wall` (`intact` / `breached`)
+- a `vault` opening → a `vault_door` (`locked` / `unlocked` / `open` / `breached`;
+  closed by default, so the greybox reads shut). Author it as
+  `{ "kind": "vault", "pos": ..., "tag": "main_vault" }` (default 1.4 x 2.3 m,
+  raised threshold lip). Zoo builds the closed armored door and reuses
+  doorway/breach for its open/breached states.
 
 Opt a window in, or override a case, per opening:
 

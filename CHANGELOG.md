@@ -1,3 +1,32 @@
+## [0.63.0] - Vault door: the first bank interactive fixture
+
+- New `vault` opening kind — the heist vault portal. It infers a `vault_door`
+  interactive fixture (via `interactives.py`): states `[locked, unlocked, open,
+  breached]`, default `locked`, with the transition graph unlock/lock/open/close
+  plus `breach` from either closed state. Emitted into both contracts sharing one
+  stable id, like every other fixture.
+- state_geometry maps each state to the Zoo module that backs it —
+  `{locked: vault_door, unlocked: vault_door, open: doorway, breached: breach}` —
+  so Zoo builds the closed armored door (`vault_door` species, 0.17.0), reuses
+  `doorway` for the open passage and `breach` for the blown state, and defers
+  `unlocked` (identical art to `locked` today) to the resolver's base fallback.
+  The vault door is thus a doorway/breach at its other states, exactly like a
+  breachable wall is a wall's breached state.
+- Baking: a vault opening carves the wall and, being closed by default (locked),
+  fills the portal with a solid armored panel (`VAULTDOOR` piece, role
+  `vault_door`) in both the modular and non-modular shells — the greybox reads
+  shut and blocks. A `VAULT_DOOR_*` socket marker is emitted for Godot scene
+  swap, parity with door/breach.
+- Authoring: `{ "kind": "vault", "pos": ..., "tag": "main_vault" }`. Defaults
+  1.4 x 2.3 m with a 0.15 m raised threshold lip (matches Zoo's vault_door
+  frame). `Opening.kind` + schema enum gain `vault` (SCHEMA 1.11.0 -> 1.12.0).
+- Navigability treats a vault as a connection (the vault room is entered through
+  it, so it's not flagged isolated); sightline/cover audits still treat the
+  closed door as solid. Showcased in `bank.json` (basement: crack the vault
+  door or blow the adjacent breach). 3 new tests (20 total). Gate green.
+- Fixes the VERSION text file (was stale at 0.61.0 while HEAD was tagged
+  v0.62.0) to track KIT_VERSION again.
+
 ## [0.62.0] - Roof: authorable, swappable, collision-retaining
 
 - The top-story ceiling slab that `_slabs()` already bakes becomes a first-class

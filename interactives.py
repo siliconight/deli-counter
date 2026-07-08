@@ -68,12 +68,38 @@ _DEFAULTS = {
         "reversible": False,
         "collision_per_state": {"intact": True, "broken": True},
     },
+    "vault_door": {
+        # a heist hero portal. The closed states (locked/unlocked) are a solid
+        # armored door; open is a passage; breached is blown. state_geometry
+        # maps each state to the Zoo module that backs it: the closed door has
+        # its own species, open reuses `doorway`, breached reuses `breach`
+        # (so a vault door is a doorway/breach at its other states, same as a
+        # breachable wall is a wall's breached state). unlocked == locked art
+        # today, so Zoo defers it to the base until the art pass adds a handle.
+        "kind": "vault_door",
+        "states": ["locked", "unlocked", "open", "breached"],
+        "default": "locked",
+        "state_geometry": {"locked": "vault_door", "unlocked": "vault_door",
+                           "open": "doorway", "breached": "breach"},
+        "transitions": [
+            {"event": "unlock", "from": "locked", "to": "unlocked"},
+            {"event": "lock", "from": "unlocked", "to": "locked"},
+            {"event": "open", "from": "unlocked", "to": "open"},
+            {"event": "close", "from": "open", "to": "unlocked"},
+            {"event": "breach", "from": "locked", "to": "breached"},
+            {"event": "breach", "from": "unlocked", "to": "breached"},
+        ],
+        "reversible": False,   # the lock/open cycle reverses; a breach doesn't
+        "collision_per_state": {"locked": True, "unlocked": True,
+                                "open": False, "breached": False},
+    },
 }
 
 # opening.kind -> fixture kind (the inference). A garage door is a door; a
-# breach opening is a breachable wall; a window is interactive only when the
-# author marks it breakable.
-_KIND_TO_FIXTURE = {"door": "door", "garage": "door", "breach": "breach_wall"}
+# breach opening is a breachable wall; a vault opening is a vault door; a window
+# is interactive only when the author marks it breakable.
+_KIND_TO_FIXTURE = {"door": "door", "garage": "door", "breach": "breach_wall",
+                    "vault": "vault_door"}
 
 
 def _copy_machine(spec):

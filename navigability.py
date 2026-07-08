@@ -29,7 +29,7 @@ def _opening_nav_width(op):
     """Clear width an agent sees through an opening. Windows with a sill aren't
     floor-level traversable; only doors/garages/breaches at floor level count."""
     r = op.resolved()
-    if op.kind in ("door", "garage", "breach"):
+    if op.kind in ("door", "garage", "breach", "vault"):
         return r["width"]
     return None   # windows etc. are not nav-traversable openings
 

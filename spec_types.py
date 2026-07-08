@@ -69,7 +69,7 @@ class Placement:
 @dataclass
 class Opening:
     """A door or window cut into a wall."""
-    kind: Literal["door", "window", "garage", "breach"] = "door"
+    kind: Literal["door", "window", "garage", "breach", "vault"] = "door"
     # position along the wall's run, as a fraction -0.5..0.5 of wall length
     pos: float = 0.0
     width: Optional[float] = None    # m; defaults per kind
@@ -99,6 +99,7 @@ class Opening:
             "window": dict(width=1.6, height=1.4, sill=1.0),
             "garage": dict(width=3.5, height=3.0, sill=0.0),
             "breach": dict(width=1.5, height=2.2, sill=0.0),
+            "vault":  dict(width=1.4, height=2.3, sill=0.15),
         }[self.kind]
         for k, v in defaults.items():
             if d[k] is None:
