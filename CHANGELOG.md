@@ -1,3 +1,26 @@
+## [0.64.0] - Teller line + safe deposit boxes: the rest of the bank fixtures
+
+- New `teller` and `safe_deposit` opening kinds — the bank lobby teller line and
+  the vault-room box wall. Both are SOLID barriers (like `window`), not carved
+  portals like `vault`: they bake a solid piece filling the span (a `TELLERLINE`
+  / `SAFEDEPOSIT` slot) so the greybox stays sealed, and Zoo's `teller_line` /
+  `safe_deposit_boxes` modules (Zoo 0.18/0.19) swap in.
+- Each infers an interactive fixture (`interactives.py`): `teller` -> a
+  `teller_window` (intact/shattered, intact blocks / shattered passable);
+  `safe_deposit` -> a `safe_deposit_boxes` wall (intact/drilled, solid in both —
+  per-box loot is gameplay's granularity, not the wall's art state). Neither
+  carries `state_geometry`, so the break/drill state reuses the base art and Zoo
+  defers it until a shattered-glass / drilled-box art pass — same as a broken
+  window. Emitted into both contracts with a stable position id + a socket
+  marker, like every fixture.
+- Authoring: `{ "kind": "teller", "pos": ... }` (default 2.0 x 3.0 m, floor-to-
+  ceiling) and `{ "kind": "safe_deposit", "pos": ... }` (default 2.0 x 2.4 m).
+  `Opening.kind` + schema enum gain both (SCHEMA 1.12.0 -> 1.13.0). Navigability
+  treats them as solid (barriers, not connections), like a window.
+- Showcased in `bank.json`: a lobby teller line (story 0) and a vault-room
+  deposit-box wall (basement, beside the vault door + breach). 3 new tests
+  (23 total). Gate green.
+
 ## [0.63.0] - Vault door: the first bank interactive fixture
 
 - New `vault` opening kind — the heist vault portal. It infers a `vault_door`

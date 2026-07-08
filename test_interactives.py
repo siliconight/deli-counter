@@ -75,6 +75,40 @@ def test_vault_slot_view_carries_the_state_geometry_for_zoo():
         "locked": True, "unlocked": True, "open": False, "breached": False}
 
 
+# --- teller line + safe deposit boxes: solid barriers, one break state -----
+
+def test_teller_is_inferred_as_a_teller_window():
+    m = I.derive_interactive("gs_bank", "int_0_2", 0, "teller", 0.0)
+    assert m["kind"] == "teller_window"
+    assert m["states"] == ["intact", "shattered"]
+    assert m["default"] == "intact"
+    assert [t["event"] for t in m["transitions"]] == ["shatter"]
+    # intact blocks, shattered is passable (advisory); no state_geometry ->
+    # shattered reuses the teller_line art (Zoo defers it)
+    assert "state_geometry" not in m
+    assert m["collision_per_state"] == {"intact": True, "shattered": False}
+
+
+def test_safe_deposit_is_inferred_as_a_box_wall():
+    m = I.derive_interactive("gs_bank", "int_-1_0", -1, "safe_deposit", 0.2)
+    assert m["kind"] == "safe_deposit_boxes"
+    assert m["states"] == ["intact", "drilled"]
+    assert [t["event"] for t in m["transitions"]] == ["drill"]
+    # the wall stays solid in both states (per-box loot is gameplay's job)
+    assert m["collision_per_state"] == {"intact": True, "drilled": True}
+
+
+def test_teller_and_safe_deposit_get_stable_ids_and_slot_views():
+    for kind in ("teller", "safe_deposit"):
+        m = I.derive_interactive("gs_bank", "int_0_1", 0, kind, 0.1)
+        sv = I.slot_interactive(m)
+        gv = I.gameplay_interactive(m, "int_0_1_open0",
+                                    {"translation": [1, 2, 1], "rot_y": 0})
+        assert sv["id"] == gv["id"] == m["id"]
+        assert "state_geometry" not in sv     # both defer to the base species
+        assert gv["transitions"]
+
+
 # --- authored override ------------------------------------------------------
 
 def test_override_false_forces_non_interactive():

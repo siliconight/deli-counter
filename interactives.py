@@ -93,13 +93,43 @@ _DEFAULTS = {
         "collision_per_state": {"locked": True, "unlocked": True,
                                 "open": False, "breached": False},
     },
+    "teller_window": {
+        # a bank teller line: a solid counter + bulletproof glass. Intact blocks;
+        # shattered is passable. Shattered reuses the same teller_line art today
+        # (no state_geometry), so Zoo defers it to the base until a
+        # shattered-glass art pass. Terminal once shattered.
+        "kind": "teller_window",
+        "states": ["intact", "shattered"],
+        "default": "intact",
+        "transitions": [
+            {"event": "shatter", "from": "intact", "to": "shattered"},
+        ],
+        "reversible": False,
+        "collision_per_state": {"intact": True, "shattered": False},
+    },
+    "safe_deposit_boxes": {
+        # a vault-room wall of deposit boxes. Intact is a solid wall; drilled is
+        # the robbed/opened state (reuses the same art today -> deferred). The
+        # wall stays solid in both states (you don't walk through it); per-box
+        # loot is gameplay's granularity, not the wall's art state.
+        "kind": "safe_deposit_boxes",
+        "states": ["intact", "drilled"],
+        "default": "intact",
+        "transitions": [
+            {"event": "drill", "from": "intact", "to": "drilled"},
+        ],
+        "reversible": False,
+        "collision_per_state": {"intact": True, "drilled": True},
+    },
 }
 
 # opening.kind -> fixture kind (the inference). A garage door is a door; a
-# breach opening is a breachable wall; a vault opening is a vault door; a window
-# is interactive only when the author marks it breakable.
+# breach opening is a breachable wall; a vault opening is a vault door; a teller
+# opening is a teller window; a safe_deposit opening is a box wall; a window is
+# interactive only when the author marks it breakable.
 _KIND_TO_FIXTURE = {"door": "door", "garage": "door", "breach": "breach_wall",
-                    "vault": "vault_door"}
+                    "vault": "vault_door", "teller": "teller_window",
+                    "safe_deposit": "safe_deposit_boxes"}
 
 
 def _copy_machine(spec):

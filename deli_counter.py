@@ -536,7 +536,8 @@ class _Builder:
         facing, rot_y, story = self._slot_orient(vb, axis)
         kind = h["kind"]
         role = {"door": "doorway", "garage": "doorway", "window": "window",
-                "breach": "breach", "vault": "vault_door"}.get(kind, "doorway")
+                "breach": "breach", "vault": "vault_door",
+                "teller": "teller_line", "safe_deposit": "safe_deposit_boxes"}.get(kind, "doorway")
         u, w, hh, sill = h["u"], h["w"], h["h"], h["sill"]
         if axis == 0:
             oc = (center[0] + u, center[1], center[2])
@@ -661,7 +662,8 @@ class _Builder:
         open_top = open_bottom + hh
         vb, cb = f"{vbase}_open{j}", f"{cbase}_open{j}"
         role = {"door": "doorway", "garage": "doorway", "window": "window",
-                "breach": "breach", "vault": "vault_door"}.get(kind, "doorway")
+                "breach": "breach", "vault": "vault_door",
+                "teller": "teller_line", "safe_deposit": "safe_deposit_boxes"}.get(kind, "doorway")
         # RESOLVER FORK: a themed opening module replaces the whole frame at once.
         resolved = self._resolve_module(role, width=w)
         if resolved:
@@ -708,6 +710,20 @@ class _Builder:
             self._seg_box(f"{vb}_VAULTDOOR", f"{cb}_VAULTDOOR", center,
                           size, axis, u, w, (open_bottom + open_top) / 2.0, hh,
                           role="vault_door", material=material,
+                          record_slot=False)
+        elif kind == "teller":
+            # a solid barrier (counter + bulletproof glass) fills the span; the
+            # shell stays sealed. Zoo's teller_line module swaps in.
+            self._seg_box(f"{vb}_TELLERLINE", f"{cb}_TELLERLINE", center,
+                          size, axis, u, w, (open_bottom + open_top) / 2.0, hh,
+                          role="teller_line", material=material,
+                          record_slot=False)
+        elif kind == "safe_deposit":
+            # a solid wall of deposit boxes fills the span. Zoo's
+            # safe_deposit_boxes module swaps in.
+            self._seg_box(f"{vb}_SAFEDEPOSIT", f"{cb}_SAFEDEPOSIT", center,
+                          size, axis, u, w, (open_bottom + open_top) / 2.0, hh,
+                          role="safe_deposit_boxes", material=material,
                           record_slot=False)
         # door / garage: aperture left void (walkable) -> nothing in the span
 
@@ -1044,6 +1060,14 @@ class _Builder:
                 self._tag_rarity_anchor(sock)
             elif op.kind == "vault":
                 nm = f"VAULT_DOOR_{wall_name}_{j}".upper()
+                sock = self._empty(nm, (wx, wy, cz), self.MARKERS)
+                self._tag_rarity_anchor(sock)
+            elif op.kind == "teller":
+                nm = f"TELLER_LINE_{wall_name}_{j}".upper()
+                sock = self._empty(nm, (wx, wy, cz), self.MARKERS)
+                self._tag_rarity_anchor(sock)
+            elif op.kind == "safe_deposit":
+                nm = f"SAFE_DEPOSIT_{wall_name}_{j}".upper()
                 sock = self._empty(nm, (wx, wy, cz), self.MARKERS)
                 self._tag_rarity_anchor(sock)
 

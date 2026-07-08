@@ -21,6 +21,11 @@ replicable state machines (into `gameplay.json`'s `interactives` and each slot's
   `{ "kind": "vault", "pos": ..., "tag": "main_vault" }` (default 1.4 x 2.3 m,
   raised threshold lip). Zoo builds the closed armored door and reuses
   doorway/breach for its open/breached states.
+- a `teller` opening → a `teller_window` (`intact` / `shattered`), and a
+  `safe_deposit` opening → a `safe_deposit_boxes` wall (`intact` / `drilled`).
+  Both are solid barriers (they read shut, like a window), sized floor-to-
+  ceiling by default; Zoo swaps in the teller line / box wall. Author as
+  `{ "kind": "teller", "pos": ... }` / `{ "kind": "safe_deposit", "pos": ... }`.
 
 Opt a window in, or override a case, per opening:
 
