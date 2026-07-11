@@ -1079,6 +1079,20 @@
     "separation_factor": {
       "type": "number",
       "exclusiveMinimum": 0
+    },
+    "archetype": {
+      "enum": [
+        "residential_house",
+        "urban_storefront_narrow",
+        "restaurant_two_story",
+        "office_lowrise",
+        "office_midrise",
+        "hotel_corridor",
+        "apartment_corridor",
+        "school_wings",
+        "warehouse_mezzanine",
+        "parking_structure"
+      ]
     }
   },
   "$defs": {

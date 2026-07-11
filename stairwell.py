@@ -335,6 +335,26 @@ def check(spec):
                 f"shaft; offline review can't see a barrier -- make sure the "
                 f"grade landing interrupts descent (Rule 8).")
 
+        # s14.2 -- archetype fit (intel; placement lives in stair_place.py)
+        if getattr(spec, "archetype", None):
+            import stair_place                      # lazy: avoids the cycle
+            prof = stair_place.PROFILES.get(spec.archetype)
+            if prof is None:
+                warnings.append(
+                    f"STAIRWELL: spec declares unknown archetype "
+                    f"'{spec.archetype}' (known: "
+                    f"{', '.join(sorted(stair_place.PROFILES))}).")
+            else:
+                fams = stair_place.zone_families_at(spec, prof, st.x, st.y)
+                if not fams & (set(prof["primary_zones"])
+                               | set(prof["secondary_zones"])):
+                    warnings.append(
+                        f"STAIRWELL STAIR_LOW_ARCHETYPE_FIT: '{sid}' at "
+                        f"({st.x:g}, {st.y:g}) sits in none of "
+                        f"'{spec.archetype}''s candidate zones "
+                        f"({', '.join(prof['primary_zones'] + prof['secondary_zones'])}) "
+                        f"-- see stair_place.py for a placement proposal.")
+
         # Rule 4 / 9 -- a door landing on the treads (footprint approximation)
         tread = footprint_rect(st)
         tread = (tread[0], tread[1] + _TREAD_MARGIN,

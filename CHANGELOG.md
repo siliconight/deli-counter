@@ -1,3 +1,47 @@
+## [0.66.0] - Archetype profiles + weighted stair placement (spec Phase 3)
+
+- New `stair_place.py`: the PLACEMENT side of what stairwell.py reviews.
+  Ten archetype profiles from the placement spec s12 (residential_house,
+  urban_storefront_narrow, restaurant_two_story, office_lowrise,
+  office_midrise, hotel_corridor, apartment_corridor, school_wings,
+  warehouse_mezzanine, parking_structure), each carrying stair count policy,
+  preferred shape, primary/secondary candidate zones, service/convenience
+  probabilities, separation factor, and s10 riser/width geometry defaults.
+- Candidate zones are DETERMINISTIC anchors (s11.2, never random points):
+  exterior corners, grade corridor-axis ends, central core edges, wing
+  junctions (adjacent circulation rooms), rear service bands (rear = wall
+  opposite the most-doored front), perimeter bays, and party-wall bands for
+  narrow plates (aspect >= 1.8). Every rejected candidate carries its stated
+  reason (s11.3 / acceptance criterion 14): does_not_fit_inside_shell,
+  overlaps_protected_room, consumes_circulation,
+  entrance_through_prohibited_room, no_ground_discharge,
+  overlaps_existing_stair.
+- Survivors are scored with the s11.4 weights verbatim (corridor connection,
+  discharge, stack efficiency, separation, grid alignment, archetype fit,
+  exterior visibility, minus usable-area damage, dead ends, route dependency).
+  Two-stair buildings select the best PAIR (s11.5): separation valid, routes
+  independent (reuses the Rule 7 chokepoint scan), coverage + separation
+  bonuses -- never the two top individual scores.
+- Proposals emit ready-to-paste Stairwell JSON with roles assigned
+  (primary/secondary egress + optional seeded service/convenience extras --
+  rolls on spec.seed, so the same spec proposes the same stairs forever), s10
+  riser math (uniform risers near the profile target, run snapped to the
+  0.5 m grid), and stack-serving story ranges. CLI:
+  `python stair_place.py specs/x.json --archetype office_lowrise`
+  (+ `--count`, `--write` for stair-less specs, `--write --replace` to
+  overwrite deliberately; --replace ignores existing stairs in the math).
+- LevelSpec gains optional `archetype` (SCHEMA 1.14.0 -> 1.15.0, enum of the
+  ten profiles). When declared, stairwell.py adds STAIR_LOW_ARCHETYPE_FIT
+  intel (s14.2) for any stair outside the profile's candidate zones.
+- Showcased in `office.json`: declares `office_lowrise`, and its (0,0)
+  center stair -- the spec's headline "random center stair" anti-pattern --
+  now fires the fit warning, while `stair_place.py` proposes the corrected
+  pair (corridor-end west + corner east, independent lobby/bullpen routes,
+  both exec_suite-overlapping corners rejected with reasons). Geometry
+  untouched; the warning is intel, gate stays green.
+- 16 new tests (60 total), including the loop-closure test: a stair_place
+  proposal must pass stairwell.check with zero errors. Gate green.
+
 ## [0.65.0] - Stairwell systems: stairs become semantic egress systems
 
 - Implements Phases 1-2 of docs/stairwell_placement_spec.md (new doc, folded in

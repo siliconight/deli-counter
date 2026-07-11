@@ -396,6 +396,10 @@ class LevelSpec:
     # required = max(8.0 m, floor_plate_diagonal * separation_factor).
     # 0.33 = sprinklered approximation; 0.50 = conservative non-sprinklered.
     separation_factor: float = 0.33
+    # building archetype (stair_place.py profile id). Optional; when set,
+    # stairwell.py adds STAIR_LOW_ARCHETYPE_FIT intel for classified stairs
+    # sitting outside the profile's candidate zones.
+    archetype: Optional[str] = None
 
     ext_walls: list[ExtWall] = field(default_factory=list)
     partitions: list[Partition] = field(default_factory=list)
