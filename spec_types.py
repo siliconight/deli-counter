@@ -154,6 +154,11 @@ class Stairwell:
     id: Optional[str] = None         # stable id -> gameplay.json stair_systems
     role: Optional[str] = None       # primary_egress/secondary_egress/... (spec s5)
     stack_id: Optional[str] = None   # declared vertical stack membership (Rule 2)
+    # arbitrary extra data -> gameplay.json (like VerticalLink.meta). A
+    # meta["gameplay"] dict overlays the derived s9.3 network defaults -- the
+    # spec's "authored scenario explicitly permits it" escape hatch (e.g.
+    # {"gameplay": {"allow_random_lock": true}}).
+    meta: Optional[dict] = None
 
 
 @dataclass

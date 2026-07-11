@@ -144,3 +144,50 @@ them, that it says so and the game reads from here.)
 keys as optional and ignore them, and treat a missing `surface_roles` (older
 builds) as "infer roles yourself." Additive changes only; existing fields won't
 change shape without a `SCHEMA_VERSION` bump.
+
+## stair_systems (kit 0.65+; gameplay/network semantics 0.67+)
+
+One entry per stair, derived by `stairwell.py` (see
+docs/stairwell_placement_spec.md, section 13). This is the egress contract a
+mission layer (Dispatch) must respect when locking doors or placing blockers:
+
+```json
+{
+  "id": "main_stack", "stack_id": null, "role": "primary_egress",
+  "shape": "switchback", "enclosure": "protected",
+  "floors_served": [-1, 0, 1],
+  "footprint_polygon": [[-16.4, 6.25], ...],
+  "clear_width_m": 1.4,
+  "approach": [ { "floor": 0, "room": "stairwell", "room_role": "connector" } ],
+  "discharge": { "floor": 0, "type": "direct_exterior", "room": "stairwell",
+                 "via": [], "destination": "stairwell", "route_hops": 0 },
+  "door_nodes": [ { "floor": 0, "kind": "door", "wall": "int_0_3",
+                    "pos": 0.2, "interactive": "lvl:if:ab12cd34",
+                    "default_state": "closed", "connects_from": "corridor",
+                    "discharge_door": false } ],
+  "egress": { "counts_as_exit": true, "independence_group": "route_stairwell",
+              "paired_with": "stair_b" },
+  "gameplay": { "network_authority": "server", "replicate_door_state": true,
+                "allow_random_lock": false,
+                "egress_side_always_openable": true,
+                "fire_door": true, "self_closing": true,
+                "ai_route_cost_multiplier": 1.15,
+                "congestion": { "clear_width_m": 1.4,
+                                "max_agents_abreast": 2,
+                                "two_way_passable": true } }
+}
+```
+
+Rules of the road for consumers:
+
+- `door_nodes[].interactive` is the SAME stable id as the `interactives`
+  array entry -- one replicated node covers both contracts.
+- `allow_random_lock: false` means mission randomization may NOT lock any of
+  this stair's doors. To lock one anyway, the scenario must be authored:
+  `Stairwell.meta.gameplay` overlays these defaults, and the validator only
+  tolerates a locked egress door when another egress stair serves the floor.
+- `independence_group` differs between stairs whose grade routes do not share
+  a destination; a mission blocker that severs one group must leave another
+  group's routes untouched.
+- `congestion` is AI intel (route cost, agents abreast), advisory like
+  `reversible` on interactives -- never an instruction to the netcode.

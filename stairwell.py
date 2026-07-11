@@ -121,11 +121,9 @@ def _same_story_edges(spec, adj):
     return out
 
 
-def _exterior_rooms(spec, story):
-    """Rooms on `story` that ARE a discharge destination: they hold a
-    grade-usable exterior opening (door/garage/breach), or they are declared
-    outdoor ground (a forecourt/yard rect essentially outside the footprint)."""
-    dests = set()
+def _ext_openings(spec, story):
+    """Yield (wall_name, opening, inside_room_id) for every grade-usable
+    exterior opening (door/garage/breach) on `story`."""
     hx, hy = spec.footprint_x / 2, spec.footprint_y / 2
     for w in spec.ext_walls:
         if w.story != story:
@@ -144,8 +142,18 @@ def _exterior_rooms(spec, story):
                 rid = tactical._room_at(spec, story, hx - eps, u)
             else:
                 rid = tactical._room_at(spec, story, -hx + eps, u)
-            if rid:
-                dests.add(rid)
+            yield f"ext_{story}_{w.wall}", op, rid
+
+
+def _exterior_rooms(spec, story):
+    """Rooms on `story` that ARE a discharge destination: they hold a
+    grade-usable exterior opening (door/garage/breach), or they are declared
+    outdoor ground (a forecourt/yard rect essentially outside the footprint)."""
+    dests = set()
+    hx, hy = spec.footprint_x / 2, spec.footprint_y / 2
+    for _, _, rid in _ext_openings(spec, story):
+        if rid:
+            dests.add(rid)
     for r in spec.rooms:                      # outdoor ground rooms
         if r.story != story:
             continue
@@ -177,6 +185,100 @@ def _bfs_path(adj, start, dests):
                 return list(reversed(path))
             queue.append(m)
     return None
+
+
+# ---------------------------------------------------------------------------
+# Phase 4: door nodes + gameplay/network semantics (spec s9.3, s13)
+# ---------------------------------------------------------------------------
+
+_DOOR_KINDS = ("door", "garage", "breach", "vault")
+_AI_COST_ENCLOSED = 1.15     # s13 example: enclosed stairs cost AI a little more
+_AGENT_PASS_WIDTH = 0.7      # capsule pass band (docs/scale_guidelines.md)
+
+
+def _door_nodes(spec, st, served):
+    """The doors a body moves through to use this stair: every partition
+    opening with the stair's approach room on one side (per served, roomed
+    story), plus the approach room's exterior doors at grade (discharge).
+    `interactive` carries the SAME stable id the builder bakes -- computed
+    through interactives.derive_interactive on the same wall-name convention
+    (int_{story}_{index} / ext_{story}_{wall}) -- so netcode, slots, and this
+    egress contract all key on one id."""
+    import interactives
+    nodes = []
+    if not spec.rooms:
+        return nodes
+    for s in served:
+        if not any(r.story == s for r in spec.rooms):
+            continue
+        room = _approach_room(spec, s, st)
+        if room is None:
+            continue
+        for i, p in enumerate(spec.partitions):
+            if p.story != s or not p.openings:
+                continue
+            eps = 0.6
+            lo = min(p.start, p.end)
+            length = abs(p.end - p.start)
+            for op in p.openings:
+                if op.kind not in _DOOR_KINDS:
+                    continue
+                along = lo + (op.pos + 0.5) * length
+                if p.axis == "Y":
+                    a = tactical._room_at(spec, s, p.pos - eps, along)
+                    b = tactical._room_at(spec, s, p.pos + eps, along)
+                else:
+                    a = tactical._room_at(spec, s, along, p.pos - eps)
+                    b = tactical._room_at(spec, s, along, p.pos + eps)
+                if room.id not in (a, b):
+                    continue
+                wall = f"int_{p.story}_{i}"
+                m = interactives.derive_interactive(
+                    spec.name, wall, s, op.kind, op.pos,
+                    breakable=bool(op.breakable), override=op.interactive)
+                nodes.append({
+                    "floor": s, "kind": op.kind, "wall": wall, "pos": op.pos,
+                    "interactive": m["id"] if m else None,
+                    "default_state": (m or {}).get("default"),
+                    "connects_from": (b if a == room.id else a),
+                    "discharge_door": False,
+                })
+        if s == 0:
+            for wall, op, rid in _ext_openings(spec, 0):
+                if rid != room.id:
+                    continue
+                m = interactives.derive_interactive(
+                    spec.name, wall, 0, op.kind, op.pos,
+                    breakable=bool(op.breakable), override=op.interactive)
+                nodes.append({
+                    "floor": 0, "kind": op.kind, "wall": wall, "pos": op.pos,
+                    "interactive": m["id"] if m else None,
+                    "default_state": (m or {}).get("default"),
+                    "connects_from": "exterior",
+                    "discharge_door": True,
+                })
+    return nodes
+
+
+def _gameplay_block(role, enclosed, width):
+    """s9.3 / s13 network-and-gameplay defaults, derived from the role.
+    Egress-critical routes are server-owned and never randomly lockable; the
+    authored escape hatch is Stairwell.meta["gameplay"] (merged over this)."""
+    egress = role in EGRESS_ROLES
+    return {
+        "network_authority": "server",
+        "replicate_door_state": True,
+        "allow_random_lock": not egress,
+        "egress_side_always_openable": egress,
+        "fire_door": egress and enclosed,
+        "self_closing": egress and enclosed,
+        "ai_route_cost_multiplier": _AI_COST_ENCLOSED if enclosed else 1.0,
+        "congestion": {
+            "clear_width_m": width,
+            "max_agents_abreast": max(1, int(width // _AGENT_PASS_WIDTH)),
+            "two_way_passable": width >= 1.1,
+        },
+    }
 
 
 # ---------------------------------------------------------------------------
@@ -244,7 +346,31 @@ def derive(spec):
                                              "room": room.id, "via": [],
                                              "destination": None,
                                              "route_hops": None}
+        # Phase 4: enclosure, door nodes, and network/gameplay semantics
+        enclosed = any(ap["room_role"] == "stairwell"
+                       for ap in sysd["approach"])
+        sysd["enclosure"] = "protected" if enclosed else "open"
+        sysd["door_nodes"] = _door_nodes(spec, st, served)
+        gp = _gameplay_block(role, enclosed, st.width)
+        meta = getattr(st, "meta", None)
+        if meta:
+            sysd["meta"] = meta
+            gp.update(meta.get("gameplay", {}))   # the authored escape hatch
+        sysd["gameplay"] = gp
         systems.append(sysd)
+
+    # egress route identity: independence groups key on the grade discharge
+    # destination (two stairs sharing one are NOT independent -- the review
+    # prices that); paired_with closes the two-stair contract of s13.
+    egress = [s for s in systems if s["role"] in EGRESS_ROLES]
+    for s in egress:
+        d = s["discharge"]
+        dest = d["destination"] if d and d.get("destination") else None
+        s["egress"]["independence_group"] = (f"route_{dest}" if dest
+                                             else f"route_{s['id']}")
+        s["egress"]["paired_with"] = (
+            next(o["id"] for o in egress if o is not s)
+            if len(egress) == 2 else None)
     return systems
 
 
@@ -334,6 +460,66 @@ def check(spec):
                 f"stair '{sid}' runs through grade into the basement in one "
                 f"shaft; offline review can't see a barrier -- make sure the "
                 f"grade landing interrupts descent (Rule 8).")
+
+        # Rule 10 / criterion 10 -- the stair volume is RESERVED. Props, cover,
+        # objectives, and loot may not occupy the shaft or its landings.
+        rect = footprint_rect(st)
+        H = spec.story_height
+        lo_z = min(sysd["floors_served"] or [0]) * H
+        hi_z = (max(sysd["floors_served"] or [0]) + 1) * H
+        invaders = []
+        for v in spec.volumes:
+            nm = v.name.lower()
+            if any(k in nm for k in ("stair", "ramp", "land")):
+                continue                     # the stair's own furniture
+            vrect = (v.x - v.size_x / 2, v.y - v.size_y / 2,
+                     v.x + v.size_x / 2, v.y + v.size_y / 2)
+            if _rects_overlap(rect, vrect) and lo_z <= v.z <= hi_z:
+                invaders.append(f"volume '{v.name}'")
+        for o in getattr(spec, "objectives", []) or []:
+            if rect[0] <= o.x <= rect[2] and rect[1] <= o.y <= rect[3] \
+                    and lo_z <= o.z <= hi_z:
+                invaders.append(f"objective '{o.id}'")
+        for l in getattr(spec, "loot", []) or []:
+            if rect[0] <= l.x <= rect[2] and rect[1] <= l.y <= rect[3] \
+                    and lo_z <= l.z <= hi_z:
+                invaders.append(f"loot '{l.id}'")
+        for m in getattr(spec, "markers", []) or []:
+            if m.type not in ("objective", "loot", "cover_low", "cover_high",
+                              "extraction"):
+                continue
+            if rect[0] <= m.x <= rect[2] and rect[1] <= m.y <= rect[3] \
+                    and lo_z <= m.z <= hi_z:
+                invaders.append(f"{m.type} marker '{m.id or '?'}'")
+        if invaders:
+            emit(gate, "STAIR_VOLUME_INVADED",
+                 f"'{sid}' reserved volume is occupied by "
+                 f"{', '.join(invaders)} -- stair runs, landings, and "
+                 f"discharge are reserved space, not leftover space (Rule 10).")
+
+        # s9.3 -- locked egress roulette: a required stair door that defaults
+        # to locked is only tolerable when another egress stair serves the
+        # floor AND the scenario says so; alone, it deletes the route.
+        if gate:
+            for dn in sysd["door_nodes"]:
+                if dn.get("default_state") != "locked":
+                    continue
+                backup = [o for o in systems if o is not sysd
+                          and o["role"] in EGRESS_ROLES
+                          and dn["floor"] in o["floors_served"]]
+                if backup:
+                    warnings.append(
+                        f"STAIRWELL: egress stair '{sid}' door on floor "
+                        f"{dn['floor']} defaults to locked "
+                        f"({dn['interactive']}); route relies on "
+                        f"'{backup[0]['id']}' staying available (s9.3).")
+                else:
+                    errors.append(
+                        f"STAIRWELL LOCKED_EGRESS_DOOR: the only egress stair "
+                        f"serving floor {dn['floor']} ('{sid}') has a door "
+                        f"defaulting to locked ({dn['interactive']}) -- a "
+                        f"required route may not ship locked with no "
+                        f"alternate (s9.3).")
 
         # s14.2 -- archetype fit (intel; placement lives in stair_place.py)
         if getattr(spec, "archetype", None):

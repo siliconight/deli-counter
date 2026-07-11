@@ -1,3 +1,40 @@
+## [0.67.0] - Stair gameplay + network semantics (spec Phase 4)
+
+- stair_systems entries in gameplay.json now carry the full s13 gameplay
+  contract. `door_nodes`: every door a body moves through to use the stair
+  (partition openings flanking the approach room per served floor, plus the
+  approach room's exterior doors at grade, flagged `discharge_door`), each
+  carrying the SAME stable interactive id the builder bakes -- computed
+  through interactives.derive_interactive on the identical wall-name
+  convention, so netcode, slots.json, and the egress contract key on one id.
+- `enclosure` ("protected" when the approach room is a role-"stairwell"
+  enclosure, else "open") and a derived s9.3 `gameplay` block:
+  network_authority=server, replicate_door_state, allow_random_lock (false
+  for egress roles), egress_side_always_openable, fire_door/self_closing
+  (enclosed egress), ai_route_cost_multiplier (1.15 enclosed / 1.0 open),
+  and `congestion` intel (clear width, max agents abreast at the 0.7 m pass
+  band, two-way passability).
+- Egress route identity: `egress.independence_group` keys on the grade
+  discharge destination (stairs sharing one are not independent routes) and
+  `egress.paired_with` closes the two-stair contract. This plus
+  allow_random_lock is the handshake Dispatch consumes to keep mission
+  randomization from invalidating required routes -- documented in
+  docs/GAMEPLAY_JSON_CONTRACT.md (new stair_systems section).
+- `Stairwell.meta` (schema 1.15.0 -> 1.16.0, like VerticalLink.meta): passes
+  through to gameplay.json, and a meta["gameplay"] dict overlays the derived
+  defaults -- the spec's "authored scenario explicitly permits it" escape
+  hatch (e.g. a scripted blackout that locks a stair).
+- Two new review checks (same gate-the-contract severity):
+  STAIR_VOLUME_INVADED (Rule 10 / acceptance criterion 10) -- volumes,
+  objectives, loot, and cover/objective/loot/extraction markers may not
+  occupy a stair's reserved footprint through its served span (stair-named
+  furniture exempt); LOCKED_EGRESS_DOOR (s9.3 locked egress roulette) -- a
+  door defaulting to locked (e.g. a vault) on the ONLY egress stair serving
+  a floor is a hard error; with a backup egress stair it downgrades to a
+  reliance warning.
+- 12 new tests (72 total), including builder-id parity for door nodes and
+  the meta escape-hatch overlay. Gate green; geometry untouched.
+
 ## [0.66.0] - Archetype profiles + weighted stair placement (spec Phase 3)
 
 - New `stair_place.py`: the PLACEMENT side of what stairwell.py reviews.
