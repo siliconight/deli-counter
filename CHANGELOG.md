@@ -1,3 +1,36 @@
+## [0.65.0] - Stairwell systems: stairs become semantic egress systems
+
+- Implements Phases 1-2 of docs/stairwell_placement_spec.md (new doc, folded in
+  from the proposal): a stair is no longer an isolated mesh but a SYSTEM with a
+  role, a vertical stack, a per-floor approach, and a ground discharge route.
+- New pure analyzer `stairwell.py` in the validate chain (after navigability).
+  Severity follows the house rule -- gate the declared contract, warn the rest:
+  a stair with an EGRESS role (`primary_egress` / `secondary_egress` /
+  `exterior_egress`) gates HARD on route findings; unclassified and non-egress
+  stairs get identical findings as warnings, so every pre-0.65 spec gates
+  exactly as before. Codes match the placement spec s14 verbatim.
+- Checks (room-graph resolution, a proxy like navigability, never the truth):
+  approach on every served floor (`STAIR_NO_CORRIDOR_CONNECTION`), prohibited
+  approach rooms incl. enclosure-neighbor analysis for role-"stairwell" rooms
+  (`STAIR_ACCESS_THROUGH_PROHIBITED_ROOM`), grade discharge route to an
+  exterior door or outdoor ground (`STAIR_NO_GROUND_DISCHARGE`, classified
+  direct_exterior / exit_passage / lobby, multi-turn routes warn), egress-pair
+  separation `max(8.0 m, diagonal x separation_factor)`
+  (`REQUIRED_STAIRS_TOO_CLOSE`), single-room route dependence via articulation
+  scan (`REQUIRED_ROUTES_SHARE_SINGLE_CHOKEPOINT`), declared-stack alignment
+  (`STAIR_NOT_STACKED`), plus intel warns for basement continuation through
+  grade (Rule 8) and doors sitting over treads (Rule 4, footprint approx).
+- Authoring: `Stairwell` gains optional `id`, `role`, `stack_id`; LevelSpec
+  gains `separation_factor` (0.33 sprinklered default, 0.50 conservative).
+  SCHEMA 1.14.0. All additive -- old specs untouched, geometry byte-identical.
+- gameplay.json gains a `stair_systems` section (placement spec s13 subset:
+  identity, role, stack, floors served, footprint polygon, approach per floor,
+  discharge route) derived by `stairwell.derive()`, plus a `STAIRSYS_<ID>`
+  marker empty at each stair base for the post-import.
+- Showcased in `corner_deli_heist_01.json` (`main_stack` -> primary_egress;
+  its Rule 8 basement-shaft warning fires as intended). 17 new tests
+  (44 total). Gate green.
+
 ## [0.64.0] - Teller line + safe deposit boxes: the rest of the bank fixtures
 
 - New `teller` and `safe_deposit` opening kinds — the bank lobby teller line and

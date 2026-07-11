@@ -450,6 +450,23 @@
               "null"
             ],
             "minimum": 2
+          },
+          "id": {
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "primary_egress",
+              "secondary_egress",
+              "exterior_egress",
+              "public_convenience",
+              "service",
+              "private_residential",
+              "industrial_access"
+            ]
+          },
+          "stack_id": {
+            "type": "string"
           }
         }
       }
@@ -1058,6 +1075,10 @@
         ],
         "additionalProperties": false
       }
+    },
+    "separation_factor": {
+      "type": "number",
+      "exclusiveMinimum": 0
     }
   },
   "$defs": {

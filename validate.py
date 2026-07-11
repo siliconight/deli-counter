@@ -193,6 +193,23 @@ def validate_file(path):
     except Exception as ex:
         print(f"  NAV: proxy skipped ({ex})")
 
+    # stairwell systems (semantic stair stacks + egress review; egress-role
+    # stairs gate hard, unclassified stairs get the same findings as intel)
+    try:
+        import stairwell
+        serrors, swarnings, ssummary = stairwell.check(spec)
+        if spec.stairs:
+            print(stairwell.format_summary(spec.name, ssummary))
+        for w in swarnings:
+            print(f"  STAIR-WARN: {w}")
+        for e in serrors:
+            print(f"  STAIR-ERROR: {e}")
+        if serrors:
+            print(f"  -> {len(serrors)} stairwell error(s)")
+            return False
+    except Exception as ex:
+        print(f"  STAIRWELL: review skipped ({ex})")
+
     # floorplan SVGs (offline visual intel — one per story)
     try:
         import floorplan

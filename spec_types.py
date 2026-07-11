@@ -135,7 +135,12 @@ class Partition:
 class Stairwell:
     """Straight or switchback run connecting a range of stories. Step count is
     derived from the floor height and target step_rise (so rise stays
-    consistent regardless of story_height) unless n_steps is set explicitly."""
+    consistent regardless of story_height) unless n_steps is set explicitly.
+
+    Semantic identity (all optional; see docs/stairwell_placement_spec.md):
+    `role` opts the stair into the egress contract -- stairwell.py gates its
+    route findings as hard errors instead of intel. `stack_id` groups stairs
+    into one declared vertical stack that must chain and align (Rule 2)."""
     x: float
     y: float
     from_story: int
@@ -146,6 +151,9 @@ class Stairwell:
     cut_slabs: bool = True           # punch holes in slabs it passes through
     step_rise: float = 0.2           # target rise per step (m); game-feel default
     n_steps: Optional[int] = None    # override; else derived per floor
+    id: Optional[str] = None         # stable id -> gameplay.json stair_systems
+    role: Optional[str] = None       # primary_egress/secondary_egress/... (spec s5)
+    stack_id: Optional[str] = None   # declared vertical stack membership (Rule 2)
 
 
 @dataclass
@@ -383,6 +391,11 @@ class LevelSpec:
     # slot per top-story room, honoring Room.roofed (open-air rooms opt out).
     roof_mode: str = "footprint"
     roof_thick: Optional[float] = None   # None -> floor_thick
+
+    # egress-pair separation heuristic (stairwell.py, Rule 6):
+    # required = max(8.0 m, floor_plate_diagonal * separation_factor).
+    # 0.33 = sprinklered approximation; 0.50 = conservative non-sprinklered.
+    separation_factor: float = 0.33
 
     ext_walls: list[ExtWall] = field(default_factory=list)
     partitions: list[Partition] = field(default_factory=list)

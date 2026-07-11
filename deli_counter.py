@@ -870,7 +870,8 @@ class _Builder:
         self.gameplay = {"mode": self.s.mode, "markers": [], "rooms": [],
                          "vertical_links": [], "openings": [],
                          "objectives": [], "loot": [], "zones": [],
-                         "materials": [], "surfaces": [], "interactives": []}
+                         "materials": [], "surfaces": [], "interactives": [],
+                         "stair_systems": []}
         # OPTIONAL building rarity: resolve once, expose as the single source of
         # truth on the gameplay.json top level. None when unset (no rarity).
         # _record_openings stamps the same colour onto each breachable door so a
@@ -904,6 +905,7 @@ class _Builder:
         self._placements()
         self._parapets()
         self._rooms()
+        self._stair_semantics()
         self._markers()
         self._heist()
         self._materials()
@@ -1569,6 +1571,20 @@ class _Builder:
                 "center": [cx, cy, z],
             })
 
+    def _stair_semantics(self):
+        """Derive the semantic stair systems (stairwell.py: role, stack, floors
+        served, approach, discharge) into gameplay.json, plus a STAIRSYS_<ID>
+        marker empty at each stair base so the post-import can anchor them.
+        Geometry is untouched -- this is contract data over what _stairs baked."""
+        import stairwell
+        systems = stairwell.derive(self.s)
+        self.gameplay["stair_systems"] = systems
+        H = self.s.story_height
+        for sysd, st in zip(systems, self.s.stairs):
+            z = min(st.from_story, st.to_story) * H
+            self._empty(f"STAIRSYS_{sysd['id'].upper()}",
+                        (st.x, st.y, z), self.MARKERS)
+
     def _markers(self):
         for m in self.s.markers:
             suffix = ("_" + m.id) if m.id else ""
@@ -1758,6 +1774,10 @@ def write_gameplay_json(builder, path):
         # one replicable state machine per id. The game spawns a networked node
         # per entry and drives which art variant renders. See docs/INTERACTIVES.md.
         "interactives": builder.gameplay["interactives"],
+        # semantic stair systems (docs/stairwell_placement_spec.md s13):
+        # role, stack, floors served, per-floor approach, ground discharge.
+        # Derived by stairwell.py; the review that gated it ran in validate.
+        "stair_systems": builder.gameplay.get("stair_systems", []),
         # authoritative node-name -> surface role map (floor/ceiling/wall/stair/
         # ramp/ladder/prop). Downstream tools (Patina styling, vertex nuance)
         # should consume this instead of inferring roles from geometry.
