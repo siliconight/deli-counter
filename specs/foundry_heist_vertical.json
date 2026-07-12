@@ -518,7 +518,12 @@
       "depth": 0.18,
       "rung_spacing": 0.3,
       "cut_slabs": true,
-      "facing": "E"
+      "facing": "E",
+      "role": "service_access",
+      "placement_mode": "interior",
+      "transition": "through_step_off",
+      "access_class": "staff_restricted",
+      "id": "foundry_ladder_0"
     },
     {
       "x": -18.0,
@@ -529,7 +534,13 @@
       "depth": 0.18,
       "rung_spacing": 0.3,
       "cut_slabs": true,
-      "facing": "W"
+      "facing": "W",
+      "role": "service_access",
+      "placement_mode": "shaft",
+      "lower_surface": "pit_1",
+      "transition": "through_step_off",
+      "access_class": "maintenance",
+      "id": "foundry_ladder_1"
     },
     {
       "x": -16.0,
@@ -540,7 +551,12 @@
       "depth": 0.18,
       "rung_spacing": 0.3,
       "cut_slabs": true,
-      "facing": "N"
+      "facing": "N",
+      "role": "service_access",
+      "placement_mode": "interior",
+      "transition": "through_step_off",
+      "access_class": "staff_restricted",
+      "id": "foundry_ladder_2"
     }
   ],
   "ramps": [

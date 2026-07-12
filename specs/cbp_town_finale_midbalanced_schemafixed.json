@@ -702,7 +702,15 @@
       "depth": 0.18,
       "rung_spacing": 0.3,
       "cut_slabs": true,
-      "facing": "N"
+      "facing": "N",
+      "role": "roof_access",
+      "placement_mode": "interior",
+      "upper_surface": "roof",
+      "transition": "roof_hatch_exit",
+      "access_class": "staff_restricted",
+      "access_control": "locked_hatch",
+      "id": "cbp_ladder_0",
+      "fall_protection": "safety_rail"
     },
     {
       "x": -39.0,
@@ -713,7 +721,12 @@
       "depth": 0.18,
       "rung_spacing": 0.3,
       "cut_slabs": true,
-      "facing": "W"
+      "facing": "W",
+      "role": "service_access",
+      "placement_mode": "interior",
+      "transition": "through_step_off",
+      "access_class": "staff_restricted",
+      "id": "cbp_ladder_1"
     },
     {
       "x": 39.0,
@@ -724,7 +737,12 @@
       "depth": 0.18,
       "rung_spacing": 0.3,
       "cut_slabs": true,
-      "facing": "E"
+      "facing": "E",
+      "role": "service_access",
+      "placement_mode": "interior",
+      "transition": "through_step_off",
+      "access_class": "staff_restricted",
+      "id": "cbp_ladder_2"
     }
   ],
   "ramps": [

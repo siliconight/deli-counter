@@ -210,6 +210,23 @@ def validate_file(path):
     except Exception as ex:
         print(f"  STAIRWELL: review skipped ({ex})")
 
+    # ladder systems (semantic connections + access review; a ladder with no
+    # role is a hard error, and a ladder is never counted as ordinary egress)
+    try:
+        import ladder
+        lerrors, lwarnings, lsummary = ladder.check(spec)
+        if spec.ladders:
+            print(ladder.format_summary(spec.name, lsummary))
+        for w in lwarnings:
+            print(f"  LADDER-WARN: {w}")
+        for e in lerrors:
+            print(f"  LADDER-ERROR: {e}")
+        if lerrors:
+            print(f"  -> {len(lerrors)} ladder error(s)")
+            return False
+    except Exception as ex:
+        print(f"  LADDER: review skipped ({ex})")
+
     # floorplan SVGs (offline visual intel — one per story)
     try:
         import floorplan

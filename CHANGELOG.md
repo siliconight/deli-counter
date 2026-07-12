@@ -1,3 +1,49 @@
+## [0.69.0] - Semantic ladder connections (ladder spec Phase 1)
+
+- First cut of the ladder placement spec (new doc folded in:
+  docs/deli_counter_ladder_placement_spec.md). A ladder stops being decoration
+  on a blank wall and becomes a SYSTEM: a specialized connection between two
+  usable surfaces with a role, a safe lower approach, a resolved top
+  transition, a preserved climbing volume, and a route at both ends.
+- New pure analyzer `ladder.py` in the validate chain (after stairwell). The
+  governing invariant is absolute (spec s2): a ladder is NEVER counted as
+  ordinary required egress -- counts_as_primary_egress and
+  counts_as_public_circulation are always false, and only the two escape roles
+  (legacy_secondary_escape / fire_escape_termination) may opt into
+  counts_as_secondary_escape.
+- Ladder gains semantic identity (schema 1.17.0 -> 1.18.0, all additive):
+  id, role (8 classifications from spec s2/s6), ladder_type, placement_mode,
+  lower_surface / upper_surface (room id or a derived token: roof / grade /
+  site / pit_N), direction, access_class, counts_as_secondary_escape,
+  transition, fall_protection, access_control, fire_escape_id, and meta.
+- Phase-1 review checks (severity per spec s15): LADDER_NO_ROLE (HARD --
+  Rule 1, a roleless ladder is not generated, unlike an unclassified stair
+  which is only intel), LADDER_NO_LOWER_SURFACE / LADDER_NO_UPPER_SURFACE and
+  LADDER_TO_NOWHERE (Rule 2 -- two real traversable surfaces),
+  LADDER_ROUTE_DISCONNECTED (onward route at both ends),
+  LADDER_CLIMB_VOLUME_BLOCKED (Rule 8 -- props/equipment in the climb
+  envelope), LADDER_DOOR_CONFLICT / LADDER_WINDOW_CONFLICT (Rule 9),
+  PARAPET_CROSSOVER_MISSING (Rule 6), LADDER_LONG_CLIMB_UNPROTECTED (Rule 11 --
+  climbs over 7.3 m need a fall-protection profile), LADDER_INVALID_EGRESS
+  (s2 invariant), FIRE_ESCAPE_LADDER_ORPHANED (Rule 14), plus intel warnings
+  (LADDER_SECURITY_EXPOSURE, LADDER_LOW_GAMEPLAY_CLEARANCE,
+  LADDER_EXCESSIVE_HEIGHT, LADDER_NO_VISUAL_DESTINATION,
+  LEGACY_FIRE_ESCAPE_PROFILE).
+- gameplay.json gains a `ladders` section (spec s14): identity, connected
+  surfaces, mount/upper anchors, climb geometry with the reserved climb_rect,
+  transition, fall protection, access control, the six route_nodes (s13.1),
+  and the gameplay/network block. Documented in
+  docs/GAMEPLAY_JSON_CONTRACT.md. The builder drops <ID>_MOUNT / <ID>_DISMOUNT
+  empties for the post-import nav-link; ladder rail/rung geometry is unchanged
+  from before, so all shell.glb output is byte-identical.
+- All six shipped specs with ladders (07_police_station, cbp_town_finale,
+  corner_deli_heist_01, foundry_heist_vertical, gs_auto_shop, primos_pizza)
+  now carry real roles: roof_access for climbs to the top slab, service_access
+  for interior and pit climbs. cbp_town_finale's 8 m roof climb tripped
+  LADDER_LONG_CLIMB_UNPROTECTED and now declares a safety_rail -- the check
+  catching a real unprotected long climb on existing content.
+- 26 new tests (111 total). Gate green.
+
 ## [0.68.0] - Advanced stair types (spec Phase 5) -- stair spec COMPLETE
 
 - The geometry phase. _stairs() is restructured around a local stair frame

@@ -177,7 +177,16 @@ class Stairwell:
 class Ladder:
     """A vertical climb between two stories at (x,y). Pairs with a hatch/hole
     above. Generates rung geometry + side rails; cuts the slab it passes
-    through. The player climbs at a fixed speed (game owns that)."""
+    through. The player climbs at a fixed speed (game owns that).
+
+    Semantic identity (docs/deli_counter_ladder_placement_spec.md). A ladder is
+    a specialized connection between two usable surfaces -- never decoration on
+    a blank wall -- so it carries a role, the two surfaces it connects, and an
+    egress classification. `role` MUST be set for a ladder to survive review
+    (Rule 1: a ladder without a role is not generated). Surfaces are addressed
+    by room id, or a derived token: "roof" (top-story slab), "grade"/"site"
+    (ground outside), "pit_<n>" (a basement/pit story). ladder.py derives the
+    mount/dismount anchors, climbing volume, and route edges from these."""
     x: float
     y: float
     from_story: int
@@ -187,6 +196,24 @@ class Ladder:
     rung_spacing: float = 0.3        # vertical gap between rungs (m); exaggerated
     cut_slabs: bool = True
     facing: Literal["N", "S", "E", "W"] = "S"   # which way the climber faces
+    id: Optional[str] = None         # stable id -> gameplay.json ladders[]
+    # role (spec s2/s6): the ONLY classifications a ladder may carry. Anything
+    # else, or None, fails LADDER_NO_ROLE.
+    role: Optional[str] = None       # roof_access/service_access/... (spec s2)
+    ladder_type: str = "fixed_vertical"   # fixed_vertical/ship/alternating_tread/caged/safety_rail
+    placement_mode: str = "interior"      # interior/exterior_wall/platform/shaft
+    lower_surface: Optional[str] = None   # room id or derived token
+    upper_surface: Optional[str] = None   # room id or derived token
+    direction: str = "bidirectional"      # spec s13.2
+    access_class: str = "staff_restricted"  # public/staff_restricted/maintenance/emergency/gameplay
+    # egress: ladders are NOT ordinary egress (spec s2). Only a legacy/authored
+    # profile may set counts_as_secondary_escape true.
+    counts_as_secondary_escape: bool = False
+    transition: Optional[str] = None      # through_step_off/side_step_off/roof_hatch_exit/... (Rule 5)
+    fall_protection: Optional[str] = None  # None/safety_rail/fall_arrest/cage/rest_platform/offset
+    access_control: Optional[str] = None   # None/locked_gate/ladder_guard/locked_hatch/staff_room/elevated_rung
+    fire_escape_id: Optional[str] = None   # links a fire-escape ladder to its platform system
+    meta: Optional[dict] = None            # passthrough + gameplay overlay (like Stairwell.meta)
 
 
 @dataclass

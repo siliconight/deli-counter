@@ -537,6 +537,105 @@
               "E",
               "W"
             ]
+          },
+          "id": {
+            "type": "string"
+          },
+          "role": {
+            "enum": [
+              "not_egress",
+              "service_access",
+              "maintenance_access",
+              "roof_access",
+              "rooftop_connector",
+              "legacy_secondary_escape",
+              "fire_escape_termination",
+              "special_gameplay_route"
+            ]
+          },
+          "ladder_type": {
+            "enum": [
+              "fixed_vertical",
+              "ship",
+              "alternating_tread",
+              "caged",
+              "safety_rail"
+            ]
+          },
+          "placement_mode": {
+            "enum": [
+              "interior",
+              "exterior_wall",
+              "platform",
+              "shaft"
+            ]
+          },
+          "lower_surface": {
+            "type": "string"
+          },
+          "upper_surface": {
+            "type": "string"
+          },
+          "direction": {
+            "enum": [
+              "bidirectional",
+              "up_only",
+              "down_only",
+              "deploy_then_bidirectional",
+              "scripted_direction"
+            ]
+          },
+          "access_class": {
+            "enum": [
+              "public",
+              "staff_restricted",
+              "maintenance",
+              "emergency",
+              "gameplay"
+            ]
+          },
+          "counts_as_secondary_escape": {
+            "type": "boolean"
+          },
+          "transition": {
+            "enum": [
+              "through_step_off",
+              "side_step_off",
+              "roof_hatch_exit",
+              "parapet_cut_through",
+              "parapet_crossover_platform",
+              "parapet_inside_ladder",
+              "platform_gate_entry",
+              "fire_escape_platform_entry"
+            ]
+          },
+          "fall_protection": {
+            "enum": [
+              "none",
+              "safety_rail",
+              "fall_arrest",
+              "cage",
+              "rest_platform",
+              "offset"
+            ]
+          },
+          "access_control": {
+            "enum": [
+              "none",
+              "locked_gate",
+              "ladder_guard",
+              "locked_hatch",
+              "staff_room",
+              "elevated_rung",
+              "removable_section",
+              "security_enclosure"
+            ]
+          },
+          "fire_escape_id": {
+            "type": "string"
+          },
+          "meta": {
+            "type": "object"
           }
         }
       }

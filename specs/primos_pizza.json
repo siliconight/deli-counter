@@ -448,7 +448,13 @@
       "from_story": -1,
       "to_story": 0,
       "facing": "W",
-      "cut_slabs": true
+      "cut_slabs": true,
+      "role": "service_access",
+      "placement_mode": "shaft",
+      "lower_surface": "pit_1",
+      "transition": "through_step_off",
+      "access_class": "maintenance",
+      "id": "primos_ladder_0"
     },
     {
       "x": 3.0,
@@ -456,7 +462,12 @@
       "from_story": 0,
       "to_story": 1,
       "facing": "E",
-      "cut_slabs": true
+      "cut_slabs": true,
+      "role": "service_access",
+      "placement_mode": "interior",
+      "transition": "through_step_off",
+      "access_class": "staff_restricted",
+      "id": "primos_ladder_1"
     },
     {
       "x": -8.0,
@@ -464,7 +475,14 @@
       "from_story": 1,
       "to_story": 2,
       "facing": "E",
-      "cut_slabs": true
+      "cut_slabs": true,
+      "role": "roof_access",
+      "placement_mode": "interior",
+      "upper_surface": "roof",
+      "transition": "roof_hatch_exit",
+      "access_class": "staff_restricted",
+      "access_control": "locked_hatch",
+      "id": "primos_ladder_2"
     }
   ],
   "vertical_links": [

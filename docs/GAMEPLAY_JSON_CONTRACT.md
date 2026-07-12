@@ -206,3 +206,51 @@ Rules of the road for consumers:
 - `transfer_floor` -- present on declared stack members that shift footprint
   at that story; the review verified (or could not verify) the walk between
   them there.
+
+## ladders (kit 0.69+)
+
+One entry per ladder, derived by `ladder.py` (see
+docs/deli_counter_ladder_placement_spec.md s14). A ladder is a specialized
+connection between two usable surfaces, and -- unlike a stair -- is NEVER
+ordinary building egress:
+
+```json
+{
+  "id": "ladder_roof_rear_01", "role": "roof_access",
+  "ladder_type": "fixed_vertical", "placement_mode": "exterior_wall",
+  "lower_surface": "service_yard", "upper_surface": "roof",
+  "lower_anchor": [12.4, 0.0, 0.0], "upper_anchor": [12.4, 0.0, 5.6],
+  "climb_height_m": 5.6, "direction": "bidirectional",
+  "access_class": "staff_restricted",
+  "egress_classification": "not_egress",
+  "counts_as_primary_egress": false,
+  "counts_as_secondary_escape": false,
+  "counts_as_public_circulation": false,
+  "transition": { "type": "roof_hatch_exit" },
+  "geometry": { "clear_width_m": 0.5, "rung_spacing_m": 0.3, "climb_rect": [...] },
+  "fall_protection": { "required": false, "type": "none" },
+  "access_control": { "type": "locked_hatch" },
+  "route_nodes": { "lower_approach": [...], "lower_mount": [...],
+                   "climb_start": [...], "climb_end": [...],
+                   "upper_dismount": [...], "upper_route": [...] },
+  "gameplay": { "player_traversable": true, "ai_traversable": true,
+                "server_authoritative_state": true, "interaction_required": true,
+                "mount_anchor_id": "ladder_roof_rear_01_mount",
+                "dismount_anchor_id": "ladder_roof_rear_01_dismount",
+                "occupancy_limit": 1 }
+}
+```
+
+Rules of the road for consumers:
+
+- `egress_classification` is `not_egress` for every role except the two escape
+  roles (legacy_secondary_escape / fire_escape_termination) that explicitly set
+  `counts_as_secondary_escape`. Never route ordinary occupant egress over a
+  ladder, and never add one to the required-exit count.
+- `route_nodes` are the six traversal nodes (spec s13.1); the post-import wires
+  a nav-link between `lower_mount` and `upper_dismount`, keyed to the
+  `<ID>_MOUNT` / `<ID>_DISMOUNT` empties in the GLB.
+- `interaction_required` is true whenever `access_control` is present (a locked
+  hatch / gate must be operated before traversal).
+- `gameplay.meta` (via `Ladder.meta`) overlays these defaults for authored
+  cases, same pattern as `Stairwell.meta`.

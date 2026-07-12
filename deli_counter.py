@@ -871,7 +871,7 @@ class _Builder:
                          "vertical_links": [], "openings": [],
                          "objectives": [], "loot": [], "zones": [],
                          "materials": [], "surfaces": [], "interactives": [],
-                         "stair_systems": []}
+                         "stair_systems": [], "ladders": []}
         # OPTIONAL building rarity: resolve once, expose as the single source of
         # truth on the gameplay.json top level. None when unset (no rarity).
         # _record_openings stamps the same colour onto each breachable door so a
@@ -906,6 +906,7 @@ class _Builder:
         self._parapets()
         self._rooms()
         self._stair_semantics()
+        self._ladder_semantics()
         self._markers()
         self._heist()
         self._materials()
@@ -1765,6 +1766,24 @@ class _Builder:
             self._empty(f"STAIRSYS_{sysd['id'].upper()}",
                         (st.x, st.y, z), self.MARKERS)
 
+    def _ladder_semantics(self):
+        """Derive the semantic ladder systems (ladder.py: role, surfaces,
+        anchors, transition, egress exclusion, route nodes) into gameplay.json,
+        and drop mount/dismount empties the post-import anchors traversal to.
+        Geometry (rails/rungs) is already baked by _ladders(); this is the
+        contract over it."""
+        import ladder as _lad
+        systems = _lad.derive(self.s)
+        self.gameplay["ladders"] = systems
+        H = self.s.story_height
+        for d, ld in zip(systems, self.s.ladders):
+            z0 = min(ld.from_story, ld.to_story) * H
+            z1 = max(ld.from_story, ld.to_story) * H
+            self._empty(f"{d['id'].upper()}_MOUNT", (ld.x, ld.y, z0),
+                        self.MARKERS)
+            self._empty(f"{d['id'].upper()}_DISMOUNT", (ld.x, ld.y, z1),
+                        self.MARKERS)
+
     def _markers(self):
         for m in self.s.markers:
             suffix = ("_" + m.id) if m.id else ""
@@ -1958,6 +1977,10 @@ def write_gameplay_json(builder, path):
         # role, stack, floors served, per-floor approach, ground discharge.
         # Derived by stairwell.py; the review that gated it ran in validate.
         "stair_systems": builder.gameplay.get("stair_systems", []),
+        # semantic ladder systems (docs/deli_counter_ladder_placement_spec.md s14):
+        # role, connected surfaces, anchors, transition, egress exclusion,
+        # route nodes. Derived by ladder.py; a ladder is never ordinary egress.
+        "ladders": builder.gameplay.get("ladders", []),
         # authoritative node-name -> surface role map (floor/ceiling/wall/stair/
         # ramp/ladder/prop). Downstream tools (Patina styling, vertex nuance)
         # should consume this instead of inferring roles from geometry.
