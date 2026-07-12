@@ -1,3 +1,45 @@
+## [0.70.0] - Exterior ladder placement + roof transitions (ladder spec Phase 2)
+
+- New `ladder_place.py`: the PLACEMENT side of what ladder.py reviews, and the
+  ladder analog of stair_place.py. Six building profiles from the ladder spec
+  s21 (modern_small_commercial, historic_urban_mixed_use, modern_office,
+  warehouse_industrial, residential_house, stylized_gameplay_override), each
+  declaring what it permits (exterior roof ladder, legacy fire escape, offset
+  sections) and its default role / access control / fall-protection trigger.
+- Candidates come from CONNECTION PAIRS (grade/service surface -> roof), not
+  empty wall availability (spec s23): for each preferred exterior wall
+  (service-facing rear first, public front last), anchor points at center and
+  quarter positions. Every rejected candidate carries its reason (s12.3):
+  door_in_climb_zone, window_in_climb_zone, roof_not_walkable, hazard_at_base,
+  climb_too_tall_for_profile.
+- Survivors are scored with the s12.4 weights verbatim (service adjacency,
+  destination relevance, route continuity, rear/side facade fit, clear
+  landings, structural alignment, security, gameplay, minus public-facade,
+  door/window, vehicle, weather, utility, excessive-climb, visual-noise
+  penalties). Rooftop equipment volumes (hvac/condenser/sign/...) drive
+  destination relevance; service/utility/mechanical rooms behind the base
+  drive service adjacency.
+- Top transition resolved from parapet presence (Rule 5/6, s10.1-10.2): a
+  parapeted roof gets parapet_crossover_platform, otherwise through_step_off,
+  with the step-across in the 0.18-0.30 m through-ladder range. Long climbs
+  (> 7.3 m) get a safety_rail in the proposal.
+- Proposals emit ready-to-paste Ladder JSON with role, surfaces, transition,
+  access control, and fall protection assigned -- and close the loop: a
+  proposal passes ladder.check with zero errors (test_proposal_passes_review).
+  CLI: `python ladder_place.py specs/x.json --profile modern_small_commercial`
+  (+ --count, --write for ladder-less specs, --write --replace to overwrite).
+- Phase-2 review additions in ladder.py (spec s7, s15.2): LADDER_PUBLIC_FACADE
+  (exterior ladder on the primary public elevation), LADDER_NEAR_PUBLIC_
+  ENTRANCE (base near a main door), LADDER_NEAR_DRAINAGE (under a scupper/
+  drain volume), LADDER_VEHICLE_CONFLICT (base in a lane/dock volume with no
+  protection -- HARD, Rule 10), and LADDER_TOP_EDGE_RISK (dismount within a
+  rail-length of an unguarded roof edge with no parapet, Rule 6).
+- LevelSpec gains optional `ladder_profile` (schema 1.18.0 -> 1.19.0, enum of
+  the six profiles). gs_auto_shop declares modern_small_commercial as the
+  showcase; its existing roof-access ladder stays compatible. All shell.glb
+  output byte-identical.
+- 19 new tests (130 total). Gate green.
+
 ## [0.69.0] - Semantic ladder connections (ladder spec Phase 1)
 
 - First cut of the ladder placement spec (new doc folded in:

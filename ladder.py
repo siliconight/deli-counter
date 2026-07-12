@@ -63,6 +63,74 @@ GAMEPLAY_LOW_CLEAR = 0.50
 DERIVED_SURFACES = {"roof", "grade", "site", "ground"}
 
 
+def _facade_wall(spec, ld):
+    """The exterior wall an exterior ladder stands against (nearest plane)."""
+    hx, hy = spec.footprint_x / 2, spec.footprint_y / 2
+    d = {"N": abs(ld.y - hy), "S": abs(ld.y + hy),
+         "E": abs(ld.x - hx), "W": abs(ld.x + hx)}
+    return min(d, key=lambda k: d[k])
+
+
+def _front_rear_walls_l(spec):
+    """Front = story-0 wall with the most doors; rear = opposite."""
+    doors = {"N": 0, "S": 0, "E": 0, "W": 0}
+    for w in spec.ext_walls:
+        if w.story != 0:
+            continue
+        doors[w.wall] += sum(1 for o in w.openings
+                             if o.kind in ("door", "garage"))
+    front = max(doors, key=lambda k: doors[k]) if any(doors.values()) else "S"
+    return front, {"N": "S", "S": "N", "E": "W", "W": "E"}[front]
+
+
+def _near_public_entrance(spec, ld, tol=3.0):
+    """Is the ladder base within tol of a grade exterior door?"""
+    hx, hy = spec.footprint_x / 2, spec.footprint_y / 2
+    for w in spec.ext_walls:
+        if w.story != 0:
+            continue
+        run = spec.footprint_x if w.wall in ("N", "S") else spec.footprint_y
+        for op in w.openings:
+            if op.kind not in ("door", "garage"):
+                continue
+            u = op.pos * run
+            if w.wall == "N":
+                dx, dy = u, hy
+            elif w.wall == "S":
+                dx, dy = u, -hy
+            elif w.wall == "E":
+                dx, dy = hx, u
+            else:
+                dx, dy = -hx, u
+            if math.hypot(ld.x - dx, ld.y - dy) <= tol:
+                return True
+    return False
+
+
+def _nearest_named(spec, x, y, hints):
+    """Nearest named volume matching any hint fragment, and its distance."""
+    best, bd = None, math.inf
+    for v in getattr(spec, "volumes", []):
+        nm = v.name.lower()
+        if not any(h in nm for h in hints):
+            continue
+        dd = math.hypot(v.x - x, v.y - y)
+        if dd < bd:
+            best, bd = v.name, dd
+    return best, bd
+
+
+def _roof_edge_risk(spec, ld, rail=1.1):
+    """The dismount is within a rail-extension of a footprint edge AND no
+    parapet exists on the top story near it (a bare edge, Rule 6)."""
+    hx, hy = spec.footprint_x / 2, spec.footprint_y / 2
+    edge_dist = min(hx - abs(ld.x), hy - abs(ld.y))
+    if edge_dist > rail:
+        return False
+    return not any(p.story >= spec.n_stories - 1
+                   for p in getattr(spec, "parapets", []))
+
+
 # ---------------------------------------------------------------------------
 # Geometry + surface helpers
 # ---------------------------------------------------------------------------
@@ -493,6 +561,48 @@ def check(spec):
                 f"LADDER LADDER_SECURITY_EXPOSURE: '{lid}' is a restricted "
                 f"'{role}' ladder but is publicly accessible with no access "
                 f"control (Rule 13).")
+
+        # --- Phase 2: exterior facade findings (spec s7, s15.2) ---
+        if getattr(ld, "placement_mode", "interior") == "exterior_wall":
+            wall = _facade_wall(spec, ld)
+            front, _ = _front_rear_walls_l(spec)
+            if wall == front:
+                warnings.append(
+                    f"LADDER LADDER_PUBLIC_FACADE: '{lid}' is on the primary "
+                    f"public facade ({wall}) -- prefer a rear or side "
+                    f"service-facing wall unless the building type justifies "
+                    f"it (Rule 3 / s15.2).")
+            # base near a public entrance
+            if _near_public_entrance(spec, ld):
+                warnings.append(
+                    f"LADDER LADDER_NEAR_PUBLIC_ENTRANCE: '{lid}' base is "
+                    f"close to a main entrance door -- keep ladders clear of "
+                    f"the public approach (Rule 9 / s15.2).")
+            # scupper/drain overhead
+            hz, hd = _nearest_named(spec, ld.x, ld.y, ("scupper", "drain",
+                                                       "gutter"))
+            if hz is not None and hd < 2.0:
+                warnings.append(
+                    f"LADDER LADDER_NEAR_DRAINAGE: '{lid}' sits under/near "
+                    f"'{hz}' -- water discharge on the climb path (Rule 12 / "
+                    f"anti-pattern 'drainpipe ladder').")
+            # vehicle conflict: a volume named like a lane/dock at the base
+            vz, vd = _nearest_named(spec, ld.x, ld.y,
+                                    ("lane", "dock", "drive", "forklift"))
+            if vz is not None and vd < 1.5 \
+                    and getattr(ld, "access_control", None) in (None, "none"):
+                errors.append(
+                    f"LADDER LADDER_VEHICLE_CONFLICT: '{lid}' base is in a "
+                    f"vehicle swept path ('{vz}') with no protection -- add a "
+                    f"setback, bollards, or a protected alcove (Rule 10).")
+
+        # top landing near an unguarded roof edge (Rule 6 / s15.2)
+        if hi_story >= spec.n_stories and _roof_edge_risk(spec, ld):
+            warnings.append(
+                f"LADDER LADDER_TOP_EDGE_RISK: '{lid}' dismounts within a "
+                f"rail's length of an unguarded roof edge with no parapet "
+                f"there -- the top landing needs a secure standing surface "
+                f"(Rule 6).")
 
         # s10 -- geometry sanity (intel)
         if not (RUNG_SPACING_MIN <= ld.rung_spacing <= RUNG_SPACING_MAX):

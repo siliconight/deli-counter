@@ -444,6 +444,10 @@ class LevelSpec:
     # stairwell.py adds STAIR_LOW_ARCHETYPE_FIT intel for classified stairs
     # sitting outside the profile's candidate zones.
     archetype: Optional[str] = None
+    # ladder building profile (ladder_place.py profile id). Optional; gates
+    # what ladder roles/placements ladder.py tolerates (e.g. a profile that
+    # forbids exterior roof ladders warns when one is authored anyway).
+    ladder_profile: Optional[str] = None
 
     ext_walls: list[ExtWall] = field(default_factory=list)
     partitions: list[Partition] = field(default_factory=list)
