@@ -1,3 +1,34 @@
+## [0.71.0] - Interior roof hatches + service access (ladder spec Phase 3)
+
+- ladder.py Phase-3 review for interior roof-hatch ladders (spec s8): a hatch
+  ladder (interior/shaft placement, reaches the roof, roof_hatch_exit
+  transition) must originate in a service space and clear its opening.
+  - ROOF_HATCH_BLOCKED (HARD) fires when the ladder originates in a public or
+    occupied room (s8.2: lobby, kitchen, bedroom, objective_room, sales, ...),
+    when the climber emerges under rooftop equipment/ductwork (s8.3 dismount
+    disc), or when a parapeted roof edge collides with the hatch cover swing
+    (s8.3).
+  - Warnings for a non-preferred origin room (s8.1 prefers mechanical/utility/
+    janitor/back-of-house), a service-room door sharing the ladder base, and a
+    restricted hatch with no access_control (Rule 13).
+- ladder_place.py gains an interior roof-hatch placement mode (--mode hatch):
+  candidates are top-floor service rooms (mechanical/utility/back-of-house,
+  falling back to connectors), anchored at the room centroid a hatch-swing
+  clear of the roof edge. Reasoned rejections (prohibited_room,
+  equipment_over_hatch, parapet_blocks_cover_swing) and an s12.4-subset score
+  favoring service adjacency, equipment destination, and distance from the
+  roof edge. The hatch ladder rises from the service room's own story to the
+  roof (from_story = room story, not 0), and the proposal closes the loop --
+  it passes ladder.check with zero errors.
+- The Phase-3 check caught a real content pattern: three shipped specs
+  (cbp_town_finale, corner_deli_heist_01, gs_auto_shop) placed roof-access
+  ladders rising straight out of OBJECTIVE rooms -- exactly the s8.2
+  anti-pattern. These are gameplay access, not maintenance hatches, so they're
+  reclassified honestly as special_gameplay_route (access_class gameplay) with
+  a parapet_crossover_platform transition onto the parapeted roof. cbp_ladder_0
+  now names its real endpoints (scoreboard back-of-house -> roof).
+- 16 new tests (146 total). Gate green; all shell.glb output byte-identical.
+
 ## [0.70.0] - Exterior ladder placement + roof transitions (ladder spec Phase 2)
 
 - New `ladder_place.py`: the PLACEMENT side of what ladder.py reviews, and the

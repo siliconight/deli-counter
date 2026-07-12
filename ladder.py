@@ -62,6 +62,25 @@ GAMEPLAY_LOW_CLEAR = 0.50
 
 DERIVED_SURFACES = {"roof", "grade", "site", "ground"}
 
+# interior roof-hatch placement (spec s8.1/8.2). A hatch ladder BELONGS in a
+# service space and must NOT sit in an occupied/public room.
+HATCH_PREFERRED_ROLES = {
+    "mechanical", "utility", "service_access", "maintenance", "janitor",
+    "roof_access", "back_of_house", "service_corridor", "connector",
+}
+HATCH_PROHIBITED_ROLES = {
+    "public_entry", "lobby", "bathroom", "kitchen", "bedroom", "classroom",
+    "patient_room", "retail", "sales", "objective_room", "stairwell",
+}
+HATCH_CLEAR_RADIUS = 0.9        # m; clear dismount disc above the hatch (s8.3)
+HATCH_SWING = 0.9              # m; hatch cover swing/lift envelope (s8.3)
+
+
+def _grade_or_room_at(spec, story, x, y):
+    """The Room whose bounds contain (x, y) on `story`, or None."""
+    rid = tactical._room_at(spec, story, x, y)
+    return _room_by_id(spec, rid) if rid else None
+
 
 def _facade_wall(spec, ld):
     """The exterior wall an exterior ladder stands against (nearest plane)."""
@@ -603,6 +622,78 @@ def check(spec):
                 f"rail's length of an unguarded roof edge with no parapet "
                 f"there -- the top landing needs a secure standing surface "
                 f"(Rule 6).")
+
+        # --- Phase 3: interior roof-hatch findings (spec s8) ---
+        is_hatch = (getattr(ld, "placement_mode", "interior") in
+                    ("interior", "shaft")
+                    and hi_story >= spec.n_stories
+                    and d["transition"]["type"] == "roof_hatch_exit")
+        if is_hatch:
+            # 8.2 -- the originating room must be a service space, never an
+            # occupied/public one. Resolve the room at the ladder base.
+            base_room = _room_by_id(spec, lower) if lower else \
+                _grade_or_room_at(spec, lo_story, ld.x, ld.y)
+            brole = (base_room.role or "") if base_room else ""
+            if base_room is not None and brole in HATCH_PROHIBITED_ROLES:
+                errors.append(
+                    f"LADDER ROOF_HATCH_BLOCKED: '{lid}' hatch ladder "
+                    f"originates in '{base_room.id}' (role '{brole}') -- a "
+                    f"roof-access ladder must not sit in a public or occupied "
+                    f"room (spec s8.2).")
+            elif base_room is not None and brole \
+                    and brole not in HATCH_PREFERRED_ROLES:
+                warnings.append(
+                    f"LADDER: '{lid}' hatch ladder originates in "
+                    f"'{base_room.id}' (role '{brole}') -- prefer a service, "
+                    f"mechanical, or back-of-house room (spec s8.1).")
+
+            # 8.3 -- clear dismount disc above the hatch (no equipment / roof
+            # volume in the emergence zone)
+            top_z = z1
+            for v in getattr(spec, "volumes", []):
+                nm = v.name.lower()
+                if any(k in nm for k in ("ladder", "rung", "rail")):
+                    continue
+                if math.hypot(v.x - ld.x, v.y - ld.y) < HATCH_CLEAR_RADIUS \
+                        and v.z + v.size_z / 2 > top_z \
+                        and v.z - v.size_z / 2 < top_z + CLIMB_HEAD_CLEAR:
+                    errors.append(
+                        f"LADDER ROOF_HATCH_BLOCKED: '{lid}' climber emerges "
+                        f"under '{v.name}' -- the hatch dismount zone must be "
+                        f"clear of ductwork/equipment (spec s8.3 / "
+                        f"anti-pattern 'hatch collision').")
+                    break
+
+            # 8.3 -- hatch cover must not collide with a parapet right at the
+            # opening: a parapet within the swing envelope blocks the cover
+            if any(p.story >= spec.n_stories - 1
+                   for p in getattr(spec, "parapets", [])):
+                edge = min(spec.footprint_x / 2 - abs(ld.x),
+                           spec.footprint_y / 2 - abs(ld.y))
+                if edge < HATCH_SWING:
+                    errors.append(
+                        f"LADDER ROOF_HATCH_BLOCKED: '{lid}' hatch is within "
+                        f"{HATCH_SWING} m of a parapeted roof edge -- the "
+                        f"cover swing collides with the parapet (spec s8.3).")
+
+            # 8.3 -- the service-room door swing must not block the ladder base
+            # (approximation: an interior door landing on the climb rect)
+            for kind, story, px, py in _openings_in_climb(
+                    spec, ld, climb_rect(ld), {lo_story}):
+                if kind in ("door", "garage") and story == lo_story:
+                    warnings.append(
+                        f"LADDER: '{lid}' hatch-ladder base shares space with "
+                        f"a {kind} at ({px:.1f}, {py:.1f}) -- confirm the door "
+                        f"swing clears the ladder (spec s8.3).")
+                    break
+
+            # a restricted hatch ladder should have access control (s8 / Rule 13)
+            if getattr(ld, "access_control", None) in (None, "none") \
+                    and getattr(ld, "access_class", "") != "public":
+                warnings.append(
+                    f"LADDER: '{lid}' is an interior roof-hatch ladder with no "
+                    f"access_control -- roof access is normally locked "
+                    f"(locked_hatch / staff_room; Rule 13).")
 
         # s10 -- geometry sanity (intel)
         if not (RUNG_SPACING_MIN <= ld.rung_spacing <= RUNG_SPACING_MAX):

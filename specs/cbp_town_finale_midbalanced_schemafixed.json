@@ -703,14 +703,15 @@
       "rung_spacing": 0.3,
       "cut_slabs": true,
       "facing": "N",
-      "role": "roof_access",
+      "role": "special_gameplay_route",
       "placement_mode": "interior",
       "upper_surface": "roof",
-      "transition": "roof_hatch_exit",
-      "access_class": "staff_restricted",
+      "transition": "parapet_crossover_platform",
+      "access_class": "gameplay",
       "access_control": "locked_hatch",
       "id": "cbp_ladder_0",
-      "fall_protection": "safety_rail"
+      "fall_protection": "safety_rail",
+      "lower_surface": "scoreboard_back_of_house"
     },
     {
       "x": -39.0,

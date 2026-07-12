@@ -254,3 +254,15 @@ Rules of the road for consumers:
   hatch / gate must be operated before traversal).
 - `gameplay.meta` (via `Ladder.meta`) overlays these defaults for authored
   cases, same pattern as `Stairwell.meta`.
+
+### ladders Phase-3 notes (kit 0.71+)
+
+- An interior roof-hatch ladder (placement_mode interior/shaft, upper_surface
+  roof, transition roof_hatch_exit) is validated against spec s8: it must
+  originate in a service room (mechanical/utility/janitor/back-of-house), its
+  dismount disc must be clear of rooftop equipment, and a parapeted roof edge
+  must not collide with the hatch cover swing. A roof ladder rising from an
+  objective/public room is a ROOF_HATCH_BLOCKED error -- if the intent is a
+  gameplay rooftop route, classify it special_gameplay_route, not roof_access.
+- ladder_place.py --mode hatch proposes these: it picks a top-floor service
+  room and rises from that room's story to the roof.

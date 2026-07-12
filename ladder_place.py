@@ -317,12 +317,142 @@ def score_candidate(spec, cand, profile):
 # Proposal
 # ---------------------------------------------------------------------------
 
-def propose(spec, profile_name, count=None):
+def _service_rooms(spec, story):
+    """Rooms on `story` whose role reads as a service/back-of-house space --
+    the preferred origin for an interior roof-hatch ladder (spec s8.1)."""
+    import ladder as _l
+    out = []
+    for r in spec.rooms:
+        if r.story != story:
+            continue
+        role = r.role or ""
+        if role in _l.HATCH_PREFERRED_ROLES and role not in ("connector",):
+            out.append(r)
+    # fall back to connectors if no dedicated service room exists
+    if not out:
+        for r in spec.rooms:
+            if r.story == story and (r.role or "") == "connector":
+                out.append(r)
+    return out
+
+
+def hatch_candidate_zones(spec, profile):
+    """Interior roof-hatch candidates (spec s8): a hatch ladder rises from a
+    top-floor service room straight to the roof. Anchor at each service room's
+    centroid, kept a hatch-swing clear of the room edges and the roof edge."""
+    if not profile.get("allow_roof_hatch_ladder", False):
+        return []
+    if not _roof_walkable(spec):
+        return []
+    top = spec.n_stories - 1
+    hx, hy = spec.footprint_x / 2, spec.footprint_y / 2
+    cands = []
+    for r in _service_rooms(spec, top):
+        x0, y0, x1, y1 = r.bounds
+        cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+        # nudge off any roof edge by the swing envelope so the cover clears
+        cx = max(-hx + 1.0, min(hx - 1.0, cx))
+        cy = max(-hy + 1.0, min(hy - 1.0, cy))
+        cands.append({"room": r.id, "story": r.story,
+                      "x": round(cx, 2), "y": round(cy, 2),
+                      "facing": "S", "role": r.role or ""})
+    return cands
+
+
+def _hatch_reject_reason(spec, cand, profile):
+    import ladder as _l
+    role = cand["role"]
+    if role in _l.HATCH_PROHIBITED_ROLES:
+        return f"prohibited_room:{cand['room']}({role})"
+    # equipment in the dismount disc
+    eq, ed = _nearest_volume(spec, cand["x"], cand["y"], _EQUIP_HINTS)
+    if eq is not None and ed < _l.HATCH_CLEAR_RADIUS:
+        return f"equipment_over_hatch:{eq.name}"
+    # parapet edge collision with the cover swing
+    if any(p.story >= spec.n_stories - 1
+           for p in getattr(spec, "parapets", [])):
+        edge = min(spec.footprint_x / 2 - abs(cand["x"]),
+                   spec.footprint_y / 2 - abs(cand["y"]))
+        if edge < _l.HATCH_SWING:
+            return "parapet_blocks_cover_swing"
+    return None
+
+
+def _hatch_score(spec, cand, profile):
+    import ladder as _l
+    t = {}
+    role = cand["role"]
+    t["service_adjacency"] = 1.0 if role in SERVICE_ROLES else (
+        0.6 if role in _l.HATCH_PREFERRED_ROLES else 0.3)
+    eq, ed = _nearest_volume(spec, cand["x"], cand["y"], _EQUIP_HINTS)
+    t["destination_relevance"] = (max(0.4, 1.0 - ed / 15.0)
+                                  if eq is not None else 0.5)
+    t["route_continuity"] = 1.0        # inside a room, on the service route
+    t["clear_lower_landing"] = 1.0
+    t["clear_upper_landing"] = 1.0
+    t["security_fit"] = 1.0 if profile.get("restrict_public_access") else 0.5
+    # centrality: a hatch away from the roof edge is safer (no edge fall zone)
+    hx, hy = spec.footprint_x / 2, spec.footprint_y / 2
+    edge = min(hx - abs(cand["x"]), hy - abs(cand["y"]))
+    t["structural_alignment"] = min(1.0, edge / 3.0)
+    score = (WEIGHTS["service_adjacency"] * t["service_adjacency"]
+             + WEIGHTS["destination_relevance"] * t["destination_relevance"]
+             + WEIGHTS["route_continuity"] * t["route_continuity"]
+             + WEIGHTS["clear_lower_landing"] * t["clear_lower_landing"]
+             + WEIGHTS["clear_upper_landing"] * t["clear_upper_landing"]
+             + WEIGHTS["security_fit"] * t["security_fit"]
+             + WEIGHTS["structural_alignment"] * t["structural_alignment"])
+    return round(score, 2), t
+
+
+def propose(spec, profile_name, count=None, mode="exterior"):
     if profile_name not in PROFILES:
         raise ValueError(f"unknown profile '{profile_name}' "
                          f"(known: {', '.join(sorted(PROFILES))})")
     profile = PROFILES[profile_name]
     notes = []
+
+    if mode == "hatch":
+        if not profile.get("allow_roof_hatch_ladder", False):
+            notes.append(f"profile '{profile_name}' does not allow roof-hatch "
+                         f"ladders")
+        if not _roof_walkable(spec):
+            notes.append("roof is not a walkable dismount surface -- no hatch "
+                         "ladder proposed")
+        cands = hatch_candidate_zones(spec, profile)
+        rejected, survivors = [], []
+        for c in cands:
+            reason = _hatch_reject_reason(spec, c, profile)
+            if reason:
+                rejected.append({**c, "reason": reason})
+                continue
+            sc, terms = _hatch_score(spec, c, profile)
+            survivors.append({**c, "score": sc, "terms": terms})
+        survivors.sort(key=lambda s: -s["score"])
+        n = 1 if count is None else count
+        ladders_out = []
+        for i, c in enumerate(survivors[:n]):
+            room_story = c.get("story", spec.n_stories - 1)
+            fp = ("safety_rail"
+                  if (spec.n_stories - room_story) * spec.story_height
+                  > profile["fall_protection_trigger_m"] else None)
+            ladders_out.append({
+                "x": c["x"], "y": c["y"], "from_story": room_story,
+                "to_story": spec.n_stories, "facing": "S",
+                "id": f"{profile_name}_hatch_ladder_{i}",
+                "role": "roof_access", "ladder_type": "fixed_vertical",
+                "placement_mode": "interior",
+                "lower_surface": c["room"], "upper_surface": "roof",
+                "direction": "bidirectional", "access_class": "staff_restricted",
+                "transition": "roof_hatch_exit",
+                **({"fall_protection": fp} if fp else {}),
+                "access_control": profile.get("default_access_control")
+                or "locked_hatch",
+            })
+        return {"profile": profile_name, "mode": "hatch", "count": n,
+                "ladders": ladders_out, "considered": len(cands),
+                "rejected": rejected, "scored": survivors[:8], "notes": notes}
+
     if not profile.get("allow_exterior_roof_ladder", False):
         notes.append(f"profile '{profile_name}' does not allow exterior roof "
                      f"ladders -- prefer an interior roof-hatch ladder "
@@ -367,23 +497,28 @@ def propose(spec, profile_name, count=None):
                if profile.get("default_access_control") else {}),
         })
 
-    return {"profile": profile_name, "count": n, "ladders": ladders_out,
+    return {"profile": profile_name, "mode": "exterior", "count": n,
+            "ladders": ladders_out,
             "considered": len(cands), "rejected": rejected,
             "scored": survivors[:8], "notes": notes}
 
 
 def _report(p):
-    lines = [f"ladder placement proposal -- profile '{p['profile']}'",
+    lines = [f"ladder placement proposal -- profile '{p['profile']}' "
+             f"[{p.get('mode', 'exterior')}]",
              f"  candidates considered: {p['considered']}   "
              f"rejected: {len(p['rejected'])}   target: {p['count']}"]
     for n in p["notes"]:
         lines.append(f"  NOTE: {n}")
     for r in p["rejected"]:
-        lines.append(f"  rejected {r['wall']} ({r['x']}, {r['y']}): "
-                     f"{r['reason']}")
+        loc = r.get("wall") or r.get("room") or "?"
+        lines.append(f"  rejected {loc} ({r['x']}, {r['y']}): {r['reason']}")
     for s in p["scored"]:
-        lines.append(f"  scored   {s['wall']} ({s['x']}, {s['y']}): "
-                     f"{s['score']}  rear={s['is_rear']} front={s['is_front']}")
+        loc = s.get("wall") or s.get("room") or "?"
+        extra = (f"rear={s['is_rear']} front={s['is_front']}"
+                 if "is_rear" in s else f"role={s.get('role', '')}")
+        lines.append(f"  scored   {loc} ({s['x']}, {s['y']}): "
+                     f"{s['score']}  {extra}")
     lines.append("proposed ladders (paste into the spec's \"ladders\" "
                  "section):")
     lines.append(json.dumps(p["ladders"], indent=2))
@@ -394,6 +529,8 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[1])
     ap.add_argument("spec")
     ap.add_argument("--profile", required=True, choices=sorted(PROFILES))
+    ap.add_argument("--mode", choices=["exterior", "hatch"], default="exterior",
+                    help="exterior wall ladder (default) or interior roof-hatch")
     ap.add_argument("--count", type=int, default=None)
     ap.add_argument("--write", action="store_true",
                     help="inject the proposal (refused if ladders exist)")
@@ -403,7 +540,7 @@ def main():
 
     from spec_loader import load_spec
     spec = load_spec(args.spec)
-    proposal = propose(spec, args.profile, count=args.count)
+    proposal = propose(spec, args.profile, count=args.count, mode=args.mode)
     print(_report(proposal))
 
     if args.write:
