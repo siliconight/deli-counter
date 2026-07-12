@@ -172,6 +172,12 @@ def _climb_z(spec, ld):
         z0 = lo_plat.z
     if hi_plat is not None:
         z1 = hi_plat.z
+    lo_fe = _fire_escape_by_id(spec, getattr(ld, "lower_surface", None))
+    hi_fe = _fire_escape_by_id(spec, getattr(ld, "upper_surface", None))
+    if lo_fe is not None and lo_fe.served_stories:
+        z0 = min(lo_fe.served_stories) * H
+    if hi_fe is not None and hi_fe.served_stories:
+        z1 = min(hi_fe.served_stories) * H
     return (z0, z1) if z0 <= z1 else (z1, z0)
 
 
@@ -197,10 +203,33 @@ def climb_rect(ld):
             max(ld.x, ld.x + dx), ld.y + half)
 
 
+def _fe_access_opening(spec, fe, story):
+    """s9.2 -- is there a valid access opening (window/door, or a corridor-end
+    opening) on the fire-escape's wall at `story` near its `along` position?"""
+    want = {"window": ("window",), "door": ("door", "garage"),
+            "corridor_end": ("door", "window")}.get(fe.access, ("window", "door"))
+    run = spec.footprint_x if fe.wall in ("N", "S") else spec.footprint_y
+    target_u = fe.along * run
+    for w in spec.ext_walls:
+        if w.story != story or w.wall != fe.wall:
+            continue
+        for op in w.openings:
+            if op.kind in want and abs(op.pos * run - target_u) <= fe.width:
+                return True
+    return False
+
+
 def _platform_by_id(spec, token):
     for p in getattr(spec, "platforms", []):
         if p.id == token:
             return p
+    return None
+
+
+def _fire_escape_by_id(spec, fid):
+    for fe in getattr(spec, "fire_escapes", []):
+        if fe.id == fid:
+            return fe
     return None
 
 
@@ -222,6 +251,9 @@ def _surface_story(spec, token, default_story):
     p = _platform_by_id(spec, token)
     if p is not None:
         return int(p.z // spec.story_height)
+    fe = _fire_escape_by_id(spec, token)
+    if fe is not None and fe.served_stories:
+        return min(fe.served_stories)
     for r in spec.rooms:
         if r.id == token:
             return r.story
@@ -243,6 +275,8 @@ def _surface_valid(spec, token, story):
         return True                           # grade/site/pit are standing ground
     if _platform_by_id(spec, token) is not None:
         return True                           # a platform deck is walkable
+    if _fire_escape_by_id(spec, token) is not None:
+        return True                           # a fire-escape balcony is walkable
     r = _room_by_id(spec, token)
     return r is not None and r.story == story
 
@@ -269,6 +303,8 @@ def _has_onward_route(spec, flat, token, story):
     if p is not None:
         return True                           # deck is a standing surface; the
         #   destination-quality question is handled by LADDER_TO_NOWHERE below
+    if _fire_escape_by_id(spec, token) is not None:
+        return True                           # the escape system IS the route
     r = _room_by_id(spec, token)
     if r is None:
         return False
@@ -706,12 +742,55 @@ def check(spec):
                 f"exception; confirm the profile allows it (s15.2).")
 
         # Rule 14 -- fire-escape ladder must belong to a platform system
-        if role == "fire_escape_termination" \
-                and not getattr(ld, "fire_escape_id", None):
+        fe_id = getattr(ld, "fire_escape_id", None)
+        fe = _fire_escape_by_id(spec, fe_id) if fe_id else None
+        if role == "fire_escape_termination" and not fe_id:
             errors.append(
                 f"LADDER FIRE_ESCAPE_LADDER_ORPHANED: '{lid}' is a "
                 f"fire-escape termination with no fire_escape_id -- an "
                 f"isolated ladder on a window is not a fire escape (Rule 14).")
+        elif fe_id and fe is None:
+            errors.append(
+                f"LADDER FIRE_ESCAPE_LADDER_ORPHANED: '{lid}' names "
+                f"fire_escape_id '{fe_id}' but no such fire-escape system "
+                f"exists in the spec (Rule 14 / s9.1: generate the platform "
+                f"system before the ladder).")
+
+        # --- Phase 5: legacy fire-escape validation (spec s9) ---
+        if fe is not None:
+            # s9.3 -- a drop ladder is the LEGACY exception, not the default;
+            # its direction should model deployment (deploy_then_bidirectional)
+            if fe.termination == "drop_ladder":
+                if getattr(ld, "direction", "bidirectional") \
+                        not in ("deploy_then_bidirectional", "down_only"):
+                    warnings.append(
+                        f"LADDER: drop-ladder '{lid}' on fire escape "
+                        f"'{fe.id}' should be deploy_then_bidirectional or "
+                        f"down_only -- a stored drop ladder deploys before "
+                        f"use (s3.7 / s13.2).")
+                # s9.4 -- the deployment landing must be clear of obstructions
+                blockers = _nearest_named(
+                    spec, ld.x, ld.y,
+                    ("dumpster", "fence", "gate", "vehicle", "areaway",
+                     "spike", "well", "loading"))
+                if blockers[0] is not None and blockers[1] < 2.0:
+                    errors.append(
+                        f"LADDER DROP_LADDER_NO_DEPLOYMENT_CLEARANCE: drop "
+                        f"ladder '{lid}' deploys onto '{blockers[0]}' -- the "
+                        f"base zone below a deployable ladder must stay clear "
+                        f"(s9.4).")
+            # s9.1 step 8 -- validate the full route to grade: the lowest
+            # served story must chain down to grade via the termination
+            if fe.served_stories and min(fe.served_stories) > 0 \
+                    and fe.termination not in (
+                        "stair_to_grade", "counterbalanced_stair",
+                        "deployable_stair", "drop_ladder"):
+                errors.append(
+                    f"LADDER LADDER_ROUTE_DISCONNECTED: fire escape "
+                    f"'{fe.id}' lowest platform (story "
+                    f"{min(fe.served_stories)}) has termination "
+                    f"'{fe.termination}' that does not reach grade -- the "
+                    f"route to grade is incomplete (s9.1 step 8).")
 
         # Rule 13 -- restricted role publicly reachable (intel)
         if role in ("roof_access", "maintenance_access", "service_access") \
@@ -726,19 +805,23 @@ def check(spec):
         if getattr(ld, "placement_mode", "interior") == "exterior_wall":
             wall = _facade_wall(spec, ld)
             front, _ = _front_rear_walls_l(spec)
-            if wall == front:
-                warnings.append(
-                    f"LADDER LADDER_PUBLIC_FACADE: '{lid}' is on the primary "
-                    f"public facade ({wall}) -- prefer a rear or side "
-                    f"service-facing wall unless the building type justifies "
-                    f"it (Rule 3 / s15.2).")
-            # base near a public entrance
-            if _near_public_entrance(spec, ld):
-                warnings.append(
-                    f"LADDER LADDER_NEAR_PUBLIC_ENTRANCE: '{lid}' base is "
-                    f"close to a main entrance door -- keep ladders clear of "
-                    f"the public approach (Rule 9 / s15.2).")
-            # scupper/drain overhead
+            # facade-PREFERENCE nudges exempt legacy fire escapes: historic
+            # fire escapes commonly hang on the street or courtyard facade,
+            # and Rule 3 allows it by building type.
+            if role not in ESCAPE_ROLES:
+                if wall == front:
+                    warnings.append(
+                        f"LADDER LADDER_PUBLIC_FACADE: '{lid}' is on the "
+                        f"primary public facade ({wall}) -- prefer a rear or "
+                        f"side service-facing wall unless the building type "
+                        f"justifies it (Rule 3 / s15.2).")
+                if _near_public_entrance(spec, ld):
+                    warnings.append(
+                        f"LADDER LADDER_NEAR_PUBLIC_ENTRANCE: '{lid}' base is "
+                        f"close to a main entrance door -- keep ladders clear "
+                        f"of the public approach (Rule 9 / s15.2).")
+            # HAZARD findings apply to every exterior ladder, fire escapes
+            # included (s9.4 lists these for fire-escape base zones):
             hz, hd = _nearest_named(spec, ld.x, ld.y, ("scupper", "drain",
                                                        "gutter"))
             if hz is not None and hd < 2.0:
@@ -746,7 +829,6 @@ def check(spec):
                     f"LADDER LADDER_NEAR_DRAINAGE: '{lid}' sits under/near "
                     f"'{hz}' -- water discharge on the climb path (Rule 12 / "
                     f"anti-pattern 'drainpipe ladder').")
-            # vehicle conflict: a volume named like a lane/dock at the base
             vz, vd = _nearest_named(spec, ld.x, ld.y,
                                     ("lane", "dock", "drive", "forklift"))
             if vz is not None and vd < 1.5 \
@@ -756,8 +838,12 @@ def check(spec):
                     f"vehicle swept path ('{vz}') with no protection -- add a "
                     f"setback, bollards, or a protected alcove (Rule 10).")
 
-        # top landing near an unguarded roof edge (Rule 6 / s15.2)
-        if hi_story >= spec.n_stories and _roof_edge_risk(spec, ld):
+        # top landing near an unguarded roof edge (Rule 6 / s15.2). Skips
+        # ladders that land on a platform / fire-escape balcony (not the roof).
+        lands_elsewhere = _platform_by_id(spec, upper) is not None \
+            or _fire_escape_by_id(spec, upper) is not None
+        if hi_story >= spec.n_stories and not lands_elsewhere \
+                and _roof_edge_risk(spec, ld):
             warnings.append(
                 f"LADDER LADDER_TOP_EDGE_RISK: '{lid}' dismounts within a "
                 f"rail's length of an unguarded roof edge with no parapet "
@@ -936,6 +1022,39 @@ def check(spec):
                 f"LADDER LADDER_EXCESSIVE_HEIGHT: '{lid}' climbs {h:.1f} m "
                 f"({h / spec.story_height:.1f} stories) -- unusually long; "
                 f"consider offset sections with rest platforms (s15.2).")
+
+    # --- Phase 5: fire-escape SYSTEM validation (spec s9, independent of any
+    # linked ladder). Per s9.1 the system is generated whole and must be a
+    # complete route; s9.2 every served floor needs a valid access opening.
+    linked_fe = {getattr(ld, "fire_escape_id", None) for ld in spec.ladders}
+    for fe in getattr(spec, "fire_escapes", []):
+        if not fe.served_stories:
+            errors.append(
+                f"LADDER FIRE_ESCAPE_LADDER_ORPHANED: fire escape '{fe.id}' "
+                f"serves no stories -- it connects nothing (s9.1).")
+            continue
+        # s9.2 -- each served story needs an access opening on the fe wall
+        if have_rooms:
+            for s in fe.served_stories:
+                if not _fe_access_opening(spec, fe, s):
+                    warnings.append(
+                        f"LADDER: fire escape '{fe.id}' story {s} has no "
+                        f"{fe.access} opening on the {fe.wall} facade -- the "
+                        f"platform must connect through a real access opening "
+                        f"(s9.2).")
+        # s9.3 -- a drop_ladder termination is the legacy exception; it needs a
+        # linked drop ladder to actually descend
+        if fe.termination == "drop_ladder" and fe.id not in linked_fe:
+            warnings.append(
+                f"LADDER: fire escape '{fe.id}' declares a drop_ladder "
+                f"termination but no ladder links to it (fire_escape_id) -- "
+                f"the descent to grade is unmodeled (s9.3).")
+        # stair terminations reach grade on their own; flag a non-grade lowest
+        if min(fe.served_stories) <= 0:
+            warnings.append(
+                f"LADDER: fire escape '{fe.id}' lowest served story is "
+                f"{min(fe.served_stories)} (at/below grade) -- confirm it "
+                f"terminates at grade, not a basement areaway (s9.4).")
 
     summary = {
         "ladders": counts["total"],

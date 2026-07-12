@@ -1,3 +1,42 @@
+## [0.74.0] - Legacy fire escapes (ladder spec Phase 5) -- ladder spec COMPLETE
+
+- New `FireEscape` primitive (schema 1.20.0 -> 1.21.0): a legacy exterior
+  escape SYSTEM, not a single ladder (spec s3.5, s9). Per s9.1 the system is
+  generated whole -- a stack of floor-level balcony platforms on one facade,
+  one per served story, connected by stair segments, with a lowest-platform
+  termination to grade. Fields: id, wall, served_stories, along, depth, width,
+  termination (stair_to_grade/counterbalanced_stair/deployable_stair/
+  drop_ladder), access (window/door/corridor_end), guard_height, material.
+- Builder _fire_escapes(): balcony deck + outer guard rail per served story
+  (the facade side is the access opening) + a connecting stair stub + a marker
+  empty, all hung OUTSIDE the shell. Fire escapes are emitted into
+  gameplay.json so linked ladders read them as surfaces.
+- ladder.py resolves a FireEscape id as a surface (lower/upper_surface): a
+  fire-escape or drop ladder names the system as its upper_surface and its
+  climb endpoint pins to the lowest served balcony height.
+- Phase-5 review (spec s9): FIRE_ESCAPE_LADDER_ORPHANED now resolves
+  fire_escape_id against real systems (a ladder naming a non-existent system,
+  or a fire_escape_termination with none, or a system serving no stories, all
+  gate); DROP_LADDER_NO_DEPLOYMENT_CLEARANCE for a drop ladder deploying onto a
+  dumpster/fence/vehicle/areaway (s9.4); a full-route-to-grade check (s9.1
+  step 8); and warnings for a missing access opening on the fire-escape facade
+  (s9.2), a drop ladder whose direction does not model deployment (s3.7/s13.2),
+  and an unlinked drop-ladder termination (s9.3). Legacy fire-escape ladders
+  are exempt from the Phase-2 public-facade/entrance nudges (Rule 3 allows a
+  front-facade fire escape by building type) but NOT from the drainage/vehicle
+  hazard checks (s9.4 lists those for fire-escape base zones).
+- ladder_place.py --mode fire_escape proposes the whole system per s9.1:
+  served upper floors, rear service facade, termination chosen by profile
+  (a conditional fire-escape-ladder termination on historic_urban_mixed_use
+  yields a drop ladder; other profiles get stair_to_grade). Loop closes: the
+  proposed system + drop ladder pass ladder.check clean.
+- rowhouse_raid.json showcases a rear (N) fire escape serving the upper floor
+  with a deploy-then-bidirectional drop ladder and an access window. 15 new
+  tests (197 total). Gate green; all pre-existing shell.glb output
+  byte-identical.
+
+This closes all six phases of docs/deli_counter_ladder_placement_spec.md.
+
 ## [0.73.0] - Industrial platforms + equipment ladders (ladder spec Phase 4)
 
 - New `Platform` primitive (schema 1.19.0 -> 1.20.0): an elevated walkable deck

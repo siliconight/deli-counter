@@ -214,7 +214,14 @@ def test_fire_escape_termination_needs_system():
     sp = _roof_ladder(role="fire_escape_termination")
     errors, _, _ = L.check(sp)
     assert "FIRE_ESCAPE_LADDER_ORPHANED" in _codes(errors)
+    # a fire_escape_id that names no real system is still orphaned
+    sp1 = _roof_ladder(role="fire_escape_termination", fire_escape_id="ghost")
+    assert "FIRE_ESCAPE_LADDER_ORPHANED" in _codes(L.check(sp1)[0])
+    # linked to a real fire-escape system -> not orphaned
+    from spec_types import FireEscape
     sp2 = _roof_ladder(role="fire_escape_termination", fire_escape_id="fe_1")
+    sp2.fire_escapes = [FireEscape(id="fe_1", wall="W", served_stories=[1],
+                                   termination="stair_to_grade")]
     errors2, _, _ = L.check(sp2)
     assert "FIRE_ESCAPE_LADDER_ORPHANED" not in _codes(errors2)
 

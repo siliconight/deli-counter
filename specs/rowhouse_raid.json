@@ -88,6 +88,16 @@
           "tag": "upper_entry"
         }
       ]
+    },
+    {
+      "wall": "N",
+      "story": 1,
+      "openings": [
+        {
+          "kind": "window",
+          "pos": 0.0
+        }
+      ]
     }
   ],
   "partitions": [
@@ -340,6 +350,39 @@
       "y": -8,
       "z": 2.5,
       "room": "office"
+    }
+  ],
+  "fire_escapes": [
+    {
+      "id": "rear_fire_escape",
+      "wall": "N",
+      "served_stories": [
+        1
+      ],
+      "along": 0.0,
+      "termination": "drop_ladder",
+      "access": "window"
+    }
+  ],
+  "ladders": [
+    {
+      "x": 0.0,
+      "y": 9.7,
+      "from_story": 0,
+      "to_story": 1,
+      "facing": "S",
+      "id": "fire_escape_drop_ladder",
+      "role": "fire_escape_termination",
+      "ladder_type": "fixed_vertical",
+      "placement_mode": "exterior_wall",
+      "lower_surface": "grade",
+      "upper_surface": "rear_fire_escape",
+      "direction": "deploy_then_bidirectional",
+      "access_class": "emergency",
+      "transition": "fire_escape_platform_entry",
+      "fire_escape_id": "rear_fire_escape",
+      "access_control": "removable_section",
+      "counts_as_secondary_escape": true
     }
   ]
 }

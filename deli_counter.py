@@ -900,6 +900,7 @@ class _Builder:
         self._ramps()
         self._vault_ledges()
         self._platforms()
+        self._fire_escapes()
         self._vertical_links()
         self._slab_holes_cut()
         self._volumes()
@@ -1525,6 +1526,57 @@ class _Builder:
             # marker empty so the post-import can anchor the platform semantics
             self._empty(name, (p.x, p.y, p.z), self.MARKERS)
 
+    def _fire_escapes(self):
+        """A legacy exterior fire-escape system (ladder spec s9): a stack of
+        balcony platforms on one facade, one per served story, connected by
+        short stair segments, with guard rails on the three open sides. The
+        assembly hangs OUTSIDE the shell; the lowest platform's termination to
+        grade is authored art (stair/drop ladder) referenced by a linked
+        Ladder. Baked as deck + rail boxes tagged FIREESCAPE_<id>_<story>."""
+        H = self.s.story_height
+        hx, hy = self.s.footprint_x / 2, self.s.footprint_y / 2
+        for fe in self.s.fire_escapes:
+            for s in sorted(fe.served_stories):
+                # balcony sits just outside the facade at floor level of story s
+                if fe.wall == "N":
+                    bx, by = self.s.footprint_x * fe.along, hy + fe.depth / 2
+                    dsize = (fe.width, fe.depth, 0.12)
+                elif fe.wall == "S":
+                    bx, by = self.s.footprint_x * fe.along, -hy - fe.depth / 2
+                    dsize = (fe.width, fe.depth, 0.12)
+                elif fe.wall == "E":
+                    bx, by = hx + fe.depth / 2, self.s.footprint_y * fe.along
+                    dsize = (fe.depth, fe.width, 0.12)
+                else:
+                    bx, by = -hx - fe.depth / 2, self.s.footprint_y * fe.along
+                    dsize = (fe.depth, fe.width, 0.12)
+                z = s * H
+                name = f"FIREESCAPE_{fe.id.upper()}_{s}"
+                self._box(name, (bx, by, z - 0.06), dsize, self.VISUAL,
+                          role="floor")
+                self._col_box(name, (bx, by, z - 0.06), dsize)
+                self._record_surface(name + self.col_suffix["convex"],
+                                     fe.material)
+                # outer guard rail (the facade side is the access opening)
+                gz = z + fe.guard_height / 2
+                if fe.wall in ("N", "S"):
+                    out_y = by + (fe.depth / 2 if fe.wall == "N"
+                                  else -fe.depth / 2)
+                    self._box(f"{name}_RAIL", (bx, out_y, gz),
+                              (fe.width, 0.04, fe.guard_height), self.VISUAL,
+                              role="floor")
+                else:
+                    out_x = bx + (fe.depth / 2 if fe.wall == "E"
+                                  else -fe.depth / 2)
+                    self._box(f"{name}_RAIL", (out_x, by, gz),
+                              (0.04, fe.width, fe.guard_height), self.VISUAL,
+                              role="floor")
+                # connecting stair stub down to the platform below (visual cue)
+                if s - 1 in fe.served_stories:
+                    self._box(f"{name}_STAIR", (bx, by, z - H / 2),
+                              (0.6, 0.6, H), self.VISUAL, role="stair")
+                self._empty(name, (bx, by, z), self.MARKERS)
+
     def _slab_holes_cut(self):
         """Boolean-subtract holes from slabs (visual + collision)."""
         ft = self.s.floor_thick
@@ -2024,6 +2076,13 @@ def write_gameplay_json(builder, path):
              "role": p.role, "destination": p.destination,
              "guard_edges": list(p.guard_edges or [])}
             for p in builder.s.platforms],
+        # legacy fire-escape systems (balconies + stairs + termination);
+        # fire-escape / drop ladders link to these by fire_escape_id (Phase 5)
+        "fire_escapes": [
+            {"id": fe.id, "wall": fe.wall,
+             "served_stories": sorted(fe.served_stories),
+             "termination": fe.termination, "access": fe.access}
+            for fe in builder.s.fire_escapes],
         # authoritative node-name -> surface role map (floor/ceiling/wall/stair/
         # ramp/ladder/prop). Downstream tools (Patina styling, vertex nuance)
         # should consume this instead of inferring roles from geometry.

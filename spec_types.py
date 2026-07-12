@@ -234,6 +234,33 @@ class Ramp:
 
 
 @dataclass
+class FireEscape:
+    """A legacy exterior fire-escape SYSTEM, not a single ladder (ladder spec
+    s3.5, s9). Per s9.1 the system is generated whole: a stack of floor-level
+    balcony platforms on one exterior wall, connected by stair segments, with a
+    lowest-platform termination to grade. A fire-escape or drop Ladder links to
+    this by fire_escape_id; the review validates the full route to grade.
+
+    `wall` is the facade it hangs on; `served_stories` are the occupied floors
+    it reaches (each needs a valid access opening -- s9.2); `along` is the
+    fractional position of the assembly on that wall (-0.5..0.5). `termination`
+    is how the lowest platform reaches grade (s9.3): stair_to_grade,
+    counterbalanced_stair, deployable_stair, or drop_ladder (legacy exception).
+    Balconies + stairs are baked as geometry; the assembly reserves a facade
+    strip like an exterior ladder."""
+    id: str
+    wall: Literal["N", "S", "E", "W"] = "S"
+    served_stories: list[int] = field(default_factory=list)
+    along: float = 0.0                    # fractional position along the wall
+    depth: float = 1.4                    # balcony projection off the facade (m)
+    width: float = 2.4                    # balcony run along the facade (m)
+    termination: str = "stair_to_grade"   # s9.3 lowest-platform termination
+    access: str = "window"                # window / door / corridor_end (s9.2)
+    guard_height: float = 1.0
+    material: Optional[str] = None
+
+
+@dataclass
 class Platform:
     """An elevated walkable deck standing free of the story grid -- a catwalk,
     equipment platform, mezzanine landing, or rest platform for an offset
@@ -485,6 +512,7 @@ class LevelSpec:
     ramps: list[Ramp] = field(default_factory=list)
     vault_ledges: list[VaultLedge] = field(default_factory=list)
     platforms: list[Platform] = field(default_factory=list)
+    fire_escapes: list[FireEscape] = field(default_factory=list)
     slab_holes: list[SlabHole] = field(default_factory=list)
     volumes: list[Volume] = field(default_factory=list)
     parapets: list[Parapet] = field(default_factory=list)

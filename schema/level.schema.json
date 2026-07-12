@@ -1292,6 +1292,68 @@
           }
         }
       }
+    },
+    "fire_escapes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "wall": {
+            "enum": [
+              "N",
+              "S",
+              "E",
+              "W"
+            ]
+          },
+          "served_stories": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "along": {
+            "type": "number"
+          },
+          "depth": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "width": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "termination": {
+            "enum": [
+              "stair_to_grade",
+              "counterbalanced_stair",
+              "deployable_stair",
+              "drop_ladder"
+            ]
+          },
+          "access": {
+            "enum": [
+              "window",
+              "door",
+              "corridor_end"
+            ]
+          },
+          "guard_height": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "material": {
+            "type": "string"
+          }
+        }
+      }
     }
   },
   "$defs": {

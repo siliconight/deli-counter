@@ -319,3 +319,30 @@ them as surfaces:
 - ladder_place.py --mode equipment proposes floor->platform ladders from the
   platform graph, anchored off each platform's open edge, with an offset
   fall-protection profile for tall climbs.
+
+## fire_escapes (kit 0.74+)
+
+Legacy exterior fire-escape SYSTEMS (ladder spec s9), generated whole per s9.1
+(the platform system before the ladder). Emitted into gameplay.json:
+
+```json
+{ "id": "rear_fire_escape", "wall": "N", "served_stories": [1, 2],
+  "termination": "drop_ladder", "access": "window" }
+```
+
+- A stack of floor-level balcony platforms on one facade (`wall`), one per
+  `served_stories` floor, connected by stair segments, guarded on the three
+  open sides (the facade side is the access opening).
+- `access` (window/door/corridor_end) is the opening each served floor
+  connects through (s9.2); the review warns if the facade lacks it.
+- `termination` (s9.3) is how the lowest platform reaches grade: stair_to_grade
+  / counterbalanced_stair / deployable_stair (reach grade on their own), or
+  drop_ladder (the legacy exception -- needs a linked Ladder with
+  fire_escape_id and direction deploy_then_bidirectional).
+- A fire-escape / drop Ladder references the system by fire_escape_id and by
+  naming it as a surface (upper_surface); the climb endpoint pins to the lowest
+  balcony. FIRE_ESCAPE_LADDER_ORPHANED gates a ladder whose fire_escape_id
+  names no system; DROP_LADDER_NO_DEPLOYMENT_CLEARANCE gates a drop ladder
+  deploying onto a dumpster/fence/vehicle/areaway (s9.4).
+- ladder_place.py --mode fire_escape proposes the whole system (rear facade,
+  served upper floors, termination by profile) for a legacy building profile.

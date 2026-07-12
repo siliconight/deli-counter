@@ -52,6 +52,7 @@ PROFILES = {
     "historic_urban_mixed_use": dict(
         allow_exterior_roof_ladder=True, allow_roof_hatch_ladder=True,
         allow_legacy_fire_escape=True, allow_ladder_as_egress=False,
+        allow_fire_escape_ladder_termination="conditional",
         restrict_public_access=True, prefer_rear_or_side_facade=True,
         fall_protection_trigger_m=7.3, default_role="roof_access",
         default_access_control="locked_gate"),
@@ -462,12 +463,72 @@ def _platform_score(spec, cand, profile):
     return round(score, 2), t
 
 
+def fire_escape_proposal(spec, profile, count=None):
+    """Generate a legacy fire-escape SYSTEM per spec s9.1: identify served
+    occupied floors, place it on a service-facing facade, select a termination,
+    and add the drop/termination ladder. Returns (fire_escapes, ladders,
+    notes). Only proposed when the profile allows legacy fire escapes."""
+    notes = []
+    if not profile.get("allow_legacy_fire_escape", False):
+        notes.append("profile does not allow legacy fire escapes (s21)")
+        return [], [], notes
+    # s9.1 step 1 -- served occupied floors are the upper stories (not grade)
+    served = sorted({r.story for r in spec.rooms if r.story >= 1})
+    if not served:
+        served = list(range(1, spec.n_stories))
+    if not served:
+        notes.append("no upper occupied floors to serve")
+        return [], [], notes
+    # s9.1 step 2/3 -- place on the rear (service-facing) facade
+    front, rear = _front_rear_walls(spec)
+    hx, hy = spec.footprint_x / 2, spec.footprint_y / 2
+    # anchor the drop ladder just outside the rear wall at grade
+    if rear == "N":
+        lx, ly, facing = 0.0, hy + 0.7, "S"
+    elif rear == "S":
+        lx, ly, facing = 0.0, -hy - 0.7, "N"
+    elif rear == "E":
+        lx, ly, facing = hx + 0.7, 0.0, "W"
+    else:
+        lx, ly, facing = -hx - 0.7, 0.0, "E"
+    fe = {
+        "id": "rear_fire_escape", "wall": rear,
+        "served_stories": served, "along": 0.0,
+        "termination": "stair_to_grade", "access": "window",
+    }
+    # s9.3 -- prefer a stair to grade; drop ladder only as the legacy exception.
+    # If the profile flags a conditional ladder termination, use a drop ladder.
+    if profile.get("allow_fire_escape_ladder_termination") == "conditional":
+        fe["termination"] = "drop_ladder"
+        drop = [{
+            "x": round(lx, 2), "y": round(ly, 2), "from_story": 0,
+            "to_story": 1, "facing": facing, "id": "fire_escape_drop_ladder",
+            "role": "fire_escape_termination", "ladder_type": "fixed_vertical",
+            "placement_mode": "exterior_wall", "lower_surface": "grade",
+            "upper_surface": "rear_fire_escape",
+            "direction": "deploy_then_bidirectional", "access_class": "emergency",
+            "transition": "fire_escape_platform_entry",
+            "fire_escape_id": "rear_fire_escape",
+            "access_control": "removable_section",
+            "counts_as_secondary_escape": True,
+        }]
+    else:
+        drop = []      # stair_to_grade needs no ladder
+    return [fe], drop, notes
+
+
 def propose(spec, profile_name, count=None, mode="exterior"):
     if profile_name not in PROFILES:
         raise ValueError(f"unknown profile '{profile_name}' "
                          f"(known: {', '.join(sorted(PROFILES))})")
     profile = PROFILES[profile_name]
     notes = []
+
+    if mode == "fire_escape":
+        fes, drop, notes = fire_escape_proposal(spec, profile, count)
+        return {"profile": profile_name, "mode": "fire_escape", "count": 1,
+                "fire_escapes": fes, "ladders": drop, "considered": 1,
+                "rejected": [], "scored": [], "notes": notes}
 
     if mode == "equipment":
         import ladder as _l
@@ -615,6 +676,10 @@ def _report(p):
                  if "is_rear" in s else f"role={s.get('role', '')}")
         lines.append(f"  scored   {loc} ({s['x']}, {s['y']}): "
                      f"{s['score']}  {extra}")
+    if p.get("fire_escapes"):
+        lines.append("proposed fire escapes (paste into the spec's "
+                     "\"fire_escapes\" section):")
+        lines.append(json.dumps(p["fire_escapes"], indent=2))
     lines.append("proposed ladders (paste into the spec's \"ladders\" "
                  "section):")
     lines.append(json.dumps(p["ladders"], indent=2))
@@ -625,10 +690,11 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[1])
     ap.add_argument("spec")
     ap.add_argument("--profile", required=True, choices=sorted(PROFILES))
-    ap.add_argument("--mode", choices=["exterior", "hatch", "equipment"],
+    ap.add_argument("--mode",
+                    choices=["exterior", "hatch", "equipment", "fire_escape"],
                     default="exterior",
                     help="exterior wall / interior roof-hatch / equipment "
-                         "platform ladder")
+                         "platform / legacy fire-escape system")
     ap.add_argument("--count", type=int, default=None)
     ap.add_argument("--write", action="store_true",
                     help="inject the proposal (refused if ladders exist)")
@@ -642,19 +708,23 @@ def main():
     print(_report(proposal))
 
     if args.write:
-        if not proposal["ladders"]:
-            raise SystemExit("REFUSED: no ladder proposed (see notes above).")
+        fes = proposal.get("fire_escapes", [])
+        if not proposal["ladders"] and not fes:
+            raise SystemExit("REFUSED: nothing proposed (see notes above).")
         with open(args.spec, "r", encoding="utf-8") as f:
             data = json.load(f)
-        if data.get("ladders") and not args.replace:
-            raise SystemExit("REFUSED: spec already has ladders; re-run with "
-                             "--replace to overwrite deliberately.")
+        if (data.get("ladders") or data.get("fire_escapes")) \
+                and not args.replace:
+            raise SystemExit("REFUSED: spec already has ladders/fire escapes; "
+                             "re-run with --replace to overwrite deliberately.")
+        if fes:
+            data["fire_escapes"] = fes
         data["ladders"] = proposal["ladders"]
         with open(args.spec, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2)
             f.write("\n")
-        print(f"\nwrote {len(proposal['ladders'])} ladder(s) into {args.spec} "
-              f"-- run validate.py to gate it.")
+        print(f"\nwrote {len(fes)} fire escape(s) + {len(proposal['ladders'])} "
+              f"ladder(s) into {args.spec} -- run validate.py to gate it.")
 
 
 if __name__ == "__main__":
