@@ -1,3 +1,43 @@
+## [0.72.0] - Ladder gameplay + networking runtime (ladder spec Phase 6)
+
+- ladders[] entries now carry the full Godot 4.7 runtime contract (spec s17).
+  The ladder object is DATA; the gameplay/network layer is authoritative over
+  it. Five derived sub-blocks replace the lone server_authoritative_state flag:
+  - traversal_component (s17.1): the reusable LadderTraversal ref -- mount/
+    dismount triggers, climb axis, direction, animation profile, occupancy/
+    replication state, interaction permissions.
+  - nav_link (s17.2): an explicit off-mesh navigation link (not a baked
+    walkable slope) with start/end positions, bidirectional (derived from
+    direction: bidirectional/deploy_then_bidirectional are two-way, up_only/
+    down_only/scripted are not), a per-ladder-type AI cost (ship < vertical <
+    caged), agent_types, required_capability "climb", access_state (locked for
+    locked_gate/locked_hatch), and reservation_state. This is the artifact AI
+    pathfinding consumes.
+  - authority (s17.3): the server/client ownership split, emitted explicitly on
+    every ladder. server owns enabled/locked/deployed/obstructed/ai_reservation/
+    objective_gating/player_transition_acceptance; clients own animation/camera/
+    sound/effects/prediction. No overlap; netcode reads the split instead of
+    assuming.
+  - ai (s17.4): can_use, one_at_a_time, may_attack_while_climbing,
+    should_wait_for_agent, may_follow_to_roof (true for roof_access and
+    special_gameplay_route), recover_if_blocked.
+  - combat (s17.5): weapons_allowed_while_climbing, can_be_interrupted, can_fall
+    (tracks the fall_protection profile), can_slide_down, can_be_destroyed,
+    can_be_blocked, occupancy_limit -- data-driven per the spec, not hardcoded
+    per mission.
+- Authored overrides: Ladder.meta['combat'] overlays the combat block, and
+  meta['gameplay']['occupancy_limit'] propagates consistently to the gameplay,
+  combat, and ai blocks (occupancy 2 -> ai.one_at_a_time false).
+- Three Phase-6 review checks (spec s13.2, s15.3): a
+  deploy_then_bidirectional drop ladder with no access_control to model the
+  deploy trigger warns; a scripted_direction ladder warns that AI cannot
+  traverse it (anti-pattern 'AI teleport ladder'); and
+  LADDER_MULTIPLAYER_DEADLOCK_RISK warns when a bidirectional fixed ladder
+  allows more than one simultaneous climber (two players, opposite ends --
+  anti-pattern 'multiplayer deadlock').
+- No SCHEMA change (runtime blocks are derived, not authored). 18 new tests
+  (164 total). Gate green; all shell.glb output byte-identical.
+
 ## [0.71.0] - Interior roof hatches + service access (ladder spec Phase 3)
 
 - ladder.py Phase-3 review for interior roof-hatch ladders (spec s8): a hatch

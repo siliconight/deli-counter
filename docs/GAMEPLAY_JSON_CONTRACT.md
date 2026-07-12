@@ -266,3 +266,30 @@ Rules of the road for consumers:
   gameplay rooftop route, classify it special_gameplay_route, not roof_access.
 - ladder_place.py --mode hatch proposes these: it picks a top-floor service
   room and rises from that room's story to the roof.
+
+### ladders Phase-6 runtime blocks (kit 0.72+)
+
+Each ladder now carries the Godot 4.7 runtime contract (spec s17). The ladder
+object is DATA; the gameplay/network layer is authoritative over it.
+
+- `traversal_component` (s17.1): the reusable LadderTraversal component ref --
+  mount/dismount triggers (the <ID>_MOUNT / <ID>_DISMOUNT empties), climb axis,
+  direction, animation profile, occupancy/replication state, interaction
+  permissions.
+- `nav_link` (s17.2): an explicit off-mesh nav-link (NOT a baked walkable
+  slope) with start/end, bidirectional (derived from direction), a per-type AI
+  cost, agent_types, required_capability "climb", access_state, reservation.
+  This is what AI pathfinding consumes.
+- `authority` (s17.3): the server/client ownership split. server_owned =
+  enabled/locked/deployed/obstructed/ai_reservation/objective_gating/
+  player_transition_acceptance; client_owned = animation/camera/sound/effects/
+  prediction. Present on every ladder so netcode reads it rather than assuming.
+- `ai` (s17.4): can_use, one_at_a_time, may_attack_while_climbing,
+  should_wait_for_agent, may_follow_to_roof, recover_if_blocked.
+- `combat` (s17.5): weapons_allowed_while_climbing, can_be_interrupted,
+  can_fall (tracks fall_protection), can_slide_down, can_be_destroyed,
+  can_be_blocked, occupancy_limit -- data-driven, not hardcoded per mission.
+
+Authored overrides: `Ladder.meta['combat']` overlays the combat block and
+`Ladder.meta['gameplay']['occupancy_limit']` propagates to gameplay, combat,
+and ai consistently.

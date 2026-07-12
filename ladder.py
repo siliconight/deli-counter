@@ -327,6 +327,111 @@ def _volumes_in_climb(spec, ld, rect, z0, z1):
 
 
 # ---------------------------------------------------------------------------
+# Phase 6: Godot 4.7 runtime derivation (spec s17). The ladder object is DATA;
+# the gameplay/network layer is authoritative over it. These blocks emit the
+# exact fields that layer reads -- traversal component ref, nav-link, the
+# server/client ownership split, and data-driven AI + combat policy -- so
+# nothing is hardcoded per mission.
+# ---------------------------------------------------------------------------
+
+# server owns state (s17.3); clients own cosmetics only
+_SERVER_OWNED = ["enabled", "locked", "deployed", "obstructed",
+                 "ai_reservation", "objective_gating",
+                 "player_transition_acceptance"]
+_CLIENT_OWNED = ["animation_blend", "camera_motion", "sound_playback",
+                 "rung_hand_effects", "traversal_prediction"]
+# per-direction nav-link bidirectionality (s13.2 -> s17.2)
+_BIDIRECTIONAL_DIRECTIONS = {"bidirectional", "deploy_then_bidirectional"}
+# AI route cost multiplier by ladder type (a ship ladder is cheaper than a
+# vertical rung ladder; a caged/safety-rail climb costs a little more)
+_AI_COST = {"fixed_vertical": 3.0, "ship": 2.0, "alternating_tread": 2.5,
+            "caged": 3.5, "safety_rail": 3.2}
+
+
+def _traversal_component(ld, lid, z0, z1):
+    """s17.1 -- the reusable Godot traversal component this ladder references."""
+    direction = getattr(ld, "direction", "bidirectional")
+    return {
+        "component": "LadderTraversal",
+        "mount_trigger": f"{lid}_mount",
+        "dismount_trigger": f"{lid}_dismount",
+        "climb_axis": [[ld.x, ld.y, z0], [ld.x, ld.y, z1]],
+        "direction": direction,
+        "animation_profile": getattr(ld, "ladder_type", "fixed_vertical"),
+        "occupancy_state": "reservation",
+        "replication_state": "server",
+        "interaction_permissions": (
+            "restricted" if getattr(ld, "access_control", None)
+            not in (None, "none") else "open"),
+    }
+
+
+def _nav_link(ld, lid, z0, z1):
+    """s17.2 -- an explicit off-mesh nav-link (NOT a baked walkable slope)."""
+    direction = getattr(ld, "direction", "bidirectional")
+    ltype = getattr(ld, "ladder_type", "fixed_vertical")
+    return {
+        "id": f"{lid}_navlink",
+        "start_position": [ld.x, ld.y, z0],
+        "end_position": [ld.x, ld.y, z1],
+        "bidirectional": direction in _BIDIRECTIONAL_DIRECTIONS,
+        "cost": round(_AI_COST.get(ltype, 3.0), 2),
+        "agent_types": ["player", "ai_humanoid"],
+        "required_capability": "climb",
+        "access_state": ("locked" if getattr(ld, "access_control", None)
+                         in ("locked_gate", "locked_hatch") else "open"),
+        "reservation_state": "free",
+    }
+
+
+def _authority_split(ld):
+    """s17.3 -- server owns state, clients own cosmetics. A ladder that is
+    never interactive (no lock/gate/deploy) still lists the split; the netcode
+    reads this instead of assuming."""
+    return {"server_owned": list(_SERVER_OWNED),
+            "client_owned": list(_CLIENT_OWNED)}
+
+
+def _occupancy_limit(ld):
+    meta = getattr(ld, "meta", None) or {}
+    if "occupancy_limit" in meta.get("gameplay", {}):
+        return meta["gameplay"]["occupancy_limit"]
+    return 1                # one at a time by default (a fixed ladder)
+
+
+def _ai_policy(ld):
+    """s17.4 -- data the AI reads about using this ladder."""
+    direction = getattr(ld, "direction", "bidirectional")
+    role = getattr(ld, "role", None)
+    return {
+        "can_use": direction != "scripted_direction",
+        "one_at_a_time": _occupancy_limit(ld) <= 1,
+        "may_attack_while_climbing": False,      # vertical climb = hands full
+        "should_wait_for_agent": _occupancy_limit(ld) <= 1,
+        "may_follow_to_roof": role in ("roof_access", "special_gameplay_route"),
+        "recover_if_blocked": "return_to_lower_mount",
+    }
+
+
+def _combat_policy(ld):
+    """s17.5 -- per-ladder combat data (NOT hardcoded per mission). Authored
+    overrides come through Ladder.meta['combat']."""
+    ltype = getattr(ld, "ladder_type", "fixed_vertical")
+    base = {
+        "weapons_allowed_while_climbing": False,
+        "can_be_interrupted": True,
+        "can_fall": getattr(ld, "fall_protection", None) in (None, "none"),
+        "can_slide_down": ltype in ("fixed_vertical", "safety_rail"),
+        "can_be_destroyed": False,
+        "can_be_blocked": True,
+        "occupancy_limit": _occupancy_limit(ld),
+    }
+    meta = getattr(ld, "meta", None) or {}
+    base.update(meta.get("combat", {}))
+    return base
+
+
+# ---------------------------------------------------------------------------
 # Derivation: LevelSpec -> ladders[] (gameplay.json s14)
 # ---------------------------------------------------------------------------
 
@@ -395,6 +500,11 @@ def derive(spec):
                 "upper_dismount": [ld.x, ld.y, z1],
                 "upper_route": [ld.x, ld.y, z1],
             },
+            "traversal_component": _traversal_component(ld, lid, z0, z1),
+            "nav_link": _nav_link(ld, lid, z0, z1),
+            "authority": _authority_split(ld),
+            "ai": _ai_policy(ld),
+            "combat": _combat_policy(ld),
             "gameplay": {
                 "player_traversable": True,
                 "ai_traversable": getattr(ld, "direction", "bidirectional")
@@ -404,7 +514,7 @@ def derive(spec):
                 not in (None, "none"),
                 "mount_anchor_id": f"{lid}_mount",
                 "dismount_anchor_id": f"{lid}_dismount",
-                "occupancy_limit": 1,
+                "occupancy_limit": _occupancy_limit(ld),
             },
         }
         meta = getattr(ld, "meta", None)
@@ -694,6 +804,38 @@ def check(spec):
                     f"LADDER: '{lid}' is an interior roof-hatch ladder with no "
                     f"access_control -- roof access is normally locked "
                     f"(locked_hatch / staff_room; Rule 13).")
+
+        # --- Phase 6: runtime/network consistency (spec s13.2, s15.3, s17) ---
+        direction = getattr(ld, "direction", "bidirectional")
+        # deploy_then_bidirectional is a drop ladder: it needs a deployment
+        # control (access_control) or it can never be deployed (s13.2)
+        if direction == "deploy_then_bidirectional" \
+                and getattr(ld, "access_control", None) in (None, "none"):
+            warnings.append(
+                f"LADDER: '{lid}' is deploy_then_bidirectional but has no "
+                f"access_control to model the deploy trigger -- a drop ladder "
+                f"needs a deployment control (s13.2).")
+        # a locked/deployable ladder that is player-traversable must replicate
+        # its state; derive() sets server authority, but a scripted_direction
+        # ladder is effectively AI-disabled -- flag if it's the only route up
+        if direction == "scripted_direction":
+            warnings.append(
+                f"LADDER: '{lid}' uses scripted_direction -- AI cannot "
+                f"traverse it (ai_traversable is false); ensure another route "
+                f"serves any floor that depends on it (s15.3 / anti-pattern "
+                f"'AI teleport ladder').")
+        # occupancy_limit sanity: >1 on a fixed vertical ladder invites the
+        # multiplayer-deadlock anti-pattern (two climbers, opposite ends)
+        if _occupancy_limit(ld) > 1 \
+                and getattr(ld, "ladder_type", "fixed_vertical") \
+                == "fixed_vertical" \
+                and direction in ("bidirectional", "deploy_then_bidirectional"):
+            warnings.append(
+                f"LADDER LADDER_MULTIPLAYER_DEADLOCK_RISK: '{lid}' allows "
+                f"{_occupancy_limit(ld)} simultaneous climbers on a "
+                f"bidirectional fixed ladder -- two players from opposite ends "
+                f"can deadlock; prefer occupancy_limit 1 or a one-way "
+                f"direction (s15.3 / anti-pattern 'multiplayer deadlock').")
 
         # s10 -- geometry sanity (intel)
         if not (RUNG_SPACING_MIN <= ld.rung_spacing <= RUNG_SPACING_MAX):
