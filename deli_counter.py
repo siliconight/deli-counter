@@ -899,6 +899,7 @@ class _Builder:
         self._ladders()
         self._ramps()
         self._vault_ledges()
+        self._platforms()
         self._vertical_links()
         self._slab_holes_cut()
         self._volumes()
@@ -1490,6 +1491,40 @@ class _Builder:
             self._col_box(name, (vl.x, vl.y, z), size)
             self._record_surface(name + self.col_suffix["convex"], vl.material)
 
+    def _platforms(self):
+        """Elevated walkable deck (catwalk / equipment platform / rest
+        platform) at an arbitrary absolute z, with guard rails on the named
+        edges. The deck is walkable collision tagged PLATFORM_<id>; rails are
+        waist-height cover boxes. Ladders reference the deck as a surface."""
+        for p in self.s.platforms:
+            zc = p.z - p.thick / 2       # deck box centered under the walk top
+            name = f"PLATFORM_{p.id.upper()}"
+            self._box(name, (p.x, p.y, zc),
+                      (p.size_x, p.size_y, p.thick), self.VISUAL, role="floor")
+            self._col_box(name, (p.x, p.y, zc),
+                          (p.size_x, p.size_y, p.thick))
+            self._record_surface(name + self.col_suffix["convex"], p.material)
+            # guard rails on requested edges (Rule 7); waist-height thin boxes
+            hx, hy = p.size_x / 2, p.size_y / 2
+            gz = p.z + p.guard_height / 2
+            rt = 0.05
+            for edge in (p.guard_edges or []):
+                if edge == "N":
+                    c, s = (p.x, p.y + hy, gz), (p.size_x, rt, p.guard_height)
+                elif edge == "S":
+                    c, s = (p.x, p.y - hy, gz), (p.size_x, rt, p.guard_height)
+                elif edge == "E":
+                    c, s = (p.x + hx, p.y, gz), (rt, p.size_y, p.guard_height)
+                elif edge == "W":
+                    c, s = (p.x - hx, p.y, gz), (rt, p.size_y, p.guard_height)
+                else:
+                    continue
+                rname = f"{name}_RAIL_{edge}"
+                self._box(rname, c, s, self.VISUAL, role="floor")
+                self._col_box(rname, c, s)
+            # marker empty so the post-import can anchor the platform semantics
+            self._empty(name, (p.x, p.y, p.z), self.MARKERS)
+
     def _slab_holes_cut(self):
         """Boolean-subtract holes from slabs (visual + collision)."""
         ft = self.s.floor_thick
@@ -1981,6 +2016,14 @@ def write_gameplay_json(builder, path):
         # role, connected surfaces, anchors, transition, egress exclusion,
         # route nodes. Derived by ladder.py; a ladder is never ordinary egress.
         "ladders": builder.gameplay.get("ladders", []),
+        # elevated platforms (catwalks / equipment decks / rest platforms);
+        # ladders reference these as surfaces by id (ladder spec Phase 4)
+        "platforms": [
+            {"id": p.id, "x": p.x, "y": p.y, "z": p.z,
+             "size_x": p.size_x, "size_y": p.size_y,
+             "role": p.role, "destination": p.destination,
+             "guard_edges": list(p.guard_edges or [])}
+            for p in builder.s.platforms],
         # authoritative node-name -> surface role map (floor/ceiling/wall/stair/
         # ramp/ladder/prop). Downstream tools (Patina styling, vertex nuance)
         # should consume this instead of inferring roles from geometry.

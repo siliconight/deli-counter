@@ -234,6 +234,32 @@ class Ramp:
 
 
 @dataclass
+class Platform:
+    """An elevated walkable deck standing free of the story grid -- a catwalk,
+    equipment platform, mezzanine landing, or rest platform for an offset
+    ladder run (ladder spec s5.6/s6.4/s11.6). Unlike a Room (story-indexed) a
+    platform sits at an arbitrary absolute `z`, so it can land at a mezzanine
+    height between stories. Ladders reference it as a surface by `id`.
+
+    Guard rails are generated on the edges named in `guard_edges` (Rule 7 --
+    a platform a ladder enters needs a guarded opening; leave the ladder-side
+    edge out of the list as the access gap). A solid deck box + thin rail
+    boxes; the deck is walkable collision, rails are waist-height cover."""
+    id: str
+    x: float
+    y: float
+    z: float                              # absolute deck-top height (m)
+    size_x: float = 2.0
+    size_y: float = 2.0
+    thick: float = 0.15
+    guard_edges: list[str] = field(default_factory=lambda: ["N", "S", "E", "W"])
+    guard_height: float = 1.1
+    role: Optional[str] = None            # catwalk/equipment/mezzanine/rest
+    destination: Optional[str] = None     # what real thing it serves (s5.6)
+    material: Optional[str] = None
+
+
+@dataclass
 class VaultLedge:
     """A waist-height ledge/low wall you can vault over within a floor (cover,
     counters, half-walls, window sills as obstacles). Solid box; the game
@@ -458,6 +484,7 @@ class LevelSpec:
     ladders: list[Ladder] = field(default_factory=list)
     ramps: list[Ramp] = field(default_factory=list)
     vault_ledges: list[VaultLedge] = field(default_factory=list)
+    platforms: list[Platform] = field(default_factory=list)
     slab_holes: list[SlabHole] = field(default_factory=list)
     volumes: list[Volume] = field(default_factory=list)
     parapets: list[Parapet] = field(default_factory=list)

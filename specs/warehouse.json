@@ -151,5 +151,39 @@
       "story": 1,
       "height": 0.8
     }
+  ],
+  "platforms": [
+    {
+      "id": "main_catwalk",
+      "x": 0.0,
+      "y": 0.0,
+      "z": 4.0,
+      "size_x": 24.0,
+      "size_y": 1.6,
+      "role": "catwalk",
+      "destination": "overhead_crane_rail",
+      "guard_edges": [
+        "N",
+        "E",
+        "W"
+      ]
+    }
+  ],
+  "ladders": [
+    {
+      "x": 0.0,
+      "y": -1.3,
+      "from_story": 0,
+      "to_story": 1,
+      "facing": "N",
+      "id": "catwalk_ladder",
+      "role": "maintenance_access",
+      "ladder_type": "fixed_vertical",
+      "placement_mode": "platform",
+      "upper_surface": "main_catwalk",
+      "direction": "bidirectional",
+      "access_class": "maintenance",
+      "transition": "side_step_off"
+    }
   ]
 }

@@ -293,3 +293,29 @@ object is DATA; the gameplay/network layer is authoritative over it.
 Authored overrides: `Ladder.meta['combat']` overlays the combat block and
 `Ladder.meta['gameplay']['occupancy_limit']` propagates to gameplay, combat,
 and ai consistently.
+
+## platforms (kit 0.73+)
+
+Elevated walkable decks standing free of the story grid -- catwalks, equipment
+platforms, mezzanine landings, rest platforms for offset ladder runs (ladder
+spec s5.6/s6.4/s11.6). Emitted into gameplay.json so ladders and the game read
+them as surfaces:
+
+```json
+{ "id": "main_catwalk", "x": 0.0, "y": 0.0, "z": 4.0,
+  "size_x": 24.0, "size_y": 1.6, "role": "catwalk",
+  "destination": "overhead_crane_rail", "guard_edges": ["N", "E", "W"] }
+```
+
+- `z` is an absolute deck-top height (not story-indexed), so a platform can sit
+  at a mezzanine level between stories.
+- A ladder addresses a platform as a surface by id in lower_surface /
+  upper_surface; the climb endpoint pins to the platform's deck height.
+- `guard_edges` are railed; leave the ladder-side edge OUT as the access gap
+  (a fully-guarded platform a ladder enters warns LADDER_UNGUARDED_OPENING).
+- `destination` names the real thing the platform serves; an equipment platform
+  with no destination (and not a catwalk/mezzanine/rest deck) warns
+  LADDER_TO_NOWHERE (s5.6: connect every upper platform to a real destination).
+- ladder_place.py --mode equipment proposes floor->platform ladders from the
+  platform graph, anchored off each platform's open edge, with an offset
+  fall-protection profile for tall climbs.

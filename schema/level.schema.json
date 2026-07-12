@@ -1222,6 +1222,76 @@
         "residential_house",
         "stylized_gameplay_override"
       ]
+    },
+    "platforms": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "x",
+          "y",
+          "z"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "x": {
+            "type": "number"
+          },
+          "y": {
+            "type": "number"
+          },
+          "z": {
+            "type": "number"
+          },
+          "size_x": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "size_y": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "thick": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "guard_edges": {
+            "type": "array",
+            "items": {
+              "enum": [
+                "N",
+                "S",
+                "E",
+                "W"
+              ]
+            }
+          },
+          "guard_height": {
+            "type": "number",
+            "exclusiveMinimum": 0
+          },
+          "role": {
+            "enum": [
+              "catwalk",
+              "equipment",
+              "mezzanine",
+              "rest",
+              "sign",
+              "tank"
+            ]
+          },
+          "destination": {
+            "type": "string"
+          },
+          "material": {
+            "type": "string"
+          }
+        }
+      }
     }
   },
   "$defs": {

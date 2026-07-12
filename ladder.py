@@ -159,10 +159,20 @@ def ladder_ident(ld, i):
 
 
 def _climb_z(spec, ld):
+    """(z0, z1) of the climb. from_story/to_story set the story-grid endpoints,
+    but a lower_surface/upper_surface naming a Platform pins that end at the
+    platform's absolute deck height instead (a catwalk at a mezzanine level)."""
     H = spec.story_height
     lo = min(ld.from_story, ld.to_story)
     hi = max(ld.from_story, ld.to_story)
-    return lo * H, hi * H
+    z0, z1 = lo * H, hi * H
+    lo_plat = _platform_by_id(spec, getattr(ld, "lower_surface", None))
+    hi_plat = _platform_by_id(spec, getattr(ld, "upper_surface", None))
+    if lo_plat is not None:
+        z0 = lo_plat.z
+    if hi_plat is not None:
+        z1 = hi_plat.z
+    return (z0, z1) if z0 <= z1 else (z1, z0)
 
 
 def climb_height(spec, ld):
@@ -187,9 +197,17 @@ def climb_rect(ld):
             max(ld.x, ld.x + dx), ld.y + half)
 
 
+def _platform_by_id(spec, token):
+    for p in getattr(spec, "platforms", []):
+        if p.id == token:
+            return p
+    return None
+
+
 def _surface_story(spec, token, default_story):
-    """Resolve a surface token to a story index, or None if it names a room
-    that doesn't exist / a token we can't place."""
+    """Resolve a surface token to a story index, or None if it names a room /
+    platform that doesn't exist / a token we can't place. A platform sits at an
+    absolute z; its 'story' is the story its deck height falls within."""
     if token is None:
         return default_story
     if token in ("roof",):
@@ -201,6 +219,9 @@ def _surface_story(spec, token, default_story):
             return -int(token.split("_", 1)[1])
         except ValueError:
             return None
+    p = _platform_by_id(spec, token)
+    if p is not None:
+        return int(p.z // spec.story_height)
     for r in spec.rooms:
         if r.id == token:
             return r.story
@@ -220,6 +241,8 @@ def _surface_valid(spec, token, story):
         if token == "roof":
             return spec.n_stories >= 1        # a roof exists
         return True                           # grade/site/pit are standing ground
+    if _platform_by_id(spec, token) is not None:
+        return True                           # a platform deck is walkable
     r = _room_by_id(spec, token)
     return r is not None and r.story == story
 
@@ -237,9 +260,15 @@ def _same_story_edges(spec, adj):
 def _has_onward_route(spec, flat, token, story):
     """Does this surface connect onward (Rule 2: a valid route leads to/from
     it)? Derived surfaces (roof/grade/site) are onward by definition -- open
-    space. A room needs at least one same-story neighbor OR an exterior door."""
+    space. A platform is onward when it declares a real destination (s5.6:
+    connect every upper platform to a real service destination). A room needs
+    at least one same-story neighbor OR an exterior door."""
     if token in DERIVED_SURFACES or (token or "").startswith("pit_"):
         return True
+    p = _platform_by_id(spec, token)
+    if p is not None:
+        return True                           # deck is a standing surface; the
+        #   destination-quality question is handled by LADDER_TO_NOWHERE below
     r = _room_by_id(spec, token)
     if r is None:
         return False
@@ -636,7 +665,9 @@ def check(spec):
                 f"LADDER: '{lid}' transition '{tt}' is not one of the "
                 f"resolved types ({', '.join(sorted(TRANSITIONS))}); the top "
                 f"step-off may be undefined (Rule 5).")
-        if hi_story >= spec.n_stories and getattr(spec, "parapets", None) \
+        lands_on_platform = _platform_by_id(spec, upper) is not None
+        if hi_story >= spec.n_stories and not lands_on_platform \
+                and getattr(spec, "parapets", None) \
                 and any(p.story >= spec.n_stories - 1 for p in spec.parapets) \
                 and tt not in ("parapet_cut_through", "parapet_crossover_platform",
                                "parapet_inside_ladder", "roof_hatch_exit"):
@@ -804,6 +835,56 @@ def check(spec):
                     f"LADDER: '{lid}' is an interior roof-hatch ladder with no "
                     f"access_control -- roof access is normally locked "
                     f"(locked_hatch / staff_room; Rule 13).")
+
+        # --- Phase 4: industrial platforms + offset sections (spec s5.6, ---
+        # s6.4, s11.6). A ladder to/from a platform must land on a platform
+        # that serves a real destination, and a tall industrial climb should
+        # use offset sections with rest platforms rather than one long run.
+        up_plat = _platform_by_id(spec, upper)
+        lo_plat = _platform_by_id(spec, lower)
+        for plat, end in ((up_plat, "upper"), (lo_plat, "lower")):
+            if plat is None:
+                continue
+            if not plat.destination and (plat.role or "") not in (
+                    "catwalk", "mezzanine", "rest"):
+                # an equipment platform that serves nothing is a ladder to
+                # nowhere (s5.6 / anti-pattern 'decorative ladder to nowhere')
+                warnings.append(
+                    f"LADDER LADDER_TO_NOWHERE: '{lid}' {end} platform "
+                    f"'{plat.id}' declares no destination and is not a "
+                    f"catwalk/mezzanine/rest deck -- connect every upper "
+                    f"platform to a real service destination (s5.6).")
+            # Rule 7 -- the ladder-entry edge of a fully-guarded platform is an
+            # unguarded opening unless a gap is left; warn if all four edges
+            # are railed (nowhere to step off)
+            if set(plat.guard_edges or []) >= {"N", "S", "E", "W"}:
+                warnings.append(
+                    f"LADDER LADDER_UNGUARDED_OPENING: '{lid}' enters platform "
+                    f"'{plat.id}' but all four edges are guarded -- leave the "
+                    f"ladder-side edge open as the access gap, or model a "
+                    f"self-closing gate (Rule 7).")
+
+        # s11.6 -- a tall climb on an industrial ladder should be broken into
+        # offset sections landing on rest platforms. If the climb exceeds the
+        # trigger and fall_protection isn't an offset/rest profile, and no
+        # platform sits mid-climb, flag it.
+        if h > FALL_PROTECTION_TRIGGER_M \
+                and getattr(ld, "fall_protection", None) not in (
+                    None, "none", "offset", "rest_platform") \
+                and not (getattr(ld, "meta", None) or {}).get(
+                    "accept_long_climb", False):
+            mid_lo, mid_hi = z0 + 1.0, z1 - 1.0
+            has_rest = any(
+                mid_lo < p.z < mid_hi
+                and abs(p.x - ld.x) < max(p.size_x, 2.0)
+                and abs(p.y - ld.y) < max(p.size_y, 2.0)
+                for p in getattr(spec, "platforms", []))
+            if not has_rest:
+                warnings.append(
+                    f"LADDER: '{lid}' is a {h:.1f} m industrial climb with no "
+                    f"mid-climb rest platform -- prefer offset sections "
+                    f"landing on rest platforms over one uninterrupted run "
+                    f"(s11.6).")
 
         # --- Phase 6: runtime/network consistency (spec s13.2, s15.3, s17) ---
         direction = getattr(ld, "direction", "bidirectional")

@@ -15,7 +15,7 @@ Versioning convention (semver-ish for a geometry generator):
 """
 
 KIT_NAME = "Deli Counter"
-KIT_VERSION = "0.72.0"
+KIT_VERSION = "0.73.0"
 
 # Schema version is separate: bump when level.schema.json changes shape.
-SCHEMA_VERSION = "1.19.0"
+SCHEMA_VERSION = "1.20.0"

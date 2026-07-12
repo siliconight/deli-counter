@@ -405,12 +405,108 @@ def _hatch_score(spec, cand, profile):
     return round(score, 2), t
 
 
+def platform_candidate_zones(spec, profile):
+    """Industrial platform-access candidates (spec s5.6, s12.2): one ladder
+    per platform that isn't already reachable, anchored just off the platform's
+    open (unguarded) edge at floor level. Generated from the platform graph,
+    not empty walls (s5.9)."""
+    import ladder as _l
+    cands = []
+    for p in getattr(spec, "platforms", []):
+        open_edges = [e for e in ("N", "S", "E", "W")
+                      if e not in (p.guard_edges or [])]
+        edge = open_edges[0] if open_edges else "S"
+        hx, hy = p.size_x / 2, p.size_y / 2
+        if edge == "N":
+            bx, by, facing = p.x, p.y + hy + 0.5, "S"
+        elif edge == "S":
+            bx, by, facing = p.x, p.y - hy - 0.5, "N"
+        elif edge == "E":
+            bx, by, facing = p.x + hx + 0.5, p.y, "W"
+        else:
+            bx, by, facing = p.x - hx - 0.5, p.y, "E"
+        cands.append({"platform": p.id, "x": round(bx, 2), "y": round(by, 2),
+                      "facing": facing, "z": p.z,
+                      "role": p.role or "", "destination": p.destination,
+                      "open_edge": edge})
+    return cands
+
+
+def _platform_reject_reason(spec, cand, profile):
+    import ladder as _l
+    p = _l._platform_by_id(spec, cand["platform"])
+    if p is None:
+        return "platform_missing"
+    if set(p.guard_edges or []) >= {"N", "S", "E", "W"}:
+        return "platform_fully_guarded_no_access_edge"
+    # base in a hazard volume
+    hz, hd = _nearest_volume(spec, cand["x"], cand["y"], _HAZARD_HINTS)
+    if hz is not None and hd < 1.5:
+        return f"hazard_at_base:{hz.name}"
+    return None
+
+
+def _platform_score(spec, cand, profile):
+    t = {}
+    t["destination_relevance"] = 1.0 if cand["destination"] else 0.4
+    t["route_continuity"] = 1.0
+    t["service_adjacency"] = 1.0 if cand["role"] in ("equipment", "catwalk",
+                                                     "tank", "sign") else 0.5
+    t["clear_lower_landing"] = 1.0
+    t["clear_upper_landing"] = 1.0
+    score = (WEIGHTS["destination_relevance"] * t["destination_relevance"]
+             + WEIGHTS["route_continuity"] * t["route_continuity"]
+             + WEIGHTS["service_adjacency"] * t["service_adjacency"]
+             + WEIGHTS["clear_lower_landing"] * t["clear_lower_landing"]
+             + WEIGHTS["clear_upper_landing"] * t["clear_upper_landing"])
+    return round(score, 2), t
+
+
 def propose(spec, profile_name, count=None, mode="exterior"):
     if profile_name not in PROFILES:
         raise ValueError(f"unknown profile '{profile_name}' "
                          f"(known: {', '.join(sorted(PROFILES))})")
     profile = PROFILES[profile_name]
     notes = []
+
+    if mode == "equipment":
+        import ladder as _l
+        if not getattr(spec, "platforms", []):
+            notes.append("no platforms in the spec -- add catwalk/equipment "
+                         "platforms before proposing platform-access ladders")
+        cands = platform_candidate_zones(spec, profile)
+        rejected, survivors = [], []
+        for c in cands:
+            reason = _platform_reject_reason(spec, c, profile)
+            if reason:
+                rejected.append({**c, "reason": reason})
+                continue
+            sc, terms = _platform_score(spec, c, profile)
+            survivors.append({**c, "score": sc, "terms": terms})
+        survivors.sort(key=lambda s: -s["score"])
+        n = len(survivors) if count is None else count
+        H = spec.story_height
+        ladders_out = []
+        for i, c in enumerate(survivors[:n]):
+            base_story = 0
+            top_story = max(base_story + 1, int(c["z"] // H) + 1)
+            climb = c["z"] - base_story * H
+            fp = ("offset" if climb > profile["fall_protection_trigger_m"]
+                  else None)
+            ladders_out.append({
+                "x": c["x"], "y": c["y"], "from_story": base_story,
+                "to_story": top_story, "facing": c["facing"],
+                "id": f"{profile_name}_platform_ladder_{i}",
+                "role": "maintenance_access", "ladder_type": "fixed_vertical",
+                "placement_mode": "platform",
+                "upper_surface": c["platform"],
+                "direction": "bidirectional", "access_class": "maintenance",
+                "transition": "side_step_off",
+                **({"fall_protection": fp} if fp else {}),
+            })
+        return {"profile": profile_name, "mode": "equipment", "count": n,
+                "ladders": ladders_out, "considered": len(cands),
+                "rejected": rejected, "scored": survivors[:8], "notes": notes}
 
     if mode == "hatch":
         if not profile.get("allow_roof_hatch_ladder", False):
@@ -511,10 +607,10 @@ def _report(p):
     for n in p["notes"]:
         lines.append(f"  NOTE: {n}")
     for r in p["rejected"]:
-        loc = r.get("wall") or r.get("room") or "?"
+        loc = r.get("wall") or r.get("room") or r.get("platform") or "?"
         lines.append(f"  rejected {loc} ({r['x']}, {r['y']}): {r['reason']}")
     for s in p["scored"]:
-        loc = s.get("wall") or s.get("room") or "?"
+        loc = s.get("wall") or s.get("room") or s.get("platform") or "?"
         extra = (f"rear={s['is_rear']} front={s['is_front']}"
                  if "is_rear" in s else f"role={s.get('role', '')}")
         lines.append(f"  scored   {loc} ({s['x']}, {s['y']}): "
@@ -529,8 +625,10 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[1])
     ap.add_argument("spec")
     ap.add_argument("--profile", required=True, choices=sorted(PROFILES))
-    ap.add_argument("--mode", choices=["exterior", "hatch"], default="exterior",
-                    help="exterior wall ladder (default) or interior roof-hatch")
+    ap.add_argument("--mode", choices=["exterior", "hatch", "equipment"],
+                    default="exterior",
+                    help="exterior wall / interior roof-hatch / equipment "
+                         "platform ladder")
     ap.add_argument("--count", type=int, default=None)
     ap.add_argument("--write", action="store_true",
                     help="inject the proposal (refused if ladders exist)")

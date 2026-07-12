@@ -1,3 +1,39 @@
+## [0.73.0] - Industrial platforms + equipment ladders (ladder spec Phase 4)
+
+- New `Platform` primitive (schema 1.19.0 -> 1.20.0): an elevated walkable deck
+  standing free of the story grid -- a catwalk, equipment platform, mezzanine
+  landing, or rest platform for an offset ladder run (ladder spec s5.6/s6.4/
+  s11.6). Unlike a Room it sits at an arbitrary absolute z, so it can land at a
+  mezzanine height between stories. Fields: id, x/y/z, size_x/size_y/thick,
+  guard_edges (railed edges; leave the ladder side open as the access gap),
+  guard_height, role (catwalk/equipment/mezzanine/rest/sign/tank), destination,
+  material.
+- Builder _platforms(): a solid deck box (walkable collision, PLATFORM_<id>) +
+  waist-height rail boxes on the named edges + a marker empty. Platforms are
+  emitted into gameplay.json so ladders and the game read them as surfaces.
+- ladder.py resolves a Platform id as a surface (lower_surface/upper_surface):
+  surface validity, onward-route, and the climb-z endpoint all understand it --
+  a ladder to a catwalk pins its upper anchor to the deck height, not the story
+  slab.
+- Phase-4 review (spec s5.6, s6.4, s11.6, Rule 7): LADDER_TO_NOWHERE for an
+  equipment platform that serves no destination (a catwalk/mezzanine/rest deck
+  is exempt -- it is itself circulation); LADDER_UNGUARDED_OPENING when a
+  ladder enters a platform with all four edges guarded (no step-off gap); and
+  an s11.6 nudge to prefer offset sections with rest platforms on a tall
+  protected climb that has no mid-climb rest deck (offset/rest_platform
+  profiles and a meta.accept_long_climb opt-out silence it).
+- ladder_place.py --mode equipment: proposes floor->platform ladders from the
+  platform graph (spec s5.9 -- generated from the platform graph, not empty
+  walls), anchored just off each platform's open edge, rejecting fully-guarded
+  platforms and hazard-blocked bases, with an offset fall-protection profile
+  for tall climbs. Loop closes: the proposal passes ladder.check clean.
+- Fixed a parapet-crossover false positive: a ladder that terminates on a
+  platform (not the roof) on a top-story building no longer demands a parapet
+  crossover.
+- warehouse.json showcases a full-length catwalk (destination overhead_crane_
+  rail) with a maintenance ladder up to its open edge. 18 new tests (182
+  total). Gate green; all pre-existing shell.glb output byte-identical.
+
 ## [0.72.0] - Ladder gameplay + networking runtime (ladder spec Phase 6)
 
 - ladders[] entries now carry the full Godot 4.7 runtime contract (spec s17).
