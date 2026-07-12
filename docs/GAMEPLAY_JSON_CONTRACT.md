@@ -191,3 +191,18 @@ Rules of the road for consumers:
   group's routes untouched.
 - `congestion` is AI intel (route cost, agents abreast), advisory like
   `reversible` on interactives -- never an instruction to the netcode.
+
+### stair_systems Phase-5 fields (kit 0.68+)
+
+- `facing` -- cardinal rotation of the whole stair about its anchor ("N" =
+  the pre-0.68 ascent-along-+Y convention).
+- `exterior` -- an exterior stair tower (spec s8.4): `approach` is empty,
+  `door_nodes` are facade doors per served floor, and `discharge` is
+  `{"type": "exterior_tower", "destination": "site"}`.
+- `channels` -- 2 for scissor stairs (two independent opposite-direction
+  flights sharing one shaft; `congestion.clear_width_m` is per channel), else 1.
+- `roof_access` -- the stair tops out past the last occupied story; the slab
+  hole is cut when `cut_slabs` is on, the bulkhead/hatch is authored art.
+- `transfer_floor` -- present on declared stack members that shift footprint
+  at that story; the review verified (or could not verify) the walk between
+  them there.

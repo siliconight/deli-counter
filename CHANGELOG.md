@@ -1,3 +1,47 @@
+## [0.68.0] - Advanced stair types (spec Phase 5) -- stair spec COMPLETE
+
+- The geometry phase. _stairs() is restructured around a local stair frame
+  (ascent along +Y) rotated at emission by a new `facing` field (N/S/E/W;
+  "N" is the identity, so every pre-0.68 spec bakes byte-identical
+  geometry). Collision ramps tilt about the correct world axis per facing;
+  slab holes rotate with the stair.
+- Three new styles (schema 1.16.0 -> 1.17.0, style enum extended):
+  `l_shaped` (spec 6.3: half-rise leg, corner landing, perpendicular second
+  leg -- a lobby/corner stair with per-leg collision ramps and a bounding
+  slab hole); `scissor` (spec 6.4: two INDEPENDENT full-height opposite-
+  direction flights sharing one shaft, thin divider baked between the
+  channels; authored-only -- stair_place never proposes it); `spiral`
+  (spec 6.5: one revolution per story of wedge treads around a pole,
+  `width` = radius, per-step collision -- decorative/private/service only,
+  and the review hard-refuses an egress role on it:
+  STAIR_STYLE_NOT_EGRESS_CAPABLE).
+- Exterior stair towers (spec s8.4): `exterior: true` on a Stairwell
+  authored outside the shell. The review swaps its contract -- no interior
+  approach demanded; instead every occupied served floor needs a facade door
+  within reach of the tower (EXTERIOR_TOWER_NO_DOOR gates egress towers),
+  door_nodes come from those facade doors, and discharge is the site itself
+  ({"type": "exterior_tower", "destination": "site"}). Egress-pair
+  independence treats a tower route as independent by construction.
+- Transfer floors (Rule 2 relaxation): `transfer: true` on a stack member
+  legitimizes a footprint shift at the junction story IF a body can walk
+  between the two stairs there -- verified on the room graph (same or
+  adjacent approach rooms), error with the reason when unwalkable, accepted
+  with a warning when no rooms exist to check. `transfer_floor` is emitted
+  on both members. The plain STAIR_NOT_STACKED error now names the fix.
+- Roof + basement access: `roof_access` emitted when the stair tops out past
+  the last occupied story (corner_deli's roof stair now says so), and a new
+  STAIR_TERMINATES_INTO_SLAB intel warning fires when a multi-story stair
+  has cut_slabs=false (runs end against slabs; cut the holes or author the
+  bulkhead). Rule 8 basement handling unchanged from 0.65.
+- Atrium convenience stairs need no new machinery: an open (unenclosed)
+  stair with role public_convenience already gets open-enclosure gameplay
+  semantics and never counts toward egress. Split-level buildings are OUT of
+  scope: DC's slab model has one story_height; a stair tool cannot add
+  variable floor levels -- tracked as a non-goal until the slab model does.
+- 13 new tests (85 total). Gate green; all shipped specs byte-stable.
+
+This closes all five phases of docs/stairwell_placement_spec.md.
+
 ## [0.67.0] - Stair gameplay + network semantics (spec Phase 4)
 
 - stair_systems entries in gameplay.json now carry the full s13 gameplay

@@ -1134,81 +1134,261 @@ class _Builder:
                     self._col_box(col_name, c, size)
                 self._record_surface(col_name, p.material)
 
+    # ---- stair local-frame helpers (facing rotation, 90-degree steps) ----
+    # Stairs are authored in a LOCAL frame -- ascent along +Y, parallel-run
+    # offsets along +/-X -- and rotated about the anchor (x, y) by `facing` at
+    # emission. "N" is the identity (the pre-0.68 convention), so every
+    # existing spec bakes byte-identical geometry.
+
+    def _stair_pt(self, st, lx, ly):
+        dx, dy = lx - st.x, ly - st.y
+        f = st.facing
+        if f == "S":
+            dx, dy = -dx, -dy
+        elif f == "E":
+            dx, dy = dy, -dx
+        elif f == "W":
+            dx, dy = -dy, dx
+        return st.x + dx, st.y + dy
+
+    def _stair_sz(self, st, sx_, sy_, sz_):
+        return (sy_, sx_, sz_) if st.facing in ("E", "W") else (sx_, sy_, sz_)
+
+    def _stair_tilt(self, st, sign, angle):
+        """Ramp euler for a flight ascending local +/-Y (sign) under facing."""
+        f = st.facing
+        if f == "N":
+            return (sign * angle, 0.0, 0.0)
+        if f == "S":
+            return (-sign * angle, 0.0, 0.0)
+        if f == "E":
+            return (0.0, -sign * angle, 0.0)
+        return (0.0, sign * angle, 0.0)
+
+    def _stair_tilt_x(self, st, angle):
+        """Ramp euler for a flight ascending local +X (the L's second leg)."""
+        f = st.facing
+        if f == "N":
+            return (0.0, -angle, 0.0)
+        if f == "S":
+            return (0.0, angle, 0.0)
+        if f == "E":
+            return (-angle, 0.0, 0.0)
+        return (angle, 0.0, 0.0)
+
+    def _stair_hole(self, st, story, lx, ly, size_x, size_y):
+        wx, wy = self._stair_pt(st, lx, ly)
+        sx_, sy_, _ = self._stair_sz(st, size_x, size_y, 0)
+        self.s.slab_holes.append(SlabHole(story=story, x=wx, y=wy,
+                                          size_x=sx_, size_y=sy_))
+
     def _stairs(self):
         H = self.s.story_height
         for si, st in enumerate(self.s.stairs):
+            if st.style == "spiral":
+                self._stair_spiral(si, st, H)
+                continue
+            if st.style == "l_shaped":
+                self._stair_l_shaped(si, st, H)
+                continue
             # derive step count so rise stays near st.step_rise regardless of
             # floor height; explicit n_steps overrides. clamp to a sane range.
             n_steps = st.n_steps or max(6, min(40, round(H / st.step_rise)))
             step_d = st.run / n_steps
             step_h = H / n_steps
             # A switchback's reversed legs must sit in PARALLEL runs, offset
-            # sideways by the stair width — otherwise an up-leg and the next
+            # sideways by the stair width -- otherwise an up-leg and the next
             # (reversed) leg occupy the same footprint and their steps
             # interpenetrate into unwalkable smeared geometry. Straight stairs
-            # keep a single run (no offset).
+            # keep a single run (no offset). A scissor (spec 6.4) is the same
+            # two-channel shaft, but the channels are INDEPENDENT full-height
+            # flights travelling in opposite directions every story.
             x_offset = 0.0 if st.style == "straight" else st.width / 2
+            import math as _m
+            length3d = _m.sqrt(st.run ** 2 + H ** 2)
+            angle = _m.atan2(H, st.run)
             for s in range(st.from_story, st.to_story):
                 z = s * H
                 leg = s - st.from_story
-                sign = 1 if (leg % 2 == 0 or st.style == "straight") else -1
-                # reversed legs shift to the parallel run beside the main one
-                sx = st.x + (x_offset if sign > 0 else -x_offset)
-                for i in range(n_steps):
-                    cz = z + step_h * (i + 0.5)
-                    cy = st.y + sign * (step_d * (i + 0.5) - st.run / 2)
-                    self._box(f"stair{si}_{s}_{i}", (sx, cy, cz),
-                              (st.width, step_d, step_h), self.VISUAL,
-                              role="stair")
-                # COLLISION is a single smooth ramp under the visual steps, NOT a
-                # box per step. Boxy per-step colliders catch a CharacterBody3D on
-                # every riser (you stick / have to jump); a flush incline at the
-                # flight's pitch lets any controller walk straight up with no step
-                # logic. Visual stays stepped. The ramp ascends along +/-Y with
-                # `sign`, tilted about X like _ramps does. Sat half a step proud so
-                # its surface rides the step nosings.
-                import math as _m
-                length3d = _m.sqrt(st.run ** 2 + H ** 2)
-                angle = _m.atan2(H, st.run)
-                ramp = self._box(
-                    f"stair{si}ramp_{s}" + self.col_suffix["convex"],
-                    (sx, st.y, z + H / 2 + step_h / 2),
-                    (st.width, length3d, 0.25), self.COLLISION)
-                ramp.rotation_euler = (sign * angle, 0.0, 0.0)
+                if st.style == "scissor":
+                    flights = [(1, st.x - x_offset, "a"),
+                               (-1, st.x + x_offset, "b")]
+                else:
+                    sign = 1 if (leg % 2 == 0 or st.style == "straight") else -1
+                    # reversed legs shift to the parallel run beside the main one
+                    flights = [(sign,
+                                st.x + (x_offset if sign > 0 else -x_offset),
+                                "")]
+                for sign, sx, ch in flights:
+                    for i in range(n_steps):
+                        cz = z + step_h * (i + 0.5)
+                        cy = st.y + sign * (step_d * (i + 0.5) - st.run / 2)
+                        wx, wy = self._stair_pt(st, sx, cy)
+                        self._box(f"stair{si}{ch}_{s}_{i}", (wx, wy, cz),
+                                  self._stair_sz(st, st.width, step_d, step_h),
+                                  self.VISUAL, role="stair")
+                    # COLLISION is a single smooth ramp under the visual steps,
+                    # NOT a box per step. Boxy per-step colliders catch a
+                    # CharacterBody3D on every riser (you stick / have to
+                    # jump); a flush incline at the flight's pitch lets any
+                    # controller walk straight up with no step logic. Visual
+                    # stays stepped. Sat half a step proud so its surface rides
+                    # the step nosings.
+                    wx, wy = self._stair_pt(st, sx, st.y)
+                    ramp = self._box(
+                        f"stair{si}{ch}ramp_{s}" + self.col_suffix["convex"],
+                        (wx, wy, z + H / 2 + step_h / 2),
+                        self._stair_sz(st, st.width, length3d, 0.25),
+                        self.COLLISION)
+                    ramp.rotation_euler = self._stair_tilt(st, sign, angle)
                 # landing at the top of each leg (except the final one) bridges
                 # this run to the parallel run the next leg starts from, so you
                 # can turn the corner. Spans both runs in X, one step deep.
-                if st.style != "straight" and s < st.to_story - 1:
+                if st.style == "switchback" and s < st.to_story - 1:
+                    sign = 1 if (leg % 2 == 0) else -1
                     top_y = st.y + sign * (st.run / 2)
                     land_z = z + H - step_h / 2
                     land_w = st.width + 2 * x_offset      # covers both runs
-                    self._box(f"stair{si}_land_{s}",
-                              (st.x, top_y, land_z),
-                              (land_w, step_d * 1.4, step_h), self.VISUAL,
-                              role="stair")
-                    self._col_box(f"stair{si}col_land_{s}",
-                                  (st.x, top_y, land_z),
-                                  (land_w, step_d * 1.4, step_h))
+                    wx, wy = self._stair_pt(st, st.x, top_y)
+                    self._box(f"stair{si}_land_{s}", (wx, wy, land_z),
+                              self._stair_sz(st, land_w, step_d * 1.4, step_h),
+                              self.VISUAL, role="stair")
+                    self._col_box(f"stair{si}col_land_{s}", (wx, wy, land_z),
+                                  self._stair_sz(st, land_w, step_d * 1.4,
+                                                 step_h))
+                if st.style == "scissor":
+                    # thin divider between the channels: scissor flights are
+                    # SEPARATED routes sharing a shaft, not one wide stair.
+                    wx, wy = self._stair_pt(st, st.x, st.y)
+                    self._box(f"stair{si}_divider_{s}", (wx, wy, z + H / 2),
+                              self._stair_sz(st, 0.1, st.run, H),
+                              self.VISUAL, role="stair")
+                    self._col_box(f"stair{si}col_divider_{s}",
+                                  (wx, wy, z + H / 2),
+                                  self._stair_sz(st, 0.1, st.run, H))
                 if st.cut_slabs:
                     # The slab hole must clear the *top* of the flight plus the
                     # player's body so you can walk off onto the landing, not
                     # just the stair footprint. The top step sits at
-                    # st.y + sign*(run/2); extend the hole ~0.8 m past it in the
-                    # travel direction (player radius + margin), and pad the
-                    # near side and width a bit too. Widened in X to cover both
-                    # parallel switchback runs + the landing.
+                    # st.y + sign*(run/2); extend the hole ~0.8 m past it in
+                    # the travel direction (player radius + margin), and pad
+                    # the near side and width a bit too. Widened in X to cover
+                    # both parallel runs + the landing. A scissor tops out at
+                    # BOTH ends, so its hole is symmetric.
                     clear = 0.8
-                    near = st.run / 2 + 0.3        # behind the bottom step
-                    far = st.run / 2 + clear       # past the top landing
-                    if sign >= 0:
-                        hole_y = st.y + (far - near) / 2
-                        hole_len = far + near
+                    hole_w = st.width + 2 * x_offset + 0.8
+                    if st.style == "scissor":
+                        self._stair_hole(st, s + 1, st.x, st.y,
+                                         hole_w, st.run + 2 * clear)
                     else:
-                        hole_y = st.y - (far - near) / 2
-                        hole_len = far + near
-                    self.s.slab_holes.append(SlabHole(
-                        story=s + 1, x=st.x, y=hole_y,
-                        size_x=st.width + 2 * x_offset + 0.8, size_y=hole_len))
+                        near = st.run / 2 + 0.3    # behind the bottom step
+                        far = st.run / 2 + clear   # past the top landing
+                        hole_y = st.y + sign * (far - near) / 2
+                        self._stair_hole(st, s + 1, st.x, hole_y,
+                                         hole_w, far + near)
+
+    def _stair_l_shaped(self, si, st, H):
+        """L-shaped stair (spec 6.3): leg A ascends local +Y for half the
+        rise, a corner landing turns 90 degrees, leg B ascends local +X to the
+        floor above. Both legs reuse `run`, so the pitch is gentler than a
+        switchback's -- the L is a lobby/corner stair, not a core stair. Each
+        story repeats the same L; leg B discharges onto the floor plate."""
+        import math as _m
+        n = st.n_steps or max(6, min(40, round(H / st.step_rise)))
+        half = max(1, n // 2)
+        n2 = max(1, n - half)
+        step_h = H / n
+        dA, dB = st.run / half, st.run / n2
+        w = st.width
+        riseA = H * half / n
+        yB = st.y + st.run / 2 + w / 2          # leg B's local row
+        for s in range(st.from_story, st.to_story):
+            z = s * H
+            for i in range(half):               # leg A: local +Y
+                cz = z + step_h * (i + 0.5)
+                cy = st.y + dA * (i + 0.5) - st.run / 2
+                wx, wy = self._stair_pt(st, st.x, cy)
+                self._box(f"stair{si}a_{s}_{i}", (wx, wy, cz),
+                          self._stair_sz(st, w, dA, step_h),
+                          self.VISUAL, role="stair")
+            lenA = _m.sqrt(st.run ** 2 + riseA ** 2)
+            angA = _m.atan2(riseA, st.run)
+            wx, wy = self._stair_pt(st, st.x, st.y)
+            ramp = self._box(f"stair{si}aramp_{s}" + self.col_suffix["convex"],
+                             (wx, wy, z + riseA / 2 + step_h / 2),
+                             self._stair_sz(st, w, lenA, 0.25), self.COLLISION)
+            ramp.rotation_euler = self._stair_tilt(st, 1, angA)
+            # corner landing, flush with leg A's top
+            land_z = z + riseA - step_h / 2
+            wx, wy = self._stair_pt(st, st.x, yB)
+            self._box(f"stair{si}_corner_{s}", (wx, wy, land_z),
+                      self._stair_sz(st, w, w, step_h), self.VISUAL,
+                      role="stair")
+            self._col_box(f"stair{si}col_corner_{s}", (wx, wy, land_z),
+                          self._stair_sz(st, w, w, step_h))
+            for i in range(n2):                 # leg B: local +X
+                cz = z + riseA + step_h * (i + 0.5)
+                cx = st.x + w / 2 + dB * (i + 0.5)
+                wx, wy = self._stair_pt(st, cx, yB)
+                self._box(f"stair{si}b_{s}_{i}", (wx, wy, cz),
+                          self._stair_sz(st, dB, w, step_h),
+                          self.VISUAL, role="stair")
+            riseB = H - riseA
+            lenB = _m.sqrt(st.run ** 2 + riseB ** 2)
+            angB = _m.atan2(riseB, st.run)
+            wx, wy = self._stair_pt(st, st.x + w / 2 + st.run / 2, yB)
+            ramp = self._box(f"stair{si}bramp_{s}" + self.col_suffix["convex"],
+                             (wx, wy, z + riseA + riseB / 2 + step_h / 2),
+                             self._stair_sz(st, lenB, w, 0.25), self.COLLISION)
+            ramp.rotation_euler = self._stair_tilt_x(st, angB)
+            if st.cut_slabs:
+                # bounding hole over both legs + step-off past leg B's top
+                lx0, lx1 = st.x - w / 2 - 0.3, st.x + w / 2 + st.run + 0.8
+                ly0, ly1 = st.y - st.run / 2 - 0.3, st.y + st.run / 2 + w + 0.3
+                self._stair_hole(st, s + 1, (lx0 + lx1) / 2, (ly0 + ly1) / 2,
+                                 lx1 - lx0, ly1 - ly0)
+
+    def _stair_spiral(self, si, st, H):
+        """Spiral stair (spec 6.5): one revolution per story of wedge treads
+        around a pole. `width` is the RADIUS. Decorative / private / service
+        only -- the review hard-refuses an egress role on it. Collision is
+        per-step boxes (a helix has no single flush ramp); a capsule catches
+        on risers exactly as the ramp comment warns, which is acceptable for
+        a stair the review already keeps off required routes."""
+        import math as _m
+        n = st.n_steps or max(10, min(24, round(H / st.step_rise)))
+        step_h = H / n
+        r = st.width
+        tread = 2 * _m.pi * r / n * 1.15        # wedge chord + overlap
+        stories = range(min(st.from_story, st.to_story),
+                        max(st.from_story, st.to_story))
+        for s in stories:
+            z = s * H
+            for i in range(n):
+                a = 2 * _m.pi * (i + 0.5) / n
+                cx = st.x + _m.cos(a) * r / 2
+                cy = st.y + _m.sin(a) * r / 2
+                cz = z + step_h * (i + 0.5)
+                box = self._box(f"stair{si}_{s}_{i}", (cx, cy, cz),
+                                (r, tread, step_h), self.VISUAL, role="stair")
+                box.rotation_euler = (0.0, 0.0, a)
+                col = self._col_box(f"stair{si}col_{s}_{i}", (cx, cy, cz),
+                                    (r, tread, step_h))
+                if col is not None:
+                    col.rotation_euler = (0.0, 0.0, a)
+            if st.cut_slabs:
+                self.s.slab_holes.append(SlabHole(
+                    story=s + 1, x=st.x, y=st.y,
+                    size_x=2 * r + 0.5, size_y=2 * r + 0.5))
+        n_st = max(st.from_story, st.to_story) - min(st.from_story, st.to_story)
+        self._box(f"stair{si}_pole", (st.x, st.y,
+                                      min(st.from_story, st.to_story) * H
+                                      + n_st * H / 2),
+                  (0.16, 0.16, n_st * H), self.VISUAL, role="stair")
+        self._col_box(f"stair{si}col_pole", (st.x, st.y,
+                                             min(st.from_story, st.to_story)
+                                             * H + n_st * H / 2),
+                      (0.16, 0.16, n_st * H))
 
     def _ladders(self):
         """Vertical climb: rungs + two side rails (VISUAL), climbing one floor

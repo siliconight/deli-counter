@@ -434,7 +434,10 @@
           "style": {
             "enum": [
               "straight",
-              "switchback"
+              "switchback",
+              "l_shaped",
+              "scissor",
+              "spiral"
             ]
           },
           "cut_slabs": {
@@ -470,6 +473,20 @@
           },
           "meta": {
             "type": "object"
+          },
+          "facing": {
+            "enum": [
+              "N",
+              "S",
+              "E",
+              "W"
+            ]
+          },
+          "exterior": {
+            "type": "boolean"
+          },
+          "transfer": {
+            "type": "boolean"
           }
         }
       }

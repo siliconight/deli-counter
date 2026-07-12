@@ -67,11 +67,29 @@ def stair_ident(st, i):
 
 
 def footprint_rect(st):
-    """XY rect the stair reserves: both parallel switchback runs, or the single
-    straight run. Matches the builder's _stairs() layout math."""
-    x_off = 0.0 if st.style == "straight" else st.width / 2
-    hx = st.width / 2 + x_off
-    return (st.x - hx, st.y - st.run / 2, st.x + hx, st.y + st.run / 2)
+    """XY rect the stair reserves, style-aware and rotated by `facing`.
+    Matches the builder's layout math: switchback/scissor hold two parallel
+    runs, straight one, an L bounds both perpendicular legs + corner, and a
+    spiral is a disc of radius `width`."""
+    w, run = st.width, st.run
+    style = st.style
+    if style == "spiral":
+        lx0, ly0, lx1, ly1 = -w, -w, w, w
+    elif style == "l_shaped":
+        lx0, ly0 = -w / 2, -run / 2
+        lx1, ly1 = w / 2 + run, run / 2 + w
+    elif style == "straight":
+        lx0, ly0, lx1, ly1 = -w / 2, -run / 2, w / 2, run / 2
+    else:                        # switchback, scissor: two parallel runs
+        lx0, ly0, lx1, ly1 = -w, -run / 2, w, run / 2
+    f = getattr(st, "facing", "N") or "N"
+    if f == "S":
+        lx0, ly0, lx1, ly1 = -lx1, -ly1, -lx0, -ly0
+    elif f == "E":               # local (x, y) -> world (y, -x)
+        lx0, ly0, lx1, ly1 = ly0, -lx1, ly1, -lx0
+    elif f == "W":               # local (x, y) -> world (-y, x)
+        lx0, ly0, lx1, ly1 = -ly1, lx0, -ly0, lx1
+    return (st.x + lx0, st.y + ly0, st.x + lx1, st.y + ly1)
 
 
 def floors_served(spec, st):
@@ -260,6 +278,60 @@ def _door_nodes(spec, st, served):
     return nodes
 
 
+def _tower_wall(spec, st):
+    """The facade an exterior tower stands against: the nearest wall plane."""
+    hx, hy = spec.footprint_x / 2, spec.footprint_y / 2
+    d = {"N": abs(st.y - hy), "S": abs(st.y + hy),
+         "E": abs(st.x - hx), "W": abs(st.x + hx)}
+    return min(d, key=lambda k: d[k])
+
+
+def _tower_door_nodes(spec, st, served):
+    """Facade doors within lateral reach of an exterior tower, per served
+    story (spec s8.4: corridor -> door -> tower -> grade). These ARE the
+    tower's approach; grade needs no door because the tower discharges onto
+    the site itself."""
+    import interactives
+    wall = _tower_wall(spec, st)
+    rect = footprint_rect(st)
+    reach = max(rect[2] - rect[0], rect[3] - rect[1]) / 2 + 2.0
+    hx, hy = spec.footprint_x / 2, spec.footprint_y / 2
+    nodes = []
+    for s in served:
+        for w in spec.ext_walls:
+            if w.story != s or w.wall != wall:
+                continue
+            run = spec.footprint_x if wall in ("N", "S") else spec.footprint_y
+            for op in w.openings:
+                if op.kind not in _DOOR_KINDS:
+                    continue
+                u = op.pos * run
+                lateral = abs(u - (st.x if wall in ("N", "S") else st.y))
+                if lateral > reach:
+                    continue
+                eps = 0.8
+                if wall == "N":
+                    rid = tactical._room_at(spec, s, u, hy - eps)
+                elif wall == "S":
+                    rid = tactical._room_at(spec, s, u, -hy + eps)
+                elif wall == "E":
+                    rid = tactical._room_at(spec, s, hx - eps, u)
+                else:
+                    rid = tactical._room_at(spec, s, -hx + eps, u)
+                m = interactives.derive_interactive(
+                    spec.name, f"ext_{s}_{wall}", s, op.kind, op.pos,
+                    breakable=bool(op.breakable), override=op.interactive)
+                nodes.append({
+                    "floor": s, "kind": op.kind, "wall": f"ext_{s}_{wall}",
+                    "pos": op.pos,
+                    "interactive": m["id"] if m else None,
+                    "default_state": (m or {}).get("default"),
+                    "connects_from": rid,
+                    "discharge_door": s == 0,
+                })
+    return nodes
+
+
 def _gameplay_block(role, enclosed, width):
     """s9.3 / s13 network-and-gameplay defaults, derived from the role.
     Egress-critical routes are server-owned and never randomly lockable; the
@@ -298,11 +370,17 @@ def derive(spec):
         rect = footprint_rect(st)
         served = floors_served(spec, st)
         role = getattr(st, "role", None)
+        exterior = bool(getattr(st, "exterior", False))
         sysd = {
             "id": stair_ident(st, i),
             "stack_id": getattr(st, "stack_id", None),
             "role": role,
             "shape": st.style,
+            "facing": getattr(st, "facing", "N") or "N",
+            "exterior": exterior,
+            "channels": 2 if st.style == "scissor" else 1,
+            "roof_access": max(st.from_story, st.to_story) >= spec.n_stories,
+            "transfer": bool(getattr(st, "transfer", False)),
             "floors_served": served,
             "footprint_polygon": [[rect[0], rect[1]], [rect[2], rect[1]],
                                   [rect[2], rect[3]], [rect[0], rect[3]]],
@@ -311,7 +389,7 @@ def derive(spec):
             "discharge": None,
             "egress": {"counts_as_exit": role in EGRESS_ROLES},
         }
-        if have_rooms:
+        if have_rooms and not exterior:
             for s in served:
                 if not any(r.story == s for r in spec.rooms):
                     continue                      # roof / unroomed story
@@ -322,7 +400,7 @@ def derive(spec):
                     "room_role": room.role if room else None,
                 })
             if 0 in served and any(r.story == 0 for r in spec.rooms):
-                room = _approach_room(spec, 0, st)
+                room = _approach_room(spec, 0, st)   # interior stairs only
                 if room:
                     dests = _exterior_rooms(spec, 0)
                     path = _bfs_path(flat, room.id, dests)
@@ -346,11 +424,17 @@ def derive(spec):
                                              "room": room.id, "via": [],
                                              "destination": None,
                                              "route_hops": None}
+        # exterior towers stand on the site: they always discharge at grade
+        if exterior and min(served, default=0) <= 0:
+            sysd["discharge"] = {"floor": 0, "type": "exterior_tower",
+                                 "room": None, "via": [],
+                                 "destination": "site", "route_hops": 0}
         # Phase 4: enclosure, door nodes, and network/gameplay semantics
         enclosed = any(ap["room_role"] == "stairwell"
                        for ap in sysd["approach"])
         sysd["enclosure"] = "protected" if enclosed else "open"
-        sysd["door_nodes"] = _door_nodes(spec, st, served)
+        sysd["door_nodes"] = (_tower_door_nodes(spec, st, served) if exterior
+                              else _door_nodes(spec, st, served))
         gp = _gameplay_block(role, enclosed, st.width)
         meta = getattr(st, "meta", None)
         if meta:
@@ -371,6 +455,25 @@ def derive(spec):
         s["egress"]["paired_with"] = (
             next(o["id"] for o in egress if o is not s)
             if len(egress) == 2 else None)
+
+    # declared transfer floors: stack members that shift footprint at their
+    # junction story (Rule 2 relaxation; check() verifies walkability)
+    stacks = {}
+    for sysd, st in zip(systems, spec.stairs):
+        if sysd["stack_id"]:
+            stacks.setdefault(sysd["stack_id"], []).append((sysd, st))
+    for members in stacks.values():
+        members.sort(key=lambda m: min(m[1].from_story, m[1].to_story))
+        for (sa, a), (sb, b) in zip(members, members[1:]):
+            a_hi = max(a.from_story, a.to_story)
+            b_lo = min(b.from_story, b.to_story)
+            if a_hi == b_lo \
+                    and not _rects_overlap(footprint_rect(a),
+                                           footprint_rect(b)) \
+                    and (getattr(a, "transfer", False)
+                         or getattr(b, "transfer", False)):
+                sa["transfer_floor"] = a_hi
+                sb["transfer_floor"] = a_hi
     return systems
 
 
@@ -460,6 +563,39 @@ def check(spec):
                 f"stair '{sid}' runs through grade into the basement in one "
                 f"shaft; offline review can't see a barrier -- make sure the "
                 f"grade landing interrupts descent (Rule 8).")
+
+        # spec 6.5 -- a spiral is decorative/private/service, never egress
+        if st.style == "spiral" and role in EGRESS_ROLES:
+            errors.append(
+                f"STAIRWELL STAIR_STYLE_NOT_EGRESS_CAPABLE: '{sid}' is a "
+                f"spiral stair carrying role '{role}' -- spirals never serve "
+                f"as a required egress stair (spec 6.5); use switchback, "
+                f"straight, l_shaped, or scissor, or drop the role.")
+
+        # anti-pattern: a run that ends against the slab above (roof access
+        # needs the hole plus an authored bulkhead/hatch at the top landing)
+        if not st.cut_slabs \
+                and max(st.from_story, st.to_story) > min(st.from_story,
+                                                          st.to_story):
+            warnings.append(
+                f"STAIRWELL STAIR_TERMINATES_INTO_SLAB: '{sid}' spans "
+                f"stories with cut_slabs=false -- each run ends against the "
+                f"slab above it; cut the holes or author the bulkhead.")
+
+        # s8.4 -- exterior tower: every occupied floor it serves needs a
+        # facade door within reach (corridor -> door -> tower -> grade)
+        if sysd["exterior"] and spec.ext_walls:
+            wall = _tower_wall(spec, st)
+            with_doors = {dn["floor"] for dn in sysd["door_nodes"]}
+            for s in sysd["floors_served"]:
+                if s <= 0 or s >= spec.n_stories:
+                    continue        # grade discharges to site; roof is open
+                if any(w.story == s for w in spec.ext_walls) \
+                        and s not in with_doors:
+                    emit(gate, "EXTERIOR_TOWER_NO_DOOR",
+                         f"'{sid}' exterior tower serves story {s} but the "
+                         f"{wall} facade has no door within reach of the "
+                         f"tower there -- the floor cannot use it (s8.4).")
 
         # Rule 10 / criterion 10 -- the stair volume is RESERVED. Props, cover,
         # objectives, and loot may not occupy the shaft or its landings.
@@ -578,10 +714,39 @@ def check(spec):
                     f"story gap between '{sa['id']}' (top {a_hi}) and "
                     f"'{sb['id']}' (bottom {b_lo}).")
             if not _rects_overlap(footprint_rect(a), footprint_rect(b)):
+                junction = a_hi if a_hi == b_lo else None
+                declared = getattr(a, "transfer", False) \
+                    or getattr(b, "transfer", False)
+                if declared and junction is not None:
+                    # Rule 2 relaxation: a DECLARED transfer floor, provided
+                    # a body can actually walk between the two stairs there
+                    if have_rooms and any(r.story == junction
+                                          for r in spec.rooms):
+                        ra = _approach_room(spec, junction, a)
+                        rb = _approach_room(spec, junction, b)
+                        if ra and rb and (ra.id == rb.id
+                                          or rb.id in same_story.get(ra.id,
+                                                                     set())):
+                            continue        # verified transfer
+                        errors.append(
+                            f"STAIRWELL STAIR_NOT_STACKED: stack "
+                            f"'{stack_id}' declares a transfer at story "
+                            f"{junction}, but '{sa['id']}' and '{sb['id']}' "
+                            f"land in unconnected rooms there -- a transfer "
+                            f"floor must be walkable (Rule 2).")
+                        continue
+                    warnings.append(
+                        f"STAIRWELL: stack '{stack_id}' transfer at story "
+                        f"{junction} accepted as declared -- no rooms there "
+                        f"to verify the walk between '{sa['id']}' and "
+                        f"'{sb['id']}'.")
+                    continue
                 errors.append(
                     f"STAIRWELL STAIR_NOT_STACKED: stack '{stack_id}' members "
                     f"'{sa['id']}' and '{sb['id']}' have disjoint footprints "
-                    f"-- the stair teleports laterally between floors (Rule 2).")
+                    f"-- the stair teleports laterally between floors "
+                    f"(Rule 2); declare `transfer: true` on a member if the "
+                    f"shift is intentional and walkable.")
     # Rules 6-7 -- egress pairs: separation + route independence
     egress = [(sysd, st) for sysd, st in zip(systems, spec.stairs)
               if sysd["role"] in EGRESS_ROLES]
@@ -599,7 +764,9 @@ def check(spec):
                     f"(max(8.0, {diag:.1f} m diagonal x {factor}), Rule 6).")
             if have_rooms and sa["discharge"] and sb["discharge"] \
                     and sa["discharge"]["type"] != "none" \
-                    and sb["discharge"]["type"] != "none":
+                    and sb["discharge"]["type"] != "none" \
+                    and sa["discharge"].get("room") \
+                    and sb["discharge"].get("room"):
                 ra, rb = sa["discharge"]["room"], sb["discharge"]["room"]
                 if ra == rb:
                     errors.append(

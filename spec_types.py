@@ -147,7 +147,19 @@ class Stairwell:
     to_story: int
     width: float = 1.6
     run: float = 4.0
-    style: Literal["straight", "switchback"] = "switchback"
+    style: Literal["straight", "switchback", "l_shaped",
+                   "scissor", "spiral"] = "switchback"
+    # facing rotates the whole stair about (x, y) in 90-degree steps; "N" is
+    # the pre-0.68 convention (ascent along +Y), so old specs are byte-stable.
+    facing: Literal["N", "S", "E", "W"] = "N"
+    # exterior stair tower (spec s8.4): the stair stands OUTSIDE the shell
+    # against a facade; approach is a facade door per served floor and
+    # discharge is the site itself. Author x/y outside the footprint.
+    exterior: bool = False
+    # declared transfer stack member (Rule 2 relaxation): this stair's stack
+    # may shift footprint at the junction floor, provided the review can walk
+    # between the two approach rooms on that floor.
+    transfer: bool = False
     cut_slabs: bool = True           # punch holes in slabs it passes through
     step_rise: float = 0.2           # target rise per step (m); game-feel default
     n_steps: Optional[int] = None    # override; else derived per floor
