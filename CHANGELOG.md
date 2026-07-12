@@ -1,3 +1,42 @@
+## [0.74.2] - Spec content-coherence audit + auditor in the gate
+
+- New `audit_specs.py`: a cross-cutting content-coherence audit over every
+  spec, complementing check.py (per-spec gate) and the schema (well-formedness).
+  Four checks: (1) trapped floors -- an interior upper-story room that no
+  stair/ladder/vertical_link reaches; (2) out-of-range spans -- a stair/ladder
+  whose story span leaves the building; (3) derivation completeness -- every
+  derived ladders[] entry carries its full runtime contract (route_nodes,
+  nav_link, authority, ai, combat, traversal_component); (4) the never-egress
+  invariant (ladder spec s2) across all specs. Facade-only shells are exempt
+  from the trapped-floor check; single-story vertical_links (hatch/floor_hole
+  form) correctly count toward reachability. Hard findings fail; content-quality
+  warnings print but don't. Wired into check.py as a standard gate step.
+- Audit result on the current 22 specs: ZERO hard findings. Every interior
+  upper floor is reachable, all story spans are in range, all derived ladder
+  runtime blocks are complete, and the never-egress invariant holds everywhere.
+  18 content-quality warnings remain (STAIR_VOLUME_INVADED clutter,
+  STAIR_ACCESS_THROUGH_PROHIBITED_ROOM, one STAIR_DOOR_OPENS_ONTO_TREAD, the
+  expected rowhouse_raid LEGACY_FIRE_ESCAPE_PROFILE) -- authoring nits in
+  shipped content, not schema or logic defects; gate stays green.
+- 6 auditor self-tests. No builder/geometry change; all shell.glb byte-identical.
+
+## [0.74.1] - Schema audit + VerticalLink.meta fix
+
+- Consolidated schema/build audit after the stairwell (v0.65-0.68) and ladder
+  (v0.69-0.74) work. Verified: every LevelSpec field maps to a schema top-level
+  property; all 19 nested primitive dataclasses are field-exact against their
+  schema items with additionalProperties:false; all array-of-object items are
+  strict; the $defs/opening ref is strict and complete; all 22 shipped specs
+  validate against the strict schema; the gate chain wires navigability ->
+  stairwell -> ladder; and dangling ladder->platform / ->room / ->fire_escape
+  references are all caught.
+- Fixed one latent drift the audit surfaced: VerticalLink gained a `meta` field
+  in the dataclass but the schema never got the matching property, so with
+  additionalProperties:false any spec setting vertical_links[].meta would fail
+  validation. Added vertical_links.meta (object) to the schema. Schema 1.21.0 ->
+  1.21.1.
+- No builder or geometry change; all shell.glb output byte-identical.
+
 ## [0.74.0] - Legacy fire escapes (ladder spec Phase 5) -- ladder spec COMPLETE
 
 - New `FireEscape` primitive (schema 1.20.0 -> 1.21.0): a legacy exterior

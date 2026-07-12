@@ -26,6 +26,8 @@ def main():
     rc = 0
     print("== validating specs ==")
     rc |= run(["validate.py", "--all"])
+    print("== auditing spec content coherence ==")
+    rc |= run(["audit_specs.py"])
     print("== checking catalog freshness ==")
     rc |= run(["catalog.py", "--check"])
     if rc == 0:
