@@ -1,3 +1,110 @@
+## [0.77.0] - Circulation-first generation + the traversal gate
+
+The second half of the stair overhaul: vertical circulation now SHAPES
+generated floorplans instead of being squeezed into them, presets ship
+finished stairs and ladders, a multi-seed sweep proves the contract, and a
+headless Godot gate makes traversal the authoritative check.
+
+- **stair_core.py -- cores before rooms.** `reserve()` proposes stair cores
+  against the bare shell (all four facings, landing clearances, protected
+  rooms respected); `apply()` makes the floorplan adapt: partitions crossing
+  a shaft are TRIMMED to its edge, doorless walls crossing a landing get a
+  DOOR punched, each core gets a dedicated `stairwell` room with overlapped
+  rooms guillotine-split around it (room references remapped), and props/
+  markers inside the reservation are EVICTED. Basements with whole-floor
+  vault rooms get a separate -1->0 SERVICE connector core (public
+  circulation interrupts at grade; the connector may open into the vault).
+  `presets.make(name, stairs_first=True)` / `new_level.py --stairs-first`
+  run any recipe in this order; all 12 multi-story presets pass full
+  validation both ways.
+- **Presets ship finished circulation.** `_finish_stairs` orients every
+  recipe stair (all four facings evaluated against the physical review),
+  assigns the strongest role the layout supports, stamps clean stairs
+  `meta.generated_by`, and `_finish_ladders` gives every ladder a role
+  chosen from what it physically is (roof_access / service_access /
+  special_gameplay_route). Three recipes had genuinely broken placements
+  the new checks exposed (pawn_shop stair through the shell + shelving in
+  the roof ladder's climb envelope, corner_deli and auto_shop roof hatches
+  opening from prohibited rooms) -- fixed.
+- **stair_place pair/extras are combo-checked**: selected stairs may not
+  consume each other's landings (the bank's seed-rolled extra stairs used
+  to park on the egress pair's landings).
+- **stair_regression.py -- the provable done state.** Every multi-story
+  preset x N seeds x both generation orders must show: zero stairwell/
+  ladder/navigability errors, every stair classified + oriented, every
+  generated stair physically clean, every occupied story reachable (the
+  route graph is symmetric, so both directions), and determinism. 2400
+  variants (100 seeds) pass; the sweep immediately caught a real
+  seed-dependent bug (enrich's cover seeding measured clearance from a
+  piece's CENTER, so a 2.6 m shelf run could intrude a ladder's climb
+  envelope -- level_design now clears by piece EDGE). `check.py` runs the
+  quick sweep as a gate step.
+- **nav_gate -- headless Godot traversal.** `nav_gate.py` +
+  `godot/addon/deli_counter/nav_gate.gd` load a built .glb, bake a navmesh
+  with the F4 harness's agent parameters, and prove a polygon-graph path
+  between every traversable stair's `nav_endpoints` (undirected graph =
+  both directions), plus the documented marker-connectivity check. Wired
+  into `check.py` (skips with a note when no Godot 4 binary; `--require`
+  for CI). The F5 harness check NAVMESH_CHECK.md promised now actually
+  exists in level_test.gd. Godot 3 binaries are refused.
+- **Floorplans show the circulation.** Every stair draws its reserved
+  footprint, facing label, ascent ARROW (entry -> exit -- a stair pointed
+  into a wall is visible at a glance), and its entry/exit landing rects on
+  the stories where they apply; stair-served stories get plans even when
+  unroomed.
+- 45 new tests across test_stair_core, test_preset_stairs, test_nav_gate,
+  test_floorplan_stairs; stair_regression is runnable standalone
+  (--seeds 100) and as the quick gate.
+
+## [0.76.0] - Stairs are oriented circulation systems, not rectangles
+
+A stair is now placed and reviewed as the full sequence
+`approach -> lower landing -> flight -> upper landing -> departure`,
+closing the "stair facing a wall / discharging into a wall / landing
+consumed" class of inhuman results.
+
+- **Facing is part of the placement candidate.** `stair_place.py`
+  candidates are `(x, y, facing)`: every anchor is generated per cardinal
+  facing with that orientation's clearance extents (footprint + entry
+  landing + exit landing), scored facing-aware, and the best facing wins
+  the spot (ties break toward an interior-side approach). Proposed stairs
+  always emit an explicit `facing` -- never the silent north default.
+- **No clamping.** Out-of-bounds anchors are rejected (with reasons),
+  never clamped back inside the shell -- clamping used to collapse
+  distinct zone strategies onto the same awkward edge spot. Corridor-end
+  anchors on rooms that touch the shell are derived with the wall
+  allowance instead.
+- **Landing reservations.** New `stairwell.stair_endpoints()` derives the
+  oriented entry/exit edges + landing rects (LANDING_DEPTH 1.2 m; upper
+  landing starts past the builder's 0.8 m slab-hole step-off) for
+  straight, switchback (exit end alternates with leg count), scissor
+  (both ends), and l_shaped. `clearance_findings()` proves them clear of
+  the exterior shell, doorless partitions, props, other stairs, and
+  unrouted space. `derive()` now emits `landings[]` + `nav_endpoints`
+  per stair system (additive gameplay.json contract).
+- **New severity codes**: STAIR_ENTRY_FACES_SOLID, STAIR_EXIT_FACES_SOLID,
+  STAIR_LOWER_LANDING_BLOCKED, STAIR_UPPER_LANDING_BLOCKED,
+  STAIR_MISSING_ROLE, STAIR_MISSING_FACING. Egress-role stairs gate hard
+  as usual; authored unclassified stairs get the findings as intel
+  (pre-0.65 specs keep their severity).
+- **Generated stairs carry a stricter contract.** A stair stamped
+  `meta.generated_by` must declare a role AND a facing (errors, not
+  warnings), and ALL its physical clearance findings gate hard. New role
+  `decorative_nontraversable` opts a stair out of the physical review and
+  never satisfies floor access.
+- **Placement rejects what the review would gate**: approach rooms that
+  can't read as an enclosure (profiles with `allow_open_primary_stair`
+  opt out), any served roomed story without an approach room, and every
+  clearance finding above. The numbered egress picks now come only from
+  the profile's OWN zone families. `test_proposal_survives_its_own_review`
+  passes again (it was failing: proposals parked egress stairs in open
+  lobbies).
+- 22 new tests in `test_stair_clearance.py`; 7 new placement tests. The
+  new review flags real geometry in several shipped specs as intel (e.g.
+  bank.json's stair tops out 0.9 m from the north wall -- less than a
+  landing); corner_deli_heist_01 (already failing) gains a hard
+  STAIR_EXIT_FACES_SOLID.
+
 ## [0.75.0] - Facade lights: wall packs + storefront sign (lights.json 1.1)
 
 Light comes from the sun or from physical fixtures — and buildings were

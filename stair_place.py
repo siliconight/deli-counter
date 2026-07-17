@@ -21,11 +21,16 @@ this tool, gate with validate.
     python stair_place.py specs/office.json --archetype office_lowrise --count 1
     python stair_place.py specs/new.json --archetype hotel_corridor --write
 
-Offline limits, stated plainly: Deli Counter stairs always run along Y and
-always stack, so candidates are axis-aligned rects of the profile's switchback
-footprint; enclosure walls, doors, and swings remain authoring work after the
-proposal lands. Determinism: any probabilistic extra (service / convenience
-stair) rolls on spec.seed, so the same spec proposes the same stairs forever.
+Offline limits, stated plainly: candidates are axis-aligned rects of the
+profile's footprint, evaluated in ALL FOUR cardinal facings -- a candidate is
+(x, y, facing), never just a rectangle -- and every candidate must prove its
+whole circulation system: lower landing, flight, upper landing, plus an
+approach room capable of enclosing the stair. Anchors that don't fit are
+REJECTED with a reason, never clamped back inside the shell (clamping used to
+collapse distinct strategies onto the same awkward edge spot). Enclosure
+walls, doors, and swings remain authoring work after the proposal lands.
+Determinism: any probabilistic extra (service / convenience stair) rolls on
+spec.seed, so the same spec proposes the same stairs forever.
 """
 
 import argparse
@@ -139,6 +144,40 @@ _PERIMETER_NEAR = 2.5    # m from a rect edge to an exterior wall = "touches"
 _TREAD_DEPTH = 0.28      # s10 commercial default
 _ANCHOR_FIT_RADIUS = 3.0  # stairwell.py archetype-fit test uses this too
 
+FACINGS = ("N", "E", "S", "W")
+# entry approach comes FROM this world direction (outward from the first
+# tread) under each facing; used to break score ties toward interior approach
+_ENTRY_DIR = {"N": (0, -1), "S": (0, 1), "E": (-1, 0), "W": (1, 0)}
+
+
+def _clearance_extents(fw, run, facing):
+    """Required clear distance from the anchor to the inner shell on each
+    world side (W, S, E, N order as a dict), INCLUDING the landings: the
+    ascent axis needs run/2 + LANDING_DEPTH at the entry end and
+    run/2 + EXIT_STEP_OFF + LANDING_DEPTH at the exit end."""
+    entry = run / 2 + stairwell.LANDING_DEPTH
+    exit_ = run / 2 + stairwell.EXIT_STEP_OFF + stairwell.LANDING_DEPTH
+    half = fw / 2
+    if facing == "N":       # ascends +Y: entry south, exit north
+        return {"W": half, "E": half, "S": entry, "N": exit_}
+    if facing == "S":
+        return {"W": half, "E": half, "N": entry, "S": exit_}
+    if facing == "E":       # ascends +X: entry west, exit east
+        return {"S": half, "N": half, "W": entry, "E": exit_}
+    return {"S": half, "N": half, "E": entry, "W": exit_}
+
+
+def _anchor_bounds(spec, ext):
+    """Valid anchor region (x0, y0, x1, y1) for a facing's clearance extents,
+    or None when the stair system cannot fit the plate in that orientation."""
+    hx, hy = spec.footprint_x / 2, spec.footprint_y / 2
+    m = spec.wall_thick + 0.3
+    x0, x1 = -(hx - m - ext["W"]), hx - m - ext["E"]
+    y0, y1 = -(hy - m - ext["S"]), hy - m - ext["N"]
+    if x0 > x1 or y0 > y1:
+        return None
+    return (x0, y0, x1, y1)
+
 
 # ---------------------------------------------------------------------------
 # Proposal geometry
@@ -178,90 +217,121 @@ def _circulation_rooms(spec, story=None):
 
 def candidate_zones(spec, profile):
     """Deterministic candidate anchors by zone family (s11.2). Returns a list
-    of dicts {zone, x, y}; families that don't apply yield nothing."""
+    of dicts {zone, x, y, facing}; families that don't apply yield nothing.
+
+    Every anchor is generated PER FACING with that orientation's clearance
+    extents (footprint + entry landing + exit landing), so an edge-hugging
+    anchor already leaves the landings room. An anchor whose stair system
+    cannot fit the plate in a given facing is simply not generated for it --
+    nothing is clamped back inside the shell."""
     hx, hy = spec.footprint_x / 2, spec.footprint_y / 2
     fw, run, _, _, _ = stair_dims(spec, profile)
-    inset_x = hx - spec.wall_thick - 0.3 - fw / 2
-    inset_y = hy - spec.wall_thick - 0.3 - run / 2
-    if inset_x <= 0 or inset_y <= 0:
-        return []
     out = []
 
-    def add(zone, x, y):
-        x = max(-inset_x, min(inset_x, x))
-        y = max(-inset_y, min(inset_y, y))
-        out.append({"zone": zone, "x": round(x, 2), "y": round(y, 2)})
+    def add(zone, x, y, facing, bounds=None):
+        if bounds is not None:
+            x0, y0, x1, y1 = bounds
+            if not (x0 - 1e-9 <= x <= x1 + 1e-9
+                    and y0 - 1e-9 <= y <= y1 + 1e-9):
+                return                      # rejected, not clamped
+        out.append({"zone": zone, "x": round(x, 2), "y": round(y, 2),
+                    "facing": facing})
 
-    # 1. exterior corners
-    for sx in (-1, 1):
-        for sy in (-1, 1):
-            add("exterior_corner", sx * inset_x, sy * inset_y)
+    per_facing = {}
+    for f in FACINGS:
+        b = _anchor_bounds(spec, _clearance_extents(fw, run, f))
+        if b is not None:
+            per_facing[f] = b
+    if not per_facing:
+        return []
 
-    # 2. corridor-axis ends (long axis of each grade circulation room)
-    for r in _circulation_rooms(spec, story=0):
-        x0, y0, x1, y1 = r.bounds
-        cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
-        if (x1 - x0) >= (y1 - y0):
-            add("corridor_end", x0 + fw / 2 + 0.3, cy)
-            add("corridor_end", x1 - fw / 2 - 0.3, cy)
-        else:
-            add("corridor_end", cx, y0 + run / 2 + 0.3)
-            add("corridor_end", cx, y1 - run / 2 - 0.3)
-
-    # 3. central core edges (the sides of the middle bay of the plate)
-    add("core_edge", -hx / 3, 0.0)
-    add("core_edge", hx / 3, 0.0)
-    add("core_edge", 0.0, -hy / 3)
-    add("core_edge", 0.0, hy / 3)
-
-    # 4. wing junctions (shared-edge midpoints of adjacent circulation rooms)
-    circ = _circulation_rooms(spec, story=0)
-    for i, ra in enumerate(circ):
-        for rb in circ[i + 1:]:
-            ov_x = (max(ra.bounds[0], rb.bounds[0]),
-                    min(ra.bounds[2], rb.bounds[2]))
-            ov_y = (max(ra.bounds[1], rb.bounds[1]),
-                    min(ra.bounds[3], rb.bounds[3]))
-            if ov_x[1] - ov_x[0] >= 1.2 and abs(ov_y[1] - ov_y[0]) < 0.1:
-                add("wing_junction", (ov_x[0] + ov_x[1]) / 2, ov_y[0])
-            elif ov_y[1] - ov_y[0] >= 1.2 and abs(ov_x[1] - ov_x[0]) < 0.1:
-                add("wing_junction", ov_x[0], (ov_y[0] + ov_y[1]) / 2)
-
-    # 5. rear service band (rear wall: center + quarter points)
     _, rear = _front_rear_walls(spec)
-    if rear == "N":
-        for fx in (-0.5, 0.0, 0.5):
-            add("rear_service", fx * inset_x, inset_y)
-    elif rear == "S":
-        for fx in (-0.5, 0.0, 0.5):
-            add("rear_service", fx * inset_x, -inset_y)
-    elif rear == "E":
-        for fy in (-0.5, 0.0, 0.5):
-            add("rear_service", inset_x, fy * inset_y)
-    else:
-        for fy in (-0.5, 0.0, 0.5):
-            add("rear_service", -inset_x, fy * inset_y)
+    long_y = spec.footprint_y / spec.footprint_x >= 1.8
+    long_x = spec.footprint_x / spec.footprint_y >= 1.8
 
-    # 6. perimeter bays (mid of each wall)
-    add("perimeter_bay", 0.0, inset_y)
-    add("perimeter_bay", 0.0, -inset_y)
-    add("perimeter_bay", inset_x, 0.0)
-    add("perimeter_bay", -inset_x, 0.0)
+    for f, (x0, y0, x1, y1) in per_facing.items():
+        xr, yr = min(-x0, x1), min(-y0, y1)   # symmetric band half-widths
 
-    # 7. party-wall bands (long side walls of a narrow plate, aspect >= 1.8)
-    if spec.footprint_y / spec.footprint_x >= 1.8:      # long in Y
-        for fy in (-0.5, 0.0, 0.5):
-            add("party_wall", inset_x, fy * inset_y)
-            add("party_wall", -inset_x, fy * inset_y)
-    elif spec.footprint_x / spec.footprint_y >= 1.8:    # long in X
-        for fx in (-0.5, 0.0, 0.5):
-            add("party_wall", fx * inset_x, inset_y)
-            add("party_wall", fx * inset_x, -inset_y)
+        # 1. exterior corners (per facing: the tightest legal tuck-in)
+        for cx in (x0, x1):
+            for cy in (y0, y1):
+                add("exterior_corner", cx, cy, f)
 
-    # dedupe anchors that collapsed onto each other after clamping
+        # 3. central core edges (the sides of the middle bay of the plate)
+        for ax, ay in ((-hx / 3, 0.0), (hx / 3, 0.0),
+                       (0.0, -hy / 3), (0.0, hy / 3)):
+            add("core_edge", ax, ay, f, (x0, y0, x1, y1))
+
+        # 5. rear service band (rear wall: center + quarter points)
+        if rear == "N":
+            for fx in (-0.5, 0.0, 0.5):
+                add("rear_service", fx * xr, y1, f)
+        elif rear == "S":
+            for fx in (-0.5, 0.0, 0.5):
+                add("rear_service", fx * xr, y0, f)
+        elif rear == "E":
+            for fy in (-0.5, 0.0, 0.5):
+                add("rear_service", x1, fy * yr, f)
+        else:
+            for fy in (-0.5, 0.0, 0.5):
+                add("rear_service", x0, fy * yr, f)
+
+        # 6. perimeter bays (mid of each wall)
+        add("perimeter_bay", 0.0, y1, f)
+        add("perimeter_bay", 0.0, y0, f)
+        add("perimeter_bay", x1, 0.0, f)
+        add("perimeter_bay", x0, 0.0, f)
+
+        # 7. party-wall bands (long side walls of a narrow plate)
+        if long_y:
+            for fy in (-0.5, 0.0, 0.5):
+                add("party_wall", x1, fy * yr, f)
+                add("party_wall", x0, fy * yr, f)
+        elif long_x:
+            for fx in (-0.5, 0.0, 0.5):
+                add("party_wall", fx * xr, y1, f)
+                add("party_wall", fx * xr, y0, f)
+
+        # 2. corridor-axis ends (long axis of each grade circulation room).
+        # Along-axis facings tuck the stair against the end wall with the
+        # landings inboard; cross-axis facings stand it across the corridor.
+        # A room edge that IS the exterior shell gets the anchor pushed in
+        # by the wall allowance (a room-bounded derivation, not a clamp --
+        # anchors that still don't fit their facing are dropped).
+        ext = _clearance_extents(fw, run, f)
+        for r in _circulation_rooms(spec, story=0):
+            rx0, ry0, rx1, ry1 = r.bounds
+            cx, cy = (rx0 + rx1) / 2, (ry0 + ry1) / 2
+            if (rx1 - rx0) >= (ry1 - ry0):
+                add("corridor_end", max(rx0 + ext["W"] + 0.3, x0), cy, f,
+                    (x0, y0, x1, y1))
+                add("corridor_end", min(rx1 - ext["E"] - 0.3, x1), cy, f,
+                    (x0, y0, x1, y1))
+            else:
+                add("corridor_end", cx, max(ry0 + ext["S"] + 0.3, y0), f,
+                    (x0, y0, x1, y1))
+                add("corridor_end", cx, min(ry1 - ext["N"] - 0.3, y1), f,
+                    (x0, y0, x1, y1))
+
+        # 4. wing junctions (shared-edge midpoints of circulation rooms)
+        circ = _circulation_rooms(spec, story=0)
+        for i, ra in enumerate(circ):
+            for rb in circ[i + 1:]:
+                ov_x = (max(ra.bounds[0], rb.bounds[0]),
+                        min(ra.bounds[2], rb.bounds[2]))
+                ov_y = (max(ra.bounds[1], rb.bounds[1]),
+                        min(ra.bounds[3], rb.bounds[3]))
+                if ov_x[1] - ov_x[0] >= 1.2 and abs(ov_y[1] - ov_y[0]) < 0.1:
+                    add("wing_junction", (ov_x[0] + ov_x[1]) / 2, ov_y[0], f,
+                        (x0, y0, x1, y1))
+                elif ov_y[1] - ov_y[0] >= 1.2 and abs(ov_x[1] - ov_x[0]) < 0.1:
+                    add("wing_junction", ov_x[0], (ov_y[0] + ov_y[1]) / 2, f,
+                        (x0, y0, x1, y1))
+
+    # dedupe anchors that landed on each other (across zone families)
     seen, uniq = set(), []
     for c in out:
-        key = (round(c["x"], 1), round(c["y"], 1))
+        key = (round(c["x"], 1), round(c["y"], 1), c["facing"])
         if key not in seen:
             seen.add(key)
             uniq.append(c)
@@ -289,7 +359,8 @@ def _cand_stair(spec, profile, cand):
     return Stairwell(x=cand["x"], y=cand["y"],
                      from_story=(-1 if spec.has_basement else 0),
                      to_story=spec.n_stories - 1,
-                     width=w, run=run, style=style, step_rise=rise)
+                     width=w, run=run, style=style, step_rise=rise,
+                     facing=cand.get("facing", "N"))
 
 
 def reject_reason(spec, profile, cand, flat_graph):
@@ -321,12 +392,19 @@ def reject_reason(spec, profile, cand, flat_graph):
             if not any(r.story == s for r in spec.rooms):
                 continue
             room = stairwell._approach_room(spec, s, st)
-            if room and (room.role or "") in stairwell.PROHIBITED_APPROACH_ROLES:
+            if room is None:
+                return f"no_room_covers_candidate@{s}"
+            if (room.role or "") in stairwell.PROHIBITED_APPROACH_ROLES:
                 return f"entrance_through_prohibited_room:{room.id}@{s}"
+            # the proposal will carry an egress role, so its approach room
+            # must be able to READ as a stair enclosure -- the review's
+            # STAIR_NOT_ENCLOSED gate. Profiles that allow an open primary
+            # stair (house, warehouse, parking) opt out.
+            if not profile["allow_open_primary_stair"] \
+                    and (room.role or "") not in stairwell.ENCLOSED_STAIR_ROLES:
+                return f"approach_not_enclosure_capable:{room.id}@{s}"
         if 0 in served and any(r.story == 0 for r in spec.rooms):
             room = stairwell._approach_room(spec, 0, st)
-            if room is None:
-                return "no_room_covers_candidate_at_grade"
             dests = stairwell._exterior_rooms(spec, 0)
             if dests and stairwell._bfs_path(flat_graph, room.id, dests) is None:
                 return f"no_ground_discharge_from:{room.id}"
@@ -334,6 +412,13 @@ def reject_reason(spec, profile, cand, flat_graph):
     for i, ex in enumerate(spec.stairs):
         if stairwell._rects_overlap(rect, stairwell.footprint_rect(ex)):
             return f"overlaps_existing_stair:{stairwell.stair_ident(ex, i)}"
+
+    # physical circulation: oriented entry/exit edges + landing volumes.
+    # The same proof stairwell.check() gates on -- the loop must close.
+    findings = stairwell.clearance_findings(spec, st, "cand")
+    if findings:
+        code, _ = findings[0]
+        return code.lower()
     return None
 
 
@@ -433,6 +518,21 @@ def score_candidate(spec, profile, cand, flat_graph, others=()):
     return round(score, 2), t
 
 
+def _combo_findings(spec, profile, cands):
+    """Total clearance findings across the spec's existing stairs PLUS the
+    hypothetical candidates, together. Selected stairs must not consume each
+    other's landings -- a candidate that is clean alone can still park its
+    footprint on another pick's landing."""
+    import copy as _copy
+    trial = _copy.copy(spec)
+    trial.stairs = list(spec.stairs) + [_cand_stair(spec, profile, c)
+                                        for c in cands]
+    n = 0
+    for i, st in enumerate(trial.stairs):
+        n += len(stairwell.clearance_findings(trial, st, f"s{i}"))
+    return n
+
+
 def _routes_independent(spec, flat_graph, room_a, room_b):
     if room_a is None or room_b is None or room_a == room_b:
         return False
@@ -450,6 +550,7 @@ def select(spec, profile, scored, count, flat_graph):
     diag = math.hypot(spec.footprint_x, spec.footprint_y)
     required = max(stairwell.MIN_EGRESS_SEPARATION,
                    diag * profile["separation_factor"])
+    baseline = _combo_findings(spec, profile, [])
     best, best_score = None, -math.inf
     for i, a in enumerate(scored):
         for b in scored[i + 1:]:
@@ -460,6 +561,10 @@ def select(spec, profile, scored, count, flat_graph):
             if spec.rooms and any(r.story == 0 for r in spec.rooms):
                 if not _routes_independent(spec, flat_graph, ra, rb):
                     continue
+            # the PAIR must be physically clean together: neither member may
+            # consume the other's landings
+            if _combo_findings(spec, profile, [a, b]) > baseline:
+                continue
             pair = a["score"] + b["score"]
             pair += 10.0 * min(1.0, dist / diag)          # coverage bonus
             pair += 5.0 * min(1.0, (dist - required) / diag)  # separation bonus
@@ -488,16 +593,20 @@ def stair_count(spec, profile):
 # Proposal
 # ---------------------------------------------------------------------------
 
-def propose(spec, archetype, count=None, ignore_existing=False):
+def propose(spec, archetype, count=None, ignore_existing=False, profile=None):
     """Full placement proposal for a spec under an archetype profile. Pure and
     deterministic (extras roll on spec.seed). Returns a dict with the proposed
     stairs, every rejection and its reason, and the scored survivors.
     ignore_existing drops the spec's current stairs from rejection and
-    separation math -- use when the proposal will REPLACE them."""
+    separation math -- use when the proposal will REPLACE them. `profile`
+    overrides the archetype's registered profile (stair_core.py uses this to
+    relax the enclosure requirement, because core-first generation BUILDS the
+    enclosure after placement)."""
     if archetype not in PROFILES:
         raise ValueError(f"unknown archetype '{archetype}' "
                          f"(known: {', '.join(sorted(PROFILES))})")
-    profile = PROFILES[archetype]
+    if profile is None:
+        profile = PROFILES[archetype]
     if ignore_existing and spec.stairs:
         import copy
         spec = copy.copy(spec)
@@ -531,9 +640,33 @@ def propose(spec, archetype, count=None, ignore_existing=False):
             dest = path[-1] if path else None
         survivors.append({**c, "score": sc, "terms": terms,
                           "room": room.id if room else None, "dest": dest})
+
+    # one survivor per anchor: the best FACING wins the spot. Ties break
+    # toward an entry that is approached from the plate interior (a stair
+    # against the north wall should be entered from the south), then by
+    # stable facing order -- deterministic forever.
+    def _facing_pref(s):
+        dx, dy = _ENTRY_DIR[s.get("facing", "N")]
+        return dx * -s["x"] + dy * -s["y"]
+
+    best_at = {}
+    for s in survivors:
+        key = (s["x"], s["y"])
+        cur = best_at.get(key)
+        if cur is None or (s["score"], _facing_pref(s),
+                           -FACINGS.index(s.get("facing", "N"))) \
+                > (cur["score"], _facing_pref(cur),
+                   -FACINGS.index(cur.get("facing", "N"))):
+            best_at[key] = s
+    survivors = list(best_at.values())
     survivors.sort(key=lambda s: -s["score"])
 
-    chosen = select(spec, profile, survivors, n, flat) if n else []
+    # the numbered egress picks come from the profile's OWN zone families;
+    # off-profile families (e.g. rear_service for an office) stay in the
+    # survivor pool for the probabilistic extras below
+    prof_zones = set(profile["primary_zones"]) | set(profile["secondary_zones"])
+    main_pool = [s for s in survivors if s["zone"] in prof_zones] or survivors
+    chosen = select(spec, profile, main_pool, n, flat) if n else []
     if n == 2 and len(chosen) == 2:
         d = math.hypot(chosen[0]["x"] - chosen[1]["x"],
                        chosen[0]["y"] - chosen[1]["y"])
@@ -554,14 +687,22 @@ def propose(spec, archetype, count=None, ignore_existing=False):
             "from_story": -1 if spec.has_basement else 0,
             "to_story": spec.n_stories - 1,
             "width": w, "run": run, "style": style, "step_rise": round(rise, 3),
+            "facing": c.get("facing", "N"),
             "cut_slabs": True,
             "id": f"{archetype}_{roles[i] if i < 2 else 'stair'}_{i}",
             "role": roles[i] if i < 2 else "primary_egress",
+            "meta": {"generated_by": "stair_place"},
         })
 
-    # probabilistic extras roll on the spec seed: same spec, same proposal
+    # probabilistic extras roll on the spec seed: same spec, same proposal.
+    # An extra must be physically clean IN COMBINATION with everything
+    # already selected -- clean-alone is not enough (its footprint could
+    # consume a chosen stair's landing).
     rng = random.Random(spec.seed)
     taken = {(c["x"], c["y"]) for c in chosen}
+    selected = list(chosen)
+    combo_base = _combo_findings(spec, profile, selected) \
+        if chosen else _combo_findings(spec, profile, [])
     extras = [("service", profile["service_stair_probability"],
                ("rear_service", "party_wall", "perimeter_bay")),
               ("public_convenience", profile["convenience_stair_probability"],
@@ -569,16 +710,22 @@ def propose(spec, archetype, count=None, ignore_existing=False):
     for role, prob, fams in extras:
         if rng.random() >= prob:
             continue
-        pick = next((s for s in survivors
-                     if s["zone"] in fams and (s["x"], s["y"]) not in taken), None)
+        pick = next(
+            (s for s in survivors
+             if s["zone"] in fams and (s["x"], s["y"]) not in taken
+             and _combo_findings(spec, profile, selected + [s]) <= combo_base),
+            None)
         if pick:
+            selected.append(pick)
             taken.add((pick["x"], pick["y"]))
             stairs_out.append({
                 "x": pick["x"], "y": pick["y"],
                 "from_story": 0, "to_story": spec.n_stories - 1,
                 "width": w, "run": run, "style": style,
-                "step_rise": round(rise, 3), "cut_slabs": True,
+                "step_rise": round(rise, 3),
+                "facing": pick.get("facing", "N"), "cut_slabs": True,
                 "id": f"{archetype}_{role}", "role": role,
+                "meta": {"generated_by": "stair_place"},
             })
 
     return {
@@ -604,10 +751,11 @@ def _report(proposal):
     for n in proposal["notes"]:
         lines.append(f"  NOTE: {n}")
     for r in proposal["rejected"]:
-        lines.append(f"  rejected {r['zone']} ({r['x']}, {r['y']}): "
-                     f"{r['reason']}")
+        lines.append(f"  rejected {r['zone']} ({r['x']}, {r['y']}) "
+                     f"facing {r.get('facing', 'N')}: {r['reason']}")
     for s in proposal["scored"]:
-        lines.append(f"  scored   {s['zone']} ({s['x']}, {s['y']}): "
+        lines.append(f"  scored   {s['zone']} ({s['x']}, {s['y']}) "
+                     f"facing {s.get('facing', 'N')}: "
                      f"{s['score']}  room={s['room']} dest={s['dest']}")
     lines.append("proposed stairs (paste into the spec's \"stairs\" section):")
     lines.append(json.dumps(proposal["stairs"], indent=2))

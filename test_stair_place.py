@@ -10,12 +10,19 @@ def _run(fn):
 
 
 def _office():
-    """Two-story plate with a protected room in the NE and a grade exit W."""
+    """Two-story plate with a protected room in the NE and a grade exit W.
+    Story 0 holds two enclosure-capable circulation rooms (corridor +
+    bullpen) so a compliant egress PAIR with independent routes exists --
+    placement refuses to park a required stair in an open lobby."""
     return LevelSpec(name="s", n_stories=2, footprint_x=40, footprint_y=30,
                      seed=7,
-                     rooms=[Room(id="lobby", story=0, bounds=[-20, -15, 20, 0],
+                     rooms=[Room(id="lobby", story=0, bounds=[-20, -15, 0, 0],
                                  role="public_entry"),
-                            Room(id="bullpen", story=0, bounds=[-20, 0, 20, 15],
+                            Room(id="retail", story=0, bounds=[0, -15, 20, 0],
+                                 role="open_floor"),
+                            Room(id="corridor", story=0,
+                                 bounds=[-20, 0, 20, 5], role="corridor"),
+                            Room(id="bullpen", story=0, bounds=[-20, 5, 20, 15],
                                  role="connector"),
                             Room(id="up", story=1, bounds=[-20, -15, 20, 15],
                                  role="connector"),
@@ -144,6 +151,91 @@ def test_unknown_archetype_raises():
         assert False, "should have raised"
     except ValueError as ex:
         assert "unknown archetype" in str(ex)
+
+
+# --- facing is part of the candidate, not a default ------------------------------
+
+def test_candidates_carry_all_four_facings():
+    cands = P.candidate_zones(_office(), P.PROFILES["office_lowrise"])
+    assert all(c["facing"] in P.FACINGS for c in cands)
+    assert {c["facing"] for c in cands} == set(P.FACINGS)
+
+
+def test_anchors_respect_per_facing_clearance_no_clamping():
+    """An anchor must leave room for the footprint AND both landings in its
+    own facing -- out-of-bounds anchors are dropped, never clamped inside."""
+    sp = _office()
+    prof = P.PROFILES["office_lowrise"]
+    fw, run, _, _, _ = P.stair_dims(sp, prof)
+    for c in P.candidate_zones(sp, prof):
+        ext = P._clearance_extents(fw, run, c["facing"])
+        b = P._anchor_bounds(sp, ext)
+        assert b is not None
+        if c["zone"] in ("exterior_corner", "perimeter_bay", "rear_service",
+                         "party_wall"):
+            assert b[0] - 0.01 <= c["x"] <= b[2] + 0.01, c
+            assert b[1] - 0.01 <= c["y"] <= b[3] + 0.01, c
+
+
+def test_tight_plate_drops_facings_instead_of_clamping():
+    """A plate too small for the stair system in one axis yields NO anchors
+    in the facings that ascend along it (the old code clamped these onto the
+    same edge spot)."""
+    sp = LevelSpec(name="s", n_stories=2, footprint_x=30, footprint_y=10)
+    prof = P.PROFILES["office_lowrise"]
+    fw, run, _, _, _ = P.stair_dims(sp, prof)
+    # ascent along Y needs run + both landings + margins > 10 m: N/S impossible
+    assert P._anchor_bounds(sp, P._clearance_extents(fw, run, "N")) is None
+    cands = P.candidate_zones(sp, prof)
+    assert cands, "E/W candidates must still exist"
+    assert {c["facing"] for c in cands} <= {"E", "W"}
+
+
+def test_proposed_stairs_carry_facing_role_and_generated_stamp():
+    prop = P.propose(_office(), "office_lowrise")
+    assert prop["stairs"]
+    for st in prop["stairs"]:
+        assert st["facing"] in P.FACINGS
+        assert st["role"] in S.STAIR_ROLES
+        assert st["meta"]["generated_by"] == "stair_place"
+
+
+def test_proposed_stairs_have_clear_oriented_circulation():
+    """Every proposed stair must pass the physical clearance review: entry
+    and exit face open floor, both landings reserved and unblocked."""
+    sp = _office()
+    prop = P.propose(sp, "office_lowrise")
+    from spec_types import Stairwell as SW
+    for st in prop["stairs"]:
+        assert S.clearance_findings(sp, SW(**st), st["id"]) == []
+
+
+def test_rejects_open_room_approach_for_required_stairs():
+    """office_lowrise doesn't allow an open primary stair: candidates whose
+    approach room can't read as an enclosure are rejected with a reason, and
+    no proposed stair is approached through the lobby or retail floor."""
+    sp = _office()
+    prop = P.propose(sp, "office_lowrise")
+    assert any(r["reason"].startswith("approach_not_enclosure_capable")
+               for r in prop["rejected"])
+    from spec_types import Stairwell as SW
+    for st in prop["stairs"]:
+        room = S._approach_room(sp, 0, SW(**st))
+        assert (room.role or "") in S.ENCLOSED_STAIR_ROLES
+
+
+def test_rejection_reasons_cover_entry_exit_landings():
+    """Somewhere in a real proposal run, candidates die for physical
+    circulation reasons -- proof the checks participate in placement."""
+    sp = _office()
+    # a doorless partition across the corridor right where the west
+    # corridor-end candidate's exit landing must discharge
+    from spec_types import Partition
+    sp.partitions = [Partition(story=0, axis="Y", pos=-11.0, start=0, end=5)]
+    prop = P.propose(sp, "office_lowrise")
+    phys = {"stair_entry_faces_solid", "stair_exit_faces_solid",
+            "stair_lower_landing_blocked", "stair_upper_landing_blocked"}
+    assert any(r["reason"] in phys for r in prop["rejected"])
 
 
 # --- review integration (STAIR_LOW_ARCHETYPE_FIT) --------------------------------

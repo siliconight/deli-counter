@@ -35,6 +35,11 @@ def _mats(*names):
     return [_PALETTE[n] for n in names]
 
 
+# eviction log of the most recent make(..., stairs_first=True) call:
+# [(kind, name, reason)] for props/markers/rooms the core reservation removed
+LAST_CORE_EVICTIONS: list = []
+
+
 # ---------------------------------------------------------------------------
 # BANK  --  reference recipe
 # ---------------------------------------------------------------------------
@@ -565,9 +570,12 @@ def corner_deli(name: str = "corner_deli_preset",
     spec["stairs"] = [{
         "x": -15.0, "y": 9.0, "from_story": stair_lo, "to_story": 2,
         "width": 1.4, "run": 5.5, "style": "switchback", "cut_slabs": True}]
+    # roof ladder moved out of the public stockroom corner: a roof-access
+    # climb may not originate in a public_entry / objective room (ladder
+    # spec s8.3), so it rises through the apartment side instead.
     spec["ladders"] = [{
-        "x": 17.5, "y": 9.5, "from_story": 0, "to_story": 2,
-        "width": 0.7, "depth": 0.25, "rung_spacing": 0.3, "cut_slabs": True, "facing": "W"}]
+        "x": 8.0, "y": -12.0, "from_story": 0, "to_story": 2,
+        "width": 0.7, "depth": 0.25, "rung_spacing": 0.3, "cut_slabs": True, "facing": "N"}]
     spec["slab_holes"] = [{"story": 1, "x": 8.0, "y": -4.0, "size_x": 2.2, "size_y": 2.2}]
     spec["vertical_links"] = [
         {"kind": "stair", "from_story": stair_lo, "to_story": 2, "role": "main_internal_rotation"},
@@ -2028,12 +2036,14 @@ def auto_shop(name: str = "auto_shop_preset", mode: str = "heist",
     ]
     spec["stairs"] = [{"x": 9.0, "y": 6.5, "from_story": 0, "to_story": 1,
                        "width": 1.2, "run": run, "style": "switchback", "cut_slabs": True}]
-    # roof-access ladder off the upper floor (north-west corner) -> story 2 hatch
-    spec["ladders"] = [{"x": -10.5, "y": 6.5, "from_story": 1, "to_story": 2,
+    # roof-access ladder off the upper floor -> story 2 hatch. It climbs from
+    # upper_storage, not the office: a roof hatch may not open from an
+    # objective room (ladder spec s8.3).
+    spec["ladders"] = [{"x": -10.5, "y": -6.0, "from_story": 1, "to_story": 2,
                         "width": 0.5, "depth": 0.15, "facing": "S", "cut_slabs": True}]
     spec["vertical_links"] = [
         {"kind": "stair", "from_story": 0, "to_story": 1, "role": "main_route"},
-        {"kind": "hatch", "from_story": 1, "to_story": 2, "role": "roof_escape", "x": -10.5, "y": 6.5},
+        {"kind": "hatch", "from_story": 1, "to_story": 2, "role": "roof_escape", "x": -10.5, "y": -6.0},
     ]
     spec["volumes"] = [
         {"name": "lift_1", "x": -6.0, "y": -3.0, "z": 0.1, "size_x": 2.6, "size_y": 1.2, "size_z": 0.2, "collision": "convex", "material": "metal"},
@@ -2131,7 +2141,11 @@ def pawn_shop(name: str = "pawn_shop_preset", mode: str = "heist",
         {"story": 1, "axis": "X", "pos": 0.0, "start": -hy, "end": hy, "material": "drywall",
          "openings": [{"kind": "door", "pos": 0.0, "width": 1.1}]},
     ]
-    spec["stairs"] = [{"x": 5.5, "y": 4.5, "from_story": 0, "to_story": 1,
+    # back-room stair to the upper storage/apartment. The 16x14 shell is too
+    # tight for a N/S ascent against the rear wall (the flight + landings
+    # need ~8.6 m of run axis), so it lies along the back room's E-W axis;
+    # _finish_stairs orients it so entry and exit both open onto clear floor.
+    spec["stairs"] = [{"x": 2.5, "y": 5.5, "from_story": 0, "to_story": 1,
                        "width": 1.0, "run": run, "style": "switchback", "cut_slabs": True}]
     spec["ladders"] = [{"x": -6.0, "y": 4.5, "from_story": 1, "to_story": 2,
                         "width": 0.5, "depth": 0.15, "facing": "S", "cut_slabs": True}]
@@ -2143,7 +2157,9 @@ def pawn_shop(name: str = "pawn_shop_preset", mode: str = "heist",
         {"name": "display_case_1", "x": -4.0, "y": -3.5, "z": 0.5, "size_x": 2.4, "size_y": 0.9, "size_z": 1.0, "collision": "convex", "material": "glass"},
         {"name": "display_case_2", "x": 4.0, "y": -3.5, "z": 0.5, "size_x": 2.4, "size_y": 0.9, "size_z": 1.0, "collision": "convex", "material": "glass"},
         {"name": "counter", "x": 0.0, "y": 1.2, "z": 0.55, "size_x": 4.0, "size_y": 0.7, "size_z": 1.1, "collision": "convex", "material": "wood"},
-        {"name": "shelving", "x": -5.5, "y": 4.5, "z": sh + 0.9, "size_x": 0.8, "size_y": 4.0, "size_z": 1.8, "collision": "convex", "material": "wood"},
+        # shelving sits clear of the roof ladder's climb envelope (Rule:
+        # the climbing volume is reserved space)
+        {"name": "shelving", "x": -3.5, "y": 4.5, "z": sh + 0.9, "size_x": 0.8, "size_y": 4.0, "size_z": 1.8, "collision": "convex", "material": "wood"},
     ]
     rooms = [
         {"id": "shop_floor", "story": 0, "bounds": [-hx, -hy, hx, 2.0], "role": "public_entry", "combat_range": "close"},
@@ -2268,15 +2284,148 @@ REGISTRY = {
 }
 
 
-def make(preset: str, enrich: bool = True, **kwargs) -> dict:
+def _finish_stairs(spec: dict) -> None:
+    """Close the stair loop for preset output: every generated stair leaves
+    here with an explicit FACING (chosen to clear the physical circulation
+    review, not defaulted north), a ROLE (the strongest classification the
+    layout supports), a stable id, and the `meta.generated_by` stamp that
+    opts it into stairwell.py's hard generated-stair contract.
+
+    Facing: all four cardinals are evaluated with stairwell.clearance_findings
+    and the cleanest wins (ties break N,E,S,W -- deterministic forever).
+    Role: egress roles are tried first and kept only if the whole spec still
+    reviews with zero stairwell errors; otherwise the stair degrades to a
+    classified non-egress role. The generated stamp is only applied when the
+    stair is physically clean -- a recipe whose stair cannot be oriented
+    clean keeps authored (warning-level) severity so generation never breaks,
+    and the regression sweep flags it for a position fix."""
+    stairs = spec.get("stairs") or []
+    if not stairs or spec.get("facade"):
+        return
+    from spec_loader import spec_from_dict
+    import stairwell as _sw
+
+    def _load():
+        return spec_from_dict(spec)
+
+    # pass 1: orient every stair (earlier choices are fixed for later ones,
+    # so landing-vs-other-stair checks see settled footprints)
+    clean = []
+    for i, sd in enumerate(stairs):
+        authored = sd.get("facing")
+        order = ([authored] + [f for f in ("N", "E", "S", "W")
+                               if f != authored]) if authored \
+            else ["N", "E", "S", "W"]
+        best_f, best_n = order[0], None
+        for f in order:
+            sd["facing"] = f
+            sp = _load()
+            n = len(_sw.clearance_findings(sp, sp.stairs[i],
+                                           sd.get("id") or f"stair_{i}"))
+            if best_n is None or n < best_n:
+                best_f, best_n = f, n
+            if n == 0:
+                break
+        sd["facing"] = best_f
+        clean.append(best_n == 0)
+
+    # pass 2: role + id + generated stamp
+    role_ladder = {0: ["primary_egress", "public_convenience", "service"],
+                   1: ["secondary_egress", "service"]}
+    for i, sd in enumerate(stairs):
+        if not sd.get("id"):
+            sd["id"] = f"{spec.get('name', 'level')}_stair_{i}"
+        had_role = bool(sd.get("role"))
+        if clean[i]:
+            meta = dict(sd.get("meta") or {})
+            meta.setdefault("generated_by", "presets")
+            sd["meta"] = meta
+        if had_role:
+            continue
+        candidates = role_ladder.get(i, ["service"])
+        chosen = candidates[-1]
+        for role in candidates:
+            sd["role"] = role
+            sp = _load()
+            errors, _, _ = _sw.check(sp)
+            if not any(f"'{sd['id']}'" in e for e in errors):
+                chosen = role
+                break
+        sd["role"] = chosen
+
+
+def _finish_ladders(spec: dict) -> None:
+    """The ladder counterpart of _finish_stairs: every preset ladder leaves
+    generation with a stable id and a ROLE (Rule 1: a ladder without a role
+    is not generated). Role candidates come from what the ladder physically
+    is -- reaches the roof -> roof_access, climbs out of a basement ->
+    service_access, interior second route -> special_gameplay_route -- and
+    the first role whose contract the layout satisfies (no ladder errors
+    naming this ladder) wins. If every candidate errors, the first is kept
+    so the failure is visible in review: that is a recipe bug to fix, not
+    something to silence."""
+    ladders = spec.get("ladders") or []
+    if not ladders or spec.get("facade"):
+        return
+    from spec_loader import spec_from_dict
+    import ladder as _ld
+    n_stories = spec.get("n_stories", 1)
+    for i, ld in enumerate(ladders):
+        if not ld.get("id"):
+            ld["id"] = f"{spec.get('name', 'level')}_ladder_{i}"
+        if ld.get("role"):
+            continue
+        hi = max(ld.get("from_story", 0), ld.get("to_story", 0))
+        lo = min(ld.get("from_story", 0), ld.get("to_story", 0))
+        if hi >= n_stories:
+            candidates = ["roof_access", "service_access"]
+        elif lo < 0:
+            candidates = ["service_access", "maintenance_access"]
+        else:
+            candidates = ["special_gameplay_route", "service_access"]
+        chosen = candidates[0]
+        for role in candidates:
+            ld["role"] = role
+            sp = spec_from_dict(spec)
+            errors, _, _ = _ld.check(sp)
+            if not any(f"'{ld['id']}'" in e for e in errors):
+                chosen = role
+                break
+        ld["role"] = chosen
+
+
+def make(preset: str, enrich: bool = True, stairs_first: bool = False,
+         archetype: Optional[str] = None, **kwargs) -> dict:
     """Build a preset spec. By default the finished spec is run through
     level_design.enrich() so every building comes out with readable cover
-    cadence and callout landmarks (better by construction). Pass enrich=False
-    for the raw recipe output."""
+    cadence and callout landmarks (better by construction), and every stair
+    leaves classified + oriented via _finish_stairs (the stair loop closes
+    at generation time, not review time). Pass enrich=False for the raw
+    recipe output (stairs are still finished -- an unfinished stair is a
+    generation bug, not a style choice).
+
+    stairs_first=True inverts the recipe's generation order: the recipe's
+    authored stairs are REPLACED by stair cores reserved against the shell
+    (stair_core.py), and the recipe's partitions, rooms, props, and markers
+    adapt around the reservation -- walls trim at the shaft, enclosures gain
+    doors onto the landings, overlapped rooms split around a dedicated
+    stairwell, and props inside the reservation are evicted. `archetype`
+    overrides the preset's default stair_place profile."""
     if preset not in REGISTRY:
         raise KeyError(f"unknown preset '{preset}'. "
                        f"available: {', '.join(sorted(REGISTRY))}")
     spec = REGISTRY[preset](**kwargs)
     if enrich and not spec.get("facade"):
         level_design.enrich(spec)
+    if stairs_first and not spec.get("facade") \
+            and spec.get("n_stories", 1) >= 2:
+        import stair_core
+        arch = archetype or stair_core.DEFAULT_ARCHETYPE.get(preset)
+        if arch is None:
+            raise ValueError(f"no default archetype for preset '{preset}'; "
+                             f"pass archetype=...")
+        global LAST_CORE_EVICTIONS
+        LAST_CORE_EVICTIONS = stair_core.core_first(spec, arch)
+    _finish_stairs(spec)
+    _finish_ladders(spec)
     return spec
