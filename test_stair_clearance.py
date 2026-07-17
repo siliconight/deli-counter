@@ -136,12 +136,13 @@ def test_clear_stair_reviews_clean():
     assert errors == []
 
 
-def test_unclassified_stair_gets_intel_not_errors():
+def test_unclassified_stair_still_gates_physical_findings():
+    """v0.78 universal gate: broken geometry is an error regardless of role
+    or authorship -- an unclassified stair walking into a wall hard-fails."""
     sp = _shell(Stairwell(x=0, y=-6, from_story=0, to_story=1, width=1.2,
                           run=4.0, style="straight"))
-    errors, warnings, _ = S.check(sp)
-    assert errors == []
-    assert "STAIR_ENTRY_FACES_SOLID" in _codes(warnings)
+    errors, _, _ = S.check(sp)
+    assert "STAIR_ENTRY_FACES_SOLID" in _codes(errors)
 
 
 def test_decorative_stair_skips_physical_review():
@@ -269,12 +270,78 @@ def test_generated_flag_promotes_clearance_to_errors():
     assert "STAIR_ENTRY_FACES_SOLID" in _codes(errors)
 
 
-def test_authored_stair_without_meta_keeps_old_severity():
+def test_authored_stair_also_gates_physical_findings():
+    """The universal gate does not care about the generated stamp: an
+    authored service stair with a blocked entry fails the same way."""
     sp = _shell(Stairwell(x=0, y=-6, from_story=0, to_story=1, width=1.2,
                           run=4.0, style="straight", id="g", role="service"))
+    errors, _, _ = S.check(sp)
+    assert "STAIR_ENTRY_FACES_SOLID" in _codes(errors)
+
+
+def test_semantic_findings_keep_role_gating():
+    """Only PHYSICAL findings went universal: an unclassified stair in a
+    prohibited room still warns (semantic finding, intel severity)."""
+    sp = LevelSpec(name="s", n_stories=2, footprint_x=40, footprint_y=30,
+                   stairs=[Stairwell(x=5, y=5, from_story=0, to_story=1)],
+                   rooms=[Room(id="stock", story=0, bounds=[0, 0, 10, 10],
+                               role="storage"),
+                          Room(id="up", story=1, bounds=[0, 0, 10, 10],
+                               role="connector")])
     errors, warnings, _ = S.check(sp)
-    assert errors == []
-    assert "STAIR_ENTRY_FACES_SOLID" in _codes(warnings)
+    assert "STAIR_ACCESS_THROUGH_PROHIBITED_ROOM" not in _codes(errors)
+    assert "STAIR_ACCESS_THROUGH_PROHIBITED_ROOM" in _codes(warnings)
+
+
+# --- circulation_contract: the downstream compliance stamp ----------------------
+
+def test_contract_stamps_compliant_shell():
+    sp = _shell(Stairwell(x=0, y=0, from_story=0, to_story=1, width=1.2,
+                          run=4.0, style="straight", facing="E", id="a",
+                          role="primary_egress"))
+    c = S.circulation_contract(sp)
+    assert c["version"] == S.CONTRACT_VERSION
+    assert c["all_compliant"] is True
+    st = c["stairs"][0]
+    assert st["id"] == "a" and st["role"] == "primary_egress"
+    assert st["facing"] == "E" and st["traversable"] is True
+    assert st["physical_findings"] == [] and st["compliant"] is True
+
+
+def test_contract_flags_broken_and_unclassified_stairs():
+    sp = _shell(Stairwell(x=0, y=-6, from_story=0, to_story=1, width=1.2,
+                          run=4.0, style="straight", id="broken",
+                          role="service"))
+    sp.stairs.append(Stairwell(x=6, y=0, from_story=0, to_story=1,
+                               width=1.2, run=4.0, style="straight",
+                               id="unroled"))
+    c = S.circulation_contract(sp)
+    assert c["all_compliant"] is False
+    by_id = {s["id"]: s for s in c["stairs"]}
+    assert "STAIR_ENTRY_FACES_SOLID" in by_id["broken"]["physical_findings"]
+    assert by_id["broken"]["compliant"] is False
+    assert by_id["unroled"]["compliant"] is False   # no role = not compliant
+
+
+def test_contract_marks_decorative_nontraversable():
+    sp = _shell(Stairwell(x=0, y=0, from_story=0, to_story=1, id="deco",
+                          role="decorative_nontraversable"))
+    c = S.circulation_contract(sp)
+    st = c["stairs"][0]
+    assert st["traversable"] is False and st["compliant"] is True
+
+
+def test_every_shipped_spec_is_contract_compliant():
+    """The migration's provable end state: all_compliant on all 29 specs."""
+    import glob
+    from spec_loader import load_spec
+    for f in sorted(glob.glob("specs/*.json")):
+        sp = load_spec(f)
+        if getattr(sp, "facade", False) or not sp.stairs:
+            continue
+        c = S.circulation_contract(sp)
+        assert c["all_compliant"], (f, [s for s in c["stairs"]
+                                        if not s["compliant"]][:1])
 
 
 if __name__ == "__main__":

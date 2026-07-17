@@ -60,6 +60,7 @@ def generate(preset, seed, stairs_first):
     spec = presets.REGISTRY[preset]()
     spec["seed"] = seed
     spec["name"] = f"sweep_{preset}_{seed}"
+    presets._finish_stairs(spec)          # orientation before enrichment
     if not spec.get("facade"):
         level_design.enrich(spec)
     if stairs_first and spec.get("n_stories", 1) >= 2:
