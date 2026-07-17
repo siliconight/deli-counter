@@ -11,6 +11,12 @@ First pass (clean): rooms as labelled boxes, exterior + partition walls with
 gaps at doorways/openings, and gameplay markers as icons. Tactical overlays
 (graph edges, chokepoints, single-route flags) layer on in a later pass.
 
+Stair overlay (v0.76): every stair serving the story draws its reserved
+footprint, its ascent ARROW (entry -> exit, so a stair facing a wall is
+visible at a glance), its facing label, and -- on the stories where they
+apply -- the entry/exit landing rects the review reserves. Green landing =
+lower approach, blue = upper departure.
+
 World convention: meters, origin at footprint center, +X east, +Y north, +Z up.
 SVG convention: +x right, +y DOWN — so we flip Y (north renders up). A story is
 selected by z: markers whose z falls in [story*sh, story*sh+sh) belong to it.
@@ -59,6 +65,10 @@ class _Tx:
         for m in getattr(spec, "markers", []) or []:
             ox = max(ox, abs(getattr(m, "x", 0.0)) - self.hx)
             oy = max(oy, abs(getattr(m, "y", 0.0)) - self.hy)
+        for st in getattr(spec, "stairs", []) or []:
+            # exterior towers stand off the facade; keep them on the canvas
+            ox = max(ox, abs(getattr(st, "x", 0.0)) - self.hx)
+            oy = max(oy, abs(getattr(st, "y", 0.0)) - self.hy)
         self.ox = max(0.0, ox) + 1.0 if ox > 0 else 0.0
         self.oy = max(0.0, oy) + 1.0 if oy > 0 else 0.0
         self.w = (spec.footprint_x + 2 * self.ox) * PX_PER_M + 2 * PADDING
@@ -132,6 +142,87 @@ def _wall_segments_with_gaps(p0, p1, gaps, axis):
         else:
             out.append(((fixed, a), (fixed, b)))
     return out
+
+
+STAIR_COLOR = "#7b1fa2"       # stair footprint + ascent arrow
+LAND_LOWER_COLOR = "#2e7d32"  # entry landing (approach)
+LAND_UPPER_COLOR = "#1565c0"  # exit landing (departure)
+
+
+def _rect_svg(tx, rect, fill, stroke, width=1.5, dash=None, opacity=0.25):
+    x0, y0, x1, y1 = rect
+    sx, sy = tx.x(x0), tx.y(y1)
+    w, h = (x1 - x0) * PX_PER_M, (y1 - y0) * PX_PER_M
+    d = f' stroke-dasharray="{dash}"' if dash else ""
+    return (f'<rect x="{sx:.1f}" y="{sy:.1f}" width="{w:.1f}" '
+            f'height="{h:.1f}" fill="{fill}" fill-opacity="{opacity}" '
+            f'stroke="{stroke}" stroke-width="{width}"{d}/>')
+
+
+def _draw_stairs(parts, tx, spec, story):
+    """Reserved footprint, ascent arrow, facing label, and landing rects for
+    every stair serving this story. The ascent arrow runs lower entry ->
+    upper exit, so a stair pointed into a wall is visible immediately."""
+    try:
+        import stairwell
+    except ImportError:
+        return
+    for i, st in enumerate(getattr(spec, "stairs", []) or []):
+        served = stairwell.floors_served(spec, st)
+        if story not in served:
+            continue
+        sid = stairwell.stair_ident(st, i)
+        rect = stairwell.footprint_rect(st)
+        parts.append(_rect_svg(tx, rect, STAIR_COLOR, STAIR_COLOR,
+                               width=1.5, dash="4 3", opacity=0.15))
+        cx, cy = tx.x((rect[0] + rect[2]) / 2), tx.y((rect[1] + rect[3]) / 2)
+        facing = getattr(st, "facing", "N") or "N"
+        role = getattr(st, "role", None)
+        label = f"{sid} ↑{facing}" + (f" [{role}]" if role else "")
+        parts.append(
+            f'<text x="{cx:.1f}" y="{cy:.1f}" font-size="9" '
+            f'fill="{STAIR_COLOR}" text-anchor="middle" font-weight="bold">'
+            f'{_esc(label)}</text>')
+
+        eps = stairwell.stair_endpoints(st)
+        lows = [e for e in eps if e["end"] == "lower"]
+        ups = [e for e in eps if e["end"] == "upper"]
+        lo_story, hi_story = min(served), max(served)
+        # landing rects on the stories where they physically apply
+        if story == lo_story:
+            for e in lows:
+                parts.append(_rect_svg(tx, e["rect"], LAND_LOWER_COLOR,
+                                       LAND_LOWER_COLOR, width=1.2,
+                                       opacity=0.30))
+        if story == hi_story:
+            for e in ups:
+                parts.append(_rect_svg(tx, e["rect"], LAND_UPPER_COLOR,
+                                       LAND_UPPER_COLOR, width=1.2,
+                                       opacity=0.30))
+        # ascent arrow: entry point -> exit point (every served story, so a
+        # mid-story plan still shows which way the shaft climbs)
+        if lows and ups:
+            (ax, ay), (bx, by) = lows[0]["point"], ups[0]["point"]
+            x1p, y1p, x2p, y2p = tx.x(ax), tx.y(ay), tx.x(bx), tx.y(by)
+            parts.append(
+                f'<line x1="{x1p:.1f}" y1="{y1p:.1f}" x2="{x2p:.1f}" '
+                f'y2="{y2p:.1f}" stroke="{STAIR_COLOR}" stroke-width="2"/>')
+            # arrowhead at the exit end
+            import math
+            ang = math.atan2(y2p - y1p, x2p - x1p)
+            for da in (2.6, -2.6):
+                hx2 = x2p + 8 * math.cos(ang + da)
+                hy2 = y2p + 8 * math.sin(ang + da)
+                parts.append(
+                    f'<line x1="{x2p:.1f}" y1="{y2p:.1f}" x2="{hx2:.1f}" '
+                    f'y2="{hy2:.1f}" stroke="{STAIR_COLOR}" '
+                    f'stroke-width="2"/>')
+        elif getattr(st, "style", "") == "spiral":
+            r = st.width * PX_PER_M
+            parts.append(
+                f'<circle cx="{tx.x(st.x):.1f}" cy="{tx.y(st.y):.1f}" '
+                f'r="{r:.1f}" fill="none" stroke="{STAIR_COLOR}" '
+                f'stroke-width="1.5" stroke-dasharray="4 3"/>')
 
 
 def render_story(spec, story):
@@ -222,6 +313,9 @@ def render_story(spec, story):
                 f'x2="{tx.x(b[0]):.1f}" y2="{tx.y(b[1]):.1f}" '
                 f'stroke="#666" stroke-width="2"/>')
 
+    # stairs serving this story: reserved footprint + ascent arrow + landings
+    _draw_stairs(parts, tx, spec, story)
+
     # markers on this story
     legend_used = {}
     for m in getattr(spec, "markers", []) or []:
@@ -261,10 +355,20 @@ def render_story(spec, story):
 
 
 def stories_in(spec):
-    """All stories that have rooms or markers."""
+    """All stories that have rooms, markers, or stair service (a story a
+    stair climbs through deserves a plan even if unroomed -- the ascent
+    arrow and landings are the point)."""
     s = set(r.story for r in (getattr(spec, "rooms", []) or []))
     for m in getattr(spec, "markers", []) or []:
         s.add(_marker_story(spec, m))
+    try:
+        import stairwell
+        for st in getattr(spec, "stairs", []) or []:
+            for fs in stairwell.floors_served(spec, st):
+                if fs < getattr(spec, "n_stories", 1):   # roof has no plan
+                    s.add(fs)
+    except ImportError:
+        pass
     if not s:
         s = {0}
     return sorted(s)

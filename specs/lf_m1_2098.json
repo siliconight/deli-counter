@@ -255,6 +255,14 @@
       "to_story": 1,
       "style": "switchback",
       "cut_slabs": true
+    },
+    {
+      "x": 11.0,
+      "y": -6.0,
+      "from_story": -1,
+      "to_story": 0,
+      "style": "straight",
+      "cut_slabs": true
     }
   ],
   "rooms": [
@@ -678,7 +686,7 @@
   "audit_accept": [
     {
       "code": "VERT_DEAD_END",
-      "why": "vault basement + roof story: single stair is the design"
+      "why": "roof story: single stair to unfurnished roof is the design"
     }
   ],
   "modular": true

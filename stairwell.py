@@ -34,7 +34,10 @@ import tactical
 # ---------------------------------------------------------------------------
 
 EGRESS_ROLES = {"primary_egress", "secondary_egress", "exterior_egress"}
-STAIR_ROLES = EGRESS_ROLES | {
+# a decorative stair is explicitly non-traversable: it never satisfies floor
+# access, and the physical entry/exit/landing checks don't apply to it.
+DECORATIVE_ROLES = {"decorative_nontraversable"}
+STAIR_ROLES = EGRESS_ROLES | DECORATIVE_ROLES | {
     "public_convenience", "service", "private_residential", "industrial_access",
 }
 
@@ -65,6 +68,15 @@ MIN_EGRESS_SEPARATION = 8.0     # m; Rule 6 game-friendly floor
 DEFAULT_SEPARATION_FACTOR = 0.33  # sprinklered approximation (Rule 6)
 DISCHARGE_MAX_CLEAN_HOPS = 3    # rooms between stair and exterior before warn
 _TREAD_MARGIN = 0.6             # m shaved off each run end for the door test
+
+# Physical circulation clearances (game-readability defaults, not code
+# compliance). A stair is an ORIENTED system: approach -> lower landing ->
+# flight -> upper landing -> departure. Both landings are reserved floor.
+LANDING_DEPTH = 1.2             # m of clear floor at each entry/exit edge
+EXIT_STEP_OFF = 0.8             # m the builder's slab hole extends past the
+                                # top flight; the upper landing starts after it
+_SOLID_BAND = 0.45              # a wall this close to the entry/exit edge =
+                                # "the tread faces solid geometry"
 
 
 # ---------------------------------------------------------------------------
@@ -99,6 +111,210 @@ def footprint_rect(st):
     elif f == "W":               # local (x, y) -> world (-y, x)
         lx0, ly0, lx1, ly1 = -ly1, lx0, -ly0, lx1
     return (st.x + lx0, st.y + ly0, st.x + lx1, st.y + ly1)
+
+
+def _rot_pt(f, x, y):
+    """Rotate a LOCAL offset into world axes under `facing` (same math as
+    footprint_rect and the builder's _stair_pt)."""
+    if f == "S":
+        return -x, -y
+    if f == "E":
+        return y, -x
+    if f == "W":
+        return -y, x
+    return x, y
+
+
+def _rot_rect(f, r):
+    x0, y0 = _rot_pt(f, r[0], r[1])
+    x1, y1 = _rot_pt(f, r[2], r[3])
+    return (min(x0, x1), min(y0, y1), max(x0, x1), max(y0, y1))
+
+
+def stair_endpoints(st):
+    """The stair's ORIENTED circulation endpoints, in world coordinates.
+
+    Each endpoint is where a body enters (lower) or leaves (upper) the stair:
+    a dict {end: "lower"|"upper", rect: landing rect (x0,y0,x1,y1),
+    point: landing center (x, y), dir: outward unit direction away from the
+    treads}. The lower landing sits flush against the first tread; the upper
+    landing starts EXIT_STEP_OFF past the top flight (the builder's slab hole
+    reaches that far) and both are LANDING_DEPTH deep. A scissor has entries
+    and exits at both ends. Spiral, exterior-tower, and decorative stairs have
+    no proxy-checkable endpoints and return []."""
+    if st.style == "spiral" or getattr(st, "exterior", False) \
+            or getattr(st, "role", None) in DECORATIVE_ROLES:
+        return []
+    w, run = st.width, st.run
+    ends = []                     # (end, local edge segment, local outward dir)
+    if st.style == "straight":
+        ends = [("lower", (-w / 2, -run / 2, w / 2, -run / 2), (0, -1)),
+                ("upper", (-w / 2, run / 2, w / 2, run / 2), (0, 1))]
+    elif st.style == "switchback":
+        # leg 0 ascends +Y in the run at local x 0..w; the last leg tops out
+        # on the +Y end when the leg count is odd-indexed even, -Y otherwise
+        legs = max(1, abs(st.to_story - st.from_story))
+        sign = 1 if (legs - 1) % 2 == 0 else -1
+        ends = [("lower", (0.0, -run / 2, w, -run / 2), (0, -1))]
+        if sign > 0:
+            ends.append(("upper", (0.0, run / 2, w, run / 2), (0, 1)))
+        else:
+            ends.append(("upper", (-w, -run / 2, 0.0, -run / 2), (0, -1)))
+    elif st.style == "scissor":
+        ends = [("lower", (-w, -run / 2, 0.0, -run / 2), (0, -1)),
+                ("lower", (0.0, run / 2, w, run / 2), (0, 1)),
+                ("upper", (-w, run / 2, 0.0, run / 2), (0, 1)),
+                ("upper", (0.0, -run / 2, w, -run / 2), (0, -1))]
+    elif st.style == "l_shaped":
+        ends = [("lower", (-w / 2, -run / 2, w / 2, -run / 2), (0, -1)),
+                ("upper", (w / 2 + run, run / 2, w / 2 + run, run / 2 + w),
+                 (1, 0))]
+    f = getattr(st, "facing", "N") or "N"
+    out = []
+    for end, edge, (dx, dy) in ends:
+        gap = 0.0 if end == "lower" else EXIT_STEP_OFF
+        lo, hi = gap, gap + LANDING_DEPTH
+        rect = (min(edge[0] + dx * lo, edge[2] + dx * hi),
+                min(edge[1] + dy * lo, edge[3] + dy * hi),
+                max(edge[0] + dx * lo, edge[2] + dx * hi),
+                max(edge[1] + dy * lo, edge[3] + dy * hi))
+        wrect = _rot_rect(f, rect)
+        wdx, wdy = _rot_pt(f, dx, dy)
+        out.append({
+            "end": end,
+            "rect": (st.x + wrect[0], st.y + wrect[1],
+                     st.x + wrect[2], st.y + wrect[3]),
+            "point": (st.x + (wrect[0] + wrect[2]) / 2,
+                      st.y + (wrect[1] + wrect[3]) / 2),
+            "dir": (wdx, wdy),
+        })
+    return out
+
+
+def clearance_findings(spec, st, sid):
+    """Physical circulation review: prove the oriented sequence
+    approach -> lower landing -> flight -> upper landing -> departure at
+    room-rect/partition resolution. Returns [(code, message)] where code is
+    one of STAIR_ENTRY_FACES_SOLID, STAIR_EXIT_FACES_SOLID,
+    STAIR_LOWER_LANDING_BLOCKED, STAIR_UPPER_LANDING_BLOCKED."""
+    findings = []
+    served = floors_served(spec, st)
+    if not served:
+        return findings
+    lo_story, hi_story = min(served), max(served)
+    hx, hy = spec.footprint_x / 2, spec.footprint_y / 2
+    ix, iy = hx - spec.wall_thick, hy - spec.wall_thick
+    H = spec.story_height
+    eps = 1e-6
+
+    for ep in stair_endpoints(st):
+        lower = ep["end"] == "lower"
+        story = lo_story if lower else hi_story
+        rect = ep["rect"]
+        code_solid = ("STAIR_ENTRY_FACES_SOLID" if lower
+                      else "STAIR_EXIT_FACES_SOLID")
+        code_block = ("STAIR_LOWER_LANDING_BLOCKED" if lower
+                      else "STAIR_UPPER_LANDING_BLOCKED")
+        what = "first tread" if lower else "top flight"
+
+        # exterior shell: the landing must fit inside the inner wall faces
+        if rect[0] < -ix - eps or rect[2] > ix + eps \
+                or rect[1] < -iy - eps or rect[3] > iy + eps:
+            findings.append((code_solid,
+                             f"'{sid}' {what} discharges into the exterior "
+                             f"shell on story {story} -- the "
+                             f"{LANDING_DEPTH:g} m landing does not fit "
+                             f"inside the walls."))
+            continue
+
+        # the band right at the treads: a wall here = the tread faces solid
+        dx, dy = ep["dir"]
+        if lower:
+            band = (rect[0] if dx >= 0 else rect[2] - _SOLID_BAND,
+                    rect[1] if dy >= 0 else rect[3] - _SOLID_BAND,
+                    rect[0] + _SOLID_BAND if dx >= 0 else rect[2],
+                    rect[1] + _SOLID_BAND if dy >= 0 else rect[3])
+        else:
+            band = rect        # the whole upper landing must clear the exit
+
+        # partitions crossing the landing without a door through them
+        t = spec.wall_thick
+        for p in spec.partitions:
+            if p.story != story:
+                continue
+            lo_c, hi_c = min(p.start, p.end), max(p.start, p.end)
+            prect = ((p.pos - t / 2, lo_c, p.pos + t / 2, hi_c)
+                     if p.axis == "Y" else
+                     (lo_c, p.pos - t / 2, hi_c, p.pos + t / 2))
+            if not _rects_overlap(prect, rect):
+                continue
+            span = ((max(rect[1], lo_c), min(rect[3], hi_c))
+                    if p.axis == "Y" else
+                    (max(rect[0], lo_c), min(rect[2], hi_c)))
+            doored = False
+            length = hi_c - lo_c
+            for op in p.openings:
+                if op.kind not in _DOOR_KINDS:
+                    continue
+                along = lo_c + (op.pos + 0.5) * length
+                half = (op.resolved()["width"]) / 2
+                if along + half >= span[0] and along - half <= span[1]:
+                    doored = True
+                    break
+            if doored:
+                continue
+            if _rects_overlap(prect, band):
+                findings.append((code_solid,
+                                 f"'{sid}' {what} faces a solid partition "
+                                 f"(story {story}, {p.axis}@{p.pos:g}) -- a "
+                                 f"body cannot step "
+                                 f"{'onto' if lower else 'off'} the stair."))
+            else:
+                findings.append((code_block,
+                                 f"'{sid}' {'lower' if lower else 'upper'} "
+                                 f"landing on story {story} is crossed by a "
+                                 f"doorless partition ({p.axis}@{p.pos:g}) -- "
+                                 f"landings are reserved circulation."))
+
+        # solid volumes standing on the landing (stair furniture excepted)
+        z_lo, z_hi = story * H, (story + 1) * H
+        for v in spec.volumes:
+            nm = v.name.lower()
+            if any(k in nm for k in ("stair", "ramp", "land")):
+                continue
+            vrect = (v.x - v.size_x / 2, v.y - v.size_y / 2,
+                     v.x + v.size_x / 2, v.y + v.size_y / 2)
+            if _rects_overlap(vrect, rect) and z_lo <= v.z <= z_hi:
+                findings.append((code_block,
+                                 f"'{sid}' {'lower' if lower else 'upper'} "
+                                 f"landing on story {story} is occupied by "
+                                 f"volume '{v.name}'."))
+
+        # another stair's reserved footprint eating the landing
+        for j, other in enumerate(spec.stairs):
+            if other is st:
+                continue
+            if story not in floors_served(spec, other):
+                continue
+            if _rects_overlap(footprint_rect(other), rect):
+                findings.append((code_block,
+                                 f"'{sid}' {'lower' if lower else 'upper'} "
+                                 f"landing on story {story} is consumed by "
+                                 f"stair '{stair_ident(other, j)}'."))
+
+        # the landing must be routed space (only checkable where rooms exist)
+        if any(r.story == story for r in spec.rooms):
+            cx, cy = ep["point"]
+            if not any(r.story == story
+                       and r.bounds[0] <= cx <= r.bounds[2]
+                       and r.bounds[1] <= cy <= r.bounds[3]
+                       for r in spec.rooms):
+                findings.append((code_block,
+                                 f"'{sid}' {'lower' if lower else 'upper'} "
+                                 f"landing on story {story} lies in unrouted "
+                                 f"space -- no room covers the "
+                                 f"{'approach' if lower else 'departure'}."))
+    return findings
 
 
 def floors_served(spec, st):
@@ -398,6 +614,26 @@ def derive(spec):
             "discharge": None,
             "egress": {"counts_as_exit": role in EGRESS_ROLES},
         }
+        # oriented circulation contract: landing rects + nav endpoints, so the
+        # consumer (game / LOT / art pass) keys traversal on explicit points
+        # instead of re-deriving them from the footprint
+        lo_s = min(served) if served else min(st.from_story, st.to_story)
+        hi_s = max(served) if served else max(st.from_story, st.to_story)
+        H = spec.story_height
+        sysd["landings"] = [{
+            "end": ep["end"],
+            "story": lo_s if ep["end"] == "lower" else hi_s,
+            "rect": list(ep["rect"]),
+            "point": [ep["point"][0], ep["point"][1],
+                      (lo_s if ep["end"] == "lower" else hi_s) * H],
+            "dir": list(ep["dir"]),
+        } for ep in stair_endpoints(st)]
+        _lows = [l for l in sysd["landings"] if l["end"] == "lower"]
+        _ups = [l for l in sysd["landings"] if l["end"] == "upper"]
+        sysd["nav_endpoints"] = {
+            "lower": _lows[0]["point"] if _lows else None,
+            "upper": _ups[0]["point"] if _ups else None,
+        }
         if have_rooms and not exterior:
             for s in served:
                 if not any(r.story == s for r in spec.rooms):
@@ -654,6 +890,32 @@ def check(spec):
                  f"'{sid}' reserved volume is occupied by "
                  f"{', '.join(invaders)} -- stair runs, landings, and "
                  f"discharge are reserved space, not leftover space (Rule 10).")
+
+        # GENERATED stairs carry a stricter contract than authored ones: a
+        # placement tool that emits a stair without a role or an explicit
+        # facing produced an unfinished stair, and that is a generation
+        # error, never intel. (Authored pre-0.65 specs keep warning-level
+        # treatment; `meta.generated_by` is the opt-in stamp.)
+        generated = bool(((getattr(st, "meta", None) or {})
+                          .get("generated_by")))
+        if generated:
+            if not role:
+                errors.append(
+                    f"STAIRWELL STAIR_MISSING_ROLE: generated stair '{sid}' "
+                    f"carries no role -- every generated stair must declare "
+                    f"one of {', '.join(sorted(STAIR_ROLES))}.")
+            if getattr(st, "facing", None) not in ("N", "S", "E", "W"):
+                errors.append(
+                    f"STAIRWELL STAIR_MISSING_FACING: generated stair "
+                    f"'{sid}' carries no facing -- ascent orientation is "
+                    f"part of the placement, not a default.")
+
+        # physical circulation: the oriented sequence approach -> lower
+        # landing -> flight -> upper landing -> departure must be provable.
+        # Egress-role AND generated stairs gate hard; authored unclassified
+        # stairs get the same findings as intel.
+        for code, msg in clearance_findings(spec, st, sid):
+            emit(gate or generated, code, msg)
 
         # s9.3 -- locked egress roulette: a required stair door that defaults
         # to locked is only tolerable when another egress stair serves the

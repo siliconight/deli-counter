@@ -858,6 +858,25 @@ A shell must fail generation or baking when any of the following occurs:
 - `REQUIRED_ROUTES_SHARE_SINGLE_CHOKEPOINT`
 - `BASEMENT_CONTINUATION_NOT_INTERRUPTED`
 
+Physical circulation (v0.76, `stairwell.clearance_findings`): a stair is an
+ORIENTED system -- approach, lower landing, flight, upper landing, departure
+-- and the whole sequence must be provable. Egress-role stairs and GENERATED
+stairs (`meta.generated_by` set) gate hard on:
+
+- `STAIR_ENTRY_FACES_SOLID` -- the first tread faces the exterior shell or a
+  doorless partition
+- `STAIR_EXIT_FACES_SOLID` -- the top flight discharges into solid geometry
+- `STAIR_LOWER_LANDING_BLOCKED` / `STAIR_UPPER_LANDING_BLOCKED` -- a landing
+  (1.2 m deep; the upper one starts past the 0.8 m slab-hole step-off) is
+  crossed by a doorless wall, occupied by a prop, consumed by another stair,
+  or lies in unrouted space
+- `STAIR_MISSING_ROLE` / `STAIR_MISSING_FACING` -- a generated stair shipped
+  without its role or an explicit facing (generation is unfinished)
+
+Authored, unclassified stairs receive the same findings as warnings
+(pre-0.65 severity preserved). `decorative_nontraversable` stairs opt out of
+the physical review and never satisfy floor access.
+
 ## 14.2 Warnings
 
 A shell may bake with a warning when:

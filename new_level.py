@@ -70,6 +70,14 @@ def main():
                     help="emit one solid box per wall run instead of modular "
                          "swap-slots (new specs are modular by default, ready "
                          "for an art pass)")
+    ap.add_argument("--stairs-first", action="store_true",
+                    help="reserve vertical circulation cores against the "
+                         "shell FIRST and adapt the recipe's rooms/partitions/"
+                         "props around them (stair_core.py), instead of using "
+                         "the recipe's authored stair positions")
+    ap.add_argument("--archetype", default=None,
+                    help="stair_place archetype for --stairs-first "
+                         "(default: the preset's registered archetype)")
     ap.add_argument("--list", action="store_true", help="list available presets and exit")
     ap.add_argument("--force", action="store_true", help="overwrite if the spec exists")
     args = ap.parse_args()
@@ -97,11 +105,23 @@ def main():
     elif args.basement:
         kwargs["basement"] = True
 
+    if args.stairs_first:
+        kwargs["stairs_first"] = True
+        if args.archetype:
+            kwargs["archetype"] = args.archetype
+
     try:
         spec = presets.make(args.preset, **kwargs)
-    except KeyError as e:
+    except (KeyError, ValueError) as e:
         print(f"error: {e}")
         return 2
+
+    if args.stairs_first:
+        n = len(spec.get("stairs") or [])
+        print(f"stairs-first: reserved {n} circulation core(s); the recipe's "
+              f"rooms/partitions adapted around them")
+        for kind, name, why in presets.LAST_CORE_EVICTIONS:
+            print(f"  evicted {kind} '{name}': {why}")
 
     # The acoustic-materials / gool audio bridge is OPTIONAL. --no-audio strips
     # the materials so the spec carries no acoustic data (the gameplay.json

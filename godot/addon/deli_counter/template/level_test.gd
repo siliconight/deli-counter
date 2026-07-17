@@ -7,6 +7,8 @@ extends Node3D
 ##   F2  toggle debug collision view (see the collision shapes)
 ##   F3  toggle the SCALE_REF proxies if the level baked them
 ##   F4  bake a NavigationMesh over the level and show it
+##   F5  nav connectivity check: can an agent path from the player to every
+##       gameplay marker? (bake with F4 first; see NAVMESH_CHECK.md)
 ##   R   respawn the player at the first attacker/crew spawn (or origin)
 ##
 ## None of this ships in your game — it's a greybox testing rig. Keep your real
@@ -54,6 +56,8 @@ func _unhandled_input(event: InputEvent) -> void:
 				_toggle_scale_ref()
 			KEY_F4:
 				_bake_navmesh()
+			KEY_F5:
+				_nav_check()
 			KEY_R:
 				_respawn()
 
@@ -138,6 +142,49 @@ func _show_nav_debug(nm: NavigationMesh) -> void:
 	_nav_dbg.mesh = st.commit()
 	_nav_dbg.position.y += 0.05               # lift so it doesn't z-fight the floor
 	add_child(_nav_dbg)
+
+
+const _CHECK_GROUPS := ["objective", "extraction", "loot", "patrol_point",
+		"rescue", "attacker_spawn", "defender_spawn", "crew_spawn"]
+const _SNAP_MAX := 2.0
+
+
+func _nav_check() -> void:
+	## The documented F5 connectivity check (NAVMESH_CHECK.md): from the
+	## player's position, can a nav agent path to every gameplay marker?
+	## The headless twin of this lives in ../nav_gate.gd (CI runs that one).
+	if _nav_region == null or _nav_polys <= 0:
+		print("[nav-check] no navmesh -- press F4 to bake first")
+		return
+	var map: RID = get_viewport().get_world_3d().navigation_map
+	var from: Vector3 = _player.global_position
+	var checked := 0
+	var reachable := 0
+	var failures: PackedStringArray = []
+	for grp in _CHECK_GROUPS:
+		for node in get_tree().get_nodes_in_group(grp):
+			if not (node is Node3D):
+				continue
+			var target: Vector3 = (node as Node3D).global_position
+			checked += 1
+			var path := NavigationServer3D.map_get_path(map, from, target, true)
+			if path.is_empty():
+				failures.append("%s (no path)" % node.name)
+				continue
+			var snap := path[path.size() - 1].distance_to(target)
+			if snap > _SNAP_MAX:
+				failures.append("%s (snap %.1fm, off-navmesh)" % [node.name, snap])
+			else:
+				reachable += 1
+	print("[nav-check] %d/%d markers reachable by a nav agent from the player"
+			% [reachable, checked])
+	if failures.is_empty():
+		print("[nav-check] all anchors reachable -- enemies can path through "
+				+ "the building to every gameplay point.")
+	else:
+		print("[nav-check] UNREACHABLE: %s" % ", ".join(failures))
+		print("[nav-check] -> an AI enemy could NOT path to those anchors. "
+				+ "Check doorway widths, stair navmesh, and isolated rooms.")
 
 
 func _update_hud() -> void:

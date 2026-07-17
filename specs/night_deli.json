@@ -1,6 +1,6 @@
 {
   "$schema": "../schema/level.schema.json",
-  "name": "corner_deli_heist_01",
+  "name": "night_deli",
   "mode": "heist",
   "seed": 1984,
   "grid": 0.5,
@@ -13,6 +13,7 @@
   "floor_thick": 0.3,
   "collision": "convex",
   "auto_exterior": true,
+  "scale_ref": false,
   "default_material": "brick_ext",
   "materials": [
     {
@@ -104,7 +105,7 @@
         {
           "kind": "door",
           "pos": 0.18,
-          "width": 1.0,
+          "width": 1.4,
           "tag": "alley_entry"
         },
         {
@@ -205,7 +206,7 @@
   "partitions": [
     {
       "story": 0,
-      "axis": "X",
+      "axis": "Y",
       "pos": -8.0,
       "start": -14.0,
       "end": 14.0,
@@ -274,7 +275,7 @@
     },
     {
       "story": 0,
-      "axis": "Y",
+      "axis": "X",
       "pos": 6.0,
       "start": -19.0,
       "end": 19.0,
@@ -290,14 +291,14 @@
         {
           "kind": "door",
           "pos": -0.4,
-          "width": 1.0,
+          "width": 1.2,
           "tag": "office_stair_door"
         }
       ]
     },
     {
       "story": 1,
-      "axis": "X",
+      "axis": "Y",
       "pos": -2.0,
       "start": -14.0,
       "end": 14.0,
@@ -320,7 +321,7 @@
     },
     {
       "story": 1,
-      "axis": "Y",
+      "axis": "X",
       "pos": 2.0,
       "start": -19.0,
       "end": 19.0,
@@ -329,7 +330,7 @@
         {
           "kind": "door",
           "pos": -0.25,
-          "width": 1.0,
+          "width": 1.4,
           "tag": "apartment_hall"
         },
         {
@@ -400,29 +401,32 @@
       "width": 1.4,
       "run": 5.5,
       "style": "switchback",
-      "cut_slabs": true,
-      "id": "main_stack",
-      "role": "primary_egress",
-      "facing": "S"
+      "cut_slabs": true
     }
   ],
   "ladders": [
     {
-      "x": 17.5,
-      "y": 9.5,
+      "x": 8.0,
+      "y": -12.0,
       "from_story": 0,
       "to_story": 2,
       "width": 0.7,
       "depth": 0.25,
       "rung_spacing": 0.3,
       "cut_slabs": true,
-      "facing": "W",
-      "role": "special_gameplay_route",
-      "placement_mode": "interior",
-      "upper_surface": "roof",
-      "transition": "parapet_crossover_platform",
-      "access_class": "gameplay",
-      "id": "corner_ladder_0"
+      "facing": "N",
+      "id": "night_deli_ladder_0",
+      "role": "roof_access"
+    },
+    {
+      "x": -7.0,
+      "y": -13.0,
+      "from_story": -1,
+      "to_story": 0,
+      "facing": "N",
+      "cut_slabs": true,
+      "id": "night_deli_ladder_1",
+      "role": "service_access"
     }
   ],
   "slab_holes": [
@@ -460,6 +464,13 @@
       "breachable": true,
       "cut_slab": true,
       "role": "roof_drop_to_stair"
+    }
+  ],
+  "parapets": [
+    {
+      "story": 2,
+      "height": 1.0,
+      "thick": 0.35
     }
   ],
   "vault_ledges": [
@@ -566,7 +577,7 @@
       "name": "manager_desk",
       "x": -9.5,
       "y": -6.5,
-      "z": 3.85,
+      "z": 3.8499999999999996,
       "size_x": 3.0,
       "size_y": 1.4,
       "size_z": 1.1,
@@ -616,27 +627,69 @@
       "size_z": 1.6,
       "collision": "convex",
       "material": "metal"
-    }
-  ],
-  "parapets": [
+    },
     {
-      "story": 2,
-      "height": 1.0,
-      "thick": 0.35
+      "name": "crate_stack_stairwell_0",
+      "x": -13.16,
+      "y": 12.09,
+      "z": 0.475,
+      "size_x": 1.1,
+      "size_y": 1.1,
+      "size_z": 0.95,
+      "collision": "convex"
+    },
+    {
+      "name": "crate_stack_stairwell_1",
+      "x": -17.36,
+      "y": 11.02,
+      "z": 0.475,
+      "size_x": 1.1,
+      "size_y": 1.1,
+      "size_z": 0.95,
+      "collision": "convex"
+    },
+    {
+      "name": "counter_island_upper_hall_0",
+      "x": -10.42,
+      "y": 6.58,
+      "z": 3.825,
+      "size_x": 2.2,
+      "size_y": 0.8,
+      "size_z": 1.05,
+      "collision": "convex"
+    },
+    {
+      "name": "planter_box_upper_hall_1",
+      "x": -14.71,
+      "y": 12.13,
+      "z": 3.75,
+      "size_x": 0.7,
+      "size_y": 1.4,
+      "size_z": 0.9,
+      "collision": "convex"
+    },
+    {
+      "name": "counter_island_upper_hall_2",
+      "x": -11.65,
+      "y": 11.21,
+      "z": 3.825,
+      "size_x": 0.8,
+      "size_y": 2.2,
+      "size_z": 1.05,
+      "collision": "convex"
+    },
+    {
+      "name": "planter_box_upper_hall_3",
+      "x": -7.61,
+      "y": 10.4,
+      "z": 3.75,
+      "size_x": 0.7,
+      "size_y": 1.4,
+      "size_z": 0.9,
+      "collision": "convex"
     }
   ],
   "rooms": [
-    {
-      "id": "main_stack_well_b",
-      "story": -1,
-      "bounds": [
-        -16.4,
-        6.25,
-        -13.6,
-        12.95
-      ],
-      "role": "stairwell"
-    },
     {
       "id": "customer_floor",
       "story": 0,
@@ -777,48 +830,12 @@
       "combat_range": "medium"
     },
     {
-      "id": "cold_storage_w",
+      "id": "cold_storage",
       "story": -1,
       "bounds": [
         -19.0,
         1.0,
-        -16.4,
-        14.0
-      ],
-      "role": "loot_room",
-      "combat_range": "close"
-    },
-    {
-      "id": "cold_storage_e",
-      "story": -1,
-      "bounds": [
-        -13.6,
         1.0,
-        1.0,
-        14.0
-      ],
-      "role": "loot_room",
-      "combat_range": "close"
-    },
-    {
-      "id": "cold_storage_s",
-      "story": -1,
-      "bounds": [
-        -16.4,
-        1.0,
-        -13.6,
-        6.25
-      ],
-      "role": "loot_room",
-      "combat_range": "close"
-    },
-    {
-      "id": "cold_storage_n",
-      "story": -1,
-      "bounds": [
-        -16.4,
-        12.95,
-        -13.6,
         14.0
       ],
       "role": "loot_room",
@@ -906,6 +923,16 @@
       "room": "stockroom_loading"
     },
     {
+      "id": "manager_safe_docs",
+      "kind": "evidence",
+      "x": -9.5,
+      "y": -6.5,
+      "z": 4.2,
+      "value": 3000,
+      "bags": 1,
+      "room": "manager_office"
+    },
+    {
       "id": "cold_room_rare_meat",
       "kind": "black_market_food",
       "x": -8.0,
@@ -913,7 +940,7 @@
       "z": -2.1,
       "value": 2200,
       "bags": 2,
-      "room": "cold_storage_e"
+      "room": "cold_storage"
     },
     {
       "id": "vault_cash_bags",
@@ -924,16 +951,6 @@
       "value": 8000,
       "bags": 3,
       "room": "basement_vault"
-    },
-    {
-      "id": "manager_safe_docs",
-      "kind": "evidence",
-      "x": -9.5,
-      "y": -6.5,
-      "z": 4.2,
-      "value": 3000,
-      "bags": 1,
-      "room": "manager_office"
     }
   ],
   "zones": [
@@ -948,7 +965,6 @@
         -15.0
       ],
       "meta": {
-        "vehicle": "ice_cream_truck",
         "phase": "escape"
       }
     },
@@ -1003,49 +1019,6 @@
       "meta": {
         "phase": "loud"
       }
-    },
-    {
-      "type": "extraction",
-      "id": "VAN",
-      "x": 0.0,
-      "y": -17.0,
-      "z": 0.0,
-      "rot_z": 180,
-      "meta": {
-        "zone": "south_van_extract"
-      }
-    },
-    {
-      "type": "objective",
-      "id": "REGISTER",
-      "x": -12.0,
-      "y": -7.0,
-      "z": 0.9,
-      "room": "deli_counter"
-    },
-    {
-      "type": "objective",
-      "id": "SAFE",
-      "x": 8.5,
-      "y": 6.0,
-      "z": -2.2,
-      "room": "basement_vault"
-    },
-    {
-      "type": "objective",
-      "id": "SERVER",
-      "x": 8.0,
-      "y": 8.0,
-      "z": 4.4,
-      "room": "server_room"
-    },
-    {
-      "type": "loot",
-      "id": "VAULT_CASH",
-      "x": 8.5,
-      "y": 6.0,
-      "z": -2.0,
-      "room": "basement_vault"
     },
     {
       "type": "cover_low",
@@ -1114,12 +1087,279 @@
       "room": "stockroom_loading"
     },
     {
+      "type": "extraction",
+      "id": "VAN",
+      "x": 0.0,
+      "y": -17.0,
+      "z": 0.0,
+      "rot_z": 180,
+      "meta": {
+        "zone": "south_van_extract"
+      }
+    },
+    {
+      "type": "objective",
+      "id": "REGISTER",
+      "x": -12.0,
+      "y": -7.0,
+      "z": 0.9,
+      "room": "deli_counter"
+    },
+    {
+      "type": "objective",
+      "id": "SERVER",
+      "x": 8.0,
+      "y": 8.0,
+      "z": 4.4,
+      "room": "server_room"
+    },
+    {
+      "type": "objective",
+      "id": "SAFE",
+      "x": 8.5,
+      "y": 6.0,
+      "z": -2.2,
+      "room": "basement_vault"
+    },
+    {
+      "type": "loot",
+      "id": "VAULT_CASH",
+      "x": 8.5,
+      "y": 6.0,
+      "z": -2.0,
+      "room": "basement_vault"
+    },
+    {
       "type": "patrol_point",
       "id": "P04",
       "x": -8.0,
       "y": 5.0,
       "z": -3.3,
-      "room": "cold_storage_e"
+      "room": "cold_storage"
+    },
+    {
+      "type": "cover_low",
+      "id": "AUTO_FRONT_REGISTER_COUNTER",
+      "x": -12.0,
+      "y": -7.0,
+      "z": 0.0,
+      "room": "customer_floor",
+      "meta": {
+        "auto": "cover_from_volume",
+        "from": "front_register_counter"
+      }
+    },
+    {
+      "type": "cover_low",
+      "id": "AUTO_KITCHEN_PREP_TABLE",
+      "x": 12.0,
+      "y": -4.5,
+      "z": 0.0,
+      "room": "kitchen",
+      "meta": {
+        "auto": "cover_from_volume",
+        "from": "kitchen_prep_table"
+      }
+    },
+    {
+      "type": "cover_high",
+      "id": "AUTO_STOCKROOM_RACK_01",
+      "x": 2.0,
+      "y": 10.5,
+      "z": 0.0,
+      "room": "stockroom_loading",
+      "meta": {
+        "auto": "cover_from_volume",
+        "from": "stockroom_rack_01"
+      }
+    },
+    {
+      "type": "cover_low",
+      "id": "AUTO_MANAGER_DESK",
+      "x": -9.5,
+      "y": -6.5,
+      "z": 3.3,
+      "room": "manager_office",
+      "meta": {
+        "auto": "cover_from_volume",
+        "from": "manager_desk"
+      }
+    },
+    {
+      "type": "cover_high",
+      "id": "AUTO_SERVER_RACK_CLUSTER",
+      "x": 8.0,
+      "y": 8.0,
+      "z": 3.3,
+      "room": "server_room",
+      "meta": {
+        "auto": "cover_from_volume",
+        "from": "server_rack_cluster"
+      }
+    },
+    {
+      "type": "cover_low",
+      "id": "AUTO_APARTMENT_SOFA_COVER",
+      "x": 7.5,
+      "y": -8.0,
+      "z": 3.3,
+      "room": "apartment_hideout",
+      "meta": {
+        "auto": "cover_from_volume",
+        "from": "apartment_sofa_cover"
+      }
+    },
+    {
+      "type": "cover_high",
+      "id": "AUTO_BASEMENT_COLD_ROOM_RACK",
+      "x": -8.0,
+      "y": 5.0,
+      "z": -3.3,
+      "room": "cold_storage",
+      "meta": {
+        "auto": "cover_from_volume",
+        "from": "basement_cold_room_rack"
+      }
+    },
+    {
+      "type": "cover_low",
+      "id": "AUTO_COUNTER_ISLAND_UPPER_HALL_0",
+      "x": -10.42,
+      "y": 6.58,
+      "z": 3.3,
+      "room": "upper_hall",
+      "meta": {
+        "auto": "cover_from_volume",
+        "from": "counter_island_upper_hall_0"
+      }
+    },
+    {
+      "type": "cover_low",
+      "id": "AUTO_PLANTER_BOX_UPPER_HALL_1",
+      "x": -14.71,
+      "y": 12.13,
+      "z": 3.3,
+      "room": "upper_hall",
+      "meta": {
+        "auto": "cover_from_volume",
+        "from": "planter_box_upper_hall_1"
+      }
+    },
+    {
+      "type": "cover_low",
+      "id": "AUTO_COUNTER_ISLAND_UPPER_HALL_2",
+      "x": -11.65,
+      "y": 11.21,
+      "z": 3.3,
+      "room": "upper_hall",
+      "meta": {
+        "auto": "cover_from_volume",
+        "from": "counter_island_upper_hall_2"
+      }
+    },
+    {
+      "type": "cover_low",
+      "id": "AUTO_PLANTER_BOX_UPPER_HALL_3",
+      "x": -7.61,
+      "y": 10.4,
+      "z": 3.3,
+      "room": "upper_hall",
+      "meta": {
+        "auto": "cover_from_volume",
+        "from": "planter_box_upper_hall_3"
+      }
+    },
+    {
+      "type": "landmark",
+      "id": "CUSTOMER_FLOOR",
+      "x": -13.5,
+      "y": -8.5,
+      "z": 1.0,
+      "room": "customer_floor",
+      "meta": {
+        "auto": "landmark",
+        "label": "customer_floor",
+        "role": "public_entry"
+      }
+    },
+    {
+      "type": "landmark",
+      "id": "DELI_COUNTER",
+      "x": -13.5,
+      "y": 1.5,
+      "z": 1.0,
+      "room": "deli_counter",
+      "meta": {
+        "auto": "landmark",
+        "label": "deli_counter",
+        "role": "objective_room"
+      }
+    },
+    {
+      "type": "landmark",
+      "id": "STOCKROOM_LOADING",
+      "x": 5.5,
+      "y": 10.0,
+      "z": 1.0,
+      "room": "stockroom_loading",
+      "meta": {
+        "auto": "landmark",
+        "label": "stockroom_loading",
+        "role": "public_entry"
+      }
+    },
+    {
+      "type": "landmark",
+      "id": "MANAGER_OFFICE",
+      "x": -10.5,
+      "y": -6.0,
+      "z": 4.3,
+      "room": "manager_office",
+      "meta": {
+        "auto": "landmark",
+        "label": "manager_office",
+        "role": "objective_room"
+      }
+    },
+    {
+      "type": "landmark",
+      "id": "SERVER_ROOM",
+      "x": 8.5,
+      "y": 8.0,
+      "z": 4.3,
+      "room": "server_room",
+      "meta": {
+        "auto": "landmark",
+        "label": "server_room",
+        "role": "objective_room"
+      }
+    },
+    {
+      "type": "landmark",
+      "id": "COLD_STORAGE",
+      "x": -9.0,
+      "y": 7.5,
+      "z": -2.3,
+      "room": "cold_storage",
+      "meta": {
+        "auto": "landmark",
+        "label": "cold_storage",
+        "role": "loot_room"
+      }
+    },
+    {
+      "type": "landmark",
+      "id": "BASEMENT_VAULT",
+      "x": 10.0,
+      "y": 7.5,
+      "z": -2.3,
+      "room": "basement_vault",
+      "meta": {
+        "auto": "landmark",
+        "label": "basement_vault",
+        "role": "objective_room"
+      }
     }
-  ]
+  ],
+  "modular": true
 }

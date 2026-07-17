@@ -28,6 +28,10 @@ def main():
     rc |= run(["validate.py", "--all"])
     print("== auditing spec content coherence ==")
     rc |= run(["audit_specs.py"])
+    print("== stair regression sweep (quick) ==")
+    rc |= run(["stair_regression.py", "--quick"])
+    print("== nav traversal gate (built shells; needs Godot 4) ==")
+    rc |= run(["nav_gate.py", "--all"])
     print("== checking catalog freshness ==")
     rc |= run(["catalog.py", "--check"])
     if rc == 0:

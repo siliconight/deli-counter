@@ -278,8 +278,12 @@ def _room_has_cover(spec, room):
     return False
 
 
-def _seed_clear(spec, room, px, py, placed):
-    """Candidate point clear of walls, openings, verticals, props, markers."""
+def _seed_clear(spec, room, px, py, placed, half=0.0):
+    """Candidate point clear of walls, openings, verticals, props, markers.
+    `half` is the worst-case half-extent of the piece that will stand here:
+    clearances are measured from the piece's EDGE, not its center -- a 2.6 m
+    shelf run can intrude a ladder's climb envelope while its center is
+    comfortably clear (found by the 100-seed regression sweep)."""
     story = room.get("story", 0)
     for p in spec.get("partitions", []):
         if p.get("story", 0) != story:
@@ -293,13 +297,14 @@ def _seed_clear(spec, room, px, py, placed):
         if d < 1.0:
             return False
     for v in spec.get("volumes", []):
-        if abs(v["x"] - px) < v.get("size_x", 1) / 2 + 0.9 and                 abs(v["y"] - py) < v.get("size_y", 1) / 2 + 0.9:
+        if abs(v["x"] - px) < v.get("size_x", 1) / 2 + 0.9 + half and \
+                abs(v["y"] - py) < v.get("size_y", 1) / 2 + 0.9 + half:
             return False
     for s in spec.get("stairs", []):
-        if math.hypot(s["x"] - px, s["y"] - py) < 2.6:
+        if math.hypot(s["x"] - px, s["y"] - py) < 2.6 + half:
             return False
     for l in spec.get("ladders", []):
-        if math.hypot(l["x"] - px, l["y"] - py) < 1.6:
+        if math.hypot(l["x"] - px, l["y"] - py) < 1.6 + half:
             return False
     for m in spec.get("markers", []):
         if m.get("type") in ("objective", "loot") and                 math.hypot(m.get("x", 1e9) - px, m.get("y", 1e9) - py) < 1.2:
@@ -365,10 +370,11 @@ def seed_cover(spec):
         rng.shuffle(cands)
         placed = []
         sh = _story_height(spec)
+        arch_half = max(max(sx, sy) / 2 for _, sx, sy, _ in arch)
         for (px, py) in cands:
             if len(placed) >= want:
                 break
-            if not _seed_clear(spec, room, px, py, placed):
+            if not _seed_clear(spec, room, px, py, placed, half=arch_half):
                 continue
             name, sx, sy, sz = arch[len(placed) % len(arch)]
             if rng.random() < 0.5:

@@ -70,3 +70,27 @@ agree.
 
 Run the proxy on every commit; run F5 when you walk a level. A level that
 passes both is one where enemies can genuinely path to the player.
+
+## Headless automation: the stair traversal gate
+
+The F5 check has a headless twin that needs no editor and no keypress —
+`nav_gate.py` runs `godot/addon/deli_counter/nav_gate.gd` against a built
+shell and its `gameplay.json`:
+
+```
+python nav_gate.py build/bank_job.glb     # one shell
+python nav_gate.py --all                  # every built shell
+python nav_gate.py --all --require        # CI: missing Godot = failure
+```
+
+For every traversable stair system it bakes a navmesh (same agent
+parameters as F4) and proves a path between the stair's `nav_endpoints`
+(lower ↔ upper; the polygon graph is undirected, so the reverse direction
+is the same proof), plus the marker connectivity section above. Generation
+fails when traversal fails: `check.py` runs `nav_gate.py --all` as a gate
+step wherever a Godot 4 binary is available (`$DC_GODOT` or `godot4` /
+`godot` on PATH; Godot 3 binaries are refused). Without Godot the step
+notes the skip — the offline analyzers remain proxies until the gate runs.
+
+Shells built before v0.76 carry no `nav_endpoints` and report
+"skipped (rebuild with >= 0.76)".
