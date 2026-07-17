@@ -1,0 +1,52 @@
+{
+ "fx_bad_mode.json": {
+  "expected_gate": "schema",
+  "expected_code": "is not one of",
+  "reason": "mode not in the schema enum"
+ },
+ "fx_broken_stair.json": {
+  "expected_gate": "guards",
+  "expected_code": "STEP-RISE",
+  "reason": "stair rises 1.8 m per step: physically unclimbable"
+ },
+ "fx_orphan_ladder.json": {
+  "expected_gate": "ladder",
+  "expected_code": "ladder",
+  "reason": "ladder with no declared role: leads nowhere in the circulation contract"
+ },
+ "fx_pvp_breach_void.json": {
+  "expected_gate": "pvp_heist",
+  "expected_code": "PVP-BREACH",
+  "reason": "breach opens into solid/void space"
+ },
+ "fx_pvp_no_defender.json": {
+  "expected_gate": "pvp_heist",
+  "expected_code": "PVP-SPAWN-D",
+  "reason": "no defender spawn: nothing defends the objective"
+ },
+ "fx_pvp_single_route.json": {
+  "expected_gate": "pvp_heist",
+  "expected_code": "PVP-ROUTES",
+  "reason": "objective reachable by a single unavoidable route"
+ },
+ "fx_pvp_spawn_los.json": {
+  "expected_gate": "pvp_heist",
+  "expected_code": "PVP-SPAWN-LOS",
+  "reason": "opposing spawns share a direct clear sightline"
+ },
+ "fx_pvp_spawn_oob.json": {
+  "expected_gate": "pvp_heist",
+  "expected_code": "PVP-SPAWN-BOUNDS",
+  "reason": "spawn marker far outside the playable envelope"
+ },
+ "fx_sealed_box.json": {
+  "expected_gate": "enterability",
+  "expected_code": "sealed",
+  "reason": "no exterior opening of any kind: a sealed box no body can enter"
+ },
+ "fx_unreachable_room.json": {
+  "expected_gate": "navigability",
+  "expected_code": "unreachable",
+  "reason": "walled_cell has no opening: no agent can ever reach it"
+ }
+}

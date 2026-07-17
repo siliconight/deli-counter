@@ -227,6 +227,23 @@ def validate_file(path):
     except Exception as ex:
         print(f"  LADDER: review skipped ({ex})")
 
+    # pvp_heist profile (attacker-vs-defender production gate; errors block)
+    if getattr(spec, "mode", None) == "pvp_heist":
+        try:
+            import pvp_heist
+            perrors, pwarnings, psummary = pvp_heist.check(spec)
+            print(pvp_heist.format_summary(spec.name, psummary))
+            for w in pwarnings:
+                print(f"  PVP-WARN: {w}")
+            for e in perrors:
+                print(f"  PVP-ERROR: {e}")
+            if perrors:
+                print(f"  -> {len(perrors)} pvp_heist profile error(s)")
+                return False
+        except Exception as ex:
+            print(f"  PVP: profile check FAILED to run ({ex})")
+            return False
+
     # floorplan SVGs (offline visual intel — one per story)
     try:
         import floorplan

@@ -687,7 +687,7 @@ def packs_for(spec, rules_arg):
         return list(RULE_PACKS)
     if rules_arg == "auto":
         mode = getattr(spec, "mode", None) or "heist"
-        return (["heist", "cqb", "flow"] if mode == "heist"
+        return (["heist", "cqb", "flow"] if mode in ("heist", "pvp_heist")
                 else ["flow", "cqb"])
     return [r.strip() for r in rules_arg.split(",") if r.strip() in RULE_PACKS]
 
