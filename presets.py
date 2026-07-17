@@ -2415,6 +2415,11 @@ def make(preset: str, enrich: bool = True, stairs_first: bool = False,
         raise KeyError(f"unknown preset '{preset}'. "
                        f"available: {', '.join(sorted(REGISTRY))}")
     spec = REGISTRY[preset](**kwargs)
+    # orientation FIRST: the stair's facing (and therefore its landing
+    # reservation) must be settled before enrich seeds cover around it --
+    # otherwise cover placed against the default-north reservation can land
+    # on the finally-chosen facing's landing (found by the 100-seed sweep).
+    _finish_stairs(spec)
     if enrich and not spec.get("facade"):
         level_design.enrich(spec)
     if stairs_first and not spec.get("facade") \

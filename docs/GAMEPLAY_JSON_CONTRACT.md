@@ -192,6 +192,45 @@ Rules of the road for consumers:
 - `congestion` is AI intel (route cost, agents abreast), advisory like
   `reversible` on interactives -- never an instruction to the netcode.
 
+### circulation_contract (kit 0.78+)
+
+The building's vertical-circulation compliance stamp, top-level next to
+`stair_systems`. Consumers (LOT, Zoo, the game) verify a shell from this
+block instead of trusting it:
+
+```json
+"circulation_contract": {
+  "version": 1,
+  "checks": ["STAIR_ENTRY_FACES_SOLID", "STAIR_EXIT_FACES_SOLID",
+             "STAIR_LOWER_LANDING_BLOCKED", "STAIR_UPPER_LANDING_BLOCKED"],
+  "landing_depth_m": 1.2,
+  "exit_step_off_m": 0.8,
+  "all_compliant": true,
+  "stairs": [
+    { "id": "core_0_primary_egress", "role": "primary_egress",
+      "facing": "S", "traversable": true,
+      "physical_findings": [], "compliant": true }
+  ]
+}
+```
+
+Rules of the road for consumers:
+
+- `all_compliant: false` means the shell shipped past a broken or
+  unclassified stair -- refuse it, or flag it loudly. A missing
+  `circulation_contract` block entirely means a pre-0.78 build: rebuild.
+- `traversable: false` (`decorative_nontraversable` role) means the stair
+  must NEVER satisfy floor access, mission routing, or AI pathing.
+- Zoo: an art module applied over a stair may not invalidate this stamp --
+  the reserved landing rects live in `stair_systems[].landings` and the
+  traversal points in `stair_systems[].nav_endpoints`; keep railings, trim,
+  and beams out of them, and match the stamped `facing`.
+- LOT: after placing/rotating this building, re-verify your mission routes
+  against `nav_endpoints`; the stamp certifies the shell's interior, not
+  what the lot did around it.
+- The stamp is the OFFLINE proof. The engine-level truth is the nav gate
+  (`nav_gate.py`, godot/NAVMESH_CHECK.md) run against the built .glb.
+
 ### stair_systems Phase-5 fields (kit 0.68+)
 
 - `facing` -- cardinal rotation of the whole stair about its anchor ("N" =

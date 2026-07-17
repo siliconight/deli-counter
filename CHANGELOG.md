@@ -1,3 +1,41 @@
+## [0.78.0] - The universal circulation gate + the compliance stamp
+
+Acceptable buildings are now DEFINED, not aspirational: physical stair
+findings gate every spec, every shipped spec was migrated to comply, and
+built shells carry a verifiable compliance stamp.
+
+- **Universal hard errors.** STAIR_ENTRY_FACES_SOLID,
+  STAIR_EXIT_FACES_SOLID, STAIR_LOWER/UPPER_LANDING_BLOCKED are errors for
+  EVERY stair -- authored, generated, any role. A stair walking into a wall
+  is broken geometry regardless of who placed it. Semantic findings
+  (enclosure, approach roles, discharge) keep their role/generated gating.
+- **migrate_stairs.py.** Deterministic repair tool for existing specs:
+  facing first, then the smallest position nudge that leaves the stair
+  physically clean without landing on another stair, eating more
+  protected-room area than the authored placement already did, or raising
+  the spec's error count; then classifies role-less stairs/ladders via the
+  presets finishing pass. `--all --write` migrated all 13 non-compliant
+  shipped specs (facing flips for most; night_pawn moved 4 m clear of the
+  shell; bank_job/lf_m1 vault stairs reoriented off the VAULT volume).
+  All 29 specs now validate with ZERO stairwell errors and zero role-less
+  stairs.
+- **circulation_contract in gameplay.json.** `stairwell.
+  circulation_contract()` stamps every build: version, the checks run,
+  landing dimensions, per-stair {role, facing, traversable,
+  physical_findings, compliant}, and one all_compliant flag. LOT/Zoo/the
+  game verify shells from this block instead of trusting them; absence
+  means a pre-0.78 build. Documented in GAMEPLAY_JSON_CONTRACT.md with
+  consumer rules (Zoo keeps art out of `landings`/`nav_endpoints`, LOT
+  re-verifies routes after placement).
+- **Generation order fix (sweep-caught #2).** presets.make now ORIENTS
+  stairs before enrich seeds cover: cover placed against the default-north
+  reservation could land on the finally-chosen facing's landing (pawn_shop,
+  2 seeds in 100). enrich's cover seeding also now avoids the stair's REAL
+  reserved rects (footprint + landing rects), not just a radius. 2400-
+  variant sweep green again.
+- 4 new contract tests, including the provable end state: every shipped
+  spec is all_compliant.
+
 ## [0.77.0] - Circulation-first generation + the traversal gate
 
 The second half of the stair overhaul: vertical circulation now SHAPES

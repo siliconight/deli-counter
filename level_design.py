@@ -278,6 +278,30 @@ def _room_has_cover(spec, room):
     return False
 
 
+_STAIR_FIELDS = ("x", "y", "from_story", "to_story", "width", "run",
+                 "style", "facing", "exterior", "transfer", "cut_slabs",
+                 "step_rise", "n_steps", "id", "role", "stack_id", "meta")
+
+
+def _stair_reserved_rects(spec):
+    """Footprint + landing rects for every stair in a dict spec (all
+    stories -- conservative for cover seeding)."""
+    try:
+        import stairwell
+        from spec_types import Stairwell
+    except ImportError:
+        return []
+    rects = []
+    for s in spec.get("stairs", []) or []:
+        try:
+            st = Stairwell(**{k: s[k] for k in _STAIR_FIELDS if k in s})
+        except TypeError:
+            continue
+        rects.append(stairwell.footprint_rect(st))
+        rects.extend(e["rect"] for e in stairwell.stair_endpoints(st))
+    return rects
+
+
 def _seed_clear(spec, room, px, py, placed, half=0.0):
     """Candidate point clear of walls, openings, verticals, props, markers.
     `half` is the worst-case half-extent of the piece that will stand here:
@@ -302,6 +326,13 @@ def _seed_clear(spec, room, px, py, placed, half=0.0):
             return False
     for s in spec.get("stairs", []):
         if math.hypot(s["x"] - px, s["y"] - py) < 2.6 + half:
+            return False
+    # the stair RESERVATION is bigger than a radius: the flight footprint
+    # plus both landing rects (they reach ~run/2 + 2 m along the ascent
+    # axis). Cover standing on a landing is a hard error since v0.78.
+    for rect in _stair_reserved_rects(spec):
+        if px + half > rect[0] - 0.3 and px - half < rect[2] + 0.3 and \
+                py + half > rect[1] - 0.3 and py - half < rect[3] + 0.3:
             return False
     for l in spec.get("ladders", []):
         if math.hypot(l["x"] - px, l["y"] - py) < 1.6 + half:

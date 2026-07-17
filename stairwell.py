@@ -12,12 +12,18 @@ is an objective room" or "no route from the stair to an exterior door exists",
 but it cannot see enclosure walls, door swings, or signage. A pass here means
 "nothing in the spec breaks the egress contract", not "code-compliant".
 
-GATE THE DECLARED CONTRACT, WARN THE REST:
+GATE THE DECLARED CONTRACT, WARN THE REST -- EXCEPT BROKEN GEOMETRY:
   - A stair that declares an EGRESS role (primary_egress / secondary_egress /
     exterior_egress) has opted into the egress contract: route findings on it
     are HARD ERRORS, and egress pairs must satisfy separation + independence.
-  - An unclassified or non-egress stair gets the same findings as WARNINGS
-    (intel). Every pre-0.65 spec therefore gates exactly as before.
+  - An unclassified or non-egress stair gets SEMANTIC findings (enclosure,
+    approach roles, discharge) as WARNINGS (intel).
+  - PHYSICAL clearance findings (entry/exit faces solid, landing blocked)
+    are UNIVERSAL hard errors as of v0.78: a stair walking into a wall is
+    broken geometry regardless of role or authorship. Every shipped spec
+    was migrated to comply; new specs must comply from day one.
+  - Stairs stamped `meta.generated_by` additionally require an explicit
+    role and facing (STAIR_MISSING_ROLE / STAIR_MISSING_FACING).
   - A declared `stack_id` is a contract too: stairs sharing one must chain
     story ranges with overlapping footprints, or STAIR_NOT_STACKED errors.
 
@@ -912,10 +918,13 @@ def check(spec):
 
         # physical circulation: the oriented sequence approach -> lower
         # landing -> flight -> upper landing -> departure must be provable.
-        # Egress-role AND generated stairs gate hard; authored unclassified
-        # stairs get the same findings as intel.
+        # UNIVERSAL (v0.78): a stair whose entry or exit faces solid
+        # geometry, or whose landing is consumed, is broken geometry no
+        # matter who authored it -- every spec gates hard on these. (The
+        # semantic findings above -- enclosure, approach roles, discharge --
+        # keep their role/generated gating.)
         for code, msg in clearance_findings(spec, st, sid):
-            emit(gate or generated, code, msg)
+            errors.append(f"STAIRWELL {code}: {msg}")
 
         # s9.3 -- locked egress roulette: a required stair door that defaults
         # to locked is only tolerable when another egress stair serves the
@@ -1076,6 +1085,47 @@ def check(spec):
         "route_analysis": "room-graph" if have_rooms else "skipped (no rooms)",
     }
     return errors, warnings, summary
+
+
+CONTRACT_VERSION = 1
+_CONTRACT_CHECKS = ("STAIR_ENTRY_FACES_SOLID", "STAIR_EXIT_FACES_SOLID",
+                    "STAIR_LOWER_LANDING_BLOCKED",
+                    "STAIR_UPPER_LANDING_BLOCKED")
+
+
+def circulation_contract(spec):
+    """The compliance stamp downstream consumers (LOT, Zoo, the game) key
+    on: per-stair classification + physical-clearance status, and one
+    all_compliant flag. A consumer that receives all_compliant=false knows
+    the shell shipped past a broken or unclassified stair and can refuse or
+    flag it; a consumer that receives no circulation_contract at all is
+    holding a pre-0.78 build. Pure and offline-derivable; the builder
+    serializes this verbatim into gameplay.json."""
+    stairs = []
+    all_ok = True
+    for i, st in enumerate(spec.stairs):
+        sid = stair_ident(st, i)
+        role = getattr(st, "role", None)
+        facing = getattr(st, "facing", "N") or "N"
+        findings = [c for c, _ in clearance_findings(spec, st, sid)]
+        traversable = role not in DECORATIVE_ROLES
+        ok = (role in STAIR_ROLES and facing in ("N", "E", "S", "W")
+              and not findings)
+        all_ok = all_ok and ok
+        stairs.append({
+            "id": sid, "role": role, "facing": facing,
+            "traversable": traversable,
+            "physical_findings": findings,
+            "compliant": ok,
+        })
+    return {
+        "version": CONTRACT_VERSION,
+        "checks": list(_CONTRACT_CHECKS),
+        "landing_depth_m": LANDING_DEPTH,
+        "exit_step_off_m": EXIT_STEP_OFF,
+        "all_compliant": all_ok,
+        "stairs": stairs,
+    }
 
 
 def _shared_chokepoint(spec, same_story, room_a, room_b):

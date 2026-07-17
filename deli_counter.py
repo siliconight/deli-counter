@@ -1847,6 +1847,10 @@ class _Builder:
         import stairwell
         systems = stairwell.derive(self.s)
         self.gameplay["stair_systems"] = systems
+        # v0.78 compliance stamp: LOT/Zoo/the game verify the shell's
+        # vertical circulation from this block instead of trusting it
+        self.gameplay["circulation_contract"] = \
+            stairwell.circulation_contract(self.s)
         H = self.s.story_height
         for sysd, st in zip(systems, self.s.stairs):
             z = min(st.from_story, st.to_story) * H
@@ -2064,6 +2068,11 @@ def write_gameplay_json(builder, path):
         # role, stack, floors served, per-floor approach, ground discharge.
         # Derived by stairwell.py; the review that gated it ran in validate.
         "stair_systems": builder.gameplay.get("stair_systems", []),
+        # v0.78 circulation compliance stamp: version, per-stair status
+        # (role/facing/physical findings), all_compliant. Consumers refuse
+        # or flag shells that fail it; absence = pre-0.78 build.
+        "circulation_contract": builder.gameplay.get(
+            "circulation_contract", {}),
         # semantic ladder systems (docs/deli_counter_ladder_placement_spec.md s14):
         # role, connected surfaces, anchors, transition, egress exclusion,
         # route nodes. Derived by ladder.py; a ladder is never ordinary egress.
