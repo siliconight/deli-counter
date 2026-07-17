@@ -1,3 +1,37 @@
+## [0.79.0] - The pvp_heist production profile + stored proof
+
+The Production Package Phase 0 drop: buildings can now be GATED for
+attacker-vs-defender play, and every build leaves evidence behind.
+
+- **pvp_heist mode** (`pvp_heist.py`, schema enum, validate.py gate):
+  attacker/defender spawn presence + bounds, >= 2 interior-disjoint routes
+  to the objective (Menger max-flow on the room graph), objective ->
+  extraction reachability, opposing-spawn clear-ray sightline check,
+  protected defender rotation, flank requirement, breach-into-void
+  detection. Stable PVP-* finding codes; combat_audit heist+cqb packs
+  auto-apply and HIGH findings block under the profile.
+- **evidence.py**: persists <name>.validation.json / .combat_audit.json /
+  .navigation.json next to build outputs, running the same analyzer
+  modules as validate.py; auto-runs after every successful build.
+- **roundtrip.py + manifest `expected` block**: the coordinate round-trip
+  test (Blender leg). Build-time expectations (bounds/origin/floor
+  elevations/markers) re-checked after GLB re-import against the ratified
+  tolerance table (RT-* codes). Caught + fixed a real violation: boxes
+  exported with unapplied node scale -- `_apply_scales()` now bakes scale
+  at export, every production node ships 1,1,1.
+- **review_render.py**: the standard 9-view review package (4 elevations,
+  roof, entrance, objective, gameplay-height, collision) under a fixed
+  neutral rig + contact sheet + review.json.
+- **specs_failing/** (10 fixtures + FIXTURES.json) and
+  test_failing_fixtures.py: every offline blocking guardrail has a
+  known-bad spec proven to fail for its documented reason.
+- **specs/pvp_station_ref.json**: the passing reference pvp building.
+- **docs/COORDINATE_CONTRACT.md**: the ratified shared contract (Z-up
+  authoring, tested Y-up boundary at Godot import).
+- pvp_heist builds force the modular emitter so slots.json always ships.
+- 298 tests pass (+12 pvp, +14 fixture; 2 opt-in bpy tests via
+  DC_BPY_TESTS=1).
+
 ## [0.78.0] - The universal circulation gate + the compliance stamp
 
 Acceptable buildings are now DEFINED, not aspirational: physical stair

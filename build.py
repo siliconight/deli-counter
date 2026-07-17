@@ -60,16 +60,43 @@ def find_blender(explicit=None):
     return None
 
 
+def _spec_mode(spec_path):
+    try:
+        import json
+        with open(spec_path, "r", encoding="utf-8") as f:
+            return json.load(f).get("mode")
+    except Exception:
+        return None
+
+
 def build_one(blender, spec_path, out_paths):
     """out_paths: list of output file paths (one per format)."""
     runner = os.path.join(HERE, "_run_in_blender.py")
     joined = ";".join(out_paths)
     cmd = [blender, "--background", "--python", runner, "--",
            spec_path, joined]
+    env = os.environ.copy()
+    # Production profile: a pvp_heist configuration must always emit its
+    # art-pass slot manifest (slots.json) — the Zoo kit contract depends on
+    # it — so the modular emitter is forced on for pvp_heist builds.
+    if _spec_mode(spec_path) == "pvp_heist":
+        env.setdefault("DC_MODULAR", "1")
     print(f"[build] {os.path.basename(spec_path)} -> "
           f"{', '.join(os.path.basename(p) for p in out_paths)}")
-    result = subprocess.run(cmd)
-    return result.returncode == 0
+    result = subprocess.run(cmd, env=env)
+    ok = result.returncode == 0
+    # persist validation evidence next to the outputs (spec-level chain);
+    # a build without stored proof is not a production build.
+    if ok:
+        try:
+            import evidence
+            out_dir = os.path.dirname(out_paths[0]) or os.path.join(HERE, "build")
+            evidence.write_reports(spec_path, out_dir)
+        except SystemExit:
+            pass
+        except Exception as ex:
+            print(f"[build] WARNING: evidence reports not written ({ex})")
+    return ok
 
 
 def _emit_tscn(build_dir, name, res_root):

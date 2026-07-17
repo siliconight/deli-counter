@@ -1,0 +1,65 @@
+{
+ "name": "fx_unreachable_room",
+ "mode": "heist",
+ "seed": 7,
+ "footprint_x": 12.0,
+ "footprint_y": 8.0,
+ "n_stories": 1,
+ "story_height": 3.0,
+ "rooms": [
+  {
+   "id": "shop",
+   "story": 0,
+   "bounds": [
+    -6.0,
+    -4.0,
+    0.0,
+    4.0
+   ],
+   "role": "public_entry"
+  },
+  {
+   "id": "walled_cell",
+   "story": 0,
+   "bounds": [
+    0.0,
+    -4.0,
+    6.0,
+    4.0
+   ],
+   "role": "fortifiable"
+  }
+ ],
+ "ext_walls": [
+  {
+   "wall": "S",
+   "story": 0,
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.25,
+     "width": 1.6
+    }
+   ]
+  }
+ ],
+ "partitions": [
+  {
+   "story": 0,
+   "axis": "Y",
+   "pos": 0.0,
+   "start": -4.0,
+   "end": 4.0,
+   "openings": []
+  }
+ ],
+ "markers": [
+  {
+   "type": "objective",
+   "id": "A",
+   "x": -3.0,
+   "y": 0.0,
+   "z": 0.0
+  }
+ ]
+}

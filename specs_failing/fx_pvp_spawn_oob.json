@@ -1,0 +1,548 @@
+{
+ "$schema": "../schema/level.schema.json",
+ "name": "fx_pvp_spawn_oob",
+ "mode": "pvp_heist",
+ "seed": 1977,
+ "footprint_x": 34.0,
+ "footprint_y": 26.0,
+ "story_height": 3.6,
+ "n_stories": 2,
+ "has_basement": true,
+ "collision": "convex",
+ "auto_exterior": true,
+ "scale_ref": false,
+ "default_material": "concrete",
+ "materials": [
+  {
+   "id": "concrete",
+   "acoustic": "Concrete",
+   "absorption": 0.7,
+   "damping": 0.6
+  },
+  {
+   "id": "drywall",
+   "acoustic": "Drywall"
+  },
+  {
+   "id": "glass",
+   "acoustic": "Glass",
+   "absorption": 0.1,
+   "damping": 0.05
+  },
+  {
+   "id": "metal",
+   "acoustic": "Metal",
+   "absorption": 0.5,
+   "damping": 0.3
+  },
+  {
+   "id": "wood",
+   "acoustic": "Wood"
+  }
+ ],
+ "ext_walls": [
+  {
+   "wall": "S",
+   "story": 0,
+   "material": "glass",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.1,
+     "width": 1.8,
+     "tag": "main_entry"
+    },
+    {
+     "kind": "window",
+     "pos": 0.25,
+     "width": 2.0,
+     "sill": 0.9,
+     "vaultable": true
+    }
+   ]
+  },
+  {
+   "wall": "E",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "garage",
+     "pos": -0.1,
+     "width": 3.2,
+     "tag": "garage_bay"
+    }
+   ]
+  },
+  {
+   "wall": "W",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.0,
+     "tag": "staff_entry"
+    }
+   ]
+  },
+  {
+   "wall": "N",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "breach",
+     "pos": 0.2,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
+  },
+  {
+   "wall": "S",
+   "story": 1,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "window",
+     "pos": -0.25,
+     "width": 1.6,
+     "sill": 0.9,
+     "vaultable": true
+    },
+    {
+     "kind": "window",
+     "pos": 0.25,
+     "width": 1.6,
+     "sill": 0.9,
+     "vaultable": true
+    }
+   ]
+  },
+  {
+   "wall": "N",
+   "story": 1,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "window",
+     "pos": -0.25,
+     "width": 1.6,
+     "sill": 0.9,
+     "vaultable": true
+    },
+    {
+     "kind": "window",
+     "pos": 0.25,
+     "width": 1.6,
+     "sill": 0.9,
+     "vaultable": true
+    }
+   ]
+  },
+  {
+   "wall": "E",
+   "story": 1,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "window",
+     "pos": -0.25,
+     "width": 1.6,
+     "sill": 0.9,
+     "vaultable": true
+    },
+    {
+     "kind": "window",
+     "pos": 0.25,
+     "width": 1.6,
+     "sill": 0.9,
+     "vaultable": true
+    }
+   ]
+  },
+  {
+   "wall": "W",
+   "story": 1,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "window",
+     "pos": -0.25,
+     "width": 1.6,
+     "sill": 0.9,
+     "vaultable": true
+    },
+    {
+     "kind": "window",
+     "pos": 0.25,
+     "width": 1.6,
+     "sill": 0.9,
+     "vaultable": true
+    }
+   ]
+  }
+ ],
+ "partitions": [
+  {
+   "story": 0,
+   "axis": "X",
+   "pos": -2.0,
+   "start": -17.0,
+   "end": 17.0,
+   "material": "drywall",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.3
+    },
+    {
+     "kind": "door",
+     "pos": 0.3
+    }
+   ]
+  },
+  {
+   "story": 0,
+   "axis": "Y",
+   "pos": -6.0,
+   "start": -2.0,
+   "end": 13.0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "tag": "cell_door"
+    }
+   ]
+  },
+  {
+   "story": 0,
+   "axis": "Y",
+   "pos": 8.0,
+   "start": -2.0,
+   "end": 13.0,
+   "material": "drywall",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.2
+    },
+    {
+     "kind": "breach",
+     "pos": 0.3,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
+  },
+  {
+   "story": 1,
+   "axis": "X",
+   "pos": 0.0,
+   "start": -17.0,
+   "end": 17.0,
+   "material": "drywall",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.35
+    },
+    {
+     "kind": "door",
+     "pos": 0.35
+    }
+   ]
+  },
+  {
+   "story": 1,
+   "axis": "Y",
+   "pos": 6.0,
+   "start": 0.0,
+   "end": 13.0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.0,
+     "tag": "armory_door",
+     "reinforceable": true
+    }
+   ]
+  }
+ ],
+ "stairs": [
+  {
+   "x": -13.0,
+   "y": 9.0,
+   "from_story": 0,
+   "to_story": 1,
+   "style": "switchback",
+   "cut_slabs": true,
+   "facing": "E",
+   "id": "07_police_station_stair_0",
+   "meta": {
+    "generated_by": "presets"
+   },
+   "role": "public_convenience"
+  }
+ ],
+ "ladders": [
+  {
+   "x": 13.0,
+   "y": -9.0,
+   "from_story": 1,
+   "to_story": 2,
+   "facing": "S",
+   "role": "roof_access",
+   "placement_mode": "interior",
+   "upper_surface": "roof",
+   "transition": "roof_hatch_exit",
+   "access_class": "staff_restricted",
+   "access_control": "locked_hatch",
+   "id": "07_ladder_0"
+  }
+ ],
+ "vertical_links": [
+  {
+   "kind": "hatch",
+   "story": 2,
+   "x": 13.0,
+   "y": -9.0
+  },
+  {
+   "kind": "floor_hole",
+   "story": 1,
+   "x": 11.0,
+   "y": 8.0
+  }
+ ],
+ "parapets": [
+  {
+   "story": 2,
+   "height": 1.1
+  }
+ ],
+ "rooms": [
+  {
+   "id": "lobby",
+   "story": 0,
+   "bounds": [
+    -17.0,
+    -13.0,
+    17.0,
+    -2.0
+   ],
+   "role": "public_entry",
+   "combat_range": "long"
+  },
+  {
+   "id": "holding_cells",
+   "story": 0,
+   "bounds": [
+    -17.0,
+    -2.0,
+    -6.0,
+    13.0
+   ],
+   "role": "fortifiable",
+   "fortifiable": true,
+   "combat_range": "close"
+  },
+  {
+   "id": "booking",
+   "story": 0,
+   "bounds": [
+    -6.0,
+    -2.0,
+    8.0,
+    13.0
+   ],
+   "role": "connector",
+   "combat_range": "medium"
+  },
+  {
+   "id": "garage",
+   "story": 0,
+   "bounds": [
+    8.0,
+    -2.0,
+    17.0,
+    13.0
+   ],
+   "role": "open_floor",
+   "combat_range": "medium"
+  },
+  {
+   "id": "detective_offices",
+   "story": 1,
+   "bounds": [
+    -17.0,
+    -13.0,
+    17.0,
+    0.0
+   ],
+   "role": "connector",
+   "combat_range": "medium"
+  },
+  {
+   "id": "interrogation",
+   "story": 1,
+   "bounds": [
+    -17.0,
+    0.0,
+    6.0,
+    13.0
+   ],
+   "role": "fortifiable",
+   "fortifiable": true,
+   "combat_range": "close"
+  },
+  {
+   "id": "armory",
+   "story": 1,
+   "bounds": [
+    6.0,
+    0.0,
+    17.0,
+    13.0
+   ],
+   "role": "objective_room",
+   "objective": true,
+   "fortifiable": true,
+   "combat_range": "close"
+  }
+ ],
+ "volumes": [
+  {
+   "name": "front_desk",
+   "x": 0.0,
+   "y": -4.0,
+   "z": 0.55,
+   "size_x": 6.0,
+   "size_y": 0.9,
+   "size_z": 1.1,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "evidence_rack",
+   "x": 13.0,
+   "y": 7.0,
+   "z": 4.6,
+   "size_x": 0.8,
+   "size_y": 5.0,
+   "size_z": 2.0,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "ARMORY_LOCKER",
+   "x": 14.0,
+   "y": 10.0,
+   "z": 4.6,
+   "size_x": 3.0,
+   "size_y": 0.8,
+   "size_z": 2.0,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "roof_unit",
+   "x": -11.0,
+   "y": 7.0,
+   "z": 7.8,
+   "size_x": 3.0,
+   "size_y": 2.0,
+   "size_z": 1.2,
+   "collision": "convex",
+   "material": "metal"
+  }
+ ],
+ "vault_ledges": [
+  {
+   "x": 0.0,
+   "y": -1.0,
+   "story": 0,
+   "length": 4.0,
+   "axis": "X",
+   "height": 1.1,
+   "material": "wood"
+  }
+ ],
+ "markers": [
+  {
+   "type": "attacker_spawn",
+   "id": "A",
+   "x": 500.0,
+   "y": 500.0,
+   "z": 0,
+   "rot_z": 90,
+   "room": "lobby"
+  },
+  {
+   "type": "attacker_spawn",
+   "id": "B",
+   "x": 20.0,
+   "y": 0,
+   "z": 0,
+   "rot_z": 180,
+   "room": "garage"
+  },
+  {
+   "type": "attacker_spawn",
+   "id": "ROOF",
+   "x": 13.0,
+   "y": -9.0,
+   "z": 7.2,
+   "rot_z": 0,
+   "room": "armory"
+  },
+  {
+   "type": "defender_spawn",
+   "x": 13.0,
+   "y": 9.0,
+   "z": 3.6,
+   "rot_z": 270,
+   "room": "armory"
+  },
+  {
+   "type": "objective",
+   "id": "A",
+   "x": 13.0,
+   "y": 9.0,
+   "z": 3.6,
+   "room": "armory",
+   "meta": {
+    "kind": "secure"
+   }
+  },
+  {
+   "type": "cover_high",
+   "x": 0,
+   "y": -4,
+   "z": 0,
+   "room": "lobby"
+  },
+  {
+   "type": "camera_socket",
+   "id": "01",
+   "x": 14.0,
+   "y": -11.0,
+   "z": 3.0,
+   "room": "lobby"
+  },
+  {
+   "type": "extraction",
+   "id": "STREET",
+   "x": -2,
+   "y": -14.0,
+   "z": 0
+  }
+ ]
+}

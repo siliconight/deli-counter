@@ -2103,6 +2103,30 @@ def write_gameplay_json(builder, path):
     return data
 
 
+def _apply_scales():
+    """Coordinate contract: production meshes ship with APPLIED rotation and
+    scale (docs/COORDINATE_CONTRACT.md; Production Package spec section 14 --
+    "No required asset contains unapplied scale"). The generator sizes plain
+    boxes by object scale for speed; this export pre-pass bakes any non-unit
+    scale into the mesh data so every exported node is unit-scale. Multi-user
+    meshes (the module share-cache) are already baked to real size at creation;
+    any scaled multi-user mesh is made single-user first, so sharing is never
+    silently broken -- only correctness-preserving copies are made."""
+    import mathutils
+    for obj in bpy.data.objects:
+        if obj.type != "MESH" or obj.data is None:
+            continue
+        sx, sy, sz = obj.scale
+        if (abs(sx - 1) < 1e-9 and abs(sy - 1) < 1e-9 and abs(sz - 1) < 1e-9):
+            continue
+        mesh = obj.data
+        if mesh.users > 1:
+            mesh = mesh.copy()
+            obj.data = mesh
+        mesh.transform(mathutils.Matrix.Diagonal((sx, sy, sz, 1.0)))
+        obj.scale = (1.0, 1.0, 1.0)
+
+
 def export(path: str, fmt: str = None):
     """Export the scene. Format inferred from extension unless fmt given.
 
@@ -2117,6 +2141,7 @@ def export(path: str, fmt: str = None):
                  format; use GLB for the Godot-collision pipeline.
     """
     ext = (fmt or path.rsplit(".", 1)[-1]).lower()
+    _apply_scales()
     # The SCALE_REF collection is a Blender-only visual aid — never export it.
     # Temporarily exclude it from the view layer (covers use_visible glTF) and
     # hide it (covers the OBJ exporter), then restore afterward.

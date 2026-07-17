@@ -112,10 +112,55 @@ def main():
         if g["rooms"] or any(o.get("kind") == "window"
                              for o in g.get("openings", [])):
             write_light_manifest(builder, base + ".lights.json")
-    _write_manifest(spec_path, written)
+    _write_manifest(spec_path, written, _expected_block(builder))
 
 
-def _write_manifest(spec_path, written):
+def _expected_block(builder):
+    """Record the coordinate-contract EXPECTATIONS at build time, straight
+    from the authoritative in-Blender scene: visual bounds, origin, floor
+    elevations, marker positions. roundtrip.py re-imports the exported GLB
+    and compares against this block (docs/COORDINATE_CONTRACT.md)."""
+    try:
+        import bpy
+        from mathutils import Vector
+        lo = [float("inf")] * 3
+        hi = [float("-inf")] * 3
+        vis = getattr(builder, "VISUAL", None)
+        objs = vis.objects if vis is not None else []
+        n = 0
+        for ob in objs:
+            if ob.type != "MESH":
+                continue
+            n += 1
+            for c in ob.bound_box:
+                w = ob.matrix_world @ Vector(c)
+                for i in range(3):
+                    lo[i] = min(lo[i], w[i])
+                    hi[i] = max(hi[i], w[i])
+        if not n:
+            return None
+        spec = builder.s
+        g = builder.gameplay
+        return {
+            "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
+            "bounds_min": [round(v, 5) for v in lo],
+            "bounds_max": [round(v, 5) for v in hi],
+            "origin": [0.0, 0.0, 0.0],
+            "story_height": spec.story_height,
+            "floor_elevations": [round(i * spec.story_height, 5)
+                                 for i in range(spec.n_stories)],
+            "markers": [{"name": m.get("name", m.get("type")),
+                         "type": m.get("type"),
+                         "pos": [m.get("x", 0.0), m.get("y", 0.0),
+                                 m.get("z", 0.0)]}
+                        for m in g.get("markers", [])],
+        }
+    except Exception as ex:
+        print(f"[deli_counter] WARNING: expected block not recorded ({ex})")
+        return None
+
+
+def _write_manifest(spec_path, written, expected=None):
     """Write a .manifest.json next to outputs: traces a model back to the
     exact spec content + kit version that produced it."""
     import json, hashlib, datetime
@@ -136,6 +181,8 @@ def _write_manifest(spec_path, written):
         "built_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "outputs": [os.path.basename(p) for p in written],
     }
+    if expected is not None:
+        manifest["expected"] = expected
     if written:
         base = os.path.splitext(written[0])[0]
         mpath = base + ".manifest.json"
