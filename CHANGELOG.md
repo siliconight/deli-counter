@@ -1,3 +1,26 @@
+## [0.75.0] - Facade lights: wall packs + storefront sign (lights.json 1.1)
+
+Light comes from the sun or from physical fixtures — and buildings were
+dark from the outside. Two new DERIVED anchor types in `<name>.lights.json`
+(output-only; no `level.schema.json` change):
+
+- **`wall_pack`** over every exterior door and garage rollup (any story;
+  interior doors — walls without an N/S/E/W suffix — never qualify):
+  emitter 0.15 m proud of the wall and 0.25 m above the door head
+  (`sill + height`, falling back to `z + height/2`), facing outward.
+  `reacts_to_alarm: true` — building power.
+- **`sign`** — one per building, above the widest door on the facade with
+  the most windows (the storefront); no exterior windows, no derived sign
+  (a foundry's service doors aren't signage — authored anchors can add
+  one). `pos` is the sign's FACE plane, 0.2 m proud; `size` = door width
+  + 0.8 m pad × 0.6 m. The sign's door is skipped by the wall-pack pass.
+- Emitters proud of the wall is the contract with Zoo's fixture pass
+  (v0.29): pos is always the EMITTER, hardware hangs around it, so Lux's
+  lamp is never inside baked geometry. `LIGHT_MANIFEST_VERSION` 1.0.0 →
+  1.1.0 (additive). Pairs with **zoo v0.29.0** (sign_box + wall_pack
+  species) and **lux v0.14.0** (wall_pack rig case + emissive binder).
+- 5 new tests (203 total). docs/LIGHT_MANIFEST.md updated.
+
 ## [0.74.2] - Spec content-coherence audit + auditor in the gate
 
 - New `audit_specs.py`: a cross-cutting content-coherence audit over every

@@ -52,6 +52,15 @@ CIRCULATION_ROLES = {
     "main_route", "route_node", "staging", "public_entry", "open_floor",
 }
 
+# Room roles that read as a DEDICATED enclosed vertical shaft (a stairwell) or
+# narrow circulation a stair can believably sit in. Narrower than CIRCULATION_
+# ROLES on purpose: open spaces (lobby, public_entry, staging, open_floor) are
+# where a bare stair "sprouts in the middle of the floor" -- excluded here so
+# the enclosure gate catches them.
+ENCLOSED_STAIR_ROLES = {
+    "stairwell", "connector", "corridor", "hall", "hallway", "service",
+}
+
 MIN_EGRESS_SEPARATION = 8.0     # m; Rule 6 game-friendly floor
 DEFAULT_SEPARATION_FACTOR = 0.33  # sprinklered approximation (Rule 6)
 DISCHARGE_MAX_CLEAN_HOPS = 3    # rooms between stair and exterior before warn
@@ -509,6 +518,7 @@ def check(spec):
                 gate = False
 
         # Rule 3 -- believable approach on every served, roomed floor
+        enclosure_flagged = False
         for ap in sysd["approach"]:
             s, rid, rrole = ap["floor"], ap["room"], ap["room_role"]
             if rid is None:
@@ -533,6 +543,18 @@ def check(spec):
                          f"'{sid}' enclosure '{rid}' on story {s} connects "
                          f"only to prohibited rooms "
                          f"({', '.join(sorted(nbrs))}).")
+            elif rrole not in ENCLOSED_STAIR_ROLES and not enclosure_flagged:
+                # A human stair lives in a stairwell shaft, not sprouting in the
+                # middle of an open functional room. Nav still works via the
+                # ramp collider -- this is about believable placement so DC/LF
+                # stop shipping bare mid-floor stairs. One finding per stair.
+                enclosure_flagged = True
+                emit(gate, "STAIR_NOT_ENCLOSED",
+                     f"'{sid}' sits inside '{rid}' (role '{rrole}') on story "
+                     f"{s}, not a stairwell -- it reads as a stair sprouting in "
+                     f"the middle of an open room. Enclose it in a dedicated "
+                     f"stairwell/corridor room (role in {sorted(ENCLOSED_STAIR_ROLES)}) "
+                     f"with a doored approach.")
 
         # Rule 5 -- ground discharge
         d = sysd["discharge"]

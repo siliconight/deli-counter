@@ -121,6 +121,19 @@ def bank(name: str = "bank_preset",
     if floors == 1 and basement:
         spec["stairs"][0]["to_story"] = 0
 
+    # second vertical link into the vault basement: a straight service stair on
+    # the east/lobby side. A single stair makes the vault a one-approach siege
+    # (combat_audit flags VERT_DEAD_END); a second link gives 4-player co-op a
+    # flank route and splits the push. The gameplay team can still wall it for a
+    # holdout -- more routes = more playground. (Roof stays single-access by
+    # design; it's unfurnished siege space.)
+    if basement:
+        spec["stairs"].append({
+            "x": half_x - 4, "y": -half_y + 5,
+            "from_story": -1, "to_story": 0,
+            "style": "straight", "cut_slabs": True,
+        })
+
     # --- rooms (tactical) ----------------------------------------------------
     rooms = [
         {"id": "lobby", "story": 0, "bounds": [-half_x, -half_y, half_x, 2.0],
@@ -228,11 +241,11 @@ def bank(name: str = "bank_preset",
              "y": -half_y + 2, "z": 3.0, "room": "lobby"},
         ]
 
-    # single stair to the vault basement IS the heist design; story 1 is
-    # unfurnished roof space. Recorded so the audit reports it accepted.
+    # the roof story stays single-access by design (unfurnished siege space);
+    # the vault basement now has two vertical links, so only the roof is accepted.
     spec.setdefault("audit_accept", []).append(
         {"code": "VERT_DEAD_END",
-         "why": "vault basement + roof story: single stair is the design"})
+         "why": "roof story: single stair to unfurnished roof is the design"})
     return spec
 
 
