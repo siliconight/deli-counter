@@ -122,9 +122,10 @@ def test_gate_script_exists_and_is_godot4_gdscript():
     assert src.startswith("extends SceneTree")
     assert "NavigationMeshSourceGeometryData3D" in src   # Godot 4 API
     assert "get_cmdline_user_args" in src
-    # agent params stay in sync with the F4 harness bake
-    assert "AGENT_RADIUS := 0.4" in src
-    assert "AGENT_HEIGHT := 1.8" in src
+    # agent params come from the shared agent contract via the env bridge,
+    # with ratified fallbacks equal to the F4 harness bake
+    assert 'AGENT_RADIUS := _envf("DC_NAV_RADIUS", 0.4)' in src
+    assert 'AGENT_HEIGHT := _envf("DC_NAV_HEIGHT", 1.8)' in src
 
 
 if __name__ == "__main__":

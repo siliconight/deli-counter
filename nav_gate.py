@@ -83,8 +83,13 @@ def run_gate(glb_path, gameplay_path=None, godot=None, timeout=300):
     out_path = os.path.splitext(glb_path)[0] + ".navgate.json"
     cmd = [godot, "--headless", "--script", GATE_GD, "--",
            glb_path, gameplay_path, out_path]
+    try:
+        from agent_contract import nav_env
+        env = nav_env()
+    except Exception:                                  # noqa: BLE001
+        env = None
     proc = subprocess.run(cmd, capture_output=True, text=True,
-                          timeout=timeout)
+                          timeout=timeout, env=env)
     result = {}
     if os.path.exists(out_path):
         try:

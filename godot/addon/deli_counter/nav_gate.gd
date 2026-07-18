@@ -26,15 +26,21 @@ extends SceneTree
 ## Stairs built before v0.76 carry no nav_endpoints in gameplay.json and are
 ## reported as "skipped (rebuild with >= 0.76)" -- rebuild the shell to gate.
 
-const AGENT_RADIUS := 0.4        # keep in sync with level_test.gd / NAVMESH_CHECK.md
-const AGENT_HEIGHT := 1.8
-const AGENT_MAX_CLIMB := 0.5
-# 0.15 m cells: the voxelizer erodes by whole cells (ceil(radius/cell) per
-# side), so 0.25 m cells eat 1.0 m of every doorway and fragment rooms into
-# islands. At 0.15 the erosion is 0.45/side -- a legal 1.25 m door keeps a
-# robust 2-cell corridor.
-const CELL_SIZE := 0.15
-const SNAP_MAX := 2.0            # m; endpoint farther than this from the mesh = off-navmesh
+# Agent metrics come from agent_contract.json via nav_gate.py's env bridge
+# (DC_NAV_*); fallbacks equal the ratified values. 0.15 m cells matter: the
+# voxelizer erodes whole cells per side, so 0.25 m cells eat 1.0 m of every
+# doorway and fragment rooms into islands.
+static func _envf(key: String, fallback: float) -> float:
+	var v := OS.get_environment(key)
+	return float(v) if v != "" else fallback
+
+var AGENT_RADIUS := _envf("DC_NAV_RADIUS", 0.4)
+var AGENT_HEIGHT := _envf("DC_NAV_HEIGHT", 1.8)
+var AGENT_MAX_CLIMB := _envf("DC_NAV_CLIMB", 0.5)
+var AGENT_MAX_SLOPE := _envf("DC_NAV_SLOPE", 55.0)
+var CELL_SIZE := _envf("DC_NAV_CELL", 0.15)
+var CELL_HEIGHT := _envf("DC_NAV_CELL_H", 0.15)
+var SNAP_MAX := _envf("DC_QA_SNAP", 2.0)
 
 var _exit_code := 0
 
@@ -97,9 +103,9 @@ func _run(glb_path: String, gp_path: String) -> Dictionary:
 	# deg (STEP-RISE budget), and the baker's default 45 deg slope limit
 	# quantizes a 42 deg ramp into disjoint islands. Give the bake headroom:
 	# slope legality is validate.py's job, connectivity is this gate's.
-	nm.agent_max_slope = 55.0
+	nm.agent_max_slope = AGENT_MAX_SLOPE
 	nm.cell_size = CELL_SIZE
-	nm.cell_height = 0.15
+	nm.cell_height = CELL_HEIGHT
 	nm.geometry_parsed_geometry_type = NavigationMesh.PARSED_GEOMETRY_MESH_INSTANCES
 	var src := NavigationMeshSourceGeometryData3D.new()
 	NavigationServer3D.parse_source_geometry_data(nm, src, level)
