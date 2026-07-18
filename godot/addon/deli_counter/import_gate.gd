@@ -75,8 +75,11 @@ func _run(glb_path: String) -> Dictionary:
 		result["error"] = "cannot load glb (%d)" % err
 		_exit_code = 2
 		return result
+	# NOTE: the scene is inspected WITHOUT entering the tree -- in 4.7
+	# --script mode, nodes added during _initialize are not inside the tree
+	# yet, so global transforms read as identity. All walks below accumulate
+	# transforms manually and never query global state.
 	var level := doc.generate_scene(state)
-	root.add_child(level)
 
 	# -- GI-SCALE ------------------------------------------------------------
 	var bad_scale: Array = []
@@ -93,12 +96,13 @@ func _run(glb_path: String) -> Dictionary:
 	# x stays; godot y = blender z; godot z = -blender y (range flips)
 	var exp_lo := Vector3(lo_b[0], lo_b[2], -hi_b[1])
 	var exp_hi := Vector3(hi_b[0], hi_b[2], -lo_b[1])
-	var aabb := _visual_aabb(level)
+	var aabb: Variant = _visual_aabb(level)
 	if aabb == null:
 		_fail(result, "GI-BOUNDS", "no visual meshes in imported scene")
 	else:
-		var got_lo: Vector3 = aabb.position
-		var got_hi: Vector3 = aabb.position + aabb.size
+		var box: AABB = aabb
+		var got_lo: Vector3 = box.position
+		var got_hi: Vector3 = box.position + box.size
 		var worst := 0.0
 		for i in 3:
 			worst = maxf(worst, absf(got_lo[i] - exp_lo[i]))
@@ -124,7 +128,7 @@ func _run(glb_path: String) -> Dictionary:
 
 	# -- GI-MARKERS ----------------------------------------------------------
 	var empties := {}
-	_collect_empties(level, empties)
+	_collect_empties(level, empties, Transform3D.IDENTITY)
 	var exp_markers: Array = expected.get("markers", [])
 	var missing := 0
 	var drifted: Array = []
@@ -158,6 +162,7 @@ func _run(glb_path: String) -> Dictionary:
 	result["ok"] = _exit_code == 0
 	print("[import-gate] %s: %s" % [glb_path.get_file(),
 		"PASS" if result["ok"] else "FAIL"])
+	level.free()    # silence RID-leak chatter at exit
 	return result
 
 
@@ -183,9 +188,22 @@ func _walk_scales(node: Node, bad: Array) -> void:
 		_walk_scales(c, bad)
 
 
+func _node_mesh(node: Node) -> Mesh:
+	## a runtime glTF load can yield MeshInstance3D OR ImporterMeshInstance3D
+	## (4.6+); read the mesh by property and normalize to a renderable Mesh
+	var mv: Variant = node.get("mesh")
+	if mv == null:
+		return null
+	if mv is Mesh:
+		return mv
+	if mv is ImporterMesh:
+		return (mv as ImporterMesh).get_mesh()
+	return null
+
+
 func _visual_aabb(node: Node) -> Variant:
 	var boxes: Array = []
-	_collect_aabbs(node, boxes)
+	_collect_aabbs(node, boxes, Transform3D.IDENTITY)
 	if boxes.is_empty():
 		return null
 	var merged: AABB = boxes[0]
@@ -194,20 +212,28 @@ func _visual_aabb(node: Node) -> Variant:
 	return merged
 
 
-func _collect_aabbs(node: Node, boxes: Array) -> void:
-	if node is MeshInstance3D and not ("colonly" in node.name.to_lower()):
-		var mi := node as MeshInstance3D
-		boxes.append(mi.global_transform * mi.get_aabb())
+func _collect_aabbs(node: Node, boxes: Array, xform: Transform3D) -> void:
+	var x := xform
+	if node is Node3D:
+		x = xform * (node as Node3D).transform
+	var mesh: Mesh = _node_mesh(node)
+	if mesh != null and not ("colonly" in node.name.to_lower()):
+		boxes.append(x * mesh.get_aabb())
 	for c in node.get_children():
-		_collect_aabbs(c, boxes)
+		_collect_aabbs(c, boxes, x)
 
 
-func _collect_empties(node: Node, out: Dictionary) -> void:
-	# a glTF "empty" imports as a plain Node3D (not a MeshInstance3D/Camera/...)
-	if node is Node3D and node.get_class() == "Node3D":
-		out[node.name] = (node as Node3D).global_position
+func _collect_empties(node: Node, out: Dictionary, xform: Transform3D) -> void:
+	# a glTF "empty" imports as a mesh-less Node3D; record its ACCUMULATED
+	# position (never global_position -- the scene is not in the tree)
+	var x := xform
+	if node is Node3D:
+		x = xform * (node as Node3D).transform
+		if _node_mesh(node) == null and node.get_child_count() >= 0 \
+				and node.get_class() == "Node3D":
+			out[node.name] = x.origin
 	for c in node.get_children():
-		_collect_empties(c, out)
+		_collect_empties(c, out, x)
 
 
 func _match_empty(empties: Dictionary, mname: String) -> Variant:

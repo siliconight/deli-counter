@@ -1289,6 +1289,26 @@ class _Builder:
                         hole_y = st.y + sign * (far - near) / 2
                         self._stair_hole(st, s + 1, st.x, hole_y,
                                          hole_w, far + near)
+                        # THE FINAL flight has no switchback landing, so the
+                        # headroom margin above cuts away the very floor the
+                        # climber discharges onto -- a 0.7-0.8 m walk-off void
+                        # at the top of every single-story stair (caught by
+                        # the engine nav gate: stair top and floor bake as
+                        # disjoint islands). Bridge it with a flush discharge
+                        # platform filling the hole's exit margin.
+                        if s == st.to_story - 1:
+                            disch_y = st.y + sign * (st.run / 2 + clear / 2)
+                            wx, wy = self._stair_pt(st, st.x, disch_y)
+                            dz = z + H - step_h / 2
+                            self._box(f"stair{si}_discharge_{s}",
+                                      (wx, wy, dz),
+                                      self._stair_sz(st, hole_w, clear,
+                                                     step_h),
+                                      self.VISUAL, role="stair")
+                            self._col_box(f"stair{si}col_discharge_{s}",
+                                          (wx, wy, dz),
+                                          self._stair_sz(st, hole_w, clear,
+                                                         step_h))
 
     def _stair_l_shaped(self, si, st, H):
         """L-shaped stair (spec 6.3): leg A ascends local +Y for half the

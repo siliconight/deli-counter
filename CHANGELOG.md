@@ -1,3 +1,31 @@
+## [0.80.0] - The stair discharge fix + the engine gates go live
+
+The first LIVE runs of the Godot engine gates (4.7, real hardware) -- and
+they immediately earned their keep.
+
+- **THE DISCHARGE FIX.** Every single-story `cut_slabs` stair shipped with a
+  0.7-0.8 m walk-off VOID at the top: the slab hole's headroom margin cuts
+  0.8 m past the top step, but only intermediate switchback legs get a
+  bridging landing -- the final flight discharged into the hole it climbed
+  through. Caught by the navmesh gate (stair top and floor baked as disjoint
+  islands); invisible to every offline analyzer. The final flight now emits
+  a flush discharge platform (visual + collision) filling the hole's exit
+  margin. All 298 tests + the 48-variant stair regression pass.
+- **import_gate.gd hardened for 4.7 --script mode**: runtime scenes are
+  inspected WITHOUT entering the tree (nodes read identity transforms
+  during _initialize), transforms accumulated manually, ImporterMeshInstance3D
+  normalized to meshes, strict-typing clean. Reference shell: full PASS
+  (GI-SCALE / GI-BOUNDS 0.00 mm / GI-ORIGIN / GI-MARKERS).
+- **nav_gate.gd**: manual mesh feed when parse_source_geometry_data returns
+  empty (4.6+ runtime trees), TRUE closest-point-on-polygon snap (centroid
+  distance false-flagged big merged polys), island diagnostics (per-island
+  poly count + y-range), bake slope headroom (55 deg) and 0.15 m cells --
+  voxel erosion is per-cell, so 0.25 m cells ate legal doorways and
+  fragmented rooms into islands. Reference shell: PASSED (stair ok, 2/2
+  markers reachable).
+- **specs/pvp_station_ref.json**: 8 doors widened to 1.25 m (the offline
+  MIN_NAV_DOOR_WIDTH warning, now enforced by a real bake).
+
 ## [0.79.0] - The pvp_heist production profile + stored proof
 
 The Production Package Phase 0 drop: buildings can now be GATED for
