@@ -29,7 +29,11 @@ extends SceneTree
 const AGENT_RADIUS := 0.4        # keep in sync with level_test.gd / NAVMESH_CHECK.md
 const AGENT_HEIGHT := 1.8
 const AGENT_MAX_CLIMB := 0.5
-const CELL_SIZE := 0.25
+# 0.15 m cells: the voxelizer erodes by whole cells (ceil(radius/cell) per
+# side), so 0.25 m cells eat 1.0 m of every doorway and fragment rooms into
+# islands. At 0.15 the erosion is 0.45/side -- a legal 1.25 m door keeps a
+# robust 2-cell corridor.
+const CELL_SIZE := 0.15
 const SNAP_MAX := 2.0            # m; endpoint farther than this from the mesh = off-navmesh
 
 var _exit_code := 0
@@ -89,12 +93,31 @@ func _run(glb_path: String, gp_path: String) -> Dictionary:
 	nm.agent_radius = AGENT_RADIUS
 	nm.agent_height = AGENT_HEIGHT
 	nm.agent_max_climb = AGENT_MAX_CLIMB
+	# stairs bake as their collision RAMPS; the steepest legal stair is ~45
+	# deg (STEP-RISE budget), and the baker's default 45 deg slope limit
+	# quantizes a 42 deg ramp into disjoint islands. Give the bake headroom:
+	# slope legality is validate.py's job, connectivity is this gate's.
+	nm.agent_max_slope = 55.0
 	nm.cell_size = CELL_SIZE
+	nm.cell_height = 0.15
 	nm.geometry_parsed_geometry_type = NavigationMesh.PARSED_GEOMETRY_MESH_INSTANCES
 	var src := NavigationMeshSourceGeometryData3D.new()
 	NavigationServer3D.parse_source_geometry_data(nm, src, level)
 	NavigationServer3D.bake_from_source_geometry_data(nm, src)
+	print("[nav-gate] bake: radius %.2f cell %.2f climb %.2f slope %.0f"
+		% [AGENT_RADIUS, CELL_SIZE, AGENT_MAX_CLIMB, nm.agent_max_slope])
 	result["navmesh_polys"] = nm.get_polygon_count()
+	if nm.get_polygon_count() == 0:
+		# Godot 4.6+/headless --script: parse_source_geometry_data can come
+		# back empty for a runtime-generated tree. Feed the mesh instances by
+		# hand and re-bake before declaring the shell unwalkable.
+		var n_mi := _count_mesh_instances(level)
+		print("[nav-gate] parse produced 0 polys (%d MeshInstance3D in tree); "
+			% n_mi + "retrying with manual mesh feed")
+		src = NavigationMeshSourceGeometryData3D.new()
+		_add_meshes_manual(level, src)
+		NavigationServer3D.bake_from_source_geometry_data(nm, src)
+		result["navmesh_polys"] = nm.get_polygon_count()
 	if nm.get_polygon_count() == 0:
 		result["error"] = "navmesh baked 0 polygons"
 		print("[nav-gate] FAIL: navmesh baked 0 polygons -- nothing walkable")
@@ -103,6 +126,10 @@ func _run(glb_path: String, gp_path: String) -> Dictionary:
 	print("[nav-gate] navmesh: %d polys" % nm.get_polygon_count())
 
 	var graph := _poly_graph(nm)
+	var islands := _islands(graph)
+	result["islands"] = _island_summary(nm, islands)
+	print("[nav-gate] islands: %d -- %s" % [result["islands"].size(),
+		str(result["islands"])])
 
 	# -- stairs: prove lower <-> upper --------------------------------------
 	var failures := 0
@@ -133,7 +160,8 @@ func _run(glb_path: String, gp_path: String) -> Dictionary:
 			rep["detail"] = "path lower<->upper (undirected polygon graph)"
 		else:
 			rep["status"] = "no_path"
-			rep["detail"] = "endpoints on disjoint navmesh islands"
+			rep["detail"] = "endpoints on disjoint islands (lower on %d, upper on %d)" % [
+				_island_of(islands, lo_hit["poly"]), _island_of(islands, hi_hit["poly"])]
 			failures += 1
 		result["stairs"].append(rep)
 		print("[nav-gate] stair %s: %s -- %s" % [rep["id"], rep["status"], rep["detail"]])
@@ -177,21 +205,52 @@ func _poly_graph(nm: NavigationMesh) -> Array:
 
 
 func _snap(nm: NavigationMesh, p: Vector3) -> Dictionary:
-	## nearest polygon by centroid; returns {poly, dist}
+	## nearest polygon by TRUE closest point on its surface (fan-triangulated);
+	## centroid distance false-flags points standing on large merged polygons
 	var verts := nm.get_vertices()
 	var best := -1
 	var best_d := INF
 	for i in nm.get_polygon_count():
 		var poly := nm.get_polygon(i)
-		var c := Vector3.ZERO
-		for idx in poly:
-			c += verts[idx]
-		c /= poly.size()
-		var d := p.distance_to(c)
-		if d < best_d:
-			best_d = d
-			best = i
+		if poly.size() < 3:
+			continue
+		var a: Vector3 = verts[poly[0]]
+		for k in range(1, poly.size() - 1):
+			var b: Vector3 = verts[poly[k]]
+			var c: Vector3 = verts[poly[k + 1]]
+			var q := _closest_on_tri(p, a, b, c)
+			var d := p.distance_to(q)
+			if d < best_d:
+				best_d = d
+				best = i
 	return {"poly": best, "dist": best_d}
+
+
+func _closest_on_tri(p: Vector3, a: Vector3, b: Vector3, c: Vector3) -> Vector3:
+	var n := (b - a).cross(c - a)
+	if n.length_squared() < 1e-12:
+		return Geometry3D.get_closest_point_to_segment(p, a, b)
+	n = n.normalized()
+	var proj := p - n * (p - a).dot(n)
+	if _same_side(proj, a, b, c) and _same_side(proj, b, c, a) \
+			and _same_side(proj, c, a, b):
+		return proj
+	var q1 := Geometry3D.get_closest_point_to_segment(p, a, b)
+	var q2 := Geometry3D.get_closest_point_to_segment(p, b, c)
+	var q3 := Geometry3D.get_closest_point_to_segment(p, c, a)
+	var best := q1
+	if p.distance_squared_to(q2) < p.distance_squared_to(best):
+		best = q2
+	if p.distance_squared_to(q3) < p.distance_squared_to(best):
+		best = q3
+	return best
+
+
+func _same_side(pt: Vector3, a: Vector3, b: Vector3, c: Vector3) -> bool:
+	var ab := b - a
+	var c1 := ab.cross(pt - a)
+	var c2 := ab.cross(c - a)
+	return c1.dot(c2) >= -1e-9
 
 
 func _connected(adj: Array, a: int, b: int) -> bool:
@@ -241,3 +300,90 @@ func _check_markers(gp: Variant, nm: NavigationMesh, graph: Array) -> Dictionary
 	if not unreachable.is_empty():
 		print("[nav-check] UNREACHABLE: %s" % ", ".join(unreachable))
 	return {"checked": checked, "reachable": reachable, "unreachable": unreachable}
+
+
+func _gate_node_mesh(node: Node) -> Mesh:
+	## runtime glTF loads yield MeshInstance3D or (4.6+) ImporterMeshInstance3D;
+	## read by property, normalize to Mesh
+	var mv: Variant = node.get("mesh")
+	if mv == null:
+		return null
+	if mv is Mesh:
+		return mv
+	if mv is ImporterMesh:
+		return (mv as ImporterMesh).get_mesh()
+	return null
+
+
+func _count_mesh_instances(node: Node) -> int:
+	var n := 0
+	if _gate_node_mesh(node) != null:
+		n += 1
+	for c in node.get_children():
+		n += _count_mesh_instances(c)
+	return n
+
+
+func _add_meshes_manual(node: Node, src: NavigationMeshSourceGeometryData3D,
+		xform: Transform3D = Transform3D.IDENTITY) -> void:
+	## transforms are ACCUMULATED manually: during _initialize the runtime
+	## scene is not inside the tree, so global_transform reads identity
+	var x := xform
+	if node is Node3D:
+		x = xform * (node as Node3D).transform
+	var mesh: Mesh = _gate_node_mesh(node)
+	if mesh != null:
+		src.add_mesh(mesh, x)
+	for c in node.get_children():
+		_add_meshes_manual(c, src, x)
+
+
+func _islands(adj: Array) -> Array:
+	## connected components of the polygon graph; returns per-poly island id
+	var comp: Array = []
+	comp.resize(adj.size())
+	comp.fill(-1)
+	var next_id := 0
+	for i in adj.size():
+		if comp[i] != -1:
+			continue
+		var stack: Array = [i]
+		comp[i] = next_id
+		while not stack.is_empty():
+			var n: int = stack.pop_back()
+			for m in adj[n]:
+				if comp[m] == -1:
+					comp[m] = next_id
+					stack.append(m)
+		next_id += 1
+	return comp
+
+
+func _island_of(comp: Array, poly: int) -> int:
+	if poly < 0 or poly >= comp.size():
+		return -1
+	return comp[poly]
+
+
+func _island_summary(nm: NavigationMesh, comp: Array) -> Array:
+	## per island: poly count + y range (which FLOOR it is) for the report
+	var verts := nm.get_vertices()
+	var info := {}
+	for i in comp.size():
+		var cid: int = comp[i]
+		if not info.has(cid):
+			info[cid] = {"island": cid, "polys": 0, "y_min": INF, "y_max": -INF}
+		var d: Dictionary = info[cid]
+		d["polys"] += 1
+		for idx in nm.get_polygon(i):
+			var y: float = verts[idx].y
+			d["y_min"] = minf(d["y_min"], y)
+			d["y_max"] = maxf(d["y_max"], y)
+	var out: Array = []
+	for cid in info:
+		var d: Dictionary = info[cid]
+		d["y_min"] = snappedf(d["y_min"], 0.01)
+		d["y_max"] = snappedf(d["y_max"], 0.01)
+		out.append(d)
+	out.sort_custom(func(a, b): return a["polys"] > b["polys"])
+	return out

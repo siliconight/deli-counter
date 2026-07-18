@@ -1,0 +1,126 @@
+{
+  "kit_name": "Deli Counter",
+  "kit_version": "0.75.0",
+  "schema_version": "1.21.1",
+  "spec": "pvp_station_ref.json",
+  "spec_sha256_16": "1a36c024af1acdc5",
+  "built_utc": "2026-07-18T15:21:28.887444+00:00",
+  "outputs": [
+    "pvp_station_ref.glb"
+  ],
+  "expected": {
+    "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
+    "bounds_min": [
+      -17.15,
+      -13.15,
+      -3.9
+    ],
+    "bounds_max": [
+      17.15,
+      13.15,
+      8.4
+    ],
+    "origin": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "story_height": 3.6,
+    "floor_elevations": [
+      0.0,
+      3.6
+    ],
+    "markers": [
+      {
+        "name": "LADDER_0",
+        "type": "ladder",
+        "pos": [
+          13.0,
+          -9.0,
+          3.6
+        ]
+      },
+      {
+        "name": "HATCH_13_-9",
+        "type": "hatch",
+        "pos": [
+          13.0,
+          -9.0,
+          7.2
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_A",
+        "type": "attacker_spawn",
+        "pos": [
+          -2,
+          -16.0,
+          0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_B",
+        "type": "attacker_spawn",
+        "pos": [
+          20.0,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_ROOF",
+        "type": "attacker_spawn",
+        "pos": [
+          13.0,
+          -9.0,
+          7.2
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN",
+        "type": "defender_spawn",
+        "pos": [
+          13.0,
+          9.0,
+          3.6
+        ]
+      },
+      {
+        "name": "OBJECTIVE_A",
+        "type": "objective",
+        "pos": [
+          13.0,
+          9.0,
+          3.6
+        ]
+      },
+      {
+        "name": "COVER_HIGH",
+        "type": "cover_high",
+        "pos": [
+          0,
+          -4,
+          0
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_01",
+        "type": "camera_socket",
+        "pos": [
+          14.0,
+          -11.0,
+          3.0
+        ]
+      },
+      {
+        "name": "EXTRACTION_STREET",
+        "type": "extraction",
+        "pos": [
+          -2,
+          -14.0,
+          0
+        ]
+      }
+    ]
+  }
+}

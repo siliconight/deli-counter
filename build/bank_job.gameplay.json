@@ -3163,9 +3163,9 @@
   ],
   "stair_systems": [
     {
-      "id": "stair_0",
+      "id": "bank_job_stair_0",
       "stack_id": null,
-      "role": null,
+      "role": "public_convenience",
       "shape": "switchback",
       "facing": "N",
       "exterior": false,
@@ -3219,6 +3219,58 @@
       "egress": {
         "counts_as_exit": false
       },
+      "landings": [
+        {
+          "end": "lower",
+          "story": -1,
+          "rect": [
+            -11.0,
+            3.8,
+            -9.4,
+            5.0
+          ],
+          "point": [
+            -10.2,
+            4.4,
+            -3.6
+          ],
+          "dir": [
+            0,
+            -1
+          ]
+        },
+        {
+          "end": "upper",
+          "story": 1,
+          "rect": [
+            -12.6,
+            3.0,
+            -11.0,
+            4.2
+          ],
+          "point": [
+            -11.8,
+            3.6,
+            3.6
+          ],
+          "dir": [
+            0,
+            -1
+          ]
+        }
+      ],
+      "nav_endpoints": {
+        "lower": [
+          -10.2,
+          4.4,
+          -3.6
+        ],
+        "upper": [
+          -11.8,
+          3.6,
+          3.6
+        ]
+      },
       "enclosure": "open",
       "door_nodes": [
         {
@@ -3262,6 +3314,9 @@
           "discharge_door": false
         }
       ],
+      "meta": {
+        "generated_by": "presets"
+      },
       "gameplay": {
         "network_authority": "server",
         "replicate_door_state": true,
@@ -3278,11 +3333,11 @@
       }
     },
     {
-      "id": "stair_1",
+      "id": "bank_job_stair_1",
       "stack_id": null,
-      "role": null,
+      "role": "service",
       "shape": "straight",
-      "facing": "N",
+      "facing": "W",
       "exterior": false,
       "channels": 1,
       "roof_access": false,
@@ -3293,20 +3348,20 @@
       ],
       "footprint_polygon": [
         [
-          10.2,
-          -8.0
+          9.0,
+          -6.8
         ],
         [
-          11.8,
-          -8.0
+          13.0,
+          -6.8
         ],
         [
-          11.8,
-          -4.0
+          13.0,
+          -5.2
         ],
         [
-          10.2,
-          -4.0
+          9.0,
+          -5.2
         ]
       ],
       "clear_width_m": 1.6,
@@ -3332,6 +3387,58 @@
       },
       "egress": {
         "counts_as_exit": false
+      },
+      "landings": [
+        {
+          "end": "lower",
+          "story": -1,
+          "rect": [
+            13.0,
+            -6.8,
+            14.2,
+            -5.2
+          ],
+          "point": [
+            13.6,
+            -6.0,
+            -3.6
+          ],
+          "dir": [
+            1,
+            0
+          ]
+        },
+        {
+          "end": "upper",
+          "story": 0,
+          "rect": [
+            7.0,
+            -6.8,
+            8.2,
+            -5.2
+          ],
+          "point": [
+            7.6,
+            -6.0,
+            0.0
+          ],
+          "dir": [
+            -1,
+            0
+          ]
+        }
+      ],
+      "nav_endpoints": {
+        "lower": [
+          13.6,
+          -6.0,
+          -3.6
+        ],
+        "upper": [
+          7.6,
+          -6.0,
+          0.0
+        ]
       },
       "enclosure": "open",
       "door_nodes": [
@@ -3396,6 +3503,9 @@
           "discharge_door": true
         }
       ],
+      "meta": {
+        "generated_by": "presets"
+      },
       "gameplay": {
         "network_authority": "server",
         "replicate_door_state": true,
@@ -3412,6 +3522,36 @@
       }
     }
   ],
+  "circulation_contract": {
+    "version": 1,
+    "checks": [
+      "STAIR_ENTRY_FACES_SOLID",
+      "STAIR_EXIT_FACES_SOLID",
+      "STAIR_LOWER_LANDING_BLOCKED",
+      "STAIR_UPPER_LANDING_BLOCKED"
+    ],
+    "landing_depth_m": 1.2,
+    "exit_step_off_m": 0.8,
+    "all_compliant": true,
+    "stairs": [
+      {
+        "id": "bank_job_stair_0",
+        "role": "public_convenience",
+        "facing": "N",
+        "traversable": true,
+        "physical_findings": [],
+        "compliant": true
+      },
+      {
+        "id": "bank_job_stair_1",
+        "role": "service",
+        "facing": "W",
+        "traversable": true,
+        "physical_findings": [],
+        "compliant": true
+      }
+    ]
+  },
   "ladders": [],
   "platforms": [],
   "fire_escapes": [],
