@@ -18,11 +18,19 @@ see the model-vs-gameplay boundary), EXCEPT a fully isolated room, which is a
 model-integrity problem worth an error in the same spirit as reachability.
 """
 
-# A typical AI agent radius; doorways narrower than 2*radius + clearance can't
-# be traversed by a NavigationAgent3D of that size. Godot's default agent radius
-# is ~0.5 m; a door needs to clear the agent's diameter with margin.
-AGENT_RADIUS = 0.5
-MIN_NAV_DOOR_WIDTH = 2 * AGENT_RADIUS + 0.1   # ~1.1 m to pass a 0.5 m agent
+# Body sizes and derived clearances come from the agent contract
+# (agent_contract.json -- the single source of truth for character metrics).
+# The fallbacks equal the ratified values, so a missing file degrades
+# gracefully. NOTE the voxel reality the engine gates proved: bake erosion is
+# whole cells per side, so the honest minimum door is derived from radius AND
+# cell size, not radius alone.
+try:
+    import agent_contract as _ac
+    AGENT_RADIUS = float(_ac.contract()["nav_bake"]["agent_radius_m"])
+    MIN_NAV_DOOR_WIDTH = _ac.min_door_width()
+except Exception:                                      # noqa: BLE001
+    AGENT_RADIUS = 0.4
+    MIN_NAV_DOOR_WIDTH = 1.25
 
 
 def _opening_nav_width(op):

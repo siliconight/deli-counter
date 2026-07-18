@@ -1,64 +1,29 @@
-## [0.80.0] - The stair discharge fix + the engine gates go live
+## [0.79.0] - The engine leg lands (Godot 4.7, proven on hardware)
 
-The first LIVE runs of the Godot engine gates (4.7, real hardware) -- and
-they immediately earned their keep.
+The four engine gates authored blind in the sandbox were shaken down against
+a live Godot 4.7 stable on Windows -- 24 rounds -- and now PASS end to end.
 
-- **THE DISCHARGE FIX.** Every single-story `cut_slabs` stair shipped with a
-  0.7-0.8 m walk-off VOID at the top: the slab hole's headroom margin cuts
-  0.8 m past the top step, but only intermediate switchback legs get a
-  bridging landing -- the final flight discharged into the hole it climbed
-  through. Caught by the navmesh gate (stair top and floor baked as disjoint
-  islands); invisible to every offline analyzer. The final flight now emits
-  a flush discharge platform (visual + collision) filling the hole's exit
-  margin. All 298 tests + the 48-variant stair regression pass.
-- **import_gate.gd hardened for 4.7 --script mode**: runtime scenes are
-  inspected WITHOUT entering the tree (nodes read identity transforms
-  during _initialize), transforms accumulated manually, ImporterMeshInstance3D
-  normalized to meshes, strict-typing clean. Reference shell: full PASS
-  (GI-SCALE / GI-BOUNDS 0.00 mm / GI-ORIGIN / GI-MARKERS).
-- **nav_gate.gd**: manual mesh feed when parse_source_geometry_data returns
-  empty (4.6+ runtime trees), TRUE closest-point-on-polygon snap (centroid
-  distance false-flagged big merged polys), island diagnostics (per-island
-  poly count + y-range), bake slope headroom (55 deg) and 0.15 m cells --
-  voxel erosion is per-cell, so 0.25 m cells ate legal doorways and
-  fragmented rooms into islands. Reference shell: PASSED (stair ok, 2/2
-  markers reachable).
-- **specs/pvp_station_ref.json**: 8 doors widened to 1.25 m (the offline
-  MIN_NAV_DOOR_WIDTH warning, now enforced by a real bake).
-
-## [0.79.0] - The pvp_heist production profile + stored proof
-
-The Production Package Phase 0 drop: buildings can now be GATED for
-attacker-vs-defender play, and every build leaves evidence behind.
-
-- **pvp_heist mode** (`pvp_heist.py`, schema enum, validate.py gate):
-  attacker/defender spawn presence + bounds, >= 2 interior-disjoint routes
-  to the objective (Menger max-flow on the room graph), objective ->
-  extraction reachability, opposing-spawn clear-ray sightline check,
-  protected defender rotation, flank requirement, breach-into-void
-  detection. Stable PVP-* finding codes; combat_audit heist+cqb packs
-  auto-apply and HIGH findings block under the profile.
-- **evidence.py**: persists <name>.validation.json / .combat_audit.json /
-  .navigation.json next to build outputs, running the same analyzer
-  modules as validate.py; auto-runs after every successful build.
-- **roundtrip.py + manifest `expected` block**: the coordinate round-trip
-  test (Blender leg). Build-time expectations (bounds/origin/floor
-  elevations/markers) re-checked after GLB re-import against the ratified
-  tolerance table (RT-* codes). Caught + fixed a real violation: boxes
-  exported with unapplied node scale -- `_apply_scales()` now bakes scale
-  at export, every production node ships 1,1,1.
-- **review_render.py**: the standard 9-view review package (4 elevations,
-  roof, entrance, objective, gameplay-height, collision) under a fixed
-  neutral rig + contact sheet + review.json.
-- **specs_failing/** (10 fixtures + FIXTURES.json) and
-  test_failing_fixtures.py: every offline blocking guardrail has a
-  known-bad spec proven to fail for its documented reason.
-- **specs/pvp_station_ref.json**: the passing reference pvp building.
-- **docs/COORDINATE_CONTRACT.md**: the ratified shared contract (Z-up
-  authoring, tested Y-up boundary at Godot import).
-- pvp_heist builds force the modular emitter so slots.json always ships.
-- 298 tests pass (+12 pvp, +14 fixture; 2 opt-in bpy tests via
-  DC_BPY_TESTS=1).
+- **agent_contract.json + agent_contract.py.** THE single source of truth
+  for character/agent dimensions and every derived clearance (door width,
+  corridor, nav bake params, QA tolerances). Consumers read it through the
+  loader with ratified-value fallbacks; `nav_env()` bridges DC_NAV_*/DC_QA_*
+  env into the GDScript gates. Change a body in ONE file, re-run the gates.
+  See AGENT_CONTRACT.md for derivation rules (door width, agent radius, and
+  bake cell size are ONE decision -- voxel erosion is ceil(radius/cell)).
+- **Stair discharge fix (shipped-defect, found by the walktest).** Every
+  single-story cut_slabs stair discharged its final flight into the slab
+  hole's exit margin -- a walk-off void in EVERY affected shell. _stairs()
+  now emits a flush discharge platform filling the exit margin.
+- **nav_gate.gd hardened for 4.7 headless:** manual mesh feed with
+  accumulated transforms (runtime glTF yields ImporterMeshInstance3D and
+  0-poly parses otherwise), true closest-point-on-polygon marker snapping,
+  island diagnostics, contract-driven bake params via _envf().
+- **import_gate.gd hardened for 4.7 --script mode:** tree-free
+  accumulated-transform walks (nodes read identity transforms before the
+  tree is ready), ImporterMesh normalization.
+- **pvp_station_ref doors widened to the contract minimum 1.25 m** (0.9 m
+  doors + 0.4 m agent at 0.15 m cells erode into disjoint navmesh islands).
+- navigability.py thresholds now come from the agent contract.
 
 ## [0.78.0] - The universal circulation gate + the compliance stamp
 

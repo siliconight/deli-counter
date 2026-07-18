@@ -1,0 +1,45 @@
+{
+  "schema": "gabagool.agent_contract.v1",
+  "description": "THE single source of truth for character/agent dimensions and every clearance derived from them. Change a body here, re-run the gates, and every validator, bake, and walktest agrees. See AGENT_CONTRACT.md for the derivation rules and what to re-run after a change.",
+  "characters": {
+    "player": {
+      "radius_m": 0.35,
+      "height_m": 1.8,
+      "eye_height_m": 1.6,
+      "crouch_height_m": 1.2,
+      "max_step_up_m": 0.5,
+      "walk_speed_mps": 4.0
+    },
+    "npc_standard": {
+      "radius_m": 0.35,
+      "height_m": 1.8,
+      "note": "cops/civilians share player metrics until a distinct class ships"
+    }
+  },
+  "nav_bake": {
+    "agent_radius_m": 0.4,
+    "agent_height_m": 1.8,
+    "agent_max_climb_m": 0.5,
+    "agent_max_slope_deg": 55.0,
+    "cell_size_m": 0.15,
+    "cell_height_m": 0.15,
+    "note": "radius = fattest navigating character + 0.05 safety. max_slope sits ABOVE the steepest legal stair pitch (~45 deg; slope legality is validate.py's job, connectivity is the bake's). Voxel erosion is ceil(radius/cell) whole cells per side -- keep cell_size small enough that legal doors survive (see clearances.min_door_width_m derivation)."
+  },
+  "clearances": {
+    "min_door_width_m": 1.25,
+    "min_corridor_width_m": 1.1,
+    "min_headroom_m": 2.0,
+    "derivation": "min_door_width >= 2*ceil(agent_radius/cell_size)*cell_size + 2*cell_size  ->  2*ceil(0.4/0.15)*0.15 + 0.3 = 1.2; ratified 1.25 for margin. min_corridor = 2*agent_radius + 0.3 body margin."
+  },
+  "qa": {
+    "arrive_dist_m": 1.5,
+    "stuck_seconds": 4.0,
+    "snap_max_m": 2.0,
+    "walker_capsule_radius_m": 0.35,
+    "walker_capsule_height_m": 1.8
+  },
+  "review": {
+    "character_reference_height_m": 1.8,
+    "gameplay_camera_eye_m": 1.6
+  }
+}
