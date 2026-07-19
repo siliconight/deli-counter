@@ -32,16 +32,29 @@ def _godot_transform(translation, rot_y_deg, scale):
     """
     bx, by, bz = (translation or [0.0, 0.0, 0.0])[:3]
     ox, oy, oz = bx, bz, -by
+    vals = godot_basis(rot_y_deg, scale) + [ox, oy, oz]
+    return "Transform3D(" + ", ".join(_f(v) for v in vals) + ")"
+
+
+def godot_basis(rot_y_deg, scale):
+    """The 3x3 placement basis (9 floats, column-major) for a slot. THE single
+    source of truth for module orientation -- the placement verifier reuses it,
+    so the scene and its check can never drift apart.
+
+    basis = Scale_world x Ry(t). The rotation is NOT the slot's raw rot_y; it is
+    chosen per-slot by fitting the module to the greybox extent (the ground
+    truth) in themed_tscn -- walls (already world-oriented by deli) fit at 0 deg,
+    canonical openings at 90/270, with nothing hard-coded. Scale is
+    world-axis-aligned (deli's fit-scale gives a wall's final extents), so it is
+    applied AFTER the rotation, not in the module's local frame.
+    """
     t = math.radians(rot_y_deg or 0.0)
     c, s = math.cos(t), math.sin(t)
     sc = (scale or [1.0, 1.0, 1.0])
     gsx, gsy, gsz = sc[0], sc[2], sc[1]      # y<->z remap with the axis change
-    # basis columns (transformed X, Y, Z axes) of Ry(t), each scaled
-    cols = [c * gsx, 0.0, -s * gsx,          # X column
-            0.0, 1.0 * gsy, 0.0,             # Y column (up)
-            s * gsz, 0.0, c * gsz]           # Z column
-    vals = cols + [ox, oy, oz]
-    return "Transform3D(" + ", ".join(_f(v) for v in vals) + ")"
+    return [c * gsx, 0.0, -s * gsz,          # transformed X axis
+            0.0, gsy, 0.0,                   # transformed Y axis (up)
+            s * gsx, 0.0, c * gsz]           # transformed Z axis
 
 
 def _ref_path(res_root, ref):
