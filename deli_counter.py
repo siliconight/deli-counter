@@ -565,6 +565,11 @@ class _Builder:
         machine = h.get("interactive")
         if machine:
             slot["interactive"] = interactives.slot_interactive(machine)
+        # facade shells are hollow -- their windows glaze OPAQUE (nothing to see
+        # inside), so tag them for the art pass to skin with glass_facade rather
+        # than see-through glass.
+        if role == "window" and getattr(self.s, "facade", False):
+            slot["glazing"] = "facade"
         self.slots.append(slot)
 
     def _seg_box(self, vname, cname, center, size, axis, cu, clen, vcz, vh,

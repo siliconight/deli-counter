@@ -1,3 +1,11 @@
+## [0.80.0] - Facade windows tag opaque glazing
+
+- `_record_opening_slot`: a `window` opening on a `facade` shell (a hollow
+  building front with no interior) now tags `glazing:"facade"` on the slot,
+  so Zoo skins those panes with opaque `glass_facade` instead of see-through
+  glass -- you no longer look "through" a building that has nothing inside.
+  Non-facade (interior) windows are unchanged and remain transparent.
+
 ## [0.79.0] - The engine leg lands (Godot 4.7, proven on hardware)
 
 The four engine gates authored blind in the sandbox were shaken down against
