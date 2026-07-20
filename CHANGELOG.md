@@ -1,35 +1,22 @@
-## [0.81.0] - Placement rides the shell's truth (fit-to-greybox gate)
+## [0.80.0] - Phase 1 vertical slice: 10 configs gated on Godot 4.7
 
-Themed art now ORIENTS to the greybox collision instead of trusting a dims
-convention -- and a build-time gate proves it, so a mis-placed module fails the
-build instead of shipping.
+The four slice families grown into 10 pvp_heist configurations, every one
+PASSING both engine building gates (nav_gate + import_gate) on Godot 4.7.
 
-- **Fit-to-greybox placement (tscn_export.godot_basis + themed_tscn).** Each
-  themed module is oriented by fitting its footprint to the greybox slot's
-  extent (the shell is ground truth). Walls -- already world-oriented by the
-  greyboxer -- fall out to 0 deg; canonical openings to 90/270. Nothing is
-  hard-coded, so it stays correct on future buildings by construction. Fixes
-  the E/W openings that double-rotated under the old rot_y convention.
-- **Ground-truth placement gate (portable_building.verify_placement).** Every
-  build compares each themed module's placed footprint to its greybox slot's
-  and fails on mismatch -- the durable guard against visuals that don't sit on
-  the collision. Horizontal footprint is the hard invariant; module height is
-  reported as an advisory (some zoo opening modules are authored taller than
-  the greybox frame -- an authoring gap, not a placement error).
-- **Portable closure hardened.** Greybox-fallback slots (no themed module for
-  that width in the kit) keep their geometry in the base shell instead of
-  emitting an unbundled external ref -- the package stays self-contained
-  (PORTABLE=True) and fully visible even with a partial kit.
-
-Validated end-to-end on gas_street: 73/73 footprint match, PORTABLE=True,
-walkable=True, 7 opening-height items flagged advisory.
-## [0.80.0] - Facade windows tag opaque glazing
-
-- `_record_opening_slot`: a `window` opening on a `facade` shell (a hollow
-  building front with no interior) now tags `glazing:"facade"` on the slot,
-  so Zoo skins those panes with opaque `glass_facade` instead of see-through
-  glass -- you no longer look "through" a building that has nothing inside.
-  Non-facade (interior) windows are unchanged and remain transparent.
+- **10 configurations** across BANK_BRANCH (A02/A03/A04), DELI (A01/A02/A03),
+  WAREHOUSE (A01/A02), PARKING_GARAGE (A01/A02). A04 is the Central Bank hero
+  anchor (40x30, basement vault, 3 stairs + roof ladder).
+- **Stair discharge fix, generalized.** Phase 0 bridged only a stair's FINAL
+  flight; deli_counter.py now emits a discharge platform at EVERY story
+  crossing (multi-span stairs proved intermediate crossings void identically).
+- **Per-story stair rule (learned).** A stair spanning more than one story
+  boundary bakes its endpoints onto the top/bottom navmesh islands and skips
+  the floors between -- every passing building uses single-story flights only.
+  The slice configs are authored that way; a stairwell that needs redundancy
+  (basement access under a populated upper floor) gets a second flight, since
+  a lone inter-level flight can void under surrounding geometry.
+- Backlog: multi-story switchback should self-connect intermediate floors
+  (deferred -- intricate bake geometry, needs a live Godot loop).
 
 ## [0.79.0] - The engine leg lands (Godot 4.7, proven on hardware)
 
