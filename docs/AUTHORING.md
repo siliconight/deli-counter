@@ -49,6 +49,53 @@ the thing that was locked. On the `.tscn` + `theme_swap` path the artist edits
 modules in `res://art/zoo/` and never opens the level scene at all, so they
 physically cannot move a wall's collider.
 
+## The gate that keeps art honest — fit to the shell's truth
+
+The golden rule keeps art from *breaking* the collision. Its corollary keeps art
+from *drifting off* it: a themed module has to actually sit where the greybox
+reserved space, or you get a beautiful facade floating half a meter off its own
+collider. Deli Counter enforces this the way it enforces everything else —
+automatically, at build time — so a mis-placed skin fails the build instead of
+shipping. Two ideas make it work.
+
+**Placement fits the art to the greybox, not to a convention.** The greybox is
+ground truth: it already carries the collision and nav in world space. So when
+the resolver places a themed module, it *orients the module to match the greybox
+slot's footprint* rather than trusting the slot's stored rotation. Walls — which
+the greyboxer already lays out in world space — fall out to 0°; a canonical
+opening authored end-on rotates to 90°/270° to face its wall. Nothing is
+hard-coded per building, so the same code is correct on the next building you
+haven't drawn yet. (Lives in `tscn_export.godot_basis` + `themed_tscn._fit_rotation`.)
+
+**A ground-truth gate proves it on every build.** `portable_building.verify_placement`
+compares each themed module's placed footprint to its greybox slot's and fails
+the build on a mismatch — the durable guard against visuals that don't sit on
+the collision. The horizontal footprint (X/Z) is the hard invariant, because
+that's what rides on the collider. Height is checked separately, against the
+slot's *authored* opening height (what the kit is contracted to build) — not the
+greybox's drawn solid, because the greybox deliberately omits an opening's open
+aperture (it greyboxes a doorway as just its header lintel, so its drawn height
+is meaningless as a reference). A module that departs from its authored height is
+a kit build regression, reported as an advisory; it never fails the footprint gate.
+
+Two measurement rules the gate depends on — learned the hard way, stated here so
+nobody quietly re-introduces the bugs:
+
+- **Measure slot extents in world space, with node translation applied.** The
+  greybox positions an opening's parts — lintel, sill, pane — by node
+  translation, with each part's vertices centered at its own origin. Union the
+  *local* boxes and three stacked parts collapse into one short box (a doorway
+  reads 2 m instead of 4 m). Add the translation first.
+- **Match a slot to its greybox nodes precisely, not by substring.** A node
+  belongs to slot `S` if its name *is* `S` or starts with `S_` (a named sub-part
+  like `S_lintel`). A bare "`S` in name" test lets `ext_0_N_seg1` swallow
+  `seg10`…`seg19` — invisible while the local-space union happens to collapse
+  them onto the origin, then wrong the moment you measure correctly.
+
+> **The rule of thumb:** the greybox is the truth; the art conforms to it, and a
+> gate proves the conformance on every build. You never eyeball whether a skin
+> lines up — if it doesn't sit on the collision, the build tells you.
+
 ## Match the primitive to the job
 
 Everything in a building is one of three things, and the choice decides whether

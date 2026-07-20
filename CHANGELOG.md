@@ -1,3 +1,36 @@
+## [0.80.1] - Placement gate: measure the shell truthfully
+
+Hardening of the 0.81.0 ground-truth gate after validating it against real
+opening geometry. No change to the fit-to-greybox placement itself; these fix
+how the gate MEASURES the greybox so it stops crying wolf and starts catching a
+bug it was masking.
+
+- **Height advisory was a false positive -- fixed.** The gate compared a
+  module's height to the greybox's *drawn solid* extent, unioned in LOCAL space.
+  The greybox positions an opening's parts (lintel/sill/pane) by node
+  translation with locally-centered vertices, so the local union collapsed three
+  stacked parts into one short box (a 4.2 m window read as 2.4 m). The gate now
+  unions in WORLD space (applies node translation) and checks height against the
+  slot's AUTHORED opening height -- what the kit is contracted to build -- not
+  the greybox's partial solid (a doorway is greyboxed as just its header lintel,
+  so its drawn height is not a height reference). gas_street: 7 advisories -> 0.
+- **Hidden substring slot-match bug -- fixed.** Slot-to-greybox-node matching
+  used a bare substring test, so 'ext_0_N_seg1' also matched 'seg10'..'seg19'.
+  It was invisible only because the local-space union collapsed the siblings
+  onto the origin; measuring in world space exposed it (a wall read 30 m wide).
+  Matching is now precise: a node is the slot's iff its name is the slot_id or
+  starts with '<slot_id>_' (a named sub-part).
+- **Portable closure hardened** (carried from the same pass): greybox-fallback
+  slots keep their geometry in the base shell instead of emitting an unbundled
+  external ref, so a partial kit still yields a closed, fully-visible package.
+- **docs/AUTHORING.md:** new section "The gate that keeps art honest -- fit to
+  the shell's truth" -- the fit-to-greybox rule, the gate, and the two
+  measurement rules (world-space extents; precise slot matching) so the bugs
+  above can't be quietly re-introduced.
+
+Validated end-to-end on gas_street: 73/73 footprint match, 0 advisories,
+PORTABLE=True, walkable=True. Gate teeth confirmed: a wrong-width module fails
+the footprint check and a wrong-height module fails the height check.
 ## [0.80.0] - Phase 1 vertical slice: 10 configs gated on Godot 4.7
 
 The four slice families grown into 10 pvp_heist configurations, every one
