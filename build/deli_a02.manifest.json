@@ -1,0 +1,162 @@
+{
+  "kit_name": "Deli Counter",
+  "kit_version": "0.80.0",
+  "schema_version": "1.21.1",
+  "spec": "deli_a02.json",
+  "spec_sha256_16": "1a6a586ffcefe2fb",
+  "built_utc": "2026-07-19T23:51:29.097789+00:00",
+  "outputs": [
+    "deli_a02.glb"
+  ],
+  "expected": {
+    "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
+    "bounds_min": [
+      -19.175,
+      -19.0,
+      -3.6
+    ],
+    "bounds_max": [
+      19.175,
+      19.0,
+      7.6
+    ],
+    "origin": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "story_height": 3.3,
+    "floor_elevations": [
+      0.0,
+      3.3
+    ],
+    "markers": [
+      {
+        "name": "LADDER_0",
+        "type": "ladder",
+        "pos": [
+          8.0,
+          -12.0,
+          0.0
+        ]
+      },
+      {
+        "name": "LADDER_1",
+        "type": "ladder",
+        "pos": [
+          -7.0,
+          -13.0,
+          -3.3
+        ]
+      },
+      {
+        "name": "HATCH_-12_8",
+        "type": "hatch",
+        "pos": [
+          -12.0,
+          8.0,
+          3.3
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_FRONT",
+        "type": "attacker_spawn",
+        "pos": [
+          0.0,
+          -16.0,
+          0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_LOADING",
+        "type": "attacker_spawn",
+        "pos": [
+          6.0,
+          16.0,
+          0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN",
+        "type": "defender_spawn",
+        "pos": [
+          -12.0,
+          8.0,
+          3.3
+        ]
+      },
+      {
+        "name": "OBJECTIVE_A",
+        "type": "objective",
+        "pos": [
+          10.0,
+          8.0,
+          3.3
+        ]
+      },
+      {
+        "name": "EXTRACTION_ALLEY",
+        "type": "extraction",
+        "pos": [
+          -20.5,
+          4.0,
+          0
+        ]
+      },
+      {
+        "name": "COVER_LOW_AISLE_LEFT",
+        "type": "cover_low",
+        "pos": [
+          -2.0,
+          -9.5,
+          0.0
+        ]
+      },
+      {
+        "name": "COVER_LOW_AISLE_RIGHT",
+        "type": "cover_low",
+        "pos": [
+          2.5,
+          -9.5,
+          0.0
+        ]
+      },
+      {
+        "name": "COVER_HIGH_PALLET_STACK",
+        "type": "cover_high",
+        "pos": [
+          12.0,
+          10.0,
+          0.0
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_CAM_FRONT",
+        "type": "camera_socket",
+        "pos": [
+          -17.5,
+          -12.5,
+          2.6
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_CAM_SERVER",
+        "type": "camera_socket",
+        "pos": [
+          16.0,
+          12.0,
+          5.8
+        ]
+      },
+      {
+        "name": "PATROL_POINT_P01",
+        "type": "patrol_point",
+        "pos": [
+          -2.0,
+          -11.0,
+          0.0
+        ]
+      }
+    ]
+  }
+}

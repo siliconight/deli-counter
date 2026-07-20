@@ -2,104 +2,112 @@
   "kit_name": "Deli Counter",
   "kit_version": "0.80.0",
   "schema_version": "1.21.1",
-  "spec": "pvp_station_ref.json",
-  "spec_sha256_16": "1a36c024af1acdc5",
-  "built_utc": "2026-07-19T16:07:29.738168+00:00",
+  "spec": "warehouse_a01.json",
+  "spec_sha256_16": "7384bc4a3cbe2e72",
+  "built_utc": "2026-07-19T23:51:34.333285+00:00",
   "outputs": [
-    "pvp_station_ref.glb"
+    "warehouse_a01.glb"
   ],
   "expected": {
     "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
     "bounds_min": [
-      -17.15,
-      -13.15,
-      -3.9
+      -18.15,
+      -12.15,
+      -0.3
     ],
     "bounds_max": [
-      17.15,
-      13.15,
-      8.4
+      18.15,
+      12.15,
+      6.0
     ],
     "origin": [
       0.0,
       0.0,
       0.0
     ],
-    "story_height": 3.6,
+    "story_height": 5.0,
     "floor_elevations": [
-      0.0,
-      3.6
+      0.0
     ],
     "markers": [
       {
         "name": "LADDER_0",
         "type": "ladder",
         "pos": [
-          13.0,
-          -9.0,
-          3.6
+          -16.0,
+          10.0,
+          0.0
         ]
       },
       {
-        "name": "HATCH_13_-9",
+        "name": "HATCH_-16_10",
         "type": "hatch",
         "pos": [
-          13.0,
-          -9.0,
-          7.2
+          -16.0,
+          10.0,
+          5.0
         ]
       },
       {
-        "name": "ATTACKER_SPAWN_A",
+        "name": "ATTACKER_SPAWN_DOCKS",
         "type": "attacker_spawn",
         "pos": [
-          -2,
-          -16.0,
+          -9.0,
+          -14.0,
           0
         ]
       },
       {
-        "name": "ATTACKER_SPAWN_B",
+        "name": "ATTACKER_SPAWN_MAN_DOOR",
         "type": "attacker_spawn",
         "pos": [
           20.0,
-          0,
+          0.0,
           0
-        ]
-      },
-      {
-        "name": "ATTACKER_SPAWN_ROOF",
-        "type": "attacker_spawn",
-        "pos": [
-          13.0,
-          -9.0,
-          7.2
         ]
       },
       {
         "name": "DEFENDER_SPAWN",
         "type": "defender_spawn",
         "pos": [
-          13.0,
-          9.0,
-          3.6
+          -13.0,
+          8.0,
+          0
         ]
       },
       {
         "name": "OBJECTIVE_A",
         "type": "objective",
         "pos": [
-          13.0,
+          12.0,
+          8.0,
+          0
+        ]
+      },
+      {
+        "name": "EXTRACTION_YARD",
+        "type": "extraction",
+        "pos": [
           9.0,
-          3.6
+          -14.0,
+          0
         ]
       },
       {
         "name": "COVER_HIGH",
         "type": "cover_high",
         "pos": [
-          0,
-          -4,
+          -4.0,
+          -8.0,
+          0
+        ]
+      },
+      {
+        "name": "COVER_LOW",
+        "type": "cover_low",
+        "pos": [
+          4.0,
+          -2.0,
           0
         ]
       },
@@ -107,18 +115,9 @@
         "name": "CAMERA_SOCKET_01",
         "type": "camera_socket",
         "pos": [
-          14.0,
-          -11.0,
-          3.0
-        ]
-      },
-      {
-        "name": "EXTRACTION_STREET",
-        "type": "extraction",
-        "pos": [
-          -2,
-          -14.0,
-          0
+          16.0,
+          -10.0,
+          4.2
         ]
       }
     ]
