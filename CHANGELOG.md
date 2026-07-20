@@ -1,3 +1,17 @@
+## [0.82.0] - Version-line reconciliation (two-chat collision)
+
+Bookkeeping only -- no code change. The version line had regressed because two
+work streams collided on it:
+
+- `aba3358` set VERSION to 0.81.0 (fit-to-greybox placement + ground-truth gate).
+- The phase-1 slice (`4c234a0`, `d65e825`, "10 pvp_heist configs gated on
+  Godot 4.7") then reset VERSION back to 0.80.0 and tagged v0.80.0 -- landing
+  AFTER 0.81.0, so the number went backwards (0.81.0 -> 0.80.0 -> 0.80.1).
+
+All that work is intact on `main`; only the label regressed. This unifies the
+line FORWARD to 0.82.0 -- above the 0.81.0 baseline, absorbing the phase-1
+feature slice and the 0.80.1 gate-hardening. Pushed history is not rewritten and
+the earlier v0.80.0 tag is left in place; a fresh v0.82.0 tag marks the true HEAD.
 ## [0.80.1] - Placement gate: measure the shell truthfully
 
 Hardening of the 0.81.0 ground-truth gate after validating it against real
