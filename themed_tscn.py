@@ -118,13 +118,14 @@ def _glb_extent(glb_path):
             nm = (n.name or "").lower()
             if "colonly" in nm or "convcolonly" in nm:
                 continue
+            t = n.translation or [0.0, 0.0, 0.0]
             for p in g.meshes[n.mesh].primitives:
                 a = g.accessors[p.attributes.POSITION]
                 if a.min and a.max:
                     ok = True
                     for i in range(3):
-                        lo[i] = min(lo[i], a.min[i])
-                        hi[i] = max(hi[i], a.max[i])
+                        lo[i] = min(lo[i], a.min[i] + t[i])
+                        hi[i] = max(hi[i], a.max[i] + t[i])
         res = [hi[i] - lo[i] for i in range(3)] if ok else None
     except Exception:
         res = None
@@ -154,7 +155,13 @@ def greybox_slot_extents(greybox_glb):
                     lo[i] = min(lo[i], a.min[i])
                     hi[i] = max(hi[i], a.max[i])
         if ok:
-            per[nm] = (lo, hi)
+            # add node translation so a multi-part opening (lintel/sill/pane,
+            # each positioned by node translation) measures its true extent,
+            # not a collapsed local-space union. See portable_building
+            # ._glb_visual_bboxes for the full rationale.
+            t = n.translation or [0.0, 0.0, 0.0]
+            per[nm] = ([lo[i] + t[i] for i in range(3)],
+                       [hi[i] + t[i] for i in range(3)])
     return per
 
 
@@ -163,7 +170,10 @@ def _slot_extent(per, slot_id):
     hi = [-1e18] * 3
     found = False
     for nm, (l, h) in per.items():
-        if slot_id and slot_id in nm:
+        # precise: the slot's node or a named sub-part (<slot_id>_lintel/...),
+        # never a numeric sibling (seg1 must not swallow seg10). See
+        # portable_building._slot_greybox_extent for the rationale.
+        if slot_id and (nm == slot_id or nm.startswith(slot_id + "_")):
             found = True
             for i in range(3):
                 lo[i] = min(lo[i], l[i])

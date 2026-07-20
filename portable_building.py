@@ -136,7 +136,17 @@ def strip_greybox_base(src_glb, out_glb, slot_ids):
 
 
 def _glb_visual_bboxes(glb_path):
-    """{node_name: (lo, hi)} for visual (non-collision) meshed nodes."""
+    """{node_name: (lo, hi)} for visual (non-collision) meshed nodes, in the
+    glb's own (world) space.
+
+    A node's POSITION accessor min/max are LOCAL. The greybox positions an
+    opening's parts (lintel / sill / pane) by NODE TRANSLATION, with the vertex
+    data centred at each part's own origin -- so unioning the raw local boxes
+    collapses three vertically-stacked parts into one short box (the old
+    height-advisory false positive). We add each node's translation so a
+    multi-part slot measures its true extent. Greybox nodes are translation-only
+    (the baked-flat export convention); module parts carry translation 0, so
+    this is a no-op for them and the horizontal footprint check is unchanged."""
     from pygltflib import GLTF2
     g = GLTF2().load(glb_path)
     out = {}
@@ -157,7 +167,9 @@ def _glb_visual_bboxes(glb_path):
                     lo[i] = min(lo[i], acc.min[i])
                     hi[i] = max(hi[i], acc.max[i])
         if ok:
-            out[nm] = (lo, hi)
+            t = n.translation or [0.0, 0.0, 0.0]
+            out[nm] = ([lo[i] + t[i] for i in range(3)],
+                       [hi[i] + t[i] for i in range(3)])
     return out
 
 
@@ -180,7 +192,11 @@ def _slot_greybox_extent(gb_bboxes, slot_id):
     hi = [-1e18] * 3
     found = False
     for nm, (l, h) in gb_bboxes.items():
-        if slot_id in nm:
+        # PRECISE match: the slot's own node, or a named sub-part
+        # (<slot_id>_lintel/_sill/_pane/...). A bare substring test would let
+        # 'ext_0_N_seg1' also swallow 'ext_0_N_seg10'..'seg19' -- masked before
+        # only because the local-space union collapsed them onto the origin.
+        if nm == slot_id or nm.startswith(slot_id + "_"):
             found = True
             for i in range(3):
                 lo[i] = min(lo[i], l[i])
@@ -197,10 +213,13 @@ def verify_placement(greybox_glb, slots, module_dir, theme, style, tol=0.25):
     The check uses the SAME fit rotation the scene emits (themed_tscn._fit_rotation
     over tscn_export.godot_basis), so gate and scene can never drift. The gate is
     HORIZONTAL: X/Z footprint is the hard invariant (that is what rides on the
-    collision). Height (Y) is reported as an advisory delta -- some opening
-    modules are authored taller than the greybox opening frame, which is a zoo
-    authoring concern, not a placement error, and must not fail the orientation
-    gate."""
+    collision). Height (Y) is checked SEPARATELY, against the slot's AUTHORED
+    dims height -- not the greybox drawn extent. The greybox deliberately omits
+    an opening's open aperture (a doorway greyboxes only its header lintel), so
+    its drawn solid height is not a meaningful height reference; the authored
+    dims height is what zoo is contracted to build. A module whose height
+    departs from the authored opening height is a real zoo build regression and
+    is reported as an advisory (never fails the footprint gate)."""
     import tscn_export as _te
     gb = _glb_visual_bboxes(greybox_glb)
     cache = {}
@@ -237,9 +256,15 @@ def verify_placement(greybox_glb, slots, module_dir, theme, style, tol=0.25):
         else:
             mismatches.append({"slot": sid, "stem": stem, "fit_rot": rot,
                                "greybox_extent": ge, "placed_extent": placed})
-        if abs(placed[1] - ge[1]) > tol:
+        # Height vs the AUTHORED opening height (slot dims[2]), which is what
+        # zoo builds to -- not the greybox's partial drawn extent. A departure
+        # here means zoo did not build the module to the authored height.
+        dims = (s.get("fit") or {}).get("dims") or []
+        authored_h = round(dims[2], 3) if len(dims) >= 3 else None
+        if authored_h is not None and abs(placed[1] - authored_h) > tol:
             height_warnings.append({"slot": sid, "stem": stem,
-                                    "greybox_h": ge[1], "module_h": placed[1]})
+                                    "authored_h": authored_h,
+                                    "module_h": placed[1]})
     return {"checked": checked, "matched": matched,
             "mismatched": len(mismatches), "mismatches": mismatches[:20],
             "height_warnings": height_warnings[:20],
@@ -428,11 +453,11 @@ if __name__ == "__main__":
                   f"greybox={m['greybox_extent']} placed={m['placed_extent']}")
         hw = pc.get("height_warning_count", 0)
         if hw:
-            print(f"[portable] advisory: {hw} opening module(s) authored taller "
-                  f"than the greybox frame (zoo authoring, not a placement error)")
+            print(f"[portable] advisory: {hw} module(s) not built to the authored "
+                  f"opening height (zoo build regression, not a placement error)")
             for w in pc.get("height_warnings", [])[:4]:
                 print(f"    {w['slot']} ({w['stem']}): "
-                      f"greybox_h={w['greybox_h']} module_h={w['module_h']}")
+                      f"authored_h={w['authored_h']} module_h={w['module_h']}")
     else:
         print("[portable] WARNING: no greybox base -- no floors; "
               "pass --greybox <shell.glb> to make it walkable")
