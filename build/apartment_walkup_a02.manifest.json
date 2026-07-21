@@ -1,0 +1,99 @@
+{
+  "kit_name": "Deli Counter",
+  "kit_version": "0.80.0",
+  "schema_version": "1.21.1",
+  "spec": "apartment_walkup_a02.json",
+  "spec_sha256_16": "6df4cb6a9fe2f148",
+  "built_utc": "2026-07-20T12:27:06.447951+00:00",
+  "outputs": [
+    "apartment_walkup_a02.glb"
+  ],
+  "expected": {
+    "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
+    "bounds_min": [
+      -10.15,
+      -8.15,
+      -0.3
+    ],
+    "bounds_max": [
+      10.15,
+      8.15,
+      6.4
+    ],
+    "origin": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "story_height": 3.2,
+    "floor_elevations": [
+      0.0,
+      3.2
+    ],
+    "markers": [
+      {
+        "name": "ATTACKER_SPAWN_STOOP",
+        "type": "attacker_spawn",
+        "pos": [
+          0.0,
+          -10.0,
+          0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_YARD",
+        "type": "attacker_spawn",
+        "pos": [
+          5.0,
+          10.0,
+          0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN",
+        "type": "defender_spawn",
+        "pos": [
+          -5.0,
+          4.0,
+          3.2
+        ]
+      },
+      {
+        "name": "OBJECTIVE_A",
+        "type": "objective",
+        "pos": [
+          6.0,
+          4.0,
+          3.2
+        ]
+      },
+      {
+        "name": "EXTRACTION_STREET",
+        "type": "extraction",
+        "pos": [
+          -4.0,
+          -10.0,
+          0
+        ]
+      },
+      {
+        "name": "COVER_LOW",
+        "type": "cover_low",
+        "pos": [
+          3.0,
+          -4.0,
+          0
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_01",
+        "type": "camera_socket",
+        "pos": [
+          8.0,
+          -6.0,
+          2.5
+        ]
+      }
+    ]
+  }
+}

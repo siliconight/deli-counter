@@ -44,7 +44,17 @@ def find_godot(env=None):
     """Path to a usable Godot 4 binary, or (None, reason)."""
     env = env if env is not None else os.environ
     tried = []
-    names = [env["DC_GODOT"]] if env.get("DC_GODOT") else list(_CANDIDATES)
+    # An EXPLICIT DC_GODOT is trusted without a --version probe: the probe
+    # spawns the Windows console wrapper + engine child, and on a loaded
+    # machine (fresh Blender builds, AV scanning new files) it can blow the
+    # 30 s timeout and SKIP a gate against a perfectly good binary. If the
+    # path is wrong the gate run itself fails loudly -- nothing is masked.
+    if env.get("DC_GODOT"):
+        p = env["DC_GODOT"]
+        if os.path.exists(p):
+            return p, "DC_GODOT (explicit, unprobed)"
+        return None, f"DC_GODOT set but not found: {p}"
+    names = list(_CANDIDATES)
     for name in names:
         path = name if os.path.sep in name else shutil.which(name)
         if not path or not os.path.exists(path):

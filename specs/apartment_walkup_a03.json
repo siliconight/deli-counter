@@ -1,0 +1,303 @@
+{
+ "$schema": "../schema/level.schema.json",
+ "name": "apartment_walkup_a03",
+ "mode": "pvp_heist",
+ "seed": 3503,
+ "footprint_x": 22.0,
+ "footprint_y": 16.0,
+ "story_height": 3.2,
+ "n_stories": 2,
+ "has_basement": false,
+ "collision": "convex",
+ "auto_exterior": true,
+ "scale_ref": false,
+ "default_material": "concrete",
+ "materials": [
+  {
+   "id": "concrete",
+   "acoustic": "Concrete",
+   "absorption": 0.7,
+   "damping": 0.6
+  },
+  {
+   "id": "drywall",
+   "acoustic": "Drywall"
+  },
+  {
+   "id": "glass",
+   "acoustic": "Glass",
+   "absorption": 0.1,
+   "damping": 0.05
+  },
+  {
+   "id": "metal",
+   "acoustic": "Metal",
+   "absorption": 0.5,
+   "damping": 0.3
+  },
+  {
+   "id": "wood",
+   "acoustic": "Wood"
+  }
+ ],
+ "ext_walls": [
+  {
+   "wall": "S",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.2,
+     "width": 1.4,
+     "tag": "stoop_door"
+    },
+    {
+     "kind": "window",
+     "pos": 0.3,
+     "width": 1.4,
+     "sill": 0.9,
+     "vaultable": true
+    }
+   ]
+  },
+  {
+   "wall": "E",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "garage",
+     "pos": 0.0,
+     "width": 2.8,
+     "tag": "garage_door"
+    }
+   ]
+  },
+  {
+   "wall": "W",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.25,
+     "tag": "side_door"
+    }
+   ]
+  },
+  {
+   "wall": "N",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "breach",
+     "pos": 0.2,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
+  },
+  {
+   "wall": "S",
+   "story": 1,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "window",
+     "pos": -0.3,
+     "width": 1.4,
+     "sill": 0.9,
+     "vaultable": true
+    },
+    {
+     "kind": "window",
+     "pos": 0.3,
+     "width": 1.4,
+     "sill": 0.9,
+     "vaultable": true
+    }
+   ]
+  }
+ ],
+ "partitions": [
+  {
+   "story": 0,
+   "axis": "Y",
+   "pos": 3.0,
+   "start": -8.0,
+   "end": 8.0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.25,
+     "tag": "cage_door",
+     "reinforceable": true
+    },
+    {
+     "kind": "breach",
+     "pos": -0.4,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
+  },
+  {
+   "story": 1,
+   "axis": "X",
+   "pos": 0.0,
+   "start": -11.0,
+   "end": 11.0,
+   "material": "drywall",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.3,
+     "width": 1.25
+    },
+    {
+     "kind": "door",
+     "pos": 0.3,
+     "width": 1.25
+    }
+   ]
+  }
+ ],
+ "rooms": [
+  {
+   "id": "living_floor",
+   "story": 0,
+   "bounds": [
+    -11.0,
+    -8.0,
+    3.0,
+    8.0
+   ],
+   "role": "public_entry",
+   "combat_range": "medium"
+  },
+  {
+   "id": "garage_cage",
+   "story": 0,
+   "bounds": [
+    3.0,
+    -8.0,
+    11.0,
+    8.0
+   ],
+   "role": "objective_room",
+   "objective": true,
+   "fortifiable": true,
+   "combat_range": "close"
+  },
+  {
+   "id": "upper_front",
+   "story": 1,
+   "bounds": [
+    -11.0,
+    -8.0,
+    11.0,
+    0.0
+   ],
+   "role": "connector",
+   "combat_range": "medium"
+  },
+  {
+   "id": "upper_rear",
+   "story": 1,
+   "bounds": [
+    -11.0,
+    0.0,
+    11.0,
+    8.0
+   ],
+   "role": "fortifiable",
+   "fortifiable": true,
+   "combat_range": "close"
+  }
+ ],
+ "stairs": [
+  {
+   "x": -8.0,
+   "y": 1.5,
+   "from_story": 0,
+   "to_story": 1,
+   "style": "switchback",
+   "cut_slabs": true,
+   "facing": "N",
+   "id": "aw03_stair_0",
+   "role": "public_convenience"
+  }
+ ],
+ "ladders": [],
+ "vertical_links": [],
+ "parapets": [],
+ "volumes": [],
+ "markers": [
+  {
+   "type": "attacker_spawn",
+   "id": "STOOP",
+   "x": -4.0,
+   "y": -10.0,
+   "z": 0,
+   "rot_z": 90,
+   "room": "living_floor"
+  },
+  {
+   "type": "attacker_spawn",
+   "id": "SIDE",
+   "x": -13.0,
+   "y": 0.0,
+   "z": 0,
+   "rot_z": 0,
+   "room": "living_floor"
+  },
+  {
+   "type": "defender_spawn",
+   "x": -4.0,
+   "y": 4.0,
+   "z": 3.2,
+   "rot_z": 0,
+   "room": "upper_rear"
+  },
+  {
+   "type": "objective",
+   "id": "A",
+   "x": 7.0,
+   "y": 0.0,
+   "z": 0.0,
+   "room": "garage_cage",
+   "meta": {
+    "kind": "secure"
+   }
+  },
+  {
+   "type": "extraction",
+   "id": "STREET",
+   "x": 2.0,
+   "y": -10.0,
+   "z": 0
+  },
+  {
+   "type": "cover_low",
+   "x": -6.0,
+   "y": -4.0,
+   "z": 0,
+   "room": "living_floor"
+  },
+  {
+   "type": "camera_socket",
+   "id": "01",
+   "x": 1.0,
+   "y": -6.0,
+   "z": 2.5,
+   "room": "living_floor"
+  }
+ ]
+}

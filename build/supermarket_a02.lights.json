@@ -1,0 +1,185 @@
+{
+  "light_manifest_version": "1.1.0",
+  "building_id": "supermarket_a02",
+  "theme": "greybox",
+  "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location",
+  "rig_library": "lux",
+  "anchors": [
+    {
+      "id": "sales_floor_ceiling",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -3.5,
+        3.9
+      ],
+      "rot_y": 0.0,
+      "room": "sales_floor",
+      "row": {
+        "count": 5,
+        "spacing": 8.8
+      },
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "stockroom_ceiling",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        12.5,
+        3.9
+      ],
+      "rot_y": 0.0,
+      "room": "stockroom",
+      "row": {
+        "count": 5,
+        "spacing": 8.8
+      },
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "mezz_floor_ceiling",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -6.0,
+        7.9
+      ],
+      "rot_y": 0.0,
+      "room": "mezz_floor",
+      "row": {
+        "count": 5,
+        "spacing": 8.8
+      },
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "mezz_hall_ceiling",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -7.0,
+        10.0,
+        7.9
+      ],
+      "rot_y": 0.0,
+      "room": "mezz_hall",
+      "row": {
+        "count": 5,
+        "spacing": 6.0
+      },
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "manager_suite_ceiling",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        15.0,
+        10.0,
+        7.9
+      ],
+      "rot_y": 0.0,
+      "room": "manager_suite",
+      "row": {
+        "count": 5,
+        "spacing": 2.8
+      },
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "ext_0_S_window_1",
+      "type": "window",
+      "source": "derived",
+      "pos": [
+        -15.4,
+        -16.0,
+        1.75
+      ],
+      "rot_y": 90.0,
+      "size": [
+        2.6,
+        1.4
+      ],
+      "reacts_to_alarm": false
+    },
+    {
+      "id": "ext_1_S_window_1",
+      "type": "window",
+      "source": "derived",
+      "pos": [
+        -11.0,
+        -16.0,
+        5.75
+      ],
+      "rot_y": 90.0,
+      "size": [
+        2.4,
+        1.4
+      ],
+      "reacts_to_alarm": false
+    },
+    {
+      "id": "ext_1_S_window_2",
+      "type": "window",
+      "source": "derived",
+      "pos": [
+        11.0,
+        -16.0,
+        5.75
+      ],
+      "rot_y": 90.0,
+      "size": [
+        2.4,
+        1.4
+      ],
+      "reacts_to_alarm": false
+    },
+    {
+      "id": "ext_0_S_sign",
+      "type": "sign",
+      "source": "derived",
+      "pos": [
+        -0.0,
+        -16.2,
+        2.55
+      ],
+      "rot_y": 270.0,
+      "wall": "ext_0_S",
+      "size": [
+        3.0,
+        0.6
+      ],
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "ext_0_N_pack_1",
+      "type": "wall_pack",
+      "source": "derived",
+      "pos": [
+        0.0,
+        16.15,
+        3.25
+      ],
+      "rot_y": 90.0,
+      "wall": "ext_0_N",
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "ext_0_E_pack_1",
+      "type": "wall_pack",
+      "source": "derived",
+      "pos": [
+        22.15,
+        8.0,
+        2.45
+      ],
+      "rot_y": 0.0,
+      "wall": "ext_0_E",
+      "reacts_to_alarm": true
+    }
+  ]
+}

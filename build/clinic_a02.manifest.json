@@ -1,0 +1,117 @@
+{
+  "kit_name": "Deli Counter",
+  "kit_version": "0.80.0",
+  "schema_version": "1.21.1",
+  "spec": "clinic_a02.json",
+  "spec_sha256_16": "36ae9f5059e31918",
+  "built_utc": "2026-07-20T12:02:34.812441+00:00",
+  "outputs": [
+    "clinic_a02.glb"
+  ],
+  "expected": {
+    "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
+    "bounds_min": [
+      -14.15,
+      -10.15,
+      -0.3
+    ],
+    "bounds_max": [
+      14.15,
+      10.15,
+      7.8
+    ],
+    "origin": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "story_height": 3.4,
+    "floor_elevations": [
+      0.0,
+      3.4
+    ],
+    "markers": [
+      {
+        "name": "LADDER_0",
+        "type": "ladder",
+        "pos": [
+          -11.0,
+          -7.0,
+          3.4
+        ]
+      },
+      {
+        "name": "HATCH_-11_-7",
+        "type": "hatch",
+        "pos": [
+          -11.0,
+          -7.0,
+          6.8
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_FRONT",
+        "type": "attacker_spawn",
+        "pos": [
+          -2.0,
+          -12.0,
+          0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_SIDE",
+        "type": "attacker_spawn",
+        "pos": [
+          -16.0,
+          0.0,
+          0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN",
+        "type": "defender_spawn",
+        "pos": [
+          -7.0,
+          5.0,
+          3.4
+        ]
+      },
+      {
+        "name": "OBJECTIVE_A",
+        "type": "objective",
+        "pos": [
+          9.0,
+          5.0,
+          3.4
+        ]
+      },
+      {
+        "name": "EXTRACTION_STREET",
+        "type": "extraction",
+        "pos": [
+          4.0,
+          -12.0,
+          0
+        ]
+      },
+      {
+        "name": "COVER_HIGH",
+        "type": "cover_high",
+        "pos": [
+          5.0,
+          -5.0,
+          0
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_01",
+        "type": "camera_socket",
+        "pos": [
+          12.0,
+          -8.0,
+          2.8
+        ]
+      }
+    ]
+  }
+}

@@ -45,18 +45,20 @@ def _artifacts(tmp):
     return glb, gp
 
 
-def test_find_godot_env_override_and_version_check():
+def test_find_godot_env_override_trusted_without_probe():
+    # An EXPLICIT DC_GODOT is trusted (no --version subprocess): the probe
+    # spawns the Windows console wrapper + engine child and can time out on
+    # a loaded machine, SKIPping gates against a perfectly good binary
+    # (Phase 2 batch B). A wrong path still fails loudly at gate run time.
     with tempfile.TemporaryDirectory() as tmp:
         good = _fake_godot(tmp)
-        path, ver = nav_gate.find_godot(env={"DC_GODOT": good})
-        assert path == good and ver.startswith("4.")
+        path, why = nav_gate.find_godot(env={"DC_GODOT": good})
+        assert path == good and "unprobed" in why
 
 
-def test_find_godot_refuses_godot3():
-    with tempfile.TemporaryDirectory() as tmp:
-        old = _fake_godot(tmp, version="3.5.2.stable.official")
-        path, why = nav_gate.find_godot(env={"DC_GODOT": old})
-        assert path is None and "not Godot 4" in why
+def test_find_godot_explicit_but_missing_is_refused():
+    path, why = nav_gate.find_godot(env={"DC_GODOT": "/nonexistent/godot4"})
+    assert path is None and "not found" in why
 
 
 def test_find_godot_missing_binary():

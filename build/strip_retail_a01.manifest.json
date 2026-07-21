@@ -1,0 +1,135 @@
+{
+  "kit_name": "Deli Counter",
+  "kit_version": "0.80.0",
+  "schema_version": "1.21.1",
+  "spec": "strip_retail_a01.json",
+  "spec_sha256_16": "445400cdba97e14d",
+  "built_utc": "2026-07-20T12:26:23.928237+00:00",
+  "outputs": [
+    "strip_retail_a01.glb"
+  ],
+  "expected": {
+    "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
+    "bounds_min": [
+      -10.15,
+      -7.15,
+      -3.5
+    ],
+    "bounds_max": [
+      10.15,
+      7.15,
+      7.4
+    ],
+    "origin": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "story_height": 3.2,
+    "floor_elevations": [
+      0.0,
+      3.2
+    ],
+    "markers": [
+      {
+        "name": "LADDER_0",
+        "type": "ladder",
+        "pos": [
+          8.8,
+          -1.0,
+          -3.2
+        ]
+      },
+      {
+        "name": "LADDER_1",
+        "type": "ladder",
+        "pos": [
+          3.0,
+          -5.9,
+          0.0
+        ]
+      },
+      {
+        "name": "LADDER_2",
+        "type": "ladder",
+        "pos": [
+          -8.0,
+          5.0,
+          3.2
+        ]
+      },
+      {
+        "name": "HATCH_-5_4",
+        "type": "hatch",
+        "pos": [
+          -5.0,
+          4.0,
+          0.0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_FRONT",
+        "type": "attacker_spawn",
+        "pos": [
+          0.0,
+          -8.0,
+          0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_ALLEY",
+        "type": "attacker_spawn",
+        "pos": [
+          4.0,
+          8.0,
+          0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN",
+        "type": "defender_spawn",
+        "pos": [
+          -5.0,
+          3.0,
+          3.2
+        ]
+      },
+      {
+        "name": "OBJECTIVE_A",
+        "type": "objective",
+        "pos": [
+          5.0,
+          3.0,
+          3.2
+        ]
+      },
+      {
+        "name": "EXTRACTION_STREET",
+        "type": "extraction",
+        "pos": [
+          -4.0,
+          -8.0,
+          0
+        ]
+      },
+      {
+        "name": "COVER_LOW",
+        "type": "cover_low",
+        "pos": [
+          -3.0,
+          -3.0,
+          0
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_01",
+        "type": "camera_socket",
+        "pos": [
+          8.0,
+          -4.0,
+          2.6
+        ]
+      }
+    ]
+  }
+}

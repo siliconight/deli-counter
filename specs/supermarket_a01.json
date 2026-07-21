@@ -1,0 +1,342 @@
+{
+ "$schema": "../schema/level.schema.json",
+ "name": "supermarket_a01",
+ "mode": "pvp_heist",
+ "seed": 2601,
+ "footprint_x": 44.0,
+ "footprint_y": 32.0,
+ "story_height": 4.5,
+ "n_stories": 1,
+ "has_basement": false,
+ "collision": "convex",
+ "auto_exterior": true,
+ "scale_ref": false,
+ "default_material": "concrete",
+ "materials": [
+  {
+   "id": "concrete",
+   "acoustic": "Concrete",
+   "absorption": 0.7,
+   "damping": 0.6
+  },
+  {
+   "id": "drywall",
+   "acoustic": "Drywall"
+  },
+  {
+   "id": "glass",
+   "acoustic": "Glass",
+   "absorption": 0.1,
+   "damping": 0.05
+  },
+  {
+   "id": "metal",
+   "acoustic": "Metal",
+   "absorption": 0.5,
+   "damping": 0.3
+  },
+  {
+   "id": "wood",
+   "acoustic": "Wood"
+  }
+ ],
+ "ext_walls": [
+  {
+   "wall": "S",
+   "story": 0,
+   "material": "glass",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.25,
+     "width": 2.2,
+     "tag": "entry_west"
+    },
+    {
+     "kind": "door",
+     "pos": 0.25,
+     "width": 2.2,
+     "tag": "entry_east"
+    },
+    {
+     "kind": "window",
+     "pos": 0.0,
+     "width": 3.0,
+     "sill": 0.9,
+     "vaultable": false
+    }
+   ]
+  },
+  {
+   "wall": "N",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "garage",
+     "pos": -0.25,
+     "width": 3.6,
+     "tag": "loading_dock"
+    },
+    {
+     "kind": "door",
+     "pos": 0.3,
+     "width": 1.25,
+     "tag": "staff_entry"
+    }
+   ]
+  },
+  {
+   "wall": "W",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "breach",
+     "pos": 0.0,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
+  },
+  {
+   "wall": "E",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "window",
+     "pos": 0.0,
+     "width": 1.8,
+     "sill": 1.6,
+     "vaultable": false
+    }
+   ]
+  }
+ ],
+ "partitions": [
+  {
+   "story": 0,
+   "axis": "X",
+   "pos": 8.0,
+   "start": -22.0,
+   "end": 22.0,
+   "material": "drywall",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.35,
+     "width": 1.4
+    },
+    {
+     "kind": "door",
+     "pos": 0.1,
+     "width": 1.4
+    },
+    {
+     "kind": "door",
+     "pos": 0.4,
+     "width": 1.4
+    }
+   ]
+  },
+  {
+   "story": 0,
+   "axis": "Y",
+   "pos": -12.0,
+   "start": 8.0,
+   "end": 16.0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.25,
+     "tag": "cash_office_door",
+     "reinforceable": true
+    },
+    {
+     "kind": "breach",
+     "pos": 0.4,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
+  }
+ ],
+ "rooms": [
+  {
+   "id": "sales_floor",
+   "story": 0,
+   "bounds": [
+    -22.0,
+    -16.0,
+    22.0,
+    8.0
+   ],
+   "role": "public_entry",
+   "combat_range": "long"
+  },
+  {
+   "id": "cash_office",
+   "story": 0,
+   "bounds": [
+    -22.0,
+    8.0,
+    -12.0,
+    16.0
+   ],
+   "role": "objective_room",
+   "objective": true,
+   "fortifiable": true,
+   "combat_range": "close"
+  },
+  {
+   "id": "back_stock",
+   "story": 0,
+   "bounds": [
+    -12.0,
+    8.0,
+    22.0,
+    16.0
+   ],
+   "role": "connector",
+   "combat_range": "medium"
+  }
+ ],
+ "stairs": [],
+ "ladders": [],
+ "vertical_links": [],
+ "parapets": [],
+ "volumes": [
+  {
+   "name": "aisle_0",
+   "x": -14.0,
+   "y": -4.0,
+   "z": 1.0,
+   "size_x": 1.4,
+   "size_y": 14.0,
+   "size_z": 2.0,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "aisle_1",
+   "x": -7.0,
+   "y": -4.0,
+   "z": 1.0,
+   "size_x": 1.4,
+   "size_y": 14.0,
+   "size_z": 2.0,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "aisle_2",
+   "x": 0.0,
+   "y": -4.0,
+   "z": 1.0,
+   "size_x": 1.4,
+   "size_y": 14.0,
+   "size_z": 2.0,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "aisle_3",
+   "x": 7.0,
+   "y": -4.0,
+   "z": 1.0,
+   "size_x": 1.4,
+   "size_y": 14.0,
+   "size_z": 2.0,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "aisle_4",
+   "x": 14.0,
+   "y": -4.0,
+   "z": 1.0,
+   "size_x": 1.4,
+   "size_y": 14.0,
+   "size_z": 2.0,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "checkout_row",
+   "x": 0.0,
+   "y": -13.0,
+   "z": 0.55,
+   "size_x": 16.0,
+   "size_y": 1.0,
+   "size_z": 1.1,
+   "collision": "convex",
+   "material": "metal"
+  }
+ ],
+ "markers": [
+  {
+   "type": "attacker_spawn",
+   "id": "FRONT_W",
+   "x": -10.0,
+   "y": -18.0,
+   "z": 0,
+   "rot_z": 90,
+   "room": "sales_floor"
+  },
+  {
+   "type": "attacker_spawn",
+   "id": "FRONT_E",
+   "x": 10.0,
+   "y": -18.0,
+   "z": 0,
+   "rot_z": 90,
+   "room": "sales_floor"
+  },
+  {
+   "type": "defender_spawn",
+   "x": 6.0,
+   "y": 12.0,
+   "z": 0.0,
+   "rot_z": 0,
+   "room": "back_stock"
+  },
+  {
+   "type": "objective",
+   "id": "A",
+   "x": -17.0,
+   "y": 12.0,
+   "z": 0.0,
+   "room": "cash_office",
+   "meta": {
+    "kind": "secure"
+   }
+  },
+  {
+   "type": "extraction",
+   "id": "LOT",
+   "x": 0.0,
+   "y": -18.5,
+   "z": 0
+  },
+  {
+   "type": "cover_low",
+   "x": -7.0,
+   "y": -8.0,
+   "z": 0,
+   "room": "sales_floor"
+  },
+  {
+   "type": "camera_socket",
+   "id": "01",
+   "x": 19.0,
+   "y": -13.0,
+   "z": 3.8,
+   "room": "sales_floor"
+  }
+ ]
+}

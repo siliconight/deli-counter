@@ -1,0 +1,281 @@
+{
+ "$schema": "../schema/level.schema.json",
+ "name": "pharmacy_a01",
+ "mode": "pvp_heist",
+ "seed": 2701,
+ "footprint_x": 24.0,
+ "footprint_y": 18.0,
+ "story_height": 3.4,
+ "n_stories": 1,
+ "has_basement": false,
+ "collision": "convex",
+ "auto_exterior": true,
+ "scale_ref": false,
+ "default_material": "concrete",
+ "materials": [
+  {
+   "id": "concrete",
+   "acoustic": "Concrete",
+   "absorption": 0.7,
+   "damping": 0.6
+  },
+  {
+   "id": "drywall",
+   "acoustic": "Drywall"
+  },
+  {
+   "id": "glass",
+   "acoustic": "Glass",
+   "absorption": 0.1,
+   "damping": 0.05
+  },
+  {
+   "id": "metal",
+   "acoustic": "Metal",
+   "absorption": 0.5,
+   "damping": 0.3
+  },
+  {
+   "id": "wood",
+   "acoustic": "Wood"
+  }
+ ],
+ "ext_walls": [
+  {
+   "wall": "S",
+   "story": 0,
+   "material": "glass",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.15,
+     "width": 1.6,
+     "tag": "main_entry"
+    },
+    {
+     "kind": "window",
+     "pos": 0.3,
+     "width": 2.0,
+     "sill": 0.9,
+     "vaultable": true
+    }
+   ]
+  },
+  {
+   "wall": "E",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.2,
+     "width": 1.25,
+     "tag": "staff_entry"
+    }
+   ]
+  },
+  {
+   "wall": "N",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "breach",
+     "pos": 0.0,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
+  },
+  {
+   "wall": "W",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "window",
+     "pos": 0.0,
+     "width": 1.4,
+     "sill": 1.5,
+     "vaultable": false
+    }
+   ]
+  }
+ ],
+ "partitions": [
+  {
+   "story": 0,
+   "axis": "X",
+   "pos": 2.0,
+   "start": -12.0,
+   "end": 12.0,
+   "material": "drywall",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.3,
+     "width": 1.25
+    },
+    {
+     "kind": "door",
+     "pos": 0.35,
+     "width": 1.25
+    }
+   ]
+  },
+  {
+   "story": 0,
+   "axis": "Y",
+   "pos": 4.0,
+   "start": 2.0,
+   "end": 9.0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.25,
+     "tag": "rx_cage",
+     "reinforceable": true
+    },
+    {
+     "kind": "breach",
+     "pos": -0.4,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
+  }
+ ],
+ "rooms": [
+  {
+   "id": "retail_floor",
+   "story": 0,
+   "bounds": [
+    -12.0,
+    -9.0,
+    12.0,
+    2.0
+   ],
+   "role": "public_entry",
+   "combat_range": "medium"
+  },
+  {
+   "id": "rx_counter",
+   "story": 0,
+   "bounds": [
+    -12.0,
+    2.0,
+    4.0,
+    9.0
+   ],
+   "role": "connector",
+   "combat_range": "close"
+  },
+  {
+   "id": "rx_vault",
+   "story": 0,
+   "bounds": [
+    4.0,
+    2.0,
+    12.0,
+    9.0
+   ],
+   "role": "objective_room",
+   "objective": true,
+   "fortifiable": true,
+   "combat_range": "close"
+  }
+ ],
+ "stairs": [],
+ "ladders": [],
+ "vertical_links": [],
+ "parapets": [],
+ "volumes": [
+  {
+   "name": "gondola_a",
+   "x": -5.0,
+   "y": -3.5,
+   "z": 0.8,
+   "size_x": 1.2,
+   "size_y": 8.0,
+   "size_z": 1.6,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "gondola_b",
+   "x": 1.0,
+   "y": -3.5,
+   "z": 0.8,
+   "size_x": 1.2,
+   "size_y": 8.0,
+   "size_z": 1.6,
+   "collision": "convex",
+   "material": "metal"
+  }
+ ],
+ "markers": [
+  {
+   "type": "attacker_spawn",
+   "id": "FRONT",
+   "x": -2.0,
+   "y": -11.0,
+   "z": 0,
+   "rot_z": 90,
+   "room": "retail_floor"
+  },
+  {
+   "type": "attacker_spawn",
+   "id": "REAR",
+   "x": 14.0,
+   "y": 5.0,
+   "z": 0,
+   "rot_z": 180,
+   "room": "rx_counter"
+  },
+  {
+   "type": "defender_spawn",
+   "x": -6.0,
+   "y": 5.5,
+   "z": 0.0,
+   "rot_z": 0,
+   "room": "rx_counter"
+  },
+  {
+   "type": "objective",
+   "id": "A",
+   "x": 8.0,
+   "y": 5.5,
+   "z": 0.0,
+   "room": "rx_vault",
+   "meta": {
+    "kind": "secure"
+   }
+  },
+  {
+   "type": "extraction",
+   "id": "STREET",
+   "x": 3.0,
+   "y": -11.0,
+   "z": 0
+  },
+  {
+   "type": "cover_low",
+   "x": 4.0,
+   "y": -5.0,
+   "z": 0,
+   "room": "retail_floor"
+  },
+  {
+   "type": "camera_socket",
+   "id": "01",
+   "x": 10.0,
+   "y": -7.0,
+   "z": 2.8,
+   "room": "retail_floor"
+  }
+ ]
+}

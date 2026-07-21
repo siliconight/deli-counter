@@ -1,0 +1,733 @@
+{
+ "$schema": "../schema/level.schema.json",
+ "name": "gas_station_a02",
+ "mode": "pvp_heist",
+ "seed": 3102,
+ "grid": 0.5,
+ "footprint_x": 32.0,
+ "footprint_y": 22.0,
+ "story_height": 4.2,
+ "n_stories": 1,
+ "has_basement": false,
+ "wall_thick": 0.3,
+ "floor_thick": 0.3,
+ "collision": "convex",
+ "auto_exterior": true,
+ "default_material": "stone_ext",
+ "materials": [
+  {
+   "id": "stone_ext",
+   "acoustic": "Concrete",
+   "absorption": 0.72,
+   "damping": 0.62
+  },
+  {
+   "id": "storefront_glass",
+   "acoustic": "Glass",
+   "absorption": 0.08,
+   "damping": 0.05
+  },
+  {
+   "id": "drywall",
+   "acoustic": "Drywall",
+   "absorption": 0.42,
+   "damping": 0.38
+  },
+  {
+   "id": "cooler_panel",
+   "acoustic": "Metal",
+   "absorption": 0.5,
+   "damping": 0.3
+  },
+  {
+   "id": "metal",
+   "acoustic": "Metal",
+   "absorption": 0.18,
+   "damping": 0.16
+  },
+  {
+   "id": "asphalt",
+   "acoustic": "Concrete",
+   "absorption": 0.6,
+   "damping": 0.55
+  },
+  {
+   "id": "canopy_steel",
+   "acoustic": "Metal",
+   "absorption": 0.16,
+   "damping": 0.14
+  }
+ ],
+ "ext_walls": [
+  {
+   "wall": "S",
+   "story": 0,
+   "material": "storefront_glass",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.18,
+     "width": 1.8,
+     "tag": "front_entry_west"
+    },
+    {
+     "kind": "door",
+     "pos": 0.18,
+     "width": 1.8,
+     "tag": "front_entry_east"
+    },
+    {
+     "kind": "window",
+     "pos": -0.4,
+     "width": 3.0,
+     "height": 2.4,
+     "sill": 1.2,
+     "material": "storefront_glass",
+     "vaultable": false
+    },
+    {
+     "kind": "window",
+     "pos": 0.4,
+     "width": 3.0,
+     "height": 2.4,
+     "sill": 1.2,
+     "material": "storefront_glass",
+     "vaultable": false
+    }
+   ]
+  },
+  {
+   "wall": "N",
+   "story": 0,
+   "material": "stone_ext",
+   "openings": [
+    {
+     "kind": "breach",
+     "pos": 0.3,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
+  },
+  {
+   "wall": "E",
+   "story": 0,
+   "material": "storefront_glass",
+   "openings": [
+    {
+     "kind": "window",
+     "pos": -0.3,
+     "width": 2.4,
+     "height": 2.4,
+     "sill": 1.2,
+     "material": "storefront_glass",
+     "tag": "dining_window_1",
+     "vaultable": false
+    },
+    {
+     "kind": "window",
+     "pos": -0.1,
+     "width": 2.4,
+     "height": 2.4,
+     "sill": 1.2,
+     "material": "storefront_glass",
+     "tag": "dining_window_2",
+     "vaultable": false
+    }
+   ]
+  },
+  {
+   "wall": "W",
+   "story": 0,
+   "material": "stone_ext",
+   "openings": [
+    {
+     "kind": "window",
+     "pos": -0.3,
+     "width": 2.0,
+     "height": 2.0,
+     "sill": 1.2,
+     "material": "storefront_glass",
+     "tag": "sales_side_window",
+     "vaultable": false
+    },
+    {
+     "kind": "window",
+     "pos": 0.38,
+     "width": 1.2,
+     "height": 2.0,
+     "sill": 1.2,
+     "material": "storefront_glass",
+     "tag": "office_window",
+     "vaultable": false
+    }
+   ]
+  }
+ ],
+ "partitions": [
+  {
+   "story": 0,
+   "axis": "Y",
+   "pos": 7.0,
+   "start": -11.0,
+   "end": 1.0,
+   "material": "drywall",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.8,
+     "tag": "sales_to_food"
+    }
+   ]
+  },
+  {
+   "story": 0,
+   "axis": "X",
+   "pos": 1.0,
+   "start": -16.0,
+   "end": 16.0,
+   "material": "drywall",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.344,
+     "width": 1.25,
+     "tag": "sales_to_back_hall"
+    },
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.4,
+     "tag": "sales_to_stockroom"
+    },
+    {
+     "kind": "door",
+     "pos": 0.3,
+     "width": 1.25,
+     "tag": "cooler_door_1",
+     "material": "cooler_panel"
+    }
+   ]
+  },
+  {
+   "story": 0,
+   "axis": "Y",
+   "pos": -6.0,
+   "start": 1.0,
+   "end": 11.0,
+   "material": "drywall",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.25,
+     "width": 1.25,
+     "tag": "hall_to_stockroom"
+    },
+    {
+     "kind": "breach",
+     "pos": 0.3,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
+  },
+  {
+   "story": 0,
+   "axis": "Y",
+   "pos": 7.0,
+   "start": 1.0,
+   "end": 11.0,
+   "material": "cooler_panel",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.25,
+     "tag": "stockroom_to_cooler"
+    }
+   ]
+  },
+  {
+   "story": 0,
+   "axis": "X",
+   "pos": 6.0,
+   "start": -16.0,
+   "end": -6.0,
+   "material": "drywall",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.25,
+     "tag": "hall_to_office"
+    }
+   ]
+  }
+ ],
+ "rooms": [
+  {
+   "id": "sales_floor",
+   "story": 0,
+   "bounds": [
+    -16.0,
+    -11.0,
+    7.0,
+    1.0
+   ],
+   "role": "public_entry",
+   "objective": true,
+   "combat_range": "long"
+  },
+  {
+   "id": "food_service",
+   "story": 0,
+   "bounds": [
+    7.0,
+    -11.0,
+    16.0,
+    1.0
+   ],
+   "role": "fortifiable",
+   "fortifiable": true,
+   "combat_range": "close"
+  },
+  {
+   "id": "back_hall",
+   "story": 0,
+   "bounds": [
+    -16.0,
+    1.0,
+    -6.0,
+    6.0
+   ],
+   "role": "connector",
+   "combat_range": "medium"
+  },
+  {
+   "id": "manager_office",
+   "story": 0,
+   "bounds": [
+    -16.0,
+    6.0,
+    -6.0,
+    11.0
+   ],
+   "role": "objective_room",
+   "objective": true,
+   "fortifiable": true,
+   "combat_range": "medium"
+  },
+  {
+   "id": "stockroom",
+   "story": 0,
+   "bounds": [
+    -6.0,
+    1.0,
+    7.0,
+    11.0
+   ],
+   "role": "fortifiable",
+   "combat_range": "long",
+   "fortifiable": true
+  },
+  {
+   "id": "walk_in_cooler",
+   "story": 0,
+   "bounds": [
+    7.0,
+    1.0,
+    16.0,
+    11.0
+   ],
+   "role": "fortifiable",
+   "fortifiable": true,
+   "combat_range": "close"
+  }
+ ],
+ "volumes": [
+  {
+   "name": "register_counter",
+   "x": 0.0,
+   "y": -8.5,
+   "z": 0.55,
+   "size_x": 6.0,
+   "size_y": 1.0,
+   "size_z": 1.1,
+   "collision": "convex",
+   "material": "drywall"
+  },
+  {
+   "name": "gondola_aisle_1",
+   "x": -6.0,
+   "y": -5.0,
+   "z": 0.8,
+   "size_x": 1.0,
+   "size_y": 6.0,
+   "size_z": 1.6,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "gondola_aisle_2",
+   "x": -2.0,
+   "y": -5.0,
+   "z": 0.8,
+   "size_x": 1.0,
+   "size_y": 6.0,
+   "size_z": 1.6,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "gondola_aisle_3",
+   "x": 3.0,
+   "y": -6.0,
+   "z": 0.8,
+   "size_x": 1.0,
+   "size_y": 5.0,
+   "size_z": 1.6,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "coffee_food_island",
+   "x": 11.5,
+   "y": -6.0,
+   "z": 0.5,
+   "size_x": 4.0,
+   "size_y": 3.0,
+   "size_z": 1.0,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "bakery_grab_go_case",
+   "x": 14.0,
+   "y": -9.5,
+   "z": 0.6,
+   "size_x": 2.5,
+   "size_y": 1.0,
+   "size_z": 1.2,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "cooler_backstock_rack",
+   "x": 11.5,
+   "y": 8.0,
+   "z": 1.0,
+   "size_x": 7.0,
+   "size_y": 1.0,
+   "size_z": 2.0,
+   "collision": "convex",
+   "material": "cooler_panel"
+  },
+  {
+   "name": "stock_rack_1",
+   "x": -3.0,
+   "y": 7.0,
+   "z": 1.0,
+   "size_x": 1.0,
+   "size_y": 6.0,
+   "size_z": 2.0,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "stock_rack_2",
+   "x": 4.0,
+   "y": 7.0,
+   "z": 1.0,
+   "size_x": 1.0,
+   "size_y": 6.0,
+   "size_z": 2.0,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "loading_pallet_stack",
+   "x": -9.0,
+   "y": 8.5,
+   "z": 0.75,
+   "size_x": 4.0,
+   "size_y": 3.0,
+   "size_z": 1.5,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "manager_desk",
+   "x": -13.0,
+   "y": 8.5,
+   "z": 0.5,
+   "size_x": 2.6,
+   "size_y": 1.3,
+   "size_z": 1.0,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "office_safe",
+   "x": -9.0,
+   "y": 9.5,
+   "z": 0.6,
+   "size_x": 1.2,
+   "size_y": 1.0,
+   "size_z": 1.2,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "forecourt_pad",
+   "x": 0.0,
+   "y": -9.0,
+   "z": -0.2,
+   "size_x": 46.0,
+   "size_y": 46.0,
+   "size_z": 0.4,
+   "collision": "convex",
+   "visual": true,
+   "material": "asphalt"
+  },
+  {
+   "name": "canopy_roof",
+   "x": 0.0,
+   "y": -22.0,
+   "z": 5.35,
+   "size_x": 22.0,
+   "size_y": 13.0,
+   "size_z": 0.9,
+   "collision": "convex",
+   "material": "canopy_steel"
+  },
+  {
+   "name": "canopy_col_1",
+   "x": -8.0,
+   "y": -27.0,
+   "z": 2.45,
+   "size_x": 0.5,
+   "size_y": 0.5,
+   "size_z": 4.9,
+   "collision": "convex",
+   "material": "canopy_steel"
+  },
+  {
+   "name": "canopy_col_2",
+   "x": 0.0,
+   "y": -27.0,
+   "z": 2.45,
+   "size_x": 0.5,
+   "size_y": 0.5,
+   "size_z": 4.9,
+   "collision": "convex",
+   "material": "canopy_steel"
+  },
+  {
+   "name": "canopy_col_3",
+   "x": 8.0,
+   "y": -27.0,
+   "z": 2.45,
+   "size_x": 0.5,
+   "size_y": 0.5,
+   "size_z": 4.9,
+   "collision": "convex",
+   "material": "canopy_steel"
+  },
+  {
+   "name": "canopy_col_4",
+   "x": -8.0,
+   "y": -17.0,
+   "z": 2.45,
+   "size_x": 0.5,
+   "size_y": 0.5,
+   "size_z": 4.9,
+   "collision": "convex",
+   "material": "canopy_steel"
+  },
+  {
+   "name": "canopy_col_5",
+   "x": 0.0,
+   "y": -17.0,
+   "z": 2.45,
+   "size_x": 0.5,
+   "size_y": 0.5,
+   "size_z": 4.9,
+   "collision": "convex",
+   "material": "canopy_steel"
+  },
+  {
+   "name": "canopy_col_6",
+   "x": 8.0,
+   "y": -17.0,
+   "z": 2.45,
+   "size_x": 0.5,
+   "size_y": 0.5,
+   "size_z": 4.9,
+   "collision": "convex",
+   "material": "canopy_steel"
+  },
+  {
+   "name": "pump_island_1",
+   "x": -6.0,
+   "y": -22.0,
+   "z": 0.15,
+   "size_x": 1.6,
+   "size_y": 8.0,
+   "size_z": 0.3,
+   "collision": "convex",
+   "material": "asphalt"
+  },
+  {
+   "name": "pump_island_2",
+   "x": 0.0,
+   "y": -22.0,
+   "z": 0.15,
+   "size_x": 1.6,
+   "size_y": 8.0,
+   "size_z": 0.3,
+   "collision": "convex",
+   "material": "asphalt"
+  },
+  {
+   "name": "pump_island_3",
+   "x": 6.0,
+   "y": -22.0,
+   "z": 0.15,
+   "size_x": 1.6,
+   "size_y": 8.0,
+   "size_z": 0.3,
+   "collision": "convex",
+   "material": "asphalt"
+  },
+  {
+   "name": "pump_1",
+   "x": -6.0,
+   "y": -25.0,
+   "z": 1.0,
+   "size_x": 1.0,
+   "size_y": 1.2,
+   "size_z": 1.4,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "pump_2",
+   "x": -6.0,
+   "y": -19.0,
+   "z": 1.0,
+   "size_x": 1.0,
+   "size_y": 1.2,
+   "size_z": 1.4,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "pump_3",
+   "x": 0.0,
+   "y": -25.0,
+   "z": 1.0,
+   "size_x": 1.0,
+   "size_y": 1.2,
+   "size_z": 1.4,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "pump_4",
+   "x": 0.0,
+   "y": -19.0,
+   "z": 1.0,
+   "size_x": 1.0,
+   "size_y": 1.2,
+   "size_z": 1.4,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "pump_5",
+   "x": 6.0,
+   "y": -25.0,
+   "z": 1.0,
+   "size_x": 1.0,
+   "size_y": 1.2,
+   "size_z": 1.4,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "pump_6",
+   "x": 6.0,
+   "y": -19.0,
+   "z": 1.0,
+   "size_x": 1.0,
+   "size_y": 1.2,
+   "size_z": 1.4,
+   "collision": "convex",
+   "material": "metal"
+  }
+ ],
+ "markers": [
+  {
+   "type": "attacker_spawn",
+   "id": "FRONT_W",
+   "x": -8.0,
+   "y": -13.0,
+   "z": 0,
+   "rot_z": 90,
+   "room": "sales_floor"
+  },
+  {
+   "type": "attacker_spawn",
+   "id": "FRONT_E",
+   "x": 8.0,
+   "y": -13.0,
+   "z": 0,
+   "rot_z": 90,
+   "room": "sales_floor"
+  },
+  {
+   "type": "defender_spawn",
+   "x": -9.0,
+   "y": 7.0,
+   "z": 0.0,
+   "rot_z": 0,
+   "room": "stockroom"
+  },
+  {
+   "type": "objective",
+   "id": "A",
+   "x": 9.0,
+   "y": 7.0,
+   "z": 0.0,
+   "room": "manager_office",
+   "meta": {
+    "kind": "secure"
+   }
+  },
+  {
+   "type": "extraction",
+   "id": "PUMPS",
+   "x": 0.0,
+   "y": -13.0,
+   "z": 0
+  },
+  {
+   "type": "cover_high",
+   "x": -2.0,
+   "y": -5.0,
+   "z": 0,
+   "room": "sales_floor"
+  },
+  {
+   "type": "camera_socket",
+   "id": "01",
+   "x": 13.0,
+   "y": -8.0,
+   "z": 2.8,
+   "room": "sales_floor"
+  }
+ ]
+}

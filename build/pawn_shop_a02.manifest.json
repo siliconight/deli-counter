@@ -1,0 +1,99 @@
+{
+  "kit_name": "Deli Counter",
+  "kit_version": "0.80.0",
+  "schema_version": "1.21.1",
+  "spec": "pawn_shop_a02.json",
+  "spec_sha256_16": "9bb6de50ce4970c4",
+  "built_utc": "2026-07-20T12:26:19.888001+00:00",
+  "outputs": [
+    "pawn_shop_a02.glb"
+  ],
+  "expected": {
+    "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
+    "bounds_min": [
+      -9.15,
+      -7.15,
+      -0.3
+    ],
+    "bounds_max": [
+      9.15,
+      7.15,
+      6.4
+    ],
+    "origin": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "story_height": 3.2,
+    "floor_elevations": [
+      0.0,
+      3.2
+    ],
+    "markers": [
+      {
+        "name": "ATTACKER_SPAWN_FRONT",
+        "type": "attacker_spawn",
+        "pos": [
+          -2.0,
+          -9.0,
+          0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_ALLEY",
+        "type": "attacker_spawn",
+        "pos": [
+          11.0,
+          4.0,
+          0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN",
+        "type": "defender_spawn",
+        "pos": [
+          -5.0,
+          4.0,
+          3.2
+        ]
+      },
+      {
+        "name": "OBJECTIVE_A",
+        "type": "objective",
+        "pos": [
+          5.0,
+          4.0,
+          3.2
+        ]
+      },
+      {
+        "name": "EXTRACTION_STREET",
+        "type": "extraction",
+        "pos": [
+          3.0,
+          -9.0,
+          0
+        ]
+      },
+      {
+        "name": "COVER_LOW",
+        "type": "cover_low",
+        "pos": [
+          3.0,
+          -3.0,
+          0
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_01",
+        "type": "camera_socket",
+        "pos": [
+          7.0,
+          -5.0,
+          2.5
+        ]
+      }
+    ]
+  }
+}
