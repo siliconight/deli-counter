@@ -1,0 +1,135 @@
+{
+  "kit_name": "Deli Counter",
+  "kit_version": "0.80.0",
+  "schema_version": "1.21.1",
+  "spec": "large_warehouse_a03.json",
+  "spec_sha256_16": "c6352bf8ed266ce2",
+  "built_utc": "2026-07-20T12:02:18.308676+00:00",
+  "outputs": [
+    "large_warehouse_a03.glb"
+  ],
+  "expected": {
+    "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
+    "bounds_min": [
+      -28.15,
+      -17.15,
+      -5.3
+    ],
+    "bounds_max": [
+      28.15,
+      17.15,
+      11.0
+    ],
+    "origin": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "story_height": 5.0,
+    "floor_elevations": [
+      0.0,
+      5.0
+    ],
+    "markers": [
+      {
+        "name": "LADDER_0",
+        "type": "ladder",
+        "pos": [
+          10.0,
+          12.0,
+          5.0
+        ]
+      },
+      {
+        "name": "HATCH_10_12",
+        "type": "hatch",
+        "pos": [
+          10.0,
+          12.0,
+          10.0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_DOCKS",
+        "type": "attacker_spawn",
+        "pos": [
+          -6.0,
+          -19.0,
+          0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_REAR",
+        "type": "attacker_spawn",
+        "pos": [
+          -10.0,
+          19.0,
+          0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_ROOF",
+        "type": "attacker_spawn",
+        "pos": [
+          10.0,
+          12.0,
+          10.0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN",
+        "type": "defender_spawn",
+        "pos": [
+          -12.0,
+          0.0,
+          -4.7
+        ]
+      },
+      {
+        "name": "OBJECTIVE_A",
+        "type": "objective",
+        "pos": [
+          16.0,
+          0.0,
+          -4.7
+        ]
+      },
+      {
+        "name": "EXTRACTION_YARD",
+        "type": "extraction",
+        "pos": [
+          10.0,
+          -19.0,
+          0
+        ]
+      },
+      {
+        "name": "COVER_HIGH",
+        "type": "cover_high",
+        "pos": [
+          8.0,
+          -10.0,
+          0
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_01",
+        "type": "camera_socket",
+        "pos": [
+          25.0,
+          -14.0,
+          4.2
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_02",
+        "type": "camera_socket",
+        "pos": [
+          -25.0,
+          14.0,
+          -1.0
+        ]
+      }
+    ]
+  }
+}

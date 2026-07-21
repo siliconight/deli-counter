@@ -1,0 +1,98 @@
+{
+  "kit_name": "Deli Counter",
+  "kit_version": "0.80.0",
+  "schema_version": "1.21.1",
+  "spec": "gas_station_a03.json",
+  "spec_sha256_16": "458af2da390492d8",
+  "built_utc": "2026-07-20T12:25:55.913174+00:00",
+  "outputs": [
+    "gas_station_a03.glb"
+  ],
+  "expected": {
+    "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
+    "bounds_min": [
+      -11.15,
+      -8.15,
+      -0.3
+    ],
+    "bounds_max": [
+      11.15,
+      8.35,
+      3.6
+    ],
+    "origin": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "story_height": 3.6,
+    "floor_elevations": [
+      0.0
+    ],
+    "markers": [
+      {
+        "name": "ATTACKER_SPAWN_FRONT",
+        "type": "attacker_spawn",
+        "pos": [
+          0.0,
+          -10.0,
+          0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_REAR",
+        "type": "attacker_spawn",
+        "pos": [
+          0.0,
+          10.0,
+          0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN",
+        "type": "defender_spawn",
+        "pos": [
+          6.0,
+          4.0,
+          0.0
+        ]
+      },
+      {
+        "name": "OBJECTIVE_A",
+        "type": "objective",
+        "pos": [
+          -7.0,
+          4.0,
+          0.0
+        ]
+      },
+      {
+        "name": "EXTRACTION_STREET",
+        "type": "extraction",
+        "pos": [
+          5.0,
+          -10.0,
+          0
+        ]
+      },
+      {
+        "name": "COVER_LOW",
+        "type": "cover_low",
+        "pos": [
+          -3.0,
+          -3.0,
+          0
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_01",
+        "type": "camera_socket",
+        "pos": [
+          9.0,
+          -6.0,
+          2.6
+        ]
+      }
+    ]
+  }
+}

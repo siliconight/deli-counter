@@ -1,0 +1,117 @@
+{
+  "kit_name": "Deli Counter",
+  "kit_version": "0.80.0",
+  "schema_version": "1.21.1",
+  "spec": "apartment_walkup_a01.json",
+  "spec_sha256_16": "18693ef34695f486",
+  "built_utc": "2026-07-21T02:21:22.372050+00:00",
+  "outputs": [
+    "apartment_walkup_a01.glb"
+  ],
+  "expected": {
+    "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
+    "bounds_min": [
+      -12.15,
+      -9.15,
+      -3.5
+    ],
+    "bounds_max": [
+      12.15,
+      10.42,
+      7.4
+    ],
+    "origin": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "story_height": 3.2,
+    "floor_elevations": [
+      0.0,
+      3.2
+    ],
+    "markers": [
+      {
+        "name": "LADDER_0",
+        "type": "ladder",
+        "pos": [
+          0.0,
+          9.7,
+          0.0
+        ]
+      },
+      {
+        "name": "HATCH_-6_5",
+        "type": "hatch",
+        "pos": [
+          -6.0,
+          5.0,
+          3.2
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_FRONT",
+        "type": "attacker_spawn",
+        "pos": [
+          0.0,
+          -11.0,
+          0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_GARAGE",
+        "type": "attacker_spawn",
+        "pos": [
+          4.0,
+          11.0,
+          0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN",
+        "type": "defender_spawn",
+        "pos": [
+          -6.0,
+          -4.0,
+          -3.0
+        ]
+      },
+      {
+        "name": "OBJECTIVE_A",
+        "type": "objective",
+        "pos": [
+          6.0,
+          -4.0,
+          -3.0
+        ]
+      },
+      {
+        "name": "EXTRACTION_STREET",
+        "type": "extraction",
+        "pos": [
+          -5.0,
+          -11.0,
+          0
+        ]
+      },
+      {
+        "name": "COVER_LOW",
+        "type": "cover_low",
+        "pos": [
+          -3.0,
+          -4.0,
+          0
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_01",
+        "type": "camera_socket",
+        "pos": [
+          9.0,
+          -6.0,
+          2.6
+        ]
+      }
+    ]
+  }
+}

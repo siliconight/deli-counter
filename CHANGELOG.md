@@ -1,50 +1,22 @@
-## [0.82.0] - Version-line reconciliation (two-chat collision)
+## [0.81.0] - Phase 2 Core Library: 27 configs across 11 new families
 
-Bookkeeping only -- no code change. The version line had regressed because two
-work streams collided on it:
+All 27 PASS both engine building gates on Godot 4.7 (with Phase 1's 10 and
+Phase 0's reference: 40 configurations / 16 families registered).
 
-- `aba3358` set VERSION to 0.81.0 (fit-to-greybox placement + ground-truth gate).
-- The phase-1 slice (`4c234a0`, `d65e825`, "10 pvp_heist configs gated on
-  Godot 4.7") then reset VERSION back to 0.80.0 and tagged v0.80.0 -- landing
-  AFTER 0.81.0, so the number went backwards (0.81.0 -> 0.80.0 -> 0.80.1).
+- **New families** (chassis-neighbors + preset conversions): CREDIT_UNION,
+  SUPERMARKET, PHARMACY, LARGE_WAREHOUSE, DEPOT, CLINIC, GAS_STATION (the
+  narrative slate's Wawa), AUTO_SHOP, PAWN_SHOP, STRIP_RETAIL (Angelos
+  cheesesteak + Jewelers Row), APARTMENT_WALKUP. Registrar records carry
+  slate_missions so the writer's 33-heist slate stays mapped.
+- **find_godot trusts explicit DC_GODOT** without a --version probe: the
+  probe spawns the console wrapper + engine child and can blow its 30 s
+  timeout on a loaded machine, SKIPping gates against a good binary. A wrong
+  path still fails loudly at gate run time.
+- Placement lessons encoded (p2 factory rules): straight basement flights
+  with generous clearance are the proven pattern at tall story heights;
+  building-level nav treats exterior pads (gas forecourt) as separate
+  islands -- connected at site scale, recorded as open_issue not defect.
 
-All that work is intact on `main`; only the label regressed. This unifies the
-line FORWARD to 0.82.0 -- above the 0.81.0 baseline, absorbing the phase-1
-feature slice and the 0.80.1 gate-hardening. Pushed history is not rewritten and
-the earlier v0.80.0 tag is left in place; a fresh v0.82.0 tag marks the true HEAD.
-## [0.80.1] - Placement gate: measure the shell truthfully
-
-Hardening of the 0.81.0 ground-truth gate after validating it against real
-opening geometry. No change to the fit-to-greybox placement itself; these fix
-how the gate MEASURES the greybox so it stops crying wolf and starts catching a
-bug it was masking.
-
-- **Height advisory was a false positive -- fixed.** The gate compared a
-  module's height to the greybox's *drawn solid* extent, unioned in LOCAL space.
-  The greybox positions an opening's parts (lintel/sill/pane) by node
-  translation with locally-centered vertices, so the local union collapsed three
-  stacked parts into one short box (a 4.2 m window read as 2.4 m). The gate now
-  unions in WORLD space (applies node translation) and checks height against the
-  slot's AUTHORED opening height -- what the kit is contracted to build -- not
-  the greybox's partial solid (a doorway is greyboxed as just its header lintel,
-  so its drawn height is not a height reference). gas_street: 7 advisories -> 0.
-- **Hidden substring slot-match bug -- fixed.** Slot-to-greybox-node matching
-  used a bare substring test, so 'ext_0_N_seg1' also matched 'seg10'..'seg19'.
-  It was invisible only because the local-space union collapsed the siblings
-  onto the origin; measuring in world space exposed it (a wall read 30 m wide).
-  Matching is now precise: a node is the slot's iff its name is the slot_id or
-  starts with '<slot_id>_' (a named sub-part).
-- **Portable closure hardened** (carried from the same pass): greybox-fallback
-  slots keep their geometry in the base shell instead of emitting an unbundled
-  external ref, so a partial kit still yields a closed, fully-visible package.
-- **docs/AUTHORING.md:** new section "The gate that keeps art honest -- fit to
-  the shell's truth" -- the fit-to-greybox rule, the gate, and the two
-  measurement rules (world-space extents; precise slot matching) so the bugs
-  above can't be quietly re-introduced.
-
-Validated end-to-end on gas_street: 73/73 footprint match, 0 advisories,
-PORTABLE=True, walkable=True. Gate teeth confirmed: a wrong-width module fails
-the footprint check and a wrong-height module fails the height check.
 ## [0.80.0] - Phase 1 vertical slice: 10 configs gated on Godot 4.7
 
 The four slice families grown into 10 pvp_heist configurations, every one

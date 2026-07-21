@@ -1,0 +1,294 @@
+{
+ "$schema": "../schema/level.schema.json",
+ "name": "clinic_a01",
+ "mode": "pvp_heist",
+ "seed": 3001,
+ "footprint_x": 30.0,
+ "footprint_y": 22.0,
+ "story_height": 3.4,
+ "n_stories": 1,
+ "has_basement": false,
+ "collision": "convex",
+ "auto_exterior": true,
+ "scale_ref": false,
+ "default_material": "concrete",
+ "materials": [
+  {
+   "id": "concrete",
+   "acoustic": "Concrete",
+   "absorption": 0.7,
+   "damping": 0.6
+  },
+  {
+   "id": "drywall",
+   "acoustic": "Drywall"
+  },
+  {
+   "id": "glass",
+   "acoustic": "Glass",
+   "absorption": 0.1,
+   "damping": 0.05
+  },
+  {
+   "id": "metal",
+   "acoustic": "Metal",
+   "absorption": 0.5,
+   "damping": 0.3
+  },
+  {
+   "id": "wood",
+   "acoustic": "Wood"
+  }
+ ],
+ "ext_walls": [
+  {
+   "wall": "S",
+   "story": 0,
+   "material": "glass",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.8,
+     "tag": "main_entry"
+    },
+    {
+     "kind": "window",
+     "pos": -0.35,
+     "width": 2.0,
+     "sill": 0.9,
+     "vaultable": true
+    },
+    {
+     "kind": "window",
+     "pos": 0.35,
+     "width": 2.0,
+     "sill": 0.9,
+     "vaultable": true
+    }
+   ]
+  },
+  {
+   "wall": "E",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.25,
+     "width": 1.6,
+     "tag": "ambulance_entry"
+    }
+   ]
+  },
+  {
+   "wall": "N",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.3,
+     "width": 1.25,
+     "tag": "staff_entry"
+    },
+    {
+     "kind": "breach",
+     "pos": 0.3,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
+  },
+  {
+   "wall": "W",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "window",
+     "pos": 0.0,
+     "width": 1.6,
+     "sill": 1.4,
+     "vaultable": false
+    }
+   ]
+  }
+ ],
+ "partitions": [
+  {
+   "story": 0,
+   "axis": "X",
+   "pos": 1.0,
+   "start": -15.0,
+   "end": 15.0,
+   "material": "drywall",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.3,
+     "width": 1.25
+    },
+    {
+     "kind": "door",
+     "pos": 0.3,
+     "width": 1.25
+    }
+   ]
+  },
+  {
+   "story": 0,
+   "axis": "Y",
+   "pos": 5.0,
+   "start": 1.0,
+   "end": 11.0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.25,
+     "tag": "dispensary_door",
+     "reinforceable": true
+    },
+    {
+     "kind": "breach",
+     "pos": -0.35,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
+  }
+ ],
+ "rooms": [
+  {
+   "id": "waiting_room",
+   "story": 0,
+   "bounds": [
+    -15.0,
+    -11.0,
+    15.0,
+    1.0
+   ],
+   "role": "public_entry",
+   "combat_range": "medium"
+  },
+  {
+   "id": "exam_wing",
+   "story": 0,
+   "bounds": [
+    -15.0,
+    1.0,
+    5.0,
+    11.0
+   ],
+   "role": "connector",
+   "combat_range": "close"
+  },
+  {
+   "id": "dispensary",
+   "story": 0,
+   "bounds": [
+    5.0,
+    1.0,
+    15.0,
+    11.0
+   ],
+   "role": "objective_room",
+   "objective": true,
+   "fortifiable": true,
+   "combat_range": "close"
+  }
+ ],
+ "stairs": [],
+ "ladders": [],
+ "vertical_links": [],
+ "parapets": [],
+ "volumes": [
+  {
+   "name": "reception_desk",
+   "x": -3.0,
+   "y": -1.5,
+   "z": 0.55,
+   "size_x": 6.0,
+   "size_y": 0.8,
+   "size_z": 1.1,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "chair_row",
+   "x": 4.0,
+   "y": -7.0,
+   "z": 0.45,
+   "size_x": 6.0,
+   "size_y": 0.8,
+   "size_z": 0.9,
+   "collision": "convex",
+   "material": "metal"
+  }
+ ],
+ "markers": [
+  {
+   "type": "attacker_spawn",
+   "id": "FRONT",
+   "x": 0.0,
+   "y": -13.0,
+   "z": 0,
+   "rot_z": 90,
+   "room": "waiting_room"
+  },
+  {
+   "type": "attacker_spawn",
+   "id": "STAFF",
+   "x": -6.0,
+   "y": 13.0,
+   "z": 0,
+   "rot_z": 270,
+   "room": "exam_wing"
+  },
+  {
+   "type": "defender_spawn",
+   "x": -8.0,
+   "y": 6.0,
+   "z": 0.0,
+   "rot_z": 0,
+   "room": "exam_wing"
+  },
+  {
+   "type": "objective",
+   "id": "A",
+   "x": 10.0,
+   "y": 6.0,
+   "z": 0.0,
+   "room": "dispensary",
+   "meta": {
+    "kind": "secure"
+   }
+  },
+  {
+   "type": "extraction",
+   "id": "STREET",
+   "x": 6.0,
+   "y": -13.0,
+   "z": 0
+  },
+  {
+   "type": "cover_low",
+   "x": -8.0,
+   "y": -6.0,
+   "z": 0,
+   "room": "waiting_room"
+  },
+  {
+   "type": "camera_socket",
+   "id": "01",
+   "x": 13.0,
+   "y": -9.0,
+   "z": 2.8,
+   "room": "waiting_room"
+  }
+ ]
+}

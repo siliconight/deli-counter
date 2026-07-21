@@ -1,0 +1,168 @@
+{
+  "light_manifest_version": "1.1.0",
+  "building_id": "apartment_walkup_a03",
+  "theme": "greybox",
+  "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location",
+  "rig_library": "lux",
+  "anchors": [
+    {
+      "id": "living_floor_ceiling",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -4.0,
+        0.0,
+        3.1
+      ],
+      "rot_y": 90.0,
+      "room": "living_floor",
+      "row": {
+        "count": 5,
+        "spacing": 3.2
+      },
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "garage_cage_ceiling",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        7.0,
+        0.0,
+        3.1
+      ],
+      "rot_y": 90.0,
+      "room": "garage_cage",
+      "row": {
+        "count": 5,
+        "spacing": 3.2
+      },
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "upper_front_ceiling",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -4.0,
+        6.3
+      ],
+      "rot_y": 0.0,
+      "room": "upper_front",
+      "row": {
+        "count": 5,
+        "spacing": 4.4
+      },
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "upper_rear_ceiling",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        4.0,
+        6.3
+      ],
+      "rot_y": 0.0,
+      "room": "upper_rear",
+      "row": {
+        "count": 5,
+        "spacing": 4.4
+      },
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "ext_0_S_window_1",
+      "type": "window",
+      "source": "derived",
+      "pos": [
+        6.6,
+        -8.0,
+        1.75
+      ],
+      "rot_y": 90.0,
+      "size": [
+        1.4,
+        1.4
+      ],
+      "reacts_to_alarm": false
+    },
+    {
+      "id": "ext_1_S_window_1",
+      "type": "window",
+      "source": "derived",
+      "pos": [
+        -6.6,
+        -8.0,
+        4.95
+      ],
+      "rot_y": 90.0,
+      "size": [
+        1.4,
+        1.4
+      ],
+      "reacts_to_alarm": false
+    },
+    {
+      "id": "ext_1_S_window_2",
+      "type": "window",
+      "source": "derived",
+      "pos": [
+        6.6,
+        -8.0,
+        4.95
+      ],
+      "rot_y": 90.0,
+      "size": [
+        1.4,
+        1.4
+      ],
+      "reacts_to_alarm": false
+    },
+    {
+      "id": "ext_0_S_sign",
+      "type": "sign",
+      "source": "derived",
+      "pos": [
+        -4.4,
+        -8.2,
+        2.55
+      ],
+      "rot_y": 270.0,
+      "wall": "ext_0_S",
+      "size": [
+        2.2,
+        0.6
+      ],
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "ext_0_E_pack_1",
+      "type": "wall_pack",
+      "source": "derived",
+      "pos": [
+        11.15,
+        0.0,
+        3.25
+      ],
+      "rot_y": 0.0,
+      "wall": "ext_0_E",
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "ext_0_W_pack_1",
+      "type": "wall_pack",
+      "source": "derived",
+      "pos": [
+        -11.15,
+        0.0,
+        2.45
+      ],
+      "rot_y": 180.0,
+      "wall": "ext_0_W",
+      "reacts_to_alarm": true
+    }
+  ]
+}

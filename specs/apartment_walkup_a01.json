@@ -1,0 +1,421 @@
+{
+ "$schema": "../schema/level.schema.json",
+ "name": "apartment_walkup_a01",
+ "mode": "pvp_heist",
+ "seed": 3501,
+ "footprint_x": 24.0,
+ "footprint_y": 18.0,
+ "story_height": 3.2,
+ "n_stories": 2,
+ "has_basement": true,
+ "collision": "convex",
+ "auto_exterior": true,
+ "default_material": "brick_ext",
+ "materials": [
+  {
+   "id": "brick_ext",
+   "acoustic": "Concrete",
+   "absorption": 0.7,
+   "damping": 0.6
+  },
+  {
+   "id": "drywall",
+   "acoustic": "Drywall"
+  },
+  {
+   "id": "glass",
+   "acoustic": "Glass",
+   "absorption": 0.1,
+   "damping": 0.05
+  }
+ ],
+ "ext_walls": [
+  {
+   "wall": "S",
+   "story": 0,
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.25,
+     "width": 1.25,
+     "tag": "main_entry"
+    },
+    {
+     "kind": "window",
+     "pos": 0.25,
+     "width": 1.2,
+     "sill": 1.0,
+     "vaultable": true
+    },
+    {
+     "kind": "breach",
+     "pos": 0.42,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
+  },
+  {
+   "wall": "N",
+   "story": 0,
+   "openings": [
+    {
+     "kind": "garage",
+     "pos": 0.0,
+     "width": 2.8,
+     "tag": "vehicle_entry"
+    },
+    {
+     "kind": "breach",
+     "pos": -0.35,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
+  },
+  {
+   "wall": "E",
+   "story": 1,
+   "openings": [
+    {
+     "kind": "window",
+     "pos": 0.0,
+     "width": 1.2,
+     "sill": 1.0,
+     "vaultable": true,
+     "tag": "upper_entry"
+    }
+   ]
+  },
+  {
+   "wall": "N",
+   "story": 1,
+   "openings": [
+    {
+     "kind": "window",
+     "pos": 0.0
+    }
+   ]
+  }
+ ],
+ "partitions": [
+  {
+   "story": 0,
+   "axis": "X",
+   "pos": 0.0,
+   "start": -9,
+   "end": 9,
+   "material": "drywall",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.25,
+     "width": 1.25
+    },
+    {
+     "kind": "breach",
+     "pos": 0.35,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
+  },
+  {
+   "story": 1,
+   "axis": "Y",
+   "pos": 2.5,
+   "start": -8,
+   "end": 8,
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.25
+    }
+   ]
+  },
+  {
+   "story": -1,
+   "axis": "Y",
+   "pos": 2.0,
+   "start": -7,
+   "end": 7,
+   "openings": [
+    {
+     "kind": "breach",
+     "pos": 0.0,
+     "breach_class": "reinforceable",
+     "material": "brick",
+     "reinforceable": true
+    },
+    {
+     "kind": "door",
+     "pos": -0.35,
+     "width": 1.25,
+     "tag": "vault_gate",
+     "reinforceable": true
+    }
+   ]
+  }
+ ],
+ "stairs": [
+  {
+   "x": -6.0,
+   "y": -4.0,
+   "from_story": -1,
+   "to_story": 0,
+   "style": "straight",
+   "cut_slabs": true,
+   "facing": "W",
+   "id": "aw01_stair_dn",
+   "role": "service"
+  },
+  {
+   "x": 7.0,
+   "y": -4.5,
+   "from_story": 0,
+   "to_story": 1,
+   "style": "switchback",
+   "cut_slabs": true,
+   "facing": "N",
+   "id": "aw01_stair_up",
+   "role": "public_convenience"
+  }
+ ],
+ "rooms": [
+  {
+   "id": "front_hall",
+   "story": 0,
+   "bounds": [
+    -11,
+    -9,
+    0,
+    0
+   ],
+   "role": "public_entry",
+   "combat_range": "medium"
+  },
+  {
+   "id": "kitchen",
+   "story": 0,
+   "bounds": [
+    0,
+    -9,
+    11,
+    0
+   ],
+   "role": "connector",
+   "combat_range": "close"
+  },
+  {
+   "id": "garage_bay",
+   "story": 0,
+   "bounds": [
+    -11,
+    0,
+    11,
+    9
+   ],
+   "role": "public_entry",
+   "combat_range": "long"
+  },
+  {
+   "id": "office",
+   "story": 1,
+   "bounds": [
+    -11,
+    -9,
+    2.5,
+    9
+   ],
+   "role": "fortifiable",
+   "fortifiable": true,
+   "combat_range": "medium"
+  },
+  {
+   "id": "bedroom",
+   "story": 1,
+   "bounds": [
+    2.5,
+    -9,
+    11,
+    9
+   ],
+   "role": "connector",
+   "combat_range": "close"
+  },
+  {
+   "id": "basement_vault",
+   "story": -1,
+   "bounds": [
+    2,
+    -7,
+    11,
+    9
+   ],
+   "role": "objective_room",
+   "objective": true,
+   "fortifiable": true,
+   "combat_range": "close"
+  },
+  {
+   "id": "basement_approach",
+   "story": -1,
+   "bounds": [
+    -11,
+    -7,
+    2,
+    9
+   ],
+   "role": "connector",
+   "combat_range": "medium"
+  }
+ ],
+ "vertical_links": [
+  {
+   "kind": "stair",
+   "from_story": -1,
+   "to_story": 2,
+   "role": "main_rotation"
+  },
+  {
+   "kind": "floor_hole",
+   "story": 1,
+   "x": 4.0,
+   "y": -3.0,
+   "size_x": 2.0,
+   "size_y": 2.0,
+   "role": "vertical_angle"
+  },
+  {
+   "kind": "hatch",
+   "story": 1,
+   "x": -6.0,
+   "y": 5.0,
+   "breachable": true
+  }
+ ],
+ "slab_holes": [
+  {
+   "story": 1,
+   "x": 4.0,
+   "y": -3.0,
+   "size_x": 2.0,
+   "size_y": 2.0
+  }
+ ],
+ "volumes": [
+  {
+   "name": "kitchen_counter_cover",
+   "x": 4.0,
+   "y": -4.0,
+   "z": 0.55,
+   "size_x": 5.0,
+   "size_y": 0.8,
+   "size_z": 1.1,
+   "collision": "convex"
+  }
+ ],
+ "parapets": [
+  {
+   "story": 2,
+   "height": 1.0
+  }
+ ],
+ "markers": [
+  {
+   "type": "attacker_spawn",
+   "id": "FRONT",
+   "x": 0.0,
+   "y": -11.0,
+   "z": 0,
+   "rot_z": 90,
+   "room": "front_hall"
+  },
+  {
+   "type": "attacker_spawn",
+   "id": "GARAGE",
+   "x": 4.0,
+   "y": 11.0,
+   "z": 0,
+   "rot_z": 270,
+   "room": "garage_bay"
+  },
+  {
+   "type": "defender_spawn",
+   "x": -6.0,
+   "y": -4.0,
+   "z": -3.0,
+   "rot_z": 0,
+   "room": "basement_approach"
+  },
+  {
+   "type": "objective",
+   "id": "A",
+   "x": 6.0,
+   "y": -4.0,
+   "z": -3.0,
+   "room": "basement_vault",
+   "meta": {
+    "kind": "secure"
+   }
+  },
+  {
+   "type": "extraction",
+   "id": "STREET",
+   "x": -5.0,
+   "y": -11.0,
+   "z": 0
+  },
+  {
+   "type": "cover_low",
+   "x": -3.0,
+   "y": -4.0,
+   "z": 0,
+   "room": "front_hall"
+  },
+  {
+   "type": "camera_socket",
+   "id": "01",
+   "x": 9.0,
+   "y": -6.0,
+   "z": 2.6,
+   "room": "front_hall"
+  }
+ ],
+ "fire_escapes": [
+  {
+   "id": "rear_fire_escape",
+   "wall": "N",
+   "served_stories": [
+    1
+   ],
+   "along": 0.0,
+   "termination": "drop_ladder",
+   "access": "window"
+  }
+ ],
+ "ladders": [
+  {
+   "x": 0.0,
+   "y": 9.7,
+   "from_story": 0,
+   "to_story": 1,
+   "facing": "S",
+   "id": "fire_escape_drop_ladder",
+   "role": "fire_escape_termination",
+   "ladder_type": "fixed_vertical",
+   "placement_mode": "exterior_wall",
+   "lower_surface": "grade",
+   "upper_surface": "rear_fire_escape",
+   "direction": "deploy_then_bidirectional",
+   "access_class": "emergency",
+   "transition": "fire_escape_platform_entry",
+   "fire_escape_id": "rear_fire_escape",
+   "access_control": "removable_section",
+   "counts_as_secondary_escape": true
+  }
+ ]
+}

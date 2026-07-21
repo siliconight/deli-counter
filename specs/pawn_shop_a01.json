@@ -1,0 +1,452 @@
+{
+ "$schema": "../schema/level.schema.json",
+ "name": "pawn_shop_a01",
+ "mode": "pvp_heist",
+ "seed": 3301,
+ "grid": 0.5,
+ "footprint_x": 16.0,
+ "footprint_y": 14.0,
+ "story_height": 3.4,
+ "n_stories": 2,
+ "has_basement": false,
+ "wall_thick": 0.25,
+ "floor_thick": 0.25,
+ "collision": "convex",
+ "auto_exterior": true,
+ "scale_ref": false,
+ "default_material": "concrete",
+ "materials": [
+  {
+   "id": "concrete",
+   "acoustic": "Concrete",
+   "absorption": 0.7,
+   "damping": 0.6
+  },
+  {
+   "id": "glass",
+   "acoustic": "Glass",
+   "absorption": 0.1,
+   "damping": 0.05
+  },
+  {
+   "id": "drywall",
+   "acoustic": "Drywall",
+   "absorption": 0.42,
+   "damping": 0.38
+  },
+  {
+   "id": "wood",
+   "acoustic": "Wood",
+   "absorption": 0.35,
+   "damping": 0.3
+  }
+ ],
+ "ext_walls": [
+  {
+   "wall": "S",
+   "story": 0,
+   "material": "glass",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.2,
+     "width": 1.4,
+     "tag": "front_door"
+    },
+    {
+     "kind": "window",
+     "pos": 0.25,
+     "width": 2.2,
+     "sill": 0.6,
+     "vaultable": true,
+     "material": "glass"
+    }
+   ]
+  },
+  {
+   "wall": "N",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.25,
+     "tag": "rear_door"
+    },
+    {
+     "kind": "breach",
+     "pos": 0.35,
+     "width": 1.1,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
+  },
+  {
+   "wall": "W",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "window",
+     "pos": -0.2,
+     "width": 1.2,
+     "sill": 0.8,
+     "vaultable": true,
+     "material": "glass"
+    }
+   ]
+  },
+  {
+   "wall": "E",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.25,
+     "width": 1.25,
+     "tag": "alley_door"
+    }
+   ]
+  },
+  {
+   "wall": "S",
+   "story": 1,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "window",
+     "pos": 0.0,
+     "width": 1.4,
+     "sill": 1.0,
+     "vaultable": true,
+     "material": "glass"
+    }
+   ]
+  },
+  {
+   "wall": "N",
+   "story": 1,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "breach",
+     "pos": 0.0,
+     "width": 1.2,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
+  },
+  {
+   "wall": "W",
+   "story": 1,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "window",
+     "pos": 0.0,
+     "width": 1.2,
+     "sill": 1.0,
+     "vaultable": true,
+     "material": "glass"
+    }
+   ]
+  },
+  {
+   "wall": "E",
+   "story": 1,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "window",
+     "pos": 0.0,
+     "width": 1.2,
+     "sill": 1.0,
+     "vaultable": true,
+     "material": "glass"
+    }
+   ]
+  }
+ ],
+ "partitions": [
+  {
+   "story": 0,
+   "axis": "X",
+   "pos": 2.0,
+   "start": -8.0,
+   "end": 8.0,
+   "material": "wood",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.3,
+     "width": 1.4
+    },
+    {
+     "kind": "door",
+     "pos": 0.35,
+     "width": 1.25
+    }
+   ]
+  },
+  {
+   "story": 1,
+   "axis": "X",
+   "pos": 0.0,
+   "start": -7.0,
+   "end": 7.0,
+   "material": "drywall",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.25
+    }
+   ]
+  }
+ ],
+ "stairs": [
+  {
+   "x": 3.5,
+   "y": -5.5,
+   "from_story": 0,
+   "to_story": 1,
+   "style": "straight",
+   "cut_slabs": true,
+   "facing": "W",
+   "id": "pw01_stair_0",
+   "role": "public_convenience"
+  }
+ ],
+ "ladders": [
+  {
+   "x": -6.0,
+   "y": 4.5,
+   "from_story": 1,
+   "to_story": 2,
+   "width": 0.5,
+   "depth": 0.15,
+   "facing": "S",
+   "cut_slabs": true,
+   "id": "night_pawn_ladder_0",
+   "role": "roof_access"
+  },
+  {
+   "x": -7.0,
+   "y": -6.0,
+   "from_story": 0,
+   "to_story": 1,
+   "facing": "E",
+   "cut_slabs": true,
+   "id": "night_pawn_ladder_1",
+   "role": "special_gameplay_route"
+  }
+ ],
+ "vertical_links": [
+  {
+   "kind": "stair",
+   "from_story": 0,
+   "to_story": 1,
+   "role": "main_route"
+  },
+  {
+   "kind": "hatch",
+   "from_story": 1,
+   "to_story": 2,
+   "role": "roof_escape",
+   "x": -6.0,
+   "y": 4.5
+  }
+ ],
+ "volumes": [
+  {
+   "name": "display_case_1",
+   "x": -4.0,
+   "y": -3.5,
+   "z": 0.5,
+   "size_x": 2.4,
+   "size_y": 0.9,
+   "size_z": 1.0,
+   "collision": "convex",
+   "material": "glass"
+  },
+  {
+   "name": "display_case_2",
+   "x": 4.0,
+   "y": -3.5,
+   "z": 0.5,
+   "size_x": 2.4,
+   "size_y": 0.9,
+   "size_z": 1.0,
+   "collision": "convex",
+   "material": "glass"
+  },
+  {
+   "name": "counter",
+   "x": 0.0,
+   "y": 1.2,
+   "z": 0.55,
+   "size_x": 4.0,
+   "size_y": 0.7,
+   "size_z": 1.1,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "shelving",
+   "x": -3.5,
+   "y": 4.5,
+   "z": 4.3,
+   "size_x": 0.8,
+   "size_y": 4.0,
+   "size_z": 1.8,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "crate_stack_safe_room_0",
+   "x": -3.7,
+   "y": 5.37,
+   "z": 0.475,
+   "size_x": 1.1,
+   "size_y": 1.1,
+   "size_z": 0.95,
+   "collision": "convex"
+  },
+  {
+   "name": "crate_stack_safe_room_1",
+   "x": -2.21,
+   "y": 3.63,
+   "z": 0.475,
+   "size_x": 1.1,
+   "size_y": 1.1,
+   "size_z": 0.95,
+   "collision": "convex"
+  }
+ ],
+ "rooms": [
+  {
+   "id": "shop_floor",
+   "story": 0,
+   "bounds": [
+    -8.0,
+    -7.0,
+    8.0,
+    2.0
+   ],
+   "role": "public_entry",
+   "combat_range": "close"
+  },
+  {
+   "id": "safe_room",
+   "story": 0,
+   "bounds": [
+    -8.0,
+    2.0,
+    8.0,
+    7.0
+   ],
+   "role": "objective_room",
+   "objective": true,
+   "fortifiable": true,
+   "combat_range": "close"
+  },
+  {
+   "id": "apartment",
+   "story": 1,
+   "bounds": [
+    -8.0,
+    -7.0,
+    8.0,
+    0.0
+   ],
+   "role": "connector",
+   "combat_range": "close"
+  },
+  {
+   "id": "upper_storage",
+   "story": 1,
+   "bounds": [
+    -8.0,
+    0.0,
+    8.0,
+    7.0
+   ],
+   "role": "fortifiable",
+   "fortifiable": true,
+   "combat_range": "close"
+  }
+ ],
+ "markers": [
+  {
+   "type": "attacker_spawn",
+   "id": "FRONT",
+   "x": 0.0,
+   "y": -9.0,
+   "z": 0,
+   "rot_z": 90,
+   "room": "shop_floor"
+  },
+  {
+   "type": "attacker_spawn",
+   "id": "ALLEY",
+   "x": 10.0,
+   "y": 2.0,
+   "z": 0,
+   "rot_z": 180,
+   "room": "shop_floor"
+  },
+  {
+   "type": "defender_spawn",
+   "x": 3.0,
+   "y": 4.0,
+   "z": 3.0,
+   "rot_z": 0,
+   "room": "upper_storage"
+  },
+  {
+   "type": "objective",
+   "id": "A",
+   "x": -4.0,
+   "y": 4.0,
+   "z": 0.0,
+   "room": "safe_room",
+   "meta": {
+    "kind": "secure"
+   }
+  },
+  {
+   "type": "extraction",
+   "id": "STREET",
+   "x": 4.0,
+   "y": -9.0,
+   "z": 0
+  },
+  {
+   "type": "cover_low",
+   "x": 2.0,
+   "y": -3.0,
+   "z": 0,
+   "room": "shop_floor"
+  },
+  {
+   "type": "camera_socket",
+   "id": "01",
+   "x": 6.0,
+   "y": -5.0,
+   "z": 2.6,
+   "room": "shop_floor"
+  }
+ ],
+ "parapets": [
+  {
+   "story": 2,
+   "height": 0.9,
+   "thick": 0.3
+  }
+ ],
+ "modular": true
+}
