@@ -1,0 +1,98 @@
+{
+  "kit_name": "Deli Counter",
+  "kit_version": "0.80.0",
+  "schema_version": "1.21.1",
+  "spec": "construction_site_a02.json",
+  "spec_sha256_16": "b8c62a85f76aaeed",
+  "built_utc": "2026-07-21T11:05:30.197898+00:00",
+  "outputs": [
+    "construction_site_a02.glb"
+  ],
+  "expected": {
+    "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
+    "bounds_min": [
+      -19.15,
+      -14.15,
+      -4.1
+    ],
+    "bounds_max": [
+      19.15,
+      14.15,
+      3.8
+    ],
+    "origin": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "story_height": 3.8,
+    "floor_elevations": [
+      0.0
+    ],
+    "markers": [
+      {
+        "name": "ATTACKER_SPAWN_GATE",
+        "type": "attacker_spawn",
+        "pos": [
+          0.0,
+          -16.0,
+          0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_HAUL",
+        "type": "attacker_spawn",
+        "pos": [
+          4.0,
+          16.0,
+          0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN",
+        "type": "defender_spawn",
+        "pos": [
+          -10.0,
+          0.0,
+          -3.5
+        ]
+      },
+      {
+        "name": "OBJECTIVE_A",
+        "type": "objective",
+        "pos": [
+          10.0,
+          0.0,
+          -3.5
+        ]
+      },
+      {
+        "name": "EXTRACTION_YARD",
+        "type": "extraction",
+        "pos": [
+          -8.0,
+          -16.0,
+          0
+        ]
+      },
+      {
+        "name": "COVER_LOW",
+        "type": "cover_low",
+        "pos": [
+          4.0,
+          -7.0,
+          0
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_01",
+        "type": "camera_socket",
+        "pos": [
+          16.0,
+          -11.0,
+          3.2
+        ]
+      }
+    ]
+  }
+}

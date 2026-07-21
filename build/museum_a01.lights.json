@@ -1,0 +1,217 @@
+{
+  "light_manifest_version": "1.1.0",
+  "building_id": "museum_a01",
+  "theme": "greybox",
+  "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location",
+  "rig_library": "lux",
+  "anchors": [
+    {
+      "id": "great_hall_ceiling",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -6.0,
+        5.3
+      ],
+      "rot_y": 0.0,
+      "room": "great_hall",
+      "row": {
+        "count": 5,
+        "spacing": 9.6
+      },
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "north_galleries_ceiling",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        12.0,
+        5.3
+      ],
+      "rot_y": 0.0,
+      "room": "north_galleries",
+      "row": {
+        "count": 5,
+        "spacing": 9.6
+      },
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "mezzanine_ceiling",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -8.0,
+        10.7
+      ],
+      "rot_y": 0.0,
+      "room": "mezzanine",
+      "row": {
+        "count": 5,
+        "spacing": 9.6
+      },
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "upper_west_ceiling",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -8.0,
+        10.0,
+        10.7
+      ],
+      "rot_y": 0.0,
+      "room": "upper_west",
+      "row": {
+        "count": 5,
+        "spacing": 6.4
+      },
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "special_exhibit_ceiling",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        16.0,
+        10.0,
+        10.7
+      ],
+      "rot_y": 0.0,
+      "room": "special_exhibit",
+      "row": {
+        "count": 5,
+        "spacing": 3.2
+      },
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "ext_0_S_window_1",
+      "type": "window",
+      "source": "derived",
+      "pos": [
+        -16.8,
+        -18.0,
+        3.05
+      ],
+      "rot_y": 90.0,
+      "size": [
+        2.2,
+        1.4
+      ],
+      "reacts_to_alarm": false
+    },
+    {
+      "id": "ext_0_S_window_2",
+      "type": "window",
+      "source": "derived",
+      "pos": [
+        16.8,
+        -18.0,
+        3.05
+      ],
+      "rot_y": 90.0,
+      "size": [
+        2.2,
+        1.4
+      ],
+      "reacts_to_alarm": false
+    },
+    {
+      "id": "ext_1_N_window_1",
+      "type": "window",
+      "source": "derived",
+      "pos": [
+        0.0,
+        18.0,
+        7.85
+      ],
+      "rot_y": 270.0,
+      "size": [
+        2.0,
+        1.4
+      ],
+      "reacts_to_alarm": false
+    },
+    {
+      "id": "ext_1_S_window_1",
+      "type": "window",
+      "source": "derived",
+      "pos": [
+        -14.4,
+        -18.0,
+        7.85
+      ],
+      "rot_y": 90.0,
+      "size": [
+        2.4,
+        1.4
+      ],
+      "reacts_to_alarm": false
+    },
+    {
+      "id": "ext_1_S_window_2",
+      "type": "window",
+      "source": "derived",
+      "pos": [
+        14.4,
+        -18.0,
+        7.85
+      ],
+      "rot_y": 90.0,
+      "size": [
+        2.4,
+        1.4
+      ],
+      "reacts_to_alarm": false
+    },
+    {
+      "id": "ext_0_S_sign",
+      "type": "sign",
+      "source": "derived",
+      "pos": [
+        -0.0,
+        -18.2,
+        2.55
+      ],
+      "rot_y": 270.0,
+      "wall": "ext_0_S",
+      "size": [
+        3.4,
+        0.6
+      ],
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "ext_0_E_pack_1",
+      "type": "wall_pack",
+      "source": "derived",
+      "pos": [
+        24.15,
+        10.8,
+        2.45
+      ],
+      "rot_y": 0.0,
+      "wall": "ext_0_E",
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "ext_0_W_pack_1",
+      "type": "wall_pack",
+      "source": "derived",
+      "pos": [
+        -24.15,
+        -10.8,
+        2.45
+      ],
+      "rot_y": 180.0,
+      "wall": "ext_0_W",
+      "reacts_to_alarm": true
+    }
+  ]
+}

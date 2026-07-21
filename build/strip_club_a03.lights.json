@@ -1,0 +1,172 @@
+{
+  "light_manifest_version": "1.1.0",
+  "building_id": "strip_club_a03",
+  "theme": "greybox",
+  "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location",
+  "rig_library": "lux",
+  "anchors": [
+    {
+      "id": "main_floor_ceiling",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -5.5,
+        3.5
+      ],
+      "rot_y": 0.0,
+      "room": "main_floor",
+      "row": {
+        "count": 5,
+        "spacing": 7.2
+      },
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "back_bar_ceiling",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        6.5,
+        3.5
+      ],
+      "rot_y": 0.0,
+      "room": "back_bar",
+      "row": {
+        "count": 5,
+        "spacing": 7.2
+      },
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "vip_mezz_ceiling",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -6.0,
+        7.1
+      ],
+      "rot_y": 0.0,
+      "room": "vip_mezz",
+      "row": {
+        "count": 5,
+        "spacing": 7.2
+      },
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "champagne_wing_ceiling",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -6.0,
+        6.0,
+        7.1
+      ],
+      "rot_y": 0.0,
+      "room": "champagne_wing",
+      "row": {
+        "count": 5,
+        "spacing": 4.8
+      },
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "mezz_office_ceiling",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        12.0,
+        6.0,
+        7.1
+      ],
+      "rot_y": 0.0,
+      "room": "mezz_office",
+      "row": {
+        "count": 4,
+        "spacing": 3.0
+      },
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "ext_0_S_window_1",
+      "type": "window",
+      "source": "derived",
+      "pos": [
+        10.8,
+        -12.0,
+        2.65
+      ],
+      "rot_y": 90.0,
+      "size": [
+        1.2,
+        1.4
+      ],
+      "reacts_to_alarm": false
+    },
+    {
+      "id": "ext_1_S_window_1",
+      "type": "window",
+      "source": "derived",
+      "pos": [
+        -10.8,
+        -12.0,
+        5.85
+      ],
+      "rot_y": 90.0,
+      "size": [
+        1.4,
+        1.4
+      ],
+      "reacts_to_alarm": false
+    },
+    {
+      "id": "ext_1_S_window_2",
+      "type": "window",
+      "source": "derived",
+      "pos": [
+        10.8,
+        -12.0,
+        5.85
+      ],
+      "rot_y": 90.0,
+      "size": [
+        1.4,
+        1.4
+      ],
+      "reacts_to_alarm": false
+    },
+    {
+      "id": "ext_0_S_sign",
+      "type": "sign",
+      "source": "derived",
+      "pos": [
+        -7.2,
+        -12.2,
+        2.55
+      ],
+      "rot_y": 270.0,
+      "wall": "ext_0_S",
+      "size": [
+        2.4,
+        0.6
+      ],
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "ext_0_E_pack_1",
+      "type": "wall_pack",
+      "source": "derived",
+      "pos": [
+        18.15,
+        4.8,
+        2.45
+      ],
+      "rot_y": 0.0,
+      "wall": "ext_0_E",
+      "reacts_to_alarm": true
+    }
+  ]
+}

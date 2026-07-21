@@ -1,0 +1,307 @@
+{
+ "$schema": "../schema/level.schema.json",
+ "name": "courthouse_a03",
+ "mode": "pvp_heist",
+ "seed": 4203,
+ "footprint_x": 44.0,
+ "footprint_y": 32.0,
+ "story_height": 5.0,
+ "n_stories": 1,
+ "has_basement": false,
+ "collision": "convex",
+ "auto_exterior": true,
+ "scale_ref": false,
+ "default_material": "concrete",
+ "materials": [
+  {
+   "id": "concrete",
+   "acoustic": "Concrete",
+   "absorption": 0.7,
+   "damping": 0.6
+  },
+  {
+   "id": "drywall",
+   "acoustic": "Drywall"
+  },
+  {
+   "id": "glass",
+   "acoustic": "Glass",
+   "absorption": 0.1,
+   "damping": 0.05
+  },
+  {
+   "id": "metal",
+   "acoustic": "Metal",
+   "absorption": 0.5,
+   "damping": 0.3
+  },
+  {
+   "id": "wood",
+   "acoustic": "Wood"
+  }
+ ],
+ "ext_walls": [
+  {
+   "wall": "S",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 2.2,
+     "tag": "main_entry"
+    },
+    {
+     "kind": "window",
+     "pos": -0.35,
+     "width": 1.8,
+     "sill": 2.0,
+     "vaultable": false
+    },
+    {
+     "kind": "window",
+     "pos": 0.35,
+     "width": 1.8,
+     "sill": 2.0,
+     "vaultable": false
+    }
+   ]
+  },
+  {
+   "wall": "W",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.2,
+     "width": 1.4,
+     "tag": "transport_entry"
+    }
+   ]
+  },
+  {
+   "wall": "N",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.3,
+     "width": 1.25,
+     "tag": "staff_entry"
+    },
+    {
+     "kind": "breach",
+     "pos": -0.3,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
+  }
+ ],
+ "partitions": [
+  {
+   "story": 0,
+   "axis": "X",
+   "pos": 2.0,
+   "start": -22.0,
+   "end": 22.0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.3,
+     "width": 1.6
+    },
+    {
+     "kind": "door",
+     "pos": 0.3,
+     "width": 1.6
+    }
+   ]
+  },
+  {
+   "story": 0,
+   "axis": "Y",
+   "pos": 8.0,
+   "start": 2.0,
+   "end": 16.0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.25,
+     "tag": "chambers_door",
+     "reinforceable": true
+    },
+    {
+     "kind": "breach",
+     "pos": -0.35,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
+  }
+ ],
+ "rooms": [
+  {
+   "id": "public_hall",
+   "story": 0,
+   "bounds": [
+    -22.0,
+    -16.0,
+    22.0,
+    2.0
+   ],
+   "role": "public_entry",
+   "combat_range": "long"
+  },
+  {
+   "id": "main_courtroom",
+   "story": 0,
+   "bounds": [
+    -22.0,
+    2.0,
+    8.0,
+    16.0
+   ],
+   "role": "connector",
+   "combat_range": "medium"
+  },
+  {
+   "id": "judges_chambers",
+   "story": 0,
+   "bounds": [
+    8.0,
+    2.0,
+    22.0,
+    16.0
+   ],
+   "role": "objective_room",
+   "objective": true,
+   "fortifiable": true,
+   "combat_range": "close"
+  }
+ ],
+ "stairs": [],
+ "ladders": [
+  {
+   "x": -18.0,
+   "y": 12.0,
+   "from_story": 0,
+   "to_story": 1,
+   "facing": "S",
+   "role": "roof_access",
+   "placement_mode": "interior",
+   "upper_surface": "roof",
+   "transition": "roof_hatch_exit",
+   "access_class": "staff_restricted",
+   "access_control": "locked_hatch",
+   "id": "ch03_ladder_0"
+  }
+ ],
+ "vertical_links": [
+  {
+   "kind": "hatch",
+   "story": 1,
+   "x": -18.0,
+   "y": 12.0
+  }
+ ],
+ "parapets": [
+  {
+   "story": 1,
+   "height": 1.0
+  }
+ ],
+ "volumes": [
+  {
+   "name": "bench",
+   "x": -7.0,
+   "y": 12.0,
+   "z": 0.6,
+   "size_x": 5.0,
+   "size_y": 1.4,
+   "size_z": 1.2,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "gallery_pews",
+   "x": -8.0,
+   "y": 6.0,
+   "z": 0.45,
+   "size_x": 8.0,
+   "size_y": 1.0,
+   "size_z": 0.9,
+   "collision": "convex",
+   "material": "wood"
+  }
+ ],
+ "markers": [
+  {
+   "type": "attacker_spawn",
+   "id": "STEPS",
+   "x": -4.0,
+   "y": -18.0,
+   "z": 0,
+   "rot_z": 90,
+   "room": "public_hall"
+  },
+  {
+   "type": "attacker_spawn",
+   "id": "TRANSPORT",
+   "x": -24.0,
+   "y": -7.0,
+   "z": 0,
+   "rot_z": 0,
+   "room": "public_hall"
+  },
+  {
+   "type": "defender_spawn",
+   "x": -14.0,
+   "y": 8.0,
+   "z": 0.0,
+   "rot_z": 0,
+   "room": "main_courtroom"
+  },
+  {
+   "type": "objective",
+   "id": "A",
+   "x": 15.0,
+   "y": 9.0,
+   "z": 0.0,
+   "room": "judges_chambers",
+   "meta": {
+    "kind": "secure"
+   }
+  },
+  {
+   "type": "extraction",
+   "id": "PLAZA",
+   "x": 6.0,
+   "y": -18.0,
+   "z": 0
+  },
+  {
+   "type": "cover_high",
+   "x": 2.0,
+   "y": -8.0,
+   "z": 0,
+   "room": "public_hall"
+  },
+  {
+   "type": "camera_socket",
+   "id": "01",
+   "x": 19.0,
+   "y": -13.0,
+   "z": 4.2,
+   "room": "public_hall"
+  }
+ ]
+}

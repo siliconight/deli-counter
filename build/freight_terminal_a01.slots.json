@@ -1,0 +1,4072 @@
+{
+  "slot_manifest_version": "1.2.0",
+  "building_id": "freight_terminal_a01",
+  "theme": "greybox",
+  "module_library": "art/zoo",
+  "module_size": 2.0,
+  "space": "spec/Blender Z-up raw coords; rot_y = degrees about up",
+  "coverage": {
+    "breach/generated": 2,
+    "doorway/generated": 10,
+    "wall/generated": 99
+  },
+  "slots": [
+    {
+      "slot_id": "roof_footprint",
+      "role": "roof",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "roof_greybox_01",
+      "kit_axis": "theme",
+      "wall": null,
+      "story": 1,
+      "facing": "up",
+      "room": null,
+      "transform": {
+        "translation": [
+          0.0,
+          0.0,
+          5.85
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          54.0,
+          32.0,
+          0.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "trimesh"
+      }
+    },
+    {
+      "slot_id": "ext_0_N_seg0",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_N",
+      "story": 0,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          -26.0,
+          16.0,
+          3.0
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_N_seg1",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_N",
+      "story": 0,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          -24.0,
+          16.0,
+          3.0
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_N_seg2",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_N",
+      "story": 0,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          -22.0,
+          16.0,
+          3.0
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_N_seg3",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_N",
+      "story": 0,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          -20.0,
+          16.0,
+          3.0
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_N_seg4",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_N",
+      "story": 0,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          -18.0,
+          16.0,
+          3.0
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_N_seg5",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_N",
+      "story": 0,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          -16.375,
+          16.0,
+          3.0
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.25,
+          0.3,
+          6.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.25,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_N_open0",
+      "role": "doorway",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "doorway_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_N",
+      "story": 0,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          -13.5,
+          16.0,
+          3.0
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          4.5,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [
+          {
+            "kind": "garage",
+            "width": 4.5,
+            "height": 3.0,
+            "sill": 0.0
+          }
+        ],
+        "collision": "convex"
+      },
+      "interactive": {
+        "id": "freight_terminal_a01:if:1a68badd",
+        "kind": "door",
+        "states": [
+          "closed",
+          "open"
+        ],
+        "default": "closed",
+        "collision_per_state": {
+          "closed": true,
+          "open": false
+        }
+      }
+    },
+    {
+      "slot_id": "ext_0_N_seg6",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_N",
+      "story": 0,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          -10.25,
+          16.0,
+          3.0
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_N_seg7",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_N",
+      "story": 0,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          -8.25,
+          16.0,
+          3.0
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_N_seg8",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_N",
+      "story": 0,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          -6.25,
+          16.0,
+          3.0
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_N_seg9",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_N",
+      "story": 0,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          -4.25,
+          16.0,
+          3.0
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_N_seg10",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_N",
+      "story": 0,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          -2.25,
+          16.0,
+          3.0
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_N_seg11",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_N",
+      "story": 0,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          -0.25,
+          16.0,
+          3.0
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_N_seg12",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_N",
+      "story": 0,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          1.75,
+          16.0,
+          3.0
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_N_seg13",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_N",
+      "story": 0,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          3.75,
+          16.0,
+          3.0
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_N_seg14",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_N",
+      "story": 0,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          5.75,
+          16.0,
+          3.0
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_N_seg15",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_N",
+      "story": 0,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          7.75,
+          16.0,
+          3.0
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_N_seg16",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_N",
+      "story": 0,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          9.75,
+          16.0,
+          3.0
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_N_seg17",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_N",
+      "story": 0,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          11.0,
+          16.0,
+          3.0
+        ],
+        "rot_y": 0,
+        "scale": [
+          0.5,
+          0.3,
+          6.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.5,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_N_open1",
+      "role": "doorway",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "doorway_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_N",
+      "story": 0,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          13.5,
+          16.0,
+          3.0
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          4.5,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [
+          {
+            "kind": "garage",
+            "width": 4.5,
+            "height": 3.0,
+            "sill": 0.0
+          }
+        ],
+        "collision": "convex"
+      },
+      "interactive": {
+        "id": "freight_terminal_a01:if:889e3c94",
+        "kind": "door",
+        "states": [
+          "closed",
+          "open"
+        ],
+        "default": "closed",
+        "collision_per_state": {
+          "closed": true,
+          "open": false
+        }
+      }
+    },
+    {
+      "slot_id": "ext_0_N_seg18",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_N",
+      "story": 0,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          16.75,
+          16.0,
+          3.0
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_N_seg19",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_N",
+      "story": 0,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          18.75,
+          16.0,
+          3.0
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_N_seg20",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_N",
+      "story": 0,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          20.75,
+          16.0,
+          3.0
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_N_seg21",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_N",
+      "story": 0,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          22.75,
+          16.0,
+          3.0
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_N_seg22",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_N",
+      "story": 0,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          24.75,
+          16.0,
+          3.0
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_N_seg23",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_N",
+      "story": 0,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          26.375,
+          16.0,
+          3.0
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.25,
+          0.3,
+          6.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.25,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_S_seg0",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_S",
+      "story": 0,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          -26.0,
+          -16.0,
+          3.0
+        ],
+        "rot_y": 180,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_S_seg1",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_S",
+      "story": 0,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          -24.0,
+          -16.0,
+          3.0
+        ],
+        "rot_y": 180,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_S_seg2",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_S",
+      "story": 0,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          -22.0,
+          -16.0,
+          3.0
+        ],
+        "rot_y": 180,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_S_seg3",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_S",
+      "story": 0,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          -20.0,
+          -16.0,
+          3.0
+        ],
+        "rot_y": 180,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_S_seg4",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_S",
+      "story": 0,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          -18.625,
+          -16.0,
+          3.0
+        ],
+        "rot_y": 180,
+        "scale": [
+          0.75,
+          0.3,
+          6.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.75,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_S_open0",
+      "role": "doorway",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "doorway_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_S",
+      "story": 0,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          -16.0,
+          -16.0,
+          3.0
+        ],
+        "rot_y": 180,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          4.5,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [
+          {
+            "kind": "garage",
+            "width": 4.5,
+            "height": 3.0,
+            "sill": 0.0
+          }
+        ],
+        "collision": "convex"
+      },
+      "interactive": {
+        "id": "freight_terminal_a01:if:ebb106a6",
+        "kind": "door",
+        "states": [
+          "closed",
+          "open"
+        ],
+        "default": "closed",
+        "collision_per_state": {
+          "closed": true,
+          "open": false
+        }
+      }
+    },
+    {
+      "slot_id": "ext_0_S_seg5",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_S",
+      "story": 0,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          -12.75,
+          -16.0,
+          3.0
+        ],
+        "rot_y": 180,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_S_seg6",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_S",
+      "story": 0,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          -10.75,
+          -16.0,
+          3.0
+        ],
+        "rot_y": 180,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_S_seg7",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_S",
+      "story": 0,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          -8.75,
+          -16.0,
+          3.0
+        ],
+        "rot_y": 180,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_S_seg8",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_S",
+      "story": 0,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          -6.75,
+          -16.0,
+          3.0
+        ],
+        "rot_y": 180,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_S_seg9",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_S",
+      "story": 0,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          -4.75,
+          -16.0,
+          3.0
+        ],
+        "rot_y": 180,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_S_seg10",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_S",
+      "story": 0,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          -3.0,
+          -16.0,
+          3.0
+        ],
+        "rot_y": 180,
+        "scale": [
+          1.5,
+          0.3,
+          6.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.5,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_S_open1",
+      "role": "doorway",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "doorway_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_S",
+      "story": 0,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          0.0,
+          -16.0,
+          3.0
+        ],
+        "rot_y": 180,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          4.5,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [
+          {
+            "kind": "garage",
+            "width": 4.5,
+            "height": 3.0,
+            "sill": 0.0
+          }
+        ],
+        "collision": "convex"
+      },
+      "interactive": {
+        "id": "freight_terminal_a01:if:9bb8ea20",
+        "kind": "door",
+        "states": [
+          "closed",
+          "open"
+        ],
+        "default": "closed",
+        "collision_per_state": {
+          "closed": true,
+          "open": false
+        }
+      }
+    },
+    {
+      "slot_id": "ext_0_S_seg11",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_S",
+      "story": 0,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          3.25,
+          -16.0,
+          3.0
+        ],
+        "rot_y": 180,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_S_seg12",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_S",
+      "story": 0,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          5.25,
+          -16.0,
+          3.0
+        ],
+        "rot_y": 180,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_S_seg13",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_S",
+      "story": 0,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          7.25,
+          -16.0,
+          3.0
+        ],
+        "rot_y": 180,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_S_seg14",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_S",
+      "story": 0,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          9.25,
+          -16.0,
+          3.0
+        ],
+        "rot_y": 180,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_S_seg15",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_S",
+      "story": 0,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          11.25,
+          -16.0,
+          3.0
+        ],
+        "rot_y": 180,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_S_seg16",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_S",
+      "story": 0,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          13.0,
+          -16.0,
+          3.0
+        ],
+        "rot_y": 180,
+        "scale": [
+          1.5,
+          0.3,
+          6.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.5,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_S_open2",
+      "role": "doorway",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "doorway_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_S",
+      "story": 0,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          16.0,
+          -16.0,
+          3.0
+        ],
+        "rot_y": 180,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          4.5,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [
+          {
+            "kind": "garage",
+            "width": 4.5,
+            "height": 3.0,
+            "sill": 0.0
+          }
+        ],
+        "collision": "convex"
+      },
+      "interactive": {
+        "id": "freight_terminal_a01:if:17d0ae9f",
+        "kind": "door",
+        "states": [
+          "closed",
+          "open"
+        ],
+        "default": "closed",
+        "collision_per_state": {
+          "closed": true,
+          "open": false
+        }
+      }
+    },
+    {
+      "slot_id": "ext_0_S_seg17",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_S",
+      "story": 0,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          19.25,
+          -16.0,
+          3.0
+        ],
+        "rot_y": 180,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_S_seg18",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_S",
+      "story": 0,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          21.25,
+          -16.0,
+          3.0
+        ],
+        "rot_y": 180,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_S_seg19",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_S",
+      "story": 0,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          23.25,
+          -16.0,
+          3.0
+        ],
+        "rot_y": 180,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_S_seg20",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_S",
+      "story": 0,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          25.25,
+          -16.0,
+          3.0
+        ],
+        "rot_y": 180,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_S_seg21",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_S",
+      "story": 0,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          26.625,
+          -16.0,
+          3.0
+        ],
+        "rot_y": 180,
+        "scale": [
+          0.75,
+          0.3,
+          6.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.75,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_E_seg0",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_E",
+      "story": 0,
+      "facing": "E",
+      "transform": {
+        "translation": [
+          27.0,
+          -15.0,
+          3.0
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_E_seg1",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_E",
+      "story": 0,
+      "facing": "E",
+      "transform": {
+        "translation": [
+          27.0,
+          -13.0,
+          3.0
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_E_seg2",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_E",
+      "story": 0,
+      "facing": "E",
+      "transform": {
+        "translation": [
+          27.0,
+          -11.0,
+          3.0
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_E_seg3",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_E",
+      "story": 0,
+      "facing": "E",
+      "transform": {
+        "translation": [
+          27.0,
+          -9.0,
+          3.0
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_E_seg4",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_E",
+      "story": 0,
+      "facing": "E",
+      "transform": {
+        "translation": [
+          27.0,
+          -7.0,
+          3.0
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_E_seg5",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_E",
+      "story": 0,
+      "facing": "E",
+      "transform": {
+        "translation": [
+          27.0,
+          -5.0,
+          3.0
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_E_seg6",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_E",
+      "story": 0,
+      "facing": "E",
+      "transform": {
+        "translation": [
+          27.0,
+          -3.0,
+          3.0
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_E_seg7",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_E",
+      "story": 0,
+      "facing": "E",
+      "transform": {
+        "translation": [
+          27.0,
+          -1.3125,
+          3.0
+        ],
+        "rot_y": 90,
+        "scale": [
+          0.3,
+          1.375,
+          6.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          1.375,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_E_open0",
+      "role": "doorway",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "doorway_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_E",
+      "story": 0,
+      "facing": "E",
+      "transform": {
+        "translation": [
+          27.0,
+          0.0,
+          3.0
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.25,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [
+          {
+            "kind": "door",
+            "width": 1.25,
+            "height": 2.2,
+            "sill": 0.0
+          }
+        ],
+        "collision": "convex"
+      },
+      "interactive": {
+        "id": "freight_terminal_a01:if:23601361",
+        "kind": "door",
+        "states": [
+          "closed",
+          "open"
+        ],
+        "default": "closed",
+        "collision_per_state": {
+          "closed": true,
+          "open": false
+        }
+      }
+    },
+    {
+      "slot_id": "ext_0_E_seg8",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_E",
+      "story": 0,
+      "facing": "E",
+      "transform": {
+        "translation": [
+          27.0,
+          1.625,
+          3.0
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_E_seg9",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_E",
+      "story": 0,
+      "facing": "E",
+      "transform": {
+        "translation": [
+          27.0,
+          3.625,
+          3.0
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_E_seg10",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_E",
+      "story": 0,
+      "facing": "E",
+      "transform": {
+        "translation": [
+          27.0,
+          5.625,
+          3.0
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_E_seg11",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_E",
+      "story": 0,
+      "facing": "E",
+      "transform": {
+        "translation": [
+          27.0,
+          7.625,
+          3.0
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_E_seg12",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_E",
+      "story": 0,
+      "facing": "E",
+      "transform": {
+        "translation": [
+          27.0,
+          9.625,
+          3.0
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_E_seg13",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_E",
+      "story": 0,
+      "facing": "E",
+      "transform": {
+        "translation": [
+          27.0,
+          11.4625,
+          3.0
+        ],
+        "rot_y": 90,
+        "scale": [
+          0.3,
+          1.675,
+          6.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          1.675,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_E_open1",
+      "role": "breach",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "breach_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_E",
+      "story": 0,
+      "facing": "E",
+      "transform": {
+        "translation": [
+          27.0,
+          13.0,
+          3.0
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.4,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [
+          {
+            "kind": "breach",
+            "width": 1.4,
+            "height": 2.2,
+            "sill": 0.0
+          }
+        ],
+        "collision": "convex"
+      },
+      "interactive": {
+        "id": "freight_terminal_a01:if:eb61b83f",
+        "kind": "breach_wall",
+        "states": [
+          "intact",
+          "breached"
+        ],
+        "default": "intact",
+        "state_geometry": {
+          "intact": "wall",
+          "breached": "breach"
+        },
+        "collision_per_state": {
+          "intact": true,
+          "breached": false
+        }
+      }
+    },
+    {
+      "slot_id": "ext_0_E_seg14",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_E",
+      "story": 0,
+      "facing": "E",
+      "transform": {
+        "translation": [
+          27.0,
+          14.7,
+          3.0
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_E_seg15",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_E",
+      "story": 0,
+      "facing": "E",
+      "transform": {
+        "translation": [
+          27.0,
+          15.85,
+          3.0
+        ],
+        "rot_y": 90,
+        "scale": [
+          0.3,
+          0.3,
+          6.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_W_seg0",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_W",
+      "story": 0,
+      "facing": "W",
+      "transform": {
+        "translation": [
+          -27.0,
+          -15.0,
+          3.0
+        ],
+        "rot_y": 270,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_W_seg1",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_W",
+      "story": 0,
+      "facing": "W",
+      "transform": {
+        "translation": [
+          -27.0,
+          -13.0,
+          3.0
+        ],
+        "rot_y": 270,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_W_seg2",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_W",
+      "story": 0,
+      "facing": "W",
+      "transform": {
+        "translation": [
+          -27.0,
+          -11.0625,
+          3.0
+        ],
+        "rot_y": 270,
+        "scale": [
+          0.3,
+          1.875,
+          6.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          1.875,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_W_open0",
+      "role": "doorway",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "doorway_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_W",
+      "story": 0,
+      "facing": "W",
+      "transform": {
+        "translation": [
+          -27.0,
+          -9.5,
+          3.0
+        ],
+        "rot_y": 270,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.25,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [
+          {
+            "kind": "door",
+            "width": 1.25,
+            "height": 2.2,
+            "sill": 0.0
+          }
+        ],
+        "collision": "convex"
+      },
+      "interactive": {
+        "id": "freight_terminal_a01:if:5a6e19f5",
+        "kind": "door",
+        "states": [
+          "closed",
+          "open"
+        ],
+        "default": "closed",
+        "collision_per_state": {
+          "closed": true,
+          "open": false
+        }
+      }
+    },
+    {
+      "slot_id": "ext_0_W_seg3",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_W",
+      "story": 0,
+      "facing": "W",
+      "transform": {
+        "translation": [
+          -27.0,
+          -7.875,
+          3.0
+        ],
+        "rot_y": 270,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_W_seg4",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_W",
+      "story": 0,
+      "facing": "W",
+      "transform": {
+        "translation": [
+          -27.0,
+          -5.875,
+          3.0
+        ],
+        "rot_y": 270,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_W_seg5",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_W",
+      "story": 0,
+      "facing": "W",
+      "transform": {
+        "translation": [
+          -27.0,
+          -3.875,
+          3.0
+        ],
+        "rot_y": 270,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_W_seg6",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_W",
+      "story": 0,
+      "facing": "W",
+      "transform": {
+        "translation": [
+          -27.0,
+          -1.875,
+          3.0
+        ],
+        "rot_y": 270,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_W_seg7",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_W",
+      "story": 0,
+      "facing": "W",
+      "transform": {
+        "translation": [
+          -27.0,
+          0.125,
+          3.0
+        ],
+        "rot_y": 270,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_W_seg8",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_W",
+      "story": 0,
+      "facing": "W",
+      "transform": {
+        "translation": [
+          -27.0,
+          2.125,
+          3.0
+        ],
+        "rot_y": 270,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_W_seg9",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_W",
+      "story": 0,
+      "facing": "W",
+      "transform": {
+        "translation": [
+          -27.0,
+          4.125,
+          3.0
+        ],
+        "rot_y": 270,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_W_seg10",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_W",
+      "story": 0,
+      "facing": "W",
+      "transform": {
+        "translation": [
+          -27.0,
+          6.125,
+          3.0
+        ],
+        "rot_y": 270,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_W_seg11",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_W",
+      "story": 0,
+      "facing": "W",
+      "transform": {
+        "translation": [
+          -27.0,
+          8.125,
+          3.0
+        ],
+        "rot_y": 270,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_W_seg12",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_W",
+      "story": 0,
+      "facing": "W",
+      "transform": {
+        "translation": [
+          -27.0,
+          10.125,
+          3.0
+        ],
+        "rot_y": 270,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_W_seg13",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_W",
+      "story": 0,
+      "facing": "W",
+      "transform": {
+        "translation": [
+          -27.0,
+          12.125,
+          3.0
+        ],
+        "rot_y": 270,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_W_seg14",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_W",
+      "story": 0,
+      "facing": "W",
+      "transform": {
+        "translation": [
+          -27.0,
+          14.125,
+          3.0
+        ],
+        "rot_y": 270,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_W_seg15",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_W",
+      "story": 0,
+      "facing": "W",
+      "transform": {
+        "translation": [
+          -27.0,
+          15.5625,
+          3.0
+        ],
+        "rot_y": 270,
+        "scale": [
+          0.3,
+          0.875,
+          6.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          0.875,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_0_0_seg0",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_0_0",
+      "story": 0,
+      "facing": "Y",
+      "transform": {
+        "translation": [
+          -16.0,
+          -15.0,
+          3.0
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_0_0_seg1",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_0_0",
+      "story": 0,
+      "facing": "Y",
+      "transform": {
+        "translation": [
+          -16.0,
+          -13.0,
+          3.0
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_0_0_seg2",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_0_0",
+      "story": 0,
+      "facing": "Y",
+      "transform": {
+        "translation": [
+          -16.0,
+          -11.1,
+          3.0
+        ],
+        "rot_y": 90,
+        "scale": [
+          0.3,
+          1.8,
+          6.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          1.8,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_0_0_open0",
+      "role": "doorway",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "doorway_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_0_0",
+      "story": 0,
+      "facing": "Y",
+      "transform": {
+        "translation": [
+          -16.0,
+          -9.5,
+          3.0
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.4,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [
+          {
+            "kind": "door",
+            "width": 1.4,
+            "height": 2.2,
+            "sill": 0.0
+          }
+        ],
+        "collision": "convex"
+      },
+      "interactive": {
+        "id": "freight_terminal_a01:if:32b357ac",
+        "kind": "door",
+        "states": [
+          "closed",
+          "open"
+        ],
+        "default": "closed",
+        "collision_per_state": {
+          "closed": true,
+          "open": false
+        }
+      }
+    },
+    {
+      "slot_id": "int_0_0_seg3",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_0_0",
+      "story": 0,
+      "facing": "Y",
+      "transform": {
+        "translation": [
+          -16.0,
+          -7.8,
+          3.0
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_0_0_seg4",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_0_0",
+      "story": 0,
+      "facing": "Y",
+      "transform": {
+        "translation": [
+          -16.0,
+          -5.8,
+          3.0
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_0_0_seg5",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_0_0",
+      "story": 0,
+      "facing": "Y",
+      "transform": {
+        "translation": [
+          -16.0,
+          -3.8,
+          3.0
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_0_0_seg6",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_0_0",
+      "story": 0,
+      "facing": "Y",
+      "transform": {
+        "translation": [
+          -16.0,
+          -1.8,
+          3.0
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_0_0_seg7",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_0_0",
+      "story": 0,
+      "facing": "Y",
+      "transform": {
+        "translation": [
+          -16.0,
+          0.2,
+          3.0
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_0_0_seg8",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_0_0",
+      "story": 0,
+      "facing": "Y",
+      "transform": {
+        "translation": [
+          -16.0,
+          2.2,
+          3.0
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_0_0_seg9",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_0_0",
+      "story": 0,
+      "facing": "Y",
+      "transform": {
+        "translation": [
+          -16.0,
+          4.2,
+          3.0
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_0_0_seg10",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_0_0",
+      "story": 0,
+      "facing": "Y",
+      "transform": {
+        "translation": [
+          -16.0,
+          6.2,
+          3.0
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_0_0_seg11",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_0_0",
+      "story": 0,
+      "facing": "Y",
+      "transform": {
+        "translation": [
+          -16.0,
+          8.0,
+          3.0
+        ],
+        "rot_y": 90,
+        "scale": [
+          0.3,
+          1.6,
+          6.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          1.6,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_0_0_open1",
+      "role": "doorway",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "doorway_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_0_0",
+      "story": 0,
+      "facing": "Y",
+      "transform": {
+        "translation": [
+          -16.0,
+          9.5,
+          3.0
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.4,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [
+          {
+            "kind": "door",
+            "width": 1.4,
+            "height": 2.2,
+            "sill": 0.0
+          }
+        ],
+        "collision": "convex"
+      },
+      "interactive": {
+        "id": "freight_terminal_a01:if:e569545a",
+        "kind": "door",
+        "states": [
+          "closed",
+          "open"
+        ],
+        "default": "closed",
+        "collision_per_state": {
+          "closed": true,
+          "open": false
+        }
+      }
+    },
+    {
+      "slot_id": "int_0_0_seg12",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_0_0",
+      "story": 0,
+      "facing": "Y",
+      "transform": {
+        "translation": [
+          -16.0,
+          11.2,
+          3.0
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_0_0_seg13",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_0_0",
+      "story": 0,
+      "facing": "Y",
+      "transform": {
+        "translation": [
+          -16.0,
+          13.2,
+          3.0
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_0_0_seg14",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_0_0",
+      "story": 0,
+      "facing": "Y",
+      "transform": {
+        "translation": [
+          -16.0,
+          15.1,
+          3.0
+        ],
+        "rot_y": 90,
+        "scale": [
+          0.3,
+          1.8,
+          6.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          1.8,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_0_1_seg0",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_0_1",
+      "story": 0,
+      "facing": "X",
+      "transform": {
+        "translation": [
+          -26.85,
+          8.0,
+          3.0
+        ],
+        "rot_y": 0,
+        "scale": [
+          0.3,
+          0.3,
+          6.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_0_1_open0",
+      "role": "breach",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "breach_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_0_1",
+      "story": 0,
+      "facing": "X",
+      "transform": {
+        "translation": [
+          -26.0,
+          8.0,
+          3.0
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.4,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [
+          {
+            "kind": "breach",
+            "width": 1.4,
+            "height": 2.2,
+            "sill": 0.0
+          }
+        ],
+        "collision": "convex"
+      },
+      "interactive": {
+        "id": "freight_terminal_a01:if:c00bcaaa",
+        "kind": "breach_wall",
+        "states": [
+          "intact",
+          "breached"
+        ],
+        "default": "intact",
+        "state_geometry": {
+          "intact": "wall",
+          "breached": "breach"
+        },
+        "collision_per_state": {
+          "intact": true,
+          "breached": false
+        }
+      }
+    },
+    {
+      "slot_id": "int_0_1_seg1",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_0_1",
+      "story": 0,
+      "facing": "X",
+      "transform": {
+        "translation": [
+          -24.3,
+          8.0,
+          3.0
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_0_1_seg2",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_0_1",
+      "story": 0,
+      "facing": "X",
+      "transform": {
+        "translation": [
+          -22.7125,
+          8.0,
+          3.0
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.175,
+          0.3,
+          6.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.175,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_0_1_open1",
+      "role": "doorway",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "doorway_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_0_1",
+      "story": 0,
+      "facing": "X",
+      "transform": {
+        "translation": [
+          -21.5,
+          8.0,
+          3.0
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.25,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [
+          {
+            "kind": "door",
+            "width": 1.25,
+            "height": 2.2,
+            "sill": 0.0
+          }
+        ],
+        "collision": "convex"
+      },
+      "interactive": {
+        "id": "freight_terminal_a01:if:80305e12",
+        "kind": "door",
+        "states": [
+          "closed",
+          "open"
+        ],
+        "default": "closed",
+        "collision_per_state": {
+          "closed": true,
+          "open": false
+        }
+      }
+    },
+    {
+      "slot_id": "int_0_1_seg3",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_0_1",
+      "story": 0,
+      "facing": "X",
+      "transform": {
+        "translation": [
+          -19.875,
+          8.0,
+          3.0
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_0_1_seg4",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_0_1",
+      "story": 0,
+      "facing": "X",
+      "transform": {
+        "translation": [
+          -17.875,
+          8.0,
+          3.0
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_0_1_seg5",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_0_1",
+      "story": 0,
+      "facing": "X",
+      "transform": {
+        "translation": [
+          -16.4375,
+          8.0,
+          3.0
+        ],
+        "rot_y": 0,
+        "scale": [
+          0.875,
+          0.3,
+          6.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.875,
+          0.3,
+          6.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    }
+  ]
+}

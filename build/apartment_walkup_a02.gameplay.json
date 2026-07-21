@@ -1807,7 +1807,7 @@
       "stack_id": null,
       "role": "public_convenience",
       "shape": "switchback",
-      "facing": "S",
+      "facing": "N",
       "exterior": false,
       "channels": 1,
       "roof_access": false,
@@ -1819,40 +1819,40 @@
       "footprint_polygon": [
         [
           -8.6,
-          2.5
+          -6.0
         ],
         [
           -5.4,
-          2.5
+          -6.0
         ],
         [
           -5.4,
-          6.5
+          -2.0
         ],
         [
           -8.6,
-          6.5
+          -2.0
         ]
       ],
       "clear_width_m": 1.6,
       "approach": [
         {
           "floor": 0,
-          "room": "kitchen",
-          "room_role": "connector"
+          "room": "parlor",
+          "room_role": "public_entry"
         },
         {
           "floor": 1,
-          "room": "front_flat",
-          "room_role": "fortifiable"
+          "room": "landing",
+          "room_role": "connector"
         }
       ],
       "discharge": {
         "floor": 0,
         "type": "direct_exterior",
-        "room": "kitchen",
+        "room": "parlor",
         "via": [],
-        "destination": "kitchen",
+        "destination": "parlor",
         "route_hops": 0
       },
       "egress": {
@@ -1863,50 +1863,50 @@
           "end": "lower",
           "story": 0,
           "rect": [
-            -8.6,
-            6.5,
             -7.0,
-            7.7
+            -7.2,
+            -5.4,
+            -6.0
           ],
           "point": [
-            -7.8,
-            7.1,
+            -6.2,
+            -6.6,
             0.0
           ],
           "dir": [
             0,
-            1
+            -1
           ]
         },
         {
           "end": "upper",
           "story": 1,
           "rect": [
-            -8.6,
-            0.5,
             -7.0,
-            1.7000000000000002
+            -1.2000000000000002,
+            -5.4,
+            0.0
           ],
           "point": [
-            -7.8,
-            1.1,
+            -6.2,
+            -0.6000000000000001,
             3.2
           ],
           "dir": [
             0,
-            -1
+            1
           ]
         }
       ],
       "nav_endpoints": {
         "lower": [
-          -7.8,
-          7.1,
+          -6.2,
+          -6.6,
           0.0
         ],
         "upper": [
-          -7.8,
-          1.1,
+          -6.2,
+          -0.6000000000000001,
           3.2
         ]
       },
@@ -1919,7 +1919,7 @@
           "pos": -0.3,
           "interactive": "apartment_walkup_a02:if:d0191e8c",
           "default_state": "closed",
-          "connects_from": "parlor",
+          "connects_from": "kitchen",
           "discharge_door": false
         },
         {
@@ -1929,26 +1929,16 @@
           "pos": 0.35,
           "interactive": "apartment_walkup_a02:if:58d3632b",
           "default_state": "closed",
-          "connects_from": "parlor",
+          "connects_from": "kitchen",
           "discharge_door": false
         },
         {
           "floor": 0,
           "kind": "door",
-          "wall": "ext_0_N",
-          "pos": 0.25,
-          "interactive": "apartment_walkup_a02:if:615a972e",
+          "wall": "ext_0_S",
+          "pos": 0.0,
+          "interactive": "apartment_walkup_a02:if:98ef10e8",
           "default_state": "closed",
-          "connects_from": "exterior",
-          "discharge_door": true
-        },
-        {
-          "floor": 0,
-          "kind": "breach",
-          "wall": "ext_0_N",
-          "pos": -0.3,
-          "interactive": "apartment_walkup_a02:if:53d1dcb9",
-          "default_state": "intact",
           "connects_from": "exterior",
           "discharge_door": true
         },
@@ -1959,26 +1949,16 @@
           "pos": -0.3,
           "interactive": "apartment_walkup_a02:if:9078e3b5",
           "default_state": "closed",
-          "connects_from": "landing",
+          "connects_from": "front_flat",
           "discharge_door": false
         },
         {
           "floor": 1,
           "kind": "door",
-          "wall": "int_1_2",
-          "pos": 0.0,
-          "interactive": "apartment_walkup_a02:if:47427cba",
+          "wall": "int_1_1",
+          "pos": 0.3,
+          "interactive": "apartment_walkup_a02:if:fd96c456",
           "default_state": "closed",
-          "connects_from": "safe_flat",
-          "discharge_door": false
-        },
-        {
-          "floor": 1,
-          "kind": "breach",
-          "wall": "int_1_2",
-          "pos": -0.45,
-          "interactive": "apartment_walkup_a02:if:6d0bb11b",
-          "default_state": "intact",
           "connects_from": "safe_flat",
           "discharge_door": false
         }
@@ -2014,7 +1994,7 @@
       {
         "id": "aw02_stair_0",
         "role": "public_convenience",
-        "facing": "S",
+        "facing": "N",
         "traversable": true,
         "physical_findings": [],
         "compliant": true

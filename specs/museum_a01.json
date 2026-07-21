@@ -1,0 +1,407 @@
+{
+ "$schema": "../schema/level.schema.json",
+ "name": "museum_a01",
+ "mode": "pvp_heist",
+ "seed": 4101,
+ "footprint_x": 48.0,
+ "footprint_y": 36.0,
+ "story_height": 5.4,
+ "n_stories": 2,
+ "has_basement": false,
+ "collision": "convex",
+ "auto_exterior": true,
+ "scale_ref": false,
+ "default_material": "concrete",
+ "materials": [
+  {
+   "id": "concrete",
+   "acoustic": "Concrete",
+   "absorption": 0.7,
+   "damping": 0.6
+  },
+  {
+   "id": "drywall",
+   "acoustic": "Drywall"
+  },
+  {
+   "id": "glass",
+   "acoustic": "Glass",
+   "absorption": 0.1,
+   "damping": 0.05
+  },
+  {
+   "id": "metal",
+   "acoustic": "Metal",
+   "absorption": 0.5,
+   "damping": 0.3
+  },
+  {
+   "id": "wood",
+   "acoustic": "Wood"
+  }
+ ],
+ "ext_walls": [
+  {
+   "wall": "S",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 2.6,
+     "tag": "grand_entry"
+    },
+    {
+     "kind": "window",
+     "pos": -0.35,
+     "width": 2.2,
+     "sill": 2.2,
+     "vaultable": false
+    },
+    {
+     "kind": "window",
+     "pos": 0.35,
+     "width": 2.2,
+     "sill": 2.2,
+     "vaultable": false
+    }
+   ]
+  },
+  {
+   "wall": "E",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.3,
+     "width": 1.25,
+     "tag": "service_entry"
+    }
+   ]
+  },
+  {
+   "wall": "W",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.3,
+     "width": 1.4,
+     "tag": "group_entry"
+    },
+    {
+     "kind": "breach",
+     "pos": 0.3,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
+  },
+  {
+   "wall": "S",
+   "story": 1,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "window",
+     "pos": -0.3,
+     "width": 2.4,
+     "sill": 1.6,
+     "vaultable": false
+    },
+    {
+     "kind": "window",
+     "pos": 0.3,
+     "width": 2.4,
+     "sill": 1.6,
+     "vaultable": false
+    }
+   ]
+  },
+  {
+   "wall": "N",
+   "story": 1,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "window",
+     "pos": 0.0,
+     "width": 2.0,
+     "sill": 1.6,
+     "vaultable": false
+    }
+   ]
+  }
+ ],
+ "partitions": [
+  {
+   "story": 0,
+   "axis": "X",
+   "pos": 6.0,
+   "start": -24.0,
+   "end": 24.0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.3,
+     "width": 1.8
+    },
+    {
+     "kind": "door",
+     "pos": 0.3,
+     "width": 1.8
+    }
+   ]
+  },
+  {
+   "story": 1,
+   "axis": "X",
+   "pos": 2.0,
+   "start": -24.0,
+   "end": 24.0,
+   "material": "drywall",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.3,
+     "width": 1.25
+    },
+    {
+     "kind": "door",
+     "pos": 0.3,
+     "width": 1.25
+    }
+   ]
+  },
+  {
+   "story": 1,
+   "axis": "Y",
+   "pos": 8.0,
+   "start": 2.0,
+   "end": 18.0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.25,
+     "tag": "exhibit_vault_door",
+     "reinforceable": true
+    },
+    {
+     "kind": "breach",
+     "pos": -0.35,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
+  }
+ ],
+ "rooms": [
+  {
+   "id": "great_hall",
+   "story": 0,
+   "bounds": [
+    -24.0,
+    -18.0,
+    24.0,
+    6.0
+   ],
+   "role": "public_entry",
+   "combat_range": "long"
+  },
+  {
+   "id": "north_galleries",
+   "story": 0,
+   "bounds": [
+    -24.0,
+    6.0,
+    24.0,
+    18.0
+   ],
+   "role": "connector",
+   "combat_range": "medium"
+  },
+  {
+   "id": "mezzanine",
+   "story": 1,
+   "bounds": [
+    -24.0,
+    -18.0,
+    24.0,
+    2.0
+   ],
+   "role": "connector",
+   "combat_range": "medium"
+  },
+  {
+   "id": "upper_west",
+   "story": 1,
+   "bounds": [
+    -24.0,
+    2.0,
+    8.0,
+    18.0
+   ],
+   "role": "fortifiable",
+   "fortifiable": true,
+   "combat_range": "close"
+  },
+  {
+   "id": "special_exhibit",
+   "story": 1,
+   "bounds": [
+    8.0,
+    2.0,
+    24.0,
+    18.0
+   ],
+   "role": "objective_room",
+   "objective": true,
+   "fortifiable": true,
+   "combat_range": "close"
+  }
+ ],
+ "stairs": [
+  {
+   "x": -20.0,
+   "y": 10.0,
+   "from_story": 0,
+   "to_story": 1,
+   "style": "straight",
+   "cut_slabs": true,
+   "facing": "E",
+   "id": "mu01_stair_w",
+   "role": "public_convenience",
+   "run": 4.6
+  },
+  {
+   "x": 20.0,
+   "y": -12.0,
+   "from_story": 0,
+   "to_story": 1,
+   "style": "straight",
+   "cut_slabs": true,
+   "facing": "W",
+   "id": "mu01_stair_e",
+   "role": "service",
+   "run": 4.6
+  }
+ ],
+ "ladders": [],
+ "vertical_links": [],
+ "parapets": [],
+ "volumes": [
+  {
+   "name": "plinth_a",
+   "x": -8.0,
+   "y": -6.0,
+   "z": 0.6,
+   "size_x": 3.0,
+   "size_y": 3.0,
+   "size_z": 1.2,
+   "collision": "convex",
+   "material": "concrete"
+  },
+  {
+   "name": "plinth_b",
+   "x": 8.0,
+   "y": -6.0,
+   "z": 0.6,
+   "size_x": 3.0,
+   "size_y": 3.0,
+   "size_z": 1.2,
+   "collision": "convex",
+   "material": "concrete"
+  },
+  {
+   "name": "column_w",
+   "x": -12.0,
+   "y": -12.0,
+   "z": 2.7,
+   "size_x": 1.0,
+   "size_y": 1.0,
+   "size_z": 5.4,
+   "collision": "convex",
+   "material": "concrete"
+  },
+  {
+   "name": "column_e",
+   "x": 12.0,
+   "y": -12.0,
+   "z": 2.7,
+   "size_x": 1.0,
+   "size_y": 1.0,
+   "size_z": 5.4,
+   "collision": "convex",
+   "material": "concrete"
+  }
+ ],
+ "markers": [
+  {
+   "type": "attacker_spawn",
+   "id": "GRAND",
+   "x": 0.0,
+   "y": -20.0,
+   "z": 0,
+   "rot_z": 90,
+   "room": "great_hall"
+  },
+  {
+   "type": "attacker_spawn",
+   "id": "GROUP",
+   "x": -26.0,
+   "y": -8.0,
+   "z": 0,
+   "rot_z": 0,
+   "room": "great_hall"
+  },
+  {
+   "type": "defender_spawn",
+   "x": -10.0,
+   "y": 10.0,
+   "z": 5.4,
+   "rot_z": 0,
+   "room": "upper_west"
+  },
+  {
+   "type": "objective",
+   "id": "A",
+   "x": 16.0,
+   "y": 10.0,
+   "z": 5.4,
+   "room": "special_exhibit",
+   "meta": {
+    "kind": "secure"
+   }
+  },
+  {
+   "type": "extraction",
+   "id": "STEPS",
+   "x": 8.0,
+   "y": -20.0,
+   "z": 0
+  },
+  {
+   "type": "cover_high",
+   "x": 0.0,
+   "y": -10.0,
+   "z": 0,
+   "room": "great_hall"
+  },
+  {
+   "type": "camera_socket",
+   "id": "01",
+   "x": 21.0,
+   "y": -15.0,
+   "z": 4.6,
+   "room": "great_hall"
+  }
+ ]
+}

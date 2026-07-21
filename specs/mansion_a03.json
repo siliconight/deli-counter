@@ -1,0 +1,434 @@
+{
+ "$schema": "../schema/level.schema.json",
+ "name": "mansion_a03",
+ "mode": "pvp_heist",
+ "seed": 4303,
+ "footprint_x": 38.0,
+ "footprint_y": 28.0,
+ "story_height": 3.8,
+ "n_stories": 2,
+ "has_basement": true,
+ "collision": "convex",
+ "auto_exterior": true,
+ "scale_ref": false,
+ "default_material": "concrete",
+ "materials": [
+  {
+   "id": "concrete",
+   "acoustic": "Concrete",
+   "absorption": 0.7,
+   "damping": 0.6
+  },
+  {
+   "id": "drywall",
+   "acoustic": "Drywall"
+  },
+  {
+   "id": "glass",
+   "acoustic": "Glass",
+   "absorption": 0.1,
+   "damping": 0.05
+  },
+  {
+   "id": "metal",
+   "acoustic": "Metal",
+   "absorption": 0.5,
+   "damping": 0.3
+  },
+  {
+   "id": "wood",
+   "acoustic": "Wood"
+  }
+ ],
+ "ext_walls": [
+  {
+   "wall": "S",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 2.2,
+     "tag": "grand_door"
+    },
+    {
+     "kind": "window",
+     "pos": -0.35,
+     "width": 2.0,
+     "sill": 0.9,
+     "vaultable": true
+    },
+    {
+     "kind": "window",
+     "pos": 0.35,
+     "width": 2.0,
+     "sill": 0.9,
+     "vaultable": true
+    }
+   ]
+  },
+  {
+   "wall": "W",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.2,
+     "width": 1.25,
+     "tag": "service_door"
+    }
+   ]
+  },
+  {
+   "wall": "E",
+   "story": 0,
+   "material": "glass",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.2,
+     "width": 1.8,
+     "tag": "pool_door"
+    },
+    {
+     "kind": "window",
+     "pos": -0.3,
+     "width": 2.2,
+     "sill": 0.9,
+     "vaultable": true
+    }
+   ]
+  },
+  {
+   "wall": "N",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "breach",
+     "pos": 0.3,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
+  },
+  {
+   "wall": "S",
+   "story": 1,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "window",
+     "pos": -0.3,
+     "width": 1.8,
+     "sill": 0.9,
+     "vaultable": true
+    },
+    {
+     "kind": "window",
+     "pos": 0.3,
+     "width": 1.8,
+     "sill": 0.9,
+     "vaultable": true
+    }
+   ]
+  },
+  {
+   "wall": "N",
+   "story": 1,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "window",
+     "pos": 0.0,
+     "width": 1.6,
+     "sill": 0.9,
+     "vaultable": true
+    }
+   ]
+  }
+ ],
+ "partitions": [
+  {
+   "story": 0,
+   "axis": "X",
+   "pos": 3.0,
+   "start": -19.0,
+   "end": 19.0,
+   "material": "drywall",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.3,
+     "width": 1.25
+    },
+    {
+     "kind": "door",
+     "pos": 0.3,
+     "width": 1.25
+    }
+   ]
+  },
+  {
+   "story": 0,
+   "axis": "Y",
+   "pos": 8.0,
+   "start": 3.0,
+   "end": 14.0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.25,
+     "tag": "study_door"
+    }
+   ]
+  },
+  {
+   "story": 1,
+   "axis": "X",
+   "pos": 0.0,
+   "start": -19.0,
+   "end": 19.0,
+   "material": "drywall",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.3,
+     "width": 1.25
+    },
+    {
+     "kind": "door",
+     "pos": 0.3,
+     "width": 1.25
+    }
+   ]
+  },
+  {
+   "story": -1,
+   "axis": "Y",
+   "pos": 4.0,
+   "start": -14.0,
+   "end": 14.0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.25,
+     "tag": "panic_door",
+     "reinforceable": true
+    },
+    {
+     "kind": "breach",
+     "pos": -0.35,
+     "width": 1.4,
+     "breach_class": "reinforced",
+     "material": "drywall"
+    }
+   ]
+  }
+ ],
+ "rooms": [
+  {
+   "id": "grand_foyer",
+   "story": 0,
+   "bounds": [
+    -19.0,
+    -14.0,
+    19.0,
+    3.0
+   ],
+   "role": "public_entry",
+   "combat_range": "long"
+  },
+  {
+   "id": "gallery_wing",
+   "story": 0,
+   "bounds": [
+    -19.0,
+    3.0,
+    8.0,
+    14.0
+   ],
+   "role": "connector",
+   "combat_range": "medium"
+  },
+  {
+   "id": "study",
+   "story": 0,
+   "bounds": [
+    8.0,
+    3.0,
+    19.0,
+    14.0
+   ],
+   "role": "fortifiable",
+   "fortifiable": true,
+   "combat_range": "close"
+  },
+  {
+   "id": "upper_hall",
+   "story": 1,
+   "bounds": [
+    -19.0,
+    -14.0,
+    19.0,
+    0.0
+   ],
+   "role": "connector",
+   "combat_range": "medium"
+  },
+  {
+   "id": "private_wing",
+   "story": 1,
+   "bounds": [
+    -19.0,
+    0.0,
+    19.0,
+    14.0
+   ],
+   "role": "fortifiable",
+   "fortifiable": true,
+   "combat_range": "close"
+  },
+  {
+   "id": "panic_approach",
+   "story": -1,
+   "bounds": [
+    -19.0,
+    -14.0,
+    4.0,
+    14.0
+   ],
+   "role": "connector",
+   "combat_range": "medium"
+  },
+  {
+   "id": "panic_room",
+   "story": -1,
+   "bounds": [
+    4.0,
+    -14.0,
+    19.0,
+    14.0
+   ],
+   "role": "objective_room",
+   "objective": true,
+   "fortifiable": true,
+   "combat_range": "close"
+  }
+ ],
+ "stairs": [
+  {
+   "x": -15.0,
+   "y": -9.0,
+   "from_story": -1,
+   "to_story": 0,
+   "style": "straight",
+   "cut_slabs": true,
+   "facing": "E",
+   "id": "mn03_stair_dn",
+   "role": "service"
+  },
+  {
+   "x": -15.0,
+   "y": 9.0,
+   "from_story": -1,
+   "to_story": 0,
+   "style": "straight",
+   "cut_slabs": true,
+   "facing": "E",
+   "id": "mn03_stair_dn2",
+   "role": "service"
+  },
+  {
+   "x": 15.0,
+   "y": -9.0,
+   "from_story": 0,
+   "to_story": 1,
+   "style": "switchback",
+   "cut_slabs": true,
+   "facing": "N",
+   "id": "mn03_stair_up",
+   "role": "public_convenience"
+  }
+ ],
+ "ladders": [],
+ "vertical_links": [],
+ "parapets": [],
+ "volumes": [],
+ "markers": [
+  {
+   "type": "attacker_spawn",
+   "id": "GRAND",
+   "x": 0.0,
+   "y": -16.0,
+   "z": 0,
+   "rot_z": 90,
+   "room": "grand_foyer"
+  },
+  {
+   "type": "attacker_spawn",
+   "id": "POOL",
+   "x": 21.0,
+   "y": 6.0,
+   "z": 0,
+   "rot_z": 180,
+   "room": "study"
+  },
+  {
+   "type": "defender_spawn",
+   "x": -10.0,
+   "y": 0.0,
+   "z": -3.5,
+   "rot_z": 0,
+   "room": "panic_approach"
+  },
+  {
+   "type": "objective",
+   "id": "A",
+   "x": 12.0,
+   "y": 0.0,
+   "z": -3.5,
+   "room": "panic_room",
+   "meta": {
+    "kind": "secure"
+   }
+  },
+  {
+   "type": "extraction",
+   "id": "DRIVE",
+   "x": -8.0,
+   "y": -16.0,
+   "z": 0
+  },
+  {
+   "type": "cover_high",
+   "x": 0.0,
+   "y": -8.0,
+   "z": 0,
+   "room": "grand_foyer"
+  },
+  {
+   "type": "camera_socket",
+   "id": "01",
+   "x": 16.0,
+   "y": -11.0,
+   "z": 3.2,
+   "room": "grand_foyer"
+  },
+  {
+   "type": "camera_socket",
+   "id": "02",
+   "x": -16.0,
+   "y": 10.0,
+   "z": -0.8,
+   "room": "panic_approach"
+  }
+ ]
+}

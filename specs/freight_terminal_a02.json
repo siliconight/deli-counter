@@ -1,0 +1,354 @@
+{
+ "$schema": "../schema/level.schema.json",
+ "name": "freight_terminal_a02",
+ "mode": "pvp_heist",
+ "seed": 4802,
+ "footprint_x": 50.0,
+ "footprint_y": 30.0,
+ "story_height": 5.5,
+ "n_stories": 2,
+ "has_basement": false,
+ "collision": "convex",
+ "auto_exterior": true,
+ "scale_ref": false,
+ "default_material": "metal",
+ "materials": [
+  {
+   "id": "concrete",
+   "acoustic": "Concrete",
+   "absorption": 0.7,
+   "damping": 0.6
+  },
+  {
+   "id": "drywall",
+   "acoustic": "Drywall"
+  },
+  {
+   "id": "glass",
+   "acoustic": "Glass",
+   "absorption": 0.1,
+   "damping": 0.05
+  },
+  {
+   "id": "metal",
+   "acoustic": "Metal",
+   "absorption": 0.5,
+   "damping": 0.3
+  },
+  {
+   "id": "wood",
+   "acoustic": "Wood"
+  }
+ ],
+ "ext_walls": [
+  {
+   "wall": "N",
+   "story": 0,
+   "material": "metal",
+   "openings": [
+    {
+     "kind": "garage",
+     "pos": -0.25,
+     "width": 4.5,
+     "tag": "dock_w"
+    },
+    {
+     "kind": "garage",
+     "pos": 0.2,
+     "width": 4.5,
+     "tag": "dock_e"
+    }
+   ]
+  },
+  {
+   "wall": "S",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.8,
+     "tag": "crew_entry"
+    },
+    {
+     "kind": "breach",
+     "pos": -0.35,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
+  },
+  {
+   "wall": "E",
+   "story": 0,
+   "material": "metal",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.25,
+     "width": 1.25,
+     "tag": "service_entry"
+    }
+   ]
+  },
+  {
+   "wall": "S",
+   "story": 1,
+   "material": "glass",
+   "openings": [
+    {
+     "kind": "window",
+     "pos": -0.25,
+     "width": 2.6,
+     "sill": 0.9,
+     "vaultable": true
+    },
+    {
+     "kind": "window",
+     "pos": 0.25,
+     "width": 2.6,
+     "sill": 0.9,
+     "vaultable": true
+    }
+   ]
+  }
+ ],
+ "partitions": [
+  {
+   "story": 0,
+   "axis": "X",
+   "pos": -1.0,
+   "start": -25.0,
+   "end": 25.0,
+   "material": "metal",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.3,
+     "width": 1.4
+    },
+    {
+     "kind": "door",
+     "pos": 0.3,
+     "width": 1.4
+    }
+   ]
+  },
+  {
+   "story": 1,
+   "axis": "X",
+   "pos": 0.0,
+   "start": -25.0,
+   "end": 25.0,
+   "material": "drywall",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.3,
+     "width": 1.25
+    },
+    {
+     "kind": "door",
+     "pos": 0.3,
+     "width": 1.25
+    }
+   ]
+  },
+  {
+   "story": 1,
+   "axis": "Y",
+   "pos": 11.0,
+   "start": 0.0,
+   "end": 15.0,
+   "material": "drywall",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.25,
+     "tag": "control_door",
+     "reinforceable": true
+    },
+    {
+     "kind": "breach",
+     "pos": -0.4,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
+  }
+ ],
+ "rooms": [
+  {
+   "id": "south_floor",
+   "story": 0,
+   "bounds": [
+    -25.0,
+    -15.0,
+    25.0,
+    -1.0
+   ],
+   "role": "public_entry",
+   "combat_range": "long"
+  },
+  {
+   "id": "dock_floor",
+   "story": 0,
+   "bounds": [
+    -25.0,
+    -1.0,
+    25.0,
+    15.0
+   ],
+   "role": "open_floor",
+   "combat_range": "long"
+  },
+  {
+   "id": "mezz_south",
+   "story": 1,
+   "bounds": [
+    -25.0,
+    -15.0,
+    25.0,
+    0.0
+   ],
+   "role": "connector",
+   "combat_range": "medium"
+  },
+  {
+   "id": "mezz_hall",
+   "story": 1,
+   "bounds": [
+    -25.0,
+    0.0,
+    11.0,
+    15.0
+   ],
+   "role": "connector",
+   "combat_range": "medium"
+  },
+  {
+   "id": "gantry_control",
+   "story": 1,
+   "bounds": [
+    11.0,
+    0.0,
+    25.0,
+    15.0
+   ],
+   "role": "objective_room",
+   "objective": true,
+   "fortifiable": true,
+   "combat_range": "close"
+  }
+ ],
+ "stairs": [
+  {
+   "x": -21.0,
+   "y": 4.0,
+   "from_story": 0,
+   "to_story": 1,
+   "style": "switchback",
+   "cut_slabs": true,
+   "facing": "N",
+   "id": "ft02_stair_0",
+   "role": "public_convenience",
+   "run": 4.7
+  }
+ ],
+ "ladders": [
+  {
+   "x": 4.0,
+   "y": 11.0,
+   "from_story": 1,
+   "to_story": 2,
+   "facing": "S",
+   "role": "roof_access",
+   "placement_mode": "interior",
+   "upper_surface": "roof",
+   "transition": "roof_hatch_exit",
+   "access_class": "staff_restricted",
+   "access_control": "locked_hatch",
+   "id": "ft02_ladder_0"
+  }
+ ],
+ "vertical_links": [
+  {
+   "kind": "hatch",
+   "story": 2,
+   "x": 4.0,
+   "y": 11.0
+  }
+ ],
+ "parapets": [
+  {
+   "story": 2,
+   "height": 1.0
+  }
+ ],
+ "volumes": [],
+ "markers": [
+  {
+   "type": "attacker_spawn",
+   "id": "DOCKS",
+   "x": 0.0,
+   "y": 17.0,
+   "z": 0,
+   "rot_z": 270,
+   "room": "dock_floor"
+  },
+  {
+   "type": "attacker_spawn",
+   "id": "CREW",
+   "x": 0.0,
+   "y": -17.0,
+   "z": 0,
+   "rot_z": 90,
+   "room": "south_floor"
+  },
+  {
+   "type": "defender_spawn",
+   "x": -8.0,
+   "y": 8.0,
+   "z": 5.5,
+   "rot_z": 0,
+   "room": "mezz_hall"
+  },
+  {
+   "type": "objective",
+   "id": "A",
+   "x": 18.0,
+   "y": 8.0,
+   "z": 5.5,
+   "room": "gantry_control",
+   "meta": {
+    "kind": "secure"
+   }
+  },
+  {
+   "type": "extraction",
+   "id": "YARD",
+   "x": 14.0,
+   "y": 17.0,
+   "z": 0
+  },
+  {
+   "type": "cover_low",
+   "x": -6.0,
+   "y": 5.0,
+   "z": 0,
+   "room": "dock_floor"
+  },
+  {
+   "type": "camera_socket",
+   "id": "01",
+   "x": 22.0,
+   "y": -12.0,
+   "z": 4.6,
+   "room": "south_floor"
+  }
+ ]
+}

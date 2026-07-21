@@ -1,0 +1,332 @@
+{
+ "$schema": "../schema/level.schema.json",
+ "name": "brewery_a02",
+ "mode": "pvp_heist",
+ "seed": 4502,
+ "footprint_x": 42.0,
+ "footprint_y": 30.0,
+ "story_height": 5.0,
+ "n_stories": 1,
+ "has_basement": true,
+ "collision": "convex",
+ "auto_exterior": true,
+ "scale_ref": false,
+ "default_material": "metal",
+ "materials": [
+  {
+   "id": "concrete",
+   "acoustic": "Concrete",
+   "absorption": 0.7,
+   "damping": 0.6
+  },
+  {
+   "id": "drywall",
+   "acoustic": "Drywall"
+  },
+  {
+   "id": "glass",
+   "acoustic": "Glass",
+   "absorption": 0.1,
+   "damping": 0.05
+  },
+  {
+   "id": "metal",
+   "acoustic": "Metal",
+   "absorption": 0.5,
+   "damping": 0.3
+  },
+  {
+   "id": "wood",
+   "acoustic": "Wood"
+  }
+ ],
+ "ext_walls": [
+  {
+   "wall": "S",
+   "story": 0,
+   "material": "metal",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.8,
+     "tag": "crew_entry"
+    },
+    {
+     "kind": "window",
+     "pos": -0.35,
+     "width": 2.0,
+     "sill": 1.6,
+     "vaultable": false
+    }
+   ]
+  },
+  {
+   "wall": "W",
+   "story": 0,
+   "material": "metal",
+   "openings": [
+    {
+     "kind": "garage",
+     "pos": 0.0,
+     "width": 4.0,
+     "tag": "barrel_dock"
+    }
+   ]
+  },
+  {
+   "wall": "N",
+   "story": 0,
+   "material": "metal",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.3,
+     "width": 1.25,
+     "tag": "rear_entry"
+    },
+    {
+     "kind": "breach",
+     "pos": -0.25,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
+  }
+ ],
+ "partitions": [
+  {
+   "story": 0,
+   "axis": "X",
+   "pos": 5.0,
+   "start": -21.0,
+   "end": 21.0,
+   "material": "metal",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.3,
+     "width": 1.4
+    },
+    {
+     "kind": "door",
+     "pos": 0.3,
+     "width": 1.4
+    }
+   ]
+  },
+  {
+   "story": -1,
+   "axis": "Y",
+   "pos": -2.0,
+   "start": -15.0,
+   "end": 15.0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.25,
+     "width": 1.25,
+     "tag": "barrel_gate",
+     "reinforceable": true
+    },
+    {
+     "kind": "breach",
+     "pos": -0.35,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
+  }
+ ],
+ "rooms": [
+  {
+   "id": "brew_hall",
+   "story": 0,
+   "bounds": [
+    -21.0,
+    -15.0,
+    21.0,
+    5.0
+   ],
+   "role": "public_entry",
+   "combat_range": "long"
+  },
+  {
+   "id": "north_stock",
+   "story": 0,
+   "bounds": [
+    -21.0,
+    5.0,
+    21.0,
+    15.0
+   ],
+   "role": "connector",
+   "combat_range": "medium"
+  },
+  {
+   "id": "cellar_west",
+   "story": -1,
+   "bounds": [
+    -21.0,
+    -15.0,
+    -2.0,
+    15.0
+   ],
+   "role": "connector",
+   "combat_range": "medium"
+  },
+  {
+   "id": "barrel_vault",
+   "story": -1,
+   "bounds": [
+    -2.0,
+    -15.0,
+    21.0,
+    15.0
+   ],
+   "role": "objective_room",
+   "objective": true,
+   "fortifiable": true,
+   "combat_range": "close"
+  }
+ ],
+ "stairs": [
+  {
+   "x": -17.0,
+   "y": 9.0,
+   "from_story": -1,
+   "to_story": 0,
+   "style": "straight",
+   "cut_slabs": true,
+   "facing": "E",
+   "id": "br02_stair_n",
+   "role": "service",
+   "run": 4.2
+  },
+  {
+   "x": -17.0,
+   "y": -9.0,
+   "from_story": -1,
+   "to_story": 0,
+   "style": "straight",
+   "cut_slabs": true,
+   "facing": "E",
+   "id": "br02_stair_s",
+   "role": "public_convenience",
+   "run": 4.2
+  }
+ ],
+ "ladders": [],
+ "vertical_links": [],
+ "parapets": [],
+ "volumes": [
+  {
+   "name": "tank_0",
+   "x": -10.0,
+   "y": -2.0,
+   "z": 2.2,
+   "size_x": 2.8,
+   "size_y": 2.8,
+   "size_z": 4.4,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "tank_1",
+   "x": -3.0,
+   "y": -2.0,
+   "z": 2.2,
+   "size_x": 2.8,
+   "size_y": 2.8,
+   "size_z": 4.4,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "tank_2",
+   "x": 4.0,
+   "y": -2.0,
+   "z": 2.2,
+   "size_x": 2.8,
+   "size_y": 2.8,
+   "size_z": 4.4,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "tank_3",
+   "x": 11.0,
+   "y": -2.0,
+   "z": 2.2,
+   "size_x": 2.8,
+   "size_y": 2.8,
+   "size_z": 4.4,
+   "collision": "convex",
+   "material": "metal"
+  }
+ ],
+ "markers": [
+  {
+   "type": "attacker_spawn",
+   "id": "CREW",
+   "x": 0.0,
+   "y": -17.0,
+   "z": 0,
+   "rot_z": 90,
+   "room": "brew_hall"
+  },
+  {
+   "type": "attacker_spawn",
+   "id": "DOCK",
+   "x": -23.0,
+   "y": 0.0,
+   "z": 0,
+   "rot_z": 0,
+   "room": "brew_hall"
+  },
+  {
+   "type": "defender_spawn",
+   "x": -10.0,
+   "y": 0.0,
+   "z": -4.7,
+   "rot_z": 0,
+   "room": "cellar_west"
+  },
+  {
+   "type": "objective",
+   "id": "A",
+   "x": 10.0,
+   "y": 0.0,
+   "z": -4.7,
+   "room": "barrel_vault",
+   "meta": {
+    "kind": "secure"
+   }
+  },
+  {
+   "type": "extraction",
+   "id": "LOT",
+   "x": 8.0,
+   "y": -17.0,
+   "z": 0
+  },
+  {
+   "type": "cover_low",
+   "x": 4.0,
+   "y": -8.0,
+   "z": 0,
+   "room": "brew_hall"
+  },
+  {
+   "type": "camera_socket",
+   "id": "01",
+   "x": 18.0,
+   "y": -12.0,
+   "z": 4.2,
+   "room": "brew_hall"
+  }
+ ]
+}

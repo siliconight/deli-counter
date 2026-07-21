@@ -1,0 +1,372 @@
+{
+ "$schema": "../schema/level.schema.json",
+ "name": "courthouse_a01",
+ "mode": "pvp_heist",
+ "seed": 4201,
+ "footprint_x": 46.0,
+ "footprint_y": 34.0,
+ "story_height": 5.0,
+ "n_stories": 2,
+ "has_basement": true,
+ "collision": "convex",
+ "auto_exterior": true,
+ "scale_ref": false,
+ "default_material": "concrete",
+ "materials": [
+  {
+   "id": "concrete",
+   "acoustic": "Concrete",
+   "absorption": 0.7,
+   "damping": 0.6
+  },
+  {
+   "id": "drywall",
+   "acoustic": "Drywall"
+  },
+  {
+   "id": "glass",
+   "acoustic": "Glass",
+   "absorption": 0.1,
+   "damping": 0.05
+  },
+  {
+   "id": "metal",
+   "acoustic": "Metal",
+   "absorption": 0.5,
+   "damping": 0.3
+  },
+  {
+   "id": "wood",
+   "acoustic": "Wood"
+  }
+ ],
+ "ext_walls": [
+  {
+   "wall": "S",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 2.4,
+     "tag": "main_entry"
+    },
+    {
+     "kind": "window",
+     "pos": -0.35,
+     "width": 1.8,
+     "sill": 2.0,
+     "vaultable": false
+    },
+    {
+     "kind": "window",
+     "pos": 0.35,
+     "width": 1.8,
+     "sill": 2.0,
+     "vaultable": false
+    }
+   ]
+  },
+  {
+   "wall": "E",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.25,
+     "width": 1.25,
+     "tag": "staff_entry"
+    }
+   ]
+  },
+  {
+   "wall": "W",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.25,
+     "width": 1.4,
+     "tag": "transport_entry"
+    },
+    {
+     "kind": "breach",
+     "pos": 0.3,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
+  },
+  {
+   "wall": "S",
+   "story": 1,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "window",
+     "pos": -0.3,
+     "width": 1.8,
+     "sill": 1.4,
+     "vaultable": false
+    },
+    {
+     "kind": "window",
+     "pos": 0.3,
+     "width": 1.8,
+     "sill": 1.4,
+     "vaultable": false
+    }
+   ]
+  }
+ ],
+ "partitions": [
+  {
+   "story": 0,
+   "axis": "X",
+   "pos": 5.0,
+   "start": -23.0,
+   "end": 23.0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.3,
+     "width": 1.6
+    },
+    {
+     "kind": "door",
+     "pos": 0.3,
+     "width": 1.6
+    }
+   ]
+  },
+  {
+   "story": 1,
+   "axis": "X",
+   "pos": 0.0,
+   "start": -23.0,
+   "end": 23.0,
+   "material": "drywall",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.3,
+     "width": 1.25
+    },
+    {
+     "kind": "door",
+     "pos": 0.3,
+     "width": 1.25
+    }
+   ]
+  },
+  {
+   "story": -1,
+   "axis": "Y",
+   "pos": 2.0,
+   "start": -17.0,
+   "end": 17.0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.25,
+     "width": 1.25,
+     "tag": "evidence_gate",
+     "reinforceable": true
+    },
+    {
+     "kind": "breach",
+     "pos": 0.35,
+     "width": 1.4,
+     "breach_class": "reinforced",
+     "material": "drywall"
+    }
+   ]
+  }
+ ],
+ "rooms": [
+  {
+   "id": "rotunda",
+   "story": 0,
+   "bounds": [
+    -23.0,
+    -17.0,
+    23.0,
+    5.0
+   ],
+   "role": "public_entry",
+   "combat_range": "long"
+  },
+  {
+   "id": "court_wing",
+   "story": 0,
+   "bounds": [
+    -23.0,
+    5.0,
+    23.0,
+    17.0
+   ],
+   "role": "connector",
+   "combat_range": "medium"
+  },
+  {
+   "id": "upper_court",
+   "story": 1,
+   "bounds": [
+    -23.0,
+    -17.0,
+    23.0,
+    0.0
+   ],
+   "role": "connector",
+   "combat_range": "medium"
+  },
+  {
+   "id": "chambers",
+   "story": 1,
+   "bounds": [
+    -23.0,
+    0.0,
+    23.0,
+    17.0
+   ],
+   "role": "fortifiable",
+   "fortifiable": true,
+   "combat_range": "close"
+  },
+  {
+   "id": "evidence_hall",
+   "story": -1,
+   "bounds": [
+    -23.0,
+    -17.0,
+    2.0,
+    17.0
+   ],
+   "role": "connector",
+   "combat_range": "medium"
+  },
+  {
+   "id": "evidence_vault",
+   "story": -1,
+   "bounds": [
+    2.0,
+    -17.0,
+    23.0,
+    17.0
+   ],
+   "role": "objective_room",
+   "objective": true,
+   "fortifiable": true,
+   "combat_range": "close"
+  }
+ ],
+ "stairs": [
+  {
+   "x": -19.0,
+   "y": -11.0,
+   "from_story": -1,
+   "to_story": 0,
+   "style": "straight",
+   "cut_slabs": true,
+   "facing": "E",
+   "id": "ch01_stair_b1",
+   "role": "service",
+   "run": 4.2
+  },
+  {
+   "x": -19.0,
+   "y": 11.0,
+   "from_story": -1,
+   "to_story": 0,
+   "style": "straight",
+   "cut_slabs": true,
+   "facing": "E",
+   "id": "ch01_stair_b2",
+   "role": "service",
+   "run": 4.2
+  },
+  {
+   "x": 19.0,
+   "y": -11.0,
+   "from_story": 0,
+   "to_story": 1,
+   "style": "straight",
+   "cut_slabs": true,
+   "facing": "W",
+   "id": "ch01_stair_up",
+   "role": "public_convenience",
+   "run": 4.2
+  }
+ ],
+ "ladders": [],
+ "vertical_links": [],
+ "parapets": [],
+ "volumes": [],
+ "markers": [
+  {
+   "type": "attacker_spawn",
+   "id": "STEPS",
+   "x": 0.0,
+   "y": -19.0,
+   "z": 0,
+   "rot_z": 90,
+   "room": "rotunda"
+  },
+  {
+   "type": "attacker_spawn",
+   "id": "TRANSPORT",
+   "x": -25.0,
+   "y": -6.0,
+   "z": 0,
+   "rot_z": 0,
+   "room": "rotunda"
+  },
+  {
+   "type": "defender_spawn",
+   "x": -12.0,
+   "y": 0.0,
+   "z": -4.7,
+   "rot_z": 0,
+   "room": "evidence_hall"
+  },
+  {
+   "type": "objective",
+   "id": "A",
+   "x": 14.0,
+   "y": 0.0,
+   "z": -4.7,
+   "room": "evidence_vault",
+   "meta": {
+    "kind": "secure"
+   }
+  },
+  {
+   "type": "extraction",
+   "id": "PLAZA",
+   "x": 8.0,
+   "y": -19.0,
+   "z": 0
+  },
+  {
+   "type": "cover_high",
+   "x": 0.0,
+   "y": -9.0,
+   "z": 0,
+   "room": "rotunda"
+  },
+  {
+   "type": "camera_socket",
+   "id": "01",
+   "x": 20.0,
+   "y": -14.0,
+   "z": 4.2,
+   "room": "rotunda"
+  }
+ ]
+}
