@@ -1,0 +1,328 @@
+{
+ "$schema": "../schema/level.schema.json",
+ "name": "mansion_a02",
+ "mode": "pvp_heist",
+ "seed": 4302,
+ "footprint_x": 34.0,
+ "footprint_y": 24.0,
+ "story_height": 3.8,
+ "n_stories": 2,
+ "has_basement": false,
+ "collision": "convex",
+ "auto_exterior": true,
+ "scale_ref": false,
+ "default_material": "concrete",
+ "materials": [
+  {
+   "id": "concrete",
+   "acoustic": "Concrete",
+   "absorption": 0.7,
+   "damping": 0.6
+  },
+  {
+   "id": "drywall",
+   "acoustic": "Drywall"
+  },
+  {
+   "id": "glass",
+   "acoustic": "Glass",
+   "absorption": 0.1,
+   "damping": 0.05
+  },
+  {
+   "id": "metal",
+   "acoustic": "Metal",
+   "absorption": 0.5,
+   "damping": 0.3
+  },
+  {
+   "id": "wood",
+   "acoustic": "Wood"
+  }
+ ],
+ "ext_walls": [
+  {
+   "wall": "S",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.1,
+     "width": 1.8,
+     "tag": "front_door"
+    },
+    {
+     "kind": "window",
+     "pos": 0.3,
+     "width": 1.8,
+     "sill": 0.9,
+     "vaultable": true
+    }
+   ]
+  },
+  {
+   "wall": "N",
+   "story": 0,
+   "material": "glass",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.25,
+     "width": 1.8,
+     "tag": "garden_door"
+    },
+    {
+     "kind": "breach",
+     "pos": -0.3,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
+  },
+  {
+   "wall": "E",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "garage",
+     "pos": 0.0,
+     "width": 3.0,
+     "tag": "garage_door"
+    }
+   ]
+  },
+  {
+   "wall": "S",
+   "story": 1,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "window",
+     "pos": -0.3,
+     "width": 1.6,
+     "sill": 0.9,
+     "vaultable": true
+    },
+    {
+     "kind": "window",
+     "pos": 0.3,
+     "width": 1.6,
+     "sill": 0.9,
+     "vaultable": true
+    }
+   ]
+  }
+ ],
+ "partitions": [
+  {
+   "story": 0,
+   "axis": "X",
+   "pos": 1.0,
+   "start": -17.0,
+   "end": 17.0,
+   "material": "drywall",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.3,
+     "width": 1.25
+    },
+    {
+     "kind": "door",
+     "pos": 0.3,
+     "width": 1.25
+    }
+   ]
+  },
+  {
+   "story": 1,
+   "axis": "X",
+   "pos": 0.0,
+   "start": -17.0,
+   "end": 17.0,
+   "material": "drywall",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.35,
+     "width": 1.25
+    },
+    {
+     "kind": "door",
+     "pos": 0.3,
+     "width": 1.25
+    }
+   ]
+  },
+  {
+   "story": 1,
+   "axis": "Y",
+   "pos": 4.0,
+   "start": 0.0,
+   "end": 12.0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.25,
+     "tag": "suite_door",
+     "reinforceable": true
+    },
+    {
+     "kind": "breach",
+     "pos": -0.4,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
+  }
+ ],
+ "rooms": [
+  {
+   "id": "hall",
+   "story": 0,
+   "bounds": [
+    -17.0,
+    -12.0,
+    17.0,
+    1.0
+   ],
+   "role": "public_entry",
+   "combat_range": "medium"
+  },
+  {
+   "id": "kitchen_wing",
+   "story": 0,
+   "bounds": [
+    -17.0,
+    1.0,
+    17.0,
+    12.0
+   ],
+   "role": "connector",
+   "combat_range": "close"
+  },
+  {
+   "id": "landing",
+   "story": 1,
+   "bounds": [
+    -17.0,
+    -12.0,
+    17.0,
+    0.0
+   ],
+   "role": "connector",
+   "combat_range": "medium"
+  },
+  {
+   "id": "guest_wing",
+   "story": 1,
+   "bounds": [
+    -17.0,
+    0.0,
+    4.0,
+    12.0
+   ],
+   "role": "fortifiable",
+   "fortifiable": true,
+   "combat_range": "close"
+  },
+  {
+   "id": "master_suite",
+   "story": 1,
+   "bounds": [
+    4.0,
+    0.0,
+    17.0,
+    12.0
+   ],
+   "role": "objective_room",
+   "objective": true,
+   "fortifiable": true,
+   "combat_range": "close"
+  }
+ ],
+ "stairs": [
+  {
+   "x": -13.0,
+   "y": -7.0,
+   "from_story": 0,
+   "to_story": 1,
+   "style": "switchback",
+   "cut_slabs": true,
+   "facing": "N",
+   "id": "mn02_stair_0",
+   "role": "public_convenience"
+  }
+ ],
+ "ladders": [],
+ "vertical_links": [],
+ "parapets": [],
+ "volumes": [],
+ "markers": [
+  {
+   "type": "attacker_spawn",
+   "id": "FRONT",
+   "x": -2.0,
+   "y": -14.0,
+   "z": 0,
+   "rot_z": 90,
+   "room": "hall"
+  },
+  {
+   "type": "attacker_spawn",
+   "id": "GARDEN",
+   "x": 5.0,
+   "y": 14.0,
+   "z": 0,
+   "rot_z": 270,
+   "room": "kitchen_wing"
+  },
+  {
+   "type": "defender_spawn",
+   "x": -8.0,
+   "y": 6.0,
+   "z": 3.8,
+   "rot_z": 0,
+   "room": "guest_wing"
+  },
+  {
+   "type": "objective",
+   "id": "A",
+   "x": 10.0,
+   "y": 6.0,
+   "z": 3.8,
+   "room": "master_suite",
+   "meta": {
+    "kind": "secure"
+   }
+  },
+  {
+   "type": "extraction",
+   "id": "DRIVE",
+   "x": 6.0,
+   "y": -14.0,
+   "z": 0
+  },
+  {
+   "type": "cover_low",
+   "x": 4.0,
+   "y": -5.0,
+   "z": 0,
+   "room": "hall"
+  },
+  {
+   "type": "camera_socket",
+   "id": "01",
+   "x": 14.0,
+   "y": -9.0,
+   "z": 3.2,
+   "room": "hall"
+  }
+ ]
+}

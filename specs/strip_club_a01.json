@@ -1,0 +1,273 @@
+{
+ "$schema": "../schema/level.schema.json",
+ "name": "strip_club_a01",
+ "mode": "pvp_heist",
+ "seed": 5201,
+ "footprint_x": 34.0,
+ "footprint_y": 24.0,
+ "story_height": 3.6,
+ "n_stories": 1,
+ "has_basement": false,
+ "collision": "convex",
+ "auto_exterior": true,
+ "scale_ref": false,
+ "default_material": "concrete",
+ "materials": [
+  {
+   "id": "concrete",
+   "acoustic": "Concrete",
+   "absorption": 0.7,
+   "damping": 0.6
+  },
+  {
+   "id": "drywall",
+   "acoustic": "Drywall"
+  },
+  {
+   "id": "glass",
+   "acoustic": "Glass",
+   "absorption": 0.1,
+   "damping": 0.05
+  },
+  {
+   "id": "metal",
+   "acoustic": "Metal",
+   "absorption": 0.5,
+   "damping": 0.3
+  },
+  {
+   "id": "wood",
+   "acoustic": "Wood"
+  }
+ ],
+ "ext_walls": [
+  {
+   "wall": "S",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.15,
+     "width": 1.6,
+     "tag": "front_door"
+    },
+    {
+     "kind": "window",
+     "pos": 0.35,
+     "width": 1.2,
+     "sill": 1.8,
+     "vaultable": false
+    }
+   ]
+  },
+  {
+   "wall": "E",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.25,
+     "width": 1.25,
+     "tag": "vip_entry"
+    }
+   ]
+  },
+  {
+   "wall": "N",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.3,
+     "width": 1.25,
+     "tag": "stage_door"
+    },
+    {
+     "kind": "breach",
+     "pos": 0.3,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
+  }
+ ],
+ "partitions": [
+  {
+   "story": 0,
+   "axis": "X",
+   "pos": 2.0,
+   "start": -17.0,
+   "end": 17.0,
+   "material": "drywall",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.3,
+     "width": 1.25
+    },
+    {
+     "kind": "door",
+     "pos": 0.35,
+     "width": 1.25
+    }
+   ]
+  },
+  {
+   "story": 0,
+   "axis": "Y",
+   "pos": 7.0,
+   "start": 2.0,
+   "end": 12.0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.25,
+     "tag": "office_door",
+     "reinforceable": true
+    },
+    {
+     "kind": "breach",
+     "pos": -0.4,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
+  }
+ ],
+ "rooms": [
+  {
+   "id": "main_floor",
+   "story": 0,
+   "bounds": [
+    -17.0,
+    -12.0,
+    17.0,
+    2.0
+   ],
+   "role": "public_entry",
+   "combat_range": "medium"
+  },
+  {
+   "id": "vip_wing",
+   "story": 0,
+   "bounds": [
+    -17.0,
+    2.0,
+    7.0,
+    12.0
+   ],
+   "role": "connector",
+   "combat_range": "close"
+  },
+  {
+   "id": "cash_office",
+   "story": 0,
+   "bounds": [
+    7.0,
+    2.0,
+    17.0,
+    12.0
+   ],
+   "role": "objective_room",
+   "objective": true,
+   "fortifiable": true,
+   "combat_range": "close"
+  }
+ ],
+ "stairs": [],
+ "ladders": [],
+ "vertical_links": [],
+ "parapets": [],
+ "volumes": [
+  {
+   "name": "stage",
+   "x": 0.0,
+   "y": -2.0,
+   "z": 0.4,
+   "size_x": 8.0,
+   "size_y": 4.0,
+   "size_z": 0.8,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "bar_run",
+   "x": -12.0,
+   "y": -8.0,
+   "z": 0.55,
+   "size_x": 6.0,
+   "size_y": 0.9,
+   "size_z": 1.1,
+   "collision": "convex",
+   "material": "wood"
+  }
+ ],
+ "markers": [
+  {
+   "type": "attacker_spawn",
+   "id": "FRONT",
+   "x": -2.0,
+   "y": -14.0,
+   "z": 0,
+   "rot_z": 90,
+   "room": "main_floor"
+  },
+  {
+   "type": "attacker_spawn",
+   "id": "STAGE_DOOR",
+   "x": -8.0,
+   "y": 14.0,
+   "z": 0,
+   "rot_z": 270,
+   "room": "vip_wing"
+  },
+  {
+   "type": "defender_spawn",
+   "x": -10.0,
+   "y": 6.0,
+   "z": 0.0,
+   "rot_z": 0,
+   "room": "vip_wing"
+  },
+  {
+   "type": "objective",
+   "id": "A",
+   "x": 12.0,
+   "y": 7.0,
+   "z": 0.0,
+   "room": "cash_office",
+   "meta": {
+    "kind": "secure"
+   }
+  },
+  {
+   "type": "extraction",
+   "id": "ALLEY",
+   "x": 6.0,
+   "y": -14.0,
+   "z": 0
+  },
+  {
+   "type": "cover_low",
+   "x": 6.0,
+   "y": -6.0,
+   "z": 0,
+   "room": "main_floor"
+  },
+  {
+   "type": "camera_socket",
+   "id": "01",
+   "x": 14.0,
+   "y": -9.0,
+   "z": 3.0,
+   "room": "main_floor"
+  }
+ ]
+}

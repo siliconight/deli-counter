@@ -1,0 +1,218 @@
+{
+  "light_manifest_version": "1.1.0",
+  "building_id": "courthouse_a01",
+  "theme": "greybox",
+  "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location",
+  "rig_library": "lux",
+  "anchors": [
+    {
+      "id": "rotunda_ceiling",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -6.0,
+        4.9
+      ],
+      "rot_y": 0.0,
+      "room": "rotunda",
+      "row": {
+        "count": 5,
+        "spacing": 9.2
+      },
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "court_wing_ceiling",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        11.0,
+        4.9
+      ],
+      "rot_y": 0.0,
+      "room": "court_wing",
+      "row": {
+        "count": 5,
+        "spacing": 9.2
+      },
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "upper_court_ceiling",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -8.5,
+        9.9
+      ],
+      "rot_y": 0.0,
+      "room": "upper_court",
+      "row": {
+        "count": 5,
+        "spacing": 9.2
+      },
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "chambers_ceiling",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        8.5,
+        9.9
+      ],
+      "rot_y": 0.0,
+      "room": "chambers",
+      "row": {
+        "count": 5,
+        "spacing": 9.2
+      },
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "evidence_hall_ceiling",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -10.5,
+        0.0,
+        -0.1
+      ],
+      "rot_y": 90.0,
+      "room": "evidence_hall",
+      "row": {
+        "count": 5,
+        "spacing": 6.8
+      },
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "evidence_vault_ceiling",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        12.5,
+        0.0,
+        -0.1
+      ],
+      "rot_y": 90.0,
+      "room": "evidence_vault",
+      "row": {
+        "count": 5,
+        "spacing": 6.8
+      },
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "ext_0_S_window_1",
+      "type": "window",
+      "source": "derived",
+      "pos": [
+        -16.1,
+        -17.0,
+        2.85
+      ],
+      "rot_y": 90.0,
+      "size": [
+        1.8,
+        1.4
+      ],
+      "reacts_to_alarm": false
+    },
+    {
+      "id": "ext_0_S_window_2",
+      "type": "window",
+      "source": "derived",
+      "pos": [
+        16.1,
+        -17.0,
+        2.85
+      ],
+      "rot_y": 90.0,
+      "size": [
+        1.8,
+        1.4
+      ],
+      "reacts_to_alarm": false
+    },
+    {
+      "id": "ext_1_S_window_1",
+      "type": "window",
+      "source": "derived",
+      "pos": [
+        -13.8,
+        -17.0,
+        7.25
+      ],
+      "rot_y": 90.0,
+      "size": [
+        1.8,
+        1.4
+      ],
+      "reacts_to_alarm": false
+    },
+    {
+      "id": "ext_1_S_window_2",
+      "type": "window",
+      "source": "derived",
+      "pos": [
+        13.8,
+        -17.0,
+        7.25
+      ],
+      "rot_y": 90.0,
+      "size": [
+        1.8,
+        1.4
+      ],
+      "reacts_to_alarm": false
+    },
+    {
+      "id": "ext_0_S_sign",
+      "type": "sign",
+      "source": "derived",
+      "pos": [
+        -0.0,
+        -17.2,
+        2.55
+      ],
+      "rot_y": 270.0,
+      "wall": "ext_0_S",
+      "size": [
+        3.2,
+        0.6
+      ],
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "ext_0_E_pack_1",
+      "type": "wall_pack",
+      "source": "derived",
+      "pos": [
+        23.15,
+        8.5,
+        2.45
+      ],
+      "rot_y": 0.0,
+      "wall": "ext_0_E",
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "ext_0_W_pack_1",
+      "type": "wall_pack",
+      "source": "derived",
+      "pos": [
+        -23.15,
+        -8.5,
+        2.45
+      ],
+      "rot_y": 180.0,
+      "wall": "ext_0_W",
+      "reacts_to_alarm": true
+    }
+  ]
+}

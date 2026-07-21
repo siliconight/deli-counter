@@ -1,0 +1,98 @@
+{
+  "kit_name": "Deli Counter",
+  "kit_version": "0.80.0",
+  "schema_version": "1.21.1",
+  "spec": "museum_a02.json",
+  "spec_sha256_16": "d2f9e2bb9e7eb512",
+  "built_utc": "2026-07-21T10:51:22.763425+00:00",
+  "outputs": [
+    "museum_a02.glb"
+  ],
+  "expected": {
+    "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
+    "bounds_min": [
+      -22.15,
+      -17.15,
+      -5.3
+    ],
+    "bounds_max": [
+      22.15,
+      17.15,
+      5.0
+    ],
+    "origin": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "story_height": 5.0,
+    "floor_elevations": [
+      0.0
+    ],
+    "markers": [
+      {
+        "name": "ATTACKER_SPAWN_FRONT",
+        "type": "attacker_spawn",
+        "pos": [
+          -2.0,
+          -19.0,
+          0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_DOCK",
+        "type": "attacker_spawn",
+        "pos": [
+          6.0,
+          19.0,
+          0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN",
+        "type": "defender_spawn",
+        "pos": [
+          -12.0,
+          0.0,
+          -4.7
+        ]
+      },
+      {
+        "name": "OBJECTIVE_A",
+        "type": "objective",
+        "pos": [
+          12.0,
+          0.0,
+          -4.7
+        ]
+      },
+      {
+        "name": "EXTRACTION_STEPS",
+        "type": "extraction",
+        "pos": [
+          6.0,
+          -19.0,
+          0
+        ]
+      },
+      {
+        "name": "COVER_LOW",
+        "type": "cover_low",
+        "pos": [
+          -6.0,
+          -8.0,
+          0
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_01",
+        "type": "camera_socket",
+        "pos": [
+          19.0,
+          -14.0,
+          4.2
+        ]
+      }
+    ]
+  }
+}

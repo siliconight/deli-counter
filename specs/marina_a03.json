@@ -1,0 +1,325 @@
+{
+ "$schema": "../schema/level.schema.json",
+ "name": "marina_a03",
+ "mode": "pvp_heist",
+ "seed": 4603,
+ "footprint_x": 36.0,
+ "footprint_y": 24.0,
+ "story_height": 4.0,
+ "n_stories": 1,
+ "has_basement": false,
+ "collision": "convex",
+ "auto_exterior": true,
+ "scale_ref": false,
+ "default_material": "metal",
+ "materials": [
+  {
+   "id": "concrete",
+   "acoustic": "Concrete",
+   "absorption": 0.7,
+   "damping": 0.6
+  },
+  {
+   "id": "drywall",
+   "acoustic": "Drywall"
+  },
+  {
+   "id": "glass",
+   "acoustic": "Glass",
+   "absorption": 0.1,
+   "damping": 0.05
+  },
+  {
+   "id": "metal",
+   "acoustic": "Metal",
+   "absorption": 0.5,
+   "damping": 0.3
+  },
+  {
+   "id": "wood",
+   "acoustic": "Wood"
+  }
+ ],
+ "ext_walls": [
+  {
+   "wall": "S",
+   "story": 0,
+   "material": "metal",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.8,
+     "tag": "chandlery_entry"
+    },
+    {
+     "kind": "window",
+     "pos": -0.35,
+     "width": 2.0,
+     "sill": 1.2,
+     "vaultable": false
+    }
+   ]
+  },
+  {
+   "wall": "W",
+   "story": 0,
+   "material": "metal",
+   "openings": [
+    {
+     "kind": "garage",
+     "pos": 0.0,
+     "width": 3.6,
+     "tag": "gear_dock"
+    }
+   ]
+  },
+  {
+   "wall": "N",
+   "story": 0,
+   "material": "metal",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.3,
+     "width": 1.25,
+     "tag": "yard_entry"
+    },
+    {
+     "kind": "breach",
+     "pos": -0.25,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
+  },
+  {
+   "wall": "E",
+   "story": 0,
+   "material": "metal",
+   "openings": [
+    {
+     "kind": "window",
+     "pos": 0.0,
+     "width": 1.8,
+     "sill": 1.5,
+     "vaultable": false
+    }
+   ]
+  }
+ ],
+ "partitions": [
+  {
+   "story": 0,
+   "axis": "X",
+   "pos": 2.0,
+   "start": -18.0,
+   "end": 18.0,
+   "material": "metal",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.3,
+     "width": 1.4
+    },
+    {
+     "kind": "door",
+     "pos": 0.3,
+     "width": 1.4
+    }
+   ]
+  },
+  {
+   "story": 0,
+   "axis": "Y",
+   "pos": 6.0,
+   "start": 2.0,
+   "end": 12.0,
+   "material": "metal",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.25,
+     "tag": "bond_door",
+     "reinforceable": true
+    },
+    {
+     "kind": "breach",
+     "pos": -0.4,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
+  }
+ ],
+ "rooms": [
+  {
+   "id": "sales_floor",
+   "story": 0,
+   "bounds": [
+    -18.0,
+    -12.0,
+    18.0,
+    2.0
+   ],
+   "role": "public_entry",
+   "combat_range": "medium"
+  },
+  {
+   "id": "gear_hall",
+   "story": 0,
+   "bounds": [
+    -18.0,
+    2.0,
+    6.0,
+    12.0
+   ],
+   "role": "connector",
+   "combat_range": "medium"
+  },
+  {
+   "id": "bonded_locker",
+   "story": 0,
+   "bounds": [
+    6.0,
+    2.0,
+    18.0,
+    12.0
+   ],
+   "role": "objective_room",
+   "objective": true,
+   "fortifiable": true,
+   "combat_range": "close"
+  }
+ ],
+ "stairs": [],
+ "ladders": [
+  {
+   "x": -14.0,
+   "y": 8.0,
+   "from_story": 0,
+   "to_story": 1,
+   "facing": "E",
+   "role": "roof_access",
+   "placement_mode": "interior",
+   "upper_surface": "roof",
+   "transition": "roof_hatch_exit",
+   "access_class": "staff_restricted",
+   "access_control": "locked_hatch",
+   "id": "ma03_ladder_0"
+  }
+ ],
+ "vertical_links": [
+  {
+   "kind": "hatch",
+   "story": 1,
+   "x": -14.0,
+   "y": 8.0
+  }
+ ],
+ "parapets": [
+  {
+   "story": 1,
+   "height": 1.0
+  }
+ ],
+ "volumes": [
+  {
+   "name": "rack_a",
+   "x": -8.0,
+   "y": -5.0,
+   "z": 1.2,
+   "size_x": 1.2,
+   "size_y": 8.0,
+   "size_z": 2.4,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "rack_b",
+   "x": 0.0,
+   "y": -5.0,
+   "z": 1.2,
+   "size_x": 1.2,
+   "size_y": 8.0,
+   "size_z": 2.4,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "hull_stand",
+   "x": 10.0,
+   "y": -6.0,
+   "z": 1.4,
+   "size_x": 5.0,
+   "size_y": 2.4,
+   "size_z": 2.8,
+   "collision": "convex",
+   "material": "metal"
+  }
+ ],
+ "markers": [
+  {
+   "type": "attacker_spawn",
+   "id": "FRONT",
+   "x": 0.0,
+   "y": -14.0,
+   "z": 0,
+   "rot_z": 90,
+   "room": "sales_floor"
+  },
+  {
+   "type": "attacker_spawn",
+   "id": "YARD",
+   "x": 6.0,
+   "y": 14.0,
+   "z": 0,
+   "rot_z": 270,
+   "room": "gear_hall"
+  },
+  {
+   "type": "defender_spawn",
+   "x": -10.0,
+   "y": 7.0,
+   "z": 0.0,
+   "rot_z": 0,
+   "room": "gear_hall"
+  },
+  {
+   "type": "objective",
+   "id": "A",
+   "x": 12.0,
+   "y": 7.0,
+   "z": 0.0,
+   "room": "bonded_locker",
+   "meta": {
+    "kind": "secure"
+   }
+  },
+  {
+   "type": "extraction",
+   "id": "PIER",
+   "x": -8.0,
+   "y": -14.0,
+   "z": 0
+  },
+  {
+   "type": "cover_low",
+   "x": 5.0,
+   "y": -5.0,
+   "z": 0,
+   "room": "sales_floor"
+  },
+  {
+   "type": "camera_socket",
+   "id": "01",
+   "x": 15.0,
+   "y": -9.0,
+   "z": 3.4,
+   "room": "sales_floor"
+  }
+ ]
+}

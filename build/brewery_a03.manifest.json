@@ -1,0 +1,116 @@
+{
+  "kit_name": "Deli Counter",
+  "kit_version": "0.80.0",
+  "schema_version": "1.21.1",
+  "spec": "brewery_a03.json",
+  "spec_sha256_16": "0cf4bc8fdff1d6da",
+  "built_utc": "2026-07-21T10:51:45.569752+00:00",
+  "outputs": [
+    "brewery_a03.glb"
+  ],
+  "expected": {
+    "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
+    "bounds_min": [
+      -20.15,
+      -14.15,
+      -0.3
+    ],
+    "bounds_max": [
+      20.15,
+      14.15,
+      5.6
+    ],
+    "origin": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "story_height": 4.6,
+    "floor_elevations": [
+      0.0
+    ],
+    "markers": [
+      {
+        "name": "LADDER_0",
+        "type": "ladder",
+        "pos": [
+          14.0,
+          10.0,
+          0.0
+        ]
+      },
+      {
+        "name": "HATCH_14_10",
+        "type": "hatch",
+        "pos": [
+          14.0,
+          10.0,
+          4.6
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_TAPROOM",
+        "type": "attacker_spawn",
+        "pos": [
+          -4.0,
+          -16.0,
+          0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_TOUR",
+        "type": "attacker_spawn",
+        "pos": [
+          8.0,
+          -16.0,
+          0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN",
+        "type": "defender_spawn",
+        "pos": [
+          6.0,
+          7.0,
+          0.0
+        ]
+      },
+      {
+        "name": "OBJECTIVE_A",
+        "type": "objective",
+        "pos": [
+          -14.0,
+          7.0,
+          0.0
+        ]
+      },
+      {
+        "name": "EXTRACTION_LOT",
+        "type": "extraction",
+        "pos": [
+          0.0,
+          -16.0,
+          0
+        ]
+      },
+      {
+        "name": "COVER_LOW",
+        "type": "cover_low",
+        "pos": [
+          2.0,
+          -6.0,
+          0
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_01",
+        "type": "camera_socket",
+        "pos": [
+          17.0,
+          -11.0,
+          3.8
+        ]
+      }
+    ]
+  }
+}

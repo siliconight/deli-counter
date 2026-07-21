@@ -1,0 +1,1993 @@
+{
+  "level": "brewery_a03",
+  "mode": "pvp_heist",
+  "building_id": "brewery_a03",
+  "footprint": [
+    40.0,
+    28.0
+  ],
+  "rarity": null,
+  "rarity_color": null,
+  "markers": [
+    {
+      "name": "LADDER_0",
+      "type": "ladder",
+      "id": "ladder_0",
+      "x": 14.0,
+      "y": 10.0,
+      "z": 0.0,
+      "climb_height": 4.6,
+      "width": 0.5,
+      "depth": 0.15,
+      "facing": "S"
+    },
+    {
+      "name": "HATCH_14_10",
+      "type": "hatch",
+      "x": 14.0,
+      "y": 10.0,
+      "z": 4.6,
+      "breachable": false
+    },
+    {
+      "name": "ATTACKER_SPAWN_TAPROOM",
+      "type": "attacker_spawn",
+      "id": "TAPROOM",
+      "x": -4.0,
+      "y": -16.0,
+      "z": 0,
+      "rot_z": 90,
+      "room": "taproom"
+    },
+    {
+      "name": "ATTACKER_SPAWN_TOUR",
+      "type": "attacker_spawn",
+      "id": "TOUR",
+      "x": 8.0,
+      "y": -16.0,
+      "z": 0,
+      "rot_z": 90,
+      "room": "taproom"
+    },
+    {
+      "name": "DEFENDER_SPAWN",
+      "type": "defender_spawn",
+      "id": null,
+      "x": 6.0,
+      "y": 7.0,
+      "z": 0.0,
+      "rot_z": 0,
+      "room": "brew_back"
+    },
+    {
+      "name": "OBJECTIVE_A",
+      "type": "objective",
+      "id": "A",
+      "x": -14.0,
+      "y": 7.0,
+      "z": 0.0,
+      "rot_z": 0.0,
+      "room": "cash_office",
+      "meta": {
+        "kind": "secure"
+      }
+    },
+    {
+      "name": "EXTRACTION_LOT",
+      "type": "extraction",
+      "id": "LOT",
+      "x": 0.0,
+      "y": -16.0,
+      "z": 0,
+      "rot_z": 0.0,
+      "room": null
+    },
+    {
+      "name": "COVER_LOW",
+      "type": "cover_low",
+      "id": null,
+      "x": 2.0,
+      "y": -6.0,
+      "z": 0,
+      "rot_z": 0.0,
+      "room": "taproom"
+    },
+    {
+      "name": "CAMERA_SOCKET_01",
+      "type": "camera_socket",
+      "id": "01",
+      "x": 17.0,
+      "y": -11.0,
+      "z": 3.8,
+      "rot_z": 0.0,
+      "room": "taproom"
+    }
+  ],
+  "rooms": [
+    {
+      "id": "taproom",
+      "story": 0,
+      "bounds": [
+        -20.0,
+        -14.0,
+        20.0,
+        0.0
+      ],
+      "role": "public_entry",
+      "combat_range": "medium",
+      "fortifiable": false,
+      "objective": false,
+      "center": [
+        0.0,
+        -7.0,
+        0.0
+      ]
+    },
+    {
+      "id": "cash_office",
+      "story": 0,
+      "bounds": [
+        -20.0,
+        0.0,
+        -8.0,
+        14.0
+      ],
+      "role": "objective_room",
+      "combat_range": "close",
+      "fortifiable": true,
+      "objective": true,
+      "center": [
+        -14.0,
+        7.0,
+        0.0
+      ]
+    },
+    {
+      "id": "brew_back",
+      "story": 0,
+      "bounds": [
+        -8.0,
+        0.0,
+        20.0,
+        14.0
+      ],
+      "role": "connector",
+      "combat_range": "medium",
+      "fortifiable": false,
+      "objective": false,
+      "center": [
+        6.0,
+        7.0,
+        0.0
+      ]
+    }
+  ],
+  "vertical_links": [
+    {
+      "kind": "hatch",
+      "role": null,
+      "from_story": null,
+      "to_story": null,
+      "story": 1,
+      "x": 14.0,
+      "y": 10.0,
+      "breachable": null
+    }
+  ],
+  "openings": [
+    {
+      "wall": "ext_0_N",
+      "kind": "breach",
+      "story": 0,
+      "x": 10.0,
+      "y": 14.0,
+      "z": 1.25,
+      "width": 1.4,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": null,
+      "breach_class": "soft_wall",
+      "material": "drywall",
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "brewery_a03"
+    },
+    {
+      "wall": "ext_0_N",
+      "kind": "window",
+      "story": 0,
+      "x": -12.0,
+      "y": 14.0,
+      "z": 2.45,
+      "width": 1.8,
+      "height": 1.4,
+      "sill": 1.6,
+      "tag": null,
+      "breach_class": null,
+      "material": null,
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "brewery_a03"
+    },
+    {
+      "wall": "ext_0_S",
+      "kind": "door",
+      "story": 0,
+      "x": -8.0,
+      "y": -14.0,
+      "z": 1.25,
+      "width": 2.0,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": "taproom_entry",
+      "breach_class": null,
+      "material": null,
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "brewery_a03"
+    },
+    {
+      "wall": "ext_0_S",
+      "kind": "window",
+      "story": 0,
+      "x": 8.0,
+      "y": -14.0,
+      "z": 1.75,
+      "width": 2.6,
+      "height": 1.4,
+      "sill": 0.9,
+      "tag": null,
+      "breach_class": null,
+      "material": null,
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "brewery_a03"
+    },
+    {
+      "wall": "ext_0_S",
+      "kind": "door",
+      "story": 0,
+      "x": 18.0,
+      "y": -14.0,
+      "z": 1.25,
+      "width": 1.4,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": "tour_entry",
+      "breach_class": null,
+      "material": null,
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "brewery_a03"
+    },
+    {
+      "wall": "ext_0_E",
+      "kind": "garage",
+      "story": 0,
+      "x": 20.0,
+      "y": 0.0,
+      "z": 1.65,
+      "width": 3.6,
+      "height": 3.0,
+      "sill": 0.0,
+      "tag": "dock",
+      "breach_class": null,
+      "material": null,
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "brewery_a03"
+    },
+    {
+      "wall": "int_0_0",
+      "kind": "door",
+      "story": 0,
+      "x": -12.0,
+      "y": 0.0,
+      "z": 1.25,
+      "width": 1.4,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": null,
+      "breach_class": null,
+      "material": null,
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "brewery_a03"
+    },
+    {
+      "wall": "int_0_0",
+      "kind": "door",
+      "story": 0,
+      "x": 12.0,
+      "y": 0.0,
+      "z": 1.25,
+      "width": 1.4,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": null,
+      "breach_class": null,
+      "material": null,
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "brewery_a03"
+    },
+    {
+      "wall": "int_0_1",
+      "kind": "door",
+      "story": 0,
+      "x": -8.0,
+      "y": 7.0,
+      "z": 1.25,
+      "width": 1.25,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": "cash_door",
+      "breach_class": null,
+      "material": null,
+      "vaultable": false,
+      "reinforceable": true,
+      "building": "brewery_a03"
+    },
+    {
+      "wall": "int_0_1",
+      "kind": "breach",
+      "story": 0,
+      "x": -8.0,
+      "y": 12.6,
+      "z": 1.25,
+      "width": 1.4,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": null,
+      "breach_class": "soft_wall",
+      "material": "drywall",
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "brewery_a03"
+    }
+  ],
+  "objectives": [],
+  "loot": [],
+  "zones": [],
+  "materials": [
+    {
+      "id": "concrete",
+      "acoustic": "Concrete",
+      "absorption": 0.7,
+      "damping": 0.6
+    },
+    {
+      "id": "drywall",
+      "acoustic": "Drywall",
+      "absorption": null,
+      "damping": null
+    },
+    {
+      "id": "glass",
+      "acoustic": "Glass",
+      "absorption": 0.1,
+      "damping": 0.05
+    },
+    {
+      "id": "metal",
+      "acoustic": "Metal",
+      "absorption": 0.5,
+      "damping": 0.3
+    },
+    {
+      "id": "wood",
+      "acoustic": "Wood",
+      "absorption": null,
+      "damping": null
+    }
+  ],
+  "surfaces": [
+    {
+      "node": "ext_col_0_N_seg0",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_N_seg1",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_N_seg2",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_N_seg3",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_N_open0_lintel",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_N_open0_sill",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_N_open0_pane",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_N_seg4",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_N_seg5",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_N_seg6",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_N_seg7",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_N_seg8",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_N_seg9",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_N_seg10",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_N_seg11",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_N_seg12",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_N_seg13",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_N_seg14",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_N_open1_lintel",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_N_open1_BREACHPANEL",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_N_seg15",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_N_seg16",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_N_seg17",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_N_seg18",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_N_seg19",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_S_seg0",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "ext_col_0_S_seg1",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "ext_col_0_S_seg2",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "ext_col_0_S_seg3",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "ext_col_0_S_seg4",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "ext_col_0_S_seg5",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "ext_col_0_S_open0_lintel",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "ext_col_0_S_seg6",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "ext_col_0_S_seg7",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "ext_col_0_S_seg8",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "ext_col_0_S_seg9",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "ext_col_0_S_seg10",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "ext_col_0_S_seg11",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "ext_col_0_S_seg12",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "ext_col_0_S_open1_lintel",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "ext_col_0_S_open1_sill",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "ext_col_0_S_open1_pane",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "ext_col_0_S_seg13",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "ext_col_0_S_seg14",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "ext_col_0_S_seg15",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "ext_col_0_S_seg16",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "ext_col_0_S_open2_lintel",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "ext_col_0_S_seg17",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "ext_col_0_E_seg0",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_E_seg1",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_E_seg2",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_E_seg3",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_E_seg4",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_E_seg5",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_E_seg6",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_E_open0_lintel",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_E_seg7",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_E_seg8",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_E_seg9",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_E_seg10",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_E_seg11",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_E_seg12",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_E_seg13",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_W_seg0",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_W_seg1",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_W_seg2",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_W_seg3",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_W_seg4",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_W_seg5",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_W_seg6",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_W_seg7",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_W_seg8",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_W_seg9",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_W_seg10",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_W_seg11",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_W_seg12",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_W_seg13",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "int_col_0_0_seg0",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "int_col_0_0_seg1",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "int_col_0_0_seg2",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "int_col_0_0_seg3",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "int_col_0_0_open0_lintel",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "int_col_0_0_seg4",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "int_col_0_0_seg5",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "int_col_0_0_seg6",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "int_col_0_0_seg7",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "int_col_0_0_seg8",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "int_col_0_0_seg9",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "int_col_0_0_seg10",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "int_col_0_0_seg11",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "int_col_0_0_seg12",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "int_col_0_0_seg13",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "int_col_0_0_seg14",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "int_col_0_0_seg15",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "int_col_0_0_open1_lintel",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "int_col_0_0_seg16",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "int_col_0_0_seg17",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "int_col_0_0_seg18",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "int_col_0_0_seg19",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "int_col_0_1_seg0",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "int_col_0_1_seg1",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "int_col_0_1_seg2",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "int_col_0_1_seg3",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "int_col_0_1_open0_lintel",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "int_col_0_1_seg4",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "int_col_0_1_seg5",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "int_col_0_1_seg6",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "int_col_0_1_open1_lintel",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "int_col_0_1_open1_BREACHPANEL",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "int_col_0_1_seg7",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "bar_l_col",
+      "material": {
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
+      }
+    },
+    {
+      "node": "tank_a_col",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "tank_b_col",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    }
+  ],
+  "interactives": [
+    {
+      "id": "brewery_a03:if:e5be6f3b",
+      "kind": "breach_wall",
+      "slot_ref": "ext_0_N_open1",
+      "transform": {
+        "translation": [
+          10.0,
+          14.0,
+          1.25
+        ],
+        "rot_y": 0
+      },
+      "states": [
+        "intact",
+        "breached"
+      ],
+      "default": "intact",
+      "transitions": [
+        {
+          "event": "breach",
+          "from": "intact",
+          "to": "breached"
+        }
+      ],
+      "source": "inferred",
+      "reversible": false,
+      "building": "brewery_a03"
+    },
+    {
+      "id": "brewery_a03:if:bd9ca877",
+      "kind": "door",
+      "slot_ref": "ext_0_S_open0",
+      "transform": {
+        "translation": [
+          -8.0,
+          -14.0,
+          1.25
+        ],
+        "rot_y": 180
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "brewery_a03"
+    },
+    {
+      "id": "brewery_a03:if:322e280f",
+      "kind": "door",
+      "slot_ref": "ext_0_S_open2",
+      "transform": {
+        "translation": [
+          18.0,
+          -14.0,
+          1.25
+        ],
+        "rot_y": 180
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "brewery_a03"
+    },
+    {
+      "id": "brewery_a03:if:2b97cb66",
+      "kind": "door",
+      "slot_ref": "ext_0_E_open0",
+      "transform": {
+        "translation": [
+          20.0,
+          0.0,
+          1.65
+        ],
+        "rot_y": 90
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "brewery_a03"
+    },
+    {
+      "id": "brewery_a03:if:7b1f4fde",
+      "kind": "door",
+      "slot_ref": "int_0_0_open0",
+      "transform": {
+        "translation": [
+          -12.0,
+          0.0,
+          1.25
+        ],
+        "rot_y": 0
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "brewery_a03"
+    },
+    {
+      "id": "brewery_a03:if:07f28bcc",
+      "kind": "door",
+      "slot_ref": "int_0_0_open1",
+      "transform": {
+        "translation": [
+          12.0,
+          0.0,
+          1.25
+        ],
+        "rot_y": 0
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "brewery_a03"
+    },
+    {
+      "id": "brewery_a03:if:9ceab4ef",
+      "kind": "door",
+      "slot_ref": "int_0_1_open0",
+      "transform": {
+        "translation": [
+          -8.0,
+          7.0,
+          1.25
+        ],
+        "rot_y": 90
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "brewery_a03"
+    },
+    {
+      "id": "brewery_a03:if:cd8001b0",
+      "kind": "breach_wall",
+      "slot_ref": "int_0_1_open1",
+      "transform": {
+        "translation": [
+          -8.0,
+          12.6,
+          1.25
+        ],
+        "rot_y": 90
+      },
+      "states": [
+        "intact",
+        "breached"
+      ],
+      "default": "intact",
+      "transitions": [
+        {
+          "event": "breach",
+          "from": "intact",
+          "to": "breached"
+        }
+      ],
+      "source": "inferred",
+      "reversible": false,
+      "building": "brewery_a03"
+    }
+  ],
+  "stair_systems": [],
+  "circulation_contract": {
+    "version": 1,
+    "checks": [
+      "STAIR_ENTRY_FACES_SOLID",
+      "STAIR_EXIT_FACES_SOLID",
+      "STAIR_LOWER_LANDING_BLOCKED",
+      "STAIR_UPPER_LANDING_BLOCKED"
+    ],
+    "landing_depth_m": 1.2,
+    "exit_step_off_m": 0.8,
+    "all_compliant": true,
+    "stairs": []
+  },
+  "ladders": [
+    {
+      "id": "br03_ladder_0",
+      "role": "roof_access",
+      "ladder_type": "fixed_vertical",
+      "placement_mode": "interior",
+      "lower_surface": "story_0",
+      "upper_surface": "roof",
+      "lower_anchor": [
+        14.0,
+        10.0,
+        0.0
+      ],
+      "upper_anchor": [
+        14.0,
+        10.0,
+        4.6
+      ],
+      "climb_height_m": 4.6,
+      "direction": "bidirectional",
+      "access_class": "staff_restricted",
+      "egress_classification": "not_egress",
+      "counts_as_primary_egress": false,
+      "counts_as_secondary_escape": false,
+      "counts_as_public_circulation": false,
+      "transition": {
+        "type": "roof_hatch_exit"
+      },
+      "geometry": {
+        "clear_width_m": 0.5,
+        "rung_spacing_m": 0.3,
+        "rung_center_to_wall_m": 0.15,
+        "climb_rect": [
+          [
+            13.6,
+            8.8
+          ],
+          [
+            14.4,
+            8.8
+          ],
+          [
+            14.4,
+            10.0
+          ],
+          [
+            13.6,
+            10.0
+          ]
+        ]
+      },
+      "fall_protection": {
+        "required": false,
+        "type": "none"
+      },
+      "access_control": {
+        "type": "locked_hatch"
+      },
+      "route_nodes": {
+        "lower_approach": [
+          14.0,
+          10.0,
+          0.0
+        ],
+        "lower_mount": [
+          14.0,
+          10.0,
+          0.1
+        ],
+        "climb_start": [
+          14.0,
+          10.0,
+          0.3
+        ],
+        "climb_end": [
+          14.0,
+          10.0,
+          4.3
+        ],
+        "upper_dismount": [
+          14.0,
+          10.0,
+          4.6
+        ],
+        "upper_route": [
+          14.0,
+          10.0,
+          4.6
+        ]
+      },
+      "traversal_component": {
+        "component": "LadderTraversal",
+        "mount_trigger": "br03_ladder_0_mount",
+        "dismount_trigger": "br03_ladder_0_dismount",
+        "climb_axis": [
+          [
+            14.0,
+            10.0,
+            0.0
+          ],
+          [
+            14.0,
+            10.0,
+            4.6
+          ]
+        ],
+        "direction": "bidirectional",
+        "animation_profile": "fixed_vertical",
+        "occupancy_state": "reservation",
+        "replication_state": "server",
+        "interaction_permissions": "restricted"
+      },
+      "nav_link": {
+        "id": "br03_ladder_0_navlink",
+        "start_position": [
+          14.0,
+          10.0,
+          0.0
+        ],
+        "end_position": [
+          14.0,
+          10.0,
+          4.6
+        ],
+        "bidirectional": true,
+        "cost": 3.0,
+        "agent_types": [
+          "player",
+          "ai_humanoid"
+        ],
+        "required_capability": "climb",
+        "access_state": "locked",
+        "reservation_state": "free"
+      },
+      "authority": {
+        "server_owned": [
+          "enabled",
+          "locked",
+          "deployed",
+          "obstructed",
+          "ai_reservation",
+          "objective_gating",
+          "player_transition_acceptance"
+        ],
+        "client_owned": [
+          "animation_blend",
+          "camera_motion",
+          "sound_playback",
+          "rung_hand_effects",
+          "traversal_prediction"
+        ]
+      },
+      "ai": {
+        "can_use": true,
+        "one_at_a_time": true,
+        "may_attack_while_climbing": false,
+        "should_wait_for_agent": true,
+        "may_follow_to_roof": true,
+        "recover_if_blocked": "return_to_lower_mount"
+      },
+      "combat": {
+        "weapons_allowed_while_climbing": false,
+        "can_be_interrupted": true,
+        "can_fall": true,
+        "can_slide_down": true,
+        "can_be_destroyed": false,
+        "can_be_blocked": true,
+        "occupancy_limit": 1
+      },
+      "gameplay": {
+        "player_traversable": true,
+        "ai_traversable": true,
+        "server_authoritative_state": true,
+        "interaction_required": true,
+        "mount_anchor_id": "br03_ladder_0_mount",
+        "dismount_anchor_id": "br03_ladder_0_dismount",
+        "occupancy_limit": 1
+      }
+    }
+  ],
+  "platforms": [],
+  "fire_escapes": [],
+  "surface_roles": {
+    "slab_0": "floor",
+    "slab_1": "ceiling",
+    "ext_0_N_seg0": "wall",
+    "ext_0_N_seg1": "wall",
+    "ext_0_N_seg2": "wall",
+    "ext_0_N_seg3": "wall",
+    "ext_0_N_open0_lintel": "window",
+    "ext_0_N_open0_sill": "window",
+    "ext_0_N_open0_pane": "window",
+    "ext_0_N_seg4": "wall",
+    "ext_0_N_seg5": "wall",
+    "ext_0_N_seg6": "wall",
+    "ext_0_N_seg7": "wall",
+    "ext_0_N_seg8": "wall",
+    "ext_0_N_seg9": "wall",
+    "ext_0_N_seg10": "wall",
+    "ext_0_N_seg11": "wall",
+    "ext_0_N_seg12": "wall",
+    "ext_0_N_seg13": "wall",
+    "ext_0_N_seg14": "wall",
+    "ext_0_N_open1_lintel": "breach",
+    "ext_0_N_open1_BREACHPANEL": "breach",
+    "ext_0_N_seg15": "wall",
+    "ext_0_N_seg16": "wall",
+    "ext_0_N_seg17": "wall",
+    "ext_0_N_seg18": "wall",
+    "ext_0_N_seg19": "wall",
+    "ext_0_S_seg0": "wall",
+    "ext_0_S_seg1": "wall",
+    "ext_0_S_seg2": "wall",
+    "ext_0_S_seg3": "wall",
+    "ext_0_S_seg4": "wall",
+    "ext_0_S_seg5": "wall",
+    "ext_0_S_open0_lintel": "doorway",
+    "ext_0_S_seg6": "wall",
+    "ext_0_S_seg7": "wall",
+    "ext_0_S_seg8": "wall",
+    "ext_0_S_seg9": "wall",
+    "ext_0_S_seg10": "wall",
+    "ext_0_S_seg11": "wall",
+    "ext_0_S_seg12": "wall",
+    "ext_0_S_open1_lintel": "window",
+    "ext_0_S_open1_sill": "window",
+    "ext_0_S_open1_pane": "window",
+    "ext_0_S_seg13": "wall",
+    "ext_0_S_seg14": "wall",
+    "ext_0_S_seg15": "wall",
+    "ext_0_S_seg16": "wall",
+    "ext_0_S_open2_lintel": "doorway",
+    "ext_0_S_seg17": "wall",
+    "ext_0_E_seg0": "wall",
+    "ext_0_E_seg1": "wall",
+    "ext_0_E_seg2": "wall",
+    "ext_0_E_seg3": "wall",
+    "ext_0_E_seg4": "wall",
+    "ext_0_E_seg5": "wall",
+    "ext_0_E_seg6": "wall",
+    "ext_0_E_open0_lintel": "doorway",
+    "ext_0_E_seg7": "wall",
+    "ext_0_E_seg8": "wall",
+    "ext_0_E_seg9": "wall",
+    "ext_0_E_seg10": "wall",
+    "ext_0_E_seg11": "wall",
+    "ext_0_E_seg12": "wall",
+    "ext_0_E_seg13": "wall",
+    "ext_0_W_seg0": "wall",
+    "ext_0_W_seg1": "wall",
+    "ext_0_W_seg2": "wall",
+    "ext_0_W_seg3": "wall",
+    "ext_0_W_seg4": "wall",
+    "ext_0_W_seg5": "wall",
+    "ext_0_W_seg6": "wall",
+    "ext_0_W_seg7": "wall",
+    "ext_0_W_seg8": "wall",
+    "ext_0_W_seg9": "wall",
+    "ext_0_W_seg10": "wall",
+    "ext_0_W_seg11": "wall",
+    "ext_0_W_seg12": "wall",
+    "ext_0_W_seg13": "wall",
+    "int_0_0_seg0": "wall",
+    "int_0_0_seg1": "wall",
+    "int_0_0_seg2": "wall",
+    "int_0_0_seg3": "wall",
+    "int_0_0_open0_lintel": "doorway",
+    "int_0_0_seg4": "wall",
+    "int_0_0_seg5": "wall",
+    "int_0_0_seg6": "wall",
+    "int_0_0_seg7": "wall",
+    "int_0_0_seg8": "wall",
+    "int_0_0_seg9": "wall",
+    "int_0_0_seg10": "wall",
+    "int_0_0_seg11": "wall",
+    "int_0_0_seg12": "wall",
+    "int_0_0_seg13": "wall",
+    "int_0_0_seg14": "wall",
+    "int_0_0_seg15": "wall",
+    "int_0_0_open1_lintel": "doorway",
+    "int_0_0_seg16": "wall",
+    "int_0_0_seg17": "wall",
+    "int_0_0_seg18": "wall",
+    "int_0_0_seg19": "wall",
+    "int_0_1_seg0": "wall",
+    "int_0_1_seg1": "wall",
+    "int_0_1_seg2": "wall",
+    "int_0_1_seg3": "wall",
+    "int_0_1_open0_lintel": "doorway",
+    "int_0_1_seg4": "wall",
+    "int_0_1_seg5": "wall",
+    "int_0_1_seg6": "wall",
+    "int_0_1_open1_lintel": "breach",
+    "int_0_1_open1_BREACHPANEL": "breach",
+    "int_0_1_seg7": "wall",
+    "ladder0_rail_0_-1": "ladder",
+    "ladder0_rail_0_1": "ladder",
+    "ladder0_rung_0_0": "ladder",
+    "ladder0_rung_0_1": "ladder",
+    "ladder0_rung_0_2": "ladder",
+    "ladder0_rung_0_3": "ladder",
+    "ladder0_rung_0_4": "ladder",
+    "ladder0_rung_0_5": "ladder",
+    "ladder0_rung_0_6": "ladder",
+    "ladder0_rung_0_7": "ladder",
+    "ladder0_rung_0_8": "ladder",
+    "ladder0_rung_0_9": "ladder",
+    "ladder0_rung_0_10": "ladder",
+    "ladder0_rung_0_11": "ladder",
+    "ladder0_rung_0_12": "ladder",
+    "ladder0_rung_0_13": "ladder",
+    "ladder0_rung_0_14": "ladder",
+    "bar_l": "prop",
+    "tank_a": "prop",
+    "tank_b": "prop",
+    "parapet_N": "wall",
+    "parapet_S": "wall",
+    "parapet_E": "wall",
+    "parapet_W": "wall"
+  }
+}

@@ -1,0 +1,1155 @@
+{
+  "level": "marina_a01",
+  "mode": "pvp_heist",
+  "building_id": "marina_a01",
+  "footprint": [
+    34.0,
+    26.0
+  ],
+  "rarity": null,
+  "rarity_color": null,
+  "markers": [
+    {
+      "name": "ATTACKER_SPAWN_DOCK",
+      "type": "attacker_spawn",
+      "id": "DOCK",
+      "x": 0.0,
+      "y": -15.0,
+      "z": 0,
+      "rot_z": 90,
+      "room": "loading_floor"
+    },
+    {
+      "name": "ATTACKER_SPAWN_OFFICE",
+      "type": "attacker_spawn",
+      "id": "OFFICE",
+      "x": 6.0,
+      "y": 15.0,
+      "z": 0,
+      "rot_z": 270,
+      "room": "office_wing"
+    },
+    {
+      "name": "DEFENDER_SPAWN",
+      "type": "defender_spawn",
+      "id": null,
+      "x": -8.0,
+      "y": -6.0,
+      "z": -4.7,
+      "rot_z": 0,
+      "room": "basement_approach"
+    },
+    {
+      "name": "OBJECTIVE_A",
+      "type": "objective",
+      "id": "A",
+      "x": 6.0,
+      "y": 7.0,
+      "z": -4.7,
+      "rot_z": 0.0,
+      "room": "basement_storage",
+      "meta": {
+        "kind": "secure"
+      }
+    },
+    {
+      "name": "EXTRACTION_PIER",
+      "type": "extraction",
+      "id": "PIER",
+      "x": -8.0,
+      "y": -15.0,
+      "z": 0,
+      "rot_z": 0.0,
+      "room": null
+    },
+    {
+      "name": "COVER_LOW",
+      "type": "cover_low",
+      "id": null,
+      "x": 4.0,
+      "y": -6.0,
+      "z": 0,
+      "rot_z": 0.0,
+      "room": "loading_floor"
+    },
+    {
+      "name": "CAMERA_SOCKET_01",
+      "type": "camera_socket",
+      "id": "01",
+      "x": 14.0,
+      "y": -10.0,
+      "z": 4.2,
+      "rot_z": 0.0,
+      "room": "loading_floor"
+    }
+  ],
+  "rooms": [
+    {
+      "id": "loading_floor",
+      "story": 0,
+      "bounds": [
+        -17,
+        -13,
+        6,
+        13
+      ],
+      "role": "open_floor",
+      "combat_range": "long",
+      "fortifiable": false,
+      "objective": false,
+      "center": [
+        -5.5,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "id": "office_wing",
+      "story": 0,
+      "bounds": [
+        6,
+        -13,
+        17,
+        13
+      ],
+      "role": "connector",
+      "combat_range": "close",
+      "fortifiable": false,
+      "objective": false,
+      "center": [
+        11.5,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "id": "basement_approach",
+      "story": -1,
+      "bounds": [
+        -16.0,
+        -13.0,
+        16.0,
+        0.0
+      ],
+      "role": "connector",
+      "combat_range": "medium",
+      "fortifiable": false,
+      "objective": false,
+      "center": [
+        0.0,
+        -6.5,
+        -5.0
+      ]
+    },
+    {
+      "id": "basement_storage",
+      "story": -1,
+      "bounds": [
+        -16.0,
+        0.0,
+        16.0,
+        13.0
+      ],
+      "role": "objective_room",
+      "combat_range": "close",
+      "fortifiable": true,
+      "objective": true,
+      "center": [
+        0.0,
+        6.5,
+        -5.0
+      ]
+    }
+  ],
+  "vertical_links": [],
+  "openings": [
+    {
+      "wall": "ext_0_N",
+      "kind": "door",
+      "story": 0,
+      "x": 0.0,
+      "y": 13.0,
+      "z": 1.25,
+      "width": 1.25,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": "office_entry",
+      "breach_class": null,
+      "material": null,
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "marina_a01"
+    },
+    {
+      "wall": "ext_0_S",
+      "kind": "garage",
+      "story": 0,
+      "x": -6.8,
+      "y": -13.0,
+      "z": 1.65,
+      "width": 3.2,
+      "height": 3.0,
+      "sill": 0.0,
+      "tag": "loading_dock",
+      "breach_class": null,
+      "material": null,
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "marina_a01"
+    },
+    {
+      "wall": "ext_0_S",
+      "kind": "door",
+      "story": 0,
+      "x": 10.2,
+      "y": -13.0,
+      "z": 1.25,
+      "width": 1.25,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": "side_entry",
+      "breach_class": null,
+      "material": null,
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "marina_a01"
+    },
+    {
+      "wall": "ext_0_E",
+      "kind": "window",
+      "story": 0,
+      "x": 17.0,
+      "y": 0.0,
+      "z": 2.05,
+      "width": 1.4,
+      "height": 1.4,
+      "sill": 1.2,
+      "tag": null,
+      "breach_class": null,
+      "material": null,
+      "vaultable": true,
+      "reinforceable": false,
+      "building": "marina_a01"
+    },
+    {
+      "wall": "int_0_0",
+      "kind": "door",
+      "story": 0,
+      "x": 6.0,
+      "y": -5.2,
+      "z": 1.25,
+      "width": 1.25,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": null,
+      "breach_class": null,
+      "material": null,
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "marina_a01"
+    },
+    {
+      "wall": "int_0_0",
+      "kind": "door",
+      "story": 0,
+      "x": 6.0,
+      "y": 7.8,
+      "z": 1.25,
+      "width": 1.25,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": null,
+      "breach_class": null,
+      "material": null,
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "marina_a01"
+    },
+    {
+      "wall": "int_-1_1",
+      "kind": "door",
+      "story": -1,
+      "x": -8.0,
+      "y": 0.0,
+      "z": -3.75,
+      "width": 1.25,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": "customs_gate",
+      "breach_class": null,
+      "material": null,
+      "vaultable": false,
+      "reinforceable": true,
+      "building": "marina_a01"
+    },
+    {
+      "wall": "int_-1_1",
+      "kind": "breach",
+      "story": -1,
+      "x": 9.6,
+      "y": 0.0,
+      "z": -3.75,
+      "width": 1.4,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": null,
+      "breach_class": "soft_wall",
+      "material": "drywall",
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "marina_a01"
+    }
+  ],
+  "objectives": [],
+  "loot": [],
+  "zones": [],
+  "materials": [],
+  "surfaces": [],
+  "interactives": [
+    {
+      "id": "marina_a01:if:4b4d7553",
+      "kind": "door",
+      "slot_ref": "ext_0_N_open0",
+      "transform": {
+        "translation": [
+          0.0,
+          13.0,
+          1.25
+        ],
+        "rot_y": 0
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "marina_a01"
+    },
+    {
+      "id": "marina_a01:if:a53aa708",
+      "kind": "door",
+      "slot_ref": "ext_0_S_open0",
+      "transform": {
+        "translation": [
+          -6.8,
+          -13.0,
+          1.65
+        ],
+        "rot_y": 180
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "marina_a01"
+    },
+    {
+      "id": "marina_a01:if:404d227a",
+      "kind": "door",
+      "slot_ref": "ext_0_S_open1",
+      "transform": {
+        "translation": [
+          10.2,
+          -13.0,
+          1.25
+        ],
+        "rot_y": 180
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "marina_a01"
+    },
+    {
+      "id": "marina_a01:if:2689af25",
+      "kind": "door",
+      "slot_ref": "int_0_0_open0",
+      "transform": {
+        "translation": [
+          6.0,
+          -5.2,
+          1.25
+        ],
+        "rot_y": 90
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "marina_a01"
+    },
+    {
+      "id": "marina_a01:if:6ba33247",
+      "kind": "door",
+      "slot_ref": "int_0_0_open1",
+      "transform": {
+        "translation": [
+          6.0,
+          7.8,
+          1.25
+        ],
+        "rot_y": 90
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "marina_a01"
+    },
+    {
+      "id": "marina_a01:if:4a501c90",
+      "kind": "door",
+      "slot_ref": "int_-1_1_open0",
+      "transform": {
+        "translation": [
+          -8.0,
+          0.0,
+          -3.75
+        ],
+        "rot_y": 0
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "marina_a01"
+    },
+    {
+      "id": "marina_a01:if:47c01c3f",
+      "kind": "breach_wall",
+      "slot_ref": "int_-1_1_open1",
+      "transform": {
+        "translation": [
+          9.6,
+          0.0,
+          -3.75
+        ],
+        "rot_y": 0
+      },
+      "states": [
+        "intact",
+        "breached"
+      ],
+      "default": "intact",
+      "transitions": [
+        {
+          "event": "breach",
+          "from": "intact",
+          "to": "breached"
+        }
+      ],
+      "source": "inferred",
+      "reversible": false,
+      "building": "marina_a01"
+    }
+  ],
+  "stair_systems": [
+    {
+      "id": "ma01_stair_n",
+      "stack_id": null,
+      "role": "service",
+      "shape": "straight",
+      "facing": "W",
+      "exterior": false,
+      "channels": 1,
+      "roof_access": false,
+      "transfer": false,
+      "floors_served": [
+        -1,
+        0
+      ],
+      "footprint_polygon": [
+        [
+          10.9,
+          -8.8
+        ],
+        [
+          15.1,
+          -8.8
+        ],
+        [
+          15.1,
+          -7.2
+        ],
+        [
+          10.9,
+          -7.2
+        ]
+      ],
+      "clear_width_m": 1.6,
+      "approach": [
+        {
+          "floor": -1,
+          "room": "basement_approach",
+          "room_role": "connector"
+        },
+        {
+          "floor": 0,
+          "room": "office_wing",
+          "room_role": "connector"
+        }
+      ],
+      "discharge": {
+        "floor": 0,
+        "type": "direct_exterior",
+        "room": "office_wing",
+        "via": [],
+        "destination": "office_wing",
+        "route_hops": 0
+      },
+      "egress": {
+        "counts_as_exit": false
+      },
+      "landings": [
+        {
+          "end": "lower",
+          "story": -1,
+          "rect": [
+            15.1,
+            -8.8,
+            16.3,
+            -7.2
+          ],
+          "point": [
+            15.7,
+            -8.0,
+            -5.0
+          ],
+          "dir": [
+            1,
+            0
+          ]
+        },
+        {
+          "end": "upper",
+          "story": 0,
+          "rect": [
+            8.9,
+            -8.8,
+            10.1,
+            -7.2
+          ],
+          "point": [
+            9.5,
+            -8.0,
+            0.0
+          ],
+          "dir": [
+            -1,
+            0
+          ]
+        }
+      ],
+      "nav_endpoints": {
+        "lower": [
+          15.7,
+          -8.0,
+          -5.0
+        ],
+        "upper": [
+          9.5,
+          -8.0,
+          0.0
+        ]
+      },
+      "enclosure": "open",
+      "door_nodes": [
+        {
+          "floor": -1,
+          "kind": "door",
+          "wall": "int_-1_1",
+          "pos": -0.25,
+          "interactive": "marina_a01:if:4a501c90",
+          "default_state": "closed",
+          "connects_from": "basement_storage",
+          "discharge_door": false
+        },
+        {
+          "floor": -1,
+          "kind": "breach",
+          "wall": "int_-1_1",
+          "pos": 0.3,
+          "interactive": "marina_a01:if:47c01c3f",
+          "default_state": "intact",
+          "connects_from": "basement_storage",
+          "discharge_door": false
+        },
+        {
+          "floor": 0,
+          "kind": "door",
+          "wall": "int_0_0",
+          "pos": -0.2,
+          "interactive": "marina_a01:if:2689af25",
+          "default_state": "closed",
+          "connects_from": "loading_floor",
+          "discharge_door": false
+        },
+        {
+          "floor": 0,
+          "kind": "door",
+          "wall": "int_0_0",
+          "pos": 0.3,
+          "interactive": "marina_a01:if:6ba33247",
+          "default_state": "closed",
+          "connects_from": "loading_floor",
+          "discharge_door": false
+        },
+        {
+          "floor": 0,
+          "kind": "door",
+          "wall": "ext_0_S",
+          "pos": 0.3,
+          "interactive": "marina_a01:if:404d227a",
+          "default_state": "closed",
+          "connects_from": "exterior",
+          "discharge_door": true
+        }
+      ],
+      "gameplay": {
+        "network_authority": "server",
+        "replicate_door_state": true,
+        "allow_random_lock": true,
+        "egress_side_always_openable": false,
+        "fire_door": false,
+        "self_closing": false,
+        "ai_route_cost_multiplier": 1.0,
+        "congestion": {
+          "clear_width_m": 1.6,
+          "max_agents_abreast": 2,
+          "two_way_passable": true
+        }
+      }
+    },
+    {
+      "id": "ma01_stair_s",
+      "stack_id": null,
+      "role": "public_convenience",
+      "shape": "straight",
+      "facing": "E",
+      "exterior": false,
+      "channels": 1,
+      "roof_access": false,
+      "transfer": false,
+      "floors_served": [
+        -1,
+        0
+      ],
+      "footprint_polygon": [
+        [
+          -15.1,
+          -8.8
+        ],
+        [
+          -10.9,
+          -8.8
+        ],
+        [
+          -10.9,
+          -7.2
+        ],
+        [
+          -15.1,
+          -7.2
+        ]
+      ],
+      "clear_width_m": 1.6,
+      "approach": [
+        {
+          "floor": -1,
+          "room": "basement_approach",
+          "room_role": "connector"
+        },
+        {
+          "floor": 0,
+          "room": "loading_floor",
+          "room_role": "open_floor"
+        }
+      ],
+      "discharge": {
+        "floor": 0,
+        "type": "direct_exterior",
+        "room": "loading_floor",
+        "via": [],
+        "destination": "loading_floor",
+        "route_hops": 0
+      },
+      "egress": {
+        "counts_as_exit": false
+      },
+      "landings": [
+        {
+          "end": "lower",
+          "story": -1,
+          "rect": [
+            -16.3,
+            -8.8,
+            -15.1,
+            -7.2
+          ],
+          "point": [
+            -15.7,
+            -8.0,
+            -5.0
+          ],
+          "dir": [
+            -1,
+            0
+          ]
+        },
+        {
+          "end": "upper",
+          "story": 0,
+          "rect": [
+            -10.1,
+            -8.8,
+            -8.9,
+            -7.2
+          ],
+          "point": [
+            -9.5,
+            -8.0,
+            0.0
+          ],
+          "dir": [
+            1,
+            0
+          ]
+        }
+      ],
+      "nav_endpoints": {
+        "lower": [
+          -15.7,
+          -8.0,
+          -5.0
+        ],
+        "upper": [
+          -9.5,
+          -8.0,
+          0.0
+        ]
+      },
+      "enclosure": "open",
+      "door_nodes": [
+        {
+          "floor": -1,
+          "kind": "door",
+          "wall": "int_-1_1",
+          "pos": -0.25,
+          "interactive": "marina_a01:if:4a501c90",
+          "default_state": "closed",
+          "connects_from": "basement_storage",
+          "discharge_door": false
+        },
+        {
+          "floor": -1,
+          "kind": "breach",
+          "wall": "int_-1_1",
+          "pos": 0.3,
+          "interactive": "marina_a01:if:47c01c3f",
+          "default_state": "intact",
+          "connects_from": "basement_storage",
+          "discharge_door": false
+        },
+        {
+          "floor": 0,
+          "kind": "door",
+          "wall": "int_0_0",
+          "pos": -0.2,
+          "interactive": "marina_a01:if:2689af25",
+          "default_state": "closed",
+          "connects_from": "office_wing",
+          "discharge_door": false
+        },
+        {
+          "floor": 0,
+          "kind": "door",
+          "wall": "int_0_0",
+          "pos": 0.3,
+          "interactive": "marina_a01:if:6ba33247",
+          "default_state": "closed",
+          "connects_from": "office_wing",
+          "discharge_door": false
+        },
+        {
+          "floor": 0,
+          "kind": "garage",
+          "wall": "ext_0_S",
+          "pos": -0.2,
+          "interactive": "marina_a01:if:a53aa708",
+          "default_state": "closed",
+          "connects_from": "exterior",
+          "discharge_door": true
+        },
+        {
+          "floor": 0,
+          "kind": "door",
+          "wall": "ext_0_N",
+          "pos": 0.0,
+          "interactive": "marina_a01:if:4b4d7553",
+          "default_state": "closed",
+          "connects_from": "exterior",
+          "discharge_door": true
+        }
+      ],
+      "gameplay": {
+        "network_authority": "server",
+        "replicate_door_state": true,
+        "allow_random_lock": true,
+        "egress_side_always_openable": false,
+        "fire_door": false,
+        "self_closing": false,
+        "ai_route_cost_multiplier": 1.0,
+        "congestion": {
+          "clear_width_m": 1.6,
+          "max_agents_abreast": 2,
+          "two_way_passable": true
+        }
+      }
+    }
+  ],
+  "circulation_contract": {
+    "version": 1,
+    "checks": [
+      "STAIR_ENTRY_FACES_SOLID",
+      "STAIR_EXIT_FACES_SOLID",
+      "STAIR_LOWER_LANDING_BLOCKED",
+      "STAIR_UPPER_LANDING_BLOCKED"
+    ],
+    "landing_depth_m": 1.2,
+    "exit_step_off_m": 0.8,
+    "all_compliant": true,
+    "stairs": [
+      {
+        "id": "ma01_stair_n",
+        "role": "service",
+        "facing": "W",
+        "traversable": true,
+        "physical_findings": [],
+        "compliant": true
+      },
+      {
+        "id": "ma01_stair_s",
+        "role": "public_convenience",
+        "facing": "E",
+        "traversable": true,
+        "physical_findings": [],
+        "compliant": true
+      }
+    ]
+  },
+  "ladders": [],
+  "platforms": [],
+  "fire_escapes": [],
+  "surface_roles": {
+    "slab_-1": "floor",
+    "slab_0": "floor",
+    "slab_1": "ceiling",
+    "ext_-1_N_seg0": "wall",
+    "ext_-1_N_seg1": "wall",
+    "ext_-1_N_seg2": "wall",
+    "ext_-1_N_seg3": "wall",
+    "ext_-1_N_seg4": "wall",
+    "ext_-1_N_seg5": "wall",
+    "ext_-1_N_seg6": "wall",
+    "ext_-1_N_seg7": "wall",
+    "ext_-1_N_seg8": "wall",
+    "ext_-1_N_seg9": "wall",
+    "ext_-1_N_seg10": "wall",
+    "ext_-1_N_seg11": "wall",
+    "ext_-1_N_seg12": "wall",
+    "ext_-1_N_seg13": "wall",
+    "ext_-1_N_seg14": "wall",
+    "ext_-1_N_seg15": "wall",
+    "ext_-1_N_seg16": "wall",
+    "ext_-1_S_seg0": "wall",
+    "ext_-1_S_seg1": "wall",
+    "ext_-1_S_seg2": "wall",
+    "ext_-1_S_seg3": "wall",
+    "ext_-1_S_seg4": "wall",
+    "ext_-1_S_seg5": "wall",
+    "ext_-1_S_seg6": "wall",
+    "ext_-1_S_seg7": "wall",
+    "ext_-1_S_seg8": "wall",
+    "ext_-1_S_seg9": "wall",
+    "ext_-1_S_seg10": "wall",
+    "ext_-1_S_seg11": "wall",
+    "ext_-1_S_seg12": "wall",
+    "ext_-1_S_seg13": "wall",
+    "ext_-1_S_seg14": "wall",
+    "ext_-1_S_seg15": "wall",
+    "ext_-1_S_seg16": "wall",
+    "ext_-1_E_seg0": "wall",
+    "ext_-1_E_seg1": "wall",
+    "ext_-1_E_seg2": "wall",
+    "ext_-1_E_seg3": "wall",
+    "ext_-1_E_seg4": "wall",
+    "ext_-1_E_seg5": "wall",
+    "ext_-1_E_seg6": "wall",
+    "ext_-1_E_seg7": "wall",
+    "ext_-1_E_seg8": "wall",
+    "ext_-1_E_seg9": "wall",
+    "ext_-1_E_seg10": "wall",
+    "ext_-1_E_seg11": "wall",
+    "ext_-1_E_seg12": "wall",
+    "ext_-1_W_seg0": "wall",
+    "ext_-1_W_seg1": "wall",
+    "ext_-1_W_seg2": "wall",
+    "ext_-1_W_seg3": "wall",
+    "ext_-1_W_seg4": "wall",
+    "ext_-1_W_seg5": "wall",
+    "ext_-1_W_seg6": "wall",
+    "ext_-1_W_seg7": "wall",
+    "ext_-1_W_seg8": "wall",
+    "ext_-1_W_seg9": "wall",
+    "ext_-1_W_seg10": "wall",
+    "ext_-1_W_seg11": "wall",
+    "ext_-1_W_seg12": "wall",
+    "ext_0_N_seg0": "wall",
+    "ext_0_N_seg1": "wall",
+    "ext_0_N_seg2": "wall",
+    "ext_0_N_seg3": "wall",
+    "ext_0_N_seg4": "wall",
+    "ext_0_N_seg5": "wall",
+    "ext_0_N_seg6": "wall",
+    "ext_0_N_seg7": "wall",
+    "ext_0_N_seg8": "wall",
+    "ext_0_N_open0_lintel": "doorway",
+    "ext_0_N_seg9": "wall",
+    "ext_0_N_seg10": "wall",
+    "ext_0_N_seg11": "wall",
+    "ext_0_N_seg12": "wall",
+    "ext_0_N_seg13": "wall",
+    "ext_0_N_seg14": "wall",
+    "ext_0_N_seg15": "wall",
+    "ext_0_N_seg16": "wall",
+    "ext_0_N_seg17": "wall",
+    "ext_0_S_seg0": "wall",
+    "ext_0_S_seg1": "wall",
+    "ext_0_S_seg2": "wall",
+    "ext_0_S_seg3": "wall",
+    "ext_0_S_seg4": "wall",
+    "ext_0_S_open0_lintel": "doorway",
+    "ext_0_S_seg5": "wall",
+    "ext_0_S_seg6": "wall",
+    "ext_0_S_seg7": "wall",
+    "ext_0_S_seg8": "wall",
+    "ext_0_S_seg9": "wall",
+    "ext_0_S_seg10": "wall",
+    "ext_0_S_seg11": "wall",
+    "ext_0_S_seg12": "wall",
+    "ext_0_S_open1_lintel": "doorway",
+    "ext_0_S_seg13": "wall",
+    "ext_0_S_seg14": "wall",
+    "ext_0_S_seg15": "wall",
+    "ext_0_S_seg16": "wall",
+    "ext_0_E_seg0": "wall",
+    "ext_0_E_seg1": "wall",
+    "ext_0_E_seg2": "wall",
+    "ext_0_E_seg3": "wall",
+    "ext_0_E_seg4": "wall",
+    "ext_0_E_seg5": "wall",
+    "ext_0_E_seg6": "wall",
+    "ext_0_E_open0_lintel": "window",
+    "ext_0_E_open0_sill": "window",
+    "ext_0_E_open0_pane": "window",
+    "ext_0_E_seg7": "wall",
+    "ext_0_E_seg8": "wall",
+    "ext_0_E_seg9": "wall",
+    "ext_0_E_seg10": "wall",
+    "ext_0_E_seg11": "wall",
+    "ext_0_E_seg12": "wall",
+    "ext_0_E_seg13": "wall",
+    "ext_0_W_seg0": "wall",
+    "ext_0_W_seg1": "wall",
+    "ext_0_W_seg2": "wall",
+    "ext_0_W_seg3": "wall",
+    "ext_0_W_seg4": "wall",
+    "ext_0_W_seg5": "wall",
+    "ext_0_W_seg6": "wall",
+    "ext_0_W_seg7": "wall",
+    "ext_0_W_seg8": "wall",
+    "ext_0_W_seg9": "wall",
+    "ext_0_W_seg10": "wall",
+    "ext_0_W_seg11": "wall",
+    "ext_0_W_seg12": "wall",
+    "int_0_0_seg0": "wall",
+    "int_0_0_seg1": "wall",
+    "int_0_0_seg2": "wall",
+    "int_0_0_seg3": "wall",
+    "int_0_0_open0_lintel": "doorway",
+    "int_0_0_seg4": "wall",
+    "int_0_0_seg5": "wall",
+    "int_0_0_seg6": "wall",
+    "int_0_0_seg7": "wall",
+    "int_0_0_seg8": "wall",
+    "int_0_0_seg9": "wall",
+    "int_0_0_open1_lintel": "doorway",
+    "int_0_0_seg10": "wall",
+    "int_0_0_seg11": "wall",
+    "int_0_0_seg12": "wall",
+    "int_-1_1_seg0": "wall",
+    "int_-1_1_seg1": "wall",
+    "int_-1_1_seg2": "wall",
+    "int_-1_1_seg3": "wall",
+    "int_-1_1_open0_lintel": "doorway",
+    "int_-1_1_seg4": "wall",
+    "int_-1_1_seg5": "wall",
+    "int_-1_1_seg6": "wall",
+    "int_-1_1_seg7": "wall",
+    "int_-1_1_seg8": "wall",
+    "int_-1_1_seg9": "wall",
+    "int_-1_1_seg10": "wall",
+    "int_-1_1_seg11": "wall",
+    "int_-1_1_seg12": "wall",
+    "int_-1_1_open1_lintel": "breach",
+    "int_-1_1_open1_BREACHPANEL": "breach",
+    "int_-1_1_seg13": "wall",
+    "int_-1_1_seg14": "wall",
+    "int_-1_1_seg15": "wall",
+    "stair0_-1_0": "stair",
+    "stair0_-1_1": "stair",
+    "stair0_-1_2": "stair",
+    "stair0_-1_3": "stair",
+    "stair0_-1_4": "stair",
+    "stair0_-1_5": "stair",
+    "stair0_-1_6": "stair",
+    "stair0_-1_7": "stair",
+    "stair0_-1_8": "stair",
+    "stair0_-1_9": "stair",
+    "stair0_-1_10": "stair",
+    "stair0_-1_11": "stair",
+    "stair0_-1_12": "stair",
+    "stair0_-1_13": "stair",
+    "stair0_-1_14": "stair",
+    "stair0_-1_15": "stair",
+    "stair0_-1_16": "stair",
+    "stair0_-1_17": "stair",
+    "stair0_-1_18": "stair",
+    "stair0_-1_19": "stair",
+    "stair0_-1_20": "stair",
+    "stair0_-1_21": "stair",
+    "stair0_-1_22": "stair",
+    "stair0_-1_23": "stair",
+    "stair0_-1_24": "stair",
+    "stair0_discharge_-1": "stair",
+    "stair1_-1_0": "stair",
+    "stair1_-1_1": "stair",
+    "stair1_-1_2": "stair",
+    "stair1_-1_3": "stair",
+    "stair1_-1_4": "stair",
+    "stair1_-1_5": "stair",
+    "stair1_-1_6": "stair",
+    "stair1_-1_7": "stair",
+    "stair1_-1_8": "stair",
+    "stair1_-1_9": "stair",
+    "stair1_-1_10": "stair",
+    "stair1_-1_11": "stair",
+    "stair1_-1_12": "stair",
+    "stair1_-1_13": "stair",
+    "stair1_-1_14": "stair",
+    "stair1_-1_15": "stair",
+    "stair1_-1_16": "stair",
+    "stair1_-1_17": "stair",
+    "stair1_-1_18": "stair",
+    "stair1_-1_19": "stair",
+    "stair1_-1_20": "stair",
+    "stair1_-1_21": "stair",
+    "stair1_-1_22": "stair",
+    "stair1_-1_23": "stair",
+    "stair1_-1_24": "stair",
+    "stair1_discharge_-1": "stair",
+    "shelving_a": "prop",
+    "shelving_b": "prop",
+    "cargo_cover": "prop"
+  }
+}

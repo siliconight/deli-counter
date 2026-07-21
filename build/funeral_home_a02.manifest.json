@@ -1,0 +1,99 @@
+{
+  "kit_name": "Deli Counter",
+  "kit_version": "0.80.0",
+  "schema_version": "1.21.1",
+  "spec": "funeral_home_a02.json",
+  "spec_sha256_16": "320381632050facc",
+  "built_utc": "2026-07-21T11:05:35.538473+00:00",
+  "outputs": [
+    "funeral_home_a02.glb"
+  ],
+  "expected": {
+    "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
+    "bounds_min": [
+      -15.15,
+      -11.15,
+      -0.3
+    ],
+    "bounds_max": [
+      15.15,
+      11.15,
+      6.8
+    ],
+    "origin": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "story_height": 3.4,
+    "floor_elevations": [
+      0.0,
+      3.4
+    ],
+    "markers": [
+      {
+        "name": "ATTACKER_SPAWN_FRONT",
+        "type": "attacker_spawn",
+        "pos": [
+          -2.0,
+          -13.0,
+          0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_SIDE",
+        "type": "attacker_spawn",
+        "pos": [
+          -17.0,
+          0.0,
+          0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN",
+        "type": "defender_spawn",
+        "pos": [
+          -8.0,
+          5.0,
+          3.4
+        ]
+      },
+      {
+        "name": "OBJECTIVE_A",
+        "type": "objective",
+        "pos": [
+          9.0,
+          5.0,
+          3.4
+        ]
+      },
+      {
+        "name": "EXTRACTION_STREET",
+        "type": "extraction",
+        "pos": [
+          5.0,
+          -13.0,
+          0
+        ]
+      },
+      {
+        "name": "COVER_LOW",
+        "type": "cover_low",
+        "pos": [
+          4.0,
+          -5.0,
+          0
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_01",
+        "type": "camera_socket",
+        "pos": [
+          12.0,
+          -8.0,
+          2.8
+        ]
+      }
+    ]
+  }
+}

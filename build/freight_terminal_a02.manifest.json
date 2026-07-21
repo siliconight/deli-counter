@@ -1,0 +1,117 @@
+{
+  "kit_name": "Deli Counter",
+  "kit_version": "0.80.0",
+  "schema_version": "1.21.1",
+  "spec": "freight_terminal_a02.json",
+  "spec_sha256_16": "3c0ab72ce0fd390b",
+  "built_utc": "2026-07-21T11:05:19.529298+00:00",
+  "outputs": [
+    "freight_terminal_a02.glb"
+  ],
+  "expected": {
+    "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
+    "bounds_min": [
+      -25.15,
+      -15.15,
+      -0.3
+    ],
+    "bounds_max": [
+      25.15,
+      15.15,
+      12.0
+    ],
+    "origin": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "story_height": 5.5,
+    "floor_elevations": [
+      0.0,
+      5.5
+    ],
+    "markers": [
+      {
+        "name": "LADDER_0",
+        "type": "ladder",
+        "pos": [
+          4.0,
+          11.0,
+          5.5
+        ]
+      },
+      {
+        "name": "HATCH_4_11",
+        "type": "hatch",
+        "pos": [
+          4.0,
+          11.0,
+          11.0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_DOCKS",
+        "type": "attacker_spawn",
+        "pos": [
+          0.0,
+          17.0,
+          0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_CREW",
+        "type": "attacker_spawn",
+        "pos": [
+          0.0,
+          -17.0,
+          0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN",
+        "type": "defender_spawn",
+        "pos": [
+          -8.0,
+          8.0,
+          5.5
+        ]
+      },
+      {
+        "name": "OBJECTIVE_A",
+        "type": "objective",
+        "pos": [
+          18.0,
+          8.0,
+          5.5
+        ]
+      },
+      {
+        "name": "EXTRACTION_YARD",
+        "type": "extraction",
+        "pos": [
+          14.0,
+          17.0,
+          0
+        ]
+      },
+      {
+        "name": "COVER_LOW",
+        "type": "cover_low",
+        "pos": [
+          -6.0,
+          5.0,
+          0
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_01",
+        "type": "camera_socket",
+        "pos": [
+          22.0,
+          -12.0,
+          4.6
+        ]
+      }
+    ]
+  }
+}

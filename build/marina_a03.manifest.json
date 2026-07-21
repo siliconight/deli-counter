@@ -1,0 +1,116 @@
+{
+  "kit_name": "Deli Counter",
+  "kit_version": "0.80.0",
+  "schema_version": "1.21.1",
+  "spec": "marina_a03.json",
+  "spec_sha256_16": "372be858d15014c5",
+  "built_utc": "2026-07-21T10:51:50.460127+00:00",
+  "outputs": [
+    "marina_a03.glb"
+  ],
+  "expected": {
+    "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
+    "bounds_min": [
+      -18.15,
+      -12.15,
+      -0.3
+    ],
+    "bounds_max": [
+      18.15,
+      12.15,
+      5.0
+    ],
+    "origin": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "story_height": 4.0,
+    "floor_elevations": [
+      0.0
+    ],
+    "markers": [
+      {
+        "name": "LADDER_0",
+        "type": "ladder",
+        "pos": [
+          -14.0,
+          8.0,
+          0.0
+        ]
+      },
+      {
+        "name": "HATCH_-14_8",
+        "type": "hatch",
+        "pos": [
+          -14.0,
+          8.0,
+          4.0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_FRONT",
+        "type": "attacker_spawn",
+        "pos": [
+          0.0,
+          -14.0,
+          0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_YARD",
+        "type": "attacker_spawn",
+        "pos": [
+          6.0,
+          14.0,
+          0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN",
+        "type": "defender_spawn",
+        "pos": [
+          -10.0,
+          7.0,
+          0.0
+        ]
+      },
+      {
+        "name": "OBJECTIVE_A",
+        "type": "objective",
+        "pos": [
+          12.0,
+          7.0,
+          0.0
+        ]
+      },
+      {
+        "name": "EXTRACTION_PIER",
+        "type": "extraction",
+        "pos": [
+          -8.0,
+          -14.0,
+          0
+        ]
+      },
+      {
+        "name": "COVER_LOW",
+        "type": "cover_low",
+        "pos": [
+          5.0,
+          -5.0,
+          0
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_01",
+        "type": "camera_socket",
+        "pos": [
+          15.0,
+          -9.0,
+          3.4
+        ]
+      }
+    ]
+  }
+}

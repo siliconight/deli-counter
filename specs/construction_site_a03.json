@@ -1,0 +1,365 @@
+{
+ "$schema": "../schema/level.schema.json",
+ "name": "construction_site_a03",
+ "mode": "pvp_heist",
+ "seed": 5003,
+ "footprint_x": 44.0,
+ "footprint_y": 30.0,
+ "story_height": 3.6,
+ "n_stories": 2,
+ "has_basement": false,
+ "collision": "convex",
+ "auto_exterior": true,
+ "scale_ref": false,
+ "default_material": "concrete",
+ "materials": [
+  {
+   "id": "concrete",
+   "acoustic": "Concrete",
+   "absorption": 0.7,
+   "damping": 0.6
+  },
+  {
+   "id": "drywall",
+   "acoustic": "Drywall"
+  },
+  {
+   "id": "glass",
+   "acoustic": "Glass",
+   "absorption": 0.1,
+   "damping": 0.05
+  },
+  {
+   "id": "metal",
+   "acoustic": "Metal",
+   "absorption": 0.5,
+   "damping": 0.3
+  },
+  {
+   "id": "wood",
+   "acoustic": "Wood"
+  }
+ ],
+ "ext_walls": [
+  {
+   "wall": "S",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.2,
+     "width": 2.0,
+     "tag": "gate"
+    },
+    {
+     "kind": "window",
+     "pos": 0.25,
+     "width": 2.8,
+     "sill": 0.9,
+     "vaultable": true
+    }
+   ]
+  },
+  {
+   "wall": "E",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "garage",
+     "pos": 0.0,
+     "width": 4.0,
+     "tag": "lift_gate"
+    },
+    {
+     "kind": "breach",
+     "pos": 0.4,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
+  },
+  {
+   "wall": "N",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "breach",
+     "pos": -0.25,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    },
+    {
+     "kind": "door",
+     "pos": 0.35,
+     "width": 1.25,
+     "tag": "rear_gate"
+    }
+   ]
+  },
+  {
+   "wall": "S",
+   "story": 1,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "window",
+     "pos": -0.3,
+     "width": 3.2,
+     "sill": 0.9,
+     "vaultable": true
+    },
+    {
+     "kind": "window",
+     "pos": 0.3,
+     "width": 3.2,
+     "sill": 0.9,
+     "vaultable": true
+    }
+   ]
+  }
+ ],
+ "partitions": [
+  {
+   "story": 0,
+   "axis": "X",
+   "pos": 0.0,
+   "start": -22.0,
+   "end": 22.0,
+   "material": "drywall",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.35,
+     "width": 1.8
+    },
+    {
+     "kind": "breach",
+     "pos": 0.0,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    },
+    {
+     "kind": "door",
+     "pos": 0.4,
+     "width": 1.8
+    }
+   ]
+  },
+  {
+   "story": 1,
+   "axis": "X",
+   "pos": 2.0,
+   "start": -22.0,
+   "end": 22.0,
+   "material": "drywall",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.3,
+     "width": 1.8
+    },
+    {
+     "kind": "door",
+     "pos": 0.3,
+     "width": 1.8
+    }
+   ]
+  },
+  {
+   "story": 1,
+   "axis": "Y",
+   "pos": 10.0,
+   "start": 2.0,
+   "end": 15.0,
+   "material": "metal",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.25,
+     "tag": "plan_room_door",
+     "reinforceable": true
+    },
+    {
+     "kind": "breach",
+     "pos": -0.45,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
+  }
+ ],
+ "rooms": [
+  {
+   "id": "south_works",
+   "story": 0,
+   "bounds": [
+    -22.0,
+    -15.0,
+    22.0,
+    0.0
+   ],
+   "role": "public_entry",
+   "combat_range": "long"
+  },
+  {
+   "id": "north_works",
+   "story": 0,
+   "bounds": [
+    -22.0,
+    0.0,
+    22.0,
+    15.0
+   ],
+   "role": "open_floor",
+   "combat_range": "long"
+  },
+  {
+   "id": "upper_deck",
+   "story": 1,
+   "bounds": [
+    -22.0,
+    -15.0,
+    22.0,
+    2.0
+   ],
+   "role": "connector",
+   "combat_range": "long"
+  },
+  {
+   "id": "upper_west",
+   "story": 1,
+   "bounds": [
+    -22.0,
+    2.0,
+    10.0,
+    15.0
+   ],
+   "role": "fortifiable",
+   "fortifiable": true,
+   "combat_range": "close"
+  },
+  {
+   "id": "plan_room",
+   "story": 1,
+   "bounds": [
+    10.0,
+    2.0,
+    22.0,
+    15.0
+   ],
+   "role": "objective_room",
+   "objective": true,
+   "fortifiable": true,
+   "combat_range": "close"
+  }
+ ],
+ "stairs": [
+  {
+   "x": -18.0,
+   "y": -9.0,
+   "from_story": 0,
+   "to_story": 1,
+   "style": "straight",
+   "cut_slabs": true,
+   "facing": "E",
+   "id": "cs03_stair_0",
+   "role": "service"
+  }
+ ],
+ "ladders": [],
+ "vertical_links": [],
+ "parapets": [],
+ "volumes": [
+  {
+   "name": "scaffold_row",
+   "x": 0.0,
+   "y": 7.0,
+   "z": 1.8,
+   "size_x": 12.0,
+   "size_y": 1.4,
+   "size_z": 3.6,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "lumber_stack",
+   "x": -10.0,
+   "y": -7.0,
+   "z": 0.7,
+   "size_x": 5.0,
+   "size_y": 2.0,
+   "size_z": 1.4,
+   "collision": "convex",
+   "material": "wood"
+  }
+ ],
+ "markers": [
+  {
+   "type": "attacker_spawn",
+   "id": "GATE",
+   "x": -4.0,
+   "y": -17.0,
+   "z": 0,
+   "rot_z": 90,
+   "room": "south_works"
+  },
+  {
+   "type": "attacker_spawn",
+   "id": "LIFT",
+   "x": 24.0,
+   "y": 0.0,
+   "z": 0,
+   "rot_z": 180,
+   "room": "north_works"
+  },
+  {
+   "type": "defender_spawn",
+   "x": -12.0,
+   "y": 8.0,
+   "z": 3.6,
+   "rot_z": 0,
+   "room": "upper_west"
+  },
+  {
+   "type": "objective",
+   "id": "A",
+   "x": 16.0,
+   "y": 8.0,
+   "z": 3.6,
+   "room": "plan_room",
+   "meta": {
+    "kind": "secure"
+   }
+  },
+  {
+   "type": "extraction",
+   "id": "YARD",
+   "x": 8.0,
+   "y": -17.0,
+   "z": 0
+  },
+  {
+   "type": "cover_high",
+   "x": 2.0,
+   "y": -8.0,
+   "z": 0,
+   "room": "south_works"
+  },
+  {
+   "type": "camera_socket",
+   "id": "01",
+   "x": 19.0,
+   "y": -12.0,
+   "z": 3.0,
+   "room": "south_works"
+  }
+ ]
+}

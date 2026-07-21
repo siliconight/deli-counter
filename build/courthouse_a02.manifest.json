@@ -1,0 +1,117 @@
+{
+  "kit_name": "Deli Counter",
+  "kit_version": "0.80.0",
+  "schema_version": "1.21.1",
+  "spec": "courthouse_a02.json",
+  "spec_sha256_16": "dd0ff0dfa2921e8b",
+  "built_utc": "2026-07-21T10:51:28.708660+00:00",
+  "outputs": [
+    "courthouse_a02.glb"
+  ],
+  "expected": {
+    "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
+    "bounds_min": [
+      -21.15,
+      -16.15,
+      -0.3
+    ],
+    "bounds_max": [
+      21.15,
+      16.15,
+      11.0
+    ],
+    "origin": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "story_height": 5.0,
+    "floor_elevations": [
+      0.0,
+      5.0
+    ],
+    "markers": [
+      {
+        "name": "LADDER_0",
+        "type": "ladder",
+        "pos": [
+          -16.0,
+          12.0,
+          5.0
+        ]
+      },
+      {
+        "name": "HATCH_-16_12",
+        "type": "hatch",
+        "pos": [
+          -16.0,
+          12.0,
+          10.0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_STEPS",
+        "type": "attacker_spawn",
+        "pos": [
+          0.0,
+          -18.0,
+          0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_SIDE",
+        "type": "attacker_spawn",
+        "pos": [
+          23.0,
+          -6.0,
+          0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN",
+        "type": "defender_spawn",
+        "pos": [
+          -10.0,
+          8.0,
+          5.0
+        ]
+      },
+      {
+        "name": "OBJECTIVE_A",
+        "type": "objective",
+        "pos": [
+          13.0,
+          8.0,
+          5.0
+        ]
+      },
+      {
+        "name": "EXTRACTION_PLAZA",
+        "type": "extraction",
+        "pos": [
+          -8.0,
+          -18.0,
+          0
+        ]
+      },
+      {
+        "name": "COVER_LOW",
+        "type": "cover_low",
+        "pos": [
+          6.0,
+          -8.0,
+          0
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_01",
+        "type": "camera_socket",
+        "pos": [
+          18.0,
+          -13.0,
+          4.2
+        ]
+      }
+    ]
+  }
+}

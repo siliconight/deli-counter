@@ -1,0 +1,346 @@
+{
+ "$schema": "../schema/level.schema.json",
+ "name": "freight_terminal_a01",
+ "mode": "pvp_heist",
+ "seed": 4801,
+ "footprint_x": 54.0,
+ "footprint_y": 32.0,
+ "story_height": 6.0,
+ "n_stories": 1,
+ "has_basement": false,
+ "collision": "convex",
+ "auto_exterior": true,
+ "scale_ref": false,
+ "default_material": "metal",
+ "materials": [
+  {
+   "id": "concrete",
+   "acoustic": "Concrete",
+   "absorption": 0.7,
+   "damping": 0.6
+  },
+  {
+   "id": "drywall",
+   "acoustic": "Drywall"
+  },
+  {
+   "id": "glass",
+   "acoustic": "Glass",
+   "absorption": 0.1,
+   "damping": 0.05
+  },
+  {
+   "id": "metal",
+   "acoustic": "Metal",
+   "absorption": 0.5,
+   "damping": 0.3
+  },
+  {
+   "id": "wood",
+   "acoustic": "Wood"
+  }
+ ],
+ "ext_walls": [
+  {
+   "wall": "S",
+   "story": 0,
+   "material": "metal",
+   "openings": [
+    {
+     "kind": "garage",
+     "pos": -0.3,
+     "width": 4.5,
+     "tag": "dock_s1"
+    },
+    {
+     "kind": "garage",
+     "pos": 0.0,
+     "width": 4.5,
+     "tag": "dock_s2"
+    },
+    {
+     "kind": "garage",
+     "pos": 0.3,
+     "width": 4.5,
+     "tag": "dock_s3"
+    }
+   ]
+  },
+  {
+   "wall": "N",
+   "story": 0,
+   "material": "metal",
+   "openings": [
+    {
+     "kind": "garage",
+     "pos": -0.25,
+     "width": 4.5,
+     "tag": "dock_n1"
+    },
+    {
+     "kind": "garage",
+     "pos": 0.25,
+     "width": 4.5,
+     "tag": "dock_n2"
+    }
+   ]
+  },
+  {
+   "wall": "E",
+   "story": 0,
+   "material": "metal",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.25,
+     "tag": "man_door"
+    },
+    {
+     "kind": "breach",
+     "pos": 0.4,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
+  },
+  {
+   "wall": "W",
+   "story": 0,
+   "material": "metal",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.3,
+     "width": 1.25,
+     "tag": "office_door"
+    }
+   ]
+  }
+ ],
+ "partitions": [
+  {
+   "story": 0,
+   "axis": "Y",
+   "pos": -16.0,
+   "start": -16.0,
+   "end": 16.0,
+   "material": "metal",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.3,
+     "width": 1.4
+    },
+    {
+     "kind": "door",
+     "pos": 0.3,
+     "width": 1.4
+    }
+   ]
+  },
+  {
+   "story": 0,
+   "axis": "X",
+   "pos": 8.0,
+   "start": -27.0,
+   "end": -16.0,
+   "material": "metal",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.25,
+     "tag": "bond_door",
+     "reinforceable": true
+    },
+    {
+     "kind": "breach",
+     "pos": -0.4,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
+  }
+ ],
+ "rooms": [
+  {
+   "id": "cross_dock",
+   "story": 0,
+   "bounds": [
+    -16.0,
+    -16.0,
+    27.0,
+    16.0
+   ],
+   "role": "public_entry",
+   "combat_range": "long"
+  },
+  {
+   "id": "west_hall",
+   "story": 0,
+   "bounds": [
+    -27.0,
+    -16.0,
+    -16.0,
+    8.0
+   ],
+   "role": "connector",
+   "combat_range": "medium"
+  },
+  {
+   "id": "bonded_cage",
+   "story": 0,
+   "bounds": [
+    -27.0,
+    8.0,
+    -16.0,
+    16.0
+   ],
+   "role": "objective_room",
+   "objective": true,
+   "fortifiable": true,
+   "combat_range": "close"
+  }
+ ],
+ "stairs": [],
+ "ladders": [
+  {
+   "x": -22.0,
+   "y": -12.0,
+   "from_story": 0,
+   "to_story": 1,
+   "facing": "E",
+   "role": "roof_access",
+   "placement_mode": "interior",
+   "upper_surface": "roof",
+   "transition": "roof_hatch_exit",
+   "access_class": "staff_restricted",
+   "access_control": "locked_hatch",
+   "id": "ft01_ladder_0"
+  }
+ ],
+ "vertical_links": [
+  {
+   "kind": "hatch",
+   "story": 1,
+   "x": -22.0,
+   "y": -12.0
+  }
+ ],
+ "parapets": [
+  {
+   "story": 1,
+   "height": 1.0
+  }
+ ],
+ "volumes": [
+  {
+   "name": "container_0",
+   "x": -8.0,
+   "y": -6.0,
+   "z": 1.3,
+   "size_x": 6.0,
+   "size_y": 2.4,
+   "size_z": 2.6,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "container_1",
+   "x": 1.0,
+   "y": 6.0,
+   "z": 1.3,
+   "size_x": 6.0,
+   "size_y": 2.4,
+   "size_z": 2.6,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "container_2",
+   "x": 10.0,
+   "y": -6.0,
+   "z": 1.3,
+   "size_x": 6.0,
+   "size_y": 2.4,
+   "size_z": 2.6,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "container_3",
+   "x": 19.0,
+   "y": 6.0,
+   "z": 1.3,
+   "size_x": 6.0,
+   "size_y": 2.4,
+   "size_z": 2.6,
+   "collision": "convex",
+   "material": "metal"
+  }
+ ],
+ "markers": [
+  {
+   "type": "attacker_spawn",
+   "id": "DOCKS_S",
+   "x": 0.0,
+   "y": -18.0,
+   "z": 0,
+   "rot_z": 90,
+   "room": "cross_dock"
+  },
+  {
+   "type": "attacker_spawn",
+   "id": "DOCKS_N",
+   "x": 0.0,
+   "y": 18.0,
+   "z": 0,
+   "rot_z": 270,
+   "room": "cross_dock"
+  },
+  {
+   "type": "defender_spawn",
+   "x": -21.0,
+   "y": -4.0,
+   "z": 0.0,
+   "rot_z": 0,
+   "room": "west_hall"
+  },
+  {
+   "type": "objective",
+   "id": "A",
+   "x": -21.0,
+   "y": 12.0,
+   "z": 0.0,
+   "room": "bonded_cage",
+   "meta": {
+    "kind": "secure"
+   }
+  },
+  {
+   "type": "extraction",
+   "id": "YARD",
+   "x": 12.0,
+   "y": -18.0,
+   "z": 0
+  },
+  {
+   "type": "cover_high",
+   "x": 4.0,
+   "y": 0.0,
+   "z": 0,
+   "room": "cross_dock"
+  },
+  {
+   "type": "camera_socket",
+   "id": "01",
+   "x": 24.0,
+   "y": -13.0,
+   "z": 5.0,
+   "room": "cross_dock"
+  }
+ ]
+}

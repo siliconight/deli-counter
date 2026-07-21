@@ -1,0 +1,27 @@
+{
+  "checks": [
+    {
+      "code": "GI-SCALE",
+      "msg": "all nodes at unit positive scale",
+      "ok": true
+    },
+    {
+      "code": "GI-BOUNDS",
+      "msg": "bounds drift 0.00 mm within 2 cm",
+      "ok": true
+    },
+    {
+      "code": "GI-ORIGIN",
+      "msg": "origin at footprint-center, ground at y<=tol",
+      "ok": true
+    },
+    {
+      "code": "GI-MARKERS",
+      "msg": "7 marker empty(ies) within 5 cm",
+      "ok": true
+    }
+  ],
+  "error": "",
+  "glb": "build\\self_storage_a02.glb",
+  "ok": true
+}

@@ -1,0 +1,99 @@
+{
+  "kit_name": "Deli Counter",
+  "kit_version": "0.80.0",
+  "schema_version": "1.21.1",
+  "spec": "marina_a02.json",
+  "spec_sha256_16": "981e7f571b959a4b",
+  "built_utc": "2026-07-21T10:51:48.847142+00:00",
+  "outputs": [
+    "marina_a02.glb"
+  ],
+  "expected": {
+    "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
+    "bounds_min": [
+      -19.15,
+      -13.15,
+      -0.3
+    ],
+    "bounds_max": [
+      19.15,
+      13.15,
+      8.4
+    ],
+    "origin": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "story_height": 4.2,
+    "floor_elevations": [
+      0.0,
+      4.2
+    ],
+    "markers": [
+      {
+        "name": "ATTACKER_SPAWN_PIER",
+        "type": "attacker_spawn",
+        "pos": [
+          -4.0,
+          -15.0,
+          0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_LOT",
+        "type": "attacker_spawn",
+        "pos": [
+          6.0,
+          15.0,
+          0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN",
+        "type": "defender_spawn",
+        "pos": [
+          -8.0,
+          6.0,
+          4.2
+        ]
+      },
+      {
+        "name": "OBJECTIVE_A",
+        "type": "objective",
+        "pos": [
+          11.0,
+          6.0,
+          4.2
+        ]
+      },
+      {
+        "name": "EXTRACTION_PIER_END",
+        "type": "extraction",
+        "pos": [
+          8.0,
+          -15.0,
+          0
+        ]
+      },
+      {
+        "name": "COVER_LOW",
+        "type": "cover_low",
+        "pos": [
+          2.0,
+          -6.0,
+          0
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_01",
+        "type": "camera_socket",
+        "pos": [
+          16.0,
+          -10.0,
+          3.6
+        ]
+      }
+    ]
+  }
+}

@@ -1,3 +1,15 @@
+## [0.82.0] - Phase 3 Variety Expansion: 35 configs / 12 new families
+
+Both waves engine-green FIRST TRY (17/17 + 18/18 nav & import, zero
+batch iterations). New families: MUSEUM, COURTHOUSE, MANSION (Vinny finale
+chassis in A03), COUNTRY_CLUB, BREWERY, MARINA, RAIL_STATION (SEPTA),
+FREIGHT_TERMINAL, SELF_STORAGE, CONSTRUCTION_SITE, FUNERAL_HOME, STRIP_CLUB.
+
+- **Tall-story stair rule encoded:** run >= 0.85 x story_height keeps every
+  flight under the 55-deg slope contract (museums/courthouses at 5-6 m).
+- Post-engine fixes this phase: ONE (walkup A02 interior stair relocated to
+  the deeper parlor after site-scale physical walk wedged at it).
+
 ## [0.81.0] - Phase 2 Core Library: 27 configs across 11 new families
 
 All 27 PASS both engine building gates on Godot 4.7 (with Phase 1's 10 and
