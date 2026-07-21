@@ -1,0 +1,352 @@
+{
+ "$schema": "../schema/level.schema.json",
+ "name": "bank_tower_a01",
+ "mode": "pvp_heist",
+ "seed": 4211,
+ "footprint_x": 38,
+ "footprint_y": 28,
+ "story_height": 4.6,
+ "n_stories": 1,
+ "has_basement": true,
+ "collision": "convex",
+ "auto_exterior": true,
+ "scale_ref": false,
+ "default_material": "concrete",
+ "materials": [
+  {
+   "id": "concrete",
+   "acoustic": "Concrete",
+   "absorption": 0.7,
+   "damping": 0.6
+  },
+  {
+   "id": "drywall",
+   "acoustic": "Drywall"
+  },
+  {
+   "id": "glass",
+   "acoustic": "Glass",
+   "absorption": 0.1,
+   "damping": 0.05
+  },
+  {
+   "id": "metal",
+   "acoustic": "Metal",
+   "absorption": 0.5,
+   "damping": 0.3
+  },
+  {
+   "id": "wood",
+   "acoustic": "Wood"
+  }
+ ],
+ "ext_walls": [
+  {
+   "wall": "S",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.25,
+     "width": 2.4,
+     "tag": "entry_w"
+    },
+    {
+     "kind": "door",
+     "pos": 0.25,
+     "width": 2.4,
+     "tag": "entry_e"
+    },
+    {
+     "kind": "window",
+     "pos": 0.0,
+     "width": 3.0,
+     "sill": 1.6,
+     "vaultable": false
+    }
+   ]
+  },
+  {
+   "wall": "E",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.25,
+     "width": 1.25,
+     "tag": "service_entry"
+    }
+   ]
+  },
+  {
+   "wall": "W",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "breach",
+     "pos": 0.0,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    },
+    {
+     "kind": "window",
+     "pos": 0.35,
+     "width": 2.0,
+     "sill": 1.8,
+     "vaultable": false
+    }
+   ]
+  },
+  {
+   "wall": "N",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "garage",
+     "pos": 0.15,
+     "width": 4.2,
+     "tag": "dock_n"
+    },
+    {
+     "kind": "door",
+     "pos": -0.35,
+     "width": 1.25,
+     "tag": "crew_n"
+    }
+   ]
+  }
+ ],
+ "partitions": [
+  {
+   "story": 0,
+   "axis": "X",
+   "pos": 4.9,
+   "start": -19.0,
+   "end": 19.0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.35,
+     "width": 1.8
+    },
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.8
+    },
+    {
+     "kind": "door",
+     "pos": 0.35,
+     "width": 1.8
+    }
+   ]
+  },
+  {
+   "story": -1,
+   "axis": "Y",
+   "pos": 0.0,
+   "start": -14.0,
+   "end": 14.0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.25,
+     "width": 1.25,
+     "tag": "vault_gate",
+     "reinforceable": true
+    },
+    {
+     "kind": "breach",
+     "pos": 0.35,
+     "width": 1.4,
+     "breach_class": "reinforced",
+     "material": "drywall"
+    }
+   ]
+  }
+ ],
+ "rooms": [
+  {
+   "id": "banking_hall",
+   "story": 0,
+   "bounds": [
+    -19.0,
+    -14.0,
+    19.0,
+    4.9
+   ],
+   "role": "public_entry",
+   "combat_range": "medium"
+  },
+  {
+   "id": "teller_band",
+   "story": 0,
+   "bounds": [
+    -19.0,
+    4.9,
+    19.0,
+    14.0
+   ],
+   "role": "connector",
+   "combat_range": "medium"
+  },
+  {
+   "id": "under_hall",
+   "story": -1,
+   "bounds": [
+    -19.0,
+    -14.0,
+    0.0,
+    14.0
+   ],
+   "role": "connector",
+   "combat_range": "medium"
+  },
+  {
+   "id": "main_vault",
+   "story": -1,
+   "bounds": [
+    0.0,
+    -14.0,
+    19.0,
+    14.0
+   ],
+   "role": "objective_room",
+   "objective": true,
+   "fortifiable": true,
+   "combat_range": "close"
+  }
+ ],
+ "stairs": [
+  {
+   "x": -13.6,
+   "y": 10.0,
+   "from_story": -1,
+   "to_story": 0,
+   "style": "straight",
+   "cut_slabs": true,
+   "facing": "E",
+   "id": "bt01_stair_n",
+   "role": "service",
+   "run": 3.9
+  },
+  {
+   "x": -13.6,
+   "y": -10.0,
+   "from_story": -1,
+   "to_story": 0,
+   "style": "straight",
+   "cut_slabs": true,
+   "facing": "E",
+   "id": "bt01_stair_s",
+   "role": "public_convenience",
+   "run": 3.9
+  }
+ ],
+ "ladders": [],
+ "vertical_links": [],
+ "parapets": [],
+ "volumes": [
+  {
+   "name": "teller_desk_0",
+   "x": -10.0,
+   "y": -6.0,
+   "z": 0.6,
+   "size_x": 3.2,
+   "size_y": 1.2,
+   "size_z": 1.2,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "teller_desk_1",
+   "x": -1.0,
+   "y": -6.0,
+   "z": 0.6,
+   "size_x": 3.2,
+   "size_y": 1.2,
+   "size_z": 1.2,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "teller_desk_2",
+   "x": 8.0,
+   "y": -6.0,
+   "z": 0.6,
+   "size_x": 3.2,
+   "size_y": 1.2,
+   "size_z": 1.2,
+   "collision": "convex",
+   "material": "wood"
+  }
+ ],
+ "markers": [
+  {
+   "type": "attacker_spawn",
+   "id": "MAIN_W",
+   "x": -7.6000000000000005,
+   "y": -16.0,
+   "z": 0,
+   "rot_z": 90,
+   "room": "banking_hall"
+  },
+  {
+   "type": "attacker_spawn",
+   "id": "MAIN_E",
+   "x": 7.6000000000000005,
+   "y": -16.0,
+   "z": 0,
+   "rot_z": 90,
+   "room": "banking_hall"
+  },
+  {
+   "type": "defender_spawn",
+   "x": -9.5,
+   "y": 0.0,
+   "z": -4.3,
+   "rot_z": 0,
+   "room": "under_hall"
+  },
+  {
+   "type": "objective",
+   "id": "A",
+   "x": 9.5,
+   "y": 0.0,
+   "z": -4.3,
+   "room": "main_vault",
+   "meta": {
+    "kind": "secure"
+   }
+  },
+  {
+   "type": "extraction",
+   "id": "EXIT",
+   "x": 0.0,
+   "y": -16.0,
+   "z": 0
+  },
+  {
+   "type": "cover_high",
+   "x": 0.0,
+   "y": -5.6000000000000005,
+   "z": 0,
+   "room": "banking_hall"
+  },
+  {
+   "type": "camera_socket",
+   "id": "01",
+   "x": 16.0,
+   "y": -11.0,
+   "z": 3.5999999999999996,
+   "room": "banking_hall"
+  }
+ ]
+}

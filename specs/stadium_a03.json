@@ -1,0 +1,363 @@
+{
+ "$schema": "../schema/level.schema.json",
+ "name": "stadium_a03",
+ "mode": "pvp_heist",
+ "seed": 4103,
+ "footprint_x": 50,
+ "footprint_y": 32,
+ "story_height": 5.0,
+ "n_stories": 1,
+ "has_basement": true,
+ "collision": "convex",
+ "auto_exterior": true,
+ "scale_ref": false,
+ "default_material": "concrete",
+ "materials": [
+  {
+   "id": "concrete",
+   "acoustic": "Concrete",
+   "absorption": 0.7,
+   "damping": 0.6
+  },
+  {
+   "id": "drywall",
+   "acoustic": "Drywall"
+  },
+  {
+   "id": "glass",
+   "acoustic": "Glass",
+   "absorption": 0.1,
+   "damping": 0.05
+  },
+  {
+   "id": "metal",
+   "acoustic": "Metal",
+   "absorption": 0.5,
+   "damping": 0.3
+  },
+  {
+   "id": "wood",
+   "acoustic": "Wood"
+  }
+ ],
+ "ext_walls": [
+  {
+   "wall": "S",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.25,
+     "width": 2.4,
+     "tag": "entry_w"
+    },
+    {
+     "kind": "door",
+     "pos": 0.25,
+     "width": 2.4,
+     "tag": "entry_e"
+    },
+    {
+     "kind": "window",
+     "pos": 0.0,
+     "width": 3.0,
+     "sill": 1.6,
+     "vaultable": false
+    }
+   ]
+  },
+  {
+   "wall": "E",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.25,
+     "width": 1.25,
+     "tag": "service_entry"
+    }
+   ]
+  },
+  {
+   "wall": "W",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "breach",
+     "pos": 0.0,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    },
+    {
+     "kind": "window",
+     "pos": 0.35,
+     "width": 2.0,
+     "sill": 1.8,
+     "vaultable": false
+    }
+   ]
+  },
+  {
+   "wall": "N",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "garage",
+     "pos": 0.15,
+     "width": 4.2,
+     "tag": "dock_n"
+    },
+    {
+     "kind": "door",
+     "pos": -0.35,
+     "width": 1.25,
+     "tag": "crew_n"
+    }
+   ]
+  }
+ ],
+ "partitions": [
+  {
+   "story": 0,
+   "axis": "X",
+   "pos": 5.6,
+   "start": -25.0,
+   "end": 25.0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.35,
+     "width": 1.8
+    },
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.8
+    },
+    {
+     "kind": "door",
+     "pos": 0.35,
+     "width": 1.8
+    }
+   ]
+  },
+  {
+   "story": -1,
+   "axis": "Y",
+   "pos": 0.0,
+   "start": -16.0,
+   "end": 16.0,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.25,
+     "width": 1.25,
+     "tag": "vault_gate",
+     "reinforceable": true
+    },
+    {
+     "kind": "breach",
+     "pos": 0.35,
+     "width": 1.4,
+     "breach_class": "reinforced",
+     "material": "drywall"
+    }
+   ]
+  }
+ ],
+ "rooms": [
+  {
+   "id": "concourse",
+   "story": 0,
+   "bounds": [
+    -25.0,
+    -16.0,
+    25.0,
+    5.6
+   ],
+   "role": "public_entry",
+   "combat_range": "medium"
+  },
+  {
+   "id": "ops_band",
+   "story": 0,
+   "bounds": [
+    -25.0,
+    5.6,
+    25.0,
+    16.0
+   ],
+   "role": "connector",
+   "combat_range": "medium"
+  },
+  {
+   "id": "under_hall",
+   "story": -1,
+   "bounds": [
+    -25.0,
+    -16.0,
+    0.0,
+    16.0
+   ],
+   "role": "connector",
+   "combat_range": "medium"
+  },
+  {
+   "id": "strong_room",
+   "story": -1,
+   "bounds": [
+    0.0,
+    -16.0,
+    25.0,
+    16.0
+   ],
+   "role": "objective_room",
+   "objective": true,
+   "fortifiable": true,
+   "combat_range": "close"
+  }
+ ],
+ "stairs": [
+  {
+   "x": -19.5,
+   "y": 12.0,
+   "from_story": -1,
+   "to_story": 0,
+   "style": "straight",
+   "cut_slabs": true,
+   "facing": "E",
+   "id": "st03_stair_n",
+   "role": "service",
+   "run": 4.2
+  },
+  {
+   "x": -19.5,
+   "y": -12.0,
+   "from_story": -1,
+   "to_story": 0,
+   "style": "straight",
+   "cut_slabs": true,
+   "facing": "E",
+   "id": "st03_stair_s",
+   "role": "public_convenience",
+   "run": 4.2
+  }
+ ],
+ "ladders": [],
+ "vertical_links": [],
+ "parapets": [],
+ "volumes": [
+  {
+   "name": "kiosk_0",
+   "x": -15.0,
+   "y": -8.0,
+   "z": 1.1,
+   "size_x": 2.6,
+   "size_y": 2.0,
+   "size_z": 2.2,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "kiosk_1",
+   "x": -5.0,
+   "y": -8.0,
+   "z": 1.1,
+   "size_x": 2.6,
+   "size_y": 2.0,
+   "size_z": 2.2,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "kiosk_2",
+   "x": 5.0,
+   "y": -8.0,
+   "z": 1.1,
+   "size_x": 2.6,
+   "size_y": 2.0,
+   "size_z": 2.2,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "kiosk_3",
+   "x": 15.0,
+   "y": -8.0,
+   "z": 1.1,
+   "size_x": 2.6,
+   "size_y": 2.0,
+   "size_z": 2.2,
+   "collision": "convex",
+   "material": "metal"
+  }
+ ],
+ "markers": [
+  {
+   "type": "attacker_spawn",
+   "id": "MAIN_W",
+   "x": -10.0,
+   "y": -18.0,
+   "z": 0,
+   "rot_z": 90,
+   "room": "concourse"
+  },
+  {
+   "type": "attacker_spawn",
+   "id": "MAIN_E",
+   "x": 10.0,
+   "y": -18.0,
+   "z": 0,
+   "rot_z": 90,
+   "room": "concourse"
+  },
+  {
+   "type": "defender_spawn",
+   "x": -12.5,
+   "y": 0.0,
+   "z": -4.7,
+   "rot_z": 0,
+   "room": "under_hall"
+  },
+  {
+   "type": "objective",
+   "id": "A",
+   "x": 12.5,
+   "y": 0.0,
+   "z": -4.7,
+   "room": "strong_room",
+   "meta": {
+    "kind": "secure"
+   }
+  },
+  {
+   "type": "extraction",
+   "id": "EXIT",
+   "x": 0.0,
+   "y": -18.0,
+   "z": 0
+  },
+  {
+   "type": "cover_high",
+   "x": 0.0,
+   "y": -6.4,
+   "z": 0,
+   "room": "concourse"
+  },
+  {
+   "type": "camera_socket",
+   "id": "01",
+   "x": 22.0,
+   "y": -13.0,
+   "z": 4.0,
+   "room": "concourse"
+  }
+ ]
+}
