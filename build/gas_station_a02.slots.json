@@ -7,7 +7,7 @@
   "space": "spec/Blender Z-up raw coords; rot_y = degrees about up",
   "coverage": {
     "breach/generated": 2,
-    "doorway/generated": 9,
+    "doorway/generated": 10,
     "wall/generated": 89,
     "window/generated": 6
   },
@@ -288,16 +288,50 @@
     {
       "slot_id": "ext_0_N_seg7",
       "role": "wall",
-      "size_mod": "full",
+      "size_mod": "end",
       "style": 1,
-      "current_ref": "wall_greybox_01",
+      "current_ref": "wallEnd_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_0_N",
       "story": 0,
       "facing": "N",
       "transform": {
         "translation": [
-          -1.0,
+          -1.3125,
+          11.0,
+          2.1
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.375,
+          0.3,
+          4.2
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.375,
+          0.3,
+          4.2
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_N_open0",
+      "role": "doorway",
+      "size_mod": "full",
+      "style": 1,
+      "current_ref": "doorway_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_N",
+      "story": 0,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          0.0,
           11.0,
           2.1
         ],
@@ -310,13 +344,33 @@
       },
       "fit": {
         "dims": [
-          2.0,
+          1.25,
           0.3,
           4.2
         ],
         "pivot": "center",
-        "openings": [],
+        "openings": [
+          {
+            "kind": "door",
+            "width": 1.25,
+            "height": 2.2,
+            "sill": 0.0
+          }
+        ],
         "collision": "convex"
+      },
+      "interactive": {
+        "id": "gas_station_a02:if:2b918c34",
+        "kind": "door",
+        "states": [
+          "closed",
+          "open"
+        ],
+        "default": "closed",
+        "collision_per_state": {
+          "closed": true,
+          "open": false
+        }
       }
     },
     {
@@ -331,7 +385,7 @@
       "facing": "N",
       "transform": {
         "translation": [
-          1.0,
+          1.625,
           11.0,
           2.1
         ],
@@ -365,7 +419,7 @@
       "facing": "N",
       "transform": {
         "translation": [
-          3.0,
+          3.625,
           11.0,
           2.1
         ],
@@ -399,7 +453,7 @@
       "facing": "N",
       "transform": {
         "translation": [
-          5.0,
+          5.625,
           11.0,
           2.1
         ],
@@ -433,7 +487,7 @@
       "facing": "N",
       "transform": {
         "translation": [
-          7.0,
+          7.625,
           11.0,
           2.1
         ],
@@ -467,20 +521,20 @@
       "facing": "N",
       "transform": {
         "translation": [
-          8.4,
+          8.7125,
           11.0,
           2.1
         ],
         "rot_y": 0,
         "scale": [
-          0.8,
+          0.175,
           0.3,
           4.2
         ]
       },
       "fit": {
         "dims": [
-          0.8,
+          0.175,
           0.3,
           4.2
         ],
@@ -490,7 +544,7 @@
       }
     },
     {
-      "slot_id": "ext_0_N_open0",
+      "slot_id": "ext_0_N_open1",
       "role": "breach",
       "size_mod": "full",
       "style": 1,

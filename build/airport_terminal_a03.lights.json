@@ -1,0 +1,227 @@
+{
+  "light_manifest_version": "1.1.0",
+  "building_id": "airport_terminal_a03",
+  "theme": "greybox",
+  "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location",
+  "rig_library": "lux",
+  "anchors": [
+    {
+      "id": "concourse_ceiling",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -4.55,
+        5.4
+      ],
+      "rot_y": 0.0,
+      "room": "concourse",
+      "row": {
+        "count": 5,
+        "spacing": 10.0
+      },
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "baggage_band_ceiling",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        9.45,
+        5.4
+      ],
+      "rot_y": 0.0,
+      "room": "baggage_band",
+      "row": {
+        "count": 5,
+        "spacing": 10.0
+      },
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "upper_ring_ceiling",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -7.0,
+        10.9
+      ],
+      "rot_y": 0.0,
+      "room": "upper_ring",
+      "row": {
+        "count": 5,
+        "spacing": 10.0
+      },
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "upper_west_ceiling",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -8.125,
+        7.0,
+        10.9
+      ],
+      "rot_y": 0.0,
+      "room": "upper_west",
+      "row": {
+        "count": 5,
+        "spacing": 6.75
+      },
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "ops_control_ceiling",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        16.875,
+        7.0,
+        10.9
+      ],
+      "rot_y": 0.0,
+      "room": "ops_control",
+      "row": {
+        "count": 5,
+        "spacing": 3.25
+      },
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "ext_0_S_window_1",
+      "type": "window",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -14.0,
+        2.45
+      ],
+      "rot_y": 90.0,
+      "size": [
+        3.0,
+        1.4
+      ],
+      "reacts_to_alarm": false
+    },
+    {
+      "id": "ext_0_W_window_1",
+      "type": "window",
+      "source": "derived",
+      "pos": [
+        -25.0,
+        9.8,
+        2.65
+      ],
+      "rot_y": 0.0,
+      "size": [
+        2.0,
+        1.4
+      ],
+      "reacts_to_alarm": false
+    },
+    {
+      "id": "ext_1_S_window_1",
+      "type": "window",
+      "source": "derived",
+      "pos": [
+        -15.0,
+        -14.0,
+        7.25
+      ],
+      "rot_y": 90.0,
+      "size": [
+        2.6,
+        1.4
+      ],
+      "reacts_to_alarm": false
+    },
+    {
+      "id": "ext_1_S_window_2",
+      "type": "window",
+      "source": "derived",
+      "pos": [
+        15.0,
+        -14.0,
+        7.25
+      ],
+      "rot_y": 90.0,
+      "size": [
+        2.6,
+        1.4
+      ],
+      "reacts_to_alarm": false
+    },
+    {
+      "id": "ext_0_S_sign",
+      "type": "sign",
+      "source": "derived",
+      "pos": [
+        -12.5,
+        -14.2,
+        2.55
+      ],
+      "rot_y": 270.0,
+      "wall": "ext_0_S",
+      "size": [
+        3.2,
+        0.6
+      ],
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "ext_0_N_pack_1",
+      "type": "wall_pack",
+      "source": "derived",
+      "pos": [
+        7.5,
+        14.15,
+        3.25
+      ],
+      "rot_y": 90.0,
+      "wall": "ext_0_N",
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "ext_0_N_pack_2",
+      "type": "wall_pack",
+      "source": "derived",
+      "pos": [
+        -17.5,
+        14.15,
+        2.45
+      ],
+      "rot_y": 90.0,
+      "wall": "ext_0_N",
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "ext_0_S_pack_1",
+      "type": "wall_pack",
+      "source": "derived",
+      "pos": [
+        12.5,
+        -14.15,
+        2.45
+      ],
+      "rot_y": 270.0,
+      "wall": "ext_0_S",
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "ext_0_E_pack_1",
+      "type": "wall_pack",
+      "source": "derived",
+      "pos": [
+        25.15,
+        7.0,
+        2.45
+      ],
+      "rot_y": 0.0,
+      "wall": "ext_0_E",
+      "reacts_to_alarm": true
+    }
+  ]
+}

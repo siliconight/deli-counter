@@ -161,9 +161,9 @@
   },
   {
    "story": 0,
-   "axis": "Y",
+   "axis": "X",
    "pos": 8.0,
-   "start": -13.0,
+   "start": -20.0,
    "end": -3.0,
    "material": "metal",
    "openings": [
@@ -171,8 +171,8 @@
      "kind": "door",
      "pos": 0.0,
      "width": 1.25,
-     "tag": "cage_door",
-     "reinforceable": true
+     "reinforceable": true,
+     "tag": "cage_door"
     }
    ]
   },
@@ -218,12 +218,29 @@
      "material": "drywall"
     }
    ]
+  },
+  {
+   "story": 0,
+   "axis": "Y",
+   "pos": -3.0,
+   "start": 8.0,
+   "end": 13.0,
+   "material": "metal",
+   "openings": [
+    {
+     "kind": "breach",
+     "pos": 0.0,
+     "width": 1.4,
+     "breach_class": "soft_wall",
+     "material": "drywall"
+    }
+   ]
   }
  ],
  "stairs": [
   {
    "x": -15.0,
-   "y": 9.0,
+   "y": 4.0,
    "from_story": 0,
    "to_story": 1,
    "style": "switchback",
@@ -324,7 +341,7 @@
     -20.0,
     -3.0,
     20.0,
-    13.0
+    8.0
    ],
    "role": "open_floor",
    "combat_range": "long"
@@ -379,6 +396,18 @@
    "objective": true,
    "fortifiable": true,
    "combat_range": "close"
+  },
+  {
+   "id": "north_dock",
+   "story": 0,
+   "bounds": [
+    -3.0,
+    8.0,
+    20.0,
+    13.0
+   ],
+   "role": "connector",
+   "combat_range": "medium"
   }
  ],
  "markers": [

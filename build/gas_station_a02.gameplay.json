@@ -219,6 +219,23 @@
       "building": "gas_station_a02"
     },
     {
+      "wall": "ext_0_N",
+      "kind": "door",
+      "story": 0,
+      "x": 0.0,
+      "y": 11.0,
+      "z": 1.25,
+      "width": 1.25,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": "rear_staff_door",
+      "breach_class": null,
+      "material": null,
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "gas_station_a02"
+    },
+    {
       "wall": "ext_0_S",
       "kind": "door",
       "story": 0,
@@ -368,7 +385,7 @@
       "breach_class": null,
       "material": null,
       "vaultable": false,
-      "reinforceable": false,
+      "reinforceable": true,
       "building": "gas_station_a02"
     },
     {
@@ -385,7 +402,7 @@
       "breach_class": null,
       "material": null,
       "vaultable": false,
-      "reinforceable": false,
+      "reinforceable": true,
       "building": "gas_station_a02"
     },
     {
@@ -402,7 +419,7 @@
       "breach_class": null,
       "material": null,
       "vaultable": false,
-      "reinforceable": false,
+      "reinforceable": true,
       "building": "gas_station_a02"
     },
     {
@@ -436,7 +453,7 @@
       "breach_class": null,
       "material": null,
       "vaultable": false,
-      "reinforceable": false,
+      "reinforceable": true,
       "building": "gas_station_a02"
     },
     {
@@ -612,6 +629,15 @@
       }
     },
     {
+      "node": "ext_col_0_N_open0_lintel",
+      "material": {
+        "id": "stone_ext",
+        "acoustic": "Concrete",
+        "absorption": 0.72,
+        "damping": 0.62
+      }
+    },
+    {
       "node": "ext_col_0_N_seg8",
       "material": {
         "id": "stone_ext",
@@ -657,7 +683,7 @@
       }
     },
     {
-      "node": "ext_col_0_N_open0_lintel",
+      "node": "ext_col_0_N_open1_lintel",
       "material": {
         "id": "stone_ext",
         "acoustic": "Concrete",
@@ -666,7 +692,7 @@
       }
     },
     {
-      "node": "ext_col_0_N_open0_BREACHPANEL",
+      "node": "ext_col_0_N_open1_BREACHPANEL",
       "material": {
         "id": "stone_ext",
         "acoustic": "Concrete",
@@ -1885,7 +1911,7 @@
     {
       "id": "gas_station_a02:if:c8e9af85",
       "kind": "breach_wall",
-      "slot_ref": "ext_0_N_open0",
+      "slot_ref": "ext_0_N_open1",
       "transform": {
         "translation": [
           9.6,
@@ -1908,6 +1934,39 @@
       ],
       "source": "inferred",
       "reversible": false,
+      "building": "gas_station_a02"
+    },
+    {
+      "id": "gas_station_a02:if:2b918c34",
+      "kind": "door",
+      "slot_ref": "ext_0_N_open0",
+      "transform": {
+        "translation": [
+          0.0,
+          11.0,
+          1.25
+        ],
+        "rot_y": 0
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
       "building": "gas_station_a02"
     },
     {
@@ -2264,13 +2323,14 @@
     "ext_0_N_seg5": "wall",
     "ext_0_N_seg6": "wall",
     "ext_0_N_seg7": "wall",
+    "ext_0_N_open0_lintel": "doorway",
     "ext_0_N_seg8": "wall",
     "ext_0_N_seg9": "wall",
     "ext_0_N_seg10": "wall",
     "ext_0_N_seg11": "wall",
     "ext_0_N_seg12": "wall",
-    "ext_0_N_open0_lintel": "breach",
-    "ext_0_N_open0_BREACHPANEL": "breach",
+    "ext_0_N_open1_lintel": "breach",
+    "ext_0_N_open1_BREACHPANEL": "breach",
     "ext_0_N_seg13": "wall",
     "ext_0_N_seg14": "wall",
     "ext_0_N_seg15": "wall",

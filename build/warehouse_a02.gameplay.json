@@ -140,7 +140,7 @@
         -20.0,
         -3.0,
         20.0,
-        13.0
+        8.0
       ],
       "role": "open_floor",
       "combat_range": "long",
@@ -148,7 +148,7 @@
       "objective": false,
       "center": [
         0.0,
-        5.0,
+        2.5,
         0.0
       ]
     },
@@ -226,6 +226,25 @@
         13.0,
         6.5,
         4.0
+      ]
+    },
+    {
+      "id": "north_dock",
+      "story": 0,
+      "bounds": [
+        -3.0,
+        8.0,
+        20.0,
+        13.0
+      ],
+      "role": "connector",
+      "combat_range": "medium",
+      "fortifiable": false,
+      "objective": false,
+      "center": [
+        8.5,
+        10.5,
+        0.0
       ]
     }
   ],
@@ -426,8 +445,8 @@
       "wall": "int_0_1",
       "kind": "door",
       "story": 0,
-      "x": 8.0,
-      "y": -8.0,
+      "x": -11.5,
+      "y": 8.0,
       "z": 1.25,
       "width": 1.25,
       "height": 2.2,
@@ -498,6 +517,23 @@
       "y": 2.6,
       "z": 5.25,
       "width": 1.5,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": null,
+      "breach_class": "soft_wall",
+      "material": "drywall",
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "warehouse_a02"
+    },
+    {
+      "wall": "int_0_4",
+      "kind": "breach",
+      "story": 0,
+      "x": -3.0,
+      "y": 10.5,
+      "z": 1.25,
+      "width": 1.4,
       "height": 2.2,
       "sill": 0.0,
       "tag": null,
@@ -2111,7 +2147,7 @@
       }
     },
     {
-      "node": "int_col_0_1_open0_lintel",
+      "node": "int_col_0_1_seg3",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -2120,7 +2156,7 @@
       }
     },
     {
-      "node": "int_col_0_1_seg3",
+      "node": "int_col_0_1_open0_lintel",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -2139,6 +2175,24 @@
     },
     {
       "node": "int_col_0_1_seg5",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "int_col_0_1_seg6",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "int_col_0_1_seg7",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -2426,6 +2480,42 @@
       }
     },
     {
+      "node": "int_col_0_4_seg0",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "int_col_0_4_open0_lintel",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "int_col_0_4_open0_BREACHPANEL",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "int_col_0_4_seg1",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
       "node": "rack_long_a_col",
       "material": {
         "id": "metal",
@@ -2620,11 +2710,11 @@
       "slot_ref": "int_0_1_open0",
       "transform": {
         "translation": [
+          -11.5,
           8.0,
-          -8.0,
           1.25
         ],
-        "rot_y": 90
+        "rot_y": 0
       },
       "states": [
         "closed",
@@ -2773,6 +2863,34 @@
       "source": "inferred",
       "reversible": false,
       "building": "warehouse_a02"
+    },
+    {
+      "id": "warehouse_a02:if:e497c36c",
+      "kind": "breach_wall",
+      "slot_ref": "int_0_4_open0",
+      "transform": {
+        "translation": [
+          -3.0,
+          10.5,
+          1.25
+        ],
+        "rot_y": 90
+      },
+      "states": [
+        "intact",
+        "breached"
+      ],
+      "default": "intact",
+      "transitions": [
+        {
+          "event": "breach",
+          "from": "intact",
+          "to": "breached"
+        }
+      ],
+      "source": "inferred",
+      "reversible": false,
+      "building": "warehouse_a02"
     }
   ],
   "stair_systems": [
@@ -2793,19 +2911,19 @@
       "footprint_polygon": [
         [
           -17.0,
-          7.4
+          2.4
         ],
         [
           -13.0,
-          7.4
+          2.4
         ],
         [
           -13.0,
-          10.6
+          5.6
         ],
         [
           -17.0,
-          10.6
+          5.6
         ]
       ],
       "clear_width_m": 1.6,
@@ -2823,11 +2941,11 @@
       ],
       "discharge": {
         "floor": 0,
-        "type": "direct_exterior",
+        "type": "exit_passage",
         "room": "north_aisles",
         "via": [],
-        "destination": "north_aisles",
-        "route_hops": 0
+        "destination": "main_floor",
+        "route_hops": 1
       },
       "egress": {
         "counts_as_exit": false
@@ -2838,13 +2956,13 @@
           "story": 0,
           "rect": [
             -18.2,
-            7.4,
+            2.4,
             -17.0,
-            9.0
+            4.0
           ],
           "point": [
             -17.6,
-            8.2,
+            3.2,
             0.0
           ],
           "dir": [
@@ -2857,13 +2975,13 @@
           "story": 1,
           "rect": [
             -12.2,
-            7.4,
+            2.4,
             -11.0,
-            9.0
+            4.0
           ],
           "point": [
             -11.6,
-            8.2,
+            3.2,
             4.0
           ],
           "dir": [
@@ -2875,12 +2993,12 @@
       "nav_endpoints": {
         "lower": [
           -17.6,
-          8.2,
+          3.2,
           0.0
         ],
         "upper": [
           -11.6,
-          8.2,
+          3.2,
           4.0
         ]
       },
@@ -2908,13 +3026,13 @@
         },
         {
           "floor": 0,
-          "kind": "garage",
-          "wall": "ext_0_N",
+          "kind": "door",
+          "wall": "int_0_1",
           "pos": 0.0,
-          "interactive": "warehouse_a02:if:cdd2d16e",
+          "interactive": "warehouse_a02:if:3f029668",
           "default_state": "closed",
-          "connects_from": "exterior",
-          "discharge_door": true
+          "connects_from": "floor_cage",
+          "discharge_door": false
         },
         {
           "floor": 1,
@@ -3345,10 +3463,12 @@
     "int_0_1_seg0": "wall",
     "int_0_1_seg1": "wall",
     "int_0_1_seg2": "wall",
-    "int_0_1_open0_lintel": "doorway",
     "int_0_1_seg3": "wall",
+    "int_0_1_open0_lintel": "doorway",
     "int_0_1_seg4": "wall",
     "int_0_1_seg5": "wall",
+    "int_0_1_seg6": "wall",
+    "int_0_1_seg7": "wall",
     "int_1_2_seg0": "wall",
     "int_1_2_seg1": "wall",
     "int_1_2_seg2": "wall",
@@ -3380,6 +3500,10 @@
     "int_1_3_seg3": "wall",
     "int_1_3_seg4": "wall",
     "int_1_3_seg5": "wall",
+    "int_0_4_seg0": "wall",
+    "int_0_4_open0_lintel": "breach",
+    "int_0_4_open0_BREACHPANEL": "breach",
+    "int_0_4_seg1": "wall",
     "stair0_0_0": "stair",
     "stair0_0_1": "stair",
     "stair0_0_2": "stair",

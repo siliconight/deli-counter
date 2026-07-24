@@ -326,19 +326,6 @@
    "combat_range": "medium"
   },
   {
-   "id": "vault_room",
-   "story": -1,
-   "bounds": [
-    -15.0,
-    -11.0,
-    15.0,
-    11.0
-   ],
-   "role": "fortifiable",
-   "fortifiable": true,
-   "combat_range": "close"
-  },
-  {
    "id": "offices",
    "story": 1,
    "bounds": [
@@ -375,6 +362,32 @@
    "objective": true,
    "fortifiable": true,
    "combat_range": "close"
+  },
+  {
+   "id": "vault_west",
+   "story": -1,
+   "bounds": [
+    -15.0,
+    -11.0,
+    0.0,
+    11.0
+   ],
+   "role": "fortifiable",
+   "combat_range": "close",
+   "fortifiable": true
+  },
+  {
+   "id": "vault_east",
+   "story": -1,
+   "bounds": [
+    0.0,
+    -11.0,
+    15.0,
+    11.0
+   ],
+   "role": "fortifiable",
+   "combat_range": "close",
+   "fortifiable": true
   }
  ],
  "volumes": [

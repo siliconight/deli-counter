@@ -1,0 +1,98 @@
+{
+  "kit_name": "Deli Counter",
+  "kit_version": "0.75.0",
+  "schema_version": "1.21.1",
+  "spec": "bank_tower_a01.json",
+  "spec_sha256_16": "3a5f20b702e1e739",
+  "built_utc": "2026-07-21T12:12:20.727578+00:00",
+  "outputs": [
+    "bank_tower_a01.glb"
+  ],
+  "expected": {
+    "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
+    "bounds_min": [
+      -19.15,
+      -14.15,
+      -4.9
+    ],
+    "bounds_max": [
+      19.15,
+      14.15,
+      4.6
+    ],
+    "origin": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "story_height": 4.6,
+    "floor_elevations": [
+      0.0
+    ],
+    "markers": [
+      {
+        "name": "ATTACKER_SPAWN_MAIN_W",
+        "type": "attacker_spawn",
+        "pos": [
+          -7.6000000000000005,
+          -16.0,
+          0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_MAIN_E",
+        "type": "attacker_spawn",
+        "pos": [
+          7.6000000000000005,
+          -16.0,
+          0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN",
+        "type": "defender_spawn",
+        "pos": [
+          -9.5,
+          0.0,
+          -4.3
+        ]
+      },
+      {
+        "name": "OBJECTIVE_A",
+        "type": "objective",
+        "pos": [
+          9.5,
+          0.0,
+          -4.3
+        ]
+      },
+      {
+        "name": "EXTRACTION_EXIT",
+        "type": "extraction",
+        "pos": [
+          0.0,
+          -16.0,
+          0
+        ]
+      },
+      {
+        "name": "COVER_HIGH",
+        "type": "cover_high",
+        "pos": [
+          0.0,
+          -5.6000000000000005,
+          0
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_01",
+        "type": "camera_socket",
+        "pos": [
+          16.0,
+          -11.0,
+          3.5999999999999996
+        ]
+      }
+    ]
+  }
+}

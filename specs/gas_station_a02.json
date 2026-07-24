@@ -107,6 +107,12 @@
      "width": 1.4,
      "breach_class": "soft_wall",
      "material": "drywall"
+    },
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.25,
+     "tag": "rear_staff_door"
     }
    ]
   },
@@ -178,7 +184,8 @@
      "kind": "door",
      "pos": 0.0,
      "width": 1.8,
-     "tag": "sales_to_food"
+     "tag": "sales_to_food",
+     "reinforceable": true
     }
    ]
   },
@@ -194,13 +201,15 @@
      "kind": "door",
      "pos": -0.344,
      "width": 1.25,
-     "tag": "sales_to_back_hall"
+     "tag": "sales_to_back_hall",
+     "reinforceable": true
     },
     {
      "kind": "door",
      "pos": 0.0,
      "width": 1.4,
-     "tag": "sales_to_stockroom"
+     "tag": "sales_to_stockroom",
+     "reinforceable": true
     },
     {
      "kind": "door",
@@ -223,7 +232,8 @@
      "kind": "door",
      "pos": -0.25,
      "width": 1.25,
-     "tag": "hall_to_stockroom"
+     "tag": "hall_to_stockroom",
+     "reinforceable": true
     },
     {
      "kind": "breach",

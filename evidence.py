@@ -32,6 +32,11 @@ sys.path.insert(0, HERE)
 
 BLOCKING_GATES = ("schema", "loader", "tactical", "guards", "enterability",
                   "navigability", "stairwell", "ladder", "pvp_heist")
+# Structural-coherence gate (layout_lint L10/L11/L12: dead openings, orphan
+# walls, sealed/unreachable rooms). ENFORCED: a FAIL here refuses the build.
+# The full spec library was brought to zero layout FAILs before enabling this
+# (see test_layout_coherence.py + `python layout_lint.py --all`).
+LAYOUT_BLOCKING = True
 
 
 def _gate(fn):
@@ -108,6 +113,10 @@ def collect(spec_path):
         report["gates"]["stairwell"] = _gate(lambda: stairwell.check(spec))
         report["gates"]["ladder"] = _gate(lambda: ladder.check(spec))
 
+        # structural coherence (dead openings / orphan walls) -- all modes
+        import layout_lint
+        report["gates"]["layout"] = _gate(lambda: layout_lint.gate(data))
+
         if spec.mode == "pvp_heist":
             import pvp_heist
             report["gates"]["pvp_heist"] = _gate(lambda: pvp_heist.check(spec))
@@ -163,6 +172,9 @@ def collect(spec_path):
     if spec.mode == "pvp_heist" and "combat_audit_high" in report["gates"] \
             and not report["gates"]["combat_audit_high"]["passed"]:
         blocking.append("combat_audit_high")
+    if LAYOUT_BLOCKING and "layout" in report["gates"] \
+            and not report["gates"]["layout"]["passed"]:
+        blocking.append("layout")
     report["blocking_failures"] = blocking
     report["passed"] = not blocking
     return report, combat, nav

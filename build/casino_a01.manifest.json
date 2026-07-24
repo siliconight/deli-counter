@@ -1,0 +1,116 @@
+{
+  "kit_name": "Deli Counter",
+  "kit_version": "0.80.0",
+  "schema_version": "1.21.1",
+  "spec": "casino_a01.json",
+  "spec_sha256_16": "82da99e676d989fd",
+  "built_utc": "2026-07-22T07:16:12.936650+00:00",
+  "outputs": [
+    "casino_a01.glb"
+  ],
+  "expected": {
+    "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
+    "bounds_min": [
+      -22.15,
+      -15.15,
+      -0.3
+    ],
+    "bounds_max": [
+      22.15,
+      15.3,
+      5.6
+    ],
+    "origin": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "story_height": 4.6,
+    "floor_elevations": [
+      0.0
+    ],
+    "markers": [
+      {
+        "name": "LADDER_0",
+        "type": "ladder",
+        "pos": [
+          18.0,
+          8.2,
+          0.0
+        ]
+      },
+      {
+        "name": "HATCH_18_8",
+        "type": "hatch",
+        "pos": [
+          18.0,
+          8.2,
+          4.6
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_MAIN_W",
+        "type": "attacker_spawn",
+        "pos": [
+          -8.8,
+          -17.0,
+          0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_MAIN_E",
+        "type": "attacker_spawn",
+        "pos": [
+          8.8,
+          -17.0,
+          0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN",
+        "type": "defender_spawn",
+        "pos": [
+          6.6,
+          10.1,
+          0.0
+        ]
+      },
+      {
+        "name": "OBJECTIVE_A",
+        "type": "objective",
+        "pos": [
+          -17.6,
+          10.1,
+          0.0
+        ]
+      },
+      {
+        "name": "EXTRACTION_EXIT",
+        "type": "extraction",
+        "pos": [
+          0.0,
+          -17.0,
+          0
+        ]
+      },
+      {
+        "name": "COVER_HIGH",
+        "type": "cover_high",
+        "pos": [
+          0.0,
+          -6.0,
+          0
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_01",
+        "type": "camera_socket",
+        "pos": [
+          19.0,
+          -12.0,
+          3.5999999999999996
+        ]
+      }
+    ]
+  }
+}

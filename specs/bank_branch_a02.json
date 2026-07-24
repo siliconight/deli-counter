@@ -314,18 +314,31 @@
    "combat_range": "close"
   },
   {
-   "id": "vault_room",
+   "id": "vault_west",
    "story": -1,
    "bounds": [
     -15.0,
+    -11.0,
+    0.0,
+    11.0
+   ],
+   "role": "fortifiable",
+   "combat_range": "close",
+   "fortifiable": true
+  },
+  {
+   "id": "vault_east",
+   "story": -1,
+   "bounds": [
+    0.0,
     -11.0,
     15.0,
     11.0
    ],
    "role": "objective_room",
-   "objective": true,
+   "combat_range": "close",
    "fortifiable": true,
-   "combat_range": "close"
+   "objective": true
   }
  ],
  "volumes": [
@@ -479,7 +492,7 @@
    "y": 5.0,
    "z": -3.3,
    "rot_z": 270,
-   "room": "vault_room"
+   "room": "vault_east"
   },
   {
    "type": "objective",
@@ -487,7 +500,7 @@
    "x": -8.0,
    "y": 5.0,
    "z": -3.3,
-   "room": "vault_room",
+   "room": "vault_west",
    "meta": {
     "kind": "secure"
    }
@@ -535,7 +548,7 @@
    "x": 10.0,
    "y": -6.0,
    "z": -1.8,
-   "room": "vault_room",
+   "room": "vault_east",
    "required": true,
    "duration": 90
   },
@@ -558,7 +571,7 @@
    "z": -1.8,
    "value": 500000,
    "bags": 4,
-   "room": "vault_room"
+   "room": "vault_east"
   },
   {
    "id": "teller_cash",

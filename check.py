@@ -28,6 +28,8 @@ def main():
     rc |= run(["validate.py", "--all"])
     print("== auditing spec content coherence ==")
     rc |= run(["audit_specs.py"])
+    print("== layout guard rails (LAYOUT_RULES.md) ==")
+    rc |= run(["layout_lint.py", "--all"])
     print("== stair regression sweep (quick) ==")
     rc |= run(["stair_regression.py", "--quick"])
     print("== nav traversal gate (built shells; needs Godot 4) ==")

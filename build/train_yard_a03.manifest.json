@@ -1,0 +1,117 @@
+{
+  "kit_name": "Deli Counter",
+  "kit_version": "0.75.0",
+  "schema_version": "1.21.1",
+  "spec": "train_yard_a03.json",
+  "spec_sha256_16": "cdc947ea287f2d7a",
+  "built_utc": "2026-07-21T12:12:37.646405+00:00",
+  "outputs": [
+    "train_yard_a03.glb"
+  ],
+  "expected": {
+    "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
+    "bounds_min": [
+      -24.15,
+      -13.15,
+      -0.3
+    ],
+    "bounds_max": [
+      24.15,
+      13.15,
+      11.0
+    ],
+    "origin": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "story_height": 5.0,
+    "floor_elevations": [
+      0.0,
+      5.0
+    ],
+    "markers": [
+      {
+        "name": "LADDER_0",
+        "type": "ladder",
+        "pos": [
+          2.0,
+          -9.0,
+          5.0
+        ]
+      },
+      {
+        "name": "HATCH_2_-9",
+        "type": "hatch",
+        "pos": [
+          2.0,
+          -9.0,
+          10.0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_MAIN_W",
+        "type": "attacker_spawn",
+        "pos": [
+          -9.600000000000001,
+          -15.0,
+          0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_MAIN_E",
+        "type": "attacker_spawn",
+        "pos": [
+          9.600000000000001,
+          -15.0,
+          0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN",
+        "type": "defender_spawn",
+        "pos": [
+          -10.8,
+          6.5,
+          5.0
+        ]
+      },
+      {
+        "name": "OBJECTIVE_A",
+        "type": "objective",
+        "pos": [
+          14.399999999999999,
+          6.5,
+          5.0
+        ]
+      },
+      {
+        "name": "EXTRACTION_EXIT",
+        "type": "extraction",
+        "pos": [
+          0.0,
+          -15.0,
+          0
+        ]
+      },
+      {
+        "name": "COVER_HIGH",
+        "type": "cover_high",
+        "pos": [
+          0.0,
+          -5.2,
+          0
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_01",
+        "type": "camera_socket",
+        "pos": [
+          21.0,
+          -10.0,
+          4.0
+        ]
+      }
+    ]
+  }
+}

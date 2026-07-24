@@ -40,12 +40,14 @@ import random
 # SPEC SCHEMA  --  imported from spec_types (pure Python, no bpy)
 # ============================================================================
 
+from dataclasses import replace
 from spec_types import (
     Axis, Wall, Collision, Opening, ExtWall, Partition, Stairwell,
     SlabHole, Volume, Parapet, LevelSpec, Asset, Placement,
     Room, VerticalLink, Marker, Objective, LootSpawn, Zone, Material,
     Ladder, Ramp, VaultLedge,
 )
+from partition_bounds import clamp_partition_span
 from rarity import resolve_rarity
 import interactives
 import roofs
@@ -1111,8 +1113,32 @@ class _Builder:
         for i, p in enumerate(self.s.partitions):
             z = p.story * H
             cz = z + H / 2
-            length = abs(p.end - p.start)
-            mid = (p.start + p.end) / 2
+            # Clamp the run to the footprint on its RUNNING axis so an interior
+            # wall can never poke through the exterior shell. The 2D floorplan
+            # already clamps here; the 3D geometry MUST agree, or a wall authored
+            # past the envelope (e.g. a Y-wall given the X half-width as its end)
+            # ships as an exterior spike. In-bounds partitions are unchanged
+            # (lo/hi collapse to the raw span), so existing specs bake identically.
+            lo, hi = clamp_partition_span(p.start, p.end, p.axis,
+                                          self.s.footprint_x, self.s.footprint_y)
+            if hi - lo <= 1e-6:
+                continue  # entirely outside the footprint -> build nothing
+            length = hi - lo
+            mid = (lo + hi) / 2
+            if lo != min(p.start, p.end) or hi != max(p.start, p.end):
+                # Trimmed: keep each opening's ABSOLUTE position and drop any that
+                # fell in the removed (out-of-bounds) portion -- mirrors the 2D
+                # path so a doorway never floats past the shortened wall.
+                raw_lo, raw_hi = min(p.start, p.end), max(p.start, p.end)
+                raw_len, raw_mid = raw_hi - raw_lo, (raw_lo + raw_hi) / 2
+                openings = []
+                for op in p.openings:
+                    world = raw_mid + op.pos * raw_len
+                    npos = (world - mid) / length if length else 0.0
+                    if abs(npos) <= 0.5 + 1e-6:
+                        openings.append(replace(op, pos=npos))
+            else:
+                openings = p.openings
             if p.axis == "Y":
                 c = (p.pos, mid, cz)
                 size = (wt, length, H)
@@ -1122,8 +1148,8 @@ class _Builder:
                 size = (length, wt, H)
                 axis = 0
             holes = [self._opening_to_hole(op, length, f"int_{p.story}_{i}",
-                                           p.story) for op in p.openings]
-            self._record_openings(p.openings, c, axis, length,
+                                           p.story) for op in openings]
+            self._record_openings(openings, c, axis, length,
                                   f"int_{p.story}_{i}", p.story)
             name = f"int_{p.story}_{i}"
             col_name = f"int_col_{p.story}_{i}"

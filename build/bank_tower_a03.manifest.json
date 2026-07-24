@@ -1,0 +1,116 @@
+{
+  "kit_name": "Deli Counter",
+  "kit_version": "0.80.0",
+  "schema_version": "1.21.1",
+  "spec": "bank_tower_a03.json",
+  "spec_sha256_16": "8b49be786379e812",
+  "built_utc": "2026-07-22T07:16:08.479197+00:00",
+  "outputs": [
+    "bank_tower_a03.glb"
+  ],
+  "expected": {
+    "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
+    "bounds_min": [
+      -20.15,
+      -13.15,
+      -0.3
+    ],
+    "bounds_max": [
+      20.15,
+      13.45,
+      5.2
+    ],
+    "origin": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "story_height": 4.2,
+    "floor_elevations": [
+      0.0
+    ],
+    "markers": [
+      {
+        "name": "LADDER_0",
+        "type": "ladder",
+        "pos": [
+          16.0,
+          7.5,
+          0.0
+        ]
+      },
+      {
+        "name": "HATCH_16_7",
+        "type": "hatch",
+        "pos": [
+          16.0,
+          7.5,
+          4.2
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_MAIN_W",
+        "type": "attacker_spawn",
+        "pos": [
+          -8.0,
+          -15.0,
+          0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_MAIN_E",
+        "type": "attacker_spawn",
+        "pos": [
+          8.0,
+          -15.0,
+          0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN",
+        "type": "defender_spawn",
+        "pos": [
+          6.0,
+          8.75,
+          0.0
+        ]
+      },
+      {
+        "name": "OBJECTIVE_A",
+        "type": "objective",
+        "pos": [
+          -16.0,
+          8.75,
+          0.0
+        ]
+      },
+      {
+        "name": "EXTRACTION_EXIT",
+        "type": "extraction",
+        "pos": [
+          0.0,
+          -15.0,
+          0
+        ]
+      },
+      {
+        "name": "COVER_HIGH",
+        "type": "cover_high",
+        "pos": [
+          0.0,
+          -5.2,
+          0
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_01",
+        "type": "camera_socket",
+        "pos": [
+          17.0,
+          -10.0,
+          3.2
+        ]
+      }
+    ]
+  }
+}

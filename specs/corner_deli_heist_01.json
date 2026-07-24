@@ -204,144 +204,6 @@
   ],
   "partitions": [
     {
-      "story": 0,
-      "axis": "X",
-      "pos": -8.0,
-      "start": -14.0,
-      "end": 14.0,
-      "material": "drywall",
-      "openings": [
-        {
-          "kind": "door",
-          "pos": -0.4,
-          "width": 1.1,
-          "tag": "customer_to_counter"
-        },
-        {
-          "kind": "breach",
-          "pos": 0.38,
-          "width": 1.4,
-          "breach_class": "soft_wall",
-          "material": "drywall"
-        }
-      ]
-    },
-    {
-      "story": 0,
-      "axis": "X",
-      "pos": 7.0,
-      "start": -14.0,
-      "end": 14.0,
-      "material": "drywall",
-      "openings": [
-        {
-          "kind": "door",
-          "pos": 0.42,
-          "width": 1.1,
-          "tag": "kitchen_to_loading"
-        },
-        {
-          "kind": "window",
-          "pos": -0.3,
-          "width": 1.4,
-          "sill": 1.1,
-          "material": "glass"
-        }
-      ]
-    },
-    {
-      "story": 0,
-      "axis": "Y",
-      "pos": -3.0,
-      "start": -19.0,
-      "end": 19.0,
-      "material": "drywall",
-      "openings": [
-        {
-          "kind": "door",
-          "pos": -0.05,
-          "width": 1.2,
-          "tag": "front_to_back"
-        },
-        {
-          "kind": "breach",
-          "pos": 0.28,
-          "width": 1.5,
-          "breach_class": "soft_wall",
-          "material": "drywall"
-        }
-      ]
-    },
-    {
-      "story": 0,
-      "axis": "Y",
-      "pos": 6.0,
-      "start": -19.0,
-      "end": 19.0,
-      "material": "drywall",
-      "openings": [
-        {
-          "kind": "garage",
-          "pos": 0.15,
-          "width": 2.4,
-          "height": 2.5,
-          "tag": "stockroom_gate"
-        },
-        {
-          "kind": "door",
-          "pos": -0.4,
-          "width": 1.0,
-          "tag": "office_stair_door"
-        }
-      ]
-    },
-    {
-      "story": 1,
-      "axis": "X",
-      "pos": -2.0,
-      "start": -14.0,
-      "end": 14.0,
-      "material": "drywall",
-      "openings": [
-        {
-          "kind": "door",
-          "pos": 0.0,
-          "width": 1.1,
-          "tag": "hall_to_manager_office"
-        },
-        {
-          "kind": "breach",
-          "pos": 0.36,
-          "width": 1.4,
-          "breach_class": "soft_wall",
-          "material": "drywall"
-        }
-      ]
-    },
-    {
-      "story": 1,
-      "axis": "Y",
-      "pos": 2.0,
-      "start": -19.0,
-      "end": 19.0,
-      "material": "drywall",
-      "openings": [
-        {
-          "kind": "door",
-          "pos": -0.25,
-          "width": 1.0,
-          "tag": "apartment_hall"
-        },
-        {
-          "kind": "breach",
-          "pos": 0.28,
-          "width": 1.4,
-          "breach_class": "soft_wall",
-          "material": "drywall"
-        }
-      ]
-    },
-    {
       "story": -1,
       "axis": "X",
       "pos": 1.0,
@@ -370,8 +232,8 @@
       "story": -1,
       "axis": "Y",
       "pos": 1.0,
-      "start": -16.0,
-      "end": 16.0,
+      "start": -14.0,
+      "end": 14.0,
       "material": "brick_ext",
       "openings": [
         {
@@ -387,6 +249,148 @@
           "breach_class": "reinforceable",
           "material": "brick_ext",
           "reinforceable": true
+        }
+      ]
+    },
+    {
+      "story": 0,
+      "axis": "Y",
+      "pos": -8.0,
+      "start": -14.0,
+      "end": 14.0,
+      "material": "drywall",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.4,
+          "width": 1.1,
+          "tag": "customer_to_counter"
+        },
+        {
+          "kind": "breach",
+          "pos": 0.38,
+          "width": 1.4,
+          "breach_class": "soft_wall",
+          "material": "drywall"
+        }
+      ]
+    },
+    {
+      "story": 0,
+      "axis": "X",
+      "pos": 6.0,
+      "start": -19.0,
+      "end": 19.0,
+      "material": "drywall",
+      "openings": [
+        {
+          "kind": "garage",
+          "pos": 0.15,
+          "width": 2.4,
+          "height": 2.5,
+          "tag": "stockroom_gate"
+        },
+        {
+          "kind": "door",
+          "pos": -0.4,
+          "width": 1.2,
+          "tag": "office_stair_door"
+        },
+        {
+          "kind": "door",
+          "pos": 0.3095,
+          "width": 1.1,
+          "tag": "kitchen_to_loading"
+        }
+      ]
+    },
+    {
+      "story": 1,
+      "axis": "Y",
+      "pos": -2.0,
+      "start": -14.0,
+      "end": 14.0,
+      "material": "drywall",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": 0.0,
+          "width": 1.1,
+          "tag": "hall_to_manager_office"
+        },
+        {
+          "kind": "breach",
+          "pos": 0.36,
+          "width": 1.4,
+          "breach_class": "soft_wall",
+          "material": "drywall"
+        }
+      ]
+    },
+    {
+      "story": 1,
+      "axis": "X",
+      "pos": 2.0,
+      "start": -19.0,
+      "end": 19.0,
+      "material": "drywall",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.25,
+          "width": 1.4,
+          "tag": "apartment_hall"
+        },
+        {
+          "kind": "breach",
+          "pos": 0.28,
+          "width": 1.4,
+          "breach_class": "soft_wall",
+          "material": "drywall"
+        }
+      ]
+    },
+    {
+      "story": -1,
+      "axis": "Y",
+      "pos": -13.6,
+      "start": 1.0,
+      "end": 14.0,
+      "material": "brick_ext",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.35,
+          "width": 1.0,
+          "tag": "cold_s_access"
+        },
+        {
+          "kind": "door",
+          "pos": 0.0,
+          "width": 1.1,
+          "tag": "stack_well_access"
+        },
+        {
+          "kind": "door",
+          "pos": 0.42,
+          "width": 1.0,
+          "tag": "cold_n_access"
+        }
+      ]
+    },
+    {
+      "story": -1,
+      "axis": "Y",
+      "pos": -16.4,
+      "start": 6.25,
+      "end": 12.95,
+      "material": "brick_ext",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": 0.0,
+          "width": 1.0,
+          "tag": "cold_w_access"
         }
       ]
     }
@@ -670,7 +674,7 @@
         -8.0,
         -14.0,
         7.0,
-        -3.0
+        6.0
       ],
       "role": "connector",
       "combat_range": "medium"

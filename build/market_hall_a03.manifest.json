@@ -1,0 +1,117 @@
+{
+  "kit_name": "Deli Counter",
+  "kit_version": "0.75.0",
+  "schema_version": "1.21.1",
+  "spec": "market_hall_a03.json",
+  "spec_sha256_16": "1a045e0a0162f381",
+  "built_utc": "2026-07-21T12:00:18.855050+00:00",
+  "outputs": [
+    "market_hall_a03.glb"
+  ],
+  "expected": {
+    "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
+    "bounds_min": [
+      -23.15,
+      -15.15,
+      -0.3
+    ],
+    "bounds_max": [
+      23.15,
+      15.15,
+      14.0
+    ],
+    "origin": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "story_height": 6.5,
+    "floor_elevations": [
+      0.0,
+      6.5
+    ],
+    "markers": [
+      {
+        "name": "LADDER_0",
+        "type": "ladder",
+        "pos": [
+          2.0,
+          -11.0,
+          6.5
+        ]
+      },
+      {
+        "name": "HATCH_2_-11",
+        "type": "hatch",
+        "pos": [
+          2.0,
+          -11.0,
+          13.0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_MAIN_W",
+        "type": "attacker_spawn",
+        "pos": [
+          -9.200000000000001,
+          -17.0,
+          0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_MAIN_E",
+        "type": "attacker_spawn",
+        "pos": [
+          9.200000000000001,
+          -17.0,
+          0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN",
+        "type": "defender_spawn",
+        "pos": [
+          -10.35,
+          7.5,
+          6.5
+        ]
+      },
+      {
+        "name": "OBJECTIVE_A",
+        "type": "objective",
+        "pos": [
+          13.799999999999999,
+          7.5,
+          6.5
+        ]
+      },
+      {
+        "name": "EXTRACTION_EXIT",
+        "type": "extraction",
+        "pos": [
+          0.0,
+          -17.0,
+          0
+        ]
+      },
+      {
+        "name": "COVER_HIGH",
+        "type": "cover_high",
+        "pos": [
+          0.0,
+          -6.0,
+          0
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_01",
+        "type": "camera_socket",
+        "pos": [
+          20.0,
+          -12.0,
+          5.5
+        ]
+      }
+    ]
+  }
+}

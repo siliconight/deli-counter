@@ -538,15 +538,15 @@ def corner_deli(name: str = "corner_deli_preset",
         {"story": 0, "axis": "Y", "pos": -8.0, "start": -14.0, "end": 14.0, "material": "drywall", "openings": [
             {"kind": "door", "pos": -0.4, "width": 1.1, "tag": "customer_to_counter"},
             {"kind": "breach", "pos": 0.38, "width": 1.4, "breach_class": "soft_wall", "material": "drywall"}]},
-        {"story": 0, "axis": "X", "pos": 7.0, "start": -14.0, "end": 14.0, "material": "drywall", "openings": [
-            {"kind": "door", "pos": 0.42, "width": 1.1, "tag": "kitchen_to_loading"},
-            {"kind": "window", "pos": -0.3, "width": 1.4, "sill": 1.1, "material": "glass"}]},
-        {"story": 0, "axis": "Y", "pos": -3.0, "start": -19.0, "end": 19.0, "material": "drywall", "openings": [
-            {"kind": "door", "pos": -0.05, "width": 1.2, "tag": "front_to_back"},
-            {"kind": "breach", "pos": 0.28, "width": 1.5, "breach_class": "soft_wall", "material": "drywall"}]},
+        # Coherence fix (layout_lint L10/L11): the old X@7 and Y@-3 partitions
+        # sat 1 m off the real room boundaries, so they bounded no rooms and
+        # their doors were dead. The true front/back divider is X@6 below; the
+        # kitchen<->loading door lives on it. market_aisles now covers the
+        # former unassigned centre (see rooms), so every wall is a real boundary.
         {"story": 0, "axis": "X", "pos": 6.0, "start": -19.0, "end": 19.0, "material": "drywall", "openings": [
             {"kind": "garage", "pos": 0.15, "width": 2.4, "height": 2.5, "tag": "stockroom_gate"},
-            {"kind": "door", "pos": -0.4, "width": 1.2, "tag": "office_stair_door"}]},
+            {"kind": "door", "pos": -0.4, "width": 1.2, "tag": "office_stair_door"},
+            {"kind": "door", "pos": 0.3095, "width": 1.1, "tag": "kitchen_to_loading"}]},
         {"story": 1, "axis": "Y", "pos": -2.0, "start": -14.0, "end": 14.0, "material": "drywall", "openings": [
             {"kind": "door", "pos": 0.0, "width": 1.1, "tag": "hall_to_manager_office"},
             {"kind": "breach", "pos": 0.36, "width": 1.4, "breach_class": "soft_wall", "material": "drywall"}]},
@@ -559,7 +559,7 @@ def corner_deli(name: str = "corner_deli_preset",
             {"story": -1, "axis": "X", "pos": 1.0, "start": -12.0, "end": 12.0, "material": "brick_ext", "openings": [
                 {"kind": "door", "pos": -0.35, "width": 1.1, "tag": "basement_corridor"},
                 {"kind": "breach", "pos": 0.3, "width": 1.4, "breach_class": "reinforceable", "material": "brick_ext", "reinforceable": True, "tag": "vault_side_breach"}]},
-            {"story": -1, "axis": "Y", "pos": 1.0, "start": -16.0, "end": 16.0, "material": "brick_ext", "openings": [
+            {"story": -1, "axis": "Y", "pos": 1.0, "start": -half_y, "end": half_y, "material": "brick_ext", "openings": [
                 {"kind": "door", "pos": 0.1, "width": 1.1, "tag": "cold_room_door"},
                 {"kind": "breach", "pos": -0.32, "width": 1.4, "breach_class": "reinforceable", "material": "brick_ext", "reinforceable": True}]},
         ]
@@ -614,7 +614,7 @@ def corner_deli(name: str = "corner_deli_preset",
     rooms = [
         {"id": "customer_floor", "story": 0, "bounds": [-19.0, -14.0, -8.0, -3.0], "role": "public_entry", "combat_range": "medium"},
         {"id": "deli_counter", "story": 0, "bounds": [-19.0, -3.0, -8.0, 6.0], "role": "objective_room", "objective": True, "combat_range": "close", "fortifiable": True},
-        {"id": "market_aisles", "story": 0, "bounds": [-8.0, -14.0, 7.0, -3.0], "role": "connector", "combat_range": "medium"},
+        {"id": "market_aisles", "story": 0, "bounds": [-8.0, -14.0, 7.0, 6.0], "role": "connector", "combat_range": "medium"},
         {"id": "kitchen", "story": 0, "bounds": [7.0, -14.0, 19.0, 6.0], "role": "connector", "combat_range": "close"},
         {"id": "stockroom_loading", "story": 0, "bounds": [-8.0, 6.0, 19.0, 14.0], "role": "public_entry", "combat_range": "long"},
         {"id": "stairwell", "story": 0, "bounds": [-19.0, 6.0, -8.0, 14.0], "role": "connector", "combat_range": "close"},
@@ -1262,10 +1262,10 @@ def suburban_safehouse(name: str = "suburban_safehouse_preset",
         {"story": 0, "axis": "Y", "pos": -1.0, "start": -hy, "end": hy, "material": "drywall", "openings": [{"kind": "door", "pos": -0.3, "width": 1.1}]},
         {"story": 0, "axis": "X", "pos": 2.0, "start": -hx, "end": -1.0, "material": "drywall", "openings": [{"kind": "door", "pos": 0.0, "width": 1.1}]},
         {"story": 1, "axis": "Y", "pos": -1.0, "start": -hy, "end": hy, "material": "drywall", "openings": [{"kind": "door", "pos": 0.3, "width": 1.1}]},
-        {"story": 1, "axis": "Y", "pos": 1.0, "start": 1.0, "end": hx, "material": "drywall", "openings": [{"kind": "door", "pos": 0.0, "width": 1.1}]},
+        {"story": 1, "axis": "Y", "pos": 1.0, "start": 1.0, "end": hy, "material": "drywall", "openings": [{"kind": "door", "pos": 0.0, "width": 1.1}]},
     ]
     if basement:
-        parts.append({"story": -1, "axis": "Y", "pos": 0.0, "start": -hx, "end": hx, "material": "concrete", "openings": [{"kind": "door", "pos": 0.0, "width": 1.1}]})
+        parts.append({"story": -1, "axis": "Y", "pos": 0.0, "start": -hy, "end": hy, "material": "concrete", "openings": [{"kind": "door", "pos": 0.0, "width": 1.1}]})
     spec["partitions"] = parts
     stair_lo = -1 if basement else 0
     spec["stairs"] = [{"x": 5.0, "y": 4.0, "from_story": stair_lo, "to_story": 1, "width": 1.0, "run": 3.5, "style": "switchback", "cut_slabs": True}]
@@ -1367,7 +1367,7 @@ def rowhome(name: str = "rowhome_preset",
     # one cross-partition per floor splitting front/back room
     parts = []
     for st in range(0, 3):
-        parts.append({"story": st, "axis": "X", "pos": 0.0, "start": -hx, "end": hy - 5.0, "material": "drywall", "openings": [{"kind": "door", "pos": -0.2, "width": 1.1}]})
+        parts.append({"story": st, "axis": "X", "pos": 0.0, "start": -hx, "end": hx, "material": "drywall", "openings": [{"kind": "door", "pos": -0.2, "width": 1.1}]})
     spec["partitions"] = parts
     # single rear stair spanning all floors
     stair_lo = -1 if basement else 0
@@ -1478,15 +1478,15 @@ def casino_tower(name: str = "casino_tower_preset",
     parts = [
         {"story": 0, "axis": "X", "pos": 8.0, "start": -hx, "end": hx, "material": "drywall", "openings": [
             {"kind": "door", "pos": -0.3, "width": 1.4}, {"kind": "door", "pos": 0.3, "width": 1.4}]},
-        {"story": 0, "axis": "Y", "pos": 10.0, "start": 8.0, "end": hx, "material": "metal", "openings": [
+        {"story": 0, "axis": "Y", "pos": 10.0, "start": 8.0, "end": hy, "material": "metal", "openings": [
             {"kind": "door", "pos": 0.0, "width": 1.1, "tag": "cage_door"}]},
         {"story": 1, "axis": "X", "pos": 0.0, "start": -hx, "end": hx, "material": "drywall", "openings": [
             {"kind": "door", "pos": -0.25, "width": 1.2}, {"kind": "door", "pos": 0.25, "width": 1.2}]},
-        {"story": 1, "axis": "Y", "pos": 0.0, "start": 0.0, "end": hx, "material": "metal", "openings": [
+        {"story": 1, "axis": "Y", "pos": 0.0, "start": 0.0, "end": hy, "material": "metal", "openings": [
             {"kind": "door", "pos": 0.0, "width": 1.4, "tag": "count_room_door"}]},
     ]
     if basement:
-        parts.append({"story": -1, "axis": "Y", "pos": 0.0, "start": -hx, "end": hx, "material": "concrete", "openings": [
+        parts.append({"story": -1, "axis": "Y", "pos": 0.0, "start": -hy, "end": hy, "material": "concrete", "openings": [
             {"kind": "breach", "pos": 0.0, "width": 1.4, "breach_class": "reinforceable", "material": "concrete", "reinforceable": True, "tag": "vault_breach"}]})
     spec["partitions"] = parts
     stair_lo = -1 if basement else 0
