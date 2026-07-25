@@ -185,6 +185,63 @@ def bounds_findings(spec):
     return fails
 
 
+def ladder_findings(spec):
+    """L14/L15: every ladder must be TRAVERSABLE, not just present.
+      L14 (FAIL): the through-hole a climbing body needs pokes past the slab
+                  footprint -- the climb dead-ends into the exterior shell
+                  (the ladder faces the wrong way for where it stands).
+      L15 (WARN): a partition on the story the climb surfaces into crosses
+                  the through-hole -- the climber tops out inside a wall.
+    Hole geometry comes from ladder_geom -- the SAME module the builder cuts
+    with (the partition_bounds pattern), so this linter can never disagree
+    with the shipped geometry."""
+    import ladder_geom
+    from partition_bounds import clamp_partition_span
+    fails, warns = [], []
+    fx, fy = spec.get("footprint_x"), spec.get("footprint_y")
+    if not fx or not fy:
+        return fails, warns
+    for i, ld in enumerate(spec.get("ladders", [])):
+        if not ld.get("cut_slabs", True):
+            continue
+        # Through-hole semantics only apply where the climb passes a slab:
+        # interior/shaft ladders. An exterior_wall or platform ladder climbs
+        # the outside face and tops out at an edge, not through a cut.
+        if (ld.get("placement_mode") or "interior") not in ("interior", "shaft"):
+            continue
+        x, y = ld.get("x", 0.0), ld.get("y", 0.0)
+        w = ld.get("width", 0.5)
+        facing = ld.get("facing", "S")
+        over = ladder_geom.hole_overshoot(x, y, w, facing, fx, fy)
+        if over > 0.05:
+            fails.append(
+                f"L14 ladder through-hole out of bounds: ladder #{i} at "
+                f"({x:g},{y:g}) facing {facing} needs a climb hole that "
+                f"overshoots the footprint by {over:.2f} m -- the climb "
+                f"dead-ends into the exterior shell (flip the facing or move "
+                f"the ladder off the wall)")
+        for s in range(int(ld.get("from_story", 0)),
+                       int(ld.get("to_story", 1))):
+            top = s + 1
+            for p in spec.get("partitions", []):
+                if p.get("story") != top:
+                    continue
+                ps, pe = p.get("start"), p.get("end")
+                if ps is None or pe is None:
+                    continue
+                lo, hi = clamp_partition_span(ps, pe, p.get("axis", "X"),
+                                              fx, fy)
+                if ladder_geom.partition_blocks_hole(
+                        p.get("axis", "X"), p.get("pos", 0.0), lo, hi,
+                        spec.get("wall_thick", 0.35), x, y, w, facing):
+                    warns.append(
+                        f"L15 ladder climb surfaces into a wall: ladder #{i} "
+                        f"at ({x:g},{y:g}) tops out on story {top} where a "
+                        f"{p.get('axis')}-partition at pos={p.get('pos')} "
+                        f"crosses its through-hole")
+    return fails, warns
+
+
 def structural_findings(spec):
     """Coherence rules that apply to EVERY building (any mode):
       L10 dead opening  -- an interior door/garage/breach must connect two
@@ -340,6 +397,9 @@ def lint_spec(spec, name):
     fails += sf
     warns += sw
     warns += bounds_findings(spec)          # L13 partition-in-footprint (advisory)
+    lf14, lw15 = ladder_findings(spec)      # L14 hole-in-footprint / L15 blocked
+    fails += lf14
+    warns += lw15
     fails += reachability_findings(spec)    # L12 sealed/unreachable rooms (all modes)
     if spec.get("mode") != "pvp_heist":
         return name, fails, warns

@@ -48,6 +48,8 @@ from spec_types import (
     Ladder, Ramp, VaultLedge,
 )
 from partition_bounds import clamp_partition_span
+import ladder_geom
+import skin_style
 from rarity import resolve_rarity
 import interactives
 import roofs
@@ -508,11 +510,18 @@ class _Builder:
             rot = 0 if axis == 0 else 90
         return facing, rot, story
 
-    def _record_wall_slot(self, vname, c, sz, axis, role, size_mod, ref=None):
+    def _record_wall_slot(self, vname, c, sz, axis, role, size_mod, ref=None,
+                          material=None):
         wall_name = vname.rsplit("_seg", 1)[0]
         facing, rot_y, story = self._slot_orient(wall_name, axis)
         typ = self._slot_typename(role, size_mod)
         dims = [round(sz[0], 4), round(sz[1], 4), round(sz[2], 4)]
+        # skin style follows the surface MATERIAL (skin_style.py) so the art
+        # pass can vary skins with intent; the material rides on the slot for
+        # Zoo/Pixelcoat.
+        mat = material or self.s.default_material
+        style = skin_style.style_for(material, self._mat_style,
+                                     self.s.default_material)
         # Greybox wall REMAINDERS (wallEnd) come in many sizes but share one
         # ref -- a single fixed mesh can't fill them. They are plain solid
         # filler (no opening, never themed), so the module is authored as a
@@ -522,7 +531,8 @@ class _Builder:
         # reproduces the baked shell 1:1.)
         scale = dims[:] if size_mod == "end" else [1.0, 1.0, 1.0]
         self.slots.append({
-            "slot_id": vname, "role": role, "size_mod": size_mod, "style": 1,
+            "slot_id": vname, "role": role, "size_mod": size_mod,
+            "style": style, "material": mat,
             "current_ref": ref or f"{typ}_greybox_01", "kit_axis": "theme",
             "wall": wall_name, "story": story, "facing": facing,
             "transform": {"translation": [round(c[0], 4), round(c[1], 4),
@@ -532,11 +542,15 @@ class _Builder:
                     "pivot": "center", "openings": [], "collision": "convex"},
         })
 
-    def _record_opening_slot(self, vb, center, size, axis, h, ref=None):
+    def _record_opening_slot(self, vb, center, size, axis, h, ref=None,
+                             material=None):
         """One slot for the WHOLE opening (the swap unit), carrying aperture
         dims so a themed doorway/window prefab can replace its frame 1:1."""
         facing, rot_y, story = self._slot_orient(vb, axis)
         kind = h["kind"]
+        mat = material or self.s.default_material
+        style = skin_style.style_for(material, self._mat_style,
+                                     self.s.default_material)
         role = {"door": "doorway", "garage": "doorway", "window": "window",
                 "breach": "breach", "vault": "vault_door",
                 "teller": "teller_line", "safe_deposit": "safe_deposit_boxes"}.get(kind, "doorway")
@@ -548,7 +562,8 @@ class _Builder:
             oc = (center[0], center[1] + u, center[2])
             wall_thick = size[0]
         slot = {
-            "slot_id": vb, "role": role, "size_mod": "full", "style": 1,
+            "slot_id": vb, "role": role, "size_mod": "full",
+            "style": style, "material": mat,
             "current_ref": ref or f"{role}_greybox_01", "kit_axis": "theme",
             "wall": vb.rsplit("_open", 1)[0], "story": story, "facing": facing,
             "transform": {"translation": [round(oc[0], 4), round(oc[1], 4),
@@ -603,7 +618,7 @@ class _Builder:
                 _, rot_y, _ = self._slot_orient(wall_name, axis)
                 self._instance_module(path, vname, c, rot_y, role=role)
                 self._record_wall_slot(vname, c, sz, axis, role, size_mod,
-                                       ref=stem)
+                                       ref=stem, material=material)
                 self._cover(role, kit)
                 return
         if visual:
@@ -615,7 +630,8 @@ class _Builder:
                 # convention _exterior already uses (suffix stripped on import).
                 self._record_surface(cname, material)
         if record_slot and role:
-            self._record_wall_slot(vname, c, sz, axis, role, size_mod)
+            self._record_wall_slot(vname, c, sz, axis, role, size_mod,
+                                   material=material)
             self._cover(role, "generated")
 
     def _wall_span(self, vbase, cbase, center, size, axis, a, b, k, material):
@@ -676,12 +692,14 @@ class _Builder:
             else:
                 oc = (center[0], center[1] + u, center[2])
             self._instance_module(path, vb, oc, rot_y, role=role)
-            self._record_opening_slot(vb, center, size, axis, h, ref=stem)
+            self._record_opening_slot(vb, center, size, axis, h, ref=stem,
+                                      material=material)
             self._cover(role, kit)
             return
         # one swap slot for the whole opening (the frame pieces below are its
         # geometry, not separate slots).
-        self._record_opening_slot(vb, center, size, axis, h)
+        self._record_opening_slot(vb, center, size, axis, h,
+                                  material=material)
         self._cover(role, "generated")
 
         lintel_h = wall_top - open_top
@@ -868,6 +886,10 @@ class _Builder:
         self.MARKERS = self._col("MARKERS")
         self.surface_roles = {}   # node name -> authoritative surface role
         self.slots = []           # art-pass swap slots (one per swappable module)
+        # material -> skin style (1-based spec.materials order): the axis
+        # Zoo/Pixelcoat vary skins on. See skin_style.py.
+        self._mat_style = skin_style.material_styles(
+            [m.id for m in self.s.materials])
         self._coverage = {}       # (role, kit|'generated') -> count, for intel
         self.gameplay = {"mode": self.s.mode, "markers": [], "rooms": [],
                          "vertical_links": [], "openings": [],
@@ -1479,9 +1501,24 @@ class _Builder:
                     self._box(f"ladder{li}_rung_{s}_{r}", cc, cs, self.VISUAL,
                               role="ladder")
                 if ld.cut_slabs:
+                    # The hole a BODY climbs through, biased onto the APPROACH
+                    # side -- geometry shared with the L14/L15 linter and the
+                    # unit tests via ladder_geom (single source of truth, the
+                    # partition_bounds pattern).
+                    hx, hy, hsx, hsy = ladder_geom.through_hole(
+                        ld.x, ld.y, ld.width, ld.facing)
                     self.s.slab_holes.append(SlabHole(
-                        story=s + 1, x=ld.x, y=ld.y,
-                        size_x=ld.width + 0.6, size_y=ld.width + 0.6))
+                        story=s + 1, x=hx, y=hy, size_x=hsx, size_y=hsy))
+            # COLLISION: one thin plane at the ladder face for the full climb.
+            # A ladder is SOLID from both sides -- you can never walk through
+            # it; only the approach-side climb volume makes it traversable.
+            # Thin so the climbing capsule, held off the face by the
+            # controller, never scrapes it. Geometry from ladder_geom.
+            pcx, pcy, pcz, psx, psy, psz = ladder_geom.collision_plane(
+                ld.x, ld.y, ld.width, ld.facing,
+                ld.from_story * H, ld.to_story * H)
+            self._col_box(f"ladder{li}_plane", (pcx, pcy, pcz),
+                          (psx, psy, psz))
             # climb-volume anchor: the marker + the climb metadata the post-import
             # needs to build an Area3D the player climbs (height, footprint, facing).
             zc = ld.from_story * H

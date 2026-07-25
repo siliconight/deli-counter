@@ -33,6 +33,13 @@ from tscn_export import _godot_transform, _ref_path
 
 
 # --- Deli Counter's naming law (mirrors zoo/kit.py; DC owns the convention) ---
+# Roles whose modules span the full story height (they cover the slab edge)
+# and therefore carry a top cap in the story plane. See the sink note in
+# write_themed_tscn.
+_SLAB_CAP_SINK_ROLES = {"wall", "doorway", "window", "breach"}
+SLAB_CAP_SINK = 0.004   # metres; > z-fight gate tolerance, < perception
+
+
 def slot_typename(role: str, size_mod: str) -> str:
     if role == "wall" and size_mod == "end":
         return "wallEnd"
@@ -60,7 +67,12 @@ def _default_stem_state(slot: dict) -> str | None:
 
 
 def resolve_themed_stem(slot: dict, theme: str, style: int):
-    """Return (stem, is_scaled_unit) for a slot, or (None, False) if unroleable."""
+    """Return (stem, is_scaled_unit) for a slot, or (None, False) if unroleable.
+
+    The slot's OWN style (material-driven, skin_style.py) wins over the
+    compose-level style, which acts as the fallback for slots that carry
+    none -- so skin variety is decided where the material is known (DC slot
+    emission), not flattened by one global flag."""
     role = slot.get("role")
     fit = slot.get("fit", {})
     dims = fit.get("dims")
@@ -69,7 +81,9 @@ def resolve_themed_stem(slot: dict, theme: str, style: int):
     typ = slot_typename(role, slot.get("size_mod"))
     exact = typ != "wallEnd"
     width_cm = int(round(dims[0] * 100)) if exact else None
-    stem = module_stem(typ, theme, style, width_cm, _default_stem_state(slot))
+    eff_style = int(slot.get("style") or style or 1)
+    stem = module_stem(typ, theme, eff_style, width_cm,
+                       _default_stem_state(slot))
     return stem, (not exact)
 
 
@@ -79,16 +93,38 @@ def _themed_available(library_dir: str, stem: str) -> bool:
     return os.path.exists(os.path.join(library_dir, stem + ".glb"))
 
 
+def resolve_slot_ref(slot, theme, style, library_dir):
+    """THE resolution every consumer must share: the styled module if built,
+    else the style-01 module of the same type/width (partial kits degrade to
+    fewer skins, never to greybox), else None (true greybox fallback).
+    Returns (stem_or_None, is_scaled_unit, style_fell_back).
+
+    The composer (write_themed_tscn), the base-strip (themed_slot_ids) and
+    the placement gate MUST all resolve through here -- when they disagreed,
+    fallback modules were placed over unstripped greybox walls and the whole
+    building z-fought (caught by the z-fight gate, 0.88.0)."""
+    stem, scaled = resolve_themed_stem(slot, theme, style)
+    if stem and _themed_available(library_dir, stem):
+        return stem, scaled, False
+    if stem and int(slot.get("style") or 1) != 1:
+        stem01, scaled01 = resolve_themed_stem(dict(slot, style=1), theme, 1)
+        if stem01 and _themed_available(library_dir, stem01):
+            return stem01, scaled01, True
+    return None, False, False
+
+
 def themed_slot_ids(slots, theme, style, library_dir):
     """The slot_ids that resolve to an AVAILABLE themed module (not a greybox
     fallback). These are exactly the slots whose greybox visual should be
     stripped from the base -- the fallback slots keep their greybox geometry in
     the shell so the package stays closed (no dangling ref to an unbundled
-    greybox module) and the building stays fully visible (progressive art)."""
+    greybox module) and the building stays fully visible (progressive art).
+    Uses resolve_slot_ref, so a style-01 fallback slot IS themed and IS
+    stripped -- the strip can never disagree with the composer."""
     out = []
     for sl in slots:
-        stem, _ = resolve_themed_stem(sl, theme, style)
-        if stem and _themed_available(library_dir, stem) and sl.get("slot_id"):
+        stem, _, _ = resolve_slot_ref(sl, theme, style, library_dir)
+        if stem and sl.get("slot_id"):
             out.append(sl.get("slot_id"))
     return out
 
@@ -228,12 +264,16 @@ def write_themed_tscn(slots, building_id, out_path, *, theme, style=1,
     # When a base shell is present, a greybox-fallback slot is NOT re-emitted as
     # an external ref -- its geometry already rides in the base (the base strip
     # is told to keep exactly these slots), so the package stays closed.
+    style_fell_back = 0
     for sl in slots:
-        stem, _scaled = resolve_themed_stem(sl, theme, style)
-        if stem and _themed_available(library_dir, stem):
+        stem, _scaled, fell = resolve_slot_ref(sl, theme, style, library_dir)
+        if stem:
             resolved_refs[id(sl)] = stem
             themed += 1
-        elif base_res:
+            if fell:
+                style_fell_back += 1
+            continue
+        if base_res:
             resolved_refs[id(sl)] = None       # kept in the greybox base
             skipped_fallback += 1
         else:
@@ -271,6 +311,18 @@ def write_themed_tscn(slots, building_id, out_path, *, theme, style=1,
         name = sl.get("slot_id") or ref
         tf = sl.get("transform", {})
         rot = tf.get("rot_y")
+        tr = tf.get("translation")
+        # Wall-family modules are authored to the FULL story height so they
+        # cover the slab edge, which puts their up-facing top cap exactly in
+        # the story plane -- coplanar with the slab's top face. Grey-on-grey
+        # this is invisible; themed-on-grey it z-fights (flickering stripes
+        # along wall lines on the floor above). Sink these modules by a few
+        # millimetres: imperceptible to the eye, decisive for the depth
+        # buffer. Free-standing fixture roles (vault_door, teller_line, ...)
+        # never reach the story plane and stay untouched, as does the roof
+        # (an exact slab swap).
+        if tr and sl.get("role") in _SLAB_CAP_SINK_ROLES:
+            tr = [tr[0], tr[1], tr[2] - SLAB_CAP_SINK]
         if gb_per is not None:
             ge = _slot_extent(gb_per, sl.get("slot_id", ""))
             me = _glb_extent(os.path.join(library_dir, ref + ".glb"))
@@ -279,7 +331,7 @@ def write_themed_tscn(slots, building_id, out_path, *, theme, style=1,
                 if fit != (tf.get("rot_y") or 0):
                     refit += 1
                 rot = fit
-        xform = _godot_transform(tf.get("translation"), rot, tf.get("scale"))
+        xform = _godot_transform(tr, rot, tf.get("scale"))
         out.append(f'[node name="{name}" parent="." '
                    f'instance=ExtResource("{ids[ref]}")]')
         out.append(f"transform = {xform}")
@@ -291,6 +343,7 @@ def write_themed_tscn(slots, building_id, out_path, *, theme, style=1,
                       "distinct_modules": len(order), "slots": len(slots),
                       "greybox_base": bool(base_res), "refit": refit,
                       "skipped_fallback_kept_in_base": skipped_fallback,
+                      "style_fallback_to_01": style_fell_back,
                       "fit_to_greybox": gb_per is not None}
 
 

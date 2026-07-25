@@ -24,6 +24,14 @@ def run(args):
 
 def main():
     rc = 0
+    print("== fast unit suites (pure geometry contracts) ==")
+    # The bpy-free sources of truth the builder shares with its guards:
+    # partition clamp, z-fight gate, ladder bake + ladder traversal geometry.
+    # Sub-second; keeps the contracts and the gate in one place.
+    rc |= run(["-m", "pytest", "-q",
+               "test_partition_bounds.py", "test_zfight_gate.py",
+               "test_ladder_bake.py", "test_ladder_geom.py",
+               "test_skin_style.py"])
     print("== validating specs ==")
     rc |= run(["validate.py", "--all"])
     print("== auditing spec content coherence ==")

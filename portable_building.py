@@ -40,6 +40,111 @@ def _godot_pos(p):
     return bx, bz, -by  # same mapping tscn_export uses for translation
 
 
+def _ladder_climb_nodes(gameplay: dict):
+    """Bake the CLIMB CONTRACT for every ladder into the composed scene
+    (docs/LADDER_CLIMB_CONTRACT.md). DC's gameplay export knows each ladder's
+    base anchor, climb height, clear width and facing -- but a bare point
+    marker is not climbable. This emits, per ladder:
+
+        Ladders/Ladder_<id>   Area3D, groups ["ladder_area3d", "dc_ladder"],
+                              positioned at the base anchor, rotated so the
+                              node's +Z axis points at the APPROACH side (the
+                              face a climber mounts from) -- the community
+                              Source-style convention, so third-party climb
+                              controllers work against DC packages unmodified.
+          CollisionShape3D    BoxShape3D spanning the climbable volume: the
+                              full climb height (plus mount headroom) and the
+                              ladder's width (plus catch margin), protruding
+                              ~0.8 m onto the approach side.
+          TopOfLadder         Node3D at the step-off height, for controllers
+                              to detect top-mounting/dismounting.
+        metadata: climb_height, facing.
+
+    There is NO state here -- unlike a door, a ladder is pure geometry plus
+    intent, so the package stays a plain content drop-in; movement lives in
+    whatever player controller the host game (or LF's walk preview) runs.
+
+    Returns (sub_resources_text, nodes_text) -- shapes must be spliced in
+    BEFORE the first [node] section (tscn parses sequentially)."""
+    ladders = [m for m in (gameplay.get("markers") or [])
+               if m.get("type") == "ladder"]
+    if not ladders:
+        return "", ""
+    # +Z of the area must point at the approach side. DC's marker `facing` is
+    # the direction the rungs face (the approach direction). Row-major basis
+    # of a yaw that maps local +Z onto that direction, in Godot Y-up space
+    # (spec (x,y,z) -> godot (x, z, -y), so spec N=+y -> godot -z).
+    basis = {"S": "1, 0, 0, 0, 1, 0, 0, 0, 1",
+             "E": "0, 0, 1, 0, 1, 0, -1, 0, 0",
+             "N": "-1, 0, 0, 0, 1, 0, 0, 0, -1",
+             "W": "0, 0, -1, 0, 1, 0, 1, 0, 0"}
+    subs, nodes = [], []
+    nodes.append('[node name="Ladders" type="Node3D" parent="."]')
+    nodes.append("")
+    for i, m in enumerate(ladders):
+        h = float(m.get("climb_height", 3.0))
+        w = float(m.get("width", 0.5))
+        facing = str(m.get("facing", "S")).upper()
+        gx, gy, gz = _godot_pos([m.get("x", 0.0), m.get("y", 0.0),
+                                 m.get("z", 0.0)])
+        sid = f"LadderClimbBox_{i}"
+        # width + catch margin; climb height + mount headroom; 0.8 deep on
+        # the approach side (thin areas are glitchy to catch, per the
+        # Source-style reference rig).
+        subs.append(f'[sub_resource type="BoxShape3D" id="{sid}"]')
+        subs.append(f"size = Vector3({round(w + 0.6, 3)}, {round(h + 1.0, 3)}"
+                    f", 0.8)")
+        subs.append("")
+        name = re.sub(r"[^A-Za-z0-9_]", "_",
+                      str(m.get("id") or m.get("name") or f"ladder_{i}"))
+        b = basis.get(facing, basis["S"])
+        nodes.append(f'[node name="Ladder_{name}" type="Area3D" '
+                     f'parent="Ladders" groups=["ladder_area3d", "dc_ladder"]]')
+        nodes.append(f"transform = Transform3D({b}, {round(gx, 4)}, "
+                     f"{round(gy, 4)}, {round(gz, 4)})")
+        nodes.append(f"metadata/climb_height = {round(h, 3)}")
+        nodes.append(f'metadata/facing = "{facing}"')
+        nodes.append("")
+        nodes.append(f'[node name="CollisionShape3D" type="CollisionShape3D" '
+                     f'parent="Ladders/Ladder_{name}"]')
+        # box centre: half the climb height up, protruding onto the approach
+        # side (+Z, local) so the volume starts at the ladder face.
+        nodes.append(f"transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, "
+                     f"{round(h / 2.0, 4)}, 0.45)")
+        nodes.append(f'shape = SubResource("{sid}")')
+        nodes.append("")
+        nodes.append(f'[node name="TopOfLadder" type="Node3D" '
+                     f'parent="Ladders/Ladder_{name}"]')
+        nodes.append(f"transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, "
+                     f"{round(h - 0.2, 4)}, 0)")
+        nodes.append("")
+    return "\n".join(subs), "\n".join(nodes)
+
+
+def splice_ladder_contract(tscn_path, gameplay):
+    """Insert the ladder climb contract into a written scene: sub_resources
+    before the first [node] block (tscn parses sequentially), climb nodes
+    appended, load_steps bumped to match. No-op when the level has no
+    ladders."""
+    subs, nodes = _ladder_climb_nodes(gameplay)
+    if not nodes:
+        return 0
+    text = open(tscn_path, encoding="utf-8").read()
+    n_res = subs.count("[sub_resource")
+    m = re.search(r"\[gd_scene load_steps=(\d+)", text)
+    if m:
+        text = text.replace(m.group(0),
+                            f"[gd_scene load_steps={int(m.group(1)) + n_res}",
+                            1)
+    first_node = text.find("\n[node ")
+    if first_node < 0:
+        return 0
+    text = (text[:first_node] + "\n" + subs + text[first_node:]
+            + "\n" + nodes + "\n")
+    open(tscn_path, "w", encoding="utf-8").write(text)
+    return n_res
+
+
 def _marker_nodes(gameplay: dict) -> str:
     """Emit plain Node3D marker nodes grouped by type. Recipient game code does
     get_tree().get_nodes_in_group('attacker_spawn') etc. -- no addon."""
@@ -107,17 +212,25 @@ _ABS_START = re.compile(r'^(?:[A-Za-z]:[\\/]|/(?:home|Users|mnt|tmp|var|private|
 _REF = re.compile(r'(?:path=|preload\(|load\()\s*["\']([^"\']+)["\']')
 
 
-def strip_greybox_base(src_glb, out_glb, slot_ids):
+def strip_greybox_base(src_glb, out_glb, slot_ids, drop_nodes=()):
     """ADDITIVE base: keep the whole coherent greybox EXCEPT the swappable-slot
     surfaces that themed modules replace. Every collider stays; floors, canopy,
     pumps, aisles, counters -- all non-slot geometry -- stay greybox-visible. A
     visual is dropped ONLY if its node name carries a themed slot_id (a wall /
-    opening / roof that a zoo module is instanced onto), so we don't get double
-    walls. This is the baked 'theme swap': add themed art to the slots, keep the
-    building deli_counter already made."""
+    opening that a zoo module is instanced onto), so we don't get double walls.
+    This is the baked 'theme swap': add themed art to the slots, keep the
+    building deli_counter already made.
+
+    drop_nodes: extra visual node NAMES to drop -- slots whose greybox surface
+    is not name-linked to the slot id. The roof slot is the case in point: its
+    greybox surface is the top slab ('slab_<n>'), which never carries
+    'roof_footprint', so the name test above can't find it and the roof module
+    would cohabit the slab's exact volume -- a full-footprint z-fight (the
+    flickering-ceiling bug). build_package resolves these geometrically."""
     from pygltflib import GLTF2
     g = GLTF2().load(src_glb)
     sids = [s.lower() for s in slot_ids if s]
+    dropset = set(drop_nodes or ())
     kept_col = kept_vis = dropped = 0
     for n in g.nodes:
         if n.mesh is None:
@@ -125,14 +238,45 @@ def strip_greybox_base(src_glb, out_glb, slot_ids):
         low = (n.name or "").lower()
         if "colonly" in low or "convcolonly" in low:
             kept_col += 1                       # never touch collision/nav
-        elif any(sid in low for sid in sids):
+        elif any(sid in low for sid in sids) or (n.name or "") in dropset:
             n.mesh = None                       # themed module covers this slot
             dropped += 1
         else:
             kept_vis += 1                       # floors, canopy, pumps, props
     g.save(out_glb)
     return {"kept_colliders": kept_col, "kept_greybox_visuals": kept_vis,
-            "dropped_slot_visuals": dropped}
+            "dropped_slot_visuals": dropped,
+            "dropped_covered_nodes": sorted(dropset)}
+
+
+def roof_covered_nodes(greybox_glb, slots, themed_ids):
+    """Visual greybox nodes an exact ROOF SWAP replaces, found geometrically.
+
+    A roof slot's fit box (centre + dims, spec Z-up) equals the top slab it
+    dresses; the slab node's name ('slab_<n>') carries no slot id, so the
+    name-based strip can't see it. Convert the slot box to glb Y-up
+    ((x,y,z) -> (x,z,-y)) and match any visual node whose world AABB equals it
+    within 5 cm. Only slots that actually GET a themed module count -- a
+    greybox-fallback roof keeps its slab."""
+    themed = set(themed_ids or ())
+    roofs = [s for s in slots if s.get("role") == "roof"
+             and s.get("slot_id") in themed]
+    if not roofs:
+        return []
+    boxes = _glb_visual_bboxes(greybox_glb)
+    out = []
+    for s in roofs:
+        t = (s.get("transform") or {}).get("translation") or [0.0, 0.0, 0.0]
+        d = (s.get("fit") or {}).get("dims") or [0.0, 0.0, 0.0]
+        c = (t[0], t[2], -t[1])
+        dd = (d[0], d[2], d[1])
+        for nm, (lo, hi) in boxes.items():
+            cc = [(lo[i] + hi[i]) / 2.0 for i in range(3)]
+            nd = [hi[i] - lo[i] for i in range(3)]
+            if all(abs(cc[i] - c[i]) < 0.05 for i in range(3)) and \
+                    all(abs(nd[i] - dd[i]) < 0.05 for i in range(3)):
+                out.append(nm)
+    return sorted(set(out))
 
 
 def _glb_visual_bboxes(glb_path):
@@ -230,7 +374,10 @@ def verify_placement(greybox_glb, slots, module_dir, theme, style, tol=0.25):
         sid = s.get("slot_id")
         if not sid:
             continue
-        stem, _scaled = themed_tscn.resolve_themed_stem(s, theme, style)
+        # shared resolution (incl. the style-01 fallback) so the gate checks
+        # EXACTLY the modules the composer places -- never a subset.
+        stem, _scaled, _fell = themed_tscn.resolve_slot_ref(
+            s, theme, style, module_dir)
         if not stem:
             continue
         mp = os.path.join(module_dir, stem + ".glb")
@@ -272,8 +419,37 @@ def verify_placement(greybox_glb, slots, module_dir, theme, style, tol=0.25):
             "ok": not mismatches}
 
 
+def splice_layer_instance(tscn_path, res_path, node_name):
+    """Instance an extra CONTENT LAYER (dressing props, light fixtures) at
+    identity in a written scene: ext_resource spliced before the first node
+    (tscn parses sequentially), instance node appended, load_steps bumped.
+    Layers are authored in the same building space as the greybox, so
+    identity placement is exact by construction."""
+    text = open(tscn_path, encoding="utf-8").read()
+    rid = f"L_{node_name}"
+    m = re.search(r"\[gd_scene load_steps=(\d+)", text)
+    if m:
+        text = text.replace(m.group(0),
+                            f"[gd_scene load_steps={int(m.group(1)) + 1}", 1)
+    # ext_resources must precede sub_resources AND nodes in a tscn --
+    # splice before whichever comes first.
+    cand = [i for i in (text.find("\n[sub_resource"),
+                        text.find("\n[node ")) if i >= 0]
+    if not cand:
+        return False
+    first_node = min(cand)
+    ext = (f'\n[ext_resource type="PackedScene" path="{res_path}" '
+           f'id="{rid}"]\n')
+    node = (f'\n[node name="{node_name}" parent="." '
+            f'instance=ExtResource("{rid}")]\n')
+    text = text[:first_node] + ext + text[first_node:] + node
+    open(tscn_path, "w", encoding="utf-8").write(text)
+    return True
+
+
 def build_package(slots_path, gameplay_path, module_dir, out_dir, *,
-                  theme, style=1, building_id=None, greybox_glb=None):
+                  theme, style=1, building_id=None, greybox_glb=None,
+                  dressing_glb=None, fixtures_glb=None):
     if os.path.exists(out_dir):
         shutil.rmtree(out_dir)
     art = os.path.join(out_dir, "art", "zoo")
@@ -293,9 +469,11 @@ def build_package(slots_path, gameplay_path, module_dir, out_dir, *,
         # building stays fully visible even when the kit is partial.
         slot_ids = themed_tscn.themed_slot_ids(
             slots.get("slots", []), theme, style, module_dir)
+        covered = roof_covered_nodes(greybox_glb, slots.get("slots", []),
+                                     slot_ids)
         base_strip = strip_greybox_base(greybox_glb,
                                         os.path.join(out_dir, base_name),
-                                        slot_ids)
+                                        slot_ids, drop_nodes=covered)
         base_res = f"res://{base_name}"
 
     # 1. themed building .tscn (res://art/zoo refs), via the validated generator.
@@ -315,6 +493,26 @@ def build_package(slots_path, gameplay_path, module_dir, out_dir, *,
     if marker_block.strip():
         with open(tscn_path, "a", encoding="utf-8") as fh:
             fh.write("\n" + marker_block + "\n")
+    # 2b. ladder climb contract: an Area3D volume + TopOfLadder per ladder,
+    # so the package is climbable by any Source-style controller
+    # (docs/LADDER_CLIMB_CONTRACT.md).
+    ladder_shapes = splice_ladder_contract(tscn_path, gameplay)
+    # 2c. content LAYERS the art pipeline builds alongside the kit: the
+    # DRESSING pass (props: counters, shelving, signage) and the FIXTURES
+    # pass (light fixtures carrying LuxEmit markers -- Lux's runtime spawner
+    # turns them into placed lights). Without these the composed building
+    # is skinned architecture with empty rooms; with them it is the level.
+    layers = {}
+    for src, sub, node in ((dressing_glb, "dressing", "Dressing"),
+                           (fixtures_glb, "fixtures", "Fixtures")):
+        if not (src and os.path.exists(src)):
+            continue
+        ldir = os.path.join(out_dir, "art", sub)
+        os.makedirs(ldir, exist_ok=True)
+        fname = os.path.basename(src)
+        shutil.copy2(src, os.path.join(ldir, fname))
+        if splice_layer_instance(tscn_path, f"res://art/{sub}/{fname}", node):
+            layers[sub] = fname
 
     # 3. bundle the referenced module glbs into art/zoo/.
     refs = set(re.findall(r'path="res://art/zoo/([^"]+)"',
@@ -369,14 +567,29 @@ def build_package(slots_path, gameplay_path, module_dir, out_dir, *,
         placement = verify_placement(greybox_glb, slots.get("slots", []),
                                      module_dir, theme, style)
 
+    # Z-FIGHT GATE: no two opaque surfaces in the composed result may share a
+    # plane facing the same way (coplanar overlap flickers as the camera
+    # moves). This is the check that catches a roof module cohabiting the slab
+    # or a wall cap in the story plane BEFORE the package ships.
+    zfight = None
+    try:
+        import zfight_gate
+        zfight = zfight_gate.check_package(out_dir, scene_name=f"{bid}.tscn")
+    except Exception as ex:  # gate must report, never crash the compose
+        zfight = {"ok": False, "error": f"gate failed to run: {ex}"}
+
     manifest = {
         "schema": "portable_building.v0.1", "building_id": bid, "theme": theme,
         "themed_modules": stats["themed"], "greybox_fallback": stats["greybox_fallback"],
+        "style_fallback_to_01": stats.get("style_fallback_to_01", 0),
         "bundled_modules": bundled, "missing_modules": missing,
         "markers_baked": len(gameplay.get("markers") or []),
+        "ladder_climb_volumes": ladder_shapes,
+        "content_layers": layers,
         "greybox_base": base_strip,
         "walkable": bool(base_strip),   # floors present -> something to stand on
         "placement_check": placement,   # visual-vs-collision agreement
+        "zfight_check": zfight,         # coplanar-surface (flicker) gate
         "instancing": instancing,
         "closure": report,
     }

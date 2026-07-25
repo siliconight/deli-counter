@@ -15,9 +15,11 @@ ROOF_SLOT_ROLE = "roof"
 GREYBOX_REF = "roof_greybox_01"
 
 
-def _slot(sid, story, cx, cy, cz, sx, sy, ft, room=None):
+def _slot(sid, story, cx, cy, cz, sx, sy, ft, room=None, style=1,
+          material=None):
     return {
-        "slot_id": sid, "role": ROOF_SLOT_ROLE, "size_mod": "full", "style": 1,
+        "slot_id": sid, "role": ROOF_SLOT_ROLE, "size_mod": "full",
+        "style": style, "material": material,
         "current_ref": GREYBOX_REF, "kit_axis": "theme",
         "wall": None, "story": story, "facing": "up", "room": room,
         "transform": {"translation": [round(cx, 4), round(cy, 4), round(cz, 4)],
@@ -39,6 +41,13 @@ def roof_slots(spec, story, cz, ft):
     "per_room"  -> one slot per top-story room with room.roofed (open-air rooms
                    opt out).
     """
+    # roof skin style follows the spec's default material (skin_style.py) --
+    # same axis every other slot varies on.
+    import skin_style
+    mat = getattr(spec, "default_material", None)
+    mapping = skin_style.material_styles(
+        [m.id for m in getattr(spec, "materials", [])])
+    style = skin_style.style_for(mat, mapping, mat)
     if getattr(spec, "roof_mode", "footprint") == "per_room":
         out = []
         for r in spec.rooms:
@@ -46,7 +55,9 @@ def roof_slots(spec, story, cz, ft):
                 b = r.bounds
                 out.append(_slot(f"roof_{r.id}", story,
                                  (b[0] + b[2]) / 2.0, (b[1] + b[3]) / 2.0, cz,
-                                 b[2] - b[0], b[3] - b[1], ft, room=r.id))
+                                 b[2] - b[0], b[3] - b[1], ft, room=r.id,
+                                 style=style, material=mat))
         return out
     return [_slot("roof_footprint", story, 0.0, 0.0, cz,
-                  spec.footprint_x, spec.footprint_y, ft)]
+                  spec.footprint_x, spec.footprint_y, ft,
+                  style=style, material=mat)]
