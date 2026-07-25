@@ -578,6 +578,20 @@ def build_package(slots_path, gameplay_path, module_dir, out_dir, *,
     except Exception as ex:  # gate must report, never crash the compose
         zfight = {"ok": False, "error": f"gate failed to run: {ex}"}
 
+    # CIRCULATION GATE: dressing props must keep ladders mountable, doorways
+    # passable and stair footprints clear (circulation.py -- the volumes are
+    # derived from the same slots+gameplay this package was composed from).
+    # Only meaningful when a dressing layer was actually bundled.
+    circ = None
+    if layers.get("dressing"):
+        try:
+            import circulation
+            circ = circulation.check_dressing(
+                os.path.join(out_dir, "art", "dressing", layers["dressing"]),
+                slots, gameplay)
+        except Exception as ex:  # gate must report, never crash the compose
+            circ = {"ok": False, "error": f"gate failed to run: {ex}"}
+
     manifest = {
         "schema": "portable_building.v0.1", "building_id": bid, "theme": theme,
         "themed_modules": stats["themed"], "greybox_fallback": stats["greybox_fallback"],
@@ -590,6 +604,7 @@ def build_package(slots_path, gameplay_path, module_dir, out_dir, *,
         "walkable": bool(base_strip),   # floors present -> something to stand on
         "placement_check": placement,   # visual-vs-collision agreement
         "zfight_check": zfight,         # coplanar-surface (flicker) gate
+        "circulation_check": circ,      # props-vs-ladders/doorways/stairs gate
         "instancing": instancing,
         "closure": report,
     }
