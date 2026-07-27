@@ -323,6 +323,185 @@ def clearance_findings(spec, st, sid):
     return findings
 
 
+# ---------------------------------------------------------------------------
+# LATERAL CONTAINMENT  --  a body may fall ALONG a stair, never OUT of it
+# ---------------------------------------------------------------------------
+# clearance_findings above proves the LONGITUDINAL axis: the flight ENDS are
+# open so a body can step on and off. This section proves the LATERAL axis: the
+# flight SIDES (and every non-mouth edge of the reserved footprint) are closed
+# so a body cannot step, be pushed, or fall off the side into the shaft, the
+# floor below, or the atrium. The two are complementary halves of ONE contract
+# -- an end must be open, a side must be closed -- and they share one data
+# source: stair_endpoints() tells both which edges are the authorized mouths.
+# (Sealing a mouth is caught by STAIR_ENTRY/EXIT_FACES_SOLID above, so the two
+# halves keep each other honest: you cannot "contain" a stair you cannot enter.)
+#
+# This is a PROXY like everything else in this module. It works at spec/rect
+# resolution and asks "is a body-retaining barrier DECLARED along each hazardous
+# edge, with no person-sized gap", NOT "does the built collision form a
+# continuous wall taller than the capsule at every point" -- that is the
+# build-time geometry gate's job (Layer C of the containment audit). It exists
+# so a stair shipping with NO lateral containment fails loudly instead of
+# silently. It drives off the reserved FOOTPRINT (always in the spec), not the
+# slab holes, because a stair's own cut_slabs holes are appended by the builder
+# and are not present at review time.
+#
+# Rollout: findings are WARNINGS until deli_counter emits stair guard geometry;
+# flip CONTAINMENT_ENFORCED to True to make them hard, build-failing errors and
+# fold them into the circulation_contract compliance stamp.
+
+CONTAINMENT_ENFORCED = False       # -> True once the guard emitter ships
+LATERAL_ENVELOPE = 0.5             # m; capsule + push/network margin. A barrier
+                                   # must sit within this of a hazardous edge,
+                                   # and any uncovered remainder WIDER than this
+                                   # is a person-sized gap (use the largest body
+                                   # envelope per the invariant; cf.
+                                   # _AGENT_PASS_WIDTH / docs/scale_guidelines).
+
+
+def _footprint_edges(rect):
+    """The four edges of a footprint rect as {side: (fixed_axis, fixed_val,
+    span_lo, span_hi, normal)}. 'W'/'E' edges are vertical (fixed X, span Y);
+    'S'/'N' are horizontal (fixed Y, span X)."""
+    x0, y0, x1, y1 = rect
+    return {
+        "W": ("X", x0, y0, y1, (-1, 0)),
+        "E": ("X", x1, y0, y1, (1, 0)),
+        "S": ("Y", y0, x0, x1, (0, -1)),
+        "N": ("Y", y1, x0, x1, (0, 1)),
+    }
+
+
+def _mouth_normals(st):
+    """Outward normals of a stair's authorized mouths (entry/exit landings), as
+    a set of (dx, dy). These edges MUST stay open; every other footprint edge
+    must be contained."""
+    return {tuple(ep["dir"]) for ep in stair_endpoints(st)}
+
+
+def _merge_intervals(ivals):
+    out = []
+    for lo, hi in sorted(ivals):
+        if out and lo <= out[-1][1] + 1e-9:
+            out[-1] = (out[-1][0], max(out[-1][1], hi))
+        else:
+            out.append((lo, hi))
+    return out
+
+
+def _largest_gap(span_lo, span_hi, covered):
+    """Widest uncovered sub-interval of [span_lo, span_hi] given covered
+    intervals. The edge is contained when this is at or below the capsule
+    envelope -- i.e. no person-sized gap remains."""
+    merged = _merge_intervals([(max(a, span_lo), min(b, span_hi))
+                               for a, b in covered
+                               if b > span_lo and a < span_hi])
+    gap, cursor = 0.0, span_lo
+    for lo, hi in merged:
+        gap = max(gap, lo - cursor)
+        cursor = max(cursor, hi)
+    return max(gap, span_hi - cursor)
+
+
+def _barrier_intervals(spec, st, edge):
+    """Covered intervals along `edge` from any body-retaining barrier: the
+    exterior shell, an interior partition, or a solid guard/wall volume with
+    REAL collision. Returns [(lo, hi)] on the edge's span axis. A named guard
+    with collision='none' contributes nothing (decorative rails do not contain
+    a body -- audit M1)."""
+    fixed_axis, fixed_val, span_lo, span_hi, _ = edge
+    served = floors_served(spec, st)
+    H = spec.story_height
+    z_lo = (min(served) if served else 0) * H
+    z_hi = ((max(served) if served else 0) + 1) * H
+    env = LATERAL_ENVELOPE
+    covered = []
+
+    # exterior shell: the inner wall face on this side backs the whole edge
+    ix = spec.footprint_x / 2 - spec.wall_thick
+    iy = spec.footprint_y / 2 - spec.wall_thick
+    if (fixed_axis == "X" and abs(abs(fixed_val) - ix) <= env) \
+            or (fixed_axis == "Y" and abs(abs(fixed_val) - iy) <= env):
+        covered.append((span_lo, span_hi))
+
+    # interior partitions parallel to the edge, within envelope of its line
+    for p in spec.partitions:
+        if p.story not in served:
+            continue
+        p_lo, p_hi = min(p.start, p.end), max(p.start, p.end)
+        if fixed_axis == "X" and p.axis == "Y" and abs(p.pos - fixed_val) <= env:
+            covered.append((p_lo, p_hi))
+        elif fixed_axis == "Y" and p.axis == "X" \
+                and abs(p.pos - fixed_val) <= env:
+            covered.append((p_lo, p_hi))
+
+    # solid guard / wall volumes with real collision, overlapping the flight z
+    for v in spec.volumes:
+        if getattr(v, "collision", "convex") == "none":
+            continue
+        if v.z + v.size_z / 2 < z_lo - 1e-9 or v.z - v.size_z / 2 > z_hi + 1e-9:
+            continue
+        vx0, vx1 = v.x - v.size_x / 2, v.x + v.size_x / 2
+        vy0, vy1 = v.y - v.size_y / 2, v.y + v.size_y / 2
+        if fixed_axis == "X" and vx0 - env <= fixed_val <= vx1 + env:
+            covered.append((vy0, vy1))
+        elif fixed_axis == "Y" and vy0 - env <= fixed_val <= vy1 + env:
+            covered.append((vx0, vx1))
+    return covered
+
+
+def containment_findings(spec, st, sid):
+    """Lateral-containment review: every reserved-footprint edge that is NOT an
+    authorized mouth must be backed by a body-retaining barrier along its full
+    length (no person-sized gap). Returns [(code, message)]:
+      STAIR_LATERAL_OPEN      -- a flight SIDE open to a fall.
+      STAIR_OPENING_UNGUARDED -- a non-mouth END / floor-opening edge a body on
+                                 the upper floor can walk into.
+    Scope: interior, traversable, slab-cutting flights that span stories.
+    Exterior towers guard themselves; spirals/decorative are out of scope
+    (audit M2); a stair that cuts no slab has no shaft beside it."""
+    findings = []
+    if getattr(st, "exterior", False) \
+            or getattr(st, "role", None) in DECORATIVE_ROLES \
+            or st.style == "spiral" \
+            or not getattr(st, "cut_slabs", True) \
+            or st.from_story == st.to_story:
+        return findings
+    edges = _footprint_edges(footprint_rect(st))
+    mouths = _mouth_normals(st)
+    if not mouths:                      # nothing proxy-checkable (no ends)
+        return findings
+    # mouth edges share this fixed axis; a non-mouth edge on the SAME axis is a
+    # dangling END, a non-mouth edge on the other axis is a flight SIDE.
+    mouth_axis = "Y" if any(d[1] for d in mouths) else "X"
+    for side, edge in edges.items():
+        fixed_axis, _, span_lo, span_hi, normal = edge
+        if normal in mouths:
+            continue                    # authorized entry/exit -- must stay open
+        gap = _largest_gap(span_lo, span_hi, _barrier_intervals(spec, st, edge))
+        if gap <= LATERAL_ENVELOPE:
+            continue                    # contained: no person-sized gap
+        if fixed_axis == mouth_axis:
+            findings.append((
+                "STAIR_OPENING_UNGUARDED",
+                f"'{sid}' {side} edge of the reserved opening is unguarded "
+                f"(largest gap {gap:.2f} m > {LATERAL_ENVELOPE:g} m envelope) -- "
+                f"a body on the upper floor can walk into the stairwell; guard "
+                f"every floor-opening edge except the stair mouth (Rule 4)."))
+        else:
+            findings.append((
+                "STAIR_LATERAL_OPEN",
+                f"'{sid}' {side} side of the flight is open (largest gap "
+                f"{gap:.2f} m > {LATERAL_ENVELOPE:g} m envelope) -- a stair "
+                f"floating open in the floor plate: a body walks/is pushed off "
+                f"the side, and the shaft reads as a hole in the AI navmesh. "
+                f"Fix by relocating it against a wall/corridor (stair_place "
+                f"edge zones) or enclosing the side with a wall or guard along "
+                f"the full flight and landing. A guarded feature stair is fine; "
+                f"a bare mid-floor one is not."))
+    return findings
+
+
 def floors_served(spec, st):
     """Stories this stair gives access to, clamped to stories that exist.
     to_story past the top story is roof access; it is served but has no rooms."""
@@ -926,6 +1105,13 @@ def check(spec):
         for code, msg in clearance_findings(spec, st, sid):
             errors.append(f"STAIRWELL {code}: {msg}")
 
+        # lateral containment: the flight/opening SIDES must be closed (a body
+        # may fall ALONG a stair, never OUT of it). Warned until deli_counter
+        # emits stair guard geometry; CONTAINMENT_ENFORCED promotes to hard.
+        for code, msg in containment_findings(spec, st, sid):
+            (errors if CONTAINMENT_ENFORCED else warnings).append(
+                f"STAIRWELL {code}: {msg}")
+
         # s9.3 -- locked egress roulette: a required stair door that defaults
         # to locked is only tolerable when another egress stair serves the
         # floor AND the scenario says so; alone, it deletes the route.
@@ -1091,6 +1277,8 @@ CONTRACT_VERSION = 1
 _CONTRACT_CHECKS = ("STAIR_ENTRY_FACES_SOLID", "STAIR_EXIT_FACES_SOLID",
                     "STAIR_LOWER_LANDING_BLOCKED",
                     "STAIR_UPPER_LANDING_BLOCKED")
+# lateral-containment codes; join the contract stamp once CONTAINMENT_ENFORCED.
+_CONTAINMENT_CHECKS = ("STAIR_LATERAL_OPEN", "STAIR_OPENING_UNGUARDED")
 
 
 def circulation_contract(spec):
@@ -1108,6 +1296,8 @@ def circulation_contract(spec):
         role = getattr(st, "role", None)
         facing = getattr(st, "facing", "N") or "N"
         findings = [c for c, _ in clearance_findings(spec, st, sid)]
+        if CONTAINMENT_ENFORCED:
+            findings += [c for c, _ in containment_findings(spec, st, sid)]
         traversable = role not in DECORATIVE_ROLES
         ok = (role in STAIR_ROLES and facing in ("N", "E", "S", "W")
               and not findings)
@@ -1120,7 +1310,8 @@ def circulation_contract(spec):
         })
     return {
         "version": CONTRACT_VERSION,
-        "checks": list(_CONTRACT_CHECKS),
+        "checks": list(_CONTRACT_CHECKS) + (
+            list(_CONTAINMENT_CHECKS) if CONTAINMENT_ENFORCED else []),
         "landing_depth_m": LANDING_DEPTH,
         "exit_step_off_m": EXIT_STEP_OFF,
         "all_compliant": all_ok,
