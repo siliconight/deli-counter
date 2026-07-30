@@ -31,7 +31,9 @@
     "min_door_width_m": 1.25,
     "min_corridor_width_m": 1.1,
     "min_headroom_m": 2.0,
-    "derivation": "min_door_width >= 2*ceil(agent_radius/cell_size)*cell_size + 2*cell_size  ->  2*ceil(0.4/0.15)*0.15 + 0.3 = 1.2; ratified 1.25 for margin. min_corridor = 2*agent_radius + 0.3 body margin."
+    "derivation": "min_door_width >= 2*ceil(agent_radius/cell_size)*cell_size + 2*cell_size  ->  2*ceil(0.4/0.15)*0.15 + 0.3 = 1.2; ratified 1.25 for margin. min_corridor = 2*agent_radius + 0.3 body margin.",
+    "unassisted_step_max_m": 0.117,
+    "unassisted_step_derivation": "A capsule meets a low step on its bottom HEMISPHERE, so the contact normal is sloped rather than horizontal: normal.y = (R - h) / R. The engine calls that contact a floor only while its angle stays inside floor_max_angle, so the tallest step a body WALKS up with no step-up code is R * (1 - cos(floor_max_angle)) = 0.4 * (1 - cos 45 deg) = 0.117 m. characters.player.max_step_up_m (0.5) is what a controller can LIFT itself over; this is what it can walk over. The deliverable ships into projects with none of these tools present, so a transition above this line requires the consumer to have implemented step-up. R here is the 0.4 m capsule lot.py emits for the walk player, which matches nav_bake.agent_radius_m rather than characters.player.radius_m (0.35) -- that discrepancy is real and is recorded, not resolved."
   },
   "qa": {
     "arrive_dist_m": 1.5,
