@@ -1342,3 +1342,28 @@ def format_summary(spec_name, summary):
             f"{summary['egress']}   classified: {summary['classified']}   "
             f"routes: {summary['route_analysis']}   "
             f"(authoritative check = walk it; this is room-graph intel)")
+
+
+def ramp_foot_extension(pitch_rad, step_rise, thickness=0.25):
+    """How far a stair's collision ramp must extend past the foot of its run.
+
+    The ramp is set half a step proud of the flight so its surface rides the
+    step nosings. That is correct along the run and wrong where the run meets
+    the floor: the surface starts `step_rise / 2` above it, plus half the
+    slab's own thickness measured vertically through the tilt. The result is a
+    riser at the first step -- the exact thing a smooth ramp exists to remove.
+
+    A capsule only walks up `radius * (1 - cos(floor_max_angle))`, which is
+    0.146 m for the contract body. Anything taller needs step-up code the
+    shipped level cannot assume, so the ramp has to reach the floor rather
+    than hover above it.
+
+    Returns `(extra_length, back, drop)`: lengthen the ramp by `extra_length`
+    along its own incline, move its centre `back` downhill in plan and `drop`
+    downward, and the HEAD of the flight stays exactly where it was.
+    """
+    if pitch_rad <= 0.0:
+        return 0.0, 0.0, 0.0
+    lead = step_rise / 2.0 + (thickness / 2.0) / math.cos(pitch_rad)
+    extra = lead / math.sin(pitch_rad)
+    return extra, extra / 2.0 * math.cos(pitch_rad), extra / 2.0 * math.sin(pitch_rad)

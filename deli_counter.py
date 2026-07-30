@@ -49,6 +49,7 @@ from spec_types import (
 )
 from partition_bounds import clamp_partition_span
 import ladder_geom
+import stairwell
 import skin_style
 from rarity import resolve_rarity
 import interactives
@@ -1285,11 +1286,18 @@ class _Builder:
                     # controller walk straight up with no step logic. Visual
                     # stays stepped. Sat half a step proud so its surface rides
                     # the step nosings.
-                    wx, wy = self._stair_pt(st, sx, st.y)
+                    # reach the floor at the foot: the half-step proud offset
+                    # that makes the surface ride the nosings also starts it
+                    # that far ABOVE the slab, which is a riser no capsule
+                    # walks up. Extending downhill lands it; shifting the
+                    # centre by half leaves the head of the flight untouched.
+                    _ext, _back, _drop = stairwell.ramp_foot_extension(
+                        angle, step_h)
+                    wx, wy = self._stair_pt(st, sx, st.y - sign * _back)
                     ramp = self._box(
                         f"stair{si}{ch}ramp_{s}" + self.col_suffix["convex"],
-                        (wx, wy, z + H / 2 + step_h / 2),
-                        self._stair_sz(st, st.width, length3d, 0.25),
+                        (wx, wy, z + H / 2 + step_h / 2 - _drop),
+                        self._stair_sz(st, st.width, length3d + _ext, 0.25),
                         self.COLLISION)
                     ramp.rotation_euler = self._stair_tilt(st, sign, angle)
                 # landing at the top of each leg (except the final one) bridges
@@ -1388,10 +1396,12 @@ class _Builder:
                           self.VISUAL, role="stair")
             lenA = _m.sqrt(st.run ** 2 + riseA ** 2)
             angA = _m.atan2(riseA, st.run)
-            wx, wy = self._stair_pt(st, st.x, st.y)
+            _extA, _backA, _dropA = stairwell.ramp_foot_extension(angA, step_h)
+            wx, wy = self._stair_pt(st, st.x, st.y - _backA)
             ramp = self._box(f"stair{si}aramp_{s}" + self.col_suffix["convex"],
-                             (wx, wy, z + riseA / 2 + step_h / 2),
-                             self._stair_sz(st, w, lenA, 0.25), self.COLLISION)
+                             (wx, wy, z + riseA / 2 + step_h / 2 - _dropA),
+                             self._stair_sz(st, w, lenA + _extA, 0.25),
+                             self.COLLISION)
             ramp.rotation_euler = self._stair_tilt(st, 1, angA)
             # corner landing, flush with leg A's top
             land_z = z + riseA - step_h / 2
@@ -1411,10 +1421,16 @@ class _Builder:
             riseB = H - riseA
             lenB = _m.sqrt(st.run ** 2 + riseB ** 2)
             angB = _m.atan2(riseB, st.run)
-            wx, wy = self._stair_pt(st, st.x + w / 2 + st.run / 2, yB)
+            # leg B leaves the corner landing rather than a floor slab, but
+            # the riser is the same one and so is the remedy
+            _extB, _backB, _dropB = stairwell.ramp_foot_extension(angB, step_h)
+            wx, wy = self._stair_pt(
+                st, st.x + w / 2 + st.run / 2 - _backB, yB)
             ramp = self._box(f"stair{si}bramp_{s}" + self.col_suffix["convex"],
-                             (wx, wy, z + riseA + riseB / 2 + step_h / 2),
-                             self._stair_sz(st, lenB, w, 0.25), self.COLLISION)
+                             (wx, wy, z + riseA + riseB / 2 + step_h / 2
+                              - _dropB),
+                             self._stair_sz(st, lenB + _extB, w, 0.25),
+                             self.COLLISION)
             ramp.rotation_euler = self._stair_tilt_x(st, angB)
             if st.cut_slabs:
                 # bounding hole over both legs + step-off past leg B's top

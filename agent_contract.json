@@ -19,11 +19,13 @@
   "nav_bake": {
     "agent_radius_m": 0.4,
     "agent_height_m": 1.8,
-    "agent_max_climb_m": 0.5,
+    "agent_max_climb_m": 0.15,
     "agent_max_slope_deg": 55.0,
-    "cell_size_m": 0.15,
+    "cell_size_m": 0.1,
     "cell_height_m": 0.15,
-    "note": "radius = fattest navigating character + 0.05 safety. max_slope sits ABOVE the steepest legal stair pitch (~45 deg; slope legality is validate.py's job, connectivity is the bake's). Voxel erosion is ceil(radius/cell) whole cells per side -- keep cell_size small enough that legal doors survive (see clearances.min_door_width_m derivation)."
+    "note": "radius = fattest navigating character + 0.05 safety. max_slope sits ABOVE the steepest legal stair pitch (~45 deg; slope legality is validate.py's job, connectivity is the bake's). Voxel erosion is ceil(radius/cell) whole cells per side -- keep cell_size small enough that legal doors survive (see clearances.min_door_width_m derivation).",
+    "agent_max_climb_derivation": "Was 0.5. The navmesh routes a body over any riser up to this height; a capsule only WALKS up radius * (1 - cos(floor_max_angle)) = 0.117. Everything between was a route the bake promised and the body could not take. Measured on walkup_siege 2026-07-28: the walkers' route crossed a staircase's open lateral edge, a 0.49 m stringer, and four of them parked against it with a horizontal contact normal. Set to exactly one cell_height voxel (0.15) because Godot FLOORS this to whole voxels and warns that it does -- asking for 0.117 at this cell height quantises to zero and disconnects the map. Stairs are unaffected: Deli Counter gives them a smooth ramp collider rather than per-step boxes, so they connect by agent_max_slope, not by climb. The alternative -- enforcing lateral containment on every flight -- was rejected because it would put a barrier along the sides of every staircase in every building; open-sided stairs are ordinary architecture and the bake, not the building, is what was making the false claim.",
+    "cell_size_derivation": "Was 0.15. Recast joins adjacent voxel columns only within walkableClimb, and on a ramp that gap is cell_size * tan(pitch). So the steepest ramp that stays CONNECTED is atan(agent_max_climb_m / cell_size_m) -- 0.15 with a climb of 0.15 capped that at 45.0 deg while agent_max_slope_deg says 55.0. Measured 2026-07-29: eight path proofs across central_vault and warehouse_district failed as 'disjoint islands', every one of them a storey change, because those buildings have 4.2-5.0 m storeys over a 4.0 m run (46-51 deg) while walkup_siege's 3.2 m storeys (38.7 deg) stayed connected and passed the same sweep. agent_max_climb serves two jobs -- permitting real steps, and permitting the voxel staircase a continuous slope becomes -- and no value of it does both while cell_size is coarse. 0.1 is the largest cell that carries 55.0 deg (56.3 deg), at 2.25x the horizontal columns and so a slower bake. Raising climb instead would re-permit the 0.16 kerb, which is the defect this is protecting."
   },
   "clearances": {
     "min_door_width_m": 1.25,

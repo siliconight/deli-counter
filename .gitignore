@@ -43,3 +43,8 @@ build/.ai_review_cache/
 # Level Factory pipeline artifacts written into specs/ by LF's deli adapter
 # (transient build inputs, regenerated per run; not DC's authored library).
 specs/lf_*.json
+
+# scratch and editor backups -- copies of tracked files, not history
+_bridge/
+*.pre_wp
+*.pre_wpdefault
