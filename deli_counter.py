@@ -966,6 +966,12 @@ class _Builder:
             role = "ceiling" if is_roof else "floor"
             # VISUAL: skip only the roof mesh when authoring open-top; the
             # collision below is unaffected, so grenades/projectiles still bounce.
+            # Full footprint. The slab is NOT inset: an earlier attempt shrank
+            # it by a wall thickness to dodge the coincident top faces, which
+            # reached only the perimeter walls and left every interior
+            # partition fighting. Walls are capped under the slab instead --
+            # see _cap_thick -- and an inset slab under a shortened wall would
+            # leave a band at the perimeter with neither in it.
             if not (is_roof and self.s.roof == "open"):
                 self._box(f"slab_{s}", (0, 0, z - ft / 2),
                           (self.s.footprint_x, self.s.footprint_y, ft),
@@ -991,6 +997,18 @@ class _Builder:
         top-story room honoring Room.roofed."""
         self.slots.extend(roofs.roof_slots(self.s, story, cz, ft))
 
+    def _cap_thick(self, story, top):
+        """Thickness of the slab that caps `story` -- the one whose top face is
+        the floor of story+1, so the wall below must stop at its underside.
+
+        A wall spanning the full storey height puts its top face on the same
+        plane as that slab's top face, both pointing up and interpenetrating:
+        a z-fight at every storey boundary of every building. One rule, one
+        place, because both wall emitters need it and two copies drift.
+        """
+        return ((self.s.roof_thick or self.s.floor_thick)
+                if story + 1 == top else self.s.floor_thick)
+
     def _exterior(self):
         base, top = self._story_range()
         hx, hy = self.s.footprint_x / 2, self.s.footprint_y / 2
@@ -999,12 +1017,15 @@ class _Builder:
         explicit = {(w.wall, w.story): w for w in self.s.ext_walls}
         for s in range(base, top):
             z = s * H
-            cz = z + H / 2
+            # Stop under the slab above, not at the storey line. Uniform across
+            # every segment, so identical tiles still share one mesh datablock.
+            wh = H - self._cap_thick(s, top)
+            cz = z + wh / 2
             wall_geo = {
-                "N": ((0, hy, cz), (self.s.footprint_x, wt, H), 0),
-                "S": ((0, -hy, cz), (self.s.footprint_x, wt, H), 0),
-                "E": ((hx, 0, cz), (wt, self.s.footprint_y, H), 1),
-                "W": ((-hx, 0, cz), (wt, self.s.footprint_y, H), 1),
+                "N": ((0, hy, cz), (self.s.footprint_x, wt, wh), 0),
+                "S": ((0, -hy, cz), (self.s.footprint_x, wt, wh), 0),
+                "E": ((hx, 0, cz), (wt, self.s.footprint_y, wh), 1),
+                "W": ((-hx, 0, cz), (wt, self.s.footprint_y, wh), 1),
             }
             for wname, (c, size, axis) in wall_geo.items():
                 spec_w = explicit.get((wname, s))
@@ -1133,9 +1154,14 @@ class _Builder:
 
     def _partitions(self):
         H, wt = self.s.story_height, self.s.wall_thick
+        _base, _top = self._story_range()
         for i, p in enumerate(self.s.partitions):
             z = p.story * H
-            cz = z + H / 2
+            # Same cap as the exterior: an interior wall reaching the storey
+            # line puts its top face on the slab's, and 93 of cr_deli's
+            # remaining 151 fights were exactly this pair.
+            wh = H - self._cap_thick(p.story, _top)
+            cz = z + wh / 2
             # Clamp the run to the footprint on its RUNNING axis so an interior
             # wall can never poke through the exterior shell. The 2D floorplan
             # already clamps here; the 3D geometry MUST agree, or a wall authored
@@ -1164,11 +1190,11 @@ class _Builder:
                 openings = p.openings
             if p.axis == "Y":
                 c = (p.pos, mid, cz)
-                size = (wt, length, H)
+                size = (wt, length, wh)
                 axis = 1
             else:
                 c = (mid, p.pos, cz)
-                size = (length, wt, H)
+                size = (length, wt, wh)
                 axis = 0
             holes = [self._opening_to_hole(op, length, f"int_{p.story}_{i}",
                                            p.story) for op in openings]
@@ -2058,12 +2084,34 @@ class _Builder:
             z = p.story * self.s.story_height
             cz = z + p.height / 2
             t = p.thick
+            # THE CORNERS BELONG TO N/S. When all four segments run their full
+            # footprint extent, each corner is a t x t column inside BOTH the
+            # N/S run and the E/W run -- equal extents on three axes, so their
+            # tops, bottoms and two outer faces are all same-facing and
+            # coplanar. Four fights per corner, sixteen per ring, on an open
+            # roof with nothing in front of them and a themed skin coming.
+            #
+            # A corner can belong to one run or the other; it cannot belong to
+            # both. Which one is arbitrary. That the choice be UNIFORM is not:
+            # every E segment stays identical to every other E segment, so the
+            # segments still link one mesh datablock and a long run remains one
+            # mesh with many transforms.
+            #
+            # No hole is left -- N and S already span the full X footprint, so
+            # they cover the column E and W give up. The two runs now abut,
+            # which is how geometry is supposed to meet.
+            ey = self.s.footprint_y - 2 * t
             segs = [
                 ("N", (0, hy - t / 2, cz), (self.s.footprint_x, t, p.height)),
                 ("S", (0, -hy + t / 2, cz), (self.s.footprint_x, t, p.height)),
-                ("E", (hx - t / 2, 0, cz), (t, self.s.footprint_y, p.height)),
-                ("W", (-hx + t / 2, 0, cz), (t, self.s.footprint_y, p.height)),
             ]
+            if ey > 1e-6:
+                # A footprint narrower than two parapet thicknesses has no room
+                # for a side run at all; N and S already meet.
+                segs += [
+                    ("E", (hx - t / 2, 0, cz), (t, ey, p.height)),
+                    ("W", (-hx + t / 2, 0, cz), (t, ey, p.height)),
+                ]
             for n, c, size in segs:
                 self._box(f"parapet_{n}", c, size, self.VISUAL, role="wall")
                 self._col_box(f"parapet_{n}_col", c, size)
