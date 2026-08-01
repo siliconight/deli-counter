@@ -1288,6 +1288,14 @@ class _Builder:
             for s in range(st.from_story, st.to_story):
                 z = s * H
                 leg = s - st.from_story
+                # A leg that ends in a landing does not need a top tread: the
+                # landing tops out at the same z + H, spans both runs, and sits
+                # at the turn. Two plates for one surface is what made the top
+                # of every flight z-fight.
+                has_landing = (st.style == "switchback"
+                               and s < st.to_story - 1)
+                clear = 0.8                  # walk-off depth past the landing
+                hole_w = st.width + 2 * x_offset + clear
                 if st.style == "scissor":
                     flights = [(1, st.x - x_offset, "a"),
                                (-1, st.x + x_offset, "b")]
@@ -1298,7 +1306,7 @@ class _Builder:
                                 st.x + (x_offset if sign > 0 else -x_offset),
                                 "")]
                 for sign, sx, ch in flights:
-                    for i in range(n_steps):
+                    for i in range(n_steps - 1 if has_landing else n_steps):
                         cz = z + step_h * (i + 0.5)
                         cy = st.y + sign * (step_d * (i + 0.5) - st.run / 2)
                         wx, wy = self._stair_pt(st, sx, cy)
@@ -1329,17 +1337,27 @@ class _Builder:
                 # landing at the top of each leg (except the final one) bridges
                 # this run to the parallel run the next leg starts from, so you
                 # can turn the corner. Spans both runs in X, one step deep.
-                if st.style == "switchback" and s < st.to_story - 1:
+                if has_landing:
                     sign = 1 if (leg % 2 == 0) else -1
-                    top_y = st.y + sign * (st.run / 2)
+                    # Reaches BACK to where the treads now stop, so it is the
+                    # top step as well as the turn plate. The far edge does not
+                    # move: run/2 + 0.7*step_d, exactly where it has always
+                    # been, so nothing downstream of the turn shifts.
+                    land_far = 0.7 * step_d
+                    land_d = step_d + land_far
+                    land_y = st.y + sign * (st.run / 2 + land_far - land_d / 2)
                     land_z = z + H - step_h / 2
-                    land_w = st.width + 2 * x_offset      # covers both runs
-                    wx, wy = self._stair_pt(st, st.x, top_y)
+                    # Inside a cut hole the plate must span the hole, or its
+                    # outer strips are void once the discharge stops covering
+                    # them.
+                    land_w = (hole_w if st.cut_slabs
+                              else st.width + 2 * x_offset)
+                    wx, wy = self._stair_pt(st, st.x, land_y)
                     self._box(f"stair{si}_land_{s}", (wx, wy, land_z),
-                              self._stair_sz(st, land_w, step_d * 1.4, step_h),
+                              self._stair_sz(st, land_w, land_d, step_h),
                               self.VISUAL, role="stair")
                     self._col_box(f"stair{si}col_land_{s}", (wx, wy, land_z),
-                                  self._stair_sz(st, land_w, step_d * 1.4,
+                                  self._stair_sz(st, land_w, land_d,
                                                  step_h))
                 if st.style == "scissor":
                     # thin divider between the channels: scissor flights are
@@ -1360,8 +1378,6 @@ class _Builder:
                     # the near side and width a bit too. Widened in X to cover
                     # both parallel runs + the landing. A scissor tops out at
                     # BOTH ends, so its hole is symmetric.
-                    clear = 0.8
-                    hole_w = st.width + 2 * x_offset + 0.8
                     if st.style == "scissor":
                         self._stair_hole(st, s + 1, st.x, st.y,
                                          hole_w, st.run + 2 * clear)
@@ -1383,18 +1399,27 @@ class _Builder:
                         # crossing: in a switchback the exit margin is always
                         # free space (the next leg ascends AWAY from it off
                         # the same landing).
-                        disch_y = st.y + sign * (st.run / 2 + clear / 2)
-                        wx, wy = self._stair_pt(st, st.x, disch_y)
-                        dz = z + H - step_h / 2
-                        self._box(f"stair{si}_discharge_{s}",
-                                  (wx, wy, dz),
-                                  self._stair_sz(st, hole_w, clear,
-                                                 step_h),
-                                  self.VISUAL, role="stair")
-                        self._col_box(f"stair{si}col_discharge_{s}",
+                        # Starts at the landing's far edge when there is a
+                        # landing, at the top tread's when there is not. The
+                        # outer edge stays run/2 + clear either way, so the
+                        # hole is filled to the same extent -- the split moved,
+                        # the extent did not.
+                        d_near = (0.7 * step_d) if has_landing else 0.0
+                        d_depth = clear - d_near
+                        if d_depth > 1e-6:
+                            disch_y = st.y + sign * (st.run / 2 + d_near
+                                                     + d_depth / 2)
+                            wx, wy = self._stair_pt(st, st.x, disch_y)
+                            dz = z + H - step_h / 2
+                            self._box(f"stair{si}_discharge_{s}",
                                       (wx, wy, dz),
-                                      self._stair_sz(st, hole_w, clear,
-                                                     step_h))
+                                      self._stair_sz(st, hole_w, d_depth,
+                                                     step_h),
+                                      self.VISUAL, role="stair")
+                            self._col_box(f"stair{si}col_discharge_{s}",
+                                          (wx, wy, dz),
+                                          self._stair_sz(st, hole_w, d_depth,
+                                                         step_h))
 
     def _stair_l_shaped(self, si, st, H):
         """L-shaped stair (spec 6.3): leg A ascends local +Y for half the
