@@ -2191,11 +2191,19 @@ def write_light_manifest(builder, path):
     change. See docs/LIGHT_MANIFEST.md."""
     import json
     import lights as _lights
+    # The slab that caps each storey, from the ONE place that rule lives.
+    # A ceiling row hangs below the slab's UNDERSIDE; deriving it from
+    # `floor + story_height` alone put every fluorescent inside the slab
+    # (measured 2026-08-02: 28 of 28, buried 0.20 m in a 0.30 m slab). The wall
+    # emitters have subtracted this since `_cap_thick` was written; the light
+    # manifest is the third consumer of the same rule and did not.
+    _base, _top = builder._story_range()
     data = _lights.build_light_manifest(
         builder.s.name,
         builder.gameplay.get("rooms", []),
         builder.gameplay.get("openings", []),
         builder.s.story_height,
+        cap_thick=lambda story: builder._cap_thick(int(story), _top),
         authored=getattr(builder.s, "lights", None),
         theme=getattr(builder.s, "theme", None),
     )

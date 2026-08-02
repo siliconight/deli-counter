@@ -5,6 +5,11 @@ Run:  python -m pytest test_lights.py    (or: python test_lights.py)
 import lights
 
 
+#: The slab capping a storey. The ceiling of a room is its UNDERSIDE, so a
+#: fixture hangs at floor + story_height - SLAB - gap. Chosen to match the
+#: shipped buildings measured on 2026-08-02, where the slab is 0.30 m.
+SLAB = 0.3
+
 ROOMS = [
     # a wide room (x longer) on story 0
     {"id": "office", "story": 0, "bounds": [0, 0, 12, 4],
@@ -22,18 +27,19 @@ OPENINGS = [
 
 
 def test_one_fluorescent_per_room_on_the_ceiling():
-    a = lights.derive_light_anchors(ROOMS, [], story_height=3.5)
+    a = lights.derive_light_anchors(ROOMS, [], story_height=3.5, cap_thick=SLAB)
     fluoro = [x for x in a if x["type"] == "fluorescent"]
     assert len(fluoro) == 2
     office = next(x for x in fluoro if x["room"] == "office")
-    # ceiling = floor(0.0) + story_height(3.5) - gap(0.1)
-    assert office["pos"][2] == 3.4
+    # ceiling PLANE = floor(0.0) + story_height(3.5) - slab(0.3) = 3.2,
+    # and the fixture hangs gap(0.1) below it.
+    assert office["pos"][2] == 3.1
     assert office["reacts_to_alarm"] is True
     assert office["source"] == "derived"
 
 
 def test_row_runs_along_the_longer_axis():
-    a = lights.derive_light_anchors(ROOMS, [], story_height=3.5)
+    a = lights.derive_light_anchors(ROOMS, [], story_height=3.5, cap_thick=SLAB)
     office = next(x for x in a if x.get("room") == "office")  # x is longer
     hall = next(x for x in a if x.get("room") == "hall")      # y is longer
     assert office["rot_y"] == 0.0
@@ -43,7 +49,7 @@ def test_row_runs_along_the_longer_axis():
 
 
 def test_only_windows_become_area_lights_facing_inward():
-    a = lights.derive_light_anchors([], OPENINGS, story_height=3.5)
+    a = lights.derive_light_anchors([], OPENINGS, story_height=3.5, cap_thick=SLAB)
     wins = [x for x in a if x["type"] == "window"]
     assert len(wins) == 1                      # the door is ignored
     w = wins[0]
@@ -56,7 +62,8 @@ def test_authored_anchor_overrides_derived_by_id():
     authored = [{"id": "office_ceiling", "type": "fluorescent",
                  "pos": [6, 2, 3.0], "rot_y": 0, "room": "office",
                  "row": {"count": 1, "spacing": 0}, "reacts_to_alarm": True}]
-    m = lights.build_light_manifest("bld", ROOMS, [], 3.5, authored=authored)
+    m = lights.build_light_manifest("bld", ROOMS, [], 3.5, cap_thick=SLAB,
+                                    authored=authored)
     office = [x for x in m["anchors"] if x["id"] == "office_ceiling"]
     assert len(office) == 1                     # replaced, not duplicated
     assert office[0]["source"] == "authored"
@@ -64,7 +71,7 @@ def test_authored_anchor_overrides_derived_by_id():
 
 
 def test_manifest_header():
-    m = lights.build_light_manifest("gs_auto_shop", ROOMS, OPENINGS, 3.5,
+    m = lights.build_light_manifest("gs_auto_shop", ROOMS, OPENINGS, 3.5, cap_thick=SLAB,
                                     theme="delco")
     assert m["light_manifest_version"] == "1.1.0"
     assert m["building_id"] == "gs_auto_shop"
@@ -104,7 +111,7 @@ FACADE_OPENINGS = [
 
 
 def test_wall_pack_over_every_exterior_door_but_the_sign_door():
-    a = lights.derive_light_anchors([], FACADE_OPENINGS, story_height=3.5)
+    a = lights.derive_light_anchors([], FACADE_OPENINGS, story_height=3.5, cap_thick=SLAB)
     packs = [x for x in a if x["type"] == "wall_pack"]
     walls = sorted(p["wall"] for p in packs)
     # S door carries the sign; N door + E garage get packs; interior ignored
@@ -113,7 +120,7 @@ def test_wall_pack_over_every_exterior_door_but_the_sign_door():
 
 
 def test_wall_pack_sits_proud_above_the_door_head():
-    a = lights.derive_light_anchors([], FACADE_OPENINGS, story_height=3.5)
+    a = lights.derive_light_anchors([], FACADE_OPENINGS, story_height=3.5, cap_thick=SLAB)
     n = next(x for x in a if x["type"] == "wall_pack"
              and x["wall"] == "ext_0_N")
     # door top = sill 0 + height 2.2; emitter 0.25 above it
@@ -125,7 +132,7 @@ def test_wall_pack_sits_proud_above_the_door_head():
 
 
 def test_storefront_sign_on_the_windowed_facade():
-    a = lights.derive_light_anchors([], FACADE_OPENINGS, story_height=3.5)
+    a = lights.derive_light_anchors([], FACADE_OPENINGS, story_height=3.5, cap_thick=SLAB)
     signs = [x for x in a if x["type"] == "sign"]
     assert len(signs) == 1
     s = signs[0]
@@ -140,14 +147,56 @@ def test_storefront_sign_on_the_windowed_facade():
 
 def test_no_windows_means_no_derived_sign():
     ops = [o for o in FACADE_OPENINGS if o["kind"] != "window"]
-    a = lights.derive_light_anchors([], ops, story_height=3.5)
+    a = lights.derive_light_anchors([], ops, story_height=3.5, cap_thick=SLAB)
     assert not [x for x in a if x["type"] == "sign"]
     # every exterior door gets a pack instead
     assert len([x for x in a if x["type"] == "wall_pack"]) == 3
 
 
 def test_manifest_version_bumped_additively():
-    m = lights.build_light_manifest("bld", ROOMS, FACADE_OPENINGS, 3.5)
+    m = lights.build_light_manifest("bld", ROOMS, FACADE_OPENINGS, 3.5, cap_thick=SLAB)
     assert m["light_manifest_version"] == "1.1.0"
     types = {x["type"] for x in m["anchors"]}
     assert {"fluorescent", "window", "sign", "wall_pack"} <= types
+
+
+def test_a_ceiling_fixture_hangs_below_the_slab_it_is_under():
+    """The regression this parameter exists for.
+
+    Measured 2026-08-02: every fluorescent anchor in a shipped building sat
+    0.10 m below the floor ABOVE it, which is 0.20 m INSIDE a 0.30 m slab --
+    invisible from either room and lighting a void. 28 of 28. The fixture must
+    end up under the slab's underside, not under the next storey's floor.
+    """
+    a = lights.derive_light_anchors(ROOMS, [], story_height=3.5, cap_thick=SLAB)
+    for f in [x for x in a if x["type"] == "fluorescent"]:
+        room = next(r for r in ROOMS if r["id"] == f["room"])
+        storey_top = room["center"][2] + 3.5
+        ceiling = storey_top - SLAB
+        assert f["pos"][2] < ceiling, (
+            f'{f["id"]} at {f["pos"][2]} is not below the ceiling {ceiling}')
+        assert f["pos"][2] < storey_top - SLAB, "inside the slab"
+
+
+def test_cap_thick_may_vary_by_storey():
+    """A top storey is capped by a roof, which need not match a floor.
+
+    `Building._cap_thick` returns roof_thick for the top storey and floor_thick
+    below it, so this takes a callable and uses the storey each room declares.
+    """
+    def cap(story):
+        return 0.5 if story == 1 else 0.3
+    a = lights.derive_light_anchors(ROOMS, [], story_height=3.5, cap_thick=cap)
+    office = next(x for x in a if x.get("room") == "office")   # story 0
+    hall = next(x for x in a if x.get("room") == "hall")       # story 1
+    assert office["pos"][2] == 3.1          # 0.0 + 3.5 - 0.3 - 0.1
+    assert hall["pos"][2] == 6.4            # 3.5 + 3.5 - 0.5 - 0.1
+
+
+def test_cap_thick_is_required():
+    """No default, because a default of zero reproduces the defect silently."""
+    try:
+        lights.derive_light_anchors(ROOMS, [], story_height=3.5)
+    except TypeError:
+        return
+    raise AssertionError("cap_thick must be required")

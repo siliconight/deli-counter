@@ -17,7 +17,22 @@ _INWARD_ROT = {"W": 0.0, "S": 90.0, "E": 180.0, "N": 270.0}
 
 _TARGET_SPACING = 3.0   # metres between ceiling fixtures
 _MAX_FIXTURES = 5       # cap a single room's row
-_CEILING_GAP = 0.1      # mount fixtures this far below the ceiling
+_CEILING_GAP = 0.1      # hang fixtures this far below the ceiling PLANE
+
+# The ceiling of a storey is the UNDERSIDE of the slab that caps it, which is
+# one slab-thickness below the next storey's floor. Deriving a fixture height
+# from `floor + story_height` alone puts it on the wrong side of that slab:
+# measured 2026-08-02 on `category5_baie_dore_001`, all 28 fluorescent anchors
+# sat at 3.90 / 7.90 / -0.10 -- 0.10 below the floor ABOVE, and so buried 0.20 m
+# inside a 0.30 m slab, invisible from either room and lighting a void. Nothing
+# else in the manifest had this shape: windows, wall packs, signs and
+# streetlights were all placed correctly. It was the ceiling-mounted type alone,
+# and every one of them.
+#
+# `Building._cap_thick` is the one place that rule lives -- the wall emitters
+# already subtract it ("One rule, one place, because both wall emitters need it
+# and two copies drift"). This module is a third consumer that needed it and did
+# not have it, so `cap_thick` is passed IN rather than recomputed here.
 
 # v1.1 facade lights. Emitters sit PROUD of the wall, in free air, so the
 # lamp Lux spawns is never inside the hardware Zoo bakes: the sign's pos is
@@ -119,17 +134,28 @@ def _storefront_sign(openings):
     }, d
 
 
-def derive_light_anchors(rooms, openings, story_height):
+def derive_light_anchors(rooms, openings, story_height, *, cap_thick):
     """Derive default light anchors: one fluorescent ceiling row per interior
     room, one area light per window opening, a wall pack over every exterior
-    door, and one storefront sign."""
+    door, and one storefront sign.
+
+    `cap_thick` is the thickness of the slab capping a storey -- either a float,
+    or a callable taking the storey index (top storeys can be capped by a roof
+    of different thickness than a floor). It is REQUIRED and has no default on
+    purpose: a default of zero would silently reproduce the defect it exists to
+    fix, and this kit does not ship guards that pass by omission.
+    """
     anchors = []
     for r in rooms or []:
         c = r.get("center")
         bounds = r.get("bounds")
         if not c or not bounds:
             continue
-        ceiling_z = round(c[2] + story_height - _CEILING_GAP, 3)
+        story = int(r.get("story", 0) or 0)
+        cap = float(cap_thick(story)) if callable(cap_thick) else float(cap_thick)
+        # c[2] + story_height is the storey TOP -- the next floor's floor. The
+        # ceiling is a slab lower.
+        ceiling_z = round(c[2] + story_height - cap - _CEILING_GAP, 3)
         rot, count, spacing = _row_for_bounds(bounds)
         anchors.append({
             "id": "%s_ceiling" % r.get("id", "room"),
@@ -192,11 +218,12 @@ def derive_light_anchors(rooms, openings, story_height):
 
 
 def build_light_manifest(building_id, rooms, openings, story_height,
-                         authored=None, theme=None):
+                         *, cap_thick, authored=None, theme=None):
     """Full `<name>.lights.json` manifest. `authored` is an optional list of
     hand-placed anchors; an authored anchor replaces a derived one with the
     same id (auto defaults + spec overrides, like props)."""
-    anchors = derive_light_anchors(rooms, openings, story_height)
+    anchors = derive_light_anchors(rooms, openings, story_height,
+                                   cap_thick=cap_thick)
     if authored:
         by_id = {a["id"]: a for a in anchors}
         for a in authored:
@@ -209,7 +236,8 @@ def build_light_manifest(building_id, rooms, openings, story_height,
         "building_id": building_id,
         "theme": theme or "greybox",
         "space": ("Blender Z-up, meters; rot_y = degrees about up; "
-                  "pos is the fixture location"),
+                  "pos is the fixture location -- for a ceiling row, hung "
+                  "below the slab's underside, not below the floor above"),
         "rig_library": "lux",
         "anchors": anchors,
     }
