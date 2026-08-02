@@ -1,0 +1,144 @@
+{
+  "kit_name": "Deli Counter",
+  "kit_version": "0.80.0",
+  "schema_version": "1.21.1",
+  "spec": "cr_garage.json",
+  "spec_sha256_16": "7b7d6208d03a6bc2",
+  "built_utc": "2026-08-01T19:33:08.241611+00:00",
+  "outputs": [
+    "cr_garage.glb"
+  ],
+  "expected": {
+    "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
+    "bounds_min": [
+      -18.175,
+      -14.175,
+      -0.3
+    ],
+    "bounds_max": [
+      18.175,
+      14.175,
+      7.1
+    ],
+    "origin": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "story_height": 3.0,
+    "floor_elevations": [
+      0.0,
+      3.0
+    ],
+    "markers": [
+      {
+        "name": "COVER_HIGH_COL00",
+        "type": "cover_high",
+        "pos": [
+          -12.0,
+          -8.0,
+          0.0
+        ]
+      },
+      {
+        "name": "COVER_HIGH_COL11",
+        "type": "cover_high",
+        "pos": [
+          -4.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "COVER_HIGH_COL22",
+        "type": "cover_high",
+        "pos": [
+          4.0,
+          8.0,
+          0.0
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_01",
+        "type": "camera_socket",
+        "pos": [
+          15.0,
+          11.0,
+          2.6
+        ]
+      },
+      {
+        "name": "OBJECTIVE_BOOTHSAFE",
+        "type": "objective",
+        "pos": [
+          -14.0,
+          -11.0,
+          0.5
+        ]
+      },
+      {
+        "name": "LOOT_BOOTHCASH",
+        "type": "loot",
+        "pos": [
+          -14.0,
+          -11.0,
+          0.6
+        ]
+      },
+      {
+        "name": "EXTRACTION_VEHICLE",
+        "type": "extraction",
+        "pos": [
+          -4.0,
+          -12.0,
+          0.0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_A",
+        "type": "attacker_spawn",
+        "pos": [
+          -9.0,
+          -12.0,
+          0.0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_B",
+        "type": "attacker_spawn",
+        "pos": [
+          9.0,
+          -12.0,
+          0.0
+        ]
+      },
+      {
+        "name": "COVER_LOW_AUTO_BOOTH_DESK",
+        "type": "cover_low",
+        "pos": [
+          -14.0,
+          -11.0,
+          0.0
+        ]
+      },
+      {
+        "name": "LANDMARK_ATTENDANT_BOOTH",
+        "type": "landmark",
+        "pos": [
+          -14.0,
+          -11.0,
+          1.0
+        ]
+      },
+      {
+        "name": "LANDMARK_DECK_0_SOUTH",
+        "type": "landmark",
+        "pos": [
+          4.0,
+          -11.0,
+          1.0
+        ]
+      }
+    ]
+  }
+}

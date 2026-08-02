@@ -34,6 +34,10 @@ build/*.validation.json
 build/*.combat_audit.json
 build/*.navigation.json
 build/*.roundtrip.json
+build/*.gameplay.json
+build/*.lights.json
+build/*.slots.json
+build/*.glb.spec.sha256
 build/review/
 
 # Advisory AI review (ai_review.py) — regenerable, non-deterministic, never gates.
@@ -44,16 +48,15 @@ build/.ai_review_cache/
 # (transient build inputs, regenerated per run; not DC's authored library).
 specs/lf_*.json
 
-# scratch and editor backups -- copies of tracked files, not history
+# scratch and editor backups -- copies of tracked files, not history.
+# A RULE, not a list: each patch_*.py invents its own suffix, so any
+# enumeration of them falls behind the next patch that gets written.
+# This file carried six suffixes and had already fallen five behind --
+# pre_cap, pre_inset, pre_parapet, pre_plate, pre_plate2 were all
+# offered up as untracked files. The factory root uses the rule form.
 _bridge/
-*.pre_wp
-*.pre_wpdefault
+*.pre_*
 
 # scratch and unread build sidecars
 _scratch_archive/
 
-# scratch and editor backups -- copies of tracked files, not history
-*.pre_gate
-*.pre_visible
-*.pre_accessor
-*.pre_angle
