@@ -54,7 +54,6 @@ import skin_style
 from rarity import resolve_rarity
 import interactives
 import roofs
-import floors
 
 
 # ============================================================================
@@ -991,25 +990,6 @@ class _Builder:
             # the always-there hook that lets a roof be added after the fun test.
             if is_roof and self._modular_on():
                 self._record_roof_slots(top, z - ft / 2, ft)
-        # Floors and ceilings, once, after the slab loop -- floors.slab_slots
-        # walks ROOMS rather than storeys, because a per-storey slot would make
-        # tile-or-carpet a per-building choice and the whole point of the
-        # vocabulary is that the lobby and the concourse can differ.
-        #
-        # Only the roof was ever slotted, so every interior surface shipped as
-        # bare greybox while Zoo had recipes/floor.py and recipes/ceiling.py,
-        # the genome declared tile/carpet/wood and plaster/ceiling_tile/drywall,
-        # and Pixelcoat was building every one of those packs. Three layers
-        # ready and nothing asking: measured on a shipped manifest, the roles
-        # were roof 1, wall 299, doorway 10, breach 3, window 6.
-        if self._modular_on():
-            self._record_slab_slots(top)
-
-    def _record_slab_slots(self, top):
-        """Emit the per-room floor and ceiling swap-slots (floors.slab_slots --
-        pure & tested), so Zoo can skin what a player stands on and looks up
-        at. Skins carry no collision; the trimesh slab stays authoritative."""
-        self.slots.extend(floors.slab_slots(self.s, top))
 
     def _record_roof_slots(self, story, cz, ft):
         """Emit the roof swap-slots (see roofs.roof_slots -- pure & tested) so
