@@ -54,6 +54,7 @@ import skin_style
 from rarity import resolve_rarity
 import interactives
 import roofs
+import floors
 
 
 # ============================================================================
@@ -928,6 +929,11 @@ class _Builder:
         self._fire_escapes()
         self._vertical_links()
         self._slab_holes_cut()
+        # Immediately after the cut, and for the same reason: by here every
+        # stairwell, ramp and hatch has appended its hole, so a floor or
+        # ceiling skin can be given the same openings the slab just got.
+        if self._modular_on():
+            self._record_slab_slots()
         self._volumes()
         self._placements()
         self._parapets()
@@ -990,6 +996,24 @@ class _Builder:
             # the always-there hook that lets a roof be added after the fun test.
             if is_roof and self._modular_on():
                 self._record_roof_slots(top, z - ft / 2, ft)
+
+    def _record_slab_slots(self):
+        """Emit the per-room floor and ceiling swap-slots (floors.slab_slots --
+        pure & tested), so Zoo can skin what a player stands on and looks up at.
+
+        CALLED FROM THE BUILD SEQUENCE, NEXT TO `_slab_holes_cut`, NOT FROM
+        `_slabs`. The holes a skin has to avoid are appended to
+        `self.s.slab_holes` DURING the build -- by `_stairs`, `_ladders`,
+        `_ramps` and `_vertical_links`, all of which run after `_slabs`. Called
+        from the slab loop this read the list before any of them had written to
+        it and saw only the one hatch the spec was authored with, so every
+        stairwell stayed capped: you could walk through the ceiling but not see
+        through it.
+
+        Skins carry no collision; the trimesh slab stays authoritative.
+        """
+        _base, top = self._story_range()
+        self.slots.extend(floors.slab_slots(self.s, top))
 
     def _record_roof_slots(self, story, cz, ft):
         """Emit the roof swap-slots (see roofs.roof_slots -- pure & tested) so

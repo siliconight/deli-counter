@@ -46,11 +46,56 @@ def slot_typename(role: str, size_mod: str) -> str:
     return role
 
 
+#: Roles built as a horizontal PLATE, whose footprint varies on BOTH axes.
+#: Mirror of ``zoo_keeper.core.kit.PLATE_ROLES``.
+PLATE_ROLES = ("floor", "ceiling")
+
+
+def void_tag(voids) -> str | None:
+    """A short, stable tag for a plate's hole set, or None when it has none.
+
+    Two rooms of identical footprint with stairwells in DIFFERENT places are
+    different geometry, and the module key already knows that. The filename did
+    not: `security_office` and `count_room` are both 22x16, planned as two
+    modules, and both were named `floor_rockay_01_w2200_d1600`. One file wins
+    and one room gets the other's holes -- the same class of collision the
+    depth suffix fixed, one level down.
+
+    Formatted, not hashed with repr: both repos compute this and float repr is
+    not a contract. Order-independent, so the same holes listed differently are
+    the same tag.
+    """
+    import hashlib
+    if not voids:
+        return None
+    parts = sorted("%.4f,%.4f,%.4f,%.4f" % (float(v["x0"]), float(v["y0"]),
+                                            float(v["x1"]), float(v["y1"]))
+                   for v in voids)
+    return hashlib.sha1("|".join(parts).encode("utf-8")).hexdigest()[:6]
+
+
 def module_stem(typ: str, theme: str, style: int,
-                width_cm: int = None, state: str = None) -> str:
+                width_cm: int = None, state: str = None,
+                depth_cm: int = None, voids_tag: str = None) -> str:
+    """``<type>_<theme>_<style:02d>[_w<cm>][_d<cm>][_<state>]``.
+
+    THE MIRROR OF ``zoo_keeper.core.kit.module_stem``, and the two must change
+    together. Neither side parses a stem; both CONSTRUCT it from the same slot,
+    so they agree only by being kept identical.
+
+    ``depth_cm`` is only for plates. A wall varies on one axis and ``_w<cm>``
+    identifies it completely, so every existing wall/doorway/window filename is
+    untouched. A floor varies on both: a 44x24 room and a 44x16 room both
+    resolved to ``floor_rockay_01_w4400``, and the shorter room was handed a
+    slab eight metres too deep.
+    """
     base = f"{typ}_{theme}_{style:02d}"
     if width_cm is not None:
         base += f"_w{int(round(width_cm))}"
+    if depth_cm is not None:
+        base += f"_d{int(round(depth_cm))}"
+    if voids_tag:
+        base += f"_v{voids_tag}"
     if state:
         base += f"_{state}"
     return base
@@ -81,9 +126,12 @@ def resolve_themed_stem(slot: dict, theme: str, style: int):
     typ = slot_typename(role, slot.get("size_mod"))
     exact = typ != "wallEnd"
     width_cm = int(round(dims[0] * 100)) if exact else None
+    depth_cm = (int(round(dims[1] * 100))
+                if exact and typ in PLATE_ROLES else None)
+    vtag = void_tag(fit.get("voids")) if typ in PLATE_ROLES else None
     eff_style = int(slot.get("style") or style or 1)
     stem = module_stem(typ, theme, eff_style, width_cm,
-                       _default_stem_state(slot))
+                       _default_stem_state(slot), depth_cm, vtag)
     return stem, (not exact)
 
 

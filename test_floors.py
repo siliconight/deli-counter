@@ -127,3 +127,80 @@ def test_room_bounds_become_the_slot_footprint():
 
 def test_deterministic():
     assert floors.slab_slots(_spec(), top=2) == floors.slab_slots(_spec(), top=2)
+
+
+# --------------------------------------------------------------------------- #
+# Slab holes: a skin laid over a slab full of holes must have the same holes
+# --------------------------------------------------------------------------- #
+
+class _Hole:
+    def __init__(self, story, x, y, sx, sy):
+        self.story, self.x, self.y = story, x, y
+        self.size_x, self.size_y = sx, sy
+
+
+def _spec_with_holes():
+    s = _spec()
+    # a stairwell through the storey-1 slab, inside gaming_floor's footprint
+    s.slab_holes = [_Hole(1, 4.0, -6.0, 3.0, 4.0)]
+    return s
+
+
+def test_a_hole_opens_the_ceiling_below_and_the_floor_above():
+    """One slab, two surfaces, and the hole belongs to both of them.
+
+    A hole with story == s cuts the slab whose top face is the floor of s, so
+    it opens the FLOOR of storey s and the CEILING of storey s-1. Getting the
+    storey off by one leaves the stairwell capped from one side.
+    """
+    ids = _by_id(floors.slab_slots(_spec_with_holes(), top=2))
+    # gaming_floor is storey 0: its ceiling is the underside of the storey-1 slab
+    assert len(ids["ceiling_gaming_floor"]["fit"]["voids"]) == 1
+    # upper_lounge is storey 1: its floor is the top face of that same slab
+    assert len(ids["floor_upper_lounge"]["fit"]["voids"]) == 1
+    # and neither the floor below nor the ceiling above is touched
+    assert ids["floor_gaming_floor"]["fit"]["voids"] == []
+    assert ids["ceiling_upper_lounge"]["fit"]["voids"] == []
+
+
+def test_voids_are_in_the_skin_own_centred_coords():
+    """Modules are centre-pivot, so a world hole has to be re-centred."""
+    ids = _by_id(floors.slab_slots(_spec_with_holes(), top=2))
+    # gaming_floor spans [-22,-16,22,8] -> centre (0.0, -4.0). The hole is at
+    # x 4.0 size 3.0 and y -6.0 size 4.0, so 2.5..5.5 in x and -8.0..-4.0 in y,
+    # which re-centres to -4.0..0.0. The two rooms sharing this slab see the
+    # SAME hole at different local offsets, because their centres differ.
+    v = ids["ceiling_gaming_floor"]["fit"]["voids"][0]
+    assert v == {"x0": 2.5, "y0": -4.0, "x1": 5.5, "y1": 0.0}
+    # upper_lounge spans [-22,-16,22,0] -> centre (0.0, -8.0)
+    assert ids["floor_upper_lounge"]["fit"]["voids"][0] == {
+        "x0": 2.5, "y0": 0.0, "x1": 5.5, "y1": 4.0}
+
+
+def test_a_hole_outside_a_room_is_not_carried():
+    s = _spec()
+    s.slab_holes = [_Hole(1, 100.0, 100.0, 3.0, 4.0)]
+    for slot in floors.slab_slots(s, top=2):
+        assert slot["fit"]["voids"] == []
+
+
+def test_no_slab_holes_at_all_is_not_an_error():
+    """An older spec with no slab_holes attribute must still slot."""
+    s = _spec()
+    assert not hasattr(s, "slab_holes")
+    assert all(x["fit"]["voids"] == [] for x in floors.slab_slots(s, top=2))
+
+
+def test_a_hole_listed_twice_is_carried_once():
+    """slab_holes really does contain duplicates.
+
+    A hatch authored in the spec is appended again by `_vertical_links`, and
+    three plates came out with the same rect listed twice. Harmless to the
+    tiling, fatal to the naming: void_tag hashes the list, so identical
+    geometry would resolve to two different module files.
+    """
+    s = _spec()
+    s.slab_holes = [_Hole(1, 4.0, -6.0, 3.0, 4.0),
+                    _Hole(1, 4.0, -6.0, 3.0, 4.0)]
+    ids = _by_id(floors.slab_slots(s, top=2))
+    assert len(ids["ceiling_gaming_floor"]["fit"]["voids"]) == 1

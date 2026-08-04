@@ -91,8 +91,53 @@ def cap_thick(spec, story, top):
             if story + 1 == top else spec.floor_thick)
 
 
+def room_voids(spec, room, slab_story, cx, cy, sx, sy):
+    """The slab holes that fall inside a room, in the skin's own centred coords.
+
+    ``spec.slab_holes`` is what ``Builder._slab_holes_cut`` boolean-subtracts
+    from the slab: stairwells, ramps and hatches, each with ``story / x / y /
+    size_x / size_y`` in world XY. A hole with ``story == s`` cuts the slab
+    whose TOP face is the floor of storey s -- so it opens the floor of storey
+    s and the ceiling of storey s-1, and the two skins ask for different
+    stories.
+
+    Without this a skin is a plain rectangle laid over a slab full of holes.
+    The ceiling one caps the stairwell: you see ceiling above the staircase and
+    you cannot climb it.
+    """
+    hx, hy = sx / 2.0, sy / 2.0
+    out = []
+    for hole in getattr(spec, "slab_holes", ()) or ():
+        if int(getattr(hole, "story", 0)) != int(slab_story):
+            continue
+        x0 = float(hole.x) - float(hole.size_x) / 2.0 - cx
+        x1 = float(hole.x) + float(hole.size_x) / 2.0 - cx
+        y0 = float(hole.y) - float(hole.size_y) / 2.0 - cy
+        y1 = float(hole.y) + float(hole.size_y) / 2.0 - cy
+        # drop holes that miss this room entirely; the rest are clipped again
+        # by core.arch.plate_voids, which also keeps a rim so the plate's outer
+        # bbox still equals its authored dims.
+        if x1 <= -hx or x0 >= hx or y1 <= -hy or y0 >= hy:
+            continue
+        out.append({"x0": round(x0, 4), "y0": round(y0, 4),
+                    "x1": round(x1, 4), "y1": round(y1, 4)})
+    # DEDUPE. A hatch authored in the spec is appended AGAIN by
+    # `_vertical_links`, so `slab_holes` carries it twice and three plates came
+    # out with the identical rect listed two times. The tiling unions them and
+    # does not care, but `void_tag` hashes the list -- so the same hole listed
+    # once and twice would name two different modules for identical geometry,
+    # which is the collision this whole naming change exists to stop.
+    seen, uniq = set(), []
+    for v in out:
+        k = (v["x0"], v["y0"], v["x1"], v["y1"])
+        if k not in seen:
+            seen.add(k)
+            uniq.append(v)
+    return uniq
+
+
 def _slot(sid, role, ref, story, cx, cy, cz, sx, sy, facing, room=None,
-          style=1, material=None):
+          style=1, material=None, voids=None):
     return {
         "slot_id": sid, "role": role, "size_mod": "full",
         "style": style, "material": material,
@@ -101,7 +146,12 @@ def _slot(sid, role, ref, story, cx, cy, cz, sx, sy, facing, room=None,
         "transform": {"translation": [round(cx, 4), round(cy, 4), round(cz, 4)],
                       "rot_y": 0, "scale": [1.0, 1.0, 1.0]},
         "fit": {"dims": [round(sx, 4), round(sy, 4), round(SKIN_THICK, 4)],
-                "pivot": "center", "openings": [], "collision": "none"},
+                "pivot": "center", "openings": [], "collision": "none",
+                # Rectangular holes in the PLATE's own x/y, cut by
+                # core.arch.plate_parts. `openings` is the wall contract -- a
+                # hole in a standing slab's x/z -- and the two are not the same
+                # shape, so they get different names.
+                "voids": list(voids or ())},
     }
 
 
@@ -142,7 +192,8 @@ def slab_slots(spec, top, skin=SKIN_THICK):
             "floor_%s" % r.id, FLOOR_SLOT_ROLE, FLOOR_GREYBOX_REF, s,
             cx, cy, s * spec.story_height + skin / 2.0, sx, sy, "up",
             room=r.id, style=skin_style.style_for(fmat, mapping, default),
-            material=fmat))
+            material=fmat,
+            voids=room_voids(spec, r, s, cx, cy, sx, sy)))
 
         cmat = _material(r, CEILING_BY_ROLE, default)
         under = (s + 1) * spec.story_height - cap_thick(spec, s, top)
@@ -150,5 +201,6 @@ def slab_slots(spec, top, skin=SKIN_THICK):
             "ceiling_%s" % r.id, CEILING_SLOT_ROLE, CEILING_GREYBOX_REF, s,
             cx, cy, under - skin / 2.0, sx, sy, "down",
             room=r.id, style=skin_style.style_for(cmat, mapping, default),
-            material=cmat))
+            material=cmat,
+            voids=room_voids(spec, r, s + 1, cx, cy, sx, sy)))
     return out
