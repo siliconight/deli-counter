@@ -50,6 +50,34 @@ def slot_typename(role: str, size_mod: str) -> str:
 #: Mirror of ``zoo_keeper.core.kit.PLATE_ROLES``.
 PLATE_ROLES = ("floor", "ceiling")
 
+#: Roles whose geometry is a hole in a standing slab, cut to the slot's own
+#: ``fit.openings``. Mirror of ``zoo_keeper.core.kit.OPENING_ROLES``.
+OPENING_ROLES = ("doorway", "window", "breach", "vault_door")
+
+
+def opening_tag(openings) -> str | None:
+    """A short, stable tag for a slot's apertures, or None when it has none.
+
+    Mirror of ``zoo_keeper.core.kit.opening_tag``. ``_w<cm>`` names a doorway
+    completely only while every doorway of that width has the same aperture,
+    and nothing enforces that: two 1.4 m doorway slots, one with a 2.2 m door
+    and one with a 2.4 m door, both resolved to ``doorway_rockay_01_w140`` and
+    one got the other's hole. Same collision ``_d`` fixed for plate depth and
+    ``_v`` fixed for stairwells.
+
+    ORDER IS KEPT: only the first opening is cut, so a different order is a
+    different module. (A plate's voids are a set and sort; these do not.)
+    """
+    import hashlib
+    if not openings:
+        return None
+    parts = ["%s|%.4f,%.4f,%.4f" % (str(o.get("kind") or ""),
+                                    float(o.get("width") or 0.0),
+                                    float(o.get("height") or 0.0),
+                                    float(o.get("sill") or 0.0))
+             for o in openings]
+    return hashlib.sha1("||".join(parts).encode("utf-8")).hexdigest()[:6]
+
 
 def void_tag(voids) -> str | None:
     """A short, stable tag for a plate's hole set, or None when it has none.
@@ -76,8 +104,9 @@ def void_tag(voids) -> str | None:
 
 def module_stem(typ: str, theme: str, style: int,
                 width_cm: int = None, state: str = None,
-                depth_cm: int = None, voids_tag: str = None) -> str:
-    """``<type>_<theme>_<style:02d>[_w<cm>][_d<cm>][_<state>]``.
+                depth_cm: int = None, voids_tag: str = None,
+                openings_tag: str = None) -> str:
+    """``<type>_<theme>_<style:02d>[_w<cm>][_d<cm>][_v<hash>][_o<hash>][_<state>]``.
 
     THE MIRROR OF ``zoo_keeper.core.kit.module_stem``, and the two must change
     together. Neither side parses a stem; both CONSTRUCT it from the same slot,
@@ -96,6 +125,8 @@ def module_stem(typ: str, theme: str, style: int,
         base += f"_d{int(round(depth_cm))}"
     if voids_tag:
         base += f"_v{voids_tag}"
+    if openings_tag:
+        base += f"_o{openings_tag}"
     if state:
         base += f"_{state}"
     return base
@@ -129,9 +160,10 @@ def resolve_themed_stem(slot: dict, theme: str, style: int):
     depth_cm = (int(round(dims[1] * 100))
                 if exact and typ in PLATE_ROLES else None)
     vtag = void_tag(fit.get("voids")) if typ in PLATE_ROLES else None
+    otag = opening_tag(fit.get("openings")) if typ in OPENING_ROLES else None
     eff_style = int(slot.get("style") or style or 1)
     stem = module_stem(typ, theme, eff_style, width_cm,
-                       _default_stem_state(slot), depth_cm, vtag)
+                       _default_stem_state(slot), depth_cm, vtag, otag)
     return stem, (not exact)
 
 
