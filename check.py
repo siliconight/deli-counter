@@ -17,6 +17,14 @@ import os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
+# Test files this gate CANNOT run, each with the reason it cannot. Anything
+# not listed here is gated. Keep this list as short as the truth allows --
+# every entry is a thing nobody is checking before a commit.
+BLENDER_ONLY = [
+    ("test_failing_fixtures.py",
+     "imports bmesh -- needs a real Blender interpreter, not plain python"),
+]
+
 
 def run(args):
     return subprocess.run([sys.executable] + args, cwd=HERE).returncode
@@ -24,15 +32,31 @@ def run(args):
 
 def main():
     rc = 0
-    print("== fast unit suites (pure geometry contracts) ==")
-    # The bpy-free sources of truth the builder shares with its guards:
-    # partition clamp, z-fight gate, ladder bake + ladder traversal geometry,
-    # skin styles, prop-vs-circulation. Sub-second; contracts + gates in one
-    # place.
-    rc |= run(["-m", "pytest", "-q",
-               "test_partition_bounds.py", "test_zfight_gate.py",
-               "test_ladder_bake.py", "test_ladder_geom.py",
-               "test_skin_style.py", "test_circulation.py"])
+    print("== unit suites (everything that runs without Blender) ==")
+    # EVERY test_*.py except the ones that genuinely need Blender.
+    #
+    # This used to be a hand-written list of six files. The repo has 27, and
+    # 26 of them run without bpy in 2.4 seconds TOTAL -- so the list was not
+    # buying speed, it was buying blind spots. `test_lights.py` sat ungated
+    # from the day it was written; `test_pvp_heist.py` was RED for twelve
+    # days while the commit hook reported "All checks passed", because the
+    # opposing-spawn sightline gate had been dead since 1c344a8 and nothing
+    # here looked at it.
+    #
+    # Opt-OUT, not opt-in. A new pure test file is gated the moment it lands,
+    # with nobody having to remember to add it. Excluding one is a deliberate
+    # act that has to be written down below, with a reason.
+    skipped = []
+    args = ["-m", "pytest", "-q"]
+    for f, why in BLENDER_ONLY:
+        if os.path.exists(os.path.join(HERE, f)):
+            args += ["--ignore=" + f]
+            skipped.append((f, why))
+    rc |= run(args)
+    # Say the exclusions out loud every run. A quiet denylist becomes a
+    # permanent one.
+    for f, why in skipped:
+        print(f"   NOT GATED: {f} -- {why}")
     print("== validating specs ==")
     rc |= run(["validate.py", "--all"])
     print("== auditing spec content coherence ==")

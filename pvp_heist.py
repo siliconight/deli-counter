@@ -361,9 +361,22 @@ def _spawn_los(spec, attackers, defenders):
     errors, pairs = [], []
     if not attackers or not defenders:
         return errors, pairs
+    # A GATE THAT CANNOT RUN IS NOT A GATE THAT PASSED.
+    #
+    # This used to be `except Exception: return errors, pairs` -- an empty
+    # findings list, indistinguishable from a clean level. Between 2026-07-24
+    # and 2026-08-05 the sightline pass raised on every real spec (see
+    # wallruns.py) and this swallowed it, so PVP-SPAWN-LOS reported nothing
+    # while opposing spawns could stare straight at each other. Now the
+    # inability to check IS the finding, and it lands in `errors`, which
+    # fails the build rather than blessing it.
     try:
         import sightlines
-    except Exception:
+    except Exception as e:
+        errors.append(
+            f"PVP-SPAWN-LOS-UNAVAILABLE: the opposing-spawn sightline gate "
+            f"could not import sightlines ({type(e).__name__}: {e}) -- this "
+            f"is NOT a pass; the level is unchecked")
         return errors, pairs
     by_story = {}
     for m in attackers + defenders:
@@ -375,7 +388,16 @@ def _spawn_los(spec, attackers, defenders):
             continue
         try:
             occ = sightlines._occluders(spec, story)
-        except Exception:
+        except Exception as e:
+            # Same rule as the import above: an occluder set we could not
+            # build means this storey went unchecked, and unchecked is a
+            # failure, not a pass. Naming the storey matters -- the dead
+            # version skipped exactly the storeys that HAD partitions, i.e.
+            # the interesting ones, and looked identical to a clean result.
+            errors.append(
+                f"PVP-SPAWN-LOS-UNAVAILABLE: could not build occluders for "
+                f"story {story} ({type(e).__name__}: {e}) -- spawn sightlines "
+                f"on that story are unchecked")
             continue
         for a in atk:
             for d in dfd:

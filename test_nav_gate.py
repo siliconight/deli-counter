@@ -17,12 +17,21 @@ def _run(fn):
 def _fake_godot(tmp, version="4.3.stable.official", result=None,
                 exit_code=0):
     """A stand-in binary: answers --version, and on a gate call writes
-    `result` to the out.json argument and exits with exit_code."""
-    path = os.path.join(tmp, "godot4")
+    `result` to the out.json argument and exits with exit_code.
+
+    PORTABILITY. This used to be a single file: Python source with a `#!`
+    line and the exec bit set. That is a POSIX trick -- Windows has no
+    shebang and `os.chmod(..., S_IEXEC)` means nothing there, so
+    `subprocess.run([path, ...])` handed CreateProcess a file of Python text
+    with no extension and got `WinError 193: %1 is not a valid Win32
+    application`. Two of these tests failed on every Windows run.
+
+    So: the body goes in a plain `.py`, and the thing we hand out is a real
+    executable for the platform -- the shebang script on POSIX, a `.cmd`
+    shim on Windows (CreateProcess does dispatch `.cmd` through cmd.exe).
+    """
     payload = json.dumps(result or {})
-    with open(path, "w", encoding="utf-8") as f:
-        f.write(f"""#!{sys.executable}
-import json, sys
+    body = f"""import json, sys
 if "--version" in sys.argv:
     print("{version}")
     sys.exit(0)
@@ -32,7 +41,21 @@ with open(out, "w") as f:
     json.dump(json.loads('''{payload}'''), f)
 print("[nav-gate] fake run")
 sys.exit({exit_code})
-""")
+"""
+    impl = os.path.join(tmp, "fake_godot_impl.py")
+    with open(impl, "w", encoding="utf-8") as f:
+        f.write(body)
+
+    if os.name == "nt":
+        path = os.path.join(tmp, "godot4.cmd")
+        with open(path, "w", encoding="utf-8", newline="\r\n") as f:
+            f.write("@echo off\n\"%s\" \"%s\" %%*\n"
+                    % (sys.executable, impl))
+        return path
+
+    path = os.path.join(tmp, "godot4")
+    with open(path, "w", encoding="utf-8") as f:
+        f.write("#!%s\n%s" % (sys.executable, body))
     os.chmod(path, os.stat(path).st_mode | stat.S_IEXEC)
     return path
 

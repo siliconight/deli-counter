@@ -849,13 +849,30 @@ def audit(spec, name=None, rules=None):
                f"certainly swapped (the built wall bisects rooms)."))
 
     # --- sightline intent (reuse the existing checker's mismatches)
+    # THIS BLOCK NEVER PRODUCED A FINDING. `sightlines.check` returns the
+    # tuple `(ok, report_lines)`, so `sl.get("warnings")` raised AttributeError
+    # on a tuple every single time, straight into `except Exception: pass`.
+    # Two independent faults stacked here -- the wrong call shape, and (since
+    # 2026-07-24, see wallruns.py) the whole pass raising anyway -- and the
+    # bare `pass` made both look like "no intent mismatches found".
+    #
+    # Read the STRUCTURE, not the printed report: `analyze` already returns
+    # the per-room verdict, and grepping report() text for a phrase would
+    # break again the next time the wording changes.
     try:
-        sl = sightlines.check(spec)
-        for w in (sl.get("warnings") or []):
-            if "intent mismatch" in w:
-                F(("INFO", "SIGHT_INTENT", w.strip()))
-    except Exception:
-        pass
+        for story in sightlines.analyze(spec):
+            for rm in story.get("rooms") or []:
+                if not rm.get("mismatch"):
+                    continue
+                F(("INFO", "SIGHT_INTENT",
+                   f"room '{rm['id']}' (story {story['story']}) is authored "
+                   f"'{rm['authored']}' but its geometry plays "
+                   f"'{rm['computed']}' ({rm['max_sightline_m']} m sightline)"))
+    except Exception as e:
+        # Silence and "nothing found" must not look the same.
+        F(("HIGH", "SIGHT_DEAD",
+           f"the sightline pass could not run ({type(e).__name__}: {e}) -- "
+           f"every sightline/cover finding is MISSING, not absent"))
 
     # --- genre rule packs (--rules): PayDay 2 / Ready or Not / L4D2
     ctx = {"adj": adj, "entries": entries, "objectives": objectives,

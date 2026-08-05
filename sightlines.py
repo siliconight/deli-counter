@@ -21,6 +21,12 @@ This is INTEL, never a gate: it never fails a build. It prints a report and can
 annotate the floorplan SVGs so you read the tactical shape and nudge the spec.
 It is a GUIDE to authoring better buildings, not a pass/fail.
 
+Wall/partition geometry comes from `wallruns`, a module of its own, NOT from
+floorplan's private helpers. It used to call `fp._opening_gaps` across the
+module boundary; that name was refactored away on 2026-07-24 and this whole
+pass raised AttributeError into four `except Exception` handlers for twelve
+days without a single red light. See wallruns.py for the full story.
+
 Greybox assumptions (deliberately conservative): every opening is see-through
 (worst-case LOS through doors/windows); a volume blocks standing sight only if
 it is tall enough to cross eye height; cover markers are the authored intent for
@@ -30,6 +36,7 @@ where cover will exist after the art pass.
 import math
 
 import floorplan as fp
+import wallruns
 
 # ---- tunables (meters) ----------------------------------------------------
 EYE = 1.6            # standing eye height (volume must cross this to block)
@@ -76,8 +83,8 @@ def _occluders(spec, story):
             hi = p1[0] if axis == "x" else p1[1]
             gaps = []
             for w in wlist:
-                gaps += fp._opening_gaps(w.openings, lo, hi)
-            segs += fp._wall_segments_with_gaps(p0, p1, gaps, axis)
+                gaps += wallruns.opening_gaps(w.openings, lo, hi)
+            segs += wallruns.segments_with_gaps(p0, p1, gaps, axis)
         elif auto:
             segs.append((p0, p1))
     for p in getattr(spec, "partitions", []) or []:
@@ -89,8 +96,8 @@ def _occluders(spec, story):
             p0, p1, axis = (p.pos, p.start), (p.pos, p.end), "y"
         lo = p0[0] if axis == "x" else p0[1]
         hi = p1[0] if axis == "x" else p1[1]
-        gaps = fp._opening_gaps(p.openings, lo, hi)
-        segs += fp._wall_segments_with_gaps(p0, p1, gaps, axis)
+        gaps = wallruns.opening_gaps(p.openings, lo, hi)
+        segs += wallruns.segments_with_gaps(p0, p1, gaps, axis)
     for r in _tall_vol_rects(spec, story):
         (x0, y0, x1, y1) = r
         c = [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
