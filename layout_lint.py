@@ -391,12 +391,87 @@ def gate(spec):
     return fails, warns, {"fails": len(fails), "warnings": len(warns)}
 
 
+# Markers whose declared room is NOT the room they stand in. `room` is a
+# LABEL a marker carries; nothing re-derives it from the coordinates, so the
+# two drift apart silently and every consumer that reasons about rooms --
+# objective placement rules, patrol routing, the L6 main-entry check, AI room
+# logic -- is then reasoning about the wrong space.
+#
+# Measured 2026-08-05 across the built library: `gas_station_a01`'s objective
+# is tagged `back_office` and physically stands in `sales_floor` (the public
+# entry room), and `cr_deli`'s REGISTER is tagged `deli_counter` while
+# standing in `customer_floor`. Behind the counter and in front of it are not
+# the same place to a heist.
+#
+# PRE-ENTRY SPAWNS ARE EXEMPT. Attackers and crew are authored OUTSIDE the
+# footprint on purpose -- they breach in -- and their `room` names what they
+# breach INTO, not where they stand. Every spec in the library does this, so
+# flagging it would bury the real findings under a convention. Defenders are
+# NOT exempt: they start inside, so a defender in the wrong room is the same
+# defect as an objective in the wrong room.
+SPAWN_OUTSIDE_BY_DESIGN = ("attacker_spawn", "crew_spawn")
+MARKER_ROOM_TOL = 0.01
+
+
+def _room_contains(room, x, y, tol=MARKER_ROOM_TOL):
+    b = room.get("bounds")
+    if not b or len(b) < 4:
+        return None                     # unbounded room: cannot judge
+    x0, y0, x1, y1 = b[0], b[1], b[2], b[3]
+    return (min(x0, x1) - tol <= x <= max(x0, x1) + tol
+            and min(y0, y1) - tol <= y <= max(y0, y1) + tol)
+
+
+def marker_room_findings(spec):
+    """L16 (advisory WARN): a marker's `room` must be the room it stands in.
+
+    Reports the room(s) the coordinates DO fall in, because "says A, is in B"
+    is actionable and "is wrong" is not.
+    """
+    warns = []
+    rooms = [r for r in spec.get("rooms", []) if r.get("id")]
+    if not rooms:
+        return warns
+    by_story = {}
+    for r in rooms:
+        by_story.setdefault(r.get("story", 0), []).append(r)
+    by_id = {r["id"]: r for r in rooms}
+    for m in spec.get("markers", []) or []:
+        kind = m.get("type") or ""
+        if kind in SPAWN_OUTSIDE_BY_DESIGN:
+            continue
+        declared = m.get("room")
+        if not declared or declared not in by_id:
+            continue
+        x, y = m.get("x"), m.get("y")
+        if x is None or y is None:
+            continue
+        inside = _room_contains(by_id[declared], x, y)
+        if inside is None or inside:
+            continue
+        # Prefer same-storey candidates; a room one floor up that happens to
+        # overlap in plan is not where this marker is.
+        story = by_id[declared].get("story", 0)
+        cands = [r["id"] for r in by_story.get(story, [])
+                 if _room_contains(r, x, y)]
+        if not cands:
+            cands = [r["id"] for r in rooms if _room_contains(r, x, y)]
+        # Some marker types carry no id (there is one defender_spawn per
+        # spec); naming it twice reads as a bug in the linter.
+        who = f"{kind} '{m['id']}'" if m.get("id") else (kind or "marker")
+        actually = ", ".join(cands) if cands else "no room on this storey"
+        warns.append(f"L16 {who} at ({x:g}, {y:g}) is tagged room "
+                     f"'{declared}' but stands in {actually}")
+    return warns
+
+
 def lint_spec(spec, name):
     fails, warns = [], []
     sf, sw = structural_findings(spec)      # coherence rules run for ALL modes
     fails += sf
     warns += sw
     warns += bounds_findings(spec)          # L13 partition-in-footprint (advisory)
+    warns += marker_room_findings(spec)     # L16 marker tagged with wrong room
     lf14, lw15 = ladder_findings(spec)      # L14 hole-in-footprint / L15 blocked
     fails += lf14
     warns += lw15

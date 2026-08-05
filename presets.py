@@ -133,8 +133,22 @@ def bank(name: str = "bank_preset",
     # holdout -- more routes = more playground. (Roof stays single-access by
     # design; it's unfurnished siege space.)
     if basement:
+        # KEEP CLEAR OF THE VAULT. `vault_xyz` below puts a 5 x 5 m VAULT box
+        # at (half_x - 5, -half_y + 5); this stair used to sit at
+        # (half_x - 4, -half_y + 5) -- the same y, 1 m across, so its origin
+        # was 1.5 m INSIDE the vault. Measured on art_probe_001 seed 5017:
+        # 1.60 m of vault inside the stair's reserved column, across 15
+        # consecutive treads. Both were authored deliberately and nothing
+        # checked that they did not occupy the same space.
+        #
+        # Moved north in y, not x: the point of this stair is a second way
+        # into the vault basement (see the note above), so it has to stay on
+        # the lobby side and land in vault_room. y = -half_y + 10 is still
+        # inside the lobby (-half_y .. 2.0) and clears the vault's north face
+        # (-half_y + 7.5) by 1.7 m -- more than the 1.6 m stair width, so the
+        # run cannot clip the corner either.
         spec["stairs"].append({
-            "x": half_x - 4, "y": -half_y + 5,
+            "x": half_x - 4, "y": -half_y + 10,
             "from_story": -1, "to_story": 0,
             "style": "straight", "cut_slabs": True,
         })
