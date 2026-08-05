@@ -1786,6 +1786,43 @@ class _Builder:
             size = (v.size_x, v.size_y, v.size_z)
             if v.visual:
                 self._box(v.name, c, size, self.VISUAL, role="prop")
+                # ...and RECORD it, so the manifest is the whole building.
+                #
+                # Kitbashed placements have always been recorded as slots, with
+                # the reason stated there: "the manifest is the WHOLE building
+                # (grey + kitbash), uniform". Volumes are the other half of the
+                # same idea -- a vault, a teller counter, a desk -- and they
+                # were drawn and never recorded, so the art pass could not see
+                # them. Measured on art_probe_001 seed 5017: 213 slots, none of
+                # them a prop, and 11 prop meshes rendering as untextured white
+                # boxes in a themed scene because nothing downstream knew they
+                # existed. `kit.plan_kit` does not filter roles -- it plans a
+                # module for whatever a slot declares -- and
+                # `strip_greybox_base` already drops any greybox node whose name
+                # carries a themed slot_id. So recording the slot is the entire
+                # change; the swap machinery was already waiting for it.
+                #
+                # `fit.dims` is EXACT (the box's own size) and pivot is center,
+                # matching how the box was drawn, so a themed module of those
+                # dims lands on it 1:1. Species that Zoo cannot build yet come
+                # back in plan_kit's `missing_modules` -- which turns "what art
+                # do props need" from a guess into a report.
+                self.slots.append({
+                    "slot_id": v.name, "role": "prop", "size_mod": "full",
+                    "style": skin_style.style_for(v.material, self._mat_style,
+                                                  self.s.default_material),
+                    "material": v.material or self.s.default_material,
+                    "current_ref": "prop_greybox_01", "kit_axis": "material",
+                    "wall": None, "story": None, "facing": None,
+                    "transform": {"translation": [round(c[0], 4),
+                                                  round(c[1], 4),
+                                                  round(c[2], 4)],
+                                  "rot_y": 0.0, "scale": [1.0, 1.0, 1.0]},
+                    "fit": {"dims": [round(size[0], 4), round(size[1], 4),
+                                     round(size[2], 4)],
+                            "pivot": "center", "openings": [],
+                            "collision": v.collision},
+                })
             if v.collision != "none":
                 self._col_box(f"{v.name}_col", c, size, mode=v.collision)
                 self._record_surface(f"{v.name}_col", v.material)
