@@ -61,6 +61,63 @@ def _row_for_bounds(bounds):
     return rot, count, spacing
 
 
+def _row_runs(centre, rot, count, spacing, voids):
+    """Split a ceiling row into contiguous RUNS that miss every ceiling void.
+
+    A FIXTURE MUST BE MOUNTED TO SOMETHING. A hole is not a surface, and a
+    fluorescent hanging in a stairwell opening reads as a bug on sight --
+    measured on ``art_probe_001`` seed 5017, one of twenty sat at
+    ``x -10.50, y 6.50`` -- inside the ``ceiling_manager_office`` void, which
+    the shipped slot manifest puts at ``x -13.0..-9.0, y 4.2..9.3``.
+    Deterministic, not a seed artefact: the row is laid across the whole
+    ceiling and the void was never subtracted from it.
+
+    SPLIT, DO NOT DROP. A run that stops short of a stairwell and resumes past
+    it is what a real ceiling does, and it is the same call
+    ``openings.apply`` already makes for conduit -- shorten rather than
+    delete, because deleting the run removes light from the part of the room
+    that still has a ceiling. So this returns a LIST of (pos, count, spacing)
+    and the caller emits one anchor per run.
+
+    ``voids`` are world XY rects ``(x0, y0, x1, y1)``. Returns the row
+    unchanged when there are none -- but the CALLER must say out loud that it
+    had none, because "no voids supplied" and "no voids hit" are different
+    facts and only one of them is a pass.
+    """
+    cx, cy, cz = centre
+    if count <= 1 or spacing <= 0.0:
+        pts = [(cx, cy)]
+    else:
+        dx, dy = (1.0, 0.0) if abs(rot) < 45.0 else (0.0, 1.0)
+        start = -(count - 1) * 0.5 * spacing
+        pts = [(cx + (start + i * spacing) * dx,
+                cy + (start + i * spacing) * dy) for i in range(count)]
+
+    def _in_void(x, y):
+        return any(x0 <= x <= x1 and y0 <= y <= y1
+                   for (x0, y0, x1, y1) in (voids or ()))
+
+    runs, cur = [], []
+    for x, y in pts:
+        if _in_void(x, y):
+            if cur:
+                runs.append(cur)
+                cur = []
+            continue
+        cur.append((x, y))
+    if cur:
+        runs.append(cur)
+
+    out = []
+    for run in runs:
+        n = len(run)
+        mx = sum(p[0] for p in run) / n
+        my = sum(p[1] for p in run) / n
+        out.append(([round(mx, 3), round(my, 3), cz], n,
+                    spacing if n > 1 else 0.0))
+    return out
+
+
 def _wall_facing(wall_name):
     if not wall_name:
         return None
@@ -134,7 +191,8 @@ def _storefront_sign(openings):
     }, d
 
 
-def derive_light_anchors(rooms, openings, story_height, *, cap_thick):
+def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
+                         ceiling_voids=None):
     """Derive default light anchors: one fluorescent ceiling row per interior
     room, one area light per window opening, a wall pack over every exterior
     door, and one storefront sign.
@@ -157,16 +215,28 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick):
         # ceiling is a slab lower.
         ceiling_z = round(c[2] + story_height - cap - _CEILING_GAP, 3)
         rot, count, spacing = _row_for_bounds(bounds)
-        anchors.append({
-            "id": "%s_ceiling" % r.get("id", "room"),
-            "type": "fluorescent",
-            "source": "derived",
-            "pos": [round(c[0], 3), round(c[1], 3), ceiling_z],
-            "rot_y": rot,
-            "room": r.get("id"),
-            "row": {"count": count, "spacing": spacing},
-            "reacts_to_alarm": True,
-        })
+        # A row is laid across the whole room; a stairwell punched through the
+        # ceiling is a hole in the middle of it. Split around the holes on this
+        # storey -- see `_row_runs`.
+        holes = [v for v in (ceiling_voids or ())
+                 if int(v.get("story", story)) == story]
+        rects = [(v["x0"], v["y0"], v["x1"], v["y1"]) for v in holes]
+        runs = _row_runs([c[0], c[1], ceiling_z], rot, count, spacing, rects)
+        base_id = "%s_ceiling" % r.get("id", "room")
+        for i, (pos, n, sp) in enumerate(runs):
+            anchors.append({
+                # A single surviving run keeps the ORIGINAL id: splitting is
+                # the exception, and a room that never had a hole must not get
+                # a renamed anchor (ids are how authored overrides bind).
+                "id": base_id if len(runs) == 1 else "%s_%d" % (base_id, i),
+                "type": "fluorescent",
+                "source": "derived",
+                "pos": pos,
+                "rot_y": rot,
+                "room": r.get("id"),
+                "row": {"count": n, "spacing": sp},
+                "reacts_to_alarm": True,
+            })
 
     win_n = {}
     for o in openings or []:
@@ -218,18 +288,34 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick):
 
 
 def build_light_manifest(building_id, rooms, openings, story_height,
-                         *, cap_thick, authored=None, theme=None):
+                         *, cap_thick, authored=None, theme=None,
+                         ceiling_voids=None):
     """Full `<name>.lights.json` manifest. `authored` is an optional list of
     hand-placed anchors; an authored anchor replaces a derived one with the
     same id (auto defaults + spec overrides, like props)."""
     anchors = derive_light_anchors(rooms, openings, story_height,
-                                   cap_thick=cap_thick)
+                                   cap_thick=cap_thick,
+                                   ceiling_voids=ceiling_voids)
     if authored:
         by_id = {a["id"]: a for a in anchors}
         for a in authored:
             a = dict(a)
             a.setdefault("source", "authored")
-            by_id[a["id"]] = a
+            aid = a["id"]
+            # A row split around a ceiling void publishes `<base>_0`,
+            # `<base>_1`, ... instead of `<base>` (see `_row_runs`). An
+            # authored `<base>` means "I am placing this room's ceiling light
+            # myself" -- so the split runs are SUPERSEDED, not joined by a
+            # third fixture hanging next to them. Matching by id alone would
+            # have missed them and lit the room twice, which is the failure
+            # mode the split was added to avoid the mirror of.
+            for k in [k for k in by_id
+                      if k.startswith(aid + "_")
+                      and k[len(aid) + 1:].isdigit()
+                      and by_id[k].get("source") == "derived"
+                      and by_id[k].get("type") == "fluorescent"]:
+                del by_id[k]
+            by_id[aid] = a
         anchors = list(by_id.values())
     return {
         "light_manifest_version": LIGHT_MANIFEST_VERSION,

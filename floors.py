@@ -91,6 +91,43 @@ def cap_thick(spec, story, top):
             if story + 1 == top else spec.floor_thick)
 
 
+def ceiling_voids(spec):
+    """Every slab hole as a WORLD XY rect, tagged with the storey whose
+    CEILING it opens. For consumers that work per storey rather than per
+    room skin -- the light manifest is the first.
+
+    The storey shift is the same rule `room_voids` states above and must not
+    be restated by the caller: a hole with ``story == s`` cuts the slab whose
+    top face is the floor of storey s, so it opens the ceiling of storey
+    ``s - 1``. Off by one here and a fluorescent row splits around the hole
+    one flight up and sails straight through the real one, which on a walk
+    looks exactly like no fix at all. One rule, one place, because two copies
+    drift -- see `cap_thick`.
+
+    World coords, not room-centred: a light row is placed from the room's own
+    centre and has no skin to be relative to. Not clipped to any room either;
+    a hole outside a room simply contains none of its fixtures.
+
+    Deduped for the same reason `room_voids` dedupes -- a spec-authored hatch
+    is appended a second time by `_vertical_links`, and a caller that reports
+    "N voids subtracted" would be quoting a number that is not the number of
+    holes.
+    """
+    out, seen = [], set()
+    for hole in getattr(spec, "slab_holes", ()) or ():
+        v = (int(getattr(hole, "story", 0)) - 1,
+             round(float(hole.x) - float(hole.size_x) / 2.0, 4),
+             round(float(hole.y) - float(hole.size_y) / 2.0, 4),
+             round(float(hole.x) + float(hole.size_x) / 2.0, 4),
+             round(float(hole.y) + float(hole.size_y) / 2.0, 4))
+        if v in seen:
+            continue
+        seen.add(v)
+        out.append({"story": v[0], "x0": v[1], "y0": v[2],
+                    "x1": v[3], "y1": v[4]})
+    return out
+
+
 def room_voids(spec, room, slab_story, cx, cy, sx, sy):
     """The slab holes that fall inside a room, in the skin's own centred coords.
 

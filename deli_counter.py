@@ -2259,6 +2259,18 @@ def write_light_manifest(builder, path):
     # emitters have subtracted this since `_cap_thick` was written; the light
     # manifest is the third consumer of the same rule and did not.
     _base, _top = builder._story_range()
+    # A fixture must be mounted to SOMETHING, and a hole is not a surface. A
+    # stairwell punched through a slab is a hole in the ceiling of the room
+    # below, and the fluorescent row was laid across the whole room without
+    # ever subtracting it -- measured on art_probe_001 seed 5017, one of
+    # twenty fixtures hanging in the manager office stairwell.
+    #
+    # `floors.ceiling_voids` and not a comprehension here: the hole-storey to
+    # ceiling-storey shift is floors' rule, stated in `room_voids`, and the
+    # ceiling SKIN already avoids these same rects. A second copy of the shift
+    # in this file is a second thing to get wrong, and a light splitting
+    # around a different hole than the skin cuts is worse than neither.
+    _voids = floors.ceiling_voids(builder.s)
     data = _lights.build_light_manifest(
         builder.s.name,
         builder.gameplay.get("rooms", []),
@@ -2267,11 +2279,16 @@ def write_light_manifest(builder, path):
         cap_thick=lambda story: builder._cap_thick(int(story), _top),
         authored=getattr(builder.s, "lights", None),
         theme=getattr(builder.s, "theme", None),
+        ceiling_voids=_voids,
     )
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
+    # Say the void count out loud. "no voids supplied" and "no voids hit" are
+    # different facts and only one of them is a pass; a silent zero reads as
+    # the second when it is nearly always the first.
     print(f"[deli_counter] light manifest -> {path} "
-          f"({len(data['anchors'])} anchors)")
+          f"({len(data['anchors'])} anchors; "
+          f"{len(_voids)} ceiling void(s) subtracted)")
     return data
 
 
