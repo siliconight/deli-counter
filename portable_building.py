@@ -578,19 +578,50 @@ def build_package(slots_path, gameplay_path, module_dir, out_dir, *,
     except Exception as ex:  # gate must report, never crash the compose
         zfight = {"ok": False, "error": f"gate failed to run: {ex}"}
 
-    # CIRCULATION GATE: dressing props must keep ladders mountable, doorways
-    # passable and stair footprints clear (circulation.py -- the volumes are
-    # derived from the same slots+gameplay this package was composed from).
-    # Only meaningful when a dressing layer was actually bundled.
+    # CIRCULATION GATE: props must keep ladders mountable, doorways passable
+    # and stair footprints clear (circulation.py -- the volumes are derived
+    # from the same slots+gameplay this package was composed from).
+    #
+    # TWO SOURCES OF PROPS, and only one of them used to be checked. The
+    # dressing arm below is conditional on a dressing layer, which is correct
+    # for Patina's covers -- but DC places its OWN props into the same space
+    # with no dressing involved, and they were never tested. Measured on
+    # art_probe_001 seed 5017: VAULT (5.0 x 3.0 x 5.0 m) sat 1.6 m inside
+    # stair_1's reserved column, across 15 consecutive treads, while this
+    # manifest reported circulation_check: null and DC's own check suite
+    # called every variant "physically clean". The rule already forbade it;
+    # nothing had ever handed it the greybox.
     circ = None
+    if base_strip:
+        try:
+            import circulation
+            circ = circulation.check_shell(
+                os.path.join(out_dir, base_strip if isinstance(base_strip, str)
+                             else f"{bid}_base.glb"), slots, gameplay)
+            circ["source"] = "shell"
+        except Exception as ex:  # gate must report, never crash the compose
+            circ = {"ok": False, "source": "shell",
+                    "error": f"gate failed to run: {ex}"}
+
+    circ_dressing = None
     if layers.get("dressing"):
         try:
             import circulation
-            circ = circulation.check_dressing(
+            circ_dressing = circulation.check_dressing(
                 os.path.join(out_dir, "art", "dressing", layers["dressing"]),
                 slots, gameplay)
+            circ_dressing["source"] = "dressing"
         except Exception as ex:  # gate must report, never crash the compose
-            circ = {"ok": False, "error": f"gate failed to run: {ex}"}
+            circ_dressing = {"ok": False, "source": "dressing",
+                             "error": f"gate failed to run: {ex}"}
+
+    # One key, both arms, and a combined verdict -- a consumer asking "is
+    # circulation clear" must not have to know which pass placed the prop.
+    if circ is None and circ_dressing is not None:
+        circ = circ_dressing
+    elif circ is not None and circ_dressing is not None:
+        circ = {"ok": bool(circ.get("ok")) and bool(circ_dressing.get("ok")),
+                "shell": circ, "dressing": circ_dressing}
 
     manifest = {
         "schema": "portable_building.v0.1", "building_id": bid, "theme": theme,
