@@ -152,3 +152,76 @@ def test_empty_inputs_are_clean():
     assert C.circulation_volumes({}, {}) == []
     assert C.prop_conflicts([], []) == []
     assert C.prop_conflicts([("p", ([0, 0, 0], [1, 1, 1]))], []) == []
+
+
+# ---- DC's OWN props, not just Patina's dressing -----------------------------
+#
+# The gate's rule always covered these; only its INPUT did not. `VAULT` sat
+# 1.6 m inside a stair column on art_probe_001 seed 5017 and shipped, because
+# `check_dressing` is fed a dressing GLB and DC's greybox props were never
+# handed to the same comparison. These pin the second entry point.
+
+def _roles(**kw):
+    r = {"VAULT": "prop", "teller_counter": "prop",
+         "ext_0_N_seg0": "wall", "stair0_0_0": "stair", "floor_lobby": "floor"}
+    r.update(kw)
+    return r
+
+
+def test_shell_prop_boxes_selects_by_declared_role(monkeypatch):
+    """Role, not name pattern -- a prop called something new must still be
+    found, and a wall called something prop-ish must not."""
+    boxes = [("VAULT", ([0, 0, 0], [1, 1, 1])),
+             ("teller_counter", ([2, 0, 0], [3, 1, 1])),
+             ("ext_0_N_seg0", ([9, 0, 0], [10, 1, 1])),
+             ("stair0_0_0", ([4, 0, 0], [5, 1, 1]))]
+    import zfight_gate
+    monkeypatch.setattr(zfight_gate, "_node_world_boxes", lambda p: boxes)
+    got = C.shell_prop_boxes("ignored.glb", {"surface_roles": _roles()})
+    assert [n for n, _ in got] == ["VAULT", "teller_counter"]
+
+
+def test_shell_prop_boxes_empty_without_roles(monkeypatch):
+    import zfight_gate
+    monkeypatch.setattr(zfight_gate, "_node_world_boxes",
+                        lambda p: [("VAULT", ([0, 0, 0], [1, 1, 1]))])
+    assert C.shell_prop_boxes("ignored.glb", {}) == []
+    assert C.shell_prop_boxes("ignored.glb", None) == []
+
+
+def test_check_shell_flags_a_prop_in_a_stair_column(monkeypatch):
+    """THE regression. A vault inside a stairwell must be an error, and the
+    penetration must say how far it has to move."""
+    import zfight_gate
+    # stair footprint x 4..7, y 4..6 (Blender) -> Godot x 4..7, z -6..-4
+    monkeypatch.setattr(zfight_gate, "_node_world_boxes",
+                        lambda p: [("VAULT", ([5.0, 0.0, -5.5],
+                                              [6.0, 3.0, -4.5]))])
+    gp = {"surface_roles": {"VAULT": "prop"}, "stair_systems": [_stair()]}
+    out = C.check_shell("ignored.glb", None, gp)
+    assert out["ok"] is False
+    assert out["props"] == 1 and out["volumes"] == 1
+    assert out["conflicts"][0]["prop"] == "VAULT"
+    assert out["conflicts"][0]["volume"] == "stair:stair_0"
+    assert out["conflicts"][0]["penetration"] > 0.5
+
+
+def test_check_shell_passes_a_prop_clear_of_the_stair(monkeypatch):
+    import zfight_gate
+    monkeypatch.setattr(zfight_gate, "_node_world_boxes",
+                        lambda p: [("VAULT", ([40.0, 0.0, -40.0],
+                                              [41.0, 3.0, -39.0]))])
+    gp = {"surface_roles": {"VAULT": "prop"}, "stair_systems": [_stair()]}
+    out = C.check_shell("ignored.glb", None, gp)
+    assert out["ok"] is True and out["conflicts"] == []
+
+
+def test_check_shell_reports_zero_props_rather_than_ok(monkeypatch):
+    """A gate with no input is not a pass. `ok` may be True, but `props: 0`
+    has to be visible so a caller can tell 'nothing to check' from 'checked
+    and clean' -- the failure this whole finding is an instance of."""
+    import zfight_gate
+    monkeypatch.setattr(zfight_gate, "_node_world_boxes", lambda p: [])
+    out = C.check_shell("ignored.glb", None,
+                        {"surface_roles": {}, "stair_systems": [_stair()]})
+    assert out["props"] == 0

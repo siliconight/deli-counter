@@ -31,9 +31,22 @@ GLB/Godot Y-up space that dressing-GLB node boxes live in
 
 Consumed by portable_building.build_package (package gate, manifest key
 ``circulation_check``), Level Factory's compose driver (hard gate, rc 6) and
-the unit tests -- one source of truth, per the guardrail pattern. (No spec
-lint: the conflict only exists once a dressing GLB exists, so this is a
-package-time gate by nature.)
+the unit tests -- one source of truth, per the guardrail pattern.
+
+TWO INPUTS, NOT ONE. An earlier version of this docstring said "the conflict
+only exists once a dressing GLB exists, so this is a package-time gate by
+nature". That is false, and it cost a shipped defect: DC places its OWN props
+-- vaults, teller counters, desks, cabinets, crate stacks -- into the same
+space, before any dressing exists, and nothing tested them. Measured on
+``art_probe_001`` seed 5017: ``VAULT`` (5.00 x 3.00 x 5.00 m) sits **1.6 m**
+inside the reserved column of ``stair_1``, overlapping 15 consecutive treads
+across the full 1.60 m stair width. The rule below already forbade it in
+as many words, ``prop_conflicts`` already detected it on the first run, and
+``check_dressing`` was simply never handed DC's own geometry.
+
+So there are two entry points and they share everything but the box source:
+:func:`check_dressing` for Patina's output and :func:`check_shell` for DC's
+own greybox. A prop is a prop whoever placed it.
 """
 from __future__ import annotations
 
@@ -196,6 +209,45 @@ def prop_conflicts(prop_boxes, volumes, pen_min=PEN_MIN):
                 out.append({"prop": pname, "volume": vname,
                             "penetration": round(p, 4)})
     return out
+
+
+def shell_prop_boxes(shell_glb, gameplay):
+    """DC's own props out of its own greybox GLB, in GLB/Godot space.
+
+    Selected by DECLARED ROLE, not by a name pattern: ``gameplay.surface_roles``
+    names every node DC built and what it is, so ``role == "prop"`` is
+    authoritative and survives a prop being called something new. A regex over
+    node names would have to guess at the naming convention and would rot.
+
+    ``zfight_gate._node_world_boxes`` already skips ``*colonly`` nodes, so what
+    comes back is the visual geometry a player sees and walks into.
+    """
+    import zfight_gate
+    roles = (gameplay or {}).get("surface_roles") or {}
+    props = {n for n, r in roles.items() if r == "prop"}
+    if not props:
+        return []
+    return [(n, b) for n, b in zfight_gate._node_world_boxes(shell_glb)
+            if n in props]
+
+
+def check_shell(shell_glb, slots_manifest, gameplay):
+    """Spec-time gate: does DC's OWN greybox keep its own circulation clear?
+
+    Same volumes and same comparison as :func:`check_dressing` -- only the box
+    source differs. This is the half that was missing: a vault parked in a
+    stairwell is not a dressing problem, it is a layout problem, and it exists
+    the moment DC writes the shell.
+
+    Returns ``{ok, volumes, props, conflicts:[{prop, volume, penetration}]}``.
+    ``props: 0`` means no node declared ``role == "prop"`` -- say that out loud
+    rather than reporting ``ok``, because a gate with no input is not a pass.
+    """
+    props = shell_prop_boxes(shell_glb, gameplay)
+    vols = circulation_volumes(slots_manifest, gameplay)
+    conflicts = prop_conflicts(props, vols)
+    return {"ok": not conflicts, "volumes": len(vols), "props": len(props),
+            "conflicts": conflicts[:50]}
 
 
 def check_dressing(dressing_glb, slots_manifest, gameplay):
