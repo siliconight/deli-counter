@@ -50,6 +50,8 @@ own greybox. A prop is a prop whoever placed it.
 """
 from __future__ import annotations
 
+import os
+
 # climb-contract box (mirrors portable_building._ladder_climb_nodes)
 LADDER_CATCH_MARGIN = 0.6    # extra clear width across the ladder
 LADDER_HEADROOM = 1.0        # mount headroom above the climb height
@@ -239,15 +241,38 @@ def check_shell(shell_glb, slots_manifest, gameplay):
     stairwell is not a dressing problem, it is a layout problem, and it exists
     the moment DC writes the shell.
 
-    Returns ``{ok, volumes, props, conflicts:[{prop, volume, penetration}]}``.
-    ``props: 0`` means no node declared ``role == "prop"`` -- say that out loud
-    rather than reporting ``ok``, because a gate with no input is not a pass.
+    Returns ``{ok, volumes, props, declared_props, conflicts:[...]}``.
+
+    A GATE WITH NO INPUT IS NOT A PASS. The previous version said exactly that
+    in this docstring and then returned ``ok: not conflicts``, which is True
+    when zero props were examined -- reporting a clean building while checking
+    nothing. Measured on art_probe_001 seed 5017 (2026-08-05):
+    ``{"ok": true, "props": 0, "volumes": 9}`` while `surface_roles` declared
+    ELEVEN props. The caller had handed this the stripped base glb, and
+    stripping removes exactly the prop visuals that got themed modules -- so
+    emitting prop slots at all is what blinded the gate.
+
+    The two numbers are now separate and both reported. ``declared_props`` is
+    what `gameplay.surface_roles` says exists; ``props`` is what was found in
+    the glb. Declared > 0 with found == 0 is a plumbing failure and FAILS.
+    Declared == 0 is a building with no props, which passes honestly.
     """
     props = shell_prop_boxes(shell_glb, gameplay)
     vols = circulation_volumes(slots_manifest, gameplay)
     conflicts = prop_conflicts(props, vols)
-    return {"ok": not conflicts, "volumes": len(vols), "props": len(props),
-            "conflicts": conflicts[:50]}
+    roles = (gameplay or {}).get("surface_roles") or {}
+    declared = sum(1 for r in roles.values() if r == "prop")
+    blind = declared > 0 and not props
+    out = {"ok": (not conflicts) and not blind,
+           "volumes": len(vols), "props": len(props),
+           "declared_props": declared, "conflicts": conflicts[:50]}
+    if blind:
+        out["error"] = (
+            "%d prop(s) declared in surface_roles, 0 found in %s -- the gate "
+            "examined nothing. Not a clean building; a missing input (usually "
+            "the stripped base glb where the greybox was meant to go)."
+            % (declared, os.path.basename(str(shell_glb))))
+    return out
 
 
 def check_dressing(dressing_glb, slots_manifest, gameplay):

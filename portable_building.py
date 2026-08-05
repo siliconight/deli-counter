@@ -212,7 +212,39 @@ _ABS_START = re.compile(r'^(?:[A-Za-z]:[\\/]|/(?:home|Users|mnt|tmp|var|private|
 _REF = re.compile(r'(?:path=|preload\(|load\()\s*["\']([^"\']+)["\']')
 
 
-def strip_greybox_base(src_glb, out_glb, slot_ids, drop_nodes=()):
+def slot_owner_test(slot_ids, protect=()):
+    """Build the predicate "does this greybox node belong to a themed slot".
+
+    Returned as a closure so `strip_greybox_base` builds the sets once rather
+    than per node, and so the rule can be tested without a GLB -- it has been
+    wrong twice and both times the cost was measured in a walk, not a test.
+
+    A node belongs to a slot when its name IS that slot's id, or is that id
+    followed by `_`. The separator is the whole rule: it is what distinguishes
+    `ext_0_S_open1_lintel` (a sub-part of the opening, must go with it) from
+    `VAULTLEDGE_0` (a different object that merely starts with the same
+    letters as `VAULT`, must stay).
+
+    `protect` names slots that must never be dropped by ANOTHER slot's
+    prefix -- pass every slot_id in the manifest, including unthemed ones,
+    which keep their own greybox and would become invisible colliders.
+    """
+    sids = {str(s).lower() for s in slot_ids if s}
+    prefixes = tuple(s + "_" for s in sids)
+    keep = {str(s).lower() for s in protect if s} - sids
+
+    def owns(node_name):
+        low = str(node_name or "").lower()
+        if low in sids:
+            return True
+        if low in keep:
+            return False
+        return bool(prefixes) and low.startswith(prefixes)
+    return owns
+
+
+def strip_greybox_base(src_glb, out_glb, slot_ids, drop_nodes=(),
+                       protect=()):
     """ADDITIVE base: keep the whole coherent greybox EXCEPT the swappable-slot
     surfaces that themed modules replace. Every collider stays; floors, canopy,
     pumps, aisles, counters -- all non-slot geometry -- stay greybox-visible. A
@@ -229,30 +261,50 @@ def strip_greybox_base(src_glb, out_glb, slot_ids, drop_nodes=()):
     flickering-ceiling bug). build_package resolves these geometrically."""
     from pygltflib import GLTF2
     g = GLTF2().load(src_glb)
-    # EXACT match, not substring. A slot's id IS its greybox node's name --
-    # `_record_wall_slot` stores `slot_id: vname`, openings and volumes do the
-    # same -- and `drop_nodes` exists precisely for the slots that are NOT
-    # name-linked (the roof/slab case). So substring matching bought nothing
-    # and cost this:
+    # NAME-BOUNDARY match. This rule has been wrong twice in opposite
+    # directions, so the reasoning is written out rather than assumed.
+    #
+    # It began as a SUBSTRING test, which over-matched:
     #
     #   slot_id "VAULT"  is a substring of  node "VAULTLEDGE_0"
     #
-    # The vault got a themed module, so its id entered this list; the LEDGE has
-    # no module (it is a `vault_ledge`, not a volume) and never could. Its
-    # visual was dropped by the vault's id while its collider stayed, and the
-    # result was a body-blocking box you cannot see. Invisible collision fails
-    # dangerously and silently; a missed drop fails as double geometry, which
-    # is visible on the first walk. Exact match fails the safe way.
-    sids = {s.lower() for s in slot_ids if s}
+    # The vault got a themed module, so its id entered this list; the LEDGE
+    # has no module and never could. Its visual was dropped by the vault's id
+    # while its collider stayed -- a body-blocking box you cannot see, on a
+    # node whose role is `floor`, i.e. something you stand on.
+    #
+    # That was replaced with an EXACT test, which under-matched. An opening's
+    # greybox is not ONE node: `ext_0_S_open1` is accompanied by
+    # `ext_0_S_open1_lintel`, `_sill`, `_pane`, `_BREACHPANEL`. Exact matching
+    # dropped the opening and left its four sub-parts standing inside the
+    # themed module. Measured on art_probe_001 seed 5017: 42 nodes orphaned
+    # (30 window, 7 doorway, 4 breach, 1 floor) and the compose z-fight gate
+    # went from 15 pairs to 193.
+    #
+    # Both failures are the same missing idea: `_` is a NAME BOUNDARY. A node
+    # belongs to a slot when it IS that slot, or when it is that slot's id
+    # followed by a separator. "VAULTLEDGE_0" does not start with "VAULT_",
+    # so it survives; "ext_0_S_open1_lintel" does start with
+    # "ext_0_S_open1_", so it goes. On the shipping manifest this drops 237
+    # of 303 visual nodes -- every one the substring rule caught except
+    # VAULTLEDGE_0, which is the whole point.
+    #
+    # `protect` is every slot_id in the manifest, INCLUDING the ones that got
+    # no themed module. Such a slot keeps its own greybox visual, so letting
+    # a sibling's prefix drop it would recreate the invisible-collision bug
+    # by another route. Nothing in the current manifest collides this way;
+    # the guard is here so that staying true is not luck.
+    owns = slot_owner_test(slot_ids, protect)
     dropset = set(drop_nodes or ())
     kept_col = kept_vis = dropped = 0
     for n in g.nodes:
         if n.mesh is None:
             continue
         low = (n.name or "").lower()
+        owned = owns(n.name or "")
         if "colonly" in low or "convcolonly" in low:
             kept_col += 1                       # never touch collision/nav
-        elif low in sids or (n.name or "") in dropset:
+        elif owned or (n.name or "") in dropset:
             n.mesh = None                       # themed module covers this slot
             dropped += 1
         else:
@@ -485,9 +537,13 @@ def build_package(slots_path, gameplay_path, module_dir, out_dir, *,
             slots.get("slots", []), theme, style, module_dir)
         covered = roof_covered_nodes(greybox_glb, slots.get("slots", []),
                                      slot_ids)
-        base_strip = strip_greybox_base(greybox_glb,
-                                        os.path.join(out_dir, base_name),
-                                        slot_ids, drop_nodes=covered)
+        base_strip = strip_greybox_base(
+            greybox_glb, os.path.join(out_dir, base_name), slot_ids,
+            drop_nodes=covered,
+            # EVERY slot in the manifest, not just the themed ones. A slot
+            # that got no module keeps its own greybox visual; a sibling
+            # slot's name prefix must never be allowed to drop it.
+            protect=[s.get("slot_id") for s in slots.get("slots", [])])
         base_res = f"res://{base_name}"
 
     # 1. themed building .tscn (res://art/zoo refs), via the validated generator.
@@ -606,12 +662,19 @@ def build_package(slots_path, gameplay_path, module_dir, out_dir, *,
     # called every variant "physically clean". The rule already forbade it;
     # nothing had ever handed it the greybox.
     circ = None
-    if base_strip:
+    if greybox_glb and os.path.exists(greybox_glb):
         try:
             import circulation
-            circ = circulation.check_shell(
-                os.path.join(out_dir, base_strip if isinstance(base_strip, str)
-                             else f"{bid}_base.glb"), slots, gameplay)
+            # THE GREYBOX, NOT THE STRIPPED BASE. `strip_greybox_base`
+            # removes the visual of every slot that got a themed module --
+            # which, since prop slots exist, is every prop. Handing this the
+            # stripped output made it look for exactly the nodes stripping
+            # had just deleted: `{"ok": true, "props": 0}` against eleven
+            # declared props. `verify_placement` above already reads
+            # `greybox_glb` for the same reason; this arm did not, and a
+            # prop's position is identical either way -- the module is
+            # instanced at the slot's transform.
+            circ = circulation.check_shell(greybox_glb, slots, gameplay)
             circ["source"] = "shell"
         except Exception as ex:  # gate must report, never crash the compose
             circ = {"ok": False, "source": "shell",
