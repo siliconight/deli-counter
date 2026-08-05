@@ -135,26 +135,21 @@ func _run(glb_path: String, gp_path: String) -> Dictionary:
 		# hand and re-bake before declaring the shell unwalkable.
 		var n_mi := _count_mesh_instances(level)
 		var n_col := _count_collision_meshes(level)
-		# Prefer the COLLISION world. Falling back to every mesh is only for
-		# a shell that ships no -colonly nodes at all; baking navigation from
-		# visual geometry is what buried the stair ramps.
-		var col_only := n_col > 0
+		# Reported, not acted on. A collision-only feed was tried on
+		# 2026-08-05 to fix stair islands and is measurably a no-op on the
+		# failing shell -- byte-identical navmesh, 165 polys, same three
+		# islands -- while it DOES move other shells (warehouse_a02 222 ->
+		# 209 polys). The real cause was a stale build/, so changing what
+		# every navmesh in the project is baked from would have been an
+		# unforced behaviour change with nothing to show for it. The counts
+		# stay because "how much of this shell is collision geometry" is
+		# worth seeing when a bake looks wrong.
 		print("[nav-gate] parse produced 0 polys (%d MeshInstance3D, %d "
-			% [n_mi, n_col] + "collision); manual feed, collision_only=%s"
-			% str(col_only))
+			% [n_mi, n_col] + "collision); retrying with manual mesh feed")
 		src = NavigationMeshSourceGeometryData3D.new()
-		_add_meshes_manual(level, src, Transform3D.IDENTITY, col_only)
+		_add_meshes_manual(level, src)
 		NavigationServer3D.bake_from_source_geometry_data(nm, src)
 		result["navmesh_polys"] = nm.get_polygon_count()
-		if nm.get_polygon_count() == 0 and col_only:
-			# Do not report a shell unwalkable because its collision world
-			# was unusable; say which feed produced the answer.
-			print("[nav-gate] collision-only feed baked 0 polys; retrying "
-				+ "with all meshes")
-			src = NavigationMeshSourceGeometryData3D.new()
-			_add_meshes_manual(level, src, Transform3D.IDENTITY, false)
-			NavigationServer3D.bake_from_source_geometry_data(nm, src)
-			result["navmesh_polys"] = nm.get_polygon_count()
 	if nm.get_polygon_count() == 0:
 		result["error"] = "navmesh baked 0 polygons"
 		print("[nav-gate] FAIL: navmesh baked 0 polygons -- nothing walkable")
@@ -380,30 +375,23 @@ func _count_collision_meshes(node: Node) -> int:
 
 
 func _add_meshes_manual(node: Node, src: NavigationMeshSourceGeometryData3D,
-		xform: Transform3D = Transform3D.IDENTITY,
-		collision_only: bool = false) -> void:
+		xform: Transform3D = Transform3D.IDENTITY) -> void:
 	## transforms are ACCUMULATED manually: during _initialize the runtime
 	## scene is not inside the tree, so global_transform reads identity
 	##
-	## collision_only: bake the COLLISION world, not the visual one. This
-	## matters most on stairs. A stair ships a smooth ramp collider
-	## (`stairNramp_M-convcolonly`) plus ~19 visual tread boxes
-	## (`stairN_M_0..18`) that have no collision twin. Feeding both buries
-	## the ramp: measured on mansion_a01, the tread tops sit ~0.10 m ABOVE
-	## the ramp at every step along the run, so the ramp never becomes the
-	## walkable surface anywhere and the stair connects by climbing 0.20 m
-	## risers instead. agent_max_climb is 0.15, so it does not connect.
-	## agent_contract.json asserts the opposite -- "they connect by
-	## agent_max_slope, not by climb" -- and that only becomes true when the
-	## bake stops eating the visuals.
+	## EVERY mesh, visual and collision alike. Restricting this to -colonly
+	## nodes was tried and reverted: on the shell that was failing it
+	## produced a byte-identical navmesh, which is itself the useful result
+	## -- the visual meshes are coincident with the collision ones and
+	## contribute nothing the colliders do not already provide.
 	var x := xform
 	if node is Node3D:
 		x = xform * (node as Node3D).transform
 	var mesh: Mesh = _gate_node_mesh(node)
-	if mesh != null and (not collision_only or _is_collision_node(node.name)):
+	if mesh != null:
 		src.add_mesh(mesh, x)
 	for c in node.get_children():
-		_add_meshes_manual(c, src, x, collision_only)
+		_add_meshes_manual(c, src, x)
 
 
 func _islands(adj: Array) -> Array:
