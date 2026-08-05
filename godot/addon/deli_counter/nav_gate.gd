@@ -32,13 +32,29 @@ extends SceneTree
 # doorway and fragment rooms into islands.
 static func _envf(key: String, fallback: float) -> float:
 	var v := OS.get_environment(key)
-	return float(v) if v != "" else fallback
+	if v == "":
+		# Loud, not silent: a fallback here means the contract did not reach
+		# this process, so the bake is NOT running the ratified numbers.
+		print("[nav-gate] WARNING: %s unset -- falling back to %s; the "
+			% [key, str(fallback)] + "agent_contract did not reach this bake")
+		return fallback
+	return float(v)
 
+# THESE FALLBACKS WERE STALE and the comment above claimed they were not.
+# agent_contract.json ratified climb 0.15 (2026-07-28) and cell 0.10
+# (2026-07-29); these still read 0.5 and 0.15, i.e. the numbers from BEFORE
+# both changes. Nothing caught it because `nav_env()` overwrites them on the
+# normal path, so the stale values only surface when the contract fails to
+# load -- exactly the moment you least want a silent substitution.
+#
+# They are now the ratified values, and `_envf` reports when a fallback is
+# actually used, because "which numbers did this bake use" turned out to be
+# unanswerable from the gate's output. See docs/NAV_GATE_FINDINGS.md.
 var AGENT_RADIUS := _envf("DC_NAV_RADIUS", 0.4)
 var AGENT_HEIGHT := _envf("DC_NAV_HEIGHT", 1.8)
-var AGENT_MAX_CLIMB := _envf("DC_NAV_CLIMB", 0.5)
+var AGENT_MAX_CLIMB := _envf("DC_NAV_CLIMB", 0.15)
 var AGENT_MAX_SLOPE := _envf("DC_NAV_SLOPE", 55.0)
-var CELL_SIZE := _envf("DC_NAV_CELL", 0.15)
+var CELL_SIZE := _envf("DC_NAV_CELL", 0.10)
 var CELL_HEIGHT := _envf("DC_NAV_CELL_H", 0.15)
 var SNAP_MAX := _envf("DC_QA_SNAP", 2.0)
 
@@ -118,12 +134,27 @@ func _run(glb_path: String, gp_path: String) -> Dictionary:
 		# back empty for a runtime-generated tree. Feed the mesh instances by
 		# hand and re-bake before declaring the shell unwalkable.
 		var n_mi := _count_mesh_instances(level)
-		print("[nav-gate] parse produced 0 polys (%d MeshInstance3D in tree); "
-			% n_mi + "retrying with manual mesh feed")
+		var n_col := _count_collision_meshes(level)
+		# Prefer the COLLISION world. Falling back to every mesh is only for
+		# a shell that ships no -colonly nodes at all; baking navigation from
+		# visual geometry is what buried the stair ramps.
+		var col_only := n_col > 0
+		print("[nav-gate] parse produced 0 polys (%d MeshInstance3D, %d "
+			% [n_mi, n_col] + "collision); manual feed, collision_only=%s"
+			% str(col_only))
 		src = NavigationMeshSourceGeometryData3D.new()
-		_add_meshes_manual(level, src)
+		_add_meshes_manual(level, src, Transform3D.IDENTITY, col_only)
 		NavigationServer3D.bake_from_source_geometry_data(nm, src)
 		result["navmesh_polys"] = nm.get_polygon_count()
+		if nm.get_polygon_count() == 0 and col_only:
+			# Do not report a shell unwalkable because its collision world
+			# was unusable; say which feed produced the answer.
+			print("[nav-gate] collision-only feed baked 0 polys; retrying "
+				+ "with all meshes")
+			src = NavigationMeshSourceGeometryData3D.new()
+			_add_meshes_manual(level, src, Transform3D.IDENTITY, false)
+			NavigationServer3D.bake_from_source_geometry_data(nm, src)
+			result["navmesh_polys"] = nm.get_polygon_count()
 	if nm.get_polygon_count() == 0:
 		result["error"] = "navmesh baked 0 polygons"
 		print("[nav-gate] FAIL: navmesh baked 0 polygons -- nothing walkable")
@@ -330,18 +361,49 @@ func _count_mesh_instances(node: Node) -> int:
 	return n
 
 
+static func _is_collision_node(name: String) -> bool:
+	## Deli Counter's export convention: collision meshes carry the Godot
+	## -colonly / -convcolonly suffix. At runtime GLTF load the suffix is
+	## inert (no importer runs), so these arrive as ordinary meshes and are
+	## indistinguishable from visuals except by name.
+	var n := name.to_lower()
+	return n.ends_with("-colonly") or n.ends_with("-convcolonly")
+
+
+func _count_collision_meshes(node: Node) -> int:
+	var n := 0
+	if _gate_node_mesh(node) != null and _is_collision_node(node.name):
+		n += 1
+	for c in node.get_children():
+		n += _count_collision_meshes(c)
+	return n
+
+
 func _add_meshes_manual(node: Node, src: NavigationMeshSourceGeometryData3D,
-		xform: Transform3D = Transform3D.IDENTITY) -> void:
+		xform: Transform3D = Transform3D.IDENTITY,
+		collision_only: bool = false) -> void:
 	## transforms are ACCUMULATED manually: during _initialize the runtime
 	## scene is not inside the tree, so global_transform reads identity
+	##
+	## collision_only: bake the COLLISION world, not the visual one. This
+	## matters most on stairs. A stair ships a smooth ramp collider
+	## (`stairNramp_M-convcolonly`) plus ~19 visual tread boxes
+	## (`stairN_M_0..18`) that have no collision twin. Feeding both buries
+	## the ramp: measured on mansion_a01, the tread tops sit ~0.10 m ABOVE
+	## the ramp at every step along the run, so the ramp never becomes the
+	## walkable surface anywhere and the stair connects by climbing 0.20 m
+	## risers instead. agent_max_climb is 0.15, so it does not connect.
+	## agent_contract.json asserts the opposite -- "they connect by
+	## agent_max_slope, not by climb" -- and that only becomes true when the
+	## bake stops eating the visuals.
 	var x := xform
 	if node is Node3D:
 		x = xform * (node as Node3D).transform
 	var mesh: Mesh = _gate_node_mesh(node)
-	if mesh != null:
+	if mesh != null and (not collision_only or _is_collision_node(node.name)):
 		src.add_mesh(mesh, x)
 	for c in node.get_children():
-		_add_meshes_manual(c, src, x)
+		_add_meshes_manual(c, src, x, collision_only)
 
 
 func _islands(adj: Array) -> Array:

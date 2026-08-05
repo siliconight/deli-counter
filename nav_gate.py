@@ -93,11 +93,22 @@ def run_gate(glb_path, gameplay_path=None, godot=None, timeout=300):
     out_path = os.path.splitext(glb_path)[0] + ".navgate.json"
     cmd = [godot, "--headless", "--script", GATE_GD, "--",
            glb_path, gameplay_path, out_path]
+    # THE CONTRACT IS NOT OPTIONAL. `nav_env` overwrites every DC_NAV_* with
+    # the ratified numbers from agent_contract.json, which is what makes the
+    # gate's verdict mean something: an ad-hoc env var cannot quietly change
+    # what got certified. Swallowing the import and passing env=None dropped
+    # the bake back onto nav_gate.gd's own fallbacks -- and those are STALE
+    # (climb 0.5, cell 0.15) against a comment claiming they match the
+    # ratified values. A gate that silently bakes with pre-2026-07-28 numbers
+    # is not a gate. If the contract cannot be loaded, say so and stop.
     try:
         from agent_contract import nav_env
         env = nav_env()
-    except Exception:                                  # noqa: BLE001
-        env = None
+    except Exception as ex:                            # noqa: BLE001
+        return {"glb": glb_path, "exit_code": 2, "ok": False,
+                "error": "could not load agent_contract.nav_env (%s) -- "
+                         "refusing to bake with nav_gate.gd's fallback "
+                         "numbers, which are not the ratified ones" % ex}
     proc = subprocess.run(cmd, capture_output=True, text=True,
                           timeout=timeout, env=env)
     result = {}
@@ -119,8 +130,21 @@ def run_gate(glb_path, gameplay_path=None, godot=None, timeout=300):
 def verdict(result):
     """(ok, lines) human summary for one gate result."""
     if result.get("skipped"):
+        # NOTE: a skip still returns True here, and that is why `check.py`
+        # printed "All checks passed" for months with this gate never having
+        # baked anything. Changing it is a one-line edit; the reason it has
+        # NOT been changed here is that 13 of 103 shells currently fail, so
+        # flipping it now would block commits rather than inform anyone.
+        # `--require` is the supported way to make a missing binary fail.
+        # See docs/NAV_GATE_FINDINGS.md.
         return True, [f"SKIP: {result['reason']}"]
     lines = []
+    # The gate prints `[nav-gate] bake: radius .. cell .. climb .. slope ..`
+    # and this wrapper captured it into result["stdout"] and threw it away.
+    # That is how a bake ran for months with numbers nobody could see.
+    for ln in (result.get("stdout") or "").splitlines():
+        if "bake:" in ln:
+            lines.append(ln.strip().replace("[nav-gate] ", ""))
     ok = result.get("exit_code") == 0 and result.get("ok", False)
     if result.get("error"):
         return False, [f"gate error: {result['error']}"]
