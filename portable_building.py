@@ -229,7 +229,21 @@ def strip_greybox_base(src_glb, out_glb, slot_ids, drop_nodes=()):
     flickering-ceiling bug). build_package resolves these geometrically."""
     from pygltflib import GLTF2
     g = GLTF2().load(src_glb)
-    sids = [s.lower() for s in slot_ids if s]
+    # EXACT match, not substring. A slot's id IS its greybox node's name --
+    # `_record_wall_slot` stores `slot_id: vname`, openings and volumes do the
+    # same -- and `drop_nodes` exists precisely for the slots that are NOT
+    # name-linked (the roof/slab case). So substring matching bought nothing
+    # and cost this:
+    #
+    #   slot_id "VAULT"  is a substring of  node "VAULTLEDGE_0"
+    #
+    # The vault got a themed module, so its id entered this list; the LEDGE has
+    # no module (it is a `vault_ledge`, not a volume) and never could. Its
+    # visual was dropped by the vault's id while its collider stayed, and the
+    # result was a body-blocking box you cannot see. Invisible collision fails
+    # dangerously and silently; a missed drop fails as double geometry, which
+    # is visible on the first walk. Exact match fails the safe way.
+    sids = {s.lower() for s in slot_ids if s}
     dropset = set(drop_nodes or ())
     kept_col = kept_vis = dropped = 0
     for n in g.nodes:
@@ -238,7 +252,7 @@ def strip_greybox_base(src_glb, out_glb, slot_ids, drop_nodes=()):
         low = (n.name or "").lower()
         if "colonly" in low or "convcolonly" in low:
             kept_col += 1                       # never touch collision/nav
-        elif any(sid in low for sid in sids) or (n.name or "") in dropset:
+        elif low in sids or (n.name or "") in dropset:
             n.mesh = None                       # themed module covers this slot
             dropped += 1
         else:
