@@ -1,0 +1,369 @@
+{
+  "kit_name": "Deli Counter",
+  "kit_version": "0.80.0",
+  "schema_version": "1.21.1",
+  "spec": "night_deli.json",
+  "spec_sha256_16": "e92a96b4125dfdb8",
+  "built_utc": "2026-08-05T23:54:48.228648+00:00",
+  "outputs": [
+    "night_deli.glb"
+  ],
+  "expected": {
+    "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
+    "bounds_min": [
+      -19.175,
+      -14.175,
+      -3.6
+    ],
+    "bounds_max": [
+      19.175,
+      14.175,
+      7.6
+    ],
+    "origin": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "story_height": 3.3,
+    "floor_elevations": [
+      0.0,
+      3.3
+    ],
+    "markers": [
+      {
+        "name": "LADDER_0",
+        "type": "ladder",
+        "pos": [
+          8.0,
+          -12.0,
+          0.0
+        ]
+      },
+      {
+        "name": "LADDER_1",
+        "type": "ladder",
+        "pos": [
+          -7.0,
+          -13.0,
+          -3.3
+        ]
+      },
+      {
+        "name": "HATCH_-12_8",
+        "type": "hatch",
+        "pos": [
+          -12.0,
+          8.0,
+          3.3
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_STEALTH_FRONT",
+        "type": "attacker_spawn",
+        "pos": [
+          0.0,
+          -18.0,
+          0.0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_LOUD_ALLEY",
+        "type": "attacker_spawn",
+        "pos": [
+          -22.0,
+          4.0,
+          0.0
+        ]
+      },
+      {
+        "name": "COVER_LOW_AISLE_LEFT",
+        "type": "cover_low",
+        "pos": [
+          -2.0,
+          -9.5,
+          0.0
+        ]
+      },
+      {
+        "name": "COVER_LOW_AISLE_RIGHT",
+        "type": "cover_low",
+        "pos": [
+          2.5,
+          -9.5,
+          0.0
+        ]
+      },
+      {
+        "name": "COVER_HIGH_PALLET_STACK",
+        "type": "cover_high",
+        "pos": [
+          12.0,
+          10.0,
+          0.0
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_CAM_FRONT",
+        "type": "camera_socket",
+        "pos": [
+          -17.5,
+          -12.5,
+          2.6
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_CAM_SERVER",
+        "type": "camera_socket",
+        "pos": [
+          16.0,
+          12.0,
+          5.8
+        ]
+      },
+      {
+        "name": "PATROL_POINT_P01",
+        "type": "patrol_point",
+        "pos": [
+          -2.0,
+          -11.0,
+          0.0
+        ]
+      },
+      {
+        "name": "PATROL_POINT_P02",
+        "type": "patrol_point",
+        "pos": [
+          12.0,
+          -4.0,
+          0.0
+        ]
+      },
+      {
+        "name": "PATROL_POINT_P03",
+        "type": "patrol_point",
+        "pos": [
+          4.0,
+          10.0,
+          0.0
+        ]
+      },
+      {
+        "name": "EXTRACTION_VAN",
+        "type": "extraction",
+        "pos": [
+          0.0,
+          -17.0,
+          0.0
+        ]
+      },
+      {
+        "name": "OBJECTIVE_REGISTER",
+        "type": "objective",
+        "pos": [
+          -12.0,
+          -7.0,
+          0.9
+        ]
+      },
+      {
+        "name": "OBJECTIVE_SERVER",
+        "type": "objective",
+        "pos": [
+          8.0,
+          8.0,
+          4.4
+        ]
+      },
+      {
+        "name": "OBJECTIVE_SAFE",
+        "type": "objective",
+        "pos": [
+          8.5,
+          6.0,
+          -2.2
+        ]
+      },
+      {
+        "name": "LOOT_VAULT_CASH",
+        "type": "loot",
+        "pos": [
+          8.5,
+          6.0,
+          -2.0
+        ]
+      },
+      {
+        "name": "PATROL_POINT_P04",
+        "type": "patrol_point",
+        "pos": [
+          -8.0,
+          5.0,
+          -3.3
+        ]
+      },
+      {
+        "name": "COVER_LOW_AUTO_FRONT_REGISTER_COUNTER",
+        "type": "cover_low",
+        "pos": [
+          -12.0,
+          -7.0,
+          0.0
+        ]
+      },
+      {
+        "name": "COVER_LOW_AUTO_KITCHEN_PREP_TABLE",
+        "type": "cover_low",
+        "pos": [
+          12.0,
+          -4.5,
+          0.0
+        ]
+      },
+      {
+        "name": "COVER_HIGH_AUTO_STOCKROOM_RACK_01",
+        "type": "cover_high",
+        "pos": [
+          2.0,
+          10.5,
+          0.0
+        ]
+      },
+      {
+        "name": "COVER_LOW_AUTO_MANAGER_DESK",
+        "type": "cover_low",
+        "pos": [
+          -9.5,
+          -6.5,
+          3.3
+        ]
+      },
+      {
+        "name": "COVER_HIGH_AUTO_SERVER_RACK_CLUSTER",
+        "type": "cover_high",
+        "pos": [
+          8.0,
+          8.0,
+          3.3
+        ]
+      },
+      {
+        "name": "COVER_LOW_AUTO_APARTMENT_SOFA_COVER",
+        "type": "cover_low",
+        "pos": [
+          7.5,
+          -8.0,
+          3.3
+        ]
+      },
+      {
+        "name": "COVER_HIGH_AUTO_BASEMENT_COLD_ROOM_RACK",
+        "type": "cover_high",
+        "pos": [
+          -8.0,
+          5.0,
+          -3.3
+        ]
+      },
+      {
+        "name": "COVER_LOW_AUTO_COUNTER_ISLAND_UPPER_HALL_0",
+        "type": "cover_low",
+        "pos": [
+          -10.42,
+          6.58,
+          3.3
+        ]
+      },
+      {
+        "name": "COVER_LOW_AUTO_PLANTER_BOX_UPPER_HALL_1",
+        "type": "cover_low",
+        "pos": [
+          -14.71,
+          12.13,
+          3.3
+        ]
+      },
+      {
+        "name": "COVER_LOW_AUTO_COUNTER_ISLAND_UPPER_HALL_2",
+        "type": "cover_low",
+        "pos": [
+          -11.65,
+          11.21,
+          3.3
+        ]
+      },
+      {
+        "name": "COVER_LOW_AUTO_PLANTER_BOX_UPPER_HALL_3",
+        "type": "cover_low",
+        "pos": [
+          -7.61,
+          10.4,
+          3.3
+        ]
+      },
+      {
+        "name": "LANDMARK_CUSTOMER_FLOOR",
+        "type": "landmark",
+        "pos": [
+          -13.5,
+          -8.5,
+          1.0
+        ]
+      },
+      {
+        "name": "LANDMARK_DELI_COUNTER",
+        "type": "landmark",
+        "pos": [
+          -13.5,
+          1.5,
+          1.0
+        ]
+      },
+      {
+        "name": "LANDMARK_STOCKROOM_LOADING",
+        "type": "landmark",
+        "pos": [
+          5.5,
+          10.0,
+          1.0
+        ]
+      },
+      {
+        "name": "LANDMARK_MANAGER_OFFICE",
+        "type": "landmark",
+        "pos": [
+          -10.5,
+          -6.0,
+          4.3
+        ]
+      },
+      {
+        "name": "LANDMARK_SERVER_ROOM",
+        "type": "landmark",
+        "pos": [
+          8.5,
+          8.0,
+          4.3
+        ]
+      },
+      {
+        "name": "LANDMARK_COLD_STORAGE",
+        "type": "landmark",
+        "pos": [
+          -9.0,
+          7.5,
+          -2.3
+        ]
+      },
+      {
+        "name": "LANDMARK_BASEMENT_VAULT",
+        "type": "landmark",
+        "pos": [
+          10.0,
+          7.5,
+          -2.3
+        ]
+      }
+    ]
+  }
+}

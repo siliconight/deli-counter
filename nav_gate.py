@@ -17,6 +17,14 @@ stair's lower and upper nav endpoints; the polygon graph is undirected, so
 the reverse direction is the same proof. Markers get the documented F5
 connectivity check as a warn-only section.
 
+The gate's JSON carries `stairs_ok` (every traversable stair proved a path),
+`ok` (the same value, kept because things read it), and `navigable` -- the
+overall answer, tri-state, null when no marker was checked. verdict() below
+still passes/fails on the STAIRS alone; it prints the navigable state so that
+a shell which traverses fine and cannot reach its objective stops reading
+identically to one that can. Results written before that split carry `ok`
+alone and are reported as unjudged rather than assumed.
+
 Godot discovery: $DC_GODOT, then godot4 / godot / godot4-headless /
 godot-headless on PATH. A Godot 3.x binary is refused (the addon and this
 gate are Godot 4 API). Without a usable binary the gate SKIPS with a note --
@@ -119,6 +127,34 @@ def run_gate(glb_path, gameplay_path=None, godot=None, timeout=300):
         except (OSError, json.JSONDecodeError):
             result = {}
     result.setdefault("glb", glb_path)
+    # SCOPE THE MARKERS HERE, not in the gate. `nav_gate.gd` reports what it
+    # measured -- each marker's position, snap and reachability -- and this is
+    # where those become a verdict, because a rule that lives only in GDScript
+    # is a rule nothing can red-test. The manifest is rewritten so the file on
+    # disk carries ONE `navigable`, the scoped one; the gate's own print of it
+    # is provisional and says so.
+    footprint = []
+    try:
+        with open(gameplay_path, "r", encoding="utf-8") as f:
+            footprint = (json.load(f) or {}).get("footprint") or []
+    except (OSError, json.JSONDecodeError, AttributeError):
+        footprint = []          # scope_markers reports this as UNSCOPED
+    if isinstance(result.get("markers"), dict):
+        scoped, navigable, why = scope_markers(
+            result["markers"], footprint,
+            stairs_ok=bool(result.get("stairs_ok", result.get("ok", False))))
+        result["markers"] = scoped
+        result["navigable"] = navigable
+        result["navigable_reason"] = why
+        if os.path.exists(out_path):
+            try:
+                with open(out_path, "w", encoding="utf-8") as f:
+                    json.dump(result, f, indent=2)
+            except OSError:
+                # The verdict in memory is still correct; a manifest that could
+                # not be rewritten is a stale file, not a wrong answer.
+                print(f"[nav-gate] WARNING: could not rewrite {out_path} with "
+                      f"the scoped verdict")
     result["exit_code"] = proc.returncode
     result["stdout"] = proc.stdout
     if proc.returncode not in (0, 1):     # 2/etc = the gate itself broke
@@ -127,8 +163,132 @@ def run_gate(glb_path, gameplay_path=None, godot=None, timeout=300):
     return result
 
 
+#: Marker types the gate asks about. Mirrors the list in `nav_gate.gd`
+#: `_check_markers`; kept here because the scoping reads the rows it emits.
+SCOPE_TYPES = ("objective", "extraction", "loot", "patrol_point", "rescue")
+
+#: Who is supposed to answer for a marker this bake cannot reach. Written into
+#: every scoped manifest so that "deferred" is a record with an owner rather
+#: than a check that quietly stopped running.
+DEFERRED_TO = ("site assembly: Lot lays the ground and streets these markers "
+               "stand on, so reachability for them is a site-scope question "
+               "and no building bake can answer it")
+
+
+def marker_is_exterior(row, footprint):
+    """Is this marker outside the building? None when that cannot be decided.
+
+    `gameplay.json` carries `footprint` and every marker's `x, y`, so this is
+    arithmetic on data both manifests already hold. It replaces a snap-distance
+    threshold, which CORRELATES with being outside the building without being
+    that fact: over the 135-shell library the two classifiers disagree ten
+    times, six of them dropping a real interior defect as benign.
+
+    The boundary is inclusive -- a marker exactly on the footprint line is
+    INSIDE. A building owns its own threshold, and the other convention would
+    defer doorway markers to a scope that has no reason to care about them.
+    """
+    if not footprint or len(footprint) < 2:
+        return None
+    try:
+        half_x = abs(float(footprint[0])) / 2.0
+        half_y = abs(float(footprint[1])) / 2.0
+        return (abs(float(row.get("x", 0.0))) > half_x + 1e-6
+                or abs(float(row.get("y", 0.0))) > half_y + 1e-6)
+    except (TypeError, ValueError):
+        return None
+
+
+def scope_markers(markers, footprint, stairs_ok=True):
+    """(markers, navigable, reason) -- judge only what this bake can see.
+
+    Returns a NEW markers dict. `checked`, `reachable` and `unreachable` are
+    carried through untouched: 135 `.navgate.json` files and
+    `library_census.py` read them, and narrowing those in place would silently
+    change what every existing file means. The scoped answer arrives alongside
+    them as `interior_*` and `exterior_deferred`.
+
+    `navigable` is TRI-STATE and null is load-bearing in three distinct
+    situations, all of which mean nothing was measured:
+
+      * no `detail` rows -- the result predates this split;
+      * no footprint -- there is no inside to be on the wrong side of;
+      * every checked marker deferred -- `parking_garage` ships one marker and
+        it is exterior, and reading that as "navigable" is how a shell with
+        nothing in it becomes the library's best candidate.
+
+    Defaulting any of those to "all interior" would restore the old verdict
+    under a new name. Defaulting to "all exterior" would pass everything.
+    """
+    markers = dict(markers or {})
+    rows = markers.get("detail")
+    if not isinstance(rows, list):
+        return markers, None, (
+            "UNSCOPED: this result carries no per-marker detail, so nothing "
+            "here knows which markers are inside the building -- re-run the "
+            "gate to classify them")
+    flags = [marker_is_exterior(r, footprint) for r in rows]
+    if any(f is None for f in flags):
+        return markers, None, (
+            "UNSCOPED: gameplay.json carries no usable `footprint`, so inside "
+            "and outside are undefined for this shell and no marker can be "
+            "scoped")
+
+    interior = [r for r, ext in zip(rows, flags) if not ext]
+    exterior = [r for r, ext in zip(rows, flags) if ext]
+    unreached = [r for r in interior if not r.get("reachable")]
+    markers["interior_checked"] = len(interior)
+    markers["interior_reachable"] = len(interior) - len(unreached)
+    markers["interior_unreachable"] = [
+        "%s (snap %.1fm)" % (r.get("name", "?"), float(r.get("snap") or 0.0))
+        for r in unreached]
+    markers["exterior_deferred"] = [
+        {"name": r.get("name", "?"), "type": r.get("type", ""),
+         "snap": r.get("snap"), "reachable": bool(r.get("reachable"))}
+        for r in exterior]
+    markers["scope_note"] = DEFERRED_TO
+
+    tail = ("; %d deferred to site scope (%s)"
+            % (len(exterior), ", ".join(r.get("name", "?")
+                                        for r in exterior[:4]))
+            if exterior else "")
+    if not stairs_ok:
+        return markers, False, (
+            "a stair is not traversable, so this shell cannot be walked "
+            "whatever its markers say" + tail)
+    if not interior:
+        # TWO different ways to have measured nothing, and they are not the
+        # same fact. `warehouse` has no spawn marker at all, so the gate
+        # checked zero markers; `parking_garage` checks one and it is on the
+        # street. Both are unjudged, and a manifest that describes the first
+        # as "every checked marker is outside the building" is telling the
+        # next reader something untrue about the shell.
+        if not rows:
+            return markers, None, (
+                "UNJUDGED: no marker was checked at all (no spawn marker, or "
+                "nothing of a checked type) -- nothing asked whether this "
+                "shell connects")
+        return markers, None, (
+            "UNJUDGED: every checked marker is outside the building, so this "
+            "bake measured nothing about it" + tail)
+    if unreached:
+        return markers, False, (
+            "%d of %d interior marker(s) unreachable from spawn: %s"
+            % (len(unreached), len(interior),
+               ", ".join(markers["interior_unreachable"][:4])) + tail)
+    return markers, True, (
+        "stairs traverse and all %d interior marker(s) reachable from spawn"
+        % len(interior) + tail)
+
+
 def verdict(result):
-    """(ok, lines) human summary for one gate result."""
+    """(ok, lines) human summary for one gate result.
+
+    The returned `ok` is the STAIR verdict and nothing more -- the same thing
+    the gate's exit code means, unchanged. The reachability answer goes into
+    `lines` as the gate's own tri-state `navigable`; promoting it to the
+    return value is a separate decision with 107 of 137 shells behind it.
+    """
     if result.get("skipped"):
         # NOTE: a skip still returns True here, and that is why `check.py`
         # printed "All checks passed" for months with this gate never having
@@ -145,7 +305,12 @@ def verdict(result):
     for ln in (result.get("stdout") or "").splitlines():
         if "bake:" in ln:
             lines.append(ln.strip().replace("[nav-gate] ", ""))
-    ok = result.get("exit_code") == 0 and result.get("ok", False)
+    # `ok` in the gate's JSON has always meant STAIRS ONLY, so read the key
+    # that now says so. The fallback is not defensive habit: 137 .navgate.json
+    # files sit in build/ that were written before the split and carry `ok`
+    # alone, and re-running them all needs a Godot binary.
+    stairs_ok = result.get("stairs_ok", result.get("ok", False))
+    ok = result.get("exit_code") == 0 and stairs_ok
     if result.get("error"):
         return False, [f"gate error: {result['error']}"]
     lines.append(f"navmesh polys: {result.get('navmesh_polys', '?')}")
@@ -158,6 +323,33 @@ def verdict(result):
                      f"reachable from spawn")
         for u in mk.get("unreachable", []):
             lines.append(f"  unreachable: {u}")
+    else:
+        lines.append("markers: 0 checked -- reachability UNJUDGED")
+    # The scoped counts, when the result has them. Printed BESIDE the raw ones
+    # rather than instead of them: 99 shells read "1 of 2 unreachable" and are
+    # perfectly sound buildings, and the only way to see that from this output
+    # is to see both numbers at once.
+    if "interior_checked" in mk:
+        lines.append(f"markers (interior): {mk.get('interior_reachable', 0)}/"
+                     f"{mk['interior_checked']} reachable -- what this bake "
+                     f"can actually judge")
+        for u in mk.get("interior_unreachable", []):
+            lines.append(f"  interior unreachable: {u}")
+        for d in mk.get("exterior_deferred", []):
+            lines.append(f"  deferred to site scope: {d.get('name')} "
+                         f"(snap {d.get('snap')}m, outside the footprint)")
+    # Say the tri-state out loud. Reading this output used to require noticing
+    # that "markers: 0/1 reachable from spawn" sat one line under a verdict
+    # that said the shell passed -- which is how 101 shells reported ok: true
+    # with something unreachable in them.
+    if "navigable" in result:
+        nav = result["navigable"]
+        word = "yes" if nav is True else ("NO" if nav is False else "UNJUDGED")
+        why = result.get("navigable_reason") or ""
+        lines.append(f"navigable: {word}" + (f" -- {why}" if why else ""))
+    else:
+        lines.append("navigable: UNJUDGED -- this result predates the "
+                     "stairs/markers split; its `ok` means stairs only")
     return ok, lines
 
 

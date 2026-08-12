@@ -19,6 +19,36 @@ extends SceneTree
 ## Exit code 0 = every traversable stair passes; 1 = failures; 2 = bad input.
 ## Machine-readable results go to out.json (default: alongside the glb).
 ##
+## THREE VERDICT KEYS, because "ok" was answering a narrower question than its
+## name suggests:
+##   stairs_ok -- every traversable stair proved a path. What the exit code
+##                has always gated on.
+##   ok        -- the SAME value as stairs_ok. Kept because consumers read it
+##                (nav_gate.py verdict(), library_census.py). It is not an
+##                overall verdict and never was.
+##   navigable -- true / false / null. THIS SCRIPT NO LONGER COMPUTES IT and
+##                always writes null here; nav_gate.py fills it in. See the
+##                scope section below for why that is not a regression.
+## Measured 2026-08-08 over the 137 shells with a .navgate.json: 107 have an
+## unreachable marker and 101 of those report ok: true. The exit code is
+## deliberately unchanged by that split -- see the verdict section in _run.
+##
+## MARKER SCOPE: THIS BAKE COVERS ONE BUILDING, AND SOME MARKERS ARE NOT IN IT.
+## An extraction point stands on the street. Lot lays the street when it
+## assembles the site, so a per-building navmesh cannot contain it. Measured
+## 2026-08-08 over all 135 shells: 99 have an extraction marker outside their
+## own footprint and unreachable, and every one of those answers is about the
+## bake's extent rather than the building. This script therefore reports what
+## it MEASURED -- each marker's level-space position, snap distance and
+## reachability, in markers.detail -- and leaves the inside/outside decision
+## to nav_gate.py, which owns `navigable` and rewrites this file with it.
+##
+## The classification is four lines of arithmetic and could trivially live
+## here. It does not, because a rule that exists only in GDScript is a rule
+## nothing in the test suite can put wrong on purpose first, and this gate has
+## already shipped two verdicts that were never red-tested. See
+## test_marker_scope.py and docs/NAV_GATE_FINDINGS.md.
+##
 ## Coordinates: gameplay.json is authored in level space (Z-up, +Y north).
 ## The glTF export converts to Godot's Y-up as (x, y, z) -> (x, z, -y); this
 ## script applies the same conversion to every endpoint and marker.
@@ -82,7 +112,14 @@ func _initialize() -> void:
 
 
 func _run(glb_path: String, gp_path: String) -> Dictionary:
-	var result := {"glb": glb_path, "ok": false, "stairs": [], "markers": {},
+	# `ok` is stairs-only (see the verdict section at the end of _run);
+	# `navigable` is tri-state and starts NULL so that an early return -- bad
+	# input, unloadable glb, 0-poly navmesh -- reports "never judged" rather
+	# than a verdict nothing computed. On those paths the `error` key is what
+	# says the gate broke.
+	var result := {"glb": glb_path, "ok": false, "stairs_ok": false,
+				   "navigable": null, "navigable_reason": "not evaluated",
+				   "stairs": [], "markers": {},
 				   "navmesh_polys": 0, "error": ""}
 
 	var gp_text := FileAccess.get_file_as_string(gp_path)
@@ -159,6 +196,13 @@ func _run(glb_path: String, gp_path: String) -> Dictionary:
 
 	var graph := _poly_graph(nm)
 	var islands := _islands(graph)
+	# REPORTED, NOT GATED -- a decision, not an oversight. Requiring
+	# islands == 1 was considered on 2026-08-08 and rejected: final_stand bakes
+	# 12 and nothing shows all 12 are meant to connect (nine of them are 2-poly
+	# fragments), while a roof reachable only by a ladder the navmesh does not
+	# model is a legitimate island. What MUST connect is measured directly by
+	# marker reachability below. Do not fold an island count into `navigable`
+	# without a measurement saying which islands are supposed to be reachable.
 	result["islands"] = _island_summary(nm, islands)
 	print("[nav-gate] islands: %d -- %s" % [result["islands"].size(),
 		str(result["islands"])])
@@ -201,11 +245,51 @@ func _run(glb_path: String, gp_path: String) -> Dictionary:
 	# -- markers: the documented F5 check, headless (secondary, warn-only) ---
 	result["markers"] = _check_markers(gp, nm, graph)
 
+	# -- verdict -------------------------------------------------------------
+	# `failures` counts STAIRS and only stairs: the loop above is the only
+	# thing that increments it, and the marker section is warn-only. So the
+	# value below is the stair verdict, and it is now written under a name that
+	# says so. `ok` KEEPS WRITING THE SAME VALUE -- it is retained only because
+	# consumers read it (nav_gate.py verdict(), library_census.py); removing
+	# the key would make them read a missing value as False and start failing
+	# shells that did not fail. It is not an overall verdict.
+	var stairs_ok := failures == 0
+	result["stairs_ok"] = stairs_ok
+	result["ok"] = stairs_ok
+
+	# `navigable` IS NOT COMPUTED HERE ANY MORE, and writing a provisional one
+	# would be worse than writing none: this script cannot tell an unreachable
+	# objective from an extraction point standing on a street that does not
+	# exist yet, and on 99 of 135 shells that difference is the whole answer.
+	# It emitted `false` for all 99 until 2026-08-08, and a Level Factory
+	# selection rule read those as broken buildings.
+	#
+	# So: null, with a reason that names what is missing. nav_gate.py reads
+	# markers.detail together with gameplay.json's footprint, fills this in and
+	# rewrites the file. A bare `godot --script nav_gate.gd` run therefore
+	# reports UNSCOPED -- which is exactly true of it, and better than a number
+	# that looks like a verdict.
+	var mk: Dictionary = result["markers"]
+	var checked: int = int(mk.get("checked", 0))
+	var reachable: int = int(mk.get("reachable", 0))
+	result["navigable"] = null
+	result["navigable_reason"] = \
+		"UNSCOPED: %d/%d marker(s) reachable, but this bake covers ONE " \
+		% [reachable, checked] + "building and cannot tell which markers are " \
+		+ "inside it -- nav_gate.py scopes markers.detail against the " \
+		+ "footprint and writes the verdict"
+	print("[nav-gate] markers: %d/%d reachable, scope UNRESOLVED here -- " \
+		% [reachable, checked] + "nav_gate.py decides interior vs deferred")
+
+	# THE EXIT CODE IS DELIBERATELY UNCHANGED. Gating on `navigable` would fail
+	# 107 of 137 shells today. This repo brings a library to zero before a gate
+	# starts refusing (HEADROOM_ENFORCED, CONTAINMENT_ENFORCED are both False
+	# for that reason). This section only stops the gate asserting something it
+	# never measured; promoting it is a separate decision.
 	if failures > 0:
 		print("[nav-gate] FAIL: %d stair(s) not traversable" % failures)
 		_exit_code = 1
 	else:
-		result["ok"] = true
 		print("[nav-gate] all traversable stairs pass in both directions")
 	return result
 
@@ -312,11 +396,18 @@ func _check_markers(gp: Variant, nm: NavigationMesh, graph: Array) -> Dictionary
 			spawn = _to_godot([m.get("x", 0.0), m.get("y", 0.0), m.get("z", 0.0)])
 			break
 	if spawn == Vector3.INF:
-		return {"checked": 0, "reachable": 0, "unreachable": []}
+		return {"checked": 0, "reachable": 0, "unreachable": [], "detail": []}
 	var s_hit := _snap(nm, spawn)
 	var checked := 0
 	var reachable := 0
 	var unreachable := []
+	# One row per checked marker, so the scoping in nav_gate.py has the facts
+	# it needs and does not have to re-derive any of them. x/y are LEVEL SPACE
+	# on purpose: gameplay.json's `footprint` is measured in the same space,
+	# and handing over Godot's Y-up coordinates would compare a marker against
+	# a box on a different axis -- which is the shape of half the defects this
+	# gate has found.
+	var detail := []
 	for m in markers:
 		var t: String = str(m.get("type", ""))
 		if not (t in ["objective", "extraction", "loot", "patrol_point", "rescue"]):
@@ -324,14 +415,29 @@ func _check_markers(gp: Variant, nm: NavigationMesh, graph: Array) -> Dictionary
 		checked += 1
 		var p := _to_godot([m.get("x", 0.0), m.get("y", 0.0), m.get("z", 0.0)])
 		var hit := _snap(nm, p)
+		var mname := "%s_%s" % [t, str(m.get("id", "?"))]
+		# Written as a plain if rather than a typed one-liner: `hit["dist"]`
+		# is a Variant, and this gate has already lost an evening to GDScript
+		# refusing to infer a type off one.
+		var reached := false
 		if hit["dist"] <= SNAP_MAX and _connected(graph, s_hit["poly"], hit["poly"]):
+			reached = true
+		detail.append({"name": mname, "type": t,
+					   "x": float(m.get("x", 0.0)),
+					   "y": float(m.get("y", 0.0)),
+					   "snap": snappedf(hit["dist"], 0.01),
+					   "reachable": reached})
+		if reached:
 			reachable += 1
 		else:
-			unreachable.append("%s_%s (snap %.1fm)" % [t, str(m.get("id", "?")), hit["dist"]])
+			# Format unchanged: `library_census.py` and 135 manifests on disk
+			# parse this string.
+			unreachable.append("%s (snap %.1fm)" % [mname, hit["dist"]])
 	print("[nav-check] %d/%d markers reachable by a nav agent from the spawn" % [reachable, checked])
 	if not unreachable.is_empty():
 		print("[nav-check] UNREACHABLE: %s" % ", ".join(unreachable))
-	return {"checked": checked, "reachable": reachable, "unreachable": unreachable}
+	return {"checked": checked, "reachable": reachable,
+			"unreachable": unreachable, "detail": detail}
 
 
 func _gate_node_mesh(node: Node) -> Mesh:

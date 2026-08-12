@@ -23,16 +23,22 @@ import circulation
 
 
 def pairs(root):
-    """(<id>, glb, gameplay) for every built shell that carries both files."""
+    """(<id>, glb, gameplay) for every built shell that carries both files.
+
+    The id is the path RELATIVE to root, minus the extension -- not the
+    basename. A Level Factory workspace names every generated shell
+    ``shell.glb``, so a basename id collapses four different buildings into
+    four rows all called "shell" and the report becomes unreadable exactly
+    where the generated path is under test.
+    """
     out = []
     for glb in sorted(glob.glob(os.path.join(root, "**", "*.glb"),
                                 recursive=True)):
-        stem = glb[:-4]
-        for cand in (f"{stem}.gameplay.json", f"{stem}.gameplay.json".replace(
-                ".glb", "")):
-            if os.path.isfile(cand):
-                out.append((os.path.basename(stem), glb, cand))
-                break
+        gp = f"{glb[:-4]}.gameplay.json"
+        if not os.path.isfile(gp):
+            continue
+        rel = os.path.relpath(glb[:-4], root).replace(os.sep, "/")
+        out.append((rel, glb, gp))
     return out
 
 

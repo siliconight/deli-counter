@@ -26,6 +26,35 @@ build/mansion_a01.glb                          built 2026-07-21
 stairwell.ramp_foot_extension (fixes this)   written 2026-07-29
 ```
 
+**CORRECTION, later the same day.** The stale-build diagnosis holds -- a
+rebuild fixed six of the seven shells -- but the attribution below to
+`ramp_foot_extension` is WRONG and is kept only so the reasoning is
+inspectable. Measured after the rebuild, `mansion_a01`'s ramp is
+geometrically IDENTICAL to the pre-rebuild one: span 4.172 x 3.982 against
+4.180 x 3.982, incline length 5.518 against 5.519, and the same +0.191 m lip
+at BOTH ends. The stair went from `no_path` to `ok` with the ramp unchanged,
+so something else in the build between 2026-07-21 and 2026-08-05 is what
+fixed it. The 0.191 m lip is also not the discriminator: mansion carries it
+at both ends and passes, while `cr_deli` reaches its floors properly at every
+foot (-0.039 m) and fails on a +0.210 m head.
+
+What the islands actually say, post-rebuild:
+
+```
+mansion_a01  165 polys,  2 islands  [163 @ -3.65..4.15] [2 @ 7.9]   -> connected
+cr_deli      544 polys, 10 islands  [107 @ -3.0..0.30] [186 @ 0.30..0.45]
+                                    [184 @ 0.60..6.90] + six fragments
+             cr_deli_stair_0: lower on island 2, upper on island 3
+```
+
+cr_deli breaks at **y 0.30-0.60**, near the FOOT of the ground-to-first
+flight, not at the head. The 186-poly island sitting in that band is most
+likely counter and shelf tops -- it is a dense hand-authored deli, and
+mansion is sparse. That is a different failure from the one described below
+and it has not been diagnosed. It needs the navmesh looked at in Godot rather
+than inferred from source geometry; four mechanisms were proposed from static
+measurement here and all four were refuted by their own data.
+
 `ramp_foot_extension` exists precisely for this failure, and its docstring
 names it exactly:
 
@@ -163,3 +192,122 @@ same four markers, same snaps). Likely one spec is a copy of the other.
 compares modification times, which a fresh clone can trip. Recording a hash
 of the geometry sources into each shell's manifest at build time would be
 exact; worth doing when `build.py` next changes.
+
+---
+
+# Marker scope: the discriminator is geometry, not snap distance
+
+**2026-08-08.** `marker_scope_census.py` over all 135 shells in `build/`.
+Pure: `<id>.gameplay.json` and `<id>.navgate.json`, both already on disk.
+
+The section above is right that most unreachable markers are benign exterior
+ones, and it ends by saying the distinction "is a real improvement and is NOT
+yet implemented". Between then and now it stayed unimplemented, and Level
+Factory grew a themed-selection rule keyed on `markers.reachable == checked`.
+That rule kept **6 of 134** shells. Not one of the six was kept for being a
+better building:
+
+```
+parking_garage        has NO extraction marker at all
+cr_garage             extraction placed INSIDE the building
+bank_branch_a04       extraction 1.0 m outside -- snap landed on connected mesh
+freight_terminal_a03  extraction 1.0 m outside -- same
+pvp_station_ref       extraction 1.0 m outside -- same
+gas_station_a02       extraction 2.0 m outside -- one of only two lucky at that range
+```
+
+A filter meant to select the buildings most ready to wear a theme selected the
+two least finished ones and four geometric accidents. It was reverted.
+
+## SNAP_MAX is a proxy, and it comes apart in both directions
+
+The rule proposed above -- `snap > SNAP_MAX` means exterior and benign --
+correlates with being outside the building without being the same fact.
+Over every unreachable marker in the library, the two classifiers disagree
+ten times:
+
+```
+corner_deli_heist_01  objective_SAFE       snap 2.6   INSIDE  -- snap rule drops a real defect
+corner_deli_heist_01  loot_VAULT_CASH      snap 2.4   INSIDE  -- ditto
+cr_deli               objective_SAFE       snap 2.6   INSIDE
+cr_deli               loot_VAULT_CASH      snap 2.4   INSIDE
+night_deli            objective_SAFE       snap 2.6   INSIDE
+night_deli            loot_VAULT_CASH      snap 2.4   INSIDE
+cr_gas                extraction_FORECOURT snap 1.2   OUTSIDE -- snap rule reports a benign one
+gas_station           extraction_FORECOURT snap 1.2   OUTSIDE
+gas_street            extraction_FORECOURT snap 1.2   OUTSIDE
+gs_corner_station     extraction_FORECOURT snap 1.2   OUTSIDE
+```
+
+Six dropped defects is the expensive direction. A gate that declines to look
+is the failure this file already records twice.
+
+## The fact both manifests already hold
+
+`gameplay.json` carries `footprint` and every marker's `x, y`. Inside-ness is
+arithmetic, not inference:
+
+```
+exterior  ==  |x| > footprint[0]/2  or  |y| > footprint[1]/2
+```
+
+Measured over all 135 shells:
+
+```
+extraction OUTSIDE the footprint x UNREACHABLE      99
+extraction OUTSIDE the footprint x reachable         8
+extraction INSIDE  the footprint x reachable        11
+extraction INSIDE  the footprint x UNREACHABLE       1
+no extraction marker at all                         16
+```
+
+The 8 exterior-but-reachable are not better buildings either -- they are
+buildings whose extraction sits closer to the wall than the bake's inset:
+
+```
+1.0 m outside:   0 unreachable,  4 reachable
+2.0 m outside:  89 unreachable,  2 reachable
+```
+
+Deli Counter places `EXTRACTION_STREET` at a fixed 2.0 m beyond the south
+wall on most templates, and the reported snap is that overhang plus a
+constant ~0.6 m -- 50 shells read `overhang 2.0 -> snap 2.6`. The number is a
+template constant, not 99 independent placements.
+
+An extraction point stands on the street. Lot lays the street when it
+assembles the site. A per-building navmesh cannot contain it, so asking a
+building-scope bake whether it is reachable puts the question at a scope
+where its subject does not exist. The answer is "no" 99 times and none of
+those answers are about the building.
+
+## What the verdict looks like with exterior markers excluded
+
+Keeping UNJUDGED as its own state, because `checked == 0` is a question
+nobody asked:
+
+```
+interior markers all reachable  103 shells   43 families
+an interior marker unreachable   15 shells   14 families
+no interior marker judged        17 shells   17 families
+```
+
+`final_stand` -- walked 2026-08-07 with a stair into a wall and an objective
+nobody can reach -- is still refused, on both conditions. `pharmacy_a02`,
+which stood up in the same walk, is still admitted. The corrected rule keeps
+the true positive and drops 92 false ones.
+
+The 15 are the signal that was buried: `office`, `deli_a02`, `gas_station_a01`,
+`strip_retail_a01` and `primos_pizza` each have an objective or loot marker on
+a disconnected island, and every one of them currently reports `passed`.
+
+## Open
+
+**Q4. Where does the exterior verdict get made?** Splitting the building-scope
+check without building the site-scope one deletes a check rather than moving
+it. Deferring `extraction_*` to "judged at site assembly" is only honest if
+something at site assembly judges it. Undecided.
+
+**Q5. `cr_garage` extracts INSIDE itself.** Its `EXTRACTION_VEHICLE` sits
+2.0 m inside the footprint. That is reachable and therefore invisible to every
+gate, but a heist you extract from without leaving the building is a design
+question, not a nav one.

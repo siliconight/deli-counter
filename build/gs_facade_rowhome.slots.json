@@ -1,5 +1,5 @@
 {
-  "slot_manifest_version": "1.0.0",
+  "slot_manifest_version": "1.2.0",
   "building_id": "gs_facade_rowhome",
   "theme": "greybox",
   "module_library": "art/zoo",
@@ -10,10 +10,47 @@
   },
   "slots": [
     {
+      "slot_id": "roof_footprint",
+      "role": "roof",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "roof_greybox_01",
+      "kit_axis": "theme",
+      "wall": null,
+      "story": 2,
+      "facing": "up",
+      "room": null,
+      "transform": {
+        "translation": [
+          0.0,
+          0.0,
+          6.05
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          8.0,
+          11.0,
+          0.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "trimesh"
+      }
+    },
+    {
       "slot_id": "ext_0_N_seg0",
       "role": "wall",
       "size_mod": "full",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_0_N",
@@ -23,7 +60,7 @@
         "translation": [
           -3.0,
           5.5,
-          1.55
+          1.4
         ],
         "rot_y": 0,
         "scale": [
@@ -36,7 +73,7 @@
         "dims": [
           2.0,
           0.3,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -48,6 +85,7 @@
       "role": "wall",
       "size_mod": "full",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_0_N",
@@ -57,7 +95,7 @@
         "translation": [
           -1.0,
           5.5,
-          1.55
+          1.4
         ],
         "rot_y": 0,
         "scale": [
@@ -70,7 +108,7 @@
         "dims": [
           2.0,
           0.3,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -82,6 +120,7 @@
       "role": "wall",
       "size_mod": "full",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_0_N",
@@ -91,7 +130,7 @@
         "translation": [
           1.0,
           5.5,
-          1.55
+          1.4
         ],
         "rot_y": 0,
         "scale": [
@@ -104,7 +143,7 @@
         "dims": [
           2.0,
           0.3,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -116,6 +155,7 @@
       "role": "wall",
       "size_mod": "full",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_0_N",
@@ -125,7 +165,7 @@
         "translation": [
           3.0,
           5.5,
-          1.55
+          1.4
         ],
         "rot_y": 0,
         "scale": [
@@ -138,7 +178,7 @@
         "dims": [
           2.0,
           0.3,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -150,6 +190,7 @@
       "role": "wall",
       "size_mod": "full",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_0_S",
@@ -159,7 +200,7 @@
         "translation": [
           -3.0,
           -5.5,
-          1.55
+          1.4
         ],
         "rot_y": 180,
         "scale": [
@@ -172,7 +213,7 @@
         "dims": [
           2.0,
           0.3,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -184,6 +225,7 @@
       "role": "wall",
       "size_mod": "full",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_0_S",
@@ -193,7 +235,7 @@
         "translation": [
           -1.0,
           -5.5,
-          1.55
+          1.4
         ],
         "rot_y": 180,
         "scale": [
@@ -206,7 +248,7 @@
         "dims": [
           2.0,
           0.3,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -218,6 +260,7 @@
       "role": "wall",
       "size_mod": "full",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_0_S",
@@ -227,7 +270,7 @@
         "translation": [
           1.0,
           -5.5,
-          1.55
+          1.4
         ],
         "rot_y": 180,
         "scale": [
@@ -240,7 +283,7 @@
         "dims": [
           2.0,
           0.3,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -252,6 +295,7 @@
       "role": "wall",
       "size_mod": "full",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_0_S",
@@ -261,7 +305,7 @@
         "translation": [
           3.0,
           -5.5,
-          1.55
+          1.4
         ],
         "rot_y": 180,
         "scale": [
@@ -274,7 +318,7 @@
         "dims": [
           2.0,
           0.3,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -286,6 +330,7 @@
       "role": "wall",
       "size_mod": "full",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_0_E",
@@ -295,7 +340,7 @@
         "translation": [
           4.0,
           -4.5,
-          1.55
+          1.4
         ],
         "rot_y": 90,
         "scale": [
@@ -308,7 +353,7 @@
         "dims": [
           0.3,
           2.0,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -320,6 +365,7 @@
       "role": "wall",
       "size_mod": "full",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_0_E",
@@ -329,7 +375,7 @@
         "translation": [
           4.0,
           -2.5,
-          1.55
+          1.4
         ],
         "rot_y": 90,
         "scale": [
@@ -342,7 +388,7 @@
         "dims": [
           0.3,
           2.0,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -354,6 +400,7 @@
       "role": "wall",
       "size_mod": "full",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_0_E",
@@ -363,7 +410,7 @@
         "translation": [
           4.0,
           -0.5,
-          1.55
+          1.4
         ],
         "rot_y": 90,
         "scale": [
@@ -376,7 +423,7 @@
         "dims": [
           0.3,
           2.0,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -388,6 +435,7 @@
       "role": "wall",
       "size_mod": "full",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_0_E",
@@ -397,7 +445,7 @@
         "translation": [
           4.0,
           1.5,
-          1.55
+          1.4
         ],
         "rot_y": 90,
         "scale": [
@@ -410,7 +458,7 @@
         "dims": [
           0.3,
           2.0,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -422,6 +470,7 @@
       "role": "wall",
       "size_mod": "full",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_0_E",
@@ -431,7 +480,7 @@
         "translation": [
           4.0,
           3.5,
-          1.55
+          1.4
         ],
         "rot_y": 90,
         "scale": [
@@ -444,7 +493,7 @@
         "dims": [
           0.3,
           2.0,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -456,6 +505,7 @@
       "role": "wall",
       "size_mod": "end",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wallEnd_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_0_E",
@@ -465,20 +515,20 @@
         "translation": [
           4.0,
           5.0,
-          1.55
+          1.4
         ],
         "rot_y": 90,
         "scale": [
           0.3,
           1.0,
-          3.1
+          2.8
         ]
       },
       "fit": {
         "dims": [
           0.3,
           1.0,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -490,6 +540,7 @@
       "role": "wall",
       "size_mod": "full",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_0_W",
@@ -499,7 +550,7 @@
         "translation": [
           -4.0,
           -4.5,
-          1.55
+          1.4
         ],
         "rot_y": 270,
         "scale": [
@@ -512,7 +563,7 @@
         "dims": [
           0.3,
           2.0,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -524,6 +575,7 @@
       "role": "wall",
       "size_mod": "full",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_0_W",
@@ -533,7 +585,7 @@
         "translation": [
           -4.0,
           -2.5,
-          1.55
+          1.4
         ],
         "rot_y": 270,
         "scale": [
@@ -546,7 +598,7 @@
         "dims": [
           0.3,
           2.0,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -558,6 +610,7 @@
       "role": "wall",
       "size_mod": "full",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_0_W",
@@ -567,7 +620,7 @@
         "translation": [
           -4.0,
           -0.5,
-          1.55
+          1.4
         ],
         "rot_y": 270,
         "scale": [
@@ -580,7 +633,7 @@
         "dims": [
           0.3,
           2.0,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -592,6 +645,7 @@
       "role": "wall",
       "size_mod": "full",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_0_W",
@@ -601,7 +655,7 @@
         "translation": [
           -4.0,
           1.5,
-          1.55
+          1.4
         ],
         "rot_y": 270,
         "scale": [
@@ -614,7 +668,7 @@
         "dims": [
           0.3,
           2.0,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -626,6 +680,7 @@
       "role": "wall",
       "size_mod": "full",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_0_W",
@@ -635,7 +690,7 @@
         "translation": [
           -4.0,
           3.5,
-          1.55
+          1.4
         ],
         "rot_y": 270,
         "scale": [
@@ -648,7 +703,7 @@
         "dims": [
           0.3,
           2.0,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -660,6 +715,7 @@
       "role": "wall",
       "size_mod": "end",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wallEnd_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_0_W",
@@ -669,20 +725,20 @@
         "translation": [
           -4.0,
           5.0,
-          1.55
+          1.4
         ],
         "rot_y": 270,
         "scale": [
           0.3,
           1.0,
-          3.1
+          2.8
         ]
       },
       "fit": {
         "dims": [
           0.3,
           1.0,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -694,6 +750,7 @@
       "role": "wall",
       "size_mod": "full",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_1_N",
@@ -703,7 +760,7 @@
         "translation": [
           -3.0,
           5.5,
-          4.65
+          4.5
         ],
         "rot_y": 0,
         "scale": [
@@ -716,7 +773,7 @@
         "dims": [
           2.0,
           0.3,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -728,6 +785,7 @@
       "role": "wall",
       "size_mod": "full",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_1_N",
@@ -737,7 +795,7 @@
         "translation": [
           -1.0,
           5.5,
-          4.65
+          4.5
         ],
         "rot_y": 0,
         "scale": [
@@ -750,7 +808,7 @@
         "dims": [
           2.0,
           0.3,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -762,6 +820,7 @@
       "role": "wall",
       "size_mod": "full",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_1_N",
@@ -771,7 +830,7 @@
         "translation": [
           1.0,
           5.5,
-          4.65
+          4.5
         ],
         "rot_y": 0,
         "scale": [
@@ -784,7 +843,7 @@
         "dims": [
           2.0,
           0.3,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -796,6 +855,7 @@
       "role": "wall",
       "size_mod": "full",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_1_N",
@@ -805,7 +865,7 @@
         "translation": [
           3.0,
           5.5,
-          4.65
+          4.5
         ],
         "rot_y": 0,
         "scale": [
@@ -818,7 +878,7 @@
         "dims": [
           2.0,
           0.3,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -830,6 +890,7 @@
       "role": "wall",
       "size_mod": "full",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_1_S",
@@ -839,7 +900,7 @@
         "translation": [
           -3.0,
           -5.5,
-          4.65
+          4.5
         ],
         "rot_y": 180,
         "scale": [
@@ -852,7 +913,7 @@
         "dims": [
           2.0,
           0.3,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -864,6 +925,7 @@
       "role": "wall",
       "size_mod": "full",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_1_S",
@@ -873,7 +935,7 @@
         "translation": [
           -1.0,
           -5.5,
-          4.65
+          4.5
         ],
         "rot_y": 180,
         "scale": [
@@ -886,7 +948,7 @@
         "dims": [
           2.0,
           0.3,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -898,6 +960,7 @@
       "role": "wall",
       "size_mod": "full",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_1_S",
@@ -907,7 +970,7 @@
         "translation": [
           1.0,
           -5.5,
-          4.65
+          4.5
         ],
         "rot_y": 180,
         "scale": [
@@ -920,7 +983,7 @@
         "dims": [
           2.0,
           0.3,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -932,6 +995,7 @@
       "role": "wall",
       "size_mod": "full",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_1_S",
@@ -941,7 +1005,7 @@
         "translation": [
           3.0,
           -5.5,
-          4.65
+          4.5
         ],
         "rot_y": 180,
         "scale": [
@@ -954,7 +1018,7 @@
         "dims": [
           2.0,
           0.3,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -966,6 +1030,7 @@
       "role": "wall",
       "size_mod": "full",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_1_E",
@@ -975,7 +1040,7 @@
         "translation": [
           4.0,
           -4.5,
-          4.65
+          4.5
         ],
         "rot_y": 90,
         "scale": [
@@ -988,7 +1053,7 @@
         "dims": [
           0.3,
           2.0,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -1000,6 +1065,7 @@
       "role": "wall",
       "size_mod": "full",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_1_E",
@@ -1009,7 +1075,7 @@
         "translation": [
           4.0,
           -2.5,
-          4.65
+          4.5
         ],
         "rot_y": 90,
         "scale": [
@@ -1022,7 +1088,7 @@
         "dims": [
           0.3,
           2.0,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -1034,6 +1100,7 @@
       "role": "wall",
       "size_mod": "full",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_1_E",
@@ -1043,7 +1110,7 @@
         "translation": [
           4.0,
           -0.5,
-          4.65
+          4.5
         ],
         "rot_y": 90,
         "scale": [
@@ -1056,7 +1123,7 @@
         "dims": [
           0.3,
           2.0,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -1068,6 +1135,7 @@
       "role": "wall",
       "size_mod": "full",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_1_E",
@@ -1077,7 +1145,7 @@
         "translation": [
           4.0,
           1.5,
-          4.65
+          4.5
         ],
         "rot_y": 90,
         "scale": [
@@ -1090,7 +1158,7 @@
         "dims": [
           0.3,
           2.0,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -1102,6 +1170,7 @@
       "role": "wall",
       "size_mod": "full",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_1_E",
@@ -1111,7 +1180,7 @@
         "translation": [
           4.0,
           3.5,
-          4.65
+          4.5
         ],
         "rot_y": 90,
         "scale": [
@@ -1124,7 +1193,7 @@
         "dims": [
           0.3,
           2.0,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -1136,6 +1205,7 @@
       "role": "wall",
       "size_mod": "end",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wallEnd_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_1_E",
@@ -1145,20 +1215,20 @@
         "translation": [
           4.0,
           5.0,
-          4.65
+          4.5
         ],
         "rot_y": 90,
         "scale": [
           0.3,
           1.0,
-          3.1
+          2.8
         ]
       },
       "fit": {
         "dims": [
           0.3,
           1.0,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -1170,6 +1240,7 @@
       "role": "wall",
       "size_mod": "full",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_1_W",
@@ -1179,7 +1250,7 @@
         "translation": [
           -4.0,
           -4.5,
-          4.65
+          4.5
         ],
         "rot_y": 270,
         "scale": [
@@ -1192,7 +1263,7 @@
         "dims": [
           0.3,
           2.0,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -1204,6 +1275,7 @@
       "role": "wall",
       "size_mod": "full",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_1_W",
@@ -1213,7 +1285,7 @@
         "translation": [
           -4.0,
           -2.5,
-          4.65
+          4.5
         ],
         "rot_y": 270,
         "scale": [
@@ -1226,7 +1298,7 @@
         "dims": [
           0.3,
           2.0,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -1238,6 +1310,7 @@
       "role": "wall",
       "size_mod": "full",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_1_W",
@@ -1247,7 +1320,7 @@
         "translation": [
           -4.0,
           -0.5,
-          4.65
+          4.5
         ],
         "rot_y": 270,
         "scale": [
@@ -1260,7 +1333,7 @@
         "dims": [
           0.3,
           2.0,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -1272,6 +1345,7 @@
       "role": "wall",
       "size_mod": "full",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_1_W",
@@ -1281,7 +1355,7 @@
         "translation": [
           -4.0,
           1.5,
-          4.65
+          4.5
         ],
         "rot_y": 270,
         "scale": [
@@ -1294,7 +1368,7 @@
         "dims": [
           0.3,
           2.0,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -1306,6 +1380,7 @@
       "role": "wall",
       "size_mod": "full",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_1_W",
@@ -1315,7 +1390,7 @@
         "translation": [
           -4.0,
           3.5,
-          4.65
+          4.5
         ],
         "rot_y": 270,
         "scale": [
@@ -1328,7 +1403,7 @@
         "dims": [
           0.3,
           2.0,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],
@@ -1340,6 +1415,7 @@
       "role": "wall",
       "size_mod": "end",
       "style": 1,
+      "material": "concrete",
       "current_ref": "wallEnd_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_1_W",
@@ -1349,20 +1425,20 @@
         "translation": [
           -4.0,
           5.0,
-          4.65
+          4.5
         ],
         "rot_y": 270,
         "scale": [
           0.3,
           1.0,
-          3.1
+          2.8
         ]
       },
       "fit": {
         "dims": [
           0.3,
           1.0,
-          3.1
+          2.8
         ],
         "pivot": "center",
         "openings": [],

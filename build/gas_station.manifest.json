@@ -1,0 +1,134 @@
+{
+  "kit_name": "Deli Counter",
+  "kit_version": "0.80.0",
+  "schema_version": "1.21.1",
+  "spec": "gas_station.json",
+  "spec_sha256_16": "9a76a0fa38a34cd4",
+  "built_utc": "2026-08-05T21:17:54.091776+00:00",
+  "outputs": [
+    "gas_station.glb"
+  ],
+  "expected": {
+    "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
+    "bounds_min": [
+      -16.15,
+      -24.0,
+      -0.3
+    ],
+    "bounds_max": [
+      16.15,
+      11.15,
+      5.2
+    ],
+    "origin": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "story_height": 4.2,
+    "floor_elevations": [
+      0.0
+    ],
+    "markers": [
+      {
+        "name": "COVER_LOW_REG",
+        "type": "cover_low",
+        "pos": [
+          -12.0,
+          -7.0,
+          0.0
+        ]
+      },
+      {
+        "name": "COVER_HIGH_AISLE1",
+        "type": "cover_high",
+        "pos": [
+          -8.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "COVER_HIGH_AISLE2",
+        "type": "cover_high",
+        "pos": [
+          -3.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "COVER_HIGH_RACK1",
+        "type": "cover_high",
+        "pos": [
+          11.0,
+          -6.0,
+          0.0
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_01",
+        "type": "camera_socket",
+        "pos": [
+          -15.0,
+          10.0,
+          3.5
+        ]
+      },
+      {
+        "name": "OBJECTIVE_REGISTER",
+        "type": "objective",
+        "pos": [
+          -12.0,
+          -7.0,
+          0.9
+        ]
+      },
+      {
+        "name": "OBJECTIVE_SAFE",
+        "type": "objective",
+        "pos": [
+          14.5,
+          9.0,
+          0.5
+        ]
+      },
+      {
+        "name": "LOOT_SAFECASH",
+        "type": "loot",
+        "pos": [
+          14.5,
+          9.0,
+          0.6
+        ]
+      },
+      {
+        "name": "EXTRACTION_FORECOURT",
+        "type": "extraction",
+        "pos": [
+          0.0,
+          -20.0,
+          0.0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_A",
+        "type": "attacker_spawn",
+        "pos": [
+          -8.0,
+          -22.0,
+          0.0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_B",
+        "type": "attacker_spawn",
+        "pos": [
+          8.0,
+          -22.0,
+          0.0
+        ]
+      }
+    ]
+  }
+}

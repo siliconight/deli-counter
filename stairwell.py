@@ -22,6 +22,9 @@ GATE THE DECLARED CONTRACT, WARN THE REST -- EXCEPT BROKEN GEOMETRY:
     are UNIVERSAL hard errors as of v0.78: a stair walking into a wall is
     broken geometry regardless of role or authorship. Every shipped spec
     was migrated to comply; new specs must comply from day one.
+  - HEADROOM findings (STAIR_HEADROOM_BLOCKED / STAIR_HEADROOM_UNDER_SLAB)
+    are the same kind of physical fact but are WARNINGS while two shipped
+    specs still breach; HEADROOM_ENFORCED promotes them.
   - Stairs stamped `meta.generated_by` additionally require an explicit
     role and facing (STAIR_MISSING_ROLE / STAIR_MISSING_FACING).
   - A declared `stack_id` is a contract too: stairs sharing one must chain
@@ -33,6 +36,7 @@ reason maps straight back to the document.
 
 import math
 
+import agent_contract
 import tactical
 
 # ---------------------------------------------------------------------------
@@ -83,6 +87,13 @@ EXIT_STEP_OFF = 0.8             # m the builder's slab hole extends past the
                                 # top flight; the upper landing starts after it
 _SOLID_BAND = 0.45              # a wall this close to the entry/exit edge =
                                 # "the tread faces solid geometry"
+
+# Headroom rollout. The measurement is the same kind of physical fact as the
+# clearance findings above -- a body either fits under the thing or it does
+# not -- but two shipped specs breach it (see the HEADROOM section), and this
+# repo brings a library to zero before a gate starts refusing builds. Same
+# switch, same reason, as CONTAINMENT_ENFORCED.
+HEADROOM_ENFORCED = False       # -> True once the library measures clean
 
 
 # ---------------------------------------------------------------------------
@@ -320,6 +331,290 @@ def clearance_findings(spec, st, sid):
                                  f"landing on story {story} lies in unrouted "
                                  f"space -- no room covers the "
                                  f"{'approach' if lower else 'departure'}."))
+    return findings
+
+
+# ---------------------------------------------------------------------------
+# HEADROOM  --  a flight is a VOLUME; everything above is a rect
+# ---------------------------------------------------------------------------
+# clearance_findings proves the LONGITUDINAL axis and containment_findings the
+# LATERAL one. Both are planar: they ask where a body may walk, never how much
+# room it has above its head. agent_contract ratified min_headroom_m years'
+# worth of stairs ago and nothing ever read it, so a flight that tops out under
+# a desk reads as a clean stair here and as a path in the engine nav gate --
+# which bakes at agent_height 1.8 and proves a polygon route, not clearance.
+#
+# The measurement needs the tread a body is standing ON, not the reserved
+# column. footprint_rect is the column, and asking "is anything above any part
+# of this footprint" reports every prop on the floor plate the stair passes.
+# So ascent_surfaces rebuilds the builder's own tread arithmetic. That is a
+# deliberate duplication: the alternative is a Blender build per spec, and the
+# whole point is a check that can be run over the library in a second.
+#
+# KEEP IN STEP WITH deli_counter.Builder._stairs / _stair_l_shaped /
+# _stair_spiral. If a flight's step count, run split, or landing depth changes
+# there, it changes here. test_headroom.py pins the two ends of every flight
+# against the storey heights, which is what catches a drift.
+
+
+def _stair_pt(st, lx, ly):
+    """A point in the stair's own unrotated frame -> world, under `facing`.
+    The same mapping as the builder's `Builder._stair_pt`; `_rot_pt` above is
+    the half already shared with footprint_rect."""
+    dx, dy = _rot_pt(getattr(st, "facing", "N") or "N", lx - st.x, ly - st.y)
+    return st.x + dx, st.y + dy
+
+
+def _stair_sz(st, sx, sy):
+    """Local (across, along) extents -> world (x, y); E/W swap the axes."""
+    return (sy, sx) if (getattr(st, "facing", "N") or "N") in ("E", "W") \
+        else (sx, sy)
+
+
+def _step_count(st, H):
+    """Steps per storey. Derived from story_height and step_rise so the rise
+    stays near the authored target; `n_steps` overrides. Clamps differ by
+    style because the builder's do."""
+    if st.style == "spiral":
+        return st.n_steps or max(10, min(24, round(H / st.step_rise)))
+    return st.n_steps or max(6, min(40, round(H / st.step_rise)))
+
+
+def ascent_surfaces(spec, st):
+    """Every walking surface the stair BUILDS, bottom to top.
+
+    Returns ``[(story, x, y, z_top, size_x, size_y)]`` in world coordinates --
+    the TOP face of each tread, turn landing and spiral wedge, because that is
+    the plane a body's feet are on. The reserved footprint is not usable here:
+    it is one rect for the whole stair and carries no z.
+
+    Empty for a stair that spans no stories.
+    """
+    H = spec.story_height
+    lo = min(st.from_story, st.to_story)
+    hi = max(st.from_story, st.to_story)
+    n = _step_count(st, H)
+    out = []
+
+    if st.style == "spiral":
+        step_h = H / n
+        r = st.width                      # `width` is the RADIUS on a spiral
+        tread = 2 * math.pi * r / n * 1.15
+        for s in range(lo, hi):
+            for i in range(n):
+                a = 2 * math.pi * (i + 0.5) / n
+                out.append((s, st.x + math.cos(a) * r / 2,
+                            st.y + math.sin(a) * r / 2,
+                            s * H + step_h * (i + 1), r, tread))
+        return out
+
+    if st.style == "l_shaped":
+        half = max(1, n // 2)
+        n2 = max(1, n - half)
+        step_h = H / n
+        dA, dB = st.run / half, st.run / n2
+        w = st.width
+        riseA = H * half / n
+        yB = st.y + st.run / 2 + w / 2    # leg B's local row
+        for s in range(lo, hi):
+            z = s * H
+            for i in range(half):         # leg A ascends local +Y
+                cy = st.y + dA * (i + 0.5) - st.run / 2
+                x, y = _stair_pt(st, st.x, cy)
+                sx, sy = _stair_sz(st, w, dA)
+                out.append((s, x, y, z + step_h * (i + 1), sx, sy))
+            for i in range(n2):           # leg B ascends local +X
+                cx = st.x + w / 2 + dB * (i + 0.5)
+                x, y = _stair_pt(st, cx, yB)
+                sx, sy = _stair_sz(st, dB, w)
+                out.append((s, x, y, z + riseA + step_h * (i + 1), sx, sy))
+        return out
+
+    step_d, step_h = st.run / n, H / n
+    x_off = 0.0 if st.style == "straight" else st.width / 2
+    for s in range(lo, hi):
+        z = s * H
+        leg = s - lo
+        # a leg that ends in a turn landing has no top tread: the landing IS
+        # the top surface, spanning both runs (builder comment, _stairs).
+        has_landing = (st.style == "switchback" and s < hi - 1)
+        if st.style == "scissor":
+            flights = [(1, st.x - x_off), (-1, st.x + x_off)]
+        else:
+            sign = 1 if (leg % 2 == 0 or st.style == "straight") else -1
+            flights = [(sign, st.x + (x_off if sign > 0 else -x_off))]
+        for sign, sxl in flights:
+            for i in range(n - 1 if has_landing else n):
+                cy = st.y + sign * (step_d * (i + 0.5) - st.run / 2)
+                x, y = _stair_pt(st, sxl, cy)
+                sx, sy = _stair_sz(st, st.width, step_d)
+                out.append((s, x, y, z + step_h * (i + 1), sx, sy))
+            if has_landing:
+                land_far = 0.7 * step_d
+                land_d = step_d + land_far
+                land_y = st.y + sign * (st.run / 2 + land_far - land_d / 2)
+                land_w = ((st.width + 2 * x_off + 0.8) if st.cut_slabs
+                          else st.width + 2 * x_off)
+                x, y = _stair_pt(st, st.x, land_y)
+                sx, sy = _stair_sz(st, land_w, land_d)
+                out.append((s, x, y, z + H, sx, sy))
+    return out
+
+
+def slab_openings(spec):
+    """``{slab story: [world rects]}`` -- everything that opens a slab.
+
+    Authored `spec.slab_holes` PLUS the cut each `cut_slabs` stair makes. The
+    second half is not in the spec at review time: the builder appends it to
+    `spec.slab_holes` during `_stairs`, which is why `_record_slab_slots` has
+    to run after the stair pass and why the containment section refuses to
+    read slab holes at all. Re-deriving it here is what makes the headroom
+    question answerable without a build.
+
+    A hole with ``story == s`` cuts the slab whose TOP face is the floor of
+    storey s -- the same key `floors.room_voids` uses, restated nowhere else.
+    """
+    out = {}
+    for h in getattr(spec, "slab_holes", ()) or ():
+        out.setdefault(int(getattr(h, "story", 0)), []).append(
+            (h.x - h.size_x / 2, h.y - h.size_y / 2,
+             h.x + h.size_x / 2, h.y + h.size_y / 2))
+    for st in getattr(spec, "stairs", ()) or ():
+        if not getattr(st, "cut_slabs", True):
+            continue
+        lo = min(st.from_story, st.to_story)
+        hi = max(st.from_story, st.to_story)
+        for s in range(lo, hi):
+            if st.style == "spiral":
+                r = st.width
+                rect = (st.x - r - 0.25, st.y - r - 0.25,
+                        st.x + r + 0.25, st.y + r + 0.25)
+            elif st.style == "l_shaped":
+                w = st.width
+                lx0, lx1 = st.x - w / 2 - 0.3, st.x + w / 2 + st.run + 0.8
+                ly0, ly1 = st.y - st.run / 2 - 0.3, st.y + st.run / 2 + w + 0.3
+                px, py = _stair_pt(st, (lx0 + lx1) / 2, (ly0 + ly1) / 2)
+                sx, sy = _stair_sz(st, lx1 - lx0, ly1 - ly0)
+                rect = (px - sx / 2, py - sy / 2, px + sx / 2, py + sy / 2)
+            else:
+                x_off = 0.0 if st.style == "straight" else st.width / 2
+                clear = 0.8              # walk-off depth past the landing
+                hole_w = st.width + 2 * x_off + clear
+                if st.style == "scissor":
+                    px, py = _stair_pt(st, st.x, st.y)
+                    sx, sy = _stair_sz(st, hole_w, st.run + 2 * clear)
+                else:
+                    leg = s - lo
+                    sign = (1 if (leg % 2 == 0 or st.style == "straight")
+                            else -1)
+                    near, far = st.run / 2 + 0.3, st.run / 2 + clear
+                    px, py = _stair_pt(st, st.x,
+                                       st.y + sign * (far - near) / 2)
+                    sx, sy = _stair_sz(st, hole_w, far + near)
+                rect = (px - sx / 2, py - sy / 2, px + sx / 2, py + sy / 2)
+            out.setdefault(s + 1, []).append(rect)
+    return out
+
+
+def _slab_undersides(spec):
+    """``{slab story: underside z}`` for every slab the builder lays.
+
+    Mirrors `Builder._slabs`: one per storey from the basement up, plus the
+    roof cap at index `n_stories` using roof_thick. ``roof == "none"`` drops
+    the top cap entirely, so the top flight of such a building looks at sky.
+    """
+    H = spec.story_height
+    base = -1 if getattr(spec, "has_basement", False) else 0
+    top = spec.n_stories
+    out = {}
+    for k in range(base, top + 1):
+        if k == top and getattr(spec, "roof", "solid") == "none":
+            continue
+        thick = ((getattr(spec, "roof_thick", None) or spec.floor_thick)
+                 if k == top else spec.floor_thick)
+        out[k] = k * H - thick
+    return out
+
+
+def headroom_findings(spec, st, sid):
+    """Clear height over the ascent path, against the RATIFIED min_headroom.
+
+    Returns ``[(code, message)]`` -- STAIR_HEADROOM_UNDER_SLAB when the first
+    thing above a walking surface is a slab that nothing opens, and
+    STAIR_HEADROOM_BLOCKED when it is a solid volume. One finding per
+    obstruction, quoting the WORST sample, because a flight passes nineteen
+    treads under the same desk and nineteen identical findings is noise.
+
+    A volume whose bottom sits AT or BELOW the surface is skipped: that is an
+    object ON the stair, which Rule 10's STAIR_VOLUME_INVADED already reports
+    by name. Reporting it twice under two codes would make the same defect
+    look like two.
+
+    A decorative_nontraversable stair is exempt for the reason the module
+    header gives: it is explicitly not walked.
+    """
+    if getattr(st, "role", None) in DECORATIVE_ROLES:
+        return []
+    clear = agent_contract.min_headroom()
+    surfaces = ascent_surfaces(spec, st)
+    if not surfaces:
+        return []
+    exterior = bool(getattr(st, "exterior", False))
+    openings = {} if exterior else slab_openings(spec)
+    # an exterior tower stands OUTSIDE the shell against a facade, so the
+    # storey slabs are not above it and the slab half does not apply (s8.4).
+    slabs = {} if exterior else _slab_undersides(spec)
+    eps = 1e-6
+    worst = {}
+
+    for _s, x, y, zs, sx, sy in surfaces:
+        rect = (x - sx / 2, y - sy / 2, x + sx / 2, y + sy / 2)
+
+        ceiling, label, code = None, None, None
+        for k in sorted(slabs):
+            zc = slabs[k]
+            if zc <= zs + eps:
+                continue
+            # the sampled surface's CENTRE decides: a tread whose centre is
+            # under the opening is a tread a body walks through.
+            if any(r[0] <= x <= r[2] and r[1] <= y <= r[3]
+                   for r in openings.get(k, ())):
+                continue
+            ceiling, label = zc, f"the slab at story {k}"
+            code = "STAIR_HEADROOM_UNDER_SLAB"
+            break
+        if ceiling is not None and ceiling - zs < clear - eps:
+            key = (code, label)
+            if key not in worst or ceiling - zs < worst[key][0]:
+                worst[key] = (ceiling - zs, zs, x, y)
+
+        for v in spec.volumes:
+            nm = v.name.lower()
+            if any(kw in nm for kw in ("stair", "ramp", "land")):
+                continue                 # the stair's own furniture
+            if getattr(v, "collision", "convex") == "none":
+                continue                 # nothing a body can hit
+            vrect = (v.x - v.size_x / 2, v.y - v.size_y / 2,
+                     v.x + v.size_x / 2, v.y + v.size_y / 2)
+            if not _rects_overlap(vrect, rect):
+                continue
+            vb = v.z - v.size_z / 2
+            if vb <= zs + eps:
+                continue                 # on the stair -> Rule 10, not this
+            if vb - zs < clear - eps:
+                key = ("STAIR_HEADROOM_BLOCKED", f"volume '{v.name}'")
+                if key not in worst or vb - zs < worst[key][0]:
+                    worst[key] = (vb - zs, zs, x, y)
+
+    findings = []
+    for (code, label), (gap, zs, x, y) in sorted(
+            worst.items(), key=lambda kv: kv[1][0]):
+        findings.append((code,
+                         f"'{sid}' has {gap:.2f} m of headroom under {label} "
+                         f"at ({x:.1f}, {y:.1f}) where the walking surface is "
+                         f"z={zs:.2f} -- the contract ratifies {clear:g} m "
+                         f"(agent_contract.json clearances.min_headroom_m). A "
+                         f"body tops out into it."))
     return findings
 
 
@@ -1104,6 +1399,12 @@ def check(spec):
         # keep their role/generated gating.)
         for code, msg in clearance_findings(spec, st, sid):
             errors.append(f"STAIRWELL {code}: {msg}")
+
+        # headroom: the same physical question on the vertical axis. Warned
+        # until the library measures clean; HEADROOM_ENFORCED promotes it.
+        for code, msg in headroom_findings(spec, st, sid):
+            (errors if HEADROOM_ENFORCED else warnings).append(
+                f"STAIRWELL {code}: {msg}")
 
         # lateral containment: the flight/opening SIDES must be closed (a body
         # may fall ALONG a stair, never OUT of it). Warned until deli_counter

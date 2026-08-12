@@ -1,11 +1,280 @@
 {
   "kit_name": "Deli Counter",
-  "kit_version": "0.47.1",
-  "schema_version": "1.8.0",
+  "kit_version": "0.80.0",
+  "schema_version": "1.21.1",
   "spec": "foundry_heist_vertical.json",
-  "spec_sha256_16": "43aa92e59551205c",
-  "built_utc": "2026-06-30T13:05:15.255183+00:00",
+  "spec_sha256_16": "985765a3d70622f8",
+  "built_utc": "2026-08-05T21:17:40.873784+00:00",
   "outputs": [
     "foundry_heist_vertical.glb"
-  ]
+  ],
+  "expected": {
+    "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
+    "bounds_min": [
+      -21.15,
+      -16.04089,
+      -3.7
+    ],
+    "bounds_max": [
+      21.15,
+      15.15,
+      11.3
+    ],
+    "origin": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "story_height": 3.4,
+    "floor_elevations": [
+      0.0,
+      3.4,
+      6.8
+    ],
+    "markers": [
+      {
+        "name": "LADDER_0",
+        "type": "ladder",
+        "pos": [
+          18.0,
+          8.0,
+          0.0
+        ]
+      },
+      {
+        "name": "LADDER_1",
+        "type": "ladder",
+        "pos": [
+          -18.0,
+          6.0,
+          -3.4
+        ]
+      },
+      {
+        "name": "LADDER_2",
+        "type": "ladder",
+        "pos": [
+          -16.0,
+          12.0,
+          3.4
+        ]
+      },
+      {
+        "name": "HATCH_16_10",
+        "type": "hatch",
+        "pos": [
+          16.0,
+          10.0,
+          6.8
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_CREW_VAN_A",
+        "type": "attacker_spawn",
+        "pos": [
+          -2.0,
+          -22.0,
+          0.0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_CREW_VAN_B",
+        "type": "attacker_spawn",
+        "pos": [
+          2.0,
+          -22.0,
+          0.0
+        ]
+      },
+      {
+        "name": "EXTRACTION_VAN",
+        "type": "extraction",
+        "pos": [
+          0.0,
+          -22.0,
+          0.0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN_STEALTH_LOBBY_PATROL",
+        "type": "defender_spawn",
+        "pos": [
+          -14.0,
+          -9.0,
+          0.0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN_STEALTH_CATWALK_PATROL",
+        "type": "defender_spawn",
+        "pos": [
+          -2.0,
+          -10.0,
+          3.4
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN_ALARM_CONTROL_RESPONSE",
+        "type": "defender_spawn",
+        "pos": [
+          -12.0,
+          8.0,
+          3.4
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN_ALARM_LOADING_RESPONSE",
+        "type": "defender_spawn",
+        "pos": [
+          17.0,
+          -7.0,
+          0.0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN_LOUD_VAULT_PUSH",
+        "type": "defender_spawn",
+        "pos": [
+          8.5,
+          9.0,
+          -3.4
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN_LOUD_ROOF_DROP",
+        "type": "defender_spawn",
+        "pos": [
+          13.0,
+          -8.0,
+          6.8
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN_ESCAPE_NORTH_PINCH",
+        "type": "defender_spawn",
+        "pos": [
+          -14.0,
+          14.0,
+          0.0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN_ESCAPE_LOADING_PINCH",
+        "type": "defender_spawn",
+        "pos": [
+          20.0,
+          -8.0,
+          0.0
+        ]
+      },
+      {
+        "name": "PATROL_POINT_LOBBY_LOOP_01",
+        "type": "patrol_point",
+        "pos": [
+          -15.0,
+          -10.0,
+          0.0
+        ]
+      },
+      {
+        "name": "PATROL_POINT_GROUND_LOOP_02",
+        "type": "patrol_point",
+        "pos": [
+          0.0,
+          -10.0,
+          0.0
+        ]
+      },
+      {
+        "name": "PATROL_POINT_CATWALK_LOOP_03",
+        "type": "patrol_point",
+        "pos": [
+          0.0,
+          -10.0,
+          3.4
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_CAM_LOBBY",
+        "type": "camera_socket",
+        "pos": [
+          -19.0,
+          -13.0,
+          2.4
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_CAM_VAULT_APPROACH",
+        "type": "camera_socket",
+        "pos": [
+          2.0,
+          -13.0,
+          -1.0
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_CAM_ARCHIVE",
+        "type": "camera_socket",
+        "pos": [
+          19.0,
+          13.0,
+          5.8
+        ]
+      },
+      {
+        "name": "COVER_LOW_COVER_MACHINE_A",
+        "type": "cover_low",
+        "pos": [
+          0.0,
+          -9.0,
+          0.0
+        ]
+      },
+      {
+        "name": "COVER_LOW_COVER_LOADING_A",
+        "type": "cover_low",
+        "pos": [
+          17.0,
+          -7.0,
+          0.0
+        ]
+      },
+      {
+        "name": "COVER_HIGH_COVER_ROOF_AC_A",
+        "type": "cover_high",
+        "pos": [
+          -14.0,
+          -9.0,
+          6.8
+        ]
+      },
+      {
+        "name": "COVER_HIGH_COVER_VAULT_SAFE",
+        "type": "cover_high",
+        "pos": [
+          14.5,
+          0.0,
+          -3.4
+        ]
+      },
+      {
+        "name": "DOOR_SOCKET_DOOR_VAULT_CAGE",
+        "type": "door_socket",
+        "pos": [
+          7.0,
+          0.0,
+          -3.4
+        ]
+      },
+      {
+        "name": "DOOR_SOCKET_DOOR_CONTROL_ROOM",
+        "type": "door_socket",
+        "pos": [
+          -5.0,
+          4.0,
+          3.4
+        ]
+      }
+    ]
+  }
 }

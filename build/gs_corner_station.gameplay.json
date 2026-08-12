@@ -312,7 +312,7 @@
       "story": 0,
       "x": 8.96,
       "y": 11.0,
-      "z": 1.65,
+      "z": 1.5,
       "width": 3.0,
       "height": 3.0,
       "sill": 0.0,
@@ -329,7 +329,7 @@
       "story": 0,
       "x": 14.72,
       "y": 11.0,
-      "z": 1.25,
+      "z": 1.1,
       "width": 1.2,
       "height": 2.2,
       "sill": 0.0,
@@ -346,7 +346,7 @@
       "story": 0,
       "x": -9.6,
       "y": 11.0,
-      "z": 1.25,
+      "z": 1.1,
       "width": 1.6,
       "height": 2.2,
       "sill": 0.0,
@@ -363,7 +363,7 @@
       "story": 0,
       "x": -5.12,
       "y": -11.0,
-      "z": 1.25,
+      "z": 1.1,
       "width": 1.8,
       "height": 2.2,
       "sill": 0.0,
@@ -380,7 +380,7 @@
       "story": 0,
       "x": 5.12,
       "y": -11.0,
-      "z": 1.25,
+      "z": 1.1,
       "width": 1.8,
       "height": 2.2,
       "sill": 0.0,
@@ -397,7 +397,7 @@
       "story": 0,
       "x": -12.8,
       "y": -11.0,
-      "z": 2.35,
+      "z": 2.2,
       "width": 3.0,
       "height": 2.4,
       "sill": 1.0,
@@ -414,7 +414,7 @@
       "story": 0,
       "x": 12.8,
       "y": -11.0,
-      "z": 2.35,
+      "z": 2.2,
       "width": 3.0,
       "height": 2.4,
       "sill": 1.0,
@@ -431,7 +431,7 @@
       "story": 0,
       "x": 16.0,
       "y": -4.4,
-      "z": 1.25,
+      "z": 1.1,
       "width": 1.1,
       "height": 2.2,
       "sill": 0.0,
@@ -448,7 +448,7 @@
       "story": 0,
       "x": -16.0,
       "y": -2.2,
-      "z": 1.25,
+      "z": 1.1,
       "width": 1.1,
       "height": 2.2,
       "sill": 0.0,
@@ -465,7 +465,7 @@
       "story": 0,
       "x": -16.0,
       "y": 6.6,
-      "z": 2.05,
+      "z": 1.9,
       "width": 1.6,
       "height": 1.4,
       "sill": 1.2,
@@ -482,7 +482,7 @@
       "story": 0,
       "x": 6.0,
       "y": -6.6,
-      "z": 1.25,
+      "z": 1.1,
       "width": 1.4,
       "height": 2.2,
       "sill": 0.0,
@@ -499,7 +499,7 @@
       "story": 0,
       "x": 6.0,
       "y": 6.6,
-      "z": 1.25,
+      "z": 1.1,
       "width": 1.1,
       "height": 2.2,
       "sill": 0.0,
@@ -516,7 +516,7 @@
       "story": 0,
       "x": 11.0,
       "y": 2.0,
-      "z": 1.25,
+      "z": 1.1,
       "width": 1.2,
       "height": 2.2,
       "sill": 0.0,
@@ -533,7 +533,7 @@
       "story": 0,
       "x": 14.25,
       "y": -8.0,
-      "z": 1.25,
+      "z": 1.1,
       "width": 1.1,
       "height": 2.2,
       "sill": 0.0,
@@ -1725,6 +1725,383 @@
       }
     }
   ],
+  "interactives": [
+    {
+      "id": "gs_corner_station:if:ced64cc5",
+      "kind": "door",
+      "slot_ref": "ext_0_N_open1",
+      "transform": {
+        "translation": [
+          8.96,
+          11.0,
+          1.5
+        ],
+        "rot_y": 0
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "gs_corner_station"
+    },
+    {
+      "id": "gs_corner_station:if:5abacd00",
+      "kind": "door",
+      "slot_ref": "ext_0_N_open2",
+      "transform": {
+        "translation": [
+          14.72,
+          11.0,
+          1.1
+        ],
+        "rot_y": 0
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "gs_corner_station"
+    },
+    {
+      "id": "gs_corner_station:if:3a4a19b5",
+      "kind": "breach_wall",
+      "slot_ref": "ext_0_N_open0",
+      "transform": {
+        "translation": [
+          -9.6,
+          11.0,
+          1.1
+        ],
+        "rot_y": 0
+      },
+      "states": [
+        "intact",
+        "breached"
+      ],
+      "default": "intact",
+      "transitions": [
+        {
+          "event": "breach",
+          "from": "intact",
+          "to": "breached"
+        }
+      ],
+      "source": "inferred",
+      "reversible": false,
+      "building": "gs_corner_station"
+    },
+    {
+      "id": "gs_corner_station:if:e701924e",
+      "kind": "door",
+      "slot_ref": "ext_0_S_open1",
+      "transform": {
+        "translation": [
+          -5.12,
+          -11.0,
+          1.1
+        ],
+        "rot_y": 180
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "gs_corner_station"
+    },
+    {
+      "id": "gs_corner_station:if:cce54c5a",
+      "kind": "door",
+      "slot_ref": "ext_0_S_open2",
+      "transform": {
+        "translation": [
+          5.12,
+          -11.0,
+          1.1
+        ],
+        "rot_y": 180
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "gs_corner_station"
+    },
+    {
+      "id": "gs_corner_station:if:3f956874",
+      "kind": "door",
+      "slot_ref": "ext_0_E_open0",
+      "transform": {
+        "translation": [
+          16.0,
+          -4.4,
+          1.1
+        ],
+        "rot_y": 90
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "gs_corner_station"
+    },
+    {
+      "id": "gs_corner_station:if:741a5438",
+      "kind": "door",
+      "slot_ref": "ext_0_W_open0",
+      "transform": {
+        "translation": [
+          -16.0,
+          -2.2,
+          1.1
+        ],
+        "rot_y": 270
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "gs_corner_station"
+    },
+    {
+      "id": "gs_corner_station:if:ea8a70ee",
+      "kind": "door",
+      "slot_ref": "int_0_0_open0",
+      "transform": {
+        "translation": [
+          6.0,
+          -6.6,
+          1.1
+        ],
+        "rot_y": 90
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "gs_corner_station"
+    },
+    {
+      "id": "gs_corner_station:if:8c4aac21",
+      "kind": "door",
+      "slot_ref": "int_0_0_open1",
+      "transform": {
+        "translation": [
+          6.0,
+          6.6,
+          1.1
+        ],
+        "rot_y": 90
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "gs_corner_station"
+    },
+    {
+      "id": "gs_corner_station:if:b2cbf614",
+      "kind": "door",
+      "slot_ref": "int_0_1_open0",
+      "transform": {
+        "translation": [
+          11.0,
+          2.0,
+          1.1
+        ],
+        "rot_y": 0
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "gs_corner_station"
+    },
+    {
+      "id": "gs_corner_station:if:e20668f9",
+      "kind": "door",
+      "slot_ref": "int_0_3_open0",
+      "transform": {
+        "translation": [
+          14.25,
+          -8.0,
+          1.1
+        ],
+        "rot_y": 0
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "gs_corner_station"
+    }
+  ],
+  "stair_systems": [],
+  "circulation_contract": {
+    "version": 1,
+    "checks": [
+      "STAIR_ENTRY_FACES_SOLID",
+      "STAIR_EXIT_FACES_SOLID",
+      "STAIR_LOWER_LANDING_BLOCKED",
+      "STAIR_UPPER_LANDING_BLOCKED"
+    ],
+    "landing_depth_m": 1.2,
+    "exit_step_off_m": 0.8,
+    "all_compliant": true,
+    "stairs": []
+  },
+  "ladders": [],
+  "platforms": [],
+  "fire_escapes": [],
   "surface_roles": {
     "slab_0": "floor",
     "slab_1": "ceiling",

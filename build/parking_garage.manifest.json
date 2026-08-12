@@ -1,0 +1,108 @@
+{
+  "kit_name": "Deli Counter",
+  "kit_version": "0.80.0",
+  "schema_version": "1.21.1",
+  "spec": "parking_garage.json",
+  "spec_sha256_16": "fac59ab20baad7b8",
+  "built_utc": "2026-08-05T21:19:11.009425+00:00",
+  "outputs": [
+    "parking_garage.glb"
+  ],
+  "expected": {
+    "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
+    "bounds_min": [
+      -18.175,
+      -14.175,
+      -0.3
+    ],
+    "bounds_max": [
+      18.175,
+      14.175,
+      6.0
+    ],
+    "origin": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "story_height": 3.0,
+    "floor_elevations": [
+      0.0,
+      3.0
+    ],
+    "markers": [
+      {
+        "name": "COVER_HIGH_COL00",
+        "type": "cover_high",
+        "pos": [
+          -12.0,
+          -8.0,
+          0.0
+        ]
+      },
+      {
+        "name": "COVER_HIGH_COL11",
+        "type": "cover_high",
+        "pos": [
+          -4.0,
+          0.0,
+          0.0
+        ]
+      },
+      {
+        "name": "COVER_HIGH_COL22",
+        "type": "cover_high",
+        "pos": [
+          4.0,
+          8.0,
+          0.0
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_01",
+        "type": "camera_socket",
+        "pos": [
+          15.0,
+          11.0,
+          2.6
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_A",
+        "type": "attacker_spawn",
+        "pos": [
+          -9.0,
+          -12.0,
+          0.0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_B",
+        "type": "attacker_spawn",
+        "pos": [
+          9.0,
+          -12.0,
+          0.0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN_D",
+        "type": "defender_spawn",
+        "pos": [
+          -14.0,
+          -11.0,
+          0.0
+        ]
+      },
+      {
+        "name": "OBJECTIVE_BOOTH",
+        "type": "objective",
+        "pos": [
+          -14.0,
+          -11.0,
+          0.0
+        ]
+      }
+    ]
+  }
+}

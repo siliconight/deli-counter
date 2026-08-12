@@ -2,7 +2,7 @@
   "light_manifest_version": "1.1.0",
   "building_id": "freight_terminal_a02",
   "theme": "greybox",
-  "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location",
+  "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
   "rig_library": "lux",
   "anchors": [
     {
@@ -12,7 +12,7 @@
       "pos": [
         0.0,
         -8.0,
-        5.4
+        5.1
       ],
       "rot_y": 0.0,
       "room": "south_floor",
@@ -27,14 +27,14 @@
       "type": "fluorescent",
       "source": "derived",
       "pos": [
-        0.0,
+        5.0,
         7.0,
-        5.4
+        5.1
       ],
       "rot_y": 0.0,
       "room": "dock_floor",
       "row": {
-        "count": 5,
+        "count": 4,
         "spacing": 10.0
       },
       "reacts_to_alarm": true
@@ -46,7 +46,7 @@
       "pos": [
         0.0,
         -7.5,
-        10.9
+        10.6
       ],
       "rot_y": 0.0,
       "room": "mezz_south",
@@ -63,7 +63,7 @@
       "pos": [
         -7.0,
         7.5,
-        10.9
+        10.6
       ],
       "rot_y": 0.0,
       "room": "mezz_hall",
@@ -80,7 +80,7 @@
       "pos": [
         18.0,
         7.5,
-        10.9
+        10.6
       ],
       "rot_y": 90.0,
       "room": "gantry_control",
@@ -97,7 +97,7 @@
       "pos": [
         -12.5,
         -15.0,
-        7.25
+        7.1
       ],
       "rot_y": 90.0,
       "size": [
@@ -113,7 +113,7 @@
       "pos": [
         12.5,
         -15.0,
-        7.25
+        7.1
       ],
       "rot_y": 90.0,
       "size": [

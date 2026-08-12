@@ -2,7 +2,7 @@
   "light_manifest_version": "1.1.0",
   "building_id": "funeral_home_a03",
   "theme": "greybox",
-  "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location",
+  "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
   "rig_library": "lux",
   "anchors": [
     {
@@ -10,9 +10,9 @@
       "type": "fluorescent",
       "source": "derived",
       "pos": [
-        0.0,
+        -0.0,
         -5.0,
-        3.3
+        3.0
       ],
       "rot_y": 0.0,
       "room": "reception",
@@ -27,9 +27,9 @@
       "type": "fluorescent",
       "source": "derived",
       "pos": [
-        0.0,
+        -0.0,
         7.0,
-        3.3
+        3.0
       ],
       "rot_y": 0.0,
       "room": "crematory_wing",
@@ -45,8 +45,8 @@
       "source": "derived",
       "pos": [
         -7.5,
-        0.0,
-        -0.1
+        -0.0,
+        -0.4
       ],
       "rot_y": 90.0,
       "room": "lower_hall",
@@ -62,8 +62,8 @@
       "source": "derived",
       "pos": [
         9.5,
-        0.0,
-        -0.1
+        -0.0,
+        -0.4
       ],
       "rot_y": 90.0,
       "room": "columbarium_vault",
@@ -80,7 +80,7 @@
       "pos": [
         0.0,
         12.0,
-        2.25
+        2.1
       ],
       "rot_y": 270.0,
       "size": [
@@ -96,7 +96,7 @@
       "pos": [
         -11.9,
         -12.0,
-        1.75
+        1.6
       ],
       "rot_y": 90.0,
       "size": [

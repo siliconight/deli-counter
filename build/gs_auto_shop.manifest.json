@@ -1,11 +1,135 @@
 {
   "kit_name": "Deli Counter",
-  "kit_version": "0.54.0",
-  "schema_version": "1.9.0",
+  "kit_version": "0.80.0",
+  "schema_version": "1.21.1",
   "spec": "gs_auto_shop.json",
-  "spec_sha256_16": "ed10d60cb6e411f5",
-  "built_utc": "2026-07-02T00:07:40.336821+00:00",
+  "spec_sha256_16": "bcd8141d83737d3d",
+  "built_utc": "2026-08-05T21:18:01.029406+00:00",
   "outputs": [
     "gs_auto_shop.glb"
-  ]
+  ],
+  "expected": {
+    "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
+    "bounds_min": [
+      -13.15,
+      -9.15,
+      -0.3
+    ],
+    "bounds_max": [
+      13.15,
+      9.15,
+      8.2
+    ],
+    "origin": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "story_height": 3.6,
+    "floor_elevations": [
+      0.0,
+      3.6
+    ],
+    "markers": [
+      {
+        "name": "LADDER_0",
+        "type": "ladder",
+        "pos": [
+          -10.5,
+          6.5,
+          3.6
+        ]
+      },
+      {
+        "name": "HATCH_-10_6",
+        "type": "hatch",
+        "pos": [
+          -10.5,
+          6.5,
+          0.0
+        ]
+      },
+      {
+        "name": "COVER_LOW_LIFT1",
+        "type": "cover_low",
+        "pos": [
+          -6.0,
+          -3.0,
+          0.0
+        ]
+      },
+      {
+        "name": "COVER_LOW_LIFT2",
+        "type": "cover_low",
+        "pos": [
+          4.0,
+          -3.0,
+          0.0
+        ]
+      },
+      {
+        "name": "COVER_HIGH_RACK",
+        "type": "cover_high",
+        "pos": [
+          -10.0,
+          6.5,
+          0.0
+        ]
+      },
+      {
+        "name": "OBJECTIVE_SAFE",
+        "type": "objective",
+        "pos": [
+          -7.0,
+          6.0,
+          3.8000000000000003
+        ]
+      },
+      {
+        "name": "EXTRACTION_BAY",
+        "type": "extraction",
+        "pos": [
+          0.0,
+          -7.5,
+          0.0
+        ]
+      },
+      {
+        "name": "COVER_LOW_AUTO_TOOL_BENCH",
+        "type": "cover_low",
+        "pos": [
+          2.0,
+          6.5,
+          0.0
+        ]
+      },
+      {
+        "name": "COVER_LOW_AUTO_OFFICE_DESK",
+        "type": "cover_low",
+        "pos": [
+          -7.0,
+          5.5,
+          3.6
+        ]
+      },
+      {
+        "name": "LANDMARK_SERVICE_BAY",
+        "type": "landmark",
+        "pos": [
+          0.0,
+          -2.5,
+          1.0
+        ]
+      },
+      {
+        "name": "LANDMARK_UPPER_OFFICE",
+        "type": "landmark",
+        "pos": [
+          0.0,
+          5.5,
+          4.6
+        ]
+      }
+    ]
+  }
 }

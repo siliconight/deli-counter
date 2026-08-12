@@ -1,0 +1,613 @@
+{
+  "kit_name": "Deli Counter",
+  "kit_version": "0.80.0",
+  "schema_version": "1.21.1",
+  "spec": "cbp_town_finale_midbalanced_schemafixed.json",
+  "spec_sha256_16": "545d097bec2ae745",
+  "built_utc": "2026-08-05T21:16:45.475662+00:00",
+  "outputs": [
+    "cbp_town_finale_midbalanced_schemafixed.glb"
+  ],
+  "expected": {
+    "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
+    "bounds_min": [
+      -43.15,
+      -34.15,
+      -0.3
+    ],
+    "bounds_max": [
+      43.15,
+      34.15,
+      13.1
+    ],
+    "origin": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "story_height": 4.0,
+    "floor_elevations": [
+      0.0,
+      4.0,
+      8.0
+    ],
+    "markers": [
+      {
+        "name": "LADDER_0",
+        "type": "ladder",
+        "pos": [
+          0.0,
+          28.0,
+          4.0
+        ]
+      },
+      {
+        "name": "LADDER_1",
+        "type": "ladder",
+        "pos": [
+          -39.0,
+          18.0,
+          0.0
+        ]
+      },
+      {
+        "name": "LADDER_2",
+        "type": "ladder",
+        "pos": [
+          39.0,
+          18.0,
+          0.0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_CREW_AMBULANCE_A",
+        "type": "attacker_spawn",
+        "pos": [
+          -2,
+          -30,
+          0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_CREW_AMBULANCE_B",
+        "type": "attacker_spawn",
+        "pos": [
+          2,
+          -30,
+          0
+        ]
+      },
+      {
+        "name": "EXTRACTION_CENTER_FIELD_TRUCK",
+        "type": "extraction",
+        "pos": [
+          0,
+          31.5,
+          0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN_STEALTH_GATE_SUPERVISOR",
+        "type": "defender_spawn",
+        "pos": [
+          0,
+          -25,
+          0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN_STEALTH_SECURITY_DESK",
+        "type": "defender_spawn",
+        "pos": [
+          -30,
+          -25,
+          4
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN_STEALTH_CASH_ROOM_PATROL",
+        "type": "defender_spawn",
+        "pos": [
+          26,
+          -23,
+          4
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN_STEALTH_FIELD_PATROL",
+        "type": "defender_spawn",
+        "pos": [
+          0,
+          6,
+          0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN_ALARM_HOME_GATE_LOCKDOWN",
+        "type": "defender_spawn",
+        "pos": [
+          0,
+          -28,
+          0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN_ALARM_WEST_CLUB_FLANK",
+        "type": "defender_spawn",
+        "pos": [
+          -24,
+          -10,
+          4
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN_ALARM_EAST_CLUB_FLANK",
+        "type": "defender_spawn",
+        "pos": [
+          24,
+          -10,
+          4
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN_ALARM_PRESS_BOX_OVERWATCH",
+        "type": "defender_spawn",
+        "pos": [
+          0,
+          -22,
+          8
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN_LOUD_HOME_VOMITORY_PUSH",
+        "type": "defender_spawn",
+        "pos": [
+          0.0,
+          -6.5,
+          0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN_LOUD_THIRD_BASE_SEATING_CROSS",
+        "type": "defender_spawn",
+        "pos": [
+          -30,
+          3,
+          0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN_LOUD_FIRST_BASE_SEATING_CROSS",
+        "type": "defender_spawn",
+        "pos": [
+          30,
+          3,
+          0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN_LOUD_PRESS_HALL_MARKSMAN_W",
+        "type": "defender_spawn",
+        "pos": [
+          -26,
+          10,
+          8
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN_LOUD_PRESS_HALL_MARKSMAN_E",
+        "type": "defender_spawn",
+        "pos": [
+          26,
+          10,
+          8
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN_LOUD_CENTER_FIELD_HEAVY_PUSH",
+        "type": "defender_spawn",
+        "pos": [
+          0,
+          23,
+          0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN_ESCAPE_LEFT_FIELD_PINCH",
+        "type": "defender_spawn",
+        "pos": [
+          -12,
+          30,
+          0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN_ESCAPE_RIGHT_FIELD_PINCH",
+        "type": "defender_spawn",
+        "pos": [
+          12,
+          30,
+          0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN_ESCAPE_SCOREBOARD_DROP",
+        "type": "defender_spawn",
+        "pos": [
+          0,
+          20,
+          8
+        ]
+      },
+      {
+        "name": "PATROL_POINT_ROUTE_GATE",
+        "type": "patrol_point",
+        "pos": [
+          0,
+          -25,
+          0
+        ]
+      },
+      {
+        "name": "PATROL_POINT_ROUTE_MAIN_CONCOURSE",
+        "type": "patrol_point",
+        "pos": [
+          0,
+          -13,
+          0
+        ]
+      },
+      {
+        "name": "PATROL_POINT_ROUTE_CLUB_SECURITY",
+        "type": "patrol_point",
+        "pos": [
+          -30,
+          -25,
+          4
+        ]
+      },
+      {
+        "name": "PATROL_POINT_ROUTE_CASH_ROOM",
+        "type": "patrol_point",
+        "pos": [
+          30,
+          -25,
+          4
+        ]
+      },
+      {
+        "name": "PATROL_POINT_ROUTE_FIELD_RING",
+        "type": "patrol_point",
+        "pos": [
+          0,
+          16,
+          0
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_CAM_HOME_GATE",
+        "type": "camera_socket",
+        "pos": [
+          10,
+          -31,
+          2.8
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_CAM_CASH_COUNTING",
+        "type": "camera_socket",
+        "pos": [
+          38,
+          -31,
+          6.5
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_CAM_FIELD_WIDE",
+        "type": "camera_socket",
+        "pos": [
+          0,
+          -5,
+          6.5
+        ]
+      },
+      {
+        "name": "COVER_LOW_COVER_THIRD_KIOSK",
+        "type": "cover_low",
+        "pos": [
+          -29,
+          -14,
+          0
+        ]
+      },
+      {
+        "name": "COVER_LOW_COVER_FIRST_KIOSK",
+        "type": "cover_low",
+        "pos": [
+          29,
+          -14,
+          0
+        ]
+      },
+      {
+        "name": "COVER_HIGH_COVER_DUGOUT_LEFT",
+        "type": "cover_high",
+        "pos": [
+          -10,
+          4,
+          0
+        ]
+      },
+      {
+        "name": "COVER_HIGH_COVER_DUGOUT_RIGHT",
+        "type": "cover_high",
+        "pos": [
+          10,
+          4,
+          0
+        ]
+      },
+      {
+        "name": "COVER_LOW_COVER_TARP_LEFT",
+        "type": "cover_low",
+        "pos": [
+          -6,
+          8,
+          0
+        ]
+      },
+      {
+        "name": "COVER_LOW_COVER_TARP_RIGHT",
+        "type": "cover_low",
+        "pos": [
+          6,
+          8,
+          0
+        ]
+      },
+      {
+        "name": "COVER_HIGH_COVER_LOADING_TRUCK",
+        "type": "cover_high",
+        "pos": [
+          -7,
+          29,
+          0
+        ]
+      },
+      {
+        "name": "COVER_HIGH_COVER_TV_TRUCK",
+        "type": "cover_high",
+        "pos": [
+          7,
+          29,
+          0
+        ]
+      },
+      {
+        "name": "COVER_HIGH_COVER_SCOREBOARD_RACK",
+        "type": "cover_high",
+        "pos": [
+          0,
+          19,
+          8
+        ]
+      },
+      {
+        "name": "DOOR_SOCKET_DOOR_CASH_COUNTING",
+        "type": "door_socket",
+        "pos": [
+          23,
+          -25,
+          4
+        ]
+      },
+      {
+        "name": "DOOR_SOCKET_DOOR_FIELD_SERVICE_SPINE",
+        "type": "door_socket",
+        "pos": [
+          0,
+          10,
+          0
+        ]
+      },
+      {
+        "name": "DOOR_SOCKET_DOOR_CENTER_FIELD_LOADING",
+        "type": "door_socket",
+        "pos": [
+          0,
+          24,
+          0
+        ]
+      },
+      {
+        "name": "KEY_SOCKET_KEY_SECURITY_CARD",
+        "type": "key_socket",
+        "pos": [
+          -31.0,
+          -26.0,
+          4.0
+        ]
+      },
+      {
+        "name": "KEY_SOCKET_KEY_FIELD_SERVICE",
+        "type": "key_socket",
+        "pos": [
+          -31.0,
+          17.0,
+          0.0
+        ]
+      },
+      {
+        "name": "GATE_HINT_GATE_HINT_CASH_CAGE",
+        "type": "gate_hint",
+        "pos": [
+          23.0,
+          -25.0,
+          4.0
+        ]
+      },
+      {
+        "name": "GATE_HINT_GATE_HINT_FIELD_SPINE",
+        "type": "gate_hint",
+        "pos": [
+          0.0,
+          10.0,
+          0.0
+        ]
+      },
+      {
+        "name": "SKILL_GATE_HINT_SKILL_GATE_SCOREBOARD_LADDER",
+        "type": "skill_gate_hint",
+        "pos": [
+          0.0,
+          28.0,
+          4.0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN_ALARM_FIELD_KEY_RESPONSE",
+        "type": "defender_spawn",
+        "pos": [
+          -34.0,
+          18.0,
+          0.0
+        ]
+      },
+      {
+        "name": "DEFENDER_SPAWN_LOUD_CASH_GATE_RESPONSE",
+        "type": "defender_spawn",
+        "pos": [
+          34.0,
+          -24.0,
+          4.0
+        ]
+      },
+      {
+        "name": "STAGING_AREA_STAGING_THIRD_BASE_CONCOURSE",
+        "type": "staging_area",
+        "pos": [
+          -27.0,
+          -17.0,
+          0.0
+        ]
+      },
+      {
+        "name": "STAGING_AREA_STAGING_FIRST_BASE_CONCOURSE",
+        "type": "staging_area",
+        "pos": [
+          27.0,
+          -17.0,
+          0.0
+        ]
+      },
+      {
+        "name": "ENCOUNTER_ZONE_MID_INFIELD_CONTEST",
+        "type": "encounter_zone",
+        "pos": [
+          0.0,
+          3.0,
+          0.0
+        ]
+      },
+      {
+        "name": "STRONGHOLD_STRONGHOLD_HOME_BACKSTOP",
+        "type": "stronghold",
+        "pos": [
+          0.0,
+          -2.0,
+          0.0
+        ]
+      },
+      {
+        "name": "STRONGHOLD_STRONGHOLD_DUGOUT_LEFT",
+        "type": "stronghold",
+        "pos": [
+          -10.0,
+          4.0,
+          0.0
+        ]
+      },
+      {
+        "name": "STRONGHOLD_STRONGHOLD_DUGOUT_RIGHT",
+        "type": "stronghold",
+        "pos": [
+          10.0,
+          4.0,
+          0.0
+        ]
+      },
+      {
+        "name": "INFO_WINDOW_PRESS_INFO_WINDOW_TO_MID",
+        "type": "info_window",
+        "pos": [
+          0.0,
+          -8.5,
+          8.0
+        ]
+      },
+      {
+        "name": "SIGHTLINE_PROBE_SIGHTLINE_SHORT_HOME_TO_BACKSTOP",
+        "type": "sightline_probe",
+        "pos": [
+          0.0,
+          -7.0,
+          1.6
+        ]
+      },
+      {
+        "name": "SIGHTLINE_PROBE_SIGHTLINE_MEDIUM_DUGOUT_TO_SERVICE",
+        "type": "sightline_probe",
+        "pos": [
+          0.0,
+          5.0,
+          1.6
+        ]
+      },
+      {
+        "name": "SIGHTLINE_PROBE_SIGHTLINE_LONG_PRESS_TO_FIELD",
+        "type": "sightline_probe",
+        "pos": [
+          0.0,
+          -8.5,
+          8.0
+        ]
+      },
+      {
+        "name": "PINCH_POINT_PINCH_FIELD_SERVICE_SPINE",
+        "type": "pinch_point",
+        "pos": [
+          0.0,
+          10.0,
+          0.0
+        ]
+      },
+      {
+        "name": "CONVEYANCE_MARKER_SIGN_CENTER_FIELD_EXIT",
+        "type": "conveyance_marker",
+        "pos": [
+          0.0,
+          25.5,
+          0.0
+        ]
+      },
+      {
+        "name": "CONVEYANCE_MARKER_SIGN_LEFT_SERVICE_KEY",
+        "type": "conveyance_marker",
+        "pos": [
+          -31.0,
+          17.0,
+          0.0
+        ]
+      },
+      {
+        "name": "CONVEYANCE_MARKER_SIGN_CASH_COUNTING",
+        "type": "conveyance_marker",
+        "pos": [
+          30.0,
+          -25.0,
+          4.0
+        ]
+      }
+    ]
+  }
+}

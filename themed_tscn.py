@@ -48,7 +48,7 @@ def slot_typename(role: str, size_mod: str) -> str:
 
 #: Roles built as a horizontal PLATE, whose footprint varies on BOTH axes.
 #: Mirror of ``zoo_keeper.core.kit.PLATE_ROLES``.
-PLATE_ROLES = ("floor", "ceiling")
+PLATE_ROLES = ("floor", "ceiling", "roof")
 
 #: Roles whose geometry is a hole in a standing slab, cut to the slot's own
 #: ``fit.openings``. Mirror of ``zoo_keeper.core.kit.OPENING_ROLES``.

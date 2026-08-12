@@ -1,0 +1,81 @@
+{
+  "kit_name": "Deli Counter",
+  "kit_version": "0.80.0",
+  "schema_version": "1.21.1",
+  "spec": "survival_demo.json",
+  "spec_sha256_16": "b31765fd9f12126d",
+  "built_utc": "2026-08-05T21:19:59.204739+00:00",
+  "outputs": [
+    "survival_demo.glb"
+  ],
+  "expected": {
+    "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
+    "bounds_min": [
+      -15.15,
+      -12.15,
+      -0.3
+    ],
+    "bounds_max": [
+      15.15,
+      12.15,
+      6.6
+    ],
+    "origin": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "story_height": 3.3,
+    "floor_elevations": [
+      0.0,
+      3.3
+    ],
+    "markers": [
+      {
+        "name": "SURVIVOR_SPAWN_START",
+        "type": "survivor_spawn",
+        "pos": [
+          0,
+          -8,
+          0
+        ]
+      },
+      {
+        "name": "HORDE_SPAWN_H1",
+        "type": "horde_spawn",
+        "pos": [
+          -10,
+          8,
+          0
+        ]
+      },
+      {
+        "name": "HORDE_SPAWN_H2",
+        "type": "horde_spawn",
+        "pos": [
+          10,
+          -8,
+          3.3
+        ]
+      },
+      {
+        "name": "HORDE_SPAWN_H3",
+        "type": "horde_spawn",
+        "pos": [
+          0,
+          10,
+          3.3
+        ]
+      },
+      {
+        "name": "RESCUE_CHOPPER",
+        "type": "rescue",
+        "pos": [
+          0,
+          6,
+          3.3
+        ]
+      }
+    ]
+  }
+}

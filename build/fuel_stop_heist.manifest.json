@@ -1,11 +1,206 @@
 {
   "kit_name": "Deli Counter",
-  "kit_version": "0.41.0",
-  "schema_version": "1.8.0",
+  "kit_version": "0.80.0",
+  "schema_version": "1.21.1",
   "spec": "fuel_stop_heist.json",
   "spec_sha256_16": "2d431d6ce4fb1695",
-  "built_utc": "2026-06-29T18:27:35.046624+00:00",
+  "built_utc": "2026-08-05T21:17:47.854825+00:00",
   "outputs": [
     "fuel_stop_heist.glb"
-  ]
+  ],
+  "expected": {
+    "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
+    "bounds_min": [
+      -23.0,
+      -32.0,
+      -0.4
+    ],
+    "bounds_max": [
+      23.0,
+      14.0,
+      5.8
+    ],
+    "origin": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "story_height": 4.2,
+    "floor_elevations": [
+      0.0
+    ],
+    "markers": [
+      {
+        "name": "ATTACKER_SPAWN_PUMP_LEFT",
+        "type": "attacker_spawn",
+        "pos": [
+          -4.0,
+          -24.0,
+          0.0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_PUMP_RIGHT",
+        "type": "attacker_spawn",
+        "pos": [
+          4.0,
+          -24.0,
+          0.0
+        ]
+      },
+      {
+        "name": "EXTRACTION_GETAWAY",
+        "type": "extraction",
+        "pos": [
+          0.0,
+          -15.0,
+          0.0
+        ]
+      },
+      {
+        "name": "OBJECTIVE_REGISTER",
+        "type": "objective",
+        "pos": [
+          0.0,
+          -8.5,
+          0.9
+        ]
+      },
+      {
+        "name": "OBJECTIVE_SAFE",
+        "type": "objective",
+        "pos": [
+          -9.0,
+          9.5,
+          0.9
+        ]
+      },
+      {
+        "name": "LOOT_STOCK_CIGS",
+        "type": "loot",
+        "pos": [
+          -3.0,
+          4.0,
+          0.9
+        ]
+      },
+      {
+        "name": "LOOT_COOLER_GOODS",
+        "type": "loot",
+        "pos": [
+          11.5,
+          8.0,
+          0.9
+        ]
+      },
+      {
+        "name": "LOOT_SAFE_CASH",
+        "type": "loot",
+        "pos": [
+          -9.0,
+          9.5,
+          0.8
+        ]
+      },
+      {
+        "name": "COVER_LOW_COUNTER",
+        "type": "cover_low",
+        "pos": [
+          0.0,
+          -8.5,
+          0.0
+        ]
+      },
+      {
+        "name": "COVER_LOW_AISLE_1",
+        "type": "cover_low",
+        "pos": [
+          -6.0,
+          -5.0,
+          0.0
+        ]
+      },
+      {
+        "name": "COVER_LOW_AISLE_2",
+        "type": "cover_low",
+        "pos": [
+          -2.0,
+          -5.0,
+          0.0
+        ]
+      },
+      {
+        "name": "COVER_HIGH_FOOD_ISLAND",
+        "type": "cover_high",
+        "pos": [
+          11.5,
+          -6.0,
+          0.0
+        ]
+      },
+      {
+        "name": "COVER_HIGH_PALLETS",
+        "type": "cover_high",
+        "pos": [
+          -9.0,
+          8.5,
+          0.0
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_CAM_FRONT",
+        "type": "camera_socket",
+        "pos": [
+          -14.0,
+          -9.5,
+          3.4
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_CAM_BACK",
+        "type": "camera_socket",
+        "pos": [
+          5.0,
+          10.0,
+          3.4
+        ]
+      },
+      {
+        "name": "PATROL_POINT_P01",
+        "type": "patrol_point",
+        "pos": [
+          -2.0,
+          -7.0,
+          0.0
+        ]
+      },
+      {
+        "name": "PATROL_POINT_P02",
+        "type": "patrol_point",
+        "pos": [
+          11.5,
+          -8.0,
+          0.0
+        ]
+      },
+      {
+        "name": "PATROL_POINT_P03",
+        "type": "patrol_point",
+        "pos": [
+          0.0,
+          6.0,
+          0.0
+        ]
+      },
+      {
+        "name": "PATROL_POINT_P04",
+        "type": "patrol_point",
+        "pos": [
+          11.5,
+          5.0,
+          0.0
+        ]
+      }
+    ]
+  }
 }

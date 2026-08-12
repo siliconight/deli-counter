@@ -2,7 +2,7 @@
   "light_manifest_version": "1.1.0",
   "building_id": "deli_a01",
   "theme": "greybox",
-  "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location",
+  "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
   "rig_library": "lux",
   "anchors": [
     {
@@ -12,7 +12,7 @@
       "pos": [
         -13.5,
         -8.5,
-        3.2
+        2.9
       ],
       "rot_y": 0.0,
       "room": "customer_floor",
@@ -29,7 +29,7 @@
       "pos": [
         -13.5,
         1.5,
-        3.2
+        2.9
       ],
       "rot_y": 0.0,
       "room": "deli_counter",
@@ -45,14 +45,14 @@
       "source": "derived",
       "pos": [
         -0.5,
-        -8.5,
-        3.2
+        -4.0,
+        2.9
       ],
-      "rot_y": 0.0,
+      "rot_y": 90.0,
       "room": "market_aisles",
       "row": {
         "count": 5,
-        "spacing": 3.0
+        "spacing": 4.0
       },
       "reacts_to_alarm": true
     },
@@ -63,7 +63,7 @@
       "pos": [
         13.0,
         -4.0,
-        3.2
+        2.9
       ],
       "rot_y": 90.0,
       "room": "kitchen",
@@ -80,7 +80,7 @@
       "pos": [
         5.5,
         10.0,
-        3.2
+        2.9
       ],
       "rot_y": 0.0,
       "room": "stockroom_loading",
@@ -95,14 +95,14 @@
       "type": "fluorescent",
       "source": "derived",
       "pos": [
-        -13.5,
+        -16.25,
         10.0,
-        3.2
+        2.9
       ],
       "rot_y": 0.0,
       "room": "stairwell",
       "row": {
-        "count": 4,
+        "count": 2,
         "spacing": 2.75
       },
       "reacts_to_alarm": true
@@ -114,7 +114,7 @@
       "pos": [
         -10.5,
         -6.0,
-        6.5
+        6.2
       ],
       "rot_y": 0.0,
       "room": "manager_office",
@@ -131,7 +131,7 @@
       "pos": [
         8.5,
         -6.0,
-        6.5
+        6.2
       ],
       "rot_y": 0.0,
       "room": "apartment_hideout",
@@ -148,7 +148,7 @@
       "pos": [
         8.5,
         8.0,
-        6.5
+        6.2
       ],
       "rot_y": 0.0,
       "room": "server_room",
@@ -165,7 +165,7 @@
       "pos": [
         -10.5,
         8.0,
-        6.5
+        6.2
       ],
       "rot_y": 0.0,
       "room": "upper_hall",
@@ -182,7 +182,7 @@
       "pos": [
         -9.0,
         -6.5,
-        -0.1
+        -0.4
       ],
       "rot_y": 0.0,
       "room": "basement_corridor",
@@ -197,14 +197,14 @@
       "type": "fluorescent",
       "source": "derived",
       "pos": [
-        -9.0,
+        -5.0,
         7.5,
-        -0.1
+        -0.4
       ],
       "rot_y": 0.0,
       "room": "cold_storage",
       "row": {
-        "count": 5,
+        "count": 3,
         "spacing": 4.0
       },
       "reacts_to_alarm": true
@@ -216,7 +216,7 @@
       "pos": [
         10.0,
         7.5,
-        -0.1
+        -0.4
       ],
       "rot_y": 0.0,
       "room": "basement_vault",
@@ -233,7 +233,7 @@
       "pos": [
         10.0,
         -6.5,
-        -0.1
+        -0.4
       ],
       "rot_y": 0.0,
       "room": "utility_room",
@@ -250,7 +250,7 @@
       "pos": [
         -7.6,
         14.0,
-        2.05
+        1.9
       ],
       "rot_y": 270.0,
       "size": [
@@ -266,7 +266,7 @@
       "pos": [
         0.0,
         -14.0,
-        1.7
+        1.55
       ],
       "rot_y": 90.0,
       "size": [
@@ -282,7 +282,7 @@
       "pos": [
         19.0,
         -7.0,
-        1.85
+        1.7
       ],
       "rot_y": 180.0,
       "size": [
@@ -298,7 +298,7 @@
       "pos": [
         19.0,
         7.0,
-        1.85
+        1.7
       ],
       "rot_y": 180.0,
       "size": [
@@ -314,7 +314,7 @@
       "pos": [
         0.0,
         14.0,
-        5.15
+        5.0
       ],
       "rot_y": 270.0,
       "size": [
@@ -330,7 +330,7 @@
       "pos": [
         -10.64,
         -14.0,
-        5.15
+        5.0
       ],
       "rot_y": 90.0,
       "size": [
@@ -346,7 +346,7 @@
       "pos": [
         10.64,
         -14.0,
-        5.15
+        5.0
       ],
       "rot_y": 90.0,
       "size": [
@@ -362,27 +362,11 @@
       "pos": [
         19.0,
         5.6,
-        5.15
+        5.0
       ],
       "rot_y": 180.0,
       "size": [
         1.2,
-        1.4
-      ],
-      "reacts_to_alarm": false
-    },
-    {
-      "id": "int_0_1_window_1",
-      "type": "window",
-      "source": "derived",
-      "pos": [
-        -8.4,
-        7.0,
-        1.95
-      ],
-      "rot_y": 0.0,
-      "size": [
-        1.4,
         1.4
       ],
       "reacts_to_alarm": false

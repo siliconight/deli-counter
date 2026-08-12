@@ -2,7 +2,7 @@
   "light_manifest_version": "1.1.0",
   "building_id": "pharmacy_a02",
   "theme": "greybox",
-  "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location",
+  "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
   "rig_library": "lux",
   "anchors": [
     {
@@ -12,7 +12,7 @@
       "pos": [
         0.0,
         -3.5,
-        3.3
+        3.0
       ],
       "rot_y": 0.0,
       "room": "retail_floor",
@@ -29,7 +29,7 @@
       "pos": [
         0.0,
         6.5,
-        3.3
+        3.0
       ],
       "rot_y": 0.0,
       "room": "rx_area",
@@ -44,31 +44,48 @@
       "type": "fluorescent",
       "source": "derived",
       "pos": [
-        0.0,
+        -2.6,
         -5.0,
-        -0.1
+        -0.4
       ],
       "rot_y": 0.0,
       "room": "stock_hall",
       "row": {
-        "count": 5,
+        "count": 4,
         "spacing": 5.2
       },
       "reacts_to_alarm": true
     },
     {
-      "id": "schedule_vault_ceiling",
+      "id": "schedule_vault_ceiling_0",
       "type": "fluorescent",
       "source": "derived",
       "pos": [
-        0.0,
+        -10.4,
         5.0,
-        -0.1
+        -0.4
       ],
       "rot_y": 0.0,
       "room": "schedule_vault",
       "row": {
-        "count": 5,
+        "count": 1,
+        "spacing": 0.0
+      },
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "schedule_vault_ceiling_1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        5.2,
+        5.0,
+        -0.4
+      ],
+      "rot_y": 0.0,
+      "room": "schedule_vault",
+      "row": {
+        "count": 3,
         "spacing": 5.2
       },
       "reacts_to_alarm": true
@@ -80,7 +97,7 @@
       "pos": [
         -9.1,
         -10.0,
-        1.75
+        1.6
       ],
       "rot_y": 90.0,
       "size": [
@@ -96,7 +113,7 @@
       "pos": [
         -13.0,
         7.0,
-        1.95
+        1.8
       ],
       "rot_y": 0.0,
       "size": [

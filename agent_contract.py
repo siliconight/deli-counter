@@ -87,3 +87,13 @@ def min_door_width():
 
 def min_corridor_width():
     return float(contract()["clearances"]["min_corridor_width_m"])
+
+
+def min_headroom():
+    """Clear height a body needs ABOVE the surface it is standing on.
+
+    The third clearance, and the last one to get a reader: it was ratified in
+    agent_contract.json with no consumer at all, because every stair check in
+    the repo worked on rects. stairwell.headroom_findings is the first caller.
+    """
+    return float(contract()["clearances"]["min_headroom_m"])

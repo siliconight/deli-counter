@@ -1,7 +1,26 @@
 {
   "level": "corner_deli_heist_01",
   "mode": "heist",
+  "building_id": "corner_deli_heist_01",
+  "footprint": [
+    38.0,
+    28.0
+  ],
+  "rarity": null,
+  "rarity_color": null,
   "markers": [
+    {
+      "name": "LADDER_0",
+      "type": "ladder",
+      "id": "ladder_0",
+      "x": 17.5,
+      "y": 9.5,
+      "z": 0.0,
+      "climb_height": 6.6,
+      "width": 0.7,
+      "depth": 0.25,
+      "facing": "W"
+    },
     {
       "name": "HATCH_-12_8",
       "type": "hatch",
@@ -57,7 +76,7 @@
       "y": -7.0,
       "z": 0.9,
       "rot_z": 0.0,
-      "room": "deli_counter"
+      "room": "customer_floor"
     },
     {
       "name": "OBJECTIVE_SAFE",
@@ -177,10 +196,29 @@
       "y": 5.0,
       "z": -3.3,
       "rot_z": 0.0,
-      "room": "cold_storage"
+      "room": "cold_storage_e"
     }
   ],
   "rooms": [
+    {
+      "id": "main_stack_well_b",
+      "story": -1,
+      "bounds": [
+        -16.4,
+        6.25,
+        -13.6,
+        12.95
+      ],
+      "role": "stairwell",
+      "combat_range": null,
+      "fortifiable": false,
+      "objective": false,
+      "center": [
+        -15.0,
+        9.6,
+        -3.3
+      ]
+    },
     {
       "id": "customer_floor",
       "story": 0,
@@ -226,7 +264,7 @@
         -8.0,
         -14.0,
         7.0,
-        -3.0
+        6.0
       ],
       "role": "connector",
       "combat_range": "medium",
@@ -234,7 +272,7 @@
       "objective": false,
       "center": [
         -0.5,
-        -8.5,
+        -4.0,
         0.0
       ]
     },
@@ -391,10 +429,29 @@
       ]
     },
     {
-      "id": "cold_storage",
+      "id": "cold_storage_w",
       "story": -1,
       "bounds": [
         -19.0,
+        1.0,
+        -16.4,
+        14.0
+      ],
+      "role": "loot_room",
+      "combat_range": "close",
+      "fortifiable": false,
+      "objective": false,
+      "center": [
+        -17.7,
+        7.5,
+        -3.3
+      ]
+    },
+    {
+      "id": "cold_storage_e",
+      "story": -1,
+      "bounds": [
+        -13.6,
         1.0,
         1.0,
         14.0
@@ -404,8 +461,46 @@
       "fortifiable": false,
       "objective": false,
       "center": [
-        -9.0,
+        -6.3,
         7.5,
+        -3.3
+      ]
+    },
+    {
+      "id": "cold_storage_s",
+      "story": -1,
+      "bounds": [
+        -16.4,
+        1.0,
+        -13.6,
+        6.25
+      ],
+      "role": "loot_room",
+      "combat_range": "close",
+      "fortifiable": false,
+      "objective": false,
+      "center": [
+        -15.0,
+        3.625,
+        -3.3
+      ]
+    },
+    {
+      "id": "cold_storage_n",
+      "story": -1,
+      "bounds": [
+        -16.4,
+        12.95,
+        -13.6,
+        14.0
+      ],
+      "role": "loot_room",
+      "combat_range": "close",
+      "fortifiable": false,
+      "objective": false,
+      "center": [
+        -15.0,
+        13.475,
         -3.3
       ]
     },
@@ -487,7 +582,7 @@
       "story": 0,
       "x": -9.5,
       "y": 14.0,
-      "z": 1.5,
+      "z": 1.35,
       "width": 3.2,
       "height": 2.7,
       "sill": 0.0,
@@ -495,7 +590,8 @@
       "breach_class": null,
       "material": null,
       "vaultable": false,
-      "reinforceable": false
+      "reinforceable": false,
+      "building": "corner_deli_heist_01"
     },
     {
       "wall": "ext_0_N",
@@ -503,7 +599,7 @@
       "story": 0,
       "x": 12.16,
       "y": 14.0,
-      "z": 1.25,
+      "z": 1.1,
       "width": 1.1,
       "height": 2.2,
       "sill": 0.0,
@@ -511,7 +607,8 @@
       "breach_class": null,
       "material": null,
       "vaultable": false,
-      "reinforceable": false
+      "reinforceable": false,
+      "building": "corner_deli_heist_01"
     },
     {
       "wall": "ext_0_S",
@@ -519,7 +616,7 @@
       "story": 0,
       "x": -10.64,
       "y": -14.0,
-      "z": 1.25,
+      "z": 1.1,
       "width": 1.2,
       "height": 2.2,
       "sill": 0.0,
@@ -527,7 +624,8 @@
       "breach_class": null,
       "material": null,
       "vaultable": false,
-      "reinforceable": false
+      "reinforceable": false,
+      "building": "corner_deli_heist_01"
     },
     {
       "wall": "ext_0_S",
@@ -535,7 +633,7 @@
       "story": 0,
       "x": 0.0,
       "y": -14.0,
-      "z": 1.7,
+      "z": 1.55,
       "width": 2.0,
       "height": 1.4,
       "sill": 0.85,
@@ -543,7 +641,8 @@
       "breach_class": null,
       "material": "glass",
       "vaultable": true,
-      "reinforceable": false
+      "reinforceable": false,
+      "building": "corner_deli_heist_01"
     },
     {
       "wall": "ext_0_S",
@@ -551,7 +650,7 @@
       "story": 0,
       "x": 12.92,
       "y": -14.0,
-      "z": 1.25,
+      "z": 1.1,
       "width": 1.6,
       "height": 2.2,
       "sill": 0.0,
@@ -559,7 +658,8 @@
       "breach_class": "soft_wall",
       "material": "drywall",
       "vaultable": false,
-      "reinforceable": false
+      "reinforceable": false,
+      "building": "corner_deli_heist_01"
     },
     {
       "wall": "ext_0_E",
@@ -567,7 +667,7 @@
       "story": 0,
       "x": 19.0,
       "y": -7.0,
-      "z": 1.85,
+      "z": 1.7,
       "width": 1.4,
       "height": 1.4,
       "sill": 1.0,
@@ -575,7 +675,8 @@
       "breach_class": null,
       "material": "glass",
       "vaultable": true,
-      "reinforceable": false
+      "reinforceable": false,
+      "building": "corner_deli_heist_01"
     },
     {
       "wall": "ext_0_E",
@@ -583,7 +684,7 @@
       "story": 0,
       "x": 19.0,
       "y": 7.0,
-      "z": 1.85,
+      "z": 1.7,
       "width": 1.4,
       "height": 1.4,
       "sill": 1.0,
@@ -591,7 +692,8 @@
       "breach_class": null,
       "material": "glass",
       "vaultable": true,
-      "reinforceable": false
+      "reinforceable": false,
+      "building": "corner_deli_heist_01"
     },
     {
       "wall": "ext_0_W",
@@ -599,7 +701,7 @@
       "story": 0,
       "x": -19.0,
       "y": 5.04,
-      "z": 1.25,
+      "z": 1.1,
       "width": 1.0,
       "height": 2.2,
       "sill": 0.0,
@@ -607,7 +709,8 @@
       "breach_class": null,
       "material": null,
       "vaultable": false,
-      "reinforceable": false
+      "reinforceable": false,
+      "building": "corner_deli_heist_01"
     },
     {
       "wall": "ext_0_W",
@@ -615,7 +718,7 @@
       "story": 0,
       "x": -19.0,
       "y": -8.96,
-      "z": 1.25,
+      "z": 1.1,
       "width": 1.5,
       "height": 2.2,
       "sill": 0.0,
@@ -623,7 +726,8 @@
       "breach_class": "soft_wall",
       "material": "drywall",
       "vaultable": false,
-      "reinforceable": false
+      "reinforceable": false,
+      "building": "corner_deli_heist_01"
     },
     {
       "wall": "ext_1_N",
@@ -631,7 +735,7 @@
       "story": 1,
       "x": 0.0,
       "y": 14.0,
-      "z": 5.15,
+      "z": 5.0,
       "width": 1.4,
       "height": 1.4,
       "sill": 1.0,
@@ -639,7 +743,8 @@
       "breach_class": null,
       "material": "glass",
       "vaultable": true,
-      "reinforceable": false
+      "reinforceable": false,
+      "building": "corner_deli_heist_01"
     },
     {
       "wall": "ext_1_N",
@@ -647,7 +752,7 @@
       "story": 1,
       "x": 12.92,
       "y": 14.0,
-      "z": 4.55,
+      "z": 4.4,
       "width": 1.4,
       "height": 2.2,
       "sill": 0.0,
@@ -655,7 +760,8 @@
       "breach_class": "soft_wall",
       "material": "drywall",
       "vaultable": false,
-      "reinforceable": false
+      "reinforceable": false,
+      "building": "corner_deli_heist_01"
     },
     {
       "wall": "ext_1_S",
@@ -663,7 +769,7 @@
       "story": 1,
       "x": -10.64,
       "y": -14.0,
-      "z": 5.15,
+      "z": 5.0,
       "width": 1.3,
       "height": 1.4,
       "sill": 1.0,
@@ -671,7 +777,8 @@
       "breach_class": null,
       "material": "glass",
       "vaultable": true,
-      "reinforceable": false
+      "reinforceable": false,
+      "building": "corner_deli_heist_01"
     },
     {
       "wall": "ext_1_S",
@@ -679,7 +786,7 @@
       "story": 1,
       "x": 10.64,
       "y": -14.0,
-      "z": 5.15,
+      "z": 5.0,
       "width": 1.3,
       "height": 1.4,
       "sill": 1.0,
@@ -687,7 +794,8 @@
       "breach_class": null,
       "material": "glass",
       "vaultable": true,
-      "reinforceable": false
+      "reinforceable": false,
+      "building": "corner_deli_heist_01"
     },
     {
       "wall": "ext_1_E",
@@ -695,7 +803,7 @@
       "story": 1,
       "x": 19.0,
       "y": 5.6,
-      "z": 5.15,
+      "z": 5.0,
       "width": 1.2,
       "height": 1.4,
       "sill": 1.0,
@@ -703,207 +811,16 @@
       "breach_class": null,
       "material": "glass",
       "vaultable": true,
-      "reinforceable": false
+      "reinforceable": false,
+      "building": "corner_deli_heist_01"
     },
     {
-      "wall": "int_0_0",
-      "kind": "door",
-      "story": 0,
-      "x": -11.2,
-      "y": -8.0,
-      "z": 1.25,
-      "width": 1.1,
-      "height": 2.2,
-      "sill": 0.0,
-      "tag": "customer_to_counter",
-      "breach_class": null,
-      "material": null,
-      "vaultable": false,
-      "reinforceable": false
-    },
-    {
-      "wall": "int_0_0",
-      "kind": "breach",
-      "story": 0,
-      "x": 10.64,
-      "y": -8.0,
-      "z": 1.25,
-      "width": 1.4,
-      "height": 2.2,
-      "sill": 0.0,
-      "tag": null,
-      "breach_class": "soft_wall",
-      "material": "drywall",
-      "vaultable": false,
-      "reinforceable": false
-    },
-    {
-      "wall": "int_0_1",
-      "kind": "door",
-      "story": 0,
-      "x": 11.76,
-      "y": 7.0,
-      "z": 1.25,
-      "width": 1.1,
-      "height": 2.2,
-      "sill": 0.0,
-      "tag": "kitchen_to_loading",
-      "breach_class": null,
-      "material": null,
-      "vaultable": false,
-      "reinforceable": false
-    },
-    {
-      "wall": "int_0_1",
-      "kind": "window",
-      "story": 0,
-      "x": -8.4,
-      "y": 7.0,
-      "z": 1.95,
-      "width": 1.4,
-      "height": 1.4,
-      "sill": 1.1,
-      "tag": null,
-      "breach_class": null,
-      "material": "glass",
-      "vaultable": false,
-      "reinforceable": false
-    },
-    {
-      "wall": "int_0_2",
-      "kind": "door",
-      "story": 0,
-      "x": -3.0,
-      "y": -1.9,
-      "z": 1.25,
-      "width": 1.2,
-      "height": 2.2,
-      "sill": 0.0,
-      "tag": "front_to_back",
-      "breach_class": null,
-      "material": null,
-      "vaultable": false,
-      "reinforceable": false
-    },
-    {
-      "wall": "int_0_2",
-      "kind": "breach",
-      "story": 0,
-      "x": -3.0,
-      "y": 10.64,
-      "z": 1.25,
-      "width": 1.5,
-      "height": 2.2,
-      "sill": 0.0,
-      "tag": null,
-      "breach_class": "soft_wall",
-      "material": "drywall",
-      "vaultable": false,
-      "reinforceable": false
-    },
-    {
-      "wall": "int_0_3",
-      "kind": "garage",
-      "story": 0,
-      "x": 6.0,
-      "y": 5.7,
-      "z": 1.4,
-      "width": 2.4,
-      "height": 2.5,
-      "sill": 0.0,
-      "tag": "stockroom_gate",
-      "breach_class": null,
-      "material": null,
-      "vaultable": false,
-      "reinforceable": false
-    },
-    {
-      "wall": "int_0_3",
-      "kind": "door",
-      "story": 0,
-      "x": 6.0,
-      "y": -15.2,
-      "z": 1.25,
-      "width": 1.0,
-      "height": 2.2,
-      "sill": 0.0,
-      "tag": "office_stair_door",
-      "breach_class": null,
-      "material": null,
-      "vaultable": false,
-      "reinforceable": false
-    },
-    {
-      "wall": "int_1_4",
-      "kind": "door",
-      "story": 1,
-      "x": 0.0,
-      "y": -2.0,
-      "z": 4.55,
-      "width": 1.1,
-      "height": 2.2,
-      "sill": 0.0,
-      "tag": "hall_to_manager_office",
-      "breach_class": null,
-      "material": null,
-      "vaultable": false,
-      "reinforceable": false
-    },
-    {
-      "wall": "int_1_4",
-      "kind": "breach",
-      "story": 1,
-      "x": 10.08,
-      "y": -2.0,
-      "z": 4.55,
-      "width": 1.4,
-      "height": 2.2,
-      "sill": 0.0,
-      "tag": null,
-      "breach_class": "soft_wall",
-      "material": "drywall",
-      "vaultable": false,
-      "reinforceable": false
-    },
-    {
-      "wall": "int_1_5",
-      "kind": "door",
-      "story": 1,
-      "x": 2.0,
-      "y": -9.5,
-      "z": 4.55,
-      "width": 1.0,
-      "height": 2.2,
-      "sill": 0.0,
-      "tag": "apartment_hall",
-      "breach_class": null,
-      "material": null,
-      "vaultable": false,
-      "reinforceable": false
-    },
-    {
-      "wall": "int_1_5",
-      "kind": "breach",
-      "story": 1,
-      "x": 2.0,
-      "y": 10.64,
-      "z": 4.55,
-      "width": 1.4,
-      "height": 2.2,
-      "sill": 0.0,
-      "tag": null,
-      "breach_class": "soft_wall",
-      "material": "drywall",
-      "vaultable": false,
-      "reinforceable": false
-    },
-    {
-      "wall": "int_-1_6",
+      "wall": "int_-1_0",
       "kind": "door",
       "story": -1,
       "x": -8.4,
       "y": 1.0,
-      "z": -2.05,
+      "z": -2.2,
       "width": 1.1,
       "height": 2.2,
       "sill": 0.0,
@@ -911,15 +828,16 @@
       "breach_class": null,
       "material": null,
       "vaultable": false,
-      "reinforceable": false
+      "reinforceable": false,
+      "building": "corner_deli_heist_01"
     },
     {
-      "wall": "int_-1_6",
+      "wall": "int_-1_0",
       "kind": "breach",
       "story": -1,
       "x": 7.2,
       "y": 1.0,
-      "z": -2.05,
+      "z": -2.2,
       "width": 1.4,
       "height": 2.2,
       "sill": 0.0,
@@ -927,15 +845,16 @@
       "breach_class": "reinforceable",
       "material": "brick_ext",
       "vaultable": false,
-      "reinforceable": true
+      "reinforceable": true,
+      "building": "corner_deli_heist_01"
     },
     {
-      "wall": "int_-1_7",
+      "wall": "int_-1_1",
       "kind": "door",
       "story": -1,
       "x": 1.0,
-      "y": 3.2,
-      "z": -2.05,
+      "y": 2.8,
+      "z": -2.2,
       "width": 1.1,
       "height": 2.2,
       "sill": 0.0,
@@ -943,15 +862,16 @@
       "breach_class": null,
       "material": null,
       "vaultable": false,
-      "reinforceable": false
+      "reinforceable": false,
+      "building": "corner_deli_heist_01"
     },
     {
-      "wall": "int_-1_7",
+      "wall": "int_-1_1",
       "kind": "breach",
       "story": -1,
       "x": 1.0,
-      "y": -10.24,
-      "z": -2.05,
+      "y": -8.96,
+      "z": -2.2,
       "width": 1.4,
       "height": 2.2,
       "sill": 0.0,
@@ -959,7 +879,229 @@
       "breach_class": "reinforceable",
       "material": "brick_ext",
       "vaultable": false,
-      "reinforceable": true
+      "reinforceable": true,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "wall": "int_0_2",
+      "kind": "door",
+      "story": 0,
+      "x": -8.0,
+      "y": -11.2,
+      "z": 1.1,
+      "width": 1.1,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": "customer_to_counter",
+      "breach_class": null,
+      "material": null,
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "wall": "int_0_2",
+      "kind": "breach",
+      "story": 0,
+      "x": -8.0,
+      "y": 10.64,
+      "z": 1.1,
+      "width": 1.4,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": null,
+      "breach_class": "soft_wall",
+      "material": "drywall",
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "wall": "int_0_3",
+      "kind": "garage",
+      "story": 0,
+      "x": 5.7,
+      "y": 6.0,
+      "z": 1.25,
+      "width": 2.4,
+      "height": 2.5,
+      "sill": 0.0,
+      "tag": "stockroom_gate",
+      "breach_class": null,
+      "material": null,
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "wall": "int_0_3",
+      "kind": "door",
+      "story": 0,
+      "x": -15.2,
+      "y": 6.0,
+      "z": 1.1,
+      "width": 1.2,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": "office_stair_door",
+      "breach_class": null,
+      "material": null,
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "wall": "int_0_3",
+      "kind": "door",
+      "story": 0,
+      "x": 11.761,
+      "y": 6.0,
+      "z": 1.1,
+      "width": 1.1,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": "kitchen_to_loading",
+      "breach_class": null,
+      "material": null,
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "wall": "int_1_4",
+      "kind": "door",
+      "story": 1,
+      "x": -2.0,
+      "y": 0.0,
+      "z": 4.4,
+      "width": 1.1,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": "hall_to_manager_office",
+      "breach_class": null,
+      "material": null,
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "wall": "int_1_4",
+      "kind": "breach",
+      "story": 1,
+      "x": -2.0,
+      "y": 10.08,
+      "z": 4.4,
+      "width": 1.4,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": null,
+      "breach_class": "soft_wall",
+      "material": "drywall",
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "wall": "int_1_5",
+      "kind": "door",
+      "story": 1,
+      "x": -9.5,
+      "y": 2.0,
+      "z": 4.4,
+      "width": 1.4,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": "apartment_hall",
+      "breach_class": null,
+      "material": null,
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "wall": "int_1_5",
+      "kind": "breach",
+      "story": 1,
+      "x": 10.64,
+      "y": 2.0,
+      "z": 4.4,
+      "width": 1.4,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": null,
+      "breach_class": "soft_wall",
+      "material": "drywall",
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "wall": "int_-1_6",
+      "kind": "door",
+      "story": -1,
+      "x": -13.6,
+      "y": 2.95,
+      "z": -2.2,
+      "width": 1.0,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": "cold_s_access",
+      "breach_class": null,
+      "material": null,
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "wall": "int_-1_6",
+      "kind": "door",
+      "story": -1,
+      "x": -13.6,
+      "y": 7.5,
+      "z": -2.2,
+      "width": 1.1,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": "stack_well_access",
+      "breach_class": null,
+      "material": null,
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "wall": "int_-1_6",
+      "kind": "door",
+      "story": -1,
+      "x": -13.6,
+      "y": 12.96,
+      "z": -2.2,
+      "width": 1.0,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": "cold_n_access",
+      "breach_class": null,
+      "material": null,
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "wall": "int_-1_7",
+      "kind": "door",
+      "story": -1,
+      "x": -16.75,
+      "y": 9.6,
+      "z": -2.2,
+      "width": 1.0,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": "cold_w_access",
+      "breach_class": null,
+      "material": null,
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "corner_deli_heist_01"
     }
   ],
   "objectives": [
@@ -1030,7 +1172,7 @@
       "z": -2.1,
       "value": 2200,
       "bags": 2,
-      "room": "cold_storage",
+      "room": "cold_storage_e",
       "meta": null
     },
     {
@@ -1263,21 +1405,21 @@
       }
     },
     {
-      "node": "int_col_0_0",
+      "node": "int_col_-1_0",
       "material": {
-        "id": "drywall",
-        "acoustic": "Drywall",
-        "absorption": 0.42,
-        "damping": 0.38
+        "id": "brick_ext",
+        "acoustic": "Concrete",
+        "absorption": 0.72,
+        "damping": 0.62
       }
     },
     {
-      "node": "int_col_0_1",
+      "node": "int_col_-1_1",
       "material": {
-        "id": "drywall",
-        "acoustic": "Drywall",
-        "absorption": 0.42,
-        "damping": 0.38
+        "id": "brick_ext",
+        "acoustic": "Concrete",
+        "absorption": 0.72,
+        "damping": 0.62
       }
     },
     {
@@ -1460,5 +1602,1291 @@
         "damping": 0.16
       }
     }
-  ]
+  ],
+  "interactives": [
+    {
+      "id": "corner_deli_heist_01:if:5de07020",
+      "kind": "door",
+      "slot_ref": "ext_0_N_open0",
+      "transform": {
+        "translation": [
+          -9.5,
+          14.0,
+          1.35
+        ],
+        "rot_y": 0
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "id": "corner_deli_heist_01:if:e6e25b48",
+      "kind": "door",
+      "slot_ref": "ext_0_N_open1",
+      "transform": {
+        "translation": [
+          12.16,
+          14.0,
+          1.1
+        ],
+        "rot_y": 0
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "id": "corner_deli_heist_01:if:d4d4b0e8",
+      "kind": "door",
+      "slot_ref": "ext_0_S_open0",
+      "transform": {
+        "translation": [
+          -10.64,
+          -14.0,
+          1.1
+        ],
+        "rot_y": 180
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "id": "corner_deli_heist_01:if:999457c3",
+      "kind": "breach_wall",
+      "slot_ref": "ext_0_S_open2",
+      "transform": {
+        "translation": [
+          12.92,
+          -14.0,
+          1.1
+        ],
+        "rot_y": 180
+      },
+      "states": [
+        "intact",
+        "breached"
+      ],
+      "default": "intact",
+      "transitions": [
+        {
+          "event": "breach",
+          "from": "intact",
+          "to": "breached"
+        }
+      ],
+      "source": "inferred",
+      "reversible": false,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "id": "corner_deli_heist_01:if:02e3da41",
+      "kind": "door",
+      "slot_ref": "ext_0_W_open1",
+      "transform": {
+        "translation": [
+          -19.0,
+          5.04,
+          1.1
+        ],
+        "rot_y": 270
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "id": "corner_deli_heist_01:if:fec0cf10",
+      "kind": "breach_wall",
+      "slot_ref": "ext_0_W_open0",
+      "transform": {
+        "translation": [
+          -19.0,
+          -8.96,
+          1.1
+        ],
+        "rot_y": 270
+      },
+      "states": [
+        "intact",
+        "breached"
+      ],
+      "default": "intact",
+      "transitions": [
+        {
+          "event": "breach",
+          "from": "intact",
+          "to": "breached"
+        }
+      ],
+      "source": "inferred",
+      "reversible": false,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "id": "corner_deli_heist_01:if:ea0b5c76",
+      "kind": "breach_wall",
+      "slot_ref": "ext_1_N_open1",
+      "transform": {
+        "translation": [
+          12.92,
+          14.0,
+          4.4
+        ],
+        "rot_y": 0
+      },
+      "states": [
+        "intact",
+        "breached"
+      ],
+      "default": "intact",
+      "transitions": [
+        {
+          "event": "breach",
+          "from": "intact",
+          "to": "breached"
+        }
+      ],
+      "source": "inferred",
+      "reversible": false,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "id": "corner_deli_heist_01:if:ad3e602a",
+      "kind": "door",
+      "slot_ref": "int_-1_0_open0",
+      "transform": {
+        "translation": [
+          -8.4,
+          1.0,
+          -2.2
+        ],
+        "rot_y": 0
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "id": "corner_deli_heist_01:if:29cd9937",
+      "kind": "breach_wall",
+      "slot_ref": "int_-1_0_open1",
+      "transform": {
+        "translation": [
+          7.2,
+          1.0,
+          -2.2
+        ],
+        "rot_y": 0
+      },
+      "states": [
+        "intact",
+        "breached"
+      ],
+      "default": "intact",
+      "transitions": [
+        {
+          "event": "breach",
+          "from": "intact",
+          "to": "breached"
+        }
+      ],
+      "source": "inferred",
+      "reversible": false,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "id": "corner_deli_heist_01:if:ef61fbd4",
+      "kind": "door",
+      "slot_ref": "int_-1_1_open1",
+      "transform": {
+        "translation": [
+          1.0,
+          2.8,
+          -2.2
+        ],
+        "rot_y": 90
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "id": "corner_deli_heist_01:if:27e5aa2d",
+      "kind": "breach_wall",
+      "slot_ref": "int_-1_1_open0",
+      "transform": {
+        "translation": [
+          1.0,
+          -8.96,
+          -2.2
+        ],
+        "rot_y": 90
+      },
+      "states": [
+        "intact",
+        "breached"
+      ],
+      "default": "intact",
+      "transitions": [
+        {
+          "event": "breach",
+          "from": "intact",
+          "to": "breached"
+        }
+      ],
+      "source": "inferred",
+      "reversible": false,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "id": "corner_deli_heist_01:if:dd3d57ea",
+      "kind": "door",
+      "slot_ref": "int_0_2_open0",
+      "transform": {
+        "translation": [
+          -8.0,
+          -11.2,
+          1.1
+        ],
+        "rot_y": 90
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "id": "corner_deli_heist_01:if:aa1d64f5",
+      "kind": "breach_wall",
+      "slot_ref": "int_0_2_open1",
+      "transform": {
+        "translation": [
+          -8.0,
+          10.64,
+          1.1
+        ],
+        "rot_y": 90
+      },
+      "states": [
+        "intact",
+        "breached"
+      ],
+      "default": "intact",
+      "transitions": [
+        {
+          "event": "breach",
+          "from": "intact",
+          "to": "breached"
+        }
+      ],
+      "source": "inferred",
+      "reversible": false,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "id": "corner_deli_heist_01:if:064e5357",
+      "kind": "door",
+      "slot_ref": "int_0_3_open1",
+      "transform": {
+        "translation": [
+          5.7,
+          6.0,
+          1.25
+        ],
+        "rot_y": 0
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "id": "corner_deli_heist_01:if:2140fa26",
+      "kind": "door",
+      "slot_ref": "int_0_3_open0",
+      "transform": {
+        "translation": [
+          -15.2,
+          6.0,
+          1.1
+        ],
+        "rot_y": 0
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "id": "corner_deli_heist_01:if:9229ffe6",
+      "kind": "door",
+      "slot_ref": "int_0_3_open2",
+      "transform": {
+        "translation": [
+          11.761,
+          6.0,
+          1.1
+        ],
+        "rot_y": 0
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "id": "corner_deli_heist_01:if:ad28c071",
+      "kind": "door",
+      "slot_ref": "int_1_4_open0",
+      "transform": {
+        "translation": [
+          -2.0,
+          0.0,
+          4.4
+        ],
+        "rot_y": 90
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "id": "corner_deli_heist_01:if:311477aa",
+      "kind": "breach_wall",
+      "slot_ref": "int_1_4_open1",
+      "transform": {
+        "translation": [
+          -2.0,
+          10.08,
+          4.4
+        ],
+        "rot_y": 90
+      },
+      "states": [
+        "intact",
+        "breached"
+      ],
+      "default": "intact",
+      "transitions": [
+        {
+          "event": "breach",
+          "from": "intact",
+          "to": "breached"
+        }
+      ],
+      "source": "inferred",
+      "reversible": false,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "id": "corner_deli_heist_01:if:34a48184",
+      "kind": "door",
+      "slot_ref": "int_1_5_open0",
+      "transform": {
+        "translation": [
+          -9.5,
+          2.0,
+          4.4
+        ],
+        "rot_y": 0
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "id": "corner_deli_heist_01:if:4e478581",
+      "kind": "breach_wall",
+      "slot_ref": "int_1_5_open1",
+      "transform": {
+        "translation": [
+          10.64,
+          2.0,
+          4.4
+        ],
+        "rot_y": 0
+      },
+      "states": [
+        "intact",
+        "breached"
+      ],
+      "default": "intact",
+      "transitions": [
+        {
+          "event": "breach",
+          "from": "intact",
+          "to": "breached"
+        }
+      ],
+      "source": "inferred",
+      "reversible": false,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "id": "corner_deli_heist_01:if:feba4677",
+      "kind": "door",
+      "slot_ref": "int_-1_6_open0",
+      "transform": {
+        "translation": [
+          -13.6,
+          2.95,
+          -2.2
+        ],
+        "rot_y": 90
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "id": "corner_deli_heist_01:if:900d722b",
+      "kind": "door",
+      "slot_ref": "int_-1_6_open1",
+      "transform": {
+        "translation": [
+          -13.6,
+          7.5,
+          -2.2
+        ],
+        "rot_y": 90
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "id": "corner_deli_heist_01:if:66403fba",
+      "kind": "door",
+      "slot_ref": "int_-1_6_open2",
+      "transform": {
+        "translation": [
+          -13.6,
+          12.96,
+          -2.2
+        ],
+        "rot_y": 90
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "id": "corner_deli_heist_01:if:77c490fb",
+      "kind": "door",
+      "slot_ref": "int_-1_7_open0",
+      "transform": {
+        "translation": [
+          -16.75,
+          9.6,
+          -2.2
+        ],
+        "rot_y": 90
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "corner_deli_heist_01"
+    }
+  ],
+  "stair_systems": [
+    {
+      "id": "main_stack",
+      "stack_id": null,
+      "role": "primary_egress",
+      "shape": "switchback",
+      "facing": "S",
+      "exterior": false,
+      "channels": 1,
+      "roof_access": true,
+      "transfer": false,
+      "floors_served": [
+        -1,
+        0,
+        1,
+        2
+      ],
+      "footprint_polygon": [
+        [
+          -16.4,
+          6.25
+        ],
+        [
+          -13.6,
+          6.25
+        ],
+        [
+          -13.6,
+          11.75
+        ],
+        [
+          -16.4,
+          11.75
+        ]
+      ],
+      "clear_width_m": 1.4,
+      "approach": [
+        {
+          "floor": -1,
+          "room": "main_stack_well_b",
+          "room_role": "stairwell"
+        },
+        {
+          "floor": 0,
+          "room": "stairwell",
+          "room_role": "connector"
+        },
+        {
+          "floor": 1,
+          "room": "upper_hall",
+          "room_role": "connector"
+        }
+      ],
+      "discharge": {
+        "floor": 0,
+        "type": "direct_exterior",
+        "room": "stairwell",
+        "via": [],
+        "destination": "stairwell",
+        "route_hops": 0
+      },
+      "egress": {
+        "counts_as_exit": true,
+        "independence_group": "route_stairwell",
+        "paired_with": null
+      },
+      "landings": [
+        {
+          "end": "lower",
+          "story": -1,
+          "rect": [
+            -16.4,
+            11.75,
+            -15.0,
+            12.95
+          ],
+          "point": [
+            -15.7,
+            12.35,
+            -3.3
+          ],
+          "dir": [
+            0,
+            1
+          ]
+        },
+        {
+          "end": "upper",
+          "story": 2,
+          "rect": [
+            -16.4,
+            4.25,
+            -15.0,
+            5.45
+          ],
+          "point": [
+            -15.7,
+            4.85,
+            6.6
+          ],
+          "dir": [
+            0,
+            -1
+          ]
+        }
+      ],
+      "nav_endpoints": {
+        "lower": [
+          -15.7,
+          12.35,
+          -3.3
+        ],
+        "upper": [
+          -15.7,
+          4.85,
+          6.6
+        ]
+      },
+      "enclosure": "protected",
+      "door_nodes": [
+        {
+          "floor": -1,
+          "kind": "door",
+          "wall": "int_-1_6",
+          "pos": 0.0,
+          "interactive": "corner_deli_heist_01:if:900d722b",
+          "default_state": "closed",
+          "connects_from": "cold_storage_e",
+          "discharge_door": false
+        },
+        {
+          "floor": -1,
+          "kind": "door",
+          "wall": "int_-1_7",
+          "pos": 0.0,
+          "interactive": "corner_deli_heist_01:if:77c490fb",
+          "default_state": "closed",
+          "connects_from": "cold_storage_w",
+          "discharge_door": false
+        },
+        {
+          "floor": 0,
+          "kind": "breach",
+          "wall": "int_0_2",
+          "pos": 0.38,
+          "interactive": "corner_deli_heist_01:if:aa1d64f5",
+          "default_state": "intact",
+          "connects_from": "stockroom_loading",
+          "discharge_door": false
+        },
+        {
+          "floor": 0,
+          "kind": "door",
+          "wall": "int_0_3",
+          "pos": -0.4,
+          "interactive": "corner_deli_heist_01:if:2140fa26",
+          "default_state": "closed",
+          "connects_from": "deli_counter",
+          "discharge_door": false
+        },
+        {
+          "floor": 0,
+          "kind": "garage",
+          "wall": "ext_0_N",
+          "pos": -0.25,
+          "interactive": "corner_deli_heist_01:if:5de07020",
+          "default_state": "closed",
+          "connects_from": "exterior",
+          "discharge_door": true
+        },
+        {
+          "floor": 1,
+          "kind": "breach",
+          "wall": "int_1_4",
+          "pos": 0.36,
+          "interactive": "corner_deli_heist_01:if:311477aa",
+          "default_state": "intact",
+          "connects_from": "server_room",
+          "discharge_door": false
+        },
+        {
+          "floor": 1,
+          "kind": "door",
+          "wall": "int_1_5",
+          "pos": -0.25,
+          "interactive": "corner_deli_heist_01:if:34a48184",
+          "default_state": "closed",
+          "connects_from": "manager_office",
+          "discharge_door": false
+        }
+      ],
+      "gameplay": {
+        "network_authority": "server",
+        "replicate_door_state": true,
+        "allow_random_lock": false,
+        "egress_side_always_openable": true,
+        "fire_door": true,
+        "self_closing": true,
+        "ai_route_cost_multiplier": 1.15,
+        "congestion": {
+          "clear_width_m": 1.4,
+          "max_agents_abreast": 2,
+          "two_way_passable": true
+        }
+      }
+    }
+  ],
+  "circulation_contract": {
+    "version": 1,
+    "checks": [
+      "STAIR_ENTRY_FACES_SOLID",
+      "STAIR_EXIT_FACES_SOLID",
+      "STAIR_LOWER_LANDING_BLOCKED",
+      "STAIR_UPPER_LANDING_BLOCKED"
+    ],
+    "landing_depth_m": 1.2,
+    "exit_step_off_m": 0.8,
+    "all_compliant": true,
+    "stairs": [
+      {
+        "id": "main_stack",
+        "role": "primary_egress",
+        "facing": "S",
+        "traversable": true,
+        "physical_findings": [],
+        "compliant": true
+      }
+    ]
+  },
+  "ladders": [
+    {
+      "id": "corner_ladder_0",
+      "role": "special_gameplay_route",
+      "ladder_type": "fixed_vertical",
+      "placement_mode": "interior",
+      "lower_surface": "story_0",
+      "upper_surface": "roof",
+      "lower_anchor": [
+        17.5,
+        9.5,
+        0.0
+      ],
+      "upper_anchor": [
+        17.5,
+        9.5,
+        6.6
+      ],
+      "climb_height_m": 6.6,
+      "direction": "bidirectional",
+      "access_class": "gameplay",
+      "egress_classification": "not_egress",
+      "counts_as_primary_egress": false,
+      "counts_as_secondary_escape": false,
+      "counts_as_public_circulation": false,
+      "transition": {
+        "type": "parapet_crossover_platform"
+      },
+      "geometry": {
+        "clear_width_m": 0.7,
+        "rung_spacing_m": 0.3,
+        "rung_center_to_wall_m": 0.25,
+        "climb_rect": [
+          [
+            16.25,
+            9.1
+          ],
+          [
+            17.5,
+            9.1
+          ],
+          [
+            17.5,
+            9.9
+          ],
+          [
+            16.25,
+            9.9
+          ]
+        ]
+      },
+      "fall_protection": {
+        "required": false,
+        "type": "none"
+      },
+      "access_control": {
+        "type": "none"
+      },
+      "route_nodes": {
+        "lower_approach": [
+          17.5,
+          9.5,
+          0.0
+        ],
+        "lower_mount": [
+          17.5,
+          9.5,
+          0.1
+        ],
+        "climb_start": [
+          17.5,
+          9.5,
+          0.3
+        ],
+        "climb_end": [
+          17.5,
+          9.5,
+          6.3
+        ],
+        "upper_dismount": [
+          17.5,
+          9.5,
+          6.6
+        ],
+        "upper_route": [
+          17.5,
+          9.5,
+          6.6
+        ]
+      },
+      "traversal_component": {
+        "component": "LadderTraversal",
+        "mount_trigger": "corner_ladder_0_mount",
+        "dismount_trigger": "corner_ladder_0_dismount",
+        "climb_axis": [
+          [
+            17.5,
+            9.5,
+            0.0
+          ],
+          [
+            17.5,
+            9.5,
+            6.6
+          ]
+        ],
+        "direction": "bidirectional",
+        "animation_profile": "fixed_vertical",
+        "occupancy_state": "reservation",
+        "replication_state": "server",
+        "interaction_permissions": "open"
+      },
+      "nav_link": {
+        "id": "corner_ladder_0_navlink",
+        "start_position": [
+          17.5,
+          9.5,
+          0.0
+        ],
+        "end_position": [
+          17.5,
+          9.5,
+          6.6
+        ],
+        "bidirectional": true,
+        "cost": 3.0,
+        "agent_types": [
+          "player",
+          "ai_humanoid"
+        ],
+        "required_capability": "climb",
+        "access_state": "open",
+        "reservation_state": "free"
+      },
+      "authority": {
+        "server_owned": [
+          "enabled",
+          "locked",
+          "deployed",
+          "obstructed",
+          "ai_reservation",
+          "objective_gating",
+          "player_transition_acceptance"
+        ],
+        "client_owned": [
+          "animation_blend",
+          "camera_motion",
+          "sound_playback",
+          "rung_hand_effects",
+          "traversal_prediction"
+        ]
+      },
+      "ai": {
+        "can_use": true,
+        "one_at_a_time": true,
+        "may_attack_while_climbing": false,
+        "should_wait_for_agent": true,
+        "may_follow_to_roof": true,
+        "recover_if_blocked": "return_to_lower_mount"
+      },
+      "combat": {
+        "weapons_allowed_while_climbing": false,
+        "can_be_interrupted": true,
+        "can_fall": true,
+        "can_slide_down": true,
+        "can_be_destroyed": false,
+        "can_be_blocked": true,
+        "occupancy_limit": 1
+      },
+      "gameplay": {
+        "player_traversable": true,
+        "ai_traversable": true,
+        "server_authoritative_state": true,
+        "interaction_required": false,
+        "mount_anchor_id": "corner_ladder_0_mount",
+        "dismount_anchor_id": "corner_ladder_0_dismount",
+        "occupancy_limit": 1
+      }
+    }
+  ],
+  "platforms": [],
+  "fire_escapes": [],
+  "surface_roles": {
+    "slab_-1": "floor",
+    "slab_0": "floor",
+    "slab_1": "floor",
+    "slab_2": "ceiling",
+    "ext_-1_N": "wall",
+    "ext_-1_S": "wall",
+    "ext_-1_E": "wall",
+    "ext_-1_W": "wall",
+    "ext_0_N": "wall",
+    "ext_0_S": "wall",
+    "ext_0_E": "wall",
+    "ext_0_W": "wall",
+    "ext_1_N": "wall",
+    "ext_1_S": "wall",
+    "ext_1_E": "wall",
+    "ext_1_W": "wall",
+    "int_-1_0": "wall",
+    "int_-1_1": "wall",
+    "int_0_2": "wall",
+    "int_0_3": "wall",
+    "int_1_4": "wall",
+    "int_1_5": "wall",
+    "int_-1_6": "wall",
+    "int_-1_7": "wall",
+    "stair0_-1_0": "stair",
+    "stair0_-1_1": "stair",
+    "stair0_-1_2": "stair",
+    "stair0_-1_3": "stair",
+    "stair0_-1_4": "stair",
+    "stair0_-1_5": "stair",
+    "stair0_-1_6": "stair",
+    "stair0_-1_7": "stair",
+    "stair0_-1_8": "stair",
+    "stair0_-1_9": "stair",
+    "stair0_-1_10": "stair",
+    "stair0_-1_11": "stair",
+    "stair0_-1_12": "stair",
+    "stair0_-1_13": "stair",
+    "stair0_-1_14": "stair",
+    "stair0_land_-1": "stair",
+    "stair0_discharge_-1": "stair",
+    "stair0_0_0": "stair",
+    "stair0_0_1": "stair",
+    "stair0_0_2": "stair",
+    "stair0_0_3": "stair",
+    "stair0_0_4": "stair",
+    "stair0_0_5": "stair",
+    "stair0_0_6": "stair",
+    "stair0_0_7": "stair",
+    "stair0_0_8": "stair",
+    "stair0_0_9": "stair",
+    "stair0_0_10": "stair",
+    "stair0_0_11": "stair",
+    "stair0_0_12": "stair",
+    "stair0_0_13": "stair",
+    "stair0_0_14": "stair",
+    "stair0_land_0": "stair",
+    "stair0_discharge_0": "stair",
+    "stair0_1_0": "stair",
+    "stair0_1_1": "stair",
+    "stair0_1_2": "stair",
+    "stair0_1_3": "stair",
+    "stair0_1_4": "stair",
+    "stair0_1_5": "stair",
+    "stair0_1_6": "stair",
+    "stair0_1_7": "stair",
+    "stair0_1_8": "stair",
+    "stair0_1_9": "stair",
+    "stair0_1_10": "stair",
+    "stair0_1_11": "stair",
+    "stair0_1_12": "stair",
+    "stair0_1_13": "stair",
+    "stair0_1_14": "stair",
+    "stair0_1_15": "stair",
+    "stair0_discharge_1": "stair",
+    "ladder0_rail_0_-1": "ladder",
+    "ladder0_rail_0_1": "ladder",
+    "ladder0_rung_0_0": "ladder",
+    "ladder0_rung_0_1": "ladder",
+    "ladder0_rung_0_2": "ladder",
+    "ladder0_rung_0_3": "ladder",
+    "ladder0_rung_0_4": "ladder",
+    "ladder0_rung_0_5": "ladder",
+    "ladder0_rung_0_6": "ladder",
+    "ladder0_rung_0_7": "ladder",
+    "ladder0_rung_0_8": "ladder",
+    "ladder0_rung_0_9": "ladder",
+    "ladder0_rung_0_10": "ladder",
+    "ladder0_rail_1_-1": "ladder",
+    "ladder0_rail_1_1": "ladder",
+    "ladder0_rung_1_0": "ladder",
+    "ladder0_rung_1_1": "ladder",
+    "ladder0_rung_1_2": "ladder",
+    "ladder0_rung_1_3": "ladder",
+    "ladder0_rung_1_4": "ladder",
+    "ladder0_rung_1_5": "ladder",
+    "ladder0_rung_1_6": "ladder",
+    "ladder0_rung_1_7": "ladder",
+    "ladder0_rung_1_8": "ladder",
+    "ladder0_rung_1_9": "ladder",
+    "ladder0_rung_1_10": "ladder",
+    "VAULTLEDGE_0": "floor",
+    "VAULTLEDGE_1": "floor",
+    "front_register_counter": "prop",
+    "deli_case_cover": "prop",
+    "aisle_shelf_01": "prop",
+    "aisle_shelf_02": "prop",
+    "kitchen_prep_table": "prop",
+    "loading_pallet_stack": "prop",
+    "stockroom_rack_01": "prop",
+    "manager_desk": "prop",
+    "server_rack_cluster": "prop",
+    "apartment_sofa_cover": "prop",
+    "basement_vault_block": "prop",
+    "basement_cold_room_rack": "prop",
+    "parapet_N": "wall",
+    "parapet_S": "wall",
+    "parapet_E": "wall",
+    "parapet_W": "wall"
+  }
 }

@@ -1,0 +1,80 @@
+{
+  "kit_name": "Deli Counter",
+  "kit_version": "0.80.0",
+  "schema_version": "1.21.1",
+  "spec": "harbor_score.json",
+  "spec_sha256_16": "bff5789cdd8cdf88",
+  "built_utc": "2026-08-05T21:18:06.085950+00:00",
+  "outputs": [
+    "harbor_score.glb"
+  ],
+  "expected": {
+    "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
+    "bounds_min": [
+      -17.15,
+      -13.15,
+      -5.3
+    ],
+    "bounds_max": [
+      17.15,
+      13.15,
+      5.0
+    ],
+    "origin": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "story_height": 5.0,
+    "floor_elevations": [
+      0.0
+    ],
+    "markers": [
+      {
+        "name": "CREW_SPAWN_A",
+        "type": "crew_spawn",
+        "pos": [
+          -14,
+          -16,
+          0
+        ]
+      },
+      {
+        "name": "RESPONDER_SPAWN_1",
+        "type": "responder_spawn",
+        "pos": [
+          16,
+          14,
+          0
+        ]
+      },
+      {
+        "name": "RESPONDER_SPAWN_2",
+        "type": "responder_spawn",
+        "pos": [
+          -16,
+          14,
+          0
+        ]
+      },
+      {
+        "name": "PATROL_POINT_01",
+        "type": "patrol_point",
+        "pos": [
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_01",
+        "type": "camera_socket",
+        "pos": [
+          5,
+          12,
+          4
+        ]
+      }
+    ]
+  }
+}

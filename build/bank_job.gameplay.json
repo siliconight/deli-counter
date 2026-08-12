@@ -194,7 +194,7 @@
       "y": 0.0,
       "z": -2.6,
       "rot_z": 0.0,
-      "room": "vault_room",
+      "room": "vault_room_east",
       "meta": {
         "auto": "landmark",
         "label": "vault_room",
@@ -261,10 +261,29 @@
       ]
     },
     {
-      "id": "vault_room",
+      "id": "vault_room_west",
       "story": -1,
       "bounds": [
         -15.0,
+        -11.0,
+        0.0,
+        11.0
+      ],
+      "role": "fortifiable",
+      "combat_range": "close",
+      "fortifiable": true,
+      "objective": false,
+      "center": [
+        -7.5,
+        0.0,
+        -3.6
+      ]
+    },
+    {
+      "id": "vault_room_east",
+      "story": -1,
+      "bounds": [
+        0.0,
         -11.0,
         15.0,
         11.0
@@ -274,7 +293,7 @@
       "fortifiable": true,
       "objective": true,
       "center": [
-        0.0,
+        7.5,
         0.0,
         -3.6
       ]
@@ -288,7 +307,7 @@
       "story": 0,
       "x": 6.0,
       "y": 11.0,
-      "z": 1.25,
+      "z": 1.1,
       "width": 1.4,
       "height": 2.2,
       "sill": 0.0,
@@ -305,7 +324,7 @@
       "story": 0,
       "x": -3.0,
       "y": -11.0,
-      "z": 1.25,
+      "z": 1.1,
       "width": 1.8,
       "height": 2.2,
       "sill": 0.0,
@@ -322,7 +341,7 @@
       "story": 0,
       "x": 6.0,
       "y": -11.0,
-      "z": 1.75,
+      "z": 1.6,
       "width": 2.4,
       "height": 1.4,
       "sill": 0.9,
@@ -339,7 +358,7 @@
       "story": 0,
       "x": 12.0,
       "y": -11.0,
-      "z": 1.75,
+      "z": 1.6,
       "width": 2.4,
       "height": 1.4,
       "sill": 0.9,
@@ -356,7 +375,7 @@
       "story": 0,
       "x": 15.0,
       "y": 5.5,
-      "z": 1.25,
+      "z": 1.1,
       "width": 1.2,
       "height": 2.2,
       "sill": 0.0,
@@ -373,7 +392,7 @@
       "story": 0,
       "x": -15.0,
       "y": 0.0,
-      "z": 1.25,
+      "z": 1.1,
       "width": 1.2,
       "height": 2.2,
       "sill": 0.0,
@@ -390,7 +409,7 @@
       "story": 1,
       "x": -7.5,
       "y": 11.0,
-      "z": 5.35,
+      "z": 5.2,
       "width": 1.6,
       "height": 1.4,
       "sill": 0.9,
@@ -407,7 +426,7 @@
       "story": 1,
       "x": 7.5,
       "y": 11.0,
-      "z": 5.35,
+      "z": 5.2,
       "width": 1.6,
       "height": 1.4,
       "sill": 0.9,
@@ -424,7 +443,7 @@
       "story": 1,
       "x": -7.5,
       "y": -11.0,
-      "z": 5.35,
+      "z": 5.2,
       "width": 1.6,
       "height": 1.4,
       "sill": 0.9,
@@ -441,7 +460,7 @@
       "story": 1,
       "x": 7.5,
       "y": -11.0,
-      "z": 5.35,
+      "z": 5.2,
       "width": 1.6,
       "height": 1.4,
       "sill": 0.9,
@@ -458,7 +477,7 @@
       "story": 1,
       "x": 15.0,
       "y": -5.5,
-      "z": 5.35,
+      "z": 5.2,
       "width": 1.6,
       "height": 1.4,
       "sill": 0.9,
@@ -475,7 +494,7 @@
       "story": 1,
       "x": 15.0,
       "y": 5.5,
-      "z": 5.35,
+      "z": 5.2,
       "width": 1.6,
       "height": 1.4,
       "sill": 0.9,
@@ -492,7 +511,7 @@
       "story": 1,
       "x": -15.0,
       "y": -5.5,
-      "z": 5.35,
+      "z": 5.2,
       "width": 1.6,
       "height": 1.4,
       "sill": 0.9,
@@ -509,7 +528,7 @@
       "story": 1,
       "x": -15.0,
       "y": 5.5,
-      "z": 5.35,
+      "z": 5.2,
       "width": 1.6,
       "height": 1.4,
       "sill": 0.9,
@@ -526,7 +545,7 @@
       "story": 0,
       "x": -9.0,
       "y": 2.0,
-      "z": 1.25,
+      "z": 1.1,
       "width": 1.2,
       "height": 2.2,
       "sill": 0.0,
@@ -543,7 +562,7 @@
       "story": 0,
       "x": 10.5,
       "y": 2.0,
-      "z": 1.25,
+      "z": 1.1,
       "width": 1.2,
       "height": 2.2,
       "sill": 0.0,
@@ -560,7 +579,7 @@
       "story": 0,
       "x": 0.0,
       "y": 6.5,
-      "z": 1.25,
+      "z": 1.1,
       "width": 1.2,
       "height": 2.2,
       "sill": 0.0,
@@ -577,7 +596,7 @@
       "story": -1,
       "x": 0.0,
       "y": -4.4,
-      "z": -2.35,
+      "z": -2.5,
       "width": 1.2,
       "height": 2.2,
       "sill": 0.0,
@@ -594,7 +613,7 @@
       "story": -1,
       "x": 0.0,
       "y": 6.6,
-      "z": -2.35,
+      "z": -2.5,
       "width": 1.5,
       "height": 2.2,
       "sill": 0.0,
@@ -614,7 +633,7 @@
       "x": 10.0,
       "y": -6.0,
       "z": -1.8,
-      "room": "vault_room",
+      "room": "vault_room_east",
       "required": true,
       "duration": 90,
       "meta": null
@@ -642,7 +661,7 @@
       "z": -1.8,
       "value": 500000,
       "bags": 4,
-      "room": "vault_room",
+      "room": "vault_room_east",
       "meta": null
     },
     {
@@ -2881,7 +2900,7 @@
         "translation": [
           6.0,
           11.0,
-          1.25
+          1.1
         ],
         "rot_y": 0
       },
@@ -2909,7 +2928,7 @@
         "translation": [
           -3.0,
           -11.0,
-          1.25
+          1.1
         ],
         "rot_y": 180
       },
@@ -2942,7 +2961,7 @@
         "translation": [
           15.0,
           5.5,
-          1.25
+          1.1
         ],
         "rot_y": 90
       },
@@ -2975,7 +2994,7 @@
         "translation": [
           -15.0,
           0.0,
-          1.25
+          1.1
         ],
         "rot_y": 270
       },
@@ -3008,7 +3027,7 @@
         "translation": [
           -9.0,
           2.0,
-          1.25
+          1.1
         ],
         "rot_y": 0
       },
@@ -3041,7 +3060,7 @@
         "translation": [
           10.5,
           2.0,
-          1.25
+          1.1
         ],
         "rot_y": 0
       },
@@ -3074,7 +3093,7 @@
         "translation": [
           0.0,
           6.5,
-          1.25
+          1.1
         ],
         "rot_y": 90
       },
@@ -3107,7 +3126,7 @@
         "translation": [
           0.0,
           -4.4,
-          -2.35
+          -2.5
         ],
         "rot_y": 90
       },
@@ -3140,7 +3159,7 @@
         "translation": [
           0.0,
           6.6,
-          -2.35
+          -2.5
         ],
         "rot_y": 90
       },
@@ -3199,8 +3218,8 @@
       "approach": [
         {
           "floor": -1,
-          "room": "vault_room",
-          "room_role": "objective_room"
+          "room": "vault_room_west",
+          "room_role": "fortifiable"
         },
         {
           "floor": 0,
@@ -3213,7 +3232,7 @@
         "type": "exit_passage",
         "room": "manager_office",
         "via": [],
-        "destination": "security_room",
+        "destination": "lobby",
         "route_hops": 1
       },
       "egress": {
@@ -3280,7 +3299,7 @@
           "pos": -0.2,
           "interactive": "bank_job:if:5c99984e",
           "default_state": "closed",
-          "connects_from": "vault_room",
+          "connects_from": "vault_room_east",
           "discharge_door": false
         },
         {
@@ -3290,7 +3309,7 @@
           "pos": 0.3,
           "interactive": "bank_job:if:43c1e022",
           "default_state": "intact",
-          "connects_from": "vault_room",
+          "connects_from": "vault_room_east",
           "discharge_door": false
         },
         {
@@ -3368,7 +3387,7 @@
       "approach": [
         {
           "floor": -1,
-          "room": "vault_room",
+          "room": "vault_room_east",
           "room_role": "objective_room"
         },
         {
@@ -3449,7 +3468,7 @@
           "pos": -0.2,
           "interactive": "bank_job:if:5c99984e",
           "default_state": "closed",
-          "connects_from": "vault_room",
+          "connects_from": "vault_room_west",
           "discharge_door": false
         },
         {
@@ -3459,7 +3478,7 @@
           "pos": 0.3,
           "interactive": "bank_job:if:43c1e022",
           "default_state": "intact",
-          "connects_from": "vault_room",
+          "connects_from": "vault_room_west",
           "discharge_door": false
         },
         {
@@ -3803,8 +3822,8 @@
     "stair0_-1_14": "stair",
     "stair0_-1_15": "stair",
     "stair0_-1_16": "stair",
-    "stair0_-1_17": "stair",
     "stair0_land_-1": "stair",
+    "stair0_discharge_-1": "stair",
     "stair0_0_0": "stair",
     "stair0_0_1": "stair",
     "stair0_0_2": "stair",
@@ -3823,6 +3842,7 @@
     "stair0_0_15": "stair",
     "stair0_0_16": "stair",
     "stair0_0_17": "stair",
+    "stair0_discharge_0": "stair",
     "stair1_-1_0": "stair",
     "stair1_-1_1": "stair",
     "stair1_-1_2": "stair",
@@ -3841,6 +3861,7 @@
     "stair1_-1_15": "stair",
     "stair1_-1_16": "stair",
     "stair1_-1_17": "stair",
+    "stair1_discharge_-1": "stair",
     "VAULTLEDGE_0": "floor",
     "teller_counter": "prop",
     "VAULT": "prop",

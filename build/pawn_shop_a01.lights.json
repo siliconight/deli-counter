@@ -2,7 +2,7 @@
   "light_manifest_version": "1.1.0",
   "building_id": "pawn_shop_a01",
   "theme": "greybox",
-  "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location",
+  "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
   "rig_library": "lux",
   "anchors": [
     {
@@ -12,7 +12,7 @@
       "pos": [
         0.0,
         -2.5,
-        3.3
+        3.05
       ],
       "rot_y": 0.0,
       "room": "shop_floor",
@@ -29,7 +29,7 @@
       "pos": [
         0.0,
         4.5,
-        3.3
+        3.05
       ],
       "rot_y": 0.0,
       "room": "safe_room",
@@ -46,7 +46,7 @@
       "pos": [
         0.0,
         -3.5,
-        6.7
+        6.45
       ],
       "rot_y": 0.0,
       "room": "apartment",
@@ -61,14 +61,14 @@
       "type": "fluorescent",
       "source": "derived",
       "pos": [
-        0.0,
+        1.6,
         3.5,
-        6.7
+        6.45
       ],
       "rot_y": 0.0,
       "room": "upper_storage",
       "row": {
-        "count": 5,
+        "count": 4,
         "spacing": 3.2
       },
       "reacts_to_alarm": true
@@ -80,7 +80,7 @@
       "pos": [
         4.0,
         -7.0,
-        1.425
+        1.3
       ],
       "rot_y": 90.0,
       "size": [
@@ -96,7 +96,7 @@
       "pos": [
         -8.0,
         -2.8,
-        1.625
+        1.5
       ],
       "rot_y": 0.0,
       "size": [
@@ -112,7 +112,7 @@
       "pos": [
         0.0,
         -7.0,
-        5.225
+        5.1
       ],
       "rot_y": 90.0,
       "size": [
@@ -128,7 +128,7 @@
       "pos": [
         8.0,
         0.0,
-        5.225
+        5.1
       ],
       "rot_y": 180.0,
       "size": [
@@ -144,7 +144,7 @@
       "pos": [
         -8.0,
         0.0,
-        5.225
+        5.1
       ],
       "rot_y": 0.0,
       "size": [

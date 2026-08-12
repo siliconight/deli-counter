@@ -255,7 +255,7 @@
       "story": 0,
       "x": 7.8,
       "y": 9.0,
-      "z": 1.25,
+      "z": 1.1,
       "width": 1.1,
       "height": 2.2,
       "sill": 0.0,
@@ -284,7 +284,7 @@
       "story": 0,
       "x": -7.8,
       "y": 9.0,
-      "z": 1.25,
+      "z": 1.1,
       "width": 1.3,
       "height": 2.2,
       "sill": 0.0,
@@ -313,7 +313,7 @@
       "story": 0,
       "x": -3.9,
       "y": -9.0,
-      "z": 1.65,
+      "z": 1.5,
       "width": 4.0,
       "height": 3.0,
       "sill": 0.0,
@@ -342,7 +342,7 @@
       "story": 0,
       "x": 9.1,
       "y": -9.0,
-      "z": 1.25,
+      "z": 1.1,
       "width": 1.1,
       "height": 2.2,
       "sill": 0.0,
@@ -371,7 +371,7 @@
       "story": 0,
       "x": 13.0,
       "y": -5.4,
-      "z": 1.25,
+      "z": 1.1,
       "width": 1.1,
       "height": 2.2,
       "sill": 0.0,
@@ -400,7 +400,7 @@
       "story": 0,
       "x": -13.0,
       "y": 4.5,
-      "z": 2.05,
+      "z": 1.9,
       "width": 1.4,
       "height": 1.4,
       "sill": 1.2,
@@ -429,7 +429,7 @@
       "story": 1,
       "x": -7.8,
       "y": 9.0,
-      "z": 5.45,
+      "z": 5.3,
       "width": 1.3,
       "height": 1.4,
       "sill": 1.0,
@@ -458,7 +458,7 @@
       "story": 1,
       "x": 7.8,
       "y": 9.0,
-      "z": 4.85,
+      "z": 4.7,
       "width": 1.2,
       "height": 2.2,
       "sill": 0.0,
@@ -487,7 +487,7 @@
       "story": 1,
       "x": -5.2,
       "y": -9.0,
-      "z": 5.45,
+      "z": 5.3,
       "width": 1.3,
       "height": 1.4,
       "sill": 1.0,
@@ -516,7 +516,7 @@
       "story": 1,
       "x": 6.5,
       "y": -9.0,
-      "z": 5.45,
+      "z": 5.3,
       "width": 1.3,
       "height": 1.4,
       "sill": 1.0,
@@ -545,7 +545,7 @@
       "story": 1,
       "x": 13.0,
       "y": 0.0,
-      "z": 5.45,
+      "z": 5.3,
       "width": 1.3,
       "height": 1.4,
       "sill": 1.0,
@@ -574,7 +574,7 @@
       "story": 1,
       "x": -13.0,
       "y": 0.0,
-      "z": 5.45,
+      "z": 5.3,
       "width": 1.3,
       "height": 1.4,
       "sill": 1.0,
@@ -603,7 +603,7 @@
       "story": 0,
       "x": -6.5,
       "y": 4.0,
-      "z": 1.25,
+      "z": 1.1,
       "width": 1.1,
       "height": 2.2,
       "sill": 0.0,
@@ -632,7 +632,7 @@
       "story": 0,
       "x": 7.8,
       "y": 4.0,
-      "z": 1.25,
+      "z": 1.1,
       "width": 1.1,
       "height": 2.2,
       "sill": 0.0,
@@ -659,10 +659,10 @@
       "wall": "int_1_1",
       "kind": "door",
       "story": 1,
-      "x": 2.0,
-      "y": 3.6,
-      "z": 4.85,
-      "width": 1.1,
+      "x": 3.6,
+      "y": 2.0,
+      "z": 4.7,
+      "width": 1.4,
       "height": 2.2,
       "sill": 0.0,
       "tag": null,
@@ -2084,6 +2084,680 @@
       }
     }
   ],
+  "interactives": [
+    {
+      "id": "gs_auto_shop:if:5fae4981",
+      "kind": "door",
+      "slot_ref": "ext_0_N_open1",
+      "transform": {
+        "translation": [
+          7.8,
+          9.0,
+          1.1
+        ],
+        "rot_y": 0
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "gs_auto_shop"
+    },
+    {
+      "id": "gs_auto_shop:if:ef73c44c",
+      "kind": "breach_wall",
+      "slot_ref": "ext_0_N_open0",
+      "transform": {
+        "translation": [
+          -7.8,
+          9.0,
+          1.1
+        ],
+        "rot_y": 0
+      },
+      "states": [
+        "intact",
+        "breached"
+      ],
+      "default": "intact",
+      "transitions": [
+        {
+          "event": "breach",
+          "from": "intact",
+          "to": "breached"
+        }
+      ],
+      "source": "inferred",
+      "reversible": false,
+      "building": "gs_auto_shop"
+    },
+    {
+      "id": "gs_auto_shop:if:baefcd2c",
+      "kind": "door",
+      "slot_ref": "ext_0_S_open0",
+      "transform": {
+        "translation": [
+          -3.9,
+          -9.0,
+          1.5
+        ],
+        "rot_y": 180
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "gs_auto_shop"
+    },
+    {
+      "id": "gs_auto_shop:if:2a150661",
+      "kind": "door",
+      "slot_ref": "ext_0_S_open1",
+      "transform": {
+        "translation": [
+          9.1,
+          -9.0,
+          1.1
+        ],
+        "rot_y": 180
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "gs_auto_shop"
+    },
+    {
+      "id": "gs_auto_shop:if:0f018a52",
+      "kind": "door",
+      "slot_ref": "ext_0_E_open0",
+      "transform": {
+        "translation": [
+          13.0,
+          -5.4,
+          1.1
+        ],
+        "rot_y": 90
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "gs_auto_shop"
+    },
+    {
+      "id": "gs_auto_shop:if:d0662bec",
+      "kind": "breach_wall",
+      "slot_ref": "ext_1_N_open1",
+      "transform": {
+        "translation": [
+          7.8,
+          9.0,
+          4.7
+        ],
+        "rot_y": 0
+      },
+      "states": [
+        "intact",
+        "breached"
+      ],
+      "default": "intact",
+      "transitions": [
+        {
+          "event": "breach",
+          "from": "intact",
+          "to": "breached"
+        }
+      ],
+      "source": "inferred",
+      "reversible": false,
+      "building": "gs_auto_shop"
+    },
+    {
+      "id": "gs_auto_shop:if:426fa416",
+      "kind": "door",
+      "slot_ref": "int_0_0_open0",
+      "transform": {
+        "translation": [
+          -6.5,
+          4.0,
+          1.1
+        ],
+        "rot_y": 0
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "gs_auto_shop"
+    },
+    {
+      "id": "gs_auto_shop:if:441e76d2",
+      "kind": "door",
+      "slot_ref": "int_0_0_open1",
+      "transform": {
+        "translation": [
+          7.8,
+          4.0,
+          1.1
+        ],
+        "rot_y": 0
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "gs_auto_shop"
+    },
+    {
+      "id": "gs_auto_shop:if:ec86498f",
+      "kind": "door",
+      "slot_ref": "int_1_1_open0",
+      "transform": {
+        "translation": [
+          3.6,
+          2.0,
+          4.7
+        ],
+        "rot_y": 0
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "gs_auto_shop"
+    }
+  ],
+  "stair_systems": [
+    {
+      "id": "gs_auto_shop_stair_0",
+      "stack_id": null,
+      "role": "public_convenience",
+      "shape": "switchback",
+      "facing": "W",
+      "exterior": false,
+      "channels": 1,
+      "roof_access": false,
+      "transfer": false,
+      "floors_served": [
+        0,
+        1
+      ],
+      "footprint_polygon": [
+        [
+          6.5,
+          5.3
+        ],
+        [
+          11.5,
+          5.3
+        ],
+        [
+          11.5,
+          7.7
+        ],
+        [
+          6.5,
+          7.7
+        ]
+      ],
+      "clear_width_m": 1.2,
+      "approach": [
+        {
+          "floor": 0,
+          "room": "parts_back",
+          "room_role": "connector"
+        },
+        {
+          "floor": 1,
+          "room": "upper_office",
+          "room_role": "objective_room"
+        }
+      ],
+      "discharge": {
+        "floor": 0,
+        "type": "direct_exterior",
+        "room": "parts_back",
+        "via": [],
+        "destination": "parts_back",
+        "route_hops": 0
+      },
+      "egress": {
+        "counts_as_exit": false
+      },
+      "landings": [
+        {
+          "end": "lower",
+          "story": 0,
+          "rect": [
+            11.5,
+            6.5,
+            12.7,
+            7.7
+          ],
+          "point": [
+            12.1,
+            7.1,
+            0.0
+          ],
+          "dir": [
+            1,
+            0
+          ]
+        },
+        {
+          "end": "upper",
+          "story": 1,
+          "rect": [
+            4.5,
+            6.5,
+            5.7,
+            7.7
+          ],
+          "point": [
+            5.1,
+            7.1,
+            3.6
+          ],
+          "dir": [
+            -1,
+            0
+          ]
+        }
+      ],
+      "nav_endpoints": {
+        "lower": [
+          12.1,
+          7.1,
+          0.0
+        ],
+        "upper": [
+          5.1,
+          7.1,
+          3.6
+        ]
+      },
+      "enclosure": "open",
+      "door_nodes": [
+        {
+          "floor": 0,
+          "kind": "door",
+          "wall": "int_0_0",
+          "pos": -0.25,
+          "interactive": "gs_auto_shop:if:426fa416",
+          "default_state": "closed",
+          "connects_from": "service_bay",
+          "discharge_door": false
+        },
+        {
+          "floor": 0,
+          "kind": "door",
+          "wall": "int_0_0",
+          "pos": 0.3,
+          "interactive": "gs_auto_shop:if:441e76d2",
+          "default_state": "closed",
+          "connects_from": "service_bay",
+          "discharge_door": false
+        },
+        {
+          "floor": 0,
+          "kind": "door",
+          "wall": "ext_0_N",
+          "pos": 0.3,
+          "interactive": "gs_auto_shop:if:5fae4981",
+          "default_state": "closed",
+          "connects_from": "exterior",
+          "discharge_door": true
+        },
+        {
+          "floor": 0,
+          "kind": "breach",
+          "wall": "ext_0_N",
+          "pos": -0.3,
+          "interactive": "gs_auto_shop:if:ef73c44c",
+          "default_state": "intact",
+          "connects_from": "exterior",
+          "discharge_door": true
+        },
+        {
+          "floor": 1,
+          "kind": "door",
+          "wall": "int_1_1",
+          "pos": 0.2,
+          "interactive": "gs_auto_shop:if:ec86498f",
+          "default_state": "closed",
+          "connects_from": "upper_storage",
+          "discharge_door": false
+        }
+      ],
+      "meta": {
+        "generated_by": "presets"
+      },
+      "gameplay": {
+        "network_authority": "server",
+        "replicate_door_state": true,
+        "allow_random_lock": true,
+        "egress_side_always_openable": false,
+        "fire_door": false,
+        "self_closing": false,
+        "ai_route_cost_multiplier": 1.0,
+        "congestion": {
+          "clear_width_m": 1.2,
+          "max_agents_abreast": 1,
+          "two_way_passable": true
+        }
+      }
+    }
+  ],
+  "circulation_contract": {
+    "version": 1,
+    "checks": [
+      "STAIR_ENTRY_FACES_SOLID",
+      "STAIR_EXIT_FACES_SOLID",
+      "STAIR_LOWER_LANDING_BLOCKED",
+      "STAIR_UPPER_LANDING_BLOCKED"
+    ],
+    "landing_depth_m": 1.2,
+    "exit_step_off_m": 0.8,
+    "all_compliant": true,
+    "stairs": [
+      {
+        "id": "gs_auto_shop_stair_0",
+        "role": "public_convenience",
+        "facing": "W",
+        "traversable": true,
+        "physical_findings": [],
+        "compliant": true
+      }
+    ]
+  },
+  "ladders": [
+    {
+      "id": "gs_ladder_0",
+      "role": "special_gameplay_route",
+      "ladder_type": "fixed_vertical",
+      "placement_mode": "interior",
+      "lower_surface": "story_1",
+      "upper_surface": "roof",
+      "lower_anchor": [
+        -10.5,
+        6.5,
+        3.6
+      ],
+      "upper_anchor": [
+        -10.5,
+        6.5,
+        7.2
+      ],
+      "climb_height_m": 3.6,
+      "direction": "bidirectional",
+      "access_class": "gameplay",
+      "egress_classification": "not_egress",
+      "counts_as_primary_egress": false,
+      "counts_as_secondary_escape": false,
+      "counts_as_public_circulation": false,
+      "transition": {
+        "type": "parapet_crossover_platform"
+      },
+      "geometry": {
+        "clear_width_m": 0.5,
+        "rung_spacing_m": 0.3,
+        "rung_center_to_wall_m": 0.15,
+        "climb_rect": [
+          [
+            -10.9,
+            5.3
+          ],
+          [
+            -10.1,
+            5.3
+          ],
+          [
+            -10.1,
+            6.5
+          ],
+          [
+            -10.9,
+            6.5
+          ]
+        ]
+      },
+      "fall_protection": {
+        "required": false,
+        "type": "none"
+      },
+      "access_control": {
+        "type": "locked_hatch"
+      },
+      "route_nodes": {
+        "lower_approach": [
+          -10.5,
+          6.5,
+          3.6
+        ],
+        "lower_mount": [
+          -10.5,
+          6.5,
+          3.7
+        ],
+        "climb_start": [
+          -10.5,
+          6.5,
+          3.9
+        ],
+        "climb_end": [
+          -10.5,
+          6.5,
+          6.9
+        ],
+        "upper_dismount": [
+          -10.5,
+          6.5,
+          7.2
+        ],
+        "upper_route": [
+          -10.5,
+          6.5,
+          7.2
+        ]
+      },
+      "traversal_component": {
+        "component": "LadderTraversal",
+        "mount_trigger": "gs_ladder_0_mount",
+        "dismount_trigger": "gs_ladder_0_dismount",
+        "climb_axis": [
+          [
+            -10.5,
+            6.5,
+            3.6
+          ],
+          [
+            -10.5,
+            6.5,
+            7.2
+          ]
+        ],
+        "direction": "bidirectional",
+        "animation_profile": "fixed_vertical",
+        "occupancy_state": "reservation",
+        "replication_state": "server",
+        "interaction_permissions": "restricted"
+      },
+      "nav_link": {
+        "id": "gs_ladder_0_navlink",
+        "start_position": [
+          -10.5,
+          6.5,
+          3.6
+        ],
+        "end_position": [
+          -10.5,
+          6.5,
+          7.2
+        ],
+        "bidirectional": true,
+        "cost": 3.0,
+        "agent_types": [
+          "player",
+          "ai_humanoid"
+        ],
+        "required_capability": "climb",
+        "access_state": "locked",
+        "reservation_state": "free"
+      },
+      "authority": {
+        "server_owned": [
+          "enabled",
+          "locked",
+          "deployed",
+          "obstructed",
+          "ai_reservation",
+          "objective_gating",
+          "player_transition_acceptance"
+        ],
+        "client_owned": [
+          "animation_blend",
+          "camera_motion",
+          "sound_playback",
+          "rung_hand_effects",
+          "traversal_prediction"
+        ]
+      },
+      "ai": {
+        "can_use": true,
+        "one_at_a_time": true,
+        "may_attack_while_climbing": false,
+        "should_wait_for_agent": true,
+        "may_follow_to_roof": true,
+        "recover_if_blocked": "return_to_lower_mount"
+      },
+      "combat": {
+        "weapons_allowed_while_climbing": false,
+        "can_be_interrupted": true,
+        "can_fall": true,
+        "can_slide_down": true,
+        "can_be_destroyed": false,
+        "can_be_blocked": true,
+        "occupancy_limit": 1
+      },
+      "gameplay": {
+        "player_traversable": true,
+        "ai_traversable": true,
+        "server_authoritative_state": true,
+        "interaction_required": true,
+        "mount_anchor_id": "gs_ladder_0_mount",
+        "dismount_anchor_id": "gs_ladder_0_dismount",
+        "occupancy_limit": 1
+      }
+    }
+  ],
+  "platforms": [],
+  "fire_escapes": [],
   "surface_roles": {
     "slab_0": "floor",
     "slab_1": "floor",
@@ -2248,6 +2922,7 @@
     "stair0_0_15": "stair",
     "stair0_0_16": "stair",
     "stair0_0_17": "stair",
+    "stair0_discharge_0": "stair",
     "ladder0_rail_1_-1": "ladder",
     "ladder0_rail_1_1": "ladder",
     "ladder0_rung_1_0": "ladder",
@@ -2266,6 +2941,10 @@
     "lift_2": "prop",
     "parts_rack": "prop",
     "tool_bench": "prop",
-    "office_desk": "prop"
+    "office_desk": "prop",
+    "parapet_N": "wall",
+    "parapet_S": "wall",
+    "parapet_E": "wall",
+    "parapet_W": "wall"
   }
 }

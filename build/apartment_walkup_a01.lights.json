@@ -2,7 +2,7 @@
   "light_manifest_version": "1.1.0",
   "building_id": "apartment_walkup_a01",
   "theme": "greybox",
-  "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location",
+  "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
   "rig_library": "lux",
   "anchors": [
     {
@@ -12,7 +12,7 @@
       "pos": [
         -5.5,
         -4.5,
-        3.1
+        2.8
       ],
       "rot_y": 0.0,
       "room": "front_hall",
@@ -23,19 +23,36 @@
       "reacts_to_alarm": true
     },
     {
-      "id": "kitchen_ceiling",
+      "id": "kitchen_ceiling_0",
       "type": "fluorescent",
       "source": "derived",
       "pos": [
-        5.5,
+        2.75,
         -4.5,
-        3.1
+        2.8
       ],
       "rot_y": 0.0,
       "room": "kitchen",
       "row": {
-        "count": 4,
+        "count": 2,
         "spacing": 2.75
+      },
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "kitchen_ceiling_1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        9.625,
+        -4.5,
+        2.8
+      ],
+      "rot_y": 0.0,
+      "room": "kitchen",
+      "row": {
+        "count": 1,
+        "spacing": 0.0
       },
       "reacts_to_alarm": true
     },
@@ -46,7 +63,7 @@
       "pos": [
         0.0,
         4.5,
-        3.1
+        2.8
       ],
       "rot_y": 0.0,
       "room": "garage_bay",
@@ -63,7 +80,7 @@
       "pos": [
         -4.25,
         0.0,
-        6.3
+        6.0
       ],
       "rot_y": 90.0,
       "room": "office",
@@ -80,7 +97,7 @@
       "pos": [
         6.75,
         0.0,
-        6.3
+        6.0
       ],
       "rot_y": 90.0,
       "room": "bedroom",
@@ -97,7 +114,7 @@
       "pos": [
         6.5,
         1.0,
-        -0.1
+        -0.4
       ],
       "rot_y": 90.0,
       "room": "basement_vault",
@@ -114,7 +131,7 @@
       "pos": [
         -4.5,
         1.0,
-        -0.1
+        -0.4
       ],
       "rot_y": 90.0,
       "room": "basement_approach",
@@ -131,7 +148,7 @@
       "pos": [
         6.0,
         -9.0,
-        1.85
+        1.7
       ],
       "rot_y": 90.0,
       "size": [
@@ -147,7 +164,7 @@
       "pos": [
         0.0,
         9.0,
-        5.05
+        4.9
       ],
       "rot_y": 270.0,
       "size": [
@@ -163,7 +180,7 @@
       "pos": [
         12.0,
         0.0,
-        5.05
+        4.9
       ],
       "rot_y": 180.0,
       "size": [

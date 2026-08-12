@@ -2,7 +2,7 @@
   "light_manifest_version": "1.1.0",
   "building_id": "apartment_walkup_a02",
   "theme": "greybox",
-  "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location",
+  "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
   "rig_library": "lux",
   "anchors": [
     {
@@ -10,14 +10,14 @@
       "type": "fluorescent",
       "source": "derived",
       "pos": [
-        0.0,
+        2.0,
         -3.5,
-        3.1
+        2.8
       ],
       "rot_y": 0.0,
       "room": "parlor",
       "row": {
-        "count": 5,
+        "count": 4,
         "spacing": 4.0
       },
       "reacts_to_alarm": true
@@ -29,7 +29,7 @@
       "pos": [
         0.0,
         4.5,
-        3.1
+        2.8
       ],
       "rot_y": 0.0,
       "room": "kitchen",
@@ -46,7 +46,7 @@
       "pos": [
         0.0,
         -4.0,
-        6.3
+        6.0
       ],
       "rot_y": 0.0,
       "room": "landing",
@@ -63,7 +63,7 @@
       "pos": [
         -4.0,
         4.0,
-        6.3
+        6.0
       ],
       "rot_y": 0.0,
       "room": "front_flat",
@@ -80,7 +80,7 @@
       "pos": [
         6.0,
         4.0,
-        6.3
+        6.0
       ],
       "rot_y": 0.0,
       "room": "safe_flat",
@@ -97,7 +97,7 @@
       "pos": [
         -7.0,
         -8.0,
-        1.75
+        1.6
       ],
       "rot_y": 90.0,
       "size": [
@@ -113,7 +113,7 @@
       "pos": [
         0.0,
         8.0,
-        4.95
+        4.8
       ],
       "rot_y": 270.0,
       "size": [
@@ -129,7 +129,7 @@
       "pos": [
         -6.0,
         -8.0,
-        4.95
+        4.8
       ],
       "rot_y": 90.0,
       "size": [
@@ -145,7 +145,7 @@
       "pos": [
         6.0,
         -8.0,
-        4.95
+        4.8
       ],
       "rot_y": 90.0,
       "size": [

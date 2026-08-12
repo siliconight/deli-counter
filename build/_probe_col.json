@@ -1,0 +1,48 @@
+{
+  "error": "",
+  "glb": "build\\mansion_a01.glb",
+  "islands": [
+    {
+      "island": 2,
+      "polys": 129,
+      "y_max": 4.15,
+      "y_min": -2.9
+    },
+    {
+      "island": 1,
+      "polys": 34,
+      "y_max": -3.65,
+      "y_min": -3.65
+    },
+    {
+      "island": 0,
+      "polys": 2,
+      "y_max": 7.9,
+      "y_min": 7.9
+    }
+  ],
+  "markers": {
+    "checked": 2,
+    "reachable": 0,
+    "unreachable": [
+      "objective_A (snap 0.1m)",
+      "extraction_DRIVE (snap 2.6m)"
+    ]
+  },
+  "navmesh_polys": 165,
+  "ok": false,
+  "stairs": [
+    {
+      "detail": "endpoints on disjoint islands (lower on 1, upper on 2)",
+      "id": "mn01_stair_dn",
+      "role": "service",
+      "status": "no_path"
+    },
+    {
+      "detail": "path lower<->upper (undirected polygon graph)",
+      "id": "mn01_stair_up",
+      "role": "public_convenience",
+      "status": "ok"
+    }
+  ]
+}

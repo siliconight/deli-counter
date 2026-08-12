@@ -222,6 +222,7 @@ class _Builder:
                 self.VISUAL.objects.link(obj)
                 if role:
                     self.surface_roles[obj.name] = role
+                    self._paint(obj, role)
             obj.matrix_world = slot_m @ local_m
         return True
 
@@ -288,7 +289,112 @@ class _Builder:
         # as "surface_roles".
         if role is not None and collection is self.VISUAL:
             self.surface_roles[obj.name] = role
+            # Painted where it is labelled, so a surface cannot carry a role
+            # without carrying the material that role reads by.
+            self._paint(obj, role)
         return obj
+
+    #: Greybox READABILITY palette: (material name, base colour RGBA, roughness)
+    #: per surface role.
+    #:
+    #: Until this existed the shell exported NO materials at all, so every
+    #: surface arrived in Godot as one flat default and nothing could be told
+    #: apart at any distance. This is the dev-texture convention rather than
+    #: art direction: VALUE separates function, hue names it.
+    #:
+    #: Floor mid, wall light, ceiling dark -- the three surfaces a player
+    #: orients by are three different values before hue is considered. Stairs
+    #: and ramps amber, thresholds cyan, breaches red: the two readings that
+    #: matter most, "I can climb this" and "I can get through here", are amber
+    #: and cyan against neutral, so neither depends on telling red from green.
+    #:
+    #: Roughness stays high so a light cannot blow a surface out and erase the
+    #: value that carries the reading; metallic is zero for the same reason.
+    #:
+    #: Tune them here. They are one dict with the reasoning attached rather
+    #: than numbers at a call site, because somebody will want to.
+    #: Every colour here is separated from the surface it is SEEN AGAINST by
+    #: luminance, not only by hue. `--palette` checks those pairs and fails if
+    #: one closes: the first draft had stairs at 0.564 against a 0.522 floor,
+    #: a gap of 0.042, which is amber and grey reading as one surface in
+    #: greyscale, in low light, or to a colourblind player -- on the single
+    #: case this palette exists for.
+    GREYBOX_PALETTE = {
+        # seen against nothing -- these ARE the frame of reference
+        "floor":   ("gb_floor",     (0.52, 0.52, 0.55, 1.0), 0.90),  # 0.522
+        "ceiling": ("gb_ceiling",   (0.22, 0.22, 0.25, 1.0), 0.95),  # 0.222
+        "wall":    ("gb_wall",      (0.72, 0.71, 0.68, 1.0), 0.88),  # 0.710
+        # climbable: the brightest things on the site, seen against the FLOOR.
+        # Stair and ramp are deliberately close to each other -- same
+        # affordance, same family -- and far from what they stand on.
+        "stair":   ("gb_stair",     (1.00, 0.78, 0.32, 1.0), 0.80),  # 0.794
+        "ramp":    ("gb_ramp",      (0.95, 0.70, 0.25, 1.0), 0.80),  # 0.721
+        # A ladder is the same affordance and the hardest to place: it is seen
+        # against the WALL it is bolted to (0.710) and against the ROOF it
+        # arrives at, not against the floor. It gets the brightest value on the
+        # site because it is the smallest thing that has to be found.
+        "ladder":  ("gb_ladder",    (1.00, 0.90, 0.55, 1.0), 0.78),  # 0.897
+        # openings: seen against the WALL they are cut into, and DARK, because
+        # a hole is darker than the thing it is a hole in.
+        "doorway": ("gb_threshold", (0.05, 0.42, 0.50, 1.0), 0.75),  # 0.347
+        "breach":  ("gb_breach",    (0.74, 0.24, 0.20, 1.0), 0.85),  # 0.343
+        "window":  ("gb_window",    (0.42, 0.55, 0.62, 1.0), 0.35),  # 0.527
+        # the deck you come out onto. Seen against the sky and against whatever
+        # stands on it, NOT against the interior floor -- the two never share a
+        # view, so they are allowed to sit near each other in value.
+        "roof":    ("gb_roof",      (0.52, 0.56, 0.60, 1.0), 0.90),  # 0.555
+        # cover: seen against the floor it stands on
+        "prop":    ("gb_prop",      (0.28, 0.30, 0.26, 1.0), 0.92),  # 0.293
+    }
+
+    def _greybox_material(self, role):
+        """The shared material for ``role``, made once. None for an unlisted role.
+
+        Nodes rather than ``diffuse_color``: the glTF exporter reads the
+        Principled BSDF and ignores the viewport colour entirely, so setting
+        the latter alone would look correct in Blender and export nothing --
+        which is the failure this patch exists to end, wearing a subtler hat.
+
+        The BSDF is found BY TYPE, not by the name "Principled BSDF": that
+        string is localised in some Blender builds, and a lookup that silently
+        returns None would paint every surface the default white and report no
+        error.
+        """
+        entry = self.GREYBOX_PALETTE.get(role)
+        if entry is None:
+            return None
+        name, rgba, roughness = entry
+        mat = bpy.data.materials.get(name)
+        if mat is not None:
+            return mat
+        mat = bpy.data.materials.new(name)
+        mat.use_nodes = True
+        bsdf = next((n for n in mat.node_tree.nodes
+                     if n.type == "BSDF_PRINCIPLED"), None)
+        if bsdf is not None:
+            bsdf.inputs["Base Color"].default_value = rgba
+            bsdf.inputs["Roughness"].default_value = roughness
+            if "Metallic" in bsdf.inputs:
+                bsdf.inputs["Metallic"].default_value = 0.0
+        mat.diffuse_color = rgba          # viewport parity, exports nothing
+        return mat
+
+    def _paint(self, obj, role):
+        """Give a visual mesh the material its role reads by.
+
+        Assigned to the MESH, and skipped when the mesh already carries one.
+        Modular segments share a mesh datablock across every instance -- the
+        share key is role plus dims, so a shared mesh always has one role and
+        painting it once is correct. Appending per object would add a duplicate
+        slot to the same datablock on every reuse.
+        """
+        mat = self._greybox_material(role)
+        data = getattr(obj, "data", None)
+        if mat is None or data is None or not hasattr(data, "materials"):
+            return
+        if len(data.materials):
+            return
+        data.materials.append(mat)
 
     def _empty(self, name, location, collection, rot_z=0.0, size=0.4):
         """A named Empty used as a gameplay marker node. Exports to glTF as a
@@ -932,7 +1038,15 @@ class _Builder:
         # Immediately after the cut, and for the same reason: by here every
         # stairwell, ramp and hatch has appended its hole, so a floor or
         # ceiling skin can be given the same openings the slab just got.
+        #
+        # THE ROOF IS HERE TOO NOW, and it is the one that mattered. A floor or
+        # ceiling skin is `collision: none` -- a forgotten void there is a thing
+        # you see through and walk through. The roof slot is the slab's real
+        # thickness with `collision: trimesh`, so a forgotten void there is a
+        # wall. Roof first, so the slot order inside this block still reads
+        # roof, then floors and ceilings, as it did when `_slabs` emitted it.
         if self._modular_on():
+            self._record_roof_slots()
             self._record_slab_slots()
         self._volumes()
         self._placements()
@@ -991,11 +1105,11 @@ class _Builder:
             self._col_box(f"slab_col_{s}", (0, 0, z - ft / 2),
                           (self.s.footprint_x, self.s.footprint_y, ft),
                           mode="trimesh")
-            # ALWAYS emit the roof as an art-pass swap-slot (when modular) so
-            # Zoo can dress it -- present even in "open" mode, since the slot is
-            # the always-there hook that lets a roof be added after the fun test.
-            if is_roof and self._modular_on():
-                self._record_roof_slots(top, z - ft / 2, ft)
+            # The roof swap-slot is NOT emitted here any more -- see
+            # `_record_roof_slots`, now called next to `_record_slab_slots`
+            # after the holes are cut. Emitting it from this loop meant it was
+            # derived in build step ONE, before `_ladders` had appended a
+            # single hole, so a roof could never carry one.
 
     def _record_slab_slots(self):
         """Emit the per-room floor and ceiling swap-slots (floors.slab_slots --
@@ -1015,11 +1129,32 @@ class _Builder:
         _base, top = self._story_range()
         self.slots.extend(floors.slab_slots(self.s, top))
 
-    def _record_roof_slots(self, story, cz, ft):
+    def _record_roof_slots(self):
         """Emit the roof swap-slots (see roofs.roof_slots -- pure & tested) so
         Zoo can dress the roof. footprint = one slot; per_room = one per
-        top-story room honoring Room.roofed."""
-        self.slots.extend(roofs.roof_slots(self.s, story, cz, ft))
+        top-story room honoring Room.roofed.
+
+        CALLED FROM THE BUILD SEQUENCE, AFTER `_slab_holes_cut`, for the same
+        reason `_record_slab_slots` is -- and it was not, which is the defect.
+        It ran inside `_slabs()`, build step one, where `self.s.slab_holes` is
+        empty by construction; `_ladders` does not append until step five. So
+        the roof slot was derived before any hole existed, Zoo built a solid
+        plate for it, and the plate has `collision: trimesh` over the whole
+        plan. Measured on `bank_branch_a04`: the roof slab itself was cut
+        correctly and the themed roof laid over it was not, so a ladder climbed
+        a full storey into a collider named `Roof`.
+
+        Takes its own geometry rather than the loop's, so the call site does not
+        have to sit where the slabs are built. `roof == "none"` emits nothing --
+        there is no roof to dress -- while `"open"` still does, because the slot
+        is the always-there hook that lets a roof be added after the fun test.
+        """
+        if self.s.roof == "none":
+            return
+        _base, top = self._story_range()
+        ft = self.s.roof_thick or self.s.floor_thick
+        self.slots.extend(roofs.roof_slots(
+            self.s, top, top * self.s.story_height - ft / 2, ft))
 
     def _cap_thick(self, story, top):
         """Thickness of the slab that caps `story` -- the one whose top face is

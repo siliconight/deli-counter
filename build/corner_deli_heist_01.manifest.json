@@ -1,11 +1,198 @@
 {
   "kit_name": "Deli Counter",
-  "kit_version": "0.29.0",
-  "schema_version": "1.6.0",
+  "kit_version": "0.80.0",
+  "schema_version": "1.21.1",
   "spec": "corner_deli_heist_01.json",
-  "spec_sha256_16": "3e54b6df6787159f",
-  "built_utc": "2026-06-24T22:45:58.582858+00:00",
+  "spec_sha256_16": "c42a5a3db1289acf",
+  "built_utc": "2026-08-05T23:54:39.469604+00:00",
   "outputs": [
     "corner_deli_heist_01.glb"
-  ]
+  ],
+  "expected": {
+    "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
+    "bounds_min": [
+      -19.175,
+      -14.175,
+      -3.6
+    ],
+    "bounds_max": [
+      19.175,
+      14.175,
+      7.6
+    ],
+    "origin": [
+      0.0,
+      0.0,
+      0.0
+    ],
+    "story_height": 3.3,
+    "floor_elevations": [
+      0.0,
+      3.3
+    ],
+    "markers": [
+      {
+        "name": "LADDER_0",
+        "type": "ladder",
+        "pos": [
+          17.5,
+          9.5,
+          0.0
+        ]
+      },
+      {
+        "name": "HATCH_-12_8",
+        "type": "hatch",
+        "pos": [
+          -12.0,
+          8.0,
+          3.3
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_STEALTH_FRONT",
+        "type": "attacker_spawn",
+        "pos": [
+          0.0,
+          -18.0,
+          0.0
+        ]
+      },
+      {
+        "name": "ATTACKER_SPAWN_LOUD_ALLEY",
+        "type": "attacker_spawn",
+        "pos": [
+          -22.0,
+          4.0,
+          0.0
+        ]
+      },
+      {
+        "name": "EXTRACTION_VAN",
+        "type": "extraction",
+        "pos": [
+          0.0,
+          -17.0,
+          0.0
+        ]
+      },
+      {
+        "name": "OBJECTIVE_REGISTER",
+        "type": "objective",
+        "pos": [
+          -12.0,
+          -7.0,
+          0.9
+        ]
+      },
+      {
+        "name": "OBJECTIVE_SAFE",
+        "type": "objective",
+        "pos": [
+          8.5,
+          6.0,
+          -2.2
+        ]
+      },
+      {
+        "name": "OBJECTIVE_SERVER",
+        "type": "objective",
+        "pos": [
+          8.0,
+          8.0,
+          4.4
+        ]
+      },
+      {
+        "name": "LOOT_VAULT_CASH",
+        "type": "loot",
+        "pos": [
+          8.5,
+          6.0,
+          -2.0
+        ]
+      },
+      {
+        "name": "COVER_LOW_AISLE_LEFT",
+        "type": "cover_low",
+        "pos": [
+          -2.0,
+          -9.5,
+          0.0
+        ]
+      },
+      {
+        "name": "COVER_LOW_AISLE_RIGHT",
+        "type": "cover_low",
+        "pos": [
+          2.5,
+          -9.5,
+          0.0
+        ]
+      },
+      {
+        "name": "COVER_HIGH_PALLET_STACK",
+        "type": "cover_high",
+        "pos": [
+          12.0,
+          10.0,
+          0.0
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_CAM_FRONT",
+        "type": "camera_socket",
+        "pos": [
+          -17.5,
+          -12.5,
+          2.6
+        ]
+      },
+      {
+        "name": "CAMERA_SOCKET_CAM_SERVER",
+        "type": "camera_socket",
+        "pos": [
+          16.0,
+          12.0,
+          5.8
+        ]
+      },
+      {
+        "name": "PATROL_POINT_P01",
+        "type": "patrol_point",
+        "pos": [
+          -2.0,
+          -11.0,
+          0.0
+        ]
+      },
+      {
+        "name": "PATROL_POINT_P02",
+        "type": "patrol_point",
+        "pos": [
+          12.0,
+          -4.0,
+          0.0
+        ]
+      },
+      {
+        "name": "PATROL_POINT_P03",
+        "type": "patrol_point",
+        "pos": [
+          4.0,
+          10.0,
+          0.0
+        ]
+      },
+      {
+        "name": "PATROL_POINT_P04",
+        "type": "patrol_point",
+        "pos": [
+          -8.0,
+          5.0,
+          -3.3
+        ]
+      }
+    ]
+  }
 }
