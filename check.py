@@ -65,6 +65,22 @@ def main():
     rc |= run(["layout_lint.py", "--all"])
     print("== stair regression sweep (quick) ==")
     rc |= run(["stair_regression.py", "--quick"])
+    # BEFORE the nav gate, deliberately. That gate grades the shells in
+    # build/, and a stale shell does not make it answer weakly -- it makes it
+    # answer wrongly with full confidence. `build_freshness.py` was written on
+    # 2026-08-05 after `nav_gate --all` reported ten unwalkable stairs across
+    # seven shells, every one a fossil, and its docstring proposed exactly this
+    # wiring: "check.py already runs catalog.py --check to confirm CATALOG.md
+    # is not stale. This is the same idea one directory over, for the artefacts
+    # every downstream gate reads."
+    #
+    # It was not wired in, and on 2026-08-12 every shell in build/ was 4.2 days
+    # behind the code. A ladder that `patch_dc_roof_voids.py` had already fixed
+    # still climbed into a solid roof, because Zoo dressed a roof slot baked
+    # three days before that slot could express a hole. Named first here so the
+    # cause is read before the symptom.
+    print("== build freshness (are the shells older than the code?) ==")
+    rc |= run(["build_freshness.py"])
     print("== nav traversal gate (built shells; needs Godot 4) ==")
     rc |= run(["nav_gate.py", "--all"])
     print("== checking catalog freshness ==")

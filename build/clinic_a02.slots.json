@@ -13,42 +13,6 @@
   },
   "slots": [
     {
-      "slot_id": "roof_footprint",
-      "role": "roof",
-      "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
-      "current_ref": "roof_greybox_01",
-      "kit_axis": "theme",
-      "wall": null,
-      "story": 2,
-      "facing": "up",
-      "room": null,
-      "transform": {
-        "translation": [
-          0.0,
-          0.0,
-          6.65
-        ],
-        "rot_y": 0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          28.0,
-          20.0,
-          0.3
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "trimesh"
-      }
-    },
-    {
       "slot_id": "ext_0_N_seg0",
       "role": "wall",
       "size_mod": "full",
@@ -5337,6 +5301,56 @@
         "pivot": "center",
         "openings": [],
         "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "roof_footprint",
+      "role": "roof",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "roof_greybox_01",
+      "kit_axis": "theme",
+      "wall": null,
+      "story": 2,
+      "facing": "up",
+      "room": null,
+      "transform": {
+        "translation": [
+          0.0,
+          0.0,
+          6.65
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          28.0,
+          20.0,
+          0.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "trimesh",
+        "voids": [
+          {
+            "x0": -11.2,
+            "y0": -7.55,
+            "x1": -9.9,
+            "y1": -6.45
+          },
+          {
+            "x0": -11.75,
+            "y0": -7.75,
+            "x1": -10.25,
+            "y1": -6.25
+          }
+        ]
       }
     },
     {
