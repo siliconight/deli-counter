@@ -1,3 +1,46 @@
+## [0.89.0] - Stairs a nav agent can actually walk
+
+Seven of 135 shells failed `nav_gate --all` on stair traversal. Four are
+fixed and engine-confirmed; the mechanism turned out to be the same number
+in every case -- a Godot nav agent bakes at radius 0.40 and needs 0.80 m of
+clear width, and each of these left less.
+
+- **check.py:** `build_freshness.py` now runs BEFORE the nav gate. That gate
+  grades the shells in `build/`, and a stale shell does not make it answer
+  weakly, it makes it answer wrongly with full confidence. On 2026-08-12
+  every shell in `build/` was 4.2 days behind the code; a ladder that
+  `patch_dc_roof_voids.py` had already fixed still climbed into a solid roof.
+- **layout_lint.py L17 (NEW, FAIL):** a volume must not narrow a stair flight
+  below `AGENT_DIAMETER` (0.80 m). Footprint comes from
+  `stair_core._core_of`, the same reservation the stair placer uses, so the
+  lint and the placer cannot disagree about where a stair is. Deliberately
+  narrow: measured across the specs to hand it fires on 1 of 8 failing stairs
+  and 0 of 8 passing ones. Three wider rules were tested and rejected --
+  "volume overlaps the stair well" flags a vault and a power cabinet that
+  both bake fine. A lint that fails working buildings gets switched off, and
+  then it protects nothing.
+- **specs/office.json:** `elevator_block`, a 2.0 x 2.0 x 3.0 m solid, was
+  authored at (0.0, 0.0) -- the exact coordinates of `office_stair_0`. It
+  left 0.60 m of a 3.20 m flight. Moved to x 3.6. `nav_gate`: no_path -> ok,
+  markers 0/1 -> 1/1 reachable.
+- **specs/cr_deli.json, corner_deli_heist_01.json, night_deli.json:** three
+  clones of one authored deli. A switchback's two runs meet at the stair's
+  own x and `office_stair_door` was centred on that seam, so each run got
+  half a 1.20 m door -- 0.60 m, against 0.80 m needed. Widened to 2.40 m.
+  `cr_deli` now bakes as ONE island, y -3.00..6.90, 483 polys, which is the
+  signature every passing shell has.
+- **specs/night_deli.json:** the door fix moved its break up a floor rather
+  than closing it. `planter_box_upper_hall_1` (z 3.30..4.20) left 0.76 m on
+  the ascending run -- four centimetres short. Moved clear, along with its
+  derived `AUTO_PLANTER_BOX_UPPER_HALL_1` cover marker, which would otherwise
+  have sent bots to take cover behind nothing in a stairwell.
+
+Still failing and NOT fixed here: `night_pawn` (1.00 m runs, and a story-1
+wall with no opening over the flight), `primos_pizza` (undiagnosed), and
+`cbp_town_finale_midbalanced_schemafixed`, whose first floor bakes as ten-plus
+fragments plus 32 slivers across 63 islands -- a floor that failed to be a
+surface, which no amount of moving furniture fixes.
+
 ## [0.88.0] - Material-driven skin styles (why only one Pixelcoat skin showed)
 
 Style -- the axis Zoo/Pixelcoat vary skins on (module stems are
