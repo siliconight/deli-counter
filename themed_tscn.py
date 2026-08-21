@@ -50,6 +50,10 @@ def slot_typename(role: str, size_mod: str) -> str:
 #: Mirror of ``zoo_keeper.core.kit.PLATE_ROLES``.
 PLATE_ROLES = ("floor", "ceiling", "roof")
 
+#: Roles built as a free-standing VOLUME, free on ALL THREE axes.
+#: Mirror of ``zoo_keeper.core.kit.VOLUME_ROLES``.
+VOLUME_ROLES = ("prop",)
+
 #: Roles whose geometry is a hole in a standing slab, cut to the slot's own
 #: ``fit.openings``. Mirror of ``zoo_keeper.core.kit.OPENING_ROLES``.
 OPENING_ROLES = ("doorway", "window", "breach", "vault_door")
@@ -105,24 +109,28 @@ def void_tag(voids) -> str | None:
 def module_stem(typ: str, theme: str, style: int,
                 width_cm: int = None, state: str = None,
                 depth_cm: int = None, voids_tag: str = None,
-                openings_tag: str = None) -> str:
-    """``<type>_<theme>_<style:02d>[_w<cm>][_d<cm>][_v<hash>][_o<hash>][_<state>]``.
+                openings_tag: str = None, height_cm: int = None) -> str:
+    """``<type>_<theme>_<style:02d>[_w<cm>][_d<cm>][_h<cm>][_v<hash>][_o<hash>][_<state>]``.
 
     THE MIRROR OF ``zoo_keeper.core.kit.module_stem``, and the two must change
     together. Neither side parses a stem; both CONSTRUCT it from the same slot,
     so they agree only by being kept identical.
 
-    ``depth_cm`` is only for plates. A wall varies on one axis and ``_w<cm>``
-    identifies it completely, so every existing wall/doorway/window filename is
-    untouched. A floor varies on both: a 44x24 room and a 44x16 room both
-    resolved to ``floor_rockay_01_w4400``, and the shorter room was handed a
-    slab eight metres too deep.
+    ``depth_cm`` is for plates and volumes; ``height_cm`` only for volumes. A
+    wall varies on one axis and ``_w<cm>`` identifies it completely, so every
+    existing wall/doorway/window filename is untouched. A floor varies on both:
+    a 44x24 room and a 44x16 room both resolved to ``floor_rockay_01_w4400``,
+    and the shorter room was handed a slab eight metres too deep. A PROP varies
+    on all three, and inherited the wall's argument by mistake: `cr_gas` put a
+    0.9x10.0x1.8 counter and a 0.9x0.9x1.0 cube on one `prop_delco_04_w90`.
     """
     base = f"{typ}_{theme}_{style:02d}"
     if width_cm is not None:
         base += f"_w{int(round(width_cm))}"
     if depth_cm is not None:
         base += f"_d{int(round(depth_cm))}"
+    if height_cm is not None:
+        base += f"_h{int(round(height_cm))}"
     if voids_tag:
         base += f"_v{voids_tag}"
     if openings_tag:
@@ -158,12 +166,15 @@ def resolve_themed_stem(slot: dict, theme: str, style: int):
     exact = typ != "wallEnd"
     width_cm = int(round(dims[0] * 100)) if exact else None
     depth_cm = (int(round(dims[1] * 100))
-                if exact and typ in PLATE_ROLES else None)
+                if exact and typ in PLATE_ROLES + VOLUME_ROLES else None)
+    height_cm = (int(round(dims[2] * 100))
+                 if exact and typ in VOLUME_ROLES else None)
     vtag = void_tag(fit.get("voids")) if typ in PLATE_ROLES else None
     otag = opening_tag(fit.get("openings")) if typ in OPENING_ROLES else None
     eff_style = int(slot.get("style") or style or 1)
     stem = module_stem(typ, theme, eff_style, width_cm,
-                       _default_stem_state(slot), depth_cm, vtag, otag)
+                       _default_stem_state(slot), depth_cm, vtag, otag,
+                       height_cm)
     return stem, (not exact)
 
 

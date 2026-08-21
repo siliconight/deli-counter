@@ -1,3 +1,28 @@
+## [0.90.0] - the prop stem mirror gains depth and height
+
+### Fixed
+- **`themed_tscn.module_stem` mirrors zoo 0.39.0.** A `prop` slot's stem now
+  carries `_d<cm>` and `_h<cm>`, because a prop is free on all three axes and
+  width alone named two different solids the same file.
+
+  This file's own docstring is why it moves in the same patch: *"THE MIRROR OF
+  `zoo_keeper.core.kit.module_stem`, and the two must change together. Neither
+  side parses a stem; both CONSTRUCT it from the same slot, so they agree only
+  by being kept identical."*
+
+  Verified across every slot in the shipped corpus: **9,185 of 9,185 produce
+  identical stems on both sides.** Measured on 52 of 136 buildings, 15 (28%)
+  were affected before the fix; `cr_gas` had a 0.9x10.0x1.8 counter and a
+  0.9x0.9x1.0 cube on one `prop_delco_04_w90`.
+
+- `VOLUME_ROLES = ("prop",)` added, mirroring `zoo_keeper.core.kit`.
+
+### Notes
+- Wall, doorway and window filenames are unchanged. Only `role == "prop"` slots
+  resolve to a new stem -- 84 across the sampled buildings, asserted.
+- Existing built prop GLBs fall back to greybox until rebuilt, which is the
+  progressive art path behaving as intended.
+
 ## [0.89.0] - Stairs a nav agent can actually walk
 
 Seven of 135 shells failed `nav_gate --all` on stair traversal. Four are
