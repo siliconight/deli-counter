@@ -1,3 +1,38 @@
+## [0.91.0] - the unresolved flag gets a reader
+
+`_resolve_material` has always marked a material the spec does not declare
+`"unresolved": True`. Nothing ever read that flag. It was set in one place
+and consumed in none, so the condition it detects has been invisible for as
+long as it has existed -- and it is not an edge case.
+
+Measured over 142 specs: `ceiling_tile` and `tile` are missing from ALL of
+them, `carpet` from 137.
+
+### Added
+- The build now prints unresolved materials, with the consequence spelled
+  out rather than left to be inferred.
+
+### What that condition actually costs
+An undeclared material falls back to `default_material` -- and the fallback
+is not only acoustic. `skin_style.style_for` falls back the same way, so the
+material inherits the default's STYLE. Style selects the Pixelcoat pack and
+goes into the module filename. 410 of 574 (building, plate material) pairs
+resolve to style 1.
+
+So a carpet floor, a tile floor and a concrete floor in one building have
+been getting the same acoustics, the same skin and, when their dimensions
+match, the same file. That last one surfaced first, as 19 stem collisions in
+Zoo, and looked like a naming-law problem for most of a session.
+
+### Not fixed here, deliberately
+Adding `carpet`, `tile` and `ceiling_tile` to `presets._PALETTE` and
+migrating the 139 existing specs is the actual fix. It is held back because
+the palette's `acoustic` names ("Concrete", "Drywall", "Glass", "Metal",
+"Wood") are consumed by gool, nothing validates them, and inventing
+"Carpet" would fail silently downstream -- the same class of defect this
+entry exists to end. It also changes how every interior in the project
+looks, which deserves a session where it can be looked at.
+
 ## [0.90.0] - the prop stem mirror gains depth and height
 
 ### Fixed

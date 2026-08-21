@@ -1064,6 +1064,16 @@ class _Builder:
               f"{len(self.VISUAL.objects)} visual, "
               f"{len(self.COLLISION.objects)} collision, "
               f"{len(self.MARKERS.objects)} markers")
+        unresolved = getattr(self, "_unresolved_materials", None)
+        if unresolved:
+            listing = ", ".join("%s x%d" % (k, v)
+                                for k, v in sorted(unresolved.items()))
+            print(f"[deli_counter] UNRESOLVED MATERIALS in '{self.s.name}': "
+                  f"{listing}")
+            print(f"[deli_counter]   not declared in spec.materials, so each "
+                  f"inherits default_material "
+                  f"'{self.s.default_material}' -- its acoustics, its skin "
+                  f"style, and therefore its module filename")
 
     def _story_range(self):
         base = -1 if self.s.has_basement else 0
@@ -2248,6 +2258,24 @@ class _Builder:
             return None
         m = self._material_index.get(mid)
         if m is None:
+            # SILENT NO LONGER. This branch has always known: a material a
+            # slot names but the spec does not DECLARE lands here and is
+            # marked unresolved. Nothing read that flag, so the condition
+            # never surfaced -- and it is not rare. Measured 2026-08-21 over
+            # 142 specs: `ceiling_tile` and `tile` are missing from ALL of
+            # them and `carpet` from 137.
+            #
+            # The cost is not only acoustic. skin_style.style_for falls back
+            # the same way, so an undeclared material inherits
+            # default_material's STYLE -- and style is what picks the
+            # Pixelcoat pack and what goes in the module filename. 410 of 574
+            # (building, plate material) pairs resolve to style 1. A carpet
+            # floor and a concrete floor in one building have been getting
+            # the same skin, the same acoustics and the same filename.
+            self._unresolved_materials = getattr(
+                self, "_unresolved_materials", {})
+            self._unresolved_materials[mid] = \
+                self._unresolved_materials.get(mid, 0) + 1
             return {"id": mid, "acoustic": None, "absorption": None,
                     "damping": None, "unresolved": True}
         return {"id": m.id, "acoustic": m.acoustic,
