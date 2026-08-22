@@ -59,14 +59,27 @@ _DEFAULTS = {
         "collision_per_state": {"intact": True, "breached": False},
     },
     "window": {
+        # The reframe, same as the breachable wall: broken is a STATE of the
+        # window slot, backed by zoo's `window_broken` species (zoo 0.48.0) --
+        # same slab and void, pane gone, remnant strips in the frame. Before
+        # that species existed this machine had no state_geometry, so Zoo
+        # deferred the broken state forever and the resolver rendered intact
+        # glass on a pane the gameplay layer said was gone.
+        #
+        # collision_per_state.broken is False, matching breach_wall's
+        # breached state: the OPENING is passable and shoot-through once the
+        # pane is out (the frame's own art still carries collision, exactly
+        # as breach keeps its lintel). Advisory, as ever -- the game's
+        # destructible layer owns the actual toggle.
         "kind": "window",
         "states": ["intact", "broken"],
         "default": "intact",
+        "state_geometry": {"intact": "window", "broken": "window_broken"},
         "transitions": [
             {"event": "break", "from": "intact", "to": "broken"},
         ],
         "reversible": False,
-        "collision_per_state": {"intact": True, "broken": True},
+        "collision_per_state": {"intact": True, "broken": False},
     },
     "vault_door": {
         # a heist hero portal. The closed states (locked/unlocked) are a solid

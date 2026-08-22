@@ -206,6 +206,14 @@ def _scene_module_boxes(pkg_dir, tscn_name):
         mn = _NODE.match(block)
         if not mn:
             continue
+        # Hidden nodes are interactive STATE VARIANTS (a window's `_broken`
+        # remnant, a breach wall's `_breached` hole) parked at the same
+        # transform as their visible default, deliberately coplanar with it.
+        # A mesh that does not render cannot flicker, and the swap contract
+        # (INTERACTIVES.md) is exclusive visibility -- the game shows one
+        # sibling at a time. Gate what renders at rest, not the parked art.
+        if re.search(r"^visible = false\b", block, re.M):
+            continue
         ref = paths.get(mn.group(2), "")
         if not ref.startswith("art/zoo/") or not ref.endswith(".glb"):
             # base is handled per-node separately; content LAYERS (dressing /

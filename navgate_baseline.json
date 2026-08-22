@@ -1,0 +1,169 @@
+{
+  "generated": "2026-08-21",
+  "source": "derived from deli_counter/build/*.navgate.json, not hand-written",
+  "what_this_is": "nav_gate reports UNJUDGED for a shell with no marker whose type ends in _spawn, and the exit code is deliberately unchanged, so the set can grow silently. This freezes it. A new entrant fails test_navgate_population.py; a fixed shell must be removed from here.",
+  "not_certified": "This says nothing about whether these shells SHOULD have spawn markers. Five of the seventeen were absent from the note that first recorded this set, and the note said 18 where the measurement says 17.",
+  "counts": {
+    "shells": 135,
+    "unjudged": 17,
+    "stair_failures": 3,
+    "navigable_null": 16
+  },
+  "navigable_null_reconciliation": {
+    "unjudged": 17,
+    "navigable_null": 16,
+    "explained_by_stair_failure": [
+      {
+        "shell": "night_pawn",
+        "navigable": false,
+        "note": "navigable is a conjunction; a stair failure forces False without marker state mattering. Not an inconsistency."
+      }
+    ],
+    "unexplained": null
+  },
+  "unjudged": [
+    {
+      "shell": "bank_job",
+      "checked": 0,
+      "navigable": null,
+      "stairs_ok": true,
+      "reason": "no marker whose type ends in _spawn. RECORDED, NOT EXPLAINED -- whether this shell should have one is an author decision that has not been made"
+    },
+    {
+      "shell": "cr_pawn",
+      "checked": 0,
+      "navigable": null,
+      "stairs_ok": true,
+      "reason": "no marker whose type ends in _spawn. RECORDED, NOT EXPLAINED -- whether this shell should have one is an author decision that has not been made"
+    },
+    {
+      "shell": "gs_auto_shop",
+      "checked": 0,
+      "navigable": null,
+      "stairs_ok": true,
+      "reason": "no marker whose type ends in _spawn. RECORDED, NOT EXPLAINED -- whether this shell should have one is an author decision that has not been made"
+    },
+    {
+      "shell": "gs_facade_rowhome",
+      "checked": 0,
+      "navigable": null,
+      "stairs_ok": true,
+      "reason": "facade-only shell: there is no interior for a spawn marker to stand in, so zero markers checked is the correct outcome"
+    },
+    {
+      "shell": "gs_facade_storefront",
+      "checked": 0,
+      "navigable": null,
+      "stairs_ok": true,
+      "reason": "facade-only shell: there is no interior for a spawn marker to stand in, so zero markers checked is the correct outcome"
+    },
+    {
+      "shell": "lf_art_probe_001_5017",
+      "checked": 0,
+      "navigable": null,
+      "stairs_ok": true,
+      "reason": "probe artifact, not a shipping shell; it exists to exercise the art path and was never authored with gameplay markers"
+    },
+    {
+      "shell": "lf_category5_baie_dore_001_5017",
+      "checked": 0,
+      "navigable": null,
+      "stairs_ok": true,
+      "reason": "no marker whose type ends in _spawn. RECORDED, NOT EXPLAINED -- whether this shell should have one is an author decision that has not been made"
+    },
+    {
+      "shell": "lf_category5_baie_dore_001_5118",
+      "checked": 0,
+      "navigable": null,
+      "stairs_ok": true,
+      "reason": "no marker whose type ends in _spawn. RECORDED, NOT EXPLAINED -- whether this shell should have one is an author decision that has not been made"
+    },
+    {
+      "shell": "lf_category5_baie_dore_001_5219",
+      "checked": 0,
+      "navigable": null,
+      "stairs_ok": true,
+      "reason": "no marker whose type ends in _spawn. RECORDED, NOT EXPLAINED -- whether this shell should have one is an author decision that has not been made"
+    },
+    {
+      "shell": "lf_category5_baie_dore_001_5320",
+      "checked": 0,
+      "navigable": null,
+      "stairs_ok": true,
+      "reason": "no marker whose type ends in _spawn. RECORDED, NOT EXPLAINED -- whether this shell should have one is an author decision that has not been made"
+    },
+    {
+      "shell": "lf_category5_baie_dore_001_5421",
+      "checked": 0,
+      "navigable": null,
+      "stairs_ok": true,
+      "reason": "no marker whose type ends in _spawn. RECORDED, NOT EXPLAINED -- whether this shell should have one is an author decision that has not been made"
+    },
+    {
+      "shell": "lf_lot_demo_001_5017",
+      "checked": 0,
+      "navigable": null,
+      "stairs_ok": true,
+      "reason": "no marker whose type ends in _spawn. RECORDED, NOT EXPLAINED -- whether this shell should have one is an author decision that has not been made"
+    },
+    {
+      "shell": "lf_lot_demo_001_5118",
+      "checked": 0,
+      "navigable": null,
+      "stairs_ok": true,
+      "reason": "no marker whose type ends in _spawn. RECORDED, NOT EXPLAINED -- whether this shell should have one is an author decision that has not been made"
+    },
+    {
+      "shell": "lf_lot_demo_001_5219",
+      "checked": 0,
+      "navigable": null,
+      "stairs_ok": true,
+      "reason": "no marker whose type ends in _spawn. RECORDED, NOT EXPLAINED -- whether this shell should have one is an author decision that has not been made"
+    },
+    {
+      "shell": "night_auto",
+      "checked": 0,
+      "navigable": null,
+      "stairs_ok": true,
+      "reason": "no marker whose type ends in _spawn. RECORDED, NOT EXPLAINED -- whether this shell should have one is an author decision that has not been made"
+    },
+    {
+      "shell": "night_pawn",
+      "checked": 0,
+      "navigable": false,
+      "stairs_ok": false,
+      "reason": "no marker whose type ends in _spawn. RECORDED, NOT EXPLAINED -- whether this shell should have one is an author decision that has not been made"
+    },
+    {
+      "shell": "warehouse",
+      "checked": 0,
+      "navigable": null,
+      "stairs_ok": true,
+      "reason": "no marker whose type ends in _spawn. RECORDED, NOT EXPLAINED -- whether this shell should have one is an author decision that has not been made"
+    }
+  ],
+  "stair_failures": [
+    {
+      "shell": "cbp_town_finale_midbalanced_schemafixed",
+      "stairs": [
+        "cbp_town_finale_midbalanced_stair_0",
+        "cbp_town_finale_midbalanced_stair_1"
+      ],
+      "reason": "stair(s) reported not traversable by the Godot bake; a geometry fix, not a marker one"
+    },
+    {
+      "shell": "night_pawn",
+      "stairs": [
+        "night_pawn_stair_0"
+      ],
+      "reason": "stair(s) reported not traversable by the Godot bake; a geometry fix, not a marker one"
+    },
+    {
+      "shell": "primos_pizza",
+      "stairs": [
+        "primos_pizza_stair_0"
+      ],
+      "reason": "stair(s) reported not traversable by the Godot bake; a geometry fix, not a marker one"
+    }
+  ]
+}

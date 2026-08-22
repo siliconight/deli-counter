@@ -39,6 +39,27 @@ def test_window_not_interactive_unless_breakable():
     m = I.derive_interactive("b", "ext_0_S", 0, "window", 0.0, breakable=True)
     assert m["kind"] == "window"
     assert m["states"] == ["intact", "broken"]
+    # the reframe, same as the breachable wall: intact is a window, broken
+    # is window_broken geometry (zoo 0.48.0) -- so Zoo BUILDS the state art
+    # instead of deferring it to the resolver's fallback
+    assert m["state_geometry"] == {"intact": "window",
+                                   "broken": "window_broken"}
+    # a shot-out pane is passable/shoot-through (advisory); the frame's own
+    # art still collides, exactly as breach keeps its lintel
+    assert m["collision_per_state"] == {"intact": True, "broken": False}
+    assert m["reversible"] is False
+
+
+def test_breakable_window_slot_view_carries_state_geometry_for_zoo():
+    m = I.derive_interactive("b", "ext_0_S", 0, "window", 0.25,
+                             breakable=True)
+    sv = I.slot_interactive(m)
+    assert sv["state_geometry"]["broken"] == "window_broken"
+    assert sv["collision_per_state"]["broken"] is False
+    gv = I.gameplay_interactive(m, "ext_0_S_open0",
+                                {"translation": [0, 0, 1.5], "rot_y": 0})
+    assert gv["id"] == sv["id"] == m["id"]
+    assert [t["event"] for t in gv["transitions"]] == ["break"]
 
 
 # --- vault door: a hero portal, closed by default --------------------------

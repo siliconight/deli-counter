@@ -1,3 +1,97 @@
+## [0.94.0] - 2026-08-22
+
+### Added
+- `themed_tscn` now instances EVERY interactive state, not just the default:
+  a non-default state whose geometry differs (per `interactive.state_geometry`)
+  rides as a HIDDEN sibling -- `<slot_id>_<state>`, `visible = false`, same
+  transform -- so the shipped scene finally contains what the game's state
+  machine swaps TO. The resolver, `state_variant_stems`, is the composer-side
+  mirror of `zoo_keeper.core.kit.slot_variants`: same species rule (unmapped
+  state -> the slot's own type), same deferral (state sharing the default's
+  species is identical art today -- doors get no variant, exactly as the kit
+  builds none), same style law (variants follow the style the BASE resolved
+  to, style-01 fallback included; greybox-fallback slots get no variants).
+  On cr_deli: 11 hidden variants (3 window `_broken`, 8 breach_wall
+  `_breached`, 0 door), all six distinct variant modules landing as real
+  ext_resources so `portable_building`'s bundling regex carries them into
+  `art/zoo/` unchanged.
+- Both siblings carry `metadata/interactive_id` (the stable gameplay.json id)
+  and `metadata/interactive_state`, so netcode finds the pair without parsing
+  node names -- names are for humans; metadata is the contract
+  (docs/INTERACTIVES.md). The runtime swap is: flip visibility, toggle
+  collision per `collision_per_state`, art already loaded. A late joiner is
+  told which sibling is visible, nothing else.
+- Stats/CLI report `state_variants` placed and `state_variants_missing`
+  (state differs but its module is not in the library) -- progressive art
+  stays honest about what it skipped.
+
+### Changed
+- The z-fight gate skips `visible = false` node blocks: a parked state
+  variant is coplanar with its visible default BY DESIGN, and a mesh that
+  does not render cannot flicker. The gate measures what renders at rest.
+  The skip happens before the block's GLB is opened, and the new test baits
+  it with a malformed variant GLB so a regression fails loudly.
+
+## [0.93.0] - 2026-08-22
+
+### Changed
+- The `window` interactive machine now carries
+  `state_geometry {"intact": "window", "broken": "window_broken"}`. It never
+  had one because no broken-window species existed, so a breakable window's
+  `broken` state was deferred forever and the resolver rendered intact glass
+  on a pane the gameplay layer said was gone. zoo 0.48.0 added the species;
+  with this block, a kit build on a manifest whose window authors
+  `breakable: true` emits `window_<theme>_<style>_w<cm>_broken.glb`
+  (measured on a 1.1 m test slot through zoo's builder: both variants
+  built, PASS).
+- `collision_per_state.broken` is now `False` for windows, matching
+  breach_wall's breached state. The advisory used to claim a shot-out
+  window still blocks, which contradicted both the art (the opening is
+  passable; the frame carries its own collision, exactly as breach keeps
+  its lintel) and the consumers (the lasertag destructible drops pane
+  collision on break). Advisory stays advisory -- the game's destructible
+  layer owns the actual toggle.
+
+### Notes
+- A window is interactive ONLY when its opening authors `breakable: true`,
+  unchanged -- no existing spec changes meaning. The chain this completes:
+  DC emits the machine and the stable id -> Zoo builds the intact and
+  `_broken` art plus `glass_shard` debris, all skinned by the same
+  Pixelcoat glass pack as the pane -> the game replicates the state enum
+  per id (lasertag's `LT_DestructibleSync` is one such consumer, per the
+  ownership table in docs/INTERACTIVES.md).
+
+## [0.92.0] - 2026-08-21
+
+### Added
+- `navgate_baseline.json` and `test_navgate_population.py`. nav_gate reports
+  `markers: 0 checked -- reachability UNJUDGED` for a shell with no marker whose
+  type ends in `_spawn`, and the exit code is deliberately unchanged, so that set
+  could grow with nothing failing. It is now frozen: a new entrant fails, and a
+  shell that gets fixed must be removed or the test says so.
+
+### Corrected
+- A prior note recorded "3/135 shells fail, 18 have no spawn marker". Measured
+  from the per-shell results: 3 stair failures is right
+  (`cbp_town_finale_midbalanced_schemafixed`, `night_pawn`, `primos_pizza`), but
+  the unjudged set is 17, not 18, and five of its members were never named --
+  `cr_pawn`, `gs_auto_shop`, `gs_facade_rowhome`, `gs_facade_storefront`,
+  `lf_art_probe_001_5017`.
+- 16 shells report `navigable: null` against 17 unjudged. That is not an
+  inconsistency: `night_pawn` also fails the stair gate, and `navigable` is a
+  conjunction, so a stair failure forces `False` without marker state mattering.
+  Recorded in the baseline as explained rather than filed as a defect.
+
+### Notes
+- WHAT THIS DOES NOT CERTIFY: it says nothing about whether these shells SHOULD
+  have spawn markers. Twelve of the seventeen carry `RECORDED, NOT EXPLAINED`.
+  Only `gs_facade_*` (facade-only, no interior) and `lf_art_probe_001_5017` (a
+  probe artifact) are classified, and those from their names alone.
+- The per-shell `.navgate.json` files live in `build/`, which is not committed,
+  so the sweep SKIPS in a clean checkout. The baseline's own integrity is
+  asserted there instead, so a clean checkout never reports a green sweep of
+  nothing.
+
 ## [0.91.0] - the unresolved flag gets a reader
 
 `_resolve_material` has always marked a material the spec does not declare

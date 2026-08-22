@@ -104,6 +104,23 @@ The two share the `id`; the game joins on it. `slot_ref` points at the slot in
 
 ---
 
+## The composed scene ships both states
+
+`themed_tscn` (the art-pass composer) instances the DEFAULT state's module
+visible, and every non-default state whose geometry differs as a HIDDEN
+sibling at the same transform — `<slot_id>_<state>`, `visible = false`. Both
+nodes carry `metadata/interactive_id` (this contract's `id`) and
+`metadata/interactive_state`, so netcode finds the pair without parsing node
+names. The runtime swap the game owns is therefore: flip visibility, and
+honor `collision_per_state` if it chooses — the art is already loaded,
+nothing streams. A state sharing the default's species (a door's `open`)
+gets no sibling; its motion is presentation (see Mid-states below). The
+variant set is exactly what Zoo's `kit.slot_variants` builds —
+`state_variant_stems` in `themed_tscn.py` is its composer-side mirror, and
+the z-fight gate deliberately ignores the parked hidden siblings.
+
+---
+
 ## Stable ids — the one thing to get right
 
 `id` is the handle every client, snapshot, and saved game references. Deli
@@ -167,7 +184,7 @@ discrete checkpoint. Never sync a float angle.
 
 | Layer            | Owns                                                              |
 |------------------|-------------------------------------------------------------------|
-| **Deli Counter** | the seam: flags a slot interactive, assigns the stable `id`, emits both blocks. |
+| **Deli Counter** | the seam: flags a slot interactive, assigns the stable `id`, emits both blocks, composes both states into the shipped scene (default visible, variants hidden). |
 | **Zoo**          | the per-state art variants (via the `_<state>` naming law). Netcode-free. |
 | **The game**     | the netcode: one replicated node per `id`, drives which variant renders. |
 

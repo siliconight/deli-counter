@@ -9,8 +9,13 @@ Zoo kit produced:
   - wall remainder (size_mod 'end') -> ONE unit `wallEnd_<theme>_<style>` module,
     SCALED per-slot by the slot transform (the single exception to exact-fit).
   - everything else -> exact-fit `<type>_<theme>_<style>_w<cm>` (never stretched).
-  - interactive slots instance their DEFAULT state's stem; non-default states are
-    swapped in by game code at runtime.
+  - interactive slots instance their DEFAULT state's stem VISIBLE, and every
+    non-default state whose geometry differs (per `interactive.state_geometry`)
+    as a HIDDEN sibling at the same transform (`<slot_id>_<state>`,
+    `visible = false`), so the shipped scene contains everything the game's
+    state machine swaps between -- it flips visibility, it never loads art.
+    Both nodes carry `metadata/interactive_id` so netcode finds them without
+    parsing names (the id correlates with gameplay.json per INTERACTIVES.md).
 
 Because the Zoo modules carry their own collision, the resulting scene is
 walkable directly -- no greybox overlay needed. A themed module that is missing
@@ -150,13 +155,16 @@ def _default_stem_state(slot: dict) -> str | None:
     return None
 
 
-def resolve_themed_stem(slot: dict, theme: str, style: int):
+def resolve_themed_stem(slot: dict, theme: str, style: int, state: str = None):
     """Return (stem, is_scaled_unit) for a slot, or (None, False) if unroleable.
 
     The slot's OWN style (material-driven, skin_style.py) wins over the
     compose-level style, which acts as the fallback for slots that carry
     none -- so skin variety is decided where the material is known (DC slot
-    emission), not flattened by one global flag."""
+    emission), not flattened by one global flag.
+
+    state: an interactive stem-state suffix (e.g. 'broken'); None resolves the
+    slot's default/base stem exactly as before."""
     role = slot.get("role")
     fit = slot.get("fit", {})
     dims = fit.get("dims")
@@ -173,8 +181,8 @@ def resolve_themed_stem(slot: dict, theme: str, style: int):
     otag = opening_tag(fit.get("openings")) if typ in OPENING_ROLES else None
     eff_style = int(slot.get("style") or style or 1)
     stem = module_stem(typ, theme, eff_style, width_cm,
-                       _default_stem_state(slot), depth_cm, vtag, otag,
-                       height_cm)
+                       state if state else _default_stem_state(slot),
+                       depth_cm, vtag, otag, height_cm)
     return stem, (not exact)
 
 
@@ -202,6 +210,52 @@ def resolve_slot_ref(slot, theme, style, library_dir):
         if stem01 and _themed_available(library_dir, stem01):
             return stem01, scaled01, True
     return None, False, False
+
+
+def state_variant_stems(slot, theme, style, library_dir):
+    """[(state, stem, available)] for every NON-DEFAULT interactive state
+    whose geometry differs from the default's -- THE MIRROR of
+    ``zoo_keeper.core.kit.slot_variants``, which decides what the kit builds;
+    this decides what the composer instances. The two must agree the same way
+    module_stem's mirror does: by construction from the same slot.
+
+    Which species backs a state comes from ``interactive.state_geometry``
+    (state -> species; unmapped -> the slot's own type). A state resolving to
+    the SAME species as the default is identical art today (a door's open
+    state -- the swing is game-side presentation) and gets NO variant node,
+    exactly as the kit defers building it. The variant follows the style the
+    BASE actually resolved to, including its style-01 fallback, so a building
+    never mixes skins across states of one fixture. A greybox-fallback slot
+    gets no variants at all -- greybox has no state art.
+
+    available=False means the state differs but its module is not in the
+    library (progressive art: composer skips it, stats report it)."""
+    inter = slot.get("interactive")
+    if not inter:
+        return []
+    states = inter.get("states") or []
+    default = inter.get("default") or (states[0] if states else None)
+    geometry = inter.get("state_geometry") or {}
+    typ = slot_typename(slot.get("role"), slot.get("size_mod"))
+    default_species = geometry.get(default, typ)
+
+    base_stem, _scaled, base_fell = resolve_slot_ref(slot, theme, style,
+                                                     library_dir)
+    if not base_stem:
+        return []
+    eff_slot = dict(slot, style=1) if base_fell else slot
+    eff_style = 1 if base_fell else style
+
+    out = []
+    for st in states:
+        if st == default:
+            continue
+        if geometry.get(st, typ) == default_species:
+            continue  # identical art today; the kit deferred it too
+        stem, _ = resolve_themed_stem(eff_slot, theme, eff_style, state=st)
+        if stem:
+            out.append((st, stem, _themed_available(library_dir, stem)))
+    return out
 
 
 def themed_slot_ids(slots, theme, style, library_dir):
@@ -351,6 +405,9 @@ def write_themed_tscn(slots, building_id, out_path, *, theme, style=1,
         except Exception:
             gb_per = None
     resolved_refs = {}   # slot_id -> ref used (None -> not emitted)
+    state_refs = {}      # id(slot) -> [(state, stem)] hidden variants to place
+    state_variants = 0
+    state_missing = 0
     # First pass: pick a ref per slot (themed stem, else greybox current_ref).
     # When a base shell is present, a greybox-fallback slot is NOT re-emitted as
     # an external ref -- its geometry already rides in the base (the base strip
@@ -363,6 +420,9 @@ def write_themed_tscn(slots, building_id, out_path, *, theme, style=1,
             themed += 1
             if fell:
                 style_fell_back += 1
+            variants = state_variant_stems(sl, theme, style, library_dir)
+            state_refs[id(sl)] = [(st, vs) for st, vs, ok in variants if ok]
+            state_missing += sum(1 for _s, _v, ok in variants if not ok)
             continue
         if base_res:
             resolved_refs[id(sl)] = None       # kept in the greybox base
@@ -379,6 +439,10 @@ def write_themed_tscn(slots, building_id, out_path, *, theme, style=1,
         if ref and ref not in ids:
             ids[ref] = f"{len(order) + 1}_{ref}"
             order.append(ref)
+        for _st, vref in state_refs.get(id(sl), []):
+            if vref not in ids:
+                ids[vref] = f"{len(order) + 1}_{vref}"
+                order.append(vref)
 
     steps = len(order) + 1 + (1 if base_res else 0)
     out = [f"[gd_scene load_steps={steps} format=3]", ""]
@@ -423,10 +487,33 @@ def write_themed_tscn(slots, building_id, out_path, *, theme, style=1,
                     refit += 1
                 rot = fit
         xform = _godot_transform(tr, rot, tf.get("scale"))
+        inter = sl.get("interactive") or {}
         out.append(f'[node name="{name}" parent="." '
                    f'instance=ExtResource("{ids[ref]}")]')
         out.append(f"transform = {xform}")
+        # Netcode's handle on the fixture: the stable id from gameplay.json
+        # (INTERACTIVES.md). Names are for humans; metadata is the contract.
+        if inter.get("id"):
+            out.append(f'metadata/interactive_id = "{inter["id"]}"')
+            if inter.get("default"):
+                out.append(
+                    f'metadata/interactive_state = "{inter["default"]}"')
         out.append("")
+        # Non-default states whose geometry differs ride along HIDDEN at the
+        # same transform. The game's replicated state machine swaps state by
+        # flipping visibility (and toggling collision per
+        # interactive.collision_per_state) -- it never loads art at runtime,
+        # and a late joiner just gets told which sibling is visible.
+        for st, vref in state_refs.get(id(sl), []):
+            out.append(f'[node name="{name}_{st}" parent="." '
+                       f'instance=ExtResource("{ids[vref]}")]')
+            out.append(f"transform = {xform}")
+            out.append("visible = false")
+            if inter.get("id"):
+                out.append(f'metadata/interactive_id = "{inter["id"]}"')
+            out.append(f'metadata/interactive_state = "{st}"')
+            state_variants += 1
+            out.append("")
 
     with open(out_path, "w", encoding="utf-8") as fh:
         fh.write("\n".join(out) + "\n")
@@ -435,7 +522,9 @@ def write_themed_tscn(slots, building_id, out_path, *, theme, style=1,
                       "greybox_base": bool(base_res), "refit": refit,
                       "skipped_fallback_kept_in_base": skipped_fallback,
                       "style_fallback_to_01": style_fell_back,
-                      "fit_to_greybox": gb_per is not None}
+                      "fit_to_greybox": gb_per is not None,
+                      "state_variants": state_variants,
+                      "state_variants_missing": state_missing}
 
 
 def themed_from_manifest(manifest_path, out_path, *, theme, style=1,
@@ -472,3 +561,5 @@ if __name__ == "__main__":
           f"{stats['greybox_fallback']} greybox fallback, "
           f"{stats['distinct_modules']} distinct modules, "
           f"{stats['slots']} slots")
+    print(f"[themed_tscn] {stats['state_variants']} hidden state variants "
+          f"placed, {stats['state_variants_missing']} missing from library")
