@@ -235,6 +235,17 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
                 "rot_y": rot,
                 "room": r.get("id"),
                 "row": {"count": n, "spacing": sp},
+                # DROP: metres from this lamp down to its own room's floor.
+                # Lux derives the omni RANGE from it (>= 0.19), because a
+                # flat range is wrong at both ends: at 8.0 a lamp claimed a
+                # per-mesh light-budget slot on tiles two rooms away through
+                # the walls (roadmap 54's brightness grid), and at a flat
+                # 4.5 the arena's ~5.7 m hall had lit ceilings over a
+                # PITCH-BLACK floor -- attenuation reaches hard zero at the
+                # range, so no energy value lights a floor the range does
+                # not reach. Only this kit knows the room's height; the
+                # anchor carries it so the rig never has to guess.
+                "drop": round(ceiling_z - c[2], 3),
                 "reacts_to_alarm": True,
             })
 

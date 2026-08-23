@@ -1,3 +1,25 @@
+## [0.97.0] - 2026-08-23
+
+Roadmap item 54, the lighting contract's turn. A flat lux light range was
+wrong at both ends inside one day: 8.0 claimed per-mesh budget slots two
+rooms away through walls (the brightness grid), and the 4.5 trim left the
+arena's ~5.7 m hall with a lit ceiling over a PITCH-BLACK floor -- Godot's
+attenuation reaches hard zero at the range, so no energy value lights a
+floor the range does not reach. Only this kit knows a room's height.
+
+### Added
+- Every derived fluorescent ceiling anchor in `<name>.lights.json` carries
+  `drop`: metres from the lamp down to its own room's floor
+  (`ceiling_z - floor_z`, storey-local -- an upstairs lamp's drop is to ITS
+  floor, not the ground). Lux >= 0.19 derives the omni range from it:
+  `clamp(drop + 1.5, 4.5, 8.0)`, a floor pool ~sqrt(3 x drop) m wide in
+  every room, tall halls included, without re-claiming the whole per-mesh
+  budget. Windows and wall hardware carry no drop -- they meter their own
+  mounting, and a drop on them would be a guess wearing a number.
+- `test_light_drop.py`: drop reaches the room's own floor, storey-locality,
+  split runs share one drop, non-ceiling anchors carry none.
+- KIT_VERSION 0.97.0 (stays coupled to the release).
+
 ## [0.96.0] - 2026-08-23
 
 Roadmap item 54, the Deli Counter half -- the greybox base ships
