@@ -72,7 +72,11 @@ def estimate(spec):
         pieces.append(PieceEstimate(
             f"partition_{i}_{p.story}", _box_tris(n_holes), "partition"))
 
-    # floor slabs — one per story (+ basement), each cut by slab holes
+    # floor slabs — the visual is TILED to light-budget-sized meshes
+    # (floors.slab_tiles, roadmap 54), so the estimator mirrors the tile
+    # count per story; the holes are spread over the tiles they land on,
+    # which for an upper bound is the same total hole cost as before.
+    from floors import slab_tiles
     stories = sorted({r.story for r in spec.rooms}) if spec.rooms else \
         list(range(0, spec.n_stories))
     if spec.has_basement and -1 not in stories:
@@ -80,9 +84,16 @@ def estimate(spec):
     n_slab_holes = {}
     for h in spec.slab_holes:
         n_slab_holes[h.story] = n_slab_holes.get(h.story, 0) + 1
+    tiles = slab_tiles(spec.footprint_x, spec.footprint_y)
     for st in stories:
-        pieces.append(PieceEstimate(
-            f"slab_{st}", _box_tris(n_slab_holes.get(st, 0)), "floor"))
+        holes = n_slab_holes.get(st, 0)
+        # hole cost charged on the first tile: a hole cuts one tile (straddles
+        # a few at most), so per-story totals match the untiled model and the
+        # piece count matches what the builder now emits.
+        for k, (suffix, _off, _dims) in enumerate(tiles):
+            pieces.append(PieceEstimate(
+                f"slab_{st}{suffix}", _box_tris(holes if k == 0 else 0),
+                "floor"))
 
     # roof / parapets
     for para in spec.parapets:

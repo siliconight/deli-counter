@@ -321,9 +321,16 @@ def roof_covered_nodes(greybox_glb, slots, themed_ids):
     A roof slot's fit box (centre + dims, spec Z-up) equals the top slab it
     dresses; the slab node's name ('slab_<n>') carries no slot id, so the
     name-based strip can't see it. Convert the slot box to glb Y-up
-    ((x,y,z) -> (x,z,-y)) and match any visual node whose world AABB equals it
-    within 5 cm. Only slots that actually GET a themed module count -- a
-    greybox-fallback roof keeps its slab."""
+    ((x,y,z) -> (x,z,-y)) and match any visual node whose world AABB fits
+    INSIDE it, grown by 5 cm. Containment rather than equality because the
+    slab visual is tiled to light-budget-sized meshes (roadmap 54 --
+    `floors.slab_tiles`): the themed roof replaces every tile, and equality
+    would find none of them, leaving the whole tile set to z-fight the
+    themed module. An untiled slab is contained in its own box, so the old
+    single-node case still matches; nothing else lives inside the top slab's
+    thin volume -- walls stop under it and rooftop props stand above it.
+    Only slots that actually GET a themed module count -- a greybox-fallback
+    roof keeps its slab (all of its tiles)."""
     themed = set(themed_ids or ())
     roofs = [s for s in slots if s.get("role") == "roof"
              and s.get("slot_id") in themed]
@@ -337,10 +344,9 @@ def roof_covered_nodes(greybox_glb, slots, themed_ids):
         c = (t[0], t[2], -t[1])
         dd = (d[0], d[2], d[1])
         for nm, (lo, hi) in boxes.items():
-            cc = [(lo[i] + hi[i]) / 2.0 for i in range(3)]
-            nd = [hi[i] - lo[i] for i in range(3)]
-            if all(abs(cc[i] - c[i]) < 0.05 for i in range(3)) and \
-                    all(abs(nd[i] - dd[i]) < 0.05 for i in range(3)):
+            if all(lo[i] >= c[i] - dd[i] / 2.0 - 0.05
+                   and hi[i] <= c[i] + dd[i] / 2.0 + 0.05
+                   for i in range(3)):
                 out.append(nm)
     return sorted(set(out))
 

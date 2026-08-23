@@ -1105,9 +1105,19 @@ class _Builder:
             # see _cap_thick -- and an inset slab under a shortened wall would
             # leave a band at the perimeter with neither in it.
             if not (is_roof and self.s.roof == "open"):
-                self._box(f"slab_{s}", (0, 0, z - ft / 2),
-                          (self.s.footprint_x, self.s.footprint_y, ft),
-                          self.VISUAL, role=role)
+                # Tiled to light-budget-sized VISUAL pieces (roadmap 54):
+                # Godot lights at most `max_lights_per_object` positional
+                # lights per mesh (engine default 8), and one full-footprint
+                # slab visual was one budget for a whole storey -- the reason
+                # level_factory has to ship a per-object cap. A footprint
+                # inside floors.SLAB_TILE emits the single `slab_<n>` exactly
+                # as before, suffix and all. Collision below stays ONE
+                # trimesh slab: authoritative, holed by the boolean cut, and
+                # a collider has no light budget.
+                for suffix, (dx, dy), (tx, ty) in floors.slab_tiles(
+                        self.s.footprint_x, self.s.footprint_y):
+                    self._box(f"slab_{s}{suffix}", (dx, dy, z - ft / 2),
+                              (tx, ty, ft), self.VISUAL, role=role)
             # Slabs use TRIMESH collision regardless of the spec default, which
             # is convex. Stairwells, ramps, and hatches boolean-cut holes in the
             # slab; a CONVEX hull fills any hole straight back in, capping the
@@ -1903,29 +1913,60 @@ class _Builder:
                 self._empty(name, (bx, by, z), self.MARKERS)
 
     def _slab_holes_cut(self):
-        """Boolean-subtract holes from slabs (visual + collision)."""
+        """Boolean-subtract holes from slabs (visual + collision).
+
+        EVERY matching piece, not the first. The visual slab is tiled to
+        light-budget-sized meshes (`slab_<n>` or `slab_<n>_t<j>_<i>` -- see
+        `floors.slab_tiles`), so a stairwell can land on one tile, straddle
+        four, or swallow one whole. The old `break` on first name match was
+        correct only while the slab was a single object; on tiles it would
+        cut whichever tile the collection happened to list first and leave
+        the hole capped -- the exact walkthrough-ceiling defect the cut
+        exists to prevent. Matching is `name == prefix` or boundary-suffixed
+        (`prefix + "_t"` / the collision suffix), never bare startswith:
+        `slab_1` must not claim `slab_10`'s tiles. A tile entirely inside
+        the cutter is REMOVED rather than cut -- a DIFFERENCE that consumes
+        the whole cube leaves an empty mesh node in the export.
+        """
         ft = self.s.floor_thick
         for hole in self.s.slab_holes:
             z = hole.story * self.s.story_height - ft / 2
             cutter_c = (hole.x, hole.y, z)
             cutter_s = (hole.size_x, hole.size_y, ft * 3)
+            hx0 = hole.x - hole.size_x / 2.0
+            hx1 = hole.x + hole.size_x / 2.0
+            hy0 = hole.y - hole.size_y / 2.0
+            hy1 = hole.y + hole.size_y / 2.0
             for coll, prefix in ((self.VISUAL, f"slab_{hole.story}"),
                                  (self.COLLISION, f"slab_col_{hole.story}")):
-                target = None
-                for o in coll.objects:
-                    if o.name.startswith(prefix):
-                        target = o
-                        break
-                if target is None:
-                    continue
-                cut = self._box(f"{prefix}_holecut", cutter_c, cutter_s, coll)
-                m = target.modifiers.new(name="hole", type='BOOLEAN')
-                m.operation = 'DIFFERENCE'
-                m.object = cut
-                m.solver = 'EXACT'
-                bpy.context.view_layer.objects.active = target
-                bpy.ops.object.modifier_apply(modifier=m.name)
-                bpy.data.objects.remove(cut, do_unlink=True)
+                targets = [o for o in coll.objects
+                           if o.name == prefix
+                           or o.name.startswith(prefix + "_t")
+                           or o.name.startswith(prefix + "-")]
+                for target in targets:
+                    # object-space unit cube scaled: extent = scale, at location
+                    ox, oy = target.location.x, target.location.y
+                    tx0 = ox - target.scale.x / 2.0
+                    tx1 = ox + target.scale.x / 2.0
+                    ty0 = oy - target.scale.y / 2.0
+                    ty1 = oy + target.scale.y / 2.0
+                    if tx1 <= hx0 or tx0 >= hx1 or ty1 <= hy0 or ty0 >= hy1:
+                        continue                    # tile clear of the hole
+                    if (hx0 <= tx0 and tx1 <= hx1
+                            and hy0 <= ty0 and ty1 <= hy1):
+                        if target.name in self.surface_roles:
+                            del self.surface_roles[target.name]
+                        bpy.data.objects.remove(target, do_unlink=True)
+                        continue                    # swallowed whole
+                    cut = self._box(f"{prefix}_holecut", cutter_c, cutter_s,
+                                    coll)
+                    m = target.modifiers.new(name="hole", type='BOOLEAN')
+                    m.operation = 'DIFFERENCE'
+                    m.object = cut
+                    m.solver = 'EXACT'
+                    bpy.context.view_layer.objects.active = target
+                    bpy.ops.object.modifier_apply(modifier=m.name)
+                    bpy.data.objects.remove(cut, do_unlink=True)
 
     def _volumes(self):
         for v in self.s.volumes:

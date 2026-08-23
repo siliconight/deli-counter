@@ -173,6 +173,58 @@ def room_voids(spec, room, slab_story, cx, cy, sx, sy):
     return uniq
 
 
+#: Largest edge a slab's VISUAL mesh may have, in metres (roadmap 54). Godot's
+#: GL Compatibility renderer lights at most `max_lights_per_object` positional
+#: lights per MESH (engine default 8), so a full-footprint `slab_<n>` visual --
+#: 34 to 52 m on the shipped buildings -- is one light budget for a whole
+#: storey. That is the reason level_factory ships a per-object light cap at
+#: all. Zoo's plates carry the same law as `core.arch.PLATE_TILE`; the two are
+#: duplicated deliberately (this module is pure, Zoo is another repo) and
+#: named here so the pair is findable if either changes. Collision is NOT
+#: tiled: the one trimesh slab stays authoritative, keeps its boolean-cut
+#: holes, and a collider has no light budget.
+SLAB_TILE = 8.0
+
+
+def slab_tiles(sx, sy, tile=SLAB_TILE):
+    """Cut a footprint into visual tiles: ``[(suffix, (dx, dy), (tx, ty))]``.
+
+    Offsets are from the slab's own centre, so the Builder adds them to the
+    slab centre it already computes. A footprint inside the tile on both axes
+    returns the single ``("", (0, 0), (sx, sy))`` entry -- name and geometry
+    byte-identical to what `_slabs` always emitted, so a corner store's GLB
+    does not change by one byte.
+
+    Equal division per axis (``ceil(extent / tile)`` cells), interior cut
+    lines snapped to whole millimetres: no sliver tiles at an edge (item 41's
+    fragmentation counter-pressure), and neighbours meet at the same rounded
+    coordinate, so there are no micron cracks for a grazing light to pick out.
+    """
+    if not tile or tile <= 0.0:
+        return [("", (0.0, 0.0), (sx, sy))]
+    eps = 1e-6
+    nx = int((sx - eps) // tile) + 1 if sx > tile + eps else 1
+    ny = int((sy - eps) // tile) + 1 if sy > tile + eps else 1
+    if nx == 1 and ny == 1:
+        return [("", (0.0, 0.0), (sx, sy))]
+
+    def edges(extent, n):
+        lo = -extent / 2.0
+        return ([lo] + [round(lo + extent * k / n, 3) for k in range(1, n)]
+                + [lo + extent])
+
+    xe, ye = edges(sx, nx), edges(sy, ny)
+    out = []
+    for j in range(ny):
+        for i in range(nx):
+            out.append((f"_t{j}_{i}",
+                        (round((xe[i] + xe[i + 1]) / 2.0, 6),
+                         round((ye[j] + ye[j + 1]) / 2.0, 6)),
+                        (round(xe[i + 1] - xe[i], 6),
+                         round(ye[j + 1] - ye[j], 6))))
+    return out
+
+
 def _slot(sid, role, ref, story, cx, cy, cz, sx, sy, facing, room=None,
           style=1, material=None, voids=None):
     return {

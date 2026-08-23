@@ -1,3 +1,56 @@
+## [0.96.0] - 2026-08-23
+
+Roadmap item 54, the Deli Counter half -- the greybox base ships
+full-footprint `slab_<n>` visuals (34-52 m on the shipped buildings), and
+Godot budgets positional lights PER MESH (engine default 8), so one slab was
+one light budget for a whole storey. Zoo 0.49.0 tiles its plate modules; this
+release tiles the slab visuals the stripped base keeps, so the composed scene
+has no room-spanning plate left from either side.
+
+### Changed
+- `Builder._slabs` emits the slab VISUAL as light-budget-sized tiles
+  (`slab_<n>_t<j>_<i>`, `floors.slab_tiles`, 8 m law shared with
+  `core.arch.PLATE_TILE` in Zoo -- duplicated deliberately across repos and
+  cross-named so the pair is findable). A footprint inside the tile emits
+  the single `slab_<n>` byte-identically. COLLISION IS NOT TILED: the one
+  trimesh slab stays authoritative, keeps its boolean-cut holes, and a
+  collider has no light budget. Proven in-session on pvp_station_ref
+  (34 x 26 m, 4 storeys): 80 visual tiles at 6.8 x 6.5 m, four collision
+  slabs exactly as before.
+- `Builder._slab_holes_cut` cuts EVERY matching slab piece that overlaps
+  the cutter, not the first name match -- on tiles, `break`-on-first would
+  cut whichever tile the collection listed first and leave the stairwell
+  capped, the exact walkthrough-ceiling defect the cut exists to prevent.
+  Matching is name-boundary safe (`slab_1` cannot claim `slab_10`'s tiles);
+  a tile the cutter swallows whole is removed (with its `surface_roles`
+  entry) rather than booleaned into an empty mesh node. Same
+  pvp_station_ref build: the stairwell straddles `slab_1_t3_0`/`_t3_1`,
+  the hatches land on `_t3_4` and `slab_2_t0_4`, all four cut, both holed
+  collision slabs unchanged.
+- `portable_building.roof_covered_nodes` matches by CONTAINMENT in the
+  roof slot's box (grown 5 cm) instead of AABB equality: the top slab a
+  themed roof replaces is now a tile set, and equality would find none of
+  them -- the whole set would z-fight the themed module. An untiled slab
+  is contained in its own box, so the single-node case still strips;
+  walls stop under the thin slab volume and rooftop props stand above it,
+  so nothing else can be eaten.
+- `polybudget.estimate` mirrors the tile count per storey (hole cost
+  charged once), so the estimator's piece count matches what the builder
+  now emits.
+
+### Added
+- `test_slab_tiles.py`: byte-identity for small footprints, the arena
+  footprint tiles to budget size, exact reassembly, boundary-safe unique
+  suffixes, no slivers, tile <= 0 disables; roof strip containment --
+  every tile of a themed roof covered, untiled slab still matches,
+  walls/rooftop props/parapets stay, greybox-fallback roof keeps all
+  tiles.
+
+The item closes when the per-mesh light census
+(`tools/mesh_light_census.py`, factory root) shows zero meshes over the
+engine default of 8 on a recomposed package and level_factory deletes
+`PER_OBJECT_CEILING`.
+
 ## [0.95.0] - 2026-08-22
 
 Roadmap item 46, step 4 -- the fields the pipe was built to feed. Now that
