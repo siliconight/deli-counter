@@ -164,9 +164,18 @@ Per-opening override in the spec:
 
 ## Advisory hints stay advisory
 
-`reversible`, `collision_per_state` (and any future `authority_hint` / `persist`)
-are **descriptions the netcode MAY honor or ignore** — never instructions. The
-moment the contract tells the game *how* to replicate, it stops being agnostic.
+`reversible`, `collision_per_state`, `material`, `breach_class` (and any future
+`authority_hint` / `persist`) are **descriptions the netcode MAY honor or
+ignore** — never instructions. The moment the contract tells the game *how* to
+replicate, it stops being agnostic.
+
+`material` says what the fixture's panel is made of (a window's pane is
+`glass`; a breach panel inherits its host wall — drywall, brick_ext, ...);
+`breach_class` says how a wall yields (`soft_wall` / `reinforceable`). The
+game maps weapons to events with them: what shatters to small arms, what
+needs a charge, what a charge must be shaped for. Authored values always
+win; unauthored ones are derived at spec load from what every authored spec
+already does by hand.
 
 ---
 

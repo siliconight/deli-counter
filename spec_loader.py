@@ -74,7 +74,7 @@ def spec_from_dict(d: dict) -> LevelSpec:
         "ladders", "ramps", "vault_ledges", "platforms",
         "fire_escapes",
     )}
-    return LevelSpec(
+    spec = LevelSpec(
         ext_walls=ext_walls, partitions=partitions, stairs=stairs,
         ladders=ladders, ramps=ramps, vault_ledges=vault_ledges,
         platforms=platforms, fire_escapes=fire_escapes,
@@ -84,6 +84,54 @@ def spec_from_dict(d: dict) -> LevelSpec:
         objectives=objectives, loot=loot, zones=zones,
         materials=materials, **top,
     )
+    _derive_opening_defaults(spec)
+    return spec
+
+
+#: Materials a breach charge goes THROUGH vs ones it must be shaped for.
+#: Grounded in every authored spec (nothing invented): 10/10 authored
+#: soft_wall breaches sit in drywall, 2/2 reinforceable in brick_ext.
+_SOFT_MATERIALS = ("drywall", "wood", "glass")
+_HARD_MATERIALS = ("brick_ext", "concrete")
+
+
+def _derive_opening_defaults(spec) -> None:
+    """Fill material / breach_class on openings the author left bare.
+
+    Roadmap item 46, step 4: material is what decides whether a thing
+    shatters, splinters or dents -- and with interactives now shipped to the
+    handoff package, the game finally reads it. AUTHORED VALUES ALWAYS WIN;
+    this only encodes what every authored spec already does by hand
+    (measured across all specs: window->glass 16/16, breach material ==
+    host wall material 12/12, soft_wall on drywall 10/10, reinforceable on
+    brick_ext 2/2).
+
+      * a window's pane is glass -- the breakable machinery, the zoo skin
+        pack and the debris style already assume it;
+      * a breach panel IS a section of its host wall, so it inherits the
+        wall's material (explicit, else the palette default);
+      * a breach yields by material: soft materials -> soft_wall, hard ->
+        reinforceable; an unmapped or unknown material derives NOTHING --
+        a null stays honest where a guess would lie.
+
+    Doors, garages, vaults, tellers and safe deposits are fixtures with
+    materials of their own that no spec has authored a vocabulary for;
+    they stay untouched until one exists.
+    """
+    for wall in list(spec.ext_walls) + list(spec.partitions):
+        host = wall.material or spec.default_material
+        for op in wall.openings:
+            if op.kind == "window" and op.material is None:
+                op.material = "glass"
+            if op.kind != "breach":
+                continue
+            if op.material is None and host:
+                op.material = host
+            if op.breach_class is None and op.material:
+                if op.material in _SOFT_MATERIALS:
+                    op.breach_class = "soft_wall"
+                elif op.material in _HARD_MATERIALS:
+                    op.breach_class = "reinforceable"
 
 
 def load_spec(path: str) -> LevelSpec:

@@ -493,7 +493,9 @@ class _Builder:
         return interactives.derive_interactive(
             self.s.name, wall_name, story, op.kind, op.pos,
             breakable=bool(getattr(op, "breakable", False)),
-            override=getattr(op, "interactive", None))
+            override=getattr(op, "interactive", None),
+            material=getattr(op, "material", None),
+            breach_class=getattr(op, "breach_class", None))
 
     def _opening_to_hole(self, op: Opening, run_len, wall_name=None,
                          story=None):

@@ -1,3 +1,39 @@
+## [0.95.0] - 2026-08-22
+
+Roadmap item 46, step 4 -- the fields the pipe was built to feed. Now that
+interactives ship to the handoff package (0.94.0 + lot/dispatch/LF), the
+game finally reads what decides whether a thing shatters, splinters or
+dents. "Populating them before the pipe is connected is decorating a
+disconnected pipe" -- the pipe is connected; this is the water.
+
+### Added
+- `spec_loader._derive_opening_defaults`, run once at spec load: openings
+  the author left bare get the values every authored spec already writes by
+  hand (measured across all specs, nothing invented: window pane -> glass
+  16/16; breach material -> host wall's material, explicit or palette
+  default, 12/12; breach_class from material -- soft_wall on
+  drywall/wood/glass 10/10, reinforceable on brick_ext/concrete 2/2).
+  AUTHORED VALUES ALWAYS WIN, an unknown material derives no breach_class
+  (a null stays honest where a guess would lie), and door/garage/vault/
+  teller/safe_deposit fixtures stay untouched until a vocabulary for their
+  own materials exists. Measured on pvp_station_ref: 9 windows and 2
+  breaches go from null to annotated; mansion_a02 and the LF demo specs
+  likewise.
+- The interactive machines carry `material` / `breach_class` as ADVISORY
+  fields (INTERACTIVES.md), stamped in `derive_interactive` and shipped in
+  the gameplay entry -- so dispatch's interactives.json answers "what does
+  a charge do here" without joining back to openings. setdefault: an
+  authored override that sets either always wins. The slot view stays
+  art-only.
+- `tactical.py` warns on an UNRECOGNIZED breach_class, not just a missing
+  one. Found the defect it guards against while building this: an
+  LF-generated spec authored "reinforced" where floorplan.py reads
+  == "reinforceable" -- one letter of vocabulary drift and the breach never
+  got the treatment its author asked for. An unknown value is worse than
+  none; it LOOKS annotated.
+- `test_opening_defaults.py`: eleven checks pinning the law, the authored
+  precedence, the honest nulls, and the machine/gameplay carry.
+
 ## [0.94.0] - 2026-08-22
 
 ### Added

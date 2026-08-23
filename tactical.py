@@ -521,6 +521,17 @@ def _analyze_modes(spec):
             if op.kind == "breach" and not (op.breach_class or op.material):
                 warnings.append(f"{where}: breach opening lacks breach_class/"
                                 "material metadata")
+            # The vocabulary is two words, and one authored spec already
+            # proved a third slips through silently: an LF-generated spec
+            # wrote "reinforced" while floorplan.py reads == "reinforceable",
+            # so that breach never got the treatment its author asked for.
+            # An unknown value is worse than none -- it LOOKS annotated.
+            if (op.breach_class
+                    and op.breach_class not in ("soft_wall", "reinforceable")):
+                warnings.append(
+                    f"{where}: unknown breach_class '{op.breach_class}' -- "
+                    f"readers match 'soft_wall'/'reinforceable' exactly, so "
+                    f"this value does nothing")
     for w in spec.ext_walls:
         _check_openings(w.openings, f"ext {w.wall}@{w.story}")
     for i, p in enumerate(spec.partitions):

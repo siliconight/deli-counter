@@ -165,7 +165,8 @@ def interactive_id(building, wall_name, story, kind, pos):
 
 
 def derive_interactive(building, wall_name, story, opening_kind, pos,
-                       breakable=False, override=None):
+                       breakable=False, override=None,
+                       material=None, breach_class=None):
     """Return an interactive state machine for an opening, or None if it isn't
     interactive.
 
@@ -195,6 +196,16 @@ def derive_interactive(building, wall_name, story, opening_kind, pos,
     machine["id"] = interactive_id(building, wall_name, story,
                                    machine.get("kind", opening_kind), pos)
     machine["source"] = "authored" if isinstance(override, dict) else "inferred"
+    # ADVISORY, like collision_per_state: material is what decides whether
+    # this fixture shatters, splinters or dents; breach_class how a wall
+    # yields. The opening carries them too -- stamping them on the machine
+    # means the netcode's own input (dispatch's interactives.json) answers
+    # "what does a charge do here" without joining back to openings.
+    # setdefault: an authored override that set either always wins.
+    if material is not None:
+        machine.setdefault("material", material)
+    if breach_class is not None:
+        machine.setdefault("breach_class", breach_class)
     return machine
 
 
@@ -229,6 +240,9 @@ def gameplay_interactive(machine, slot_ref, transform, building=None):
     }
     if "reversible" in machine:
         entry["reversible"] = machine["reversible"]
+    for advisory in ("material", "breach_class"):
+        if advisory in machine:
+            entry[advisory] = machine[advisory]
     if building is not None:
         entry["building"] = building
     return entry
