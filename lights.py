@@ -16,6 +16,14 @@ LIGHT_MANIFEST_VERSION = "1.1.0"
 _INWARD_ROT = {"W": 0.0, "S": 90.0, "E": 180.0, "N": 270.0}
 
 _TARGET_SPACING = 3.0   # metres between ceiling fixtures
+
+#: The 90s below-grade rule (roadmap 57's palette, first entry): a basement or
+#: an objective room -- a vault, a count room -- does not get an office
+#: ceiling row. It gets sparse bare bulbs, one moody pool per this many square
+#: metres, hanging on a cord below the slab. Lux reads the `pendant` type as a
+#: warm incandescent omni with a tight, drop-derived range.
+_PENDANT_AREA = 25.0    # m^2 of room per bare bulb
+_PENDANT_CORD = 0.6     # metres of cord between slab underside and bulb
 _MAX_FIXTURES = 5       # cap a single room's row
 _CEILING_GAP = 0.1      # hang fixtures this far below the ceiling PLANE
 
@@ -215,21 +223,31 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
         # ceiling is a slab lower.
         ceiling_z = round(c[2] + story_height - cap - _CEILING_GAP, 3)
         rot, count, spacing = _row_for_bounds(bounds)
+        # Below grade, or guarding the take: bare bulbs instead of the office
+        # row. Same run machinery (a stairwell still splits the line around
+        # its hole), different type, density and hang -- see _PENDANT_AREA.
+        moody = story < 0 or bool(r.get("objective"))
+        if moody:
+            w = bounds[2] - bounds[0]
+            d = bounds[3] - bounds[1]
+            count = max(1, int(round((w * d) / _PENDANT_AREA)))
+            spacing = round(max(w, d) / count, 3)
+        lamp_z = round(ceiling_z - _PENDANT_CORD, 3) if moody else ceiling_z
         # A row is laid across the whole room; a stairwell punched through the
         # ceiling is a hole in the middle of it. Split around the holes on this
         # storey -- see `_row_runs`.
         holes = [v for v in (ceiling_voids or ())
                  if int(v.get("story", story)) == story]
         rects = [(v["x0"], v["y0"], v["x1"], v["y1"]) for v in holes]
-        runs = _row_runs([c[0], c[1], ceiling_z], rot, count, spacing, rects)
-        base_id = "%s_ceiling" % r.get("id", "room")
+        runs = _row_runs([c[0], c[1], lamp_z], rot, count, spacing, rects)
+        base_id = ("%s_bulbs" if moody else "%s_ceiling") % r.get("id", "room")
         for i, (pos, n, sp) in enumerate(runs):
             anchors.append({
                 # A single surviving run keeps the ORIGINAL id: splitting is
                 # the exception, and a room that never had a hole must not get
                 # a renamed anchor (ids are how authored overrides bind).
                 "id": base_id if len(runs) == 1 else "%s_%d" % (base_id, i),
-                "type": "fluorescent",
+                "type": "pendant" if moody else "fluorescent",
                 "source": "derived",
                 "pos": pos,
                 "rot_y": rot,
@@ -244,8 +262,9 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
                 # PITCH-BLACK floor -- attenuation reaches hard zero at the
                 # range, so no energy value lights a floor the range does
                 # not reach. Only this kit knows the room's height; the
-                # anchor carries it so the rig never has to guess.
-                "drop": round(ceiling_z - c[2], 3),
+                # anchor carries it so the rig never has to guess. A pendant
+                # hangs on its cord, so its drop is measured from the BULB.
+                "drop": round(lamp_z - c[2], 3),
                 "reacts_to_alarm": True,
             })
 

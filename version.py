@@ -20,7 +20,7 @@ KIT_NAME = "Deli Counter"
 # stamp had drifted from the repo VERSION file (it sat at 0.80.0 while the
 # file reached 0.95.0), which defeats "traceable to the exact kit that
 # produced it"; re-coupled to the release number here.
-KIT_VERSION = "0.97.0"
+KIT_VERSION = "0.98.0"
 
 # Schema version is separate: bump when level.schema.json changes shape.
 SCHEMA_VERSION = "1.21.1"

@@ -1,3 +1,23 @@
+## [0.98.0] - 2026-08-23
+
+Roadmap 57's palette, first entry: 90s Philadelphia is not lit by one
+fixture type. A basement or an objective room -- a vault, a count room --
+with an office fluorescent row reads like an office.
+
+### Added
+- The below-grade rule in `lights.py`: rooms with `story < 0` or
+  `objective: true` derive `pendant` anchors instead of the fluorescent
+  row -- sparse bare bulbs, one pool per ~25 m^2 (`_PENDANT_AREA`), hanging
+  `_PENDANT_CORD` = 0.6 m below the slab, with the drop measured from the
+  BULB so the range rule still reaches the floor. Same run machinery: a
+  stairwell still splits the line around its hole. Lux >= 0.20 reads the
+  type as a warm incandescent with a tight clamp and a filament waver;
+  older Lux skips it with a count, so the rollout cannot half-light a room.
+- `test_pendant_lights.py`: basement and objective rooms go moody at any
+  storey, ordinary rooms keep the row, density (50 m^2 -> 2 bulbs,
+  16 m^2 -> 1), the cord hang, drop-to-own-floor, void splitting.
+- KIT_VERSION 0.98.0 (stays coupled).
+
 ## [0.97.0] - 2026-08-23
 
 Roadmap item 54, the lighting contract's turn. A flat lux light range was
