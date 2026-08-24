@@ -32,6 +32,14 @@ _TARGET_SPACING = 4.0
 #: warm incandescent omni with a tight, drop-derived range.
 _PENDANT_AREA = 25.0    # m^2 of room per bare bulb
 _PENDANT_CORD = 0.6     # metres of cord between slab underside and bulb
+#: Density guardrails, added after census #5 measured the first law's
+#: failure: area/25 alone gave the arena's 275 m^2 skybox suite ELEVEN
+#: bulbs 1.5 m apart -- a chandelier row, not a moody cellar, and every
+#: ceiling tile under it blew the per-mesh budget. Bulbs are capped per
+#: room and never packed tighter than a real cord spacing; a big room is
+#: supposed to have dark corners -- that is what "moody" MEANS.
+_PENDANT_MAX = 5        # bulbs per room, however big the room
+_PENDANT_MIN_SPACING = 3.5   # metres between bulbs, minimum
 _MAX_FIXTURES = 5       # cap a single room's row
 _CEILING_GAP = 0.1      # hang fixtures this far below the ceiling PLANE
 
@@ -238,8 +246,11 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
         if moody:
             w = bounds[2] - bounds[0]
             d = bounds[3] - bounds[1]
-            count = max(1, int(round((w * d) / _PENDANT_AREA)))
-            spacing = round(max(w, d) / count, 3)
+            long_axis = max(w, d)
+            count = max(1, min(int(round((w * d) / _PENDANT_AREA)),
+                               _PENDANT_MAX,
+                               int(long_axis / _PENDANT_MIN_SPACING) or 1))
+            spacing = round(long_axis / count, 3)
         lamp_z = round(ceiling_z - _PENDANT_CORD, 3) if moody else ceiling_z
         # A row is laid across the whole room; a stairwell punched through the
         # ceiling is a hole in the middle of it. Split around the holes on this

@@ -1934,6 +1934,8 @@
       ],
       "source": "inferred",
       "reversible": false,
+      "material": "drywall",
+      "breach_class": "soft_wall",
       "building": "gas_station_a02"
     },
     {
@@ -2165,6 +2167,7 @@
       ],
       "source": "inferred",
       "reversible": true,
+      "material": "cooler_panel",
       "building": "gas_station_a02"
     },
     {
@@ -2226,6 +2229,8 @@
       ],
       "source": "inferred",
       "reversible": false,
+      "material": "drywall",
+      "breach_class": "soft_wall",
       "building": "gas_station_a02"
     },
     {
@@ -2313,8 +2318,30 @@
   "platforms": [],
   "fire_escapes": [],
   "surface_roles": {
-    "slab_0": "floor",
-    "slab_1": "ceiling",
+    "slab_0_t0_0": "floor",
+    "slab_0_t0_1": "floor",
+    "slab_0_t0_2": "floor",
+    "slab_0_t0_3": "floor",
+    "slab_0_t1_0": "floor",
+    "slab_0_t1_1": "floor",
+    "slab_0_t1_2": "floor",
+    "slab_0_t1_3": "floor",
+    "slab_0_t2_0": "floor",
+    "slab_0_t2_1": "floor",
+    "slab_0_t2_2": "floor",
+    "slab_0_t2_3": "floor",
+    "slab_1_t0_0": "ceiling",
+    "slab_1_t0_1": "ceiling",
+    "slab_1_t0_2": "ceiling",
+    "slab_1_t0_3": "ceiling",
+    "slab_1_t1_0": "ceiling",
+    "slab_1_t1_1": "ceiling",
+    "slab_1_t1_2": "ceiling",
+    "slab_1_t1_3": "ceiling",
+    "slab_1_t2_0": "ceiling",
+    "slab_1_t2_1": "ceiling",
+    "slab_1_t2_2": "ceiling",
+    "slab_1_t2_3": "ceiling",
     "ext_0_N_seg0": "wall",
     "ext_0_N_seg1": "wall",
     "ext_0_N_seg2": "wall",

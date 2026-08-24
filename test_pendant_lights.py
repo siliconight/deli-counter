@@ -67,3 +67,22 @@ def test_a_stairwell_still_splits_the_bulb_line():
     flu = [a for a in anchors if a["type"] == "pendant"]
     assert len(flu) >= 2                    # split into runs around the hole
     assert {a["drop"] for a in flu} == {flu[0]["drop"]}
+
+
+def test_a_big_room_is_moody_not_a_chandelier_row():
+    """Census #5's failure: area/25 alone gave a 275 m^2 suite ELEVEN bulbs
+    1.5 m apart and blew every ceiling tile under them. Capped at
+    _PENDANT_MAX, never tighter than _PENDANT_MIN_SPACING -- a big room is
+    supposed to have dark corners."""
+    rooms = [_room(id="suite", objective=True,
+                   bounds=[-8.65, -8.0, 8.65, 8.0])]   # 17.3 x 16 = 277 m^2
+    a = lights.derive_light_anchors(rooms, [], 3.7, cap_thick=_cap)[0]
+    assert a["row"]["count"] <= lights._PENDANT_MAX
+    assert a["row"]["spacing"] >= lights._PENDANT_MIN_SPACING
+
+
+def test_a_narrow_room_never_packs_bulbs_below_min_spacing():
+    rooms = [_room(id="corridor", story=-1, center=[0.0, 0.0, -3.7],
+                   bounds=[-3.0, -1.5, 3.0, 1.5])]     # 6 x 3
+    a = lights.derive_light_anchors(rooms, [], 3.7, cap_thick=_cap)[0]
+    assert a["row"]["count"] == 1

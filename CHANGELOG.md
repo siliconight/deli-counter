@@ -1,3 +1,14 @@
+## [0.99.1] - 2026-08-24
+
+### Fixed
+- Pendant density guardrails. Census #5 measured the first law's failure:
+  `area / 25` alone gave the arena's 275 m^2 skybox suite ELEVEN bulbs
+  1.5 m apart -- a chandelier row, not a moody cellar -- and every ceiling
+  tile under it blew the per-mesh budget the type was priced for. Bulbs
+  now cap at `_PENDANT_MAX` (5) per room and never pack tighter than
+  `_PENDANT_MIN_SPACING` (3.5 m). A big room is supposed to have dark
+  corners; that is what "moody" means. Two tests pin it.
+
 ## [0.99.0] - 2026-08-24
 
 Census #4 left exactly NINE meshes over the per-mesh budget of 8 -- every

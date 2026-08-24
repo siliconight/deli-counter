@@ -20,6 +20,7 @@
         "count": 5,
         "spacing": 6.0
       },
+      "drop": 3.2,
       "reacts_to_alarm": true
     },
     {
@@ -27,7 +28,7 @@
       "type": "fluorescent",
       "source": "derived",
       "pos": [
-        -13.5,
+        -13.125,
         6.5,
         3.2
       ],
@@ -37,6 +38,7 @@
         "count": 1,
         "spacing": 0.0
       },
+      "drop": 3.2,
       "reacts_to_alarm": true
     },
     {
@@ -44,16 +46,17 @@
       "type": "fluorescent",
       "source": "derived",
       "pos": [
-        -4.5,
+        -3.75,
         6.5,
         3.2
       ],
       "rot_y": 0.0,
       "room": "manager_office",
       "row": {
-        "count": 3,
-        "spacing": 3.0
+        "count": 2,
+        "spacing": 3.75
       },
+      "drop": 3.2,
       "reacts_to_alarm": true
     },
     {
@@ -68,19 +71,20 @@
       "rot_y": 0.0,
       "room": "security_room",
       "row": {
-        "count": 5,
-        "spacing": 3.0
+        "count": 4,
+        "spacing": 3.75
       },
+      "drop": 3.2,
       "reacts_to_alarm": true
     },
     {
-      "id": "vault_room_west_ceiling",
-      "type": "fluorescent",
+      "id": "vault_room_west_bulbs",
+      "type": "pendant",
       "source": "derived",
       "pos": [
         -7.5,
         0.0,
-        -0.4
+        -1.0
       ],
       "rot_y": 90.0,
       "room": "vault_room_west",
@@ -88,16 +92,17 @@
         "count": 5,
         "spacing": 4.4
       },
+      "drop": 2.6,
       "reacts_to_alarm": true
     },
     {
-      "id": "vault_room_east_ceiling",
-      "type": "fluorescent",
+      "id": "vault_room_east_bulbs",
+      "type": "pendant",
       "source": "derived",
       "pos": [
         7.5,
         0.0,
-        -0.4
+        -1.0
       ],
       "rot_y": 90.0,
       "room": "vault_room_east",
@@ -105,6 +110,7 @@
         "count": 5,
         "spacing": 4.4
       },
+      "drop": 2.6,
       "reacts_to_alarm": true
     },
     {

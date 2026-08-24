@@ -20,6 +20,7 @@
         "count": 4,
         "spacing": 6.0
       },
+      "drop": 3.2,
       "reacts_to_alarm": true
     },
     {
@@ -34,9 +35,10 @@
       "rot_y": 0.0,
       "room": "manager_office",
       "row": {
-        "count": 5,
-        "spacing": 3.0
+        "count": 4,
+        "spacing": 3.75
       },
+      "drop": 3.2,
       "reacts_to_alarm": true
     },
     {
@@ -51,9 +53,10 @@
       "rot_y": 0.0,
       "room": "garage_bay",
       "row": {
-        "count": 5,
-        "spacing": 3.0
+        "count": 4,
+        "spacing": 3.75
       },
+      "drop": 3.2,
       "reacts_to_alarm": true
     },
     {
@@ -71,6 +74,7 @@
         "count": 5,
         "spacing": 6.0
       },
+      "drop": 3.2,
       "reacts_to_alarm": true
     },
     {
@@ -85,36 +89,38 @@
       "rot_y": 0.0,
       "room": "upper_hall",
       "row": {
-        "count": 5,
-        "spacing": 3.0
+        "count": 4,
+        "spacing": 3.75
       },
+      "drop": 3.2,
       "reacts_to_alarm": true
     },
     {
-      "id": "records_secure_ceiling",
-      "type": "fluorescent",
+      "id": "records_secure_bulbs",
+      "type": "pendant",
       "source": "derived",
       "pos": [
         7.5,
         5.5,
-        6.8
+        6.2
       ],
       "rot_y": 0.0,
       "room": "records_secure",
       "row": {
-        "count": 5,
-        "spacing": 3.0
+        "count": 4,
+        "spacing": 3.75
       },
+      "drop": 2.6,
       "reacts_to_alarm": true
     },
     {
-      "id": "vault_west_ceiling",
-      "type": "fluorescent",
+      "id": "vault_west_bulbs",
+      "type": "pendant",
       "source": "derived",
       "pos": [
         -7.5,
         0.0,
-        -0.4
+        -1.0
       ],
       "rot_y": 90.0,
       "room": "vault_west",
@@ -122,16 +128,17 @@
         "count": 5,
         "spacing": 4.4
       },
+      "drop": 2.6,
       "reacts_to_alarm": true
     },
     {
-      "id": "vault_east_ceiling",
-      "type": "fluorescent",
+      "id": "vault_east_bulbs",
+      "type": "pendant",
       "source": "derived",
       "pos": [
         7.5,
         0.0,
-        -0.4
+        -1.0
       ],
       "rot_y": 90.0,
       "room": "vault_east",
@@ -139,6 +146,7 @@
         "count": 5,
         "spacing": 4.4
       },
+      "drop": 2.6,
       "reacts_to_alarm": true
     },
     {

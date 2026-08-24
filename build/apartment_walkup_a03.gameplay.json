@@ -209,7 +209,7 @@
       "sill": 0.9,
       "tag": null,
       "breach_class": null,
-      "material": null,
+      "material": "glass",
       "vaultable": true,
       "reinforceable": false,
       "building": "apartment_walkup_a03"
@@ -260,7 +260,7 @@
       "sill": 0.9,
       "tag": null,
       "breach_class": null,
-      "material": null,
+      "material": "glass",
       "vaultable": true,
       "reinforceable": false,
       "building": "apartment_walkup_a03"
@@ -277,7 +277,7 @@
       "sill": 0.9,
       "tag": null,
       "breach_class": null,
-      "material": null,
+      "material": "glass",
       "vaultable": true,
       "reinforceable": false,
       "building": "apartment_walkup_a03"
@@ -1405,6 +1405,8 @@
       ],
       "source": "inferred",
       "reversible": false,
+      "material": "drywall",
+      "breach_class": "soft_wall",
       "building": "apartment_walkup_a03"
     },
     {
@@ -1565,6 +1567,8 @@
       ],
       "source": "inferred",
       "reversible": false,
+      "material": "drywall",
+      "breach_class": "soft_wall",
       "building": "apartment_walkup_a03"
     },
     {
@@ -1848,9 +1852,24 @@
   "platforms": [],
   "fire_escapes": [],
   "surface_roles": {
-    "slab_0": "floor",
-    "slab_1": "floor",
-    "slab_2": "ceiling",
+    "slab_0_t0_0": "floor",
+    "slab_0_t0_1": "floor",
+    "slab_0_t0_2": "floor",
+    "slab_0_t1_0": "floor",
+    "slab_0_t1_1": "floor",
+    "slab_0_t1_2": "floor",
+    "slab_1_t0_0": "floor",
+    "slab_1_t0_1": "floor",
+    "slab_1_t0_2": "floor",
+    "slab_1_t1_0": "floor",
+    "slab_1_t1_1": "floor",
+    "slab_1_t1_2": "floor",
+    "slab_2_t0_0": "ceiling",
+    "slab_2_t0_1": "ceiling",
+    "slab_2_t0_2": "ceiling",
+    "slab_2_t1_0": "ceiling",
+    "slab_2_t1_1": "ceiling",
+    "slab_2_t1_2": "ceiling",
     "ext_0_N_seg0": "wall",
     "ext_0_N_seg1": "wall",
     "ext_0_N_seg2": "wall",
