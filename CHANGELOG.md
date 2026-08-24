@@ -1,3 +1,18 @@
+## [0.99.0] - 2026-08-24
+
+Census #4 left exactly NINE meshes over the per-mesh budget of 8 -- every
+one a b0/b1/b4 floor or slab tile at 9-10 lights. Ranges were already
+drop-derived and the tiles budget-sized, so the residue was lamp COUNT in
+dense rooms: rows at 3 m spacing put an office grid over every interior.
+
+### Changed
+- `_TARGET_SPACING` 3.0 -> 4.0. A quarter fewer lamps per row puts the
+  last nine tiles under the engine default, and wider pools read more
+  like a 90s interior than an office ceiling -- the direction the palette
+  was already chasing (0.98.0). If a room reads too dark, raise rig
+  energy in Lux; density is a budget number first, a look second.
+- KIT_VERSION 0.99.0 (stays coupled).
+
 ## [0.98.0] - 2026-08-23
 
 Roadmap 57's palette, first entry: 90s Philadelphia is not lit by one

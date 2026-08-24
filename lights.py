@@ -15,7 +15,15 @@ LIGHT_MANIFEST_VERSION = "1.1.0"
 # window's area light INWARD, in degrees about up (rot_y 0 == +X).
 _INWARD_ROT = {"W": 0.0, "S": 90.0, "E": 180.0, "N": 270.0}
 
-_TARGET_SPACING = 3.0   # metres between ceiling fixtures
+#: Metres between ceiling fixtures. 4.0, up from 3.0 (2026-08-24): census #4
+#: left exactly 9 meshes over the per-mesh budget of 8, every one a b0/b1/b4
+#: floor or slab tile at 9-10 lights -- dense-room lamp COUNT, not range or
+#: geometry, was the residue (ranges were already drop-derived and the tiles
+#: budget-sized). A quarter fewer lamps per row puts those tiles under 8,
+#: and the wider pools read more like a 90s interior than an office grid --
+#: the look this palette is chasing anyway. If a room reads too dark, raise
+#: rig energy in Lux; density is a budget number first.
+_TARGET_SPACING = 4.0
 
 #: The 90s below-grade rule (roadmap 57's palette, first entry): a basement or
 #: an objective room -- a vault, a count room -- does not get an office
