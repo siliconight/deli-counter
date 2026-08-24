@@ -2405,7 +2405,20 @@ class _Builder:
                     ("W", (-hx + t / 2, 0, cz), (t, ey, p.height)),
                 ]
             for n, c, size in segs:
-                self._box(f"parapet_{n}", c, size, self.VISUAL, role="wall")
+                # The VISUAL is tiled under the same law as the slabs
+                # (floors.slab_tiles, roadmap 54). Census #7 (2026-08-24)
+                # caught the gap: a 52 m `parapet_N` bound 9 lights -- a
+                # mesh that long collects claimants along its whole run,
+                # and the range trim that would shed them (1.59 m, per the
+                # census's margin forensics) is more than any interior
+                # formula can give up. A run inside the tile keeps the
+                # empty suffix, so small buildings do not change by a
+                # byte. Collision stays ONE box: no light budget there.
+                for suffix, (dx, dy), (tx, ty) in floors.slab_tiles(
+                        size[0], size[1]):
+                    self._box(f"parapet_{n}{suffix}",
+                              (c[0] + dx, c[1] + dy, c[2]),
+                              (tx, ty, size[2]), self.VISUAL, role="wall")
                 self._col_box(f"parapet_{n}_col", c, size)
 
 

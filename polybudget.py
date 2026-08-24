@@ -95,12 +95,23 @@ def estimate(spec):
                 f"slab_{st}{suffix}", _box_tris(holes if k == 0 else 0),
                 "floor"))
 
-    # roof / parapets
+    # roof / parapets -- the parapet VISUAL is tiled under the same law as
+    # the slabs (census #7: a 52 m parapet_N bound 9 lights), so the
+    # estimator mirrors the run splits. N/S span the footprint's X; E/W
+    # runs exist only when the footprint is wider than two thicknesses --
+    # the builder emits none otherwise, so the old flat "4 boxes" here
+    # overcounted exactly that case.
     for para in spec.parapets:
-        # a parapet ring ~ 4 boxes
-        for side in range(4):
-            pieces.append(PieceEstimate(
-                f"parapet_{para.story}_{side}", BOX_TRIS, "parapet"))
+        t = para.thick
+        ey = spec.footprint_y - 2 * t
+        runs = [("N", spec.footprint_x, t), ("S", spec.footprint_x, t)]
+        if ey > 1e-6:
+            runs += [("E", t, ey), ("W", t, ey)]
+        for side, sx, sy in runs:
+            for suffix, _off, _pdims in slab_tiles(sx, sy):
+                pieces.append(PieceEstimate(
+                    f"parapet_{para.story}_{side}{suffix}", BOX_TRIS,
+                    "parapet"))
 
     # stairs — one box per step; step count from floor height / step_rise
     for si, st in enumerate(spec.stairs):

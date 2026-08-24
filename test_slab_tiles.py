@@ -16,15 +16,18 @@ def _area(tiles):
 
 
 def test_a_small_footprint_is_byte_identical():
-    """A corner store must not change by one byte: same single piece, empty
-    suffix, so the visual object is still named exactly `slab_<n>`."""
-    assert floors.slab_tiles(8.0, 6.0) == [("", (0.0, 0.0), (8.0, 6.0))]
+    """A footprint inside the tile must not change by one byte: same single
+    piece, empty suffix, so the visual object is still named exactly
+    `slab_<n>`. Stated relative to SLAB_TILE since 0.100.0 -- the byte-
+    identity promise belongs to the LAW, not to any one tile size."""
+    assert floors.slab_tiles(floors.SLAB_TILE, 3.0) == \
+        [("", (0.0, 0.0), (floors.SLAB_TILE, 3.0))]
     assert floors.slab_tiles(3.0, 3.0) == [("", (0.0, 0.0), (3.0, 3.0))]
 
 
 def test_the_arena_footprint_tiles_to_budget_size():
     tiles = floors.slab_tiles(52.0, 32.0)
-    assert len(tiles) == 28                       # 7 x 4
+    assert len(tiles) == 77                       # 11 x 7 at SLAB_TILE 5.0
     for _sfx, _off, (tx, ty) in tiles:
         # interior cut lines snap to whole millimetres, so a cell can sit
         # half a millimetre over the equal division
@@ -70,6 +73,29 @@ def test_zero_or_negative_tile_disables_tiling():
     assert floors.slab_tiles(52.0, 32.0, 0) == [("", (0.0, 0.0), (52.0, 32.0))]
     assert floors.slab_tiles(52.0, 32.0, -1) == [("", (0.0, 0.0),
                                                   (52.0, 32.0))]
+
+
+# --------------------------------------------------------------------------- #
+# parapet runs: census #7 (2026-08-24) measured the arena's 52 m parapet_N
+# binding 9 lights -- the one greybox VISUAL that had escaped the tile law.
+# The builder now routes parapet visuals through slab_tiles; these pin the
+# law at parapet proportions (one long axis, one thin one).
+# --------------------------------------------------------------------------- #
+
+
+def test_a_long_parapet_run_splits_along_its_length_only():
+    tiles = floors.slab_tiles(52.0, 0.2)
+    assert len(tiles) == 11                       # ceil(52 / SLAB_TILE)
+    for _sfx, _off, (tx, ty) in tiles:
+        assert tx <= floors.SLAB_TILE + 1e-3
+        assert ty == 0.2                          # thickness never splits
+    assert round(_area(tiles), 6) == round(52.0 * 0.2, 6)
+
+
+def test_a_short_parapet_run_keeps_its_exact_name():
+    """A run inside the tile keeps the empty suffix -- `parapet_N` on a
+    small building stays byte-identical."""
+    assert floors.slab_tiles(4.6, 0.2) == [("", (0.0, 0.0), (4.6, 0.2))]
 
 
 # --------------------------------------------------------------------------- #

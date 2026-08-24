@@ -1,3 +1,31 @@
+## [0.100.0] - 2026-08-24
+
+Roadmap 54's residue, measured to its end. Census #7 -- the first run with
+every light already at its floor-pool minimum range (Lux 0.23.0) -- left 6
+meshes over the engine's 8-light budget, and the census's new margin
+forensics priced the range trims that would clear them at 0.44-1.59 m:
+more than any floor can pay (an office pool would shrink to ~1.3 m against
+4 m row spacing). The residue is geometry, in two shapes, both here.
+
+### Changed
+- `floors.SLAB_TILE` 8.0 -> 5.0. A tile's claimant count scales with its
+  collection rectangle, (tile + 2*range) per axis: at 8.0 x 6.8 an office
+  tile sweeps ~260 m^2 of lamp-bearing plan at 4.4 m ranges and bound 9-10
+  claimants; at 5.0 the rectangle shrinks ~35% and the worst measured tile
+  scales to ~6 -- under budget with headroom for a bake wobble. Zoo's
+  `PLATE_TILE` stays 8.0 ON PURPOSE: its plates measured within budget at
+  census #7, and this constant is now derived from THIS kit's lamp
+  density, not from a geometry law the repos share. Buildings wider than
+  5 m re-tile, so every rebuilt .glb differs -- the MINOR bump condition.
+- Parapet VISUALS route through `floors.slab_tiles` -- census #7 caught
+  the arena's 52 m `parapet_N` binding 9 lights, the one greybox visual
+  that had escaped the tile law entirely. Runs inside the tile keep their
+  exact name (small buildings unchanged by a byte); collision stays ONE
+  box per run, because a collider has no light budget.
+- `polybudget` mirrors the parapet splits, and stops counting E/W parapet
+  runs on footprints too narrow to hold them -- the builder never emitted
+  those, so the flat "4 boxes" estimate overcounted exactly that case.
+
 ## [0.99.1] - 2026-08-24
 
 ### Fixed

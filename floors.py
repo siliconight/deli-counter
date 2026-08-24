@@ -178,12 +178,25 @@ def room_voids(spec, room, slab_story, cx, cy, sx, sy):
 #: lights per MESH (engine default 8), so a full-footprint `slab_<n>` visual --
 #: 34 to 52 m on the shipped buildings -- is one light budget for a whole
 #: storey. That is the reason level_factory ships a per-object light cap at
-#: all. Zoo's plates carry the same law as `core.arch.PLATE_TILE`; the two are
-#: duplicated deliberately (this module is pure, Zoo is another repo) and
-#: named here so the pair is findable if either changes. Collision is NOT
-#: tiled: the one trimesh slab stays authoritative, keeps its boolean-cut
-#: holes, and a collider has no light budget.
-SLAB_TILE = 8.0
+#: all. Collision is NOT tiled: the one trimesh slab stays authoritative,
+#: keeps its boolean-cut holes, and a collider has no light budget.
+#:
+#: WHY 5.0 AND NOT 8.0. 8.0 was the first cut and passed 4665 of 4679 meshes;
+#: census #7 (2026-08-24, lot_demo_001, every fluorescent already trimmed to
+#: its floor-pool minimum of drop + 1.0) measured the residue: office slab
+#: tiles at 8.0 x 6.8 still bound 9-10 claimants. The count a tile collects
+#: scales with its collection RECTANGLE, (tile + 2*range) per axis -- about
+#: 260 m^2 of lamp-collecting area at 4.4 m ranges -- and the range trims
+#: that would shed the rest (0.44-0.69 m, per the census's own margin
+#: forensics) cost floor coverage Lux cannot pay. 5.0 shrinks the rectangle
+#: ~35%, scaling the worst measured tile from 10 claimants to ~6: under the
+#: budget with headroom for a bake wobble, while ranges stay at the minimum
+#: that still lights floors. Zoo's `core.arch.PLATE_TILE` stays 8.0 ON
+#: PURPOSE: its plates measured within budget at census #7 (the arena
+#: cleared once ranges went drop-derived), and this number is derived from
+#: THIS kit's lamp density, not from a geometry law the repos share -- do
+#: not reconcile them casually (the VERSION/CHANGELOG rule).
+SLAB_TILE = 5.0
 
 
 def slab_tiles(sx, sy, tile=SLAB_TILE):
