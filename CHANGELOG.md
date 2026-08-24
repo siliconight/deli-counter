@@ -1,3 +1,42 @@
+## [0.101.0] - 2026-08-24
+
+Roadmap 59 opens its lint. Sighted 2026-08-23 walking lot_demo_001: one
+doorway divided into two squeeze-past channels by a partition's WallEnd
+standing mid-aperture, a wall edge-on to the door. Every engine gate
+passes it -- both channels traverse -- so the check belongs at spec level,
+before the geometry exists.
+
+### Added
+- `layout_lint.py` L18 (WARN): no partition may terminate inside a
+  doorway's aperture span plus a 0.3 m leaf margin, on the wall it meets --
+  exterior and interior hosts alike. Endpoints are judged through
+  `clamp_partition_span` (the builder's own bound), so the lint and the
+  shipped geometry cannot disagree; a wall CROSSING the aperture line is
+  deliberately exempt (a different defect with different owners). WARN
+  first, on the stair-volume lint's reasoning: it must not red an
+  in-flight certification -- it graduates to FAIL once the library lints
+  clean, and the floorplan generator learns avoidance (nudge the opening
+  along its wall, or stop the partition one bay short; never silently
+  delete either). Eleven tests pin the geometry and the exemptions
+  (`test_door_split.py`). Numbered L18 because the 0.9x changelog assigns
+  L17 to the stair-volume lint, which is absent from today's
+  layout_lint.py -- that absence is its own open question, and the slot
+  stays reserved.
+- Spec output unchanged for every building -- the MINOR definition's
+  second half; KIT_VERSION stays coupled.
+
+### Fixed
+- The navgate population baseline stops grading Level Factory transients.
+  `lf_*` shells are LF pipeline side inputs built into this library's
+  `build/`, and the baseline was absorbing them one hand-written entry at
+  a time -- nine were already listed when `lf_unlit_probe_001_5017`
+  red-flagged the 0.100.0 adoption commit as a "newly unjudged shell".
+  `test_navgate_population._live` now excludes the class (the same call
+  `layout_lint.main()` already makes for `specs/lf_*.json`; LF grades its
+  own missions with its own gates), and the nine dead `lf_` entries leave
+  `navgate_baseline.json` -- unjudged 17 -> 8, every remaining entry an
+  authored shell with its reason intact.
+
 ## [0.100.0] - 2026-08-24
 
 Roadmap 54's residue, measured to its end. Census #7 -- the first run with

@@ -35,6 +35,18 @@ def _live():
     for fn in sorted(os.listdir(BUILD)):
         if not fn.endswith(".navgate.json"):
             continue
+        # lf_* shells are Level Factory pipeline transients built into this
+        # library's build/ as side inputs -- not Deli Counter's authored
+        # library, and not this baseline's to freeze. layout_lint.main()
+        # made the same call for specs/lf_*.json, and the alternative was
+        # measured 2026-08-24: every LF probe mission that rebuilds becomes
+        # a fresh "newly unjudged shell" here (lf_unlit_probe_001_5017
+        # red-flagged the 0.100.0 adoption for standing in a gate that was
+        # never judging it on purpose, joining nine lf_ entries already
+        # baselined one-by-one). LF grades its own missions with its own
+        # gates; this baseline freezes the authored library only.
+        if fn.startswith("lf_"):
+            continue
         try:
             with open(os.path.join(BUILD, fn), "r", encoding="utf-8") as fh:
                 d = json.load(fh)

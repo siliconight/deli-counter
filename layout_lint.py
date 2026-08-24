@@ -26,6 +26,8 @@ TRAVEL_MAX = 60.0            # room-graph travel to an exterior exit (A3)
 DEAD_END_MAX = 6.0           # single-opening connector depth (A4)
 HALL_MIN_SH = 4.2            # civic/venue public halls read tall (C1)
 COVER_REPEAT_MAX = 3         # identical cover volumes in a row (D2)
+LEAF_MARGIN = 0.3            # clearance a door leaf + jamb needs past the
+                             # aperture before a wall may end there (L18)
 
 VENUE_FAMILIES = ("stadium", "arena", "casino", "market_hall", "airport_terminal",
                   "bank_tower", "landmark_hall", "museum", "courthouse",
@@ -465,6 +467,140 @@ def marker_room_findings(spec):
     return warns
 
 
+def _host_openings(spec, host, is_ext):
+    """(center_along, width, label) for the door-like openings on a host wall.
+
+    Center math matches `_opening_xy` (the graph's convention): exterior
+    `pos` is a centered fraction of the footprint on the wall's running
+    axis; partition `pos` is a centered fraction of the (unclamped) span.
+    Width defaults to 1.0, the same default the floorplan drawing uses.
+    """
+    hx, hy = spec["footprint_x"] / 2, spec["footprint_y"] / 2
+    out = []
+    for op in host.get("openings", []):
+        if op.get("kind", "door") not in ("door", "garage", "breach"):
+            continue
+        w = float(op.get("width") or 1.0)
+        if is_ext:
+            face = host["wall"]
+            along = op.get("pos", 0.0) * (spec["footprint_x"]
+                                          if face in ("N", "S")
+                                          else spec["footprint_y"])
+        else:
+            ax = str(host.get("axis", "X")).upper()
+            s, e = host.get("start"), host.get("end")
+            lo = -hx if ax == "X" else -hy
+            hi = hx if ax == "X" else hy
+            s = lo if s is None else s
+            e = hi if e is None else e
+            along = (s + e) / 2 + op.get("pos", 0.0) * (e - s)
+        out.append((along, w, op.get("tag") or op.get("kind", "door")))
+    return out
+
+
+def door_split_findings(spec):
+    """L18 (advisory WARN, roadmap 59): no partition may TERMINATE inside a
+    doorway's aperture span -- plus LEAF_MARGIN each side -- on the wall it
+    meets.
+
+    Sighted 2026-08-23 walking lot_demo_001 (`zoo`, under int_0_0_seg17): a
+    partition's WallEnd stood mid-aperture, dividing one doorway into two
+    squeeze-past channels with a wall edge-on to the door. The engine gates
+    cannot see this: BOTH channels traverse, so nav passes -- the defect is
+    that the building asks "which half of the door do I take", and egress
+    is gameplay vocabulary a building must not mumble.
+
+    WARN, not FAIL, deliberately (the stair-volume lint's reasoning): it
+    fires against the authored library first; it graduates to FAIL when the
+    library is clean, and the generator learns avoidance (nudge the opening
+    along its wall, or end the partition one bay short -- never silently
+    delete either).
+
+    Geometry: a terminator is a PERPENDICULAR partition on the host's story
+    whose CLAMPED endpoint (clamp_partition_span -- the builder's own
+    bound, so lint and geometry cannot disagree) lands on the host's line
+    within one wall thickness. Only termination counts: a partition passing
+    THROUGH the aperture line is a different defect with different owners.
+
+    Numbered L18, not L17: the 0.9x changelog assigns L17 to the
+    stair-volume-narrowing lint, which is absent from this file today --
+    that absence is its own open question, and the slot stays reserved for
+    the restoration.
+    """
+    from partition_bounds import clamp_partition_span
+    warns = []
+    fx, fy = spec.get("footprint_x"), spec.get("footprint_y")
+    if not fx or not fy:
+        return warns
+    hx, hy = fx / 2, fy / 2
+    meet = float(spec.get("wall_thick", 0.35)) + 0.05
+    parts = spec.get("partitions", [])
+
+    for term in parts:
+        t_ax = str(term.get("axis", "X")).upper()
+        t_story = term.get("story", 0)
+        s, e = term.get("start"), term.get("end")
+        b = hy if t_ax == "Y" else hx
+        s = -b if s is None else s
+        e = b if e is None else e
+        lo, hi = clamp_partition_span(s, e, t_ax, fx, fy)
+        if hi - lo <= 0:
+            continue                          # never built; nothing ends anywhere
+        t_pos = float(term.get("pos", 0.0))
+
+        for end_val, end_name in ((lo, "start"), (hi, "end")):
+            # exterior hosts: the four envelope faces
+            for face, host_line, runs in (("N", hy, "X"), ("S", -hy, "X"),
+                                          ("E", hx, "Y"), ("W", -hx, "Y")):
+                if t_ax == runs or abs(end_val - host_line) > meet:
+                    continue
+                for wall in spec.get("ext_walls", []):
+                    if (wall.get("wall") != face
+                            or wall.get("story", 0) != t_story):
+                        continue
+                    for along, w, label in _host_openings(spec, wall, True):
+                        gap = abs(t_pos - along)
+                        if gap < w / 2 + LEAF_MARGIN:
+                            warns.append(
+                                f"L18 door split by a wall: story {t_story} "
+                                f"{t_ax}-partition at pos={t_pos:g} ends on "
+                                f"exterior wall {face} inside the aperture of "
+                                f"'{label}' (center {along:g}, width {w:g}; "
+                                f"wall {end_name} lands {gap:.2f} m from "
+                                f"center, needs > {w / 2 + LEAF_MARGIN:.2f} m)"
+                                f" -- one doorway becomes two squeeze-past "
+                                f"channels")
+            # partition hosts: perpendicular interior walls
+            for host in parts:
+                if host is term:
+                    continue
+                h_ax = str(host.get("axis", "X")).upper()
+                if h_ax == t_ax or host.get("story", 0) != t_story:
+                    continue
+                h_pos = float(host.get("pos", 0.0))
+                if abs(end_val - h_pos) > meet:
+                    continue
+                hs, he = host.get("start"), host.get("end")
+                hb = hy if h_ax == "Y" else hx
+                hs = -hb if hs is None else hs
+                he = hb if he is None else he
+                hlo, hhi = clamp_partition_span(hs, he, h_ax, fx, fy)
+                if not (hlo - meet <= t_pos <= hhi + meet):
+                    continue                  # meets the line, not the wall
+                for along, w, label in _host_openings(spec, host, False):
+                    gap = abs(t_pos - along)
+                    if gap < w / 2 + LEAF_MARGIN:
+                        warns.append(
+                            f"L18 door split by a wall: story {t_story} "
+                            f"{t_ax}-partition at pos={t_pos:g} ends on the "
+                            f"{h_ax}-partition at pos={h_pos:g} inside the "
+                            f"aperture of '{label}' (center {along:g}, width "
+                            f"{w:g}; wall {end_name} lands {gap:.2f} m from "
+                            f"center, needs > {w / 2 + LEAF_MARGIN:.2f} m) -- "
+                            f"one doorway becomes two squeeze-past channels")
+    return warns
+
+
 def lint_spec(spec, name):
     fails, warns = [], []
     sf, sw = structural_findings(spec)      # coherence rules run for ALL modes
@@ -475,6 +611,7 @@ def lint_spec(spec, name):
     lf14, lw15 = ladder_findings(spec)      # L14 hole-in-footprint / L15 blocked
     fails += lf14
     warns += lw15
+    warns += door_split_findings(spec)      # L18 door split by a wall (roadmap 59)
     fails += reachability_findings(spec)    # L12 sealed/unreachable rooms (all modes)
     if spec.get("mode") != "pvp_heist":
         return name, fails, warns
