@@ -1,3 +1,177 @@
+## [0.102.1] - 2026-08-25
+
+0.102.0's one regression, found by the gate it shipped with and fixed on the
+floats rather than on a theory. The corner change closed 988 of 988 open
+corners across the library and introduced exactly ONE new sub-5 cm gap --
+`strip_retail_a01 ext_1_N`, 0.050 m before `ext_1_N_open0`.
+
+### Fixed
+- `_wall_span` computes a span's remainder ONCE and uses that value for both
+  the absorb decision and the emit decision. It was computed twice, by two
+  algebraically identical expressions that are not identical in floating
+  point: `L - n * M` carries the error of `b - a`, `b - (a + n * M)` carries
+  the error of `a + n * M`. Instrumented and rebuilt, the offending span
+  reported
+
+      ext_1_N_seg6  a=-9.85 b=2.2 L=12.05 M=2.0 n=6
+                    L - n*M = 0.05000000000000071  -> too big to absorb
+                    b - x   = 0.04999999999999982  -> too small to emit
+                    hole    = 0.04999999999999982
+
+  with the control case two spans down the same run --
+
+      ext_1_N_seg9  a=3.8 b=9.85 L=6.05 n=3
+                    L - n*M = 0.04999999999999982  -> absorbed, no hole
+
+  -- ruling out coincidence. A threshold asked of two spellings of one number
+  has a blind window either side of it, and a piece that lands in the window
+  is neither absorbed nor emitted; it is silently gone. The threshold itself
+  is unchanged at 0.05 and `_seg_box` still refuses anything at or under it.
+  What changed is that both questions are now asked of the same float.
+
+### How it was found
+`tools/envelope_continuity.py` predicted `ENV_RUN_GAP 1` for the rebuilt
+library and the real rebuild read 2. The extra one was not written off: a
+temporary probe (`patch_dc_span_probe.py`, applied and reverted byte-for-byte)
+printed `repr()` of every near-threshold span, which is precisely the
+precision the manifest's 4-decimal rounding was hiding. The first hypothesis
+about this defect was REFUTED before it was confirmed -- reconstructed from
+the manifest it looked as though both expressions agreed, because the span was
+assumed to start after the previous module (a=0.15) when it actually starts at
+the run's inset edge (a=-9.85) and covers six modules. The reconstruction was
+wrong; the mechanism was right. Only the builder knew its own inputs.
+
+### Predicted
+`ENV_RUN_GAP` 2 -> 1 on a rebuilt library, the remaining one being the
+pre-existing `auto_shop_a02` gap whose whole span is under the threshold and
+so has no module to absorb into. `ENV_CORNER_OPEN` stays 0.
+
+## [0.102.0] - 2026-08-24
+
+Roadmap 58: the exterior envelope closes at its corners. Every run used to
+end ON the perpendicular wall's centreline -- `_exterior` builds an N/S run
+`footprint_x` long centred at zero, and the E/W walls sit at `+/- hx` -- so
+the outer quadrant of every corner belonged to nobody: a re-entrant notch
+`wall_thick/2` a side, full storey height, open on two faces and open to the
+sky. MEASURED before anything moved, over every slot manifest in `build/`
+with `tools/envelope_continuity.py` (new, factory root): **988 open corners
+across 124 buildings, zero clean**, and the notch tracks the wall thickness
+and nothing else -- 0.150 m on the 0.30 walls (812), 0.175 on the 0.35 (152),
+0.125 on the 0.25 (24). Half the thickness at three thicknesses is a rule,
+not a tolerance. The first candidate mechanism ("nobody owns the turn") is
+confirmed; a themed module narrower than its slot and seg-boundary rounding
+are both refuted -- runs are contiguous to 1e-6 and land on exact integers,
+and rounding does not produce one value 988 times.
+
+### Changed
+- `_emit_wall_run` grows `inset` and `corners`, both defaulted OFF. It has
+  two callers and only `_exterior` asks for either, so interior partitions
+  are untouched by construction rather than by hope. `inset` pulls the SOLID
+  spans back to the perpendicular wall's inner face; openings do NOT move
+  with it, because they are placed in `_exterior` as a fraction of the full
+  run and arrive already positioned. That is the whole reason the inset sits
+  at this seam -- shortening the run itself would slide every door inward and
+  change every building's gameplay anchors. Measured first: 0 of 1088
+  exterior openings come within a half-thickness of their run's end, so no
+  aperture lands in the pulled-back zone.
+- `corners` seats one post at each end of the run, centred on the run's own
+  end coordinate so it spans the perpendicular wall's full thickness. N/S
+  owns the corner (`corners=(axis == 0)`): two runs meeting there must not
+  both fill it, and one axis owning it makes the winner deterministic rather
+  than arbitrary.
+- `_wall_span` ABSORBS a trailing remainder at or under the 0.05 m sliver
+  threshold into the last module instead of dropping it. Dropping a sliver
+  does not tidy a run, it opens a hole in one -- and insetting shifts every
+  tile boundary, so remainders that used to clear the threshold stop clearing
+  it. Predicted over the library, the corner change alone takes run gaps from
+  1 to 15 (twelve of 0.050 m, three of 0.025, every one beside an opening or
+  a run end); with the remainder absorbed it stays at 1. This is the only
+  part of the change that also reaches interior partitions, and it strictly
+  closes gaps rather than opening them. The absorbed module is emitted
+  `size_mod="end"` so it stays a scaled `wallEnd` unit box and mints no new
+  stem in any kit.
+
+### Costs nothing in the kit
+The post is `size_mod="end"`, so `_slot_typename` returns `wallEnd` -- the one
+species Deli Counter scales, a unit box sized per slot. Zoo's
+`exact = typ != "wallEnd"` gives it unit treatment with no change in that
+repo, no new stem, and no new `.glb` in any kit: one more instance of geometry
+every kit already carries. Priced against the alternative, an exact-fit corner
+would be 18 modules per theme per style (18 distinct thickness x storey-height
+pairs in the library) against one.
+
+Zoo HAS an authored corner -- `wallCorner`, recipe plus genome, dated
+2026-07-14, never once requested (roadmap item 64). It is deliberately not
+used here: an L cannot ride the unit-box scale, because scaling a leg scales
+its thickness with it, so it is structurally exact-fit. Promoting these slots
+to it later is one function in each repo, when there is art to justify the
+18x.
+
+### Predicted, not built
+Verified by modelling the patched emitter against all 124 readable manifests
+and re-running the gate: `ENV_CORNER_OPEN` 988 -> 0, `ENV_RUN_GAP` 1 -> 1
+(the remaining one is the pre-existing `auto_shop_a02` gap, whose whole span
+is under the threshold and so has no module to absorb into),
+`ENV_PLACEMENT_DRIFT` 0. NOT run through Blender: `deli_counter.py` imports
+`bpy`, so the suite and a real rebuild are still owed. The acceptance test is
+that gate reading 0 on a rebuilt library.
+
+THE FUNCTIONAL LOCK WILL FIRE. Collision moves on every building, which is
+exactly what `functional_shell_locked` protects. Re-approval is correct here,
+not a workaround.
+
+## [0.101.2] - 2026-08-24
+
+L18 graduates WARN -> FAIL, on two measurements rather than a mood. The
+authored library lints clean (0.101.1's surgery, 129 specs at zero L18),
+and the new built-output probe (`tools/door_split_probe.py`, the
+running-tree instrument in the factory root) read ZERO walls inside 45
+jamb-pair-derived apertures on the composed lot_demo_001 -- the sighting
+that opened roadmap 59 was fixed en route by the week's rebuilds. Its
+four findings were all `AreaPanel_Surface` sign quads hanging in exterior
+doorway spans: item 55's blank cards, three of four still carrying
+engine-generated names, not walls. From here a spec that splits a doorway
+fails its build instead of waiting for a walker with a screenshot.
+
+### Changed
+- `layout_lint.py`: `door_split_findings` reports into FAILS;
+  `test_door_split.py` pins the graduation the same way it pinned the
+  WARN. Generator avoidance stays the right authoring-side fix when the
+  gate fires -- the FAIL is the backstop, not the fix.
+
+## [0.101.1] - 2026-08-24
+
+Roadmap 59's library surgery: the 33 L18 findings the new lint measured
+across 28 specs, fixed at the source. Every fix slides the OPENING clear
+of the partition end (never shortens the partition -- that opens a gap
+between rooms); the default is KEEP-SIDE minimal motion, so the aperture
+stays in the room it already mostly served, with three recorded classes
+of exception: (1) crossings where keep-side was nonsense for the opening
+(07_police_station and pvp_station_ref's `garage_bay` opened into the
+LOBBY; it belongs to the garage), (2) five dead-center collisions
+direction-picked from room roles (a breach lands in teller circulation,
+not inside the fortifiable security office; a dock belongs to brew_back,
+not the taproom; self_storage's breach keeps cutting into `vault_unit`,
+because cutting into the objective is what a breach is for), and (3) a
+bounds veto that flips across the partition when keep-side would run past
+the wall corner (none fired). The parking family's `vehicle_in` was
+adjudicated a DEFECT, not a lane divider: the wall it hit separates the
+attendant booth -- the OBJECTIVE room -- from the deck, so the 5 m bay
+half-opened into the money booth. Verification per spec: full lint before
+and after, zero L18 remaining, and not one non-L18 finding gained or
+lost anywhere.
+
+### Fixed
+- 28 specs re-authored: gas family x5 (`front_entry_east` 5.12 -> 4.75),
+  deli family (`loading_bay` -9.5 -> -9.95 x4, `alley_entry` 5.04 ->
+  4.95 x4), parking family (`vehicle_in` -> deck-side clear x4 incl.
+  cr_garage), and singles (07_police_station, bank_branch_a04,
+  brewery_a03, construction_site_a03, credit_union_a03, final_stand x2,
+  freight_terminal_a01 x2, mansion_a02, marina_a03, pawn_shop_a02,
+  pvp_station_ref, self_storage_a01/_a02, supermarket_a01). Geometry
+  corrections -- the PATCH bump condition; every rebuilt .glb with one of
+  these openings differs.
+
 ## [0.101.0] - 2026-08-24
 
 Roadmap 59 opens its lint. Sighted 2026-08-23 walking lot_demo_001: one

@@ -20,7 +20,13 @@ KIT_NAME = "Deli Counter"
 # stamp had drifted from the repo VERSION file (it sat at 0.80.0 while the
 # file reached 0.95.0), which defeats "traceable to the exact kit that
 # produced it"; re-coupled to the release number here.
-KIT_VERSION = "0.101.0"
+# 0.102.0: exterior runs inset by half a wall thickness and a `wallEnd` post
+# seats each corner (roadmap 58) -- collision and visuals both move, so a
+# rebuilt .glb differs, which is the bump condition stated above.
+# 0.102.1: a span's remainder is computed once, not twice by two routes that
+# can straddle the sliver threshold -- geometry correction, so a rebuilt .glb
+# differs on the affected spans.
+KIT_VERSION = "0.102.1"
 
 # Schema version is separate: bump when level.schema.json changes shape.
 SCHEMA_VERSION = "1.21.1"

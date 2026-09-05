@@ -760,15 +760,48 @@ class _Builder:
                           material=material, size_mod="span")
             return k + 1
         n = int((L + 1e-6) // M)         # whole modules
+        # ONE computation of the remainder, used by BOTH decisions below.
+        # `L - n * M` is algebraically the same number and is not the same
+        # float: it carries the error of `b - a`, while this carries the error
+        # of `a + n * M`, and the two can straddle the 0.05 threshold. Measured
+        # on `strip_retail_a01 ext_1_N` (a=-9.85, b=2.2, n=6): `L - n * M` is
+        # 0.05000000000000071 -- too big to absorb -- while `b - x` is
+        # 0.04999999999999982 -- too small to emit. Neither branch fired and
+        # the 5 cm became a hole beside a window. A threshold asked of two
+        # spellings of one number has a blind window either side of it.
+        rem = b - (a + n * M)
+        # A remainder at or under the sliver threshold used to be dropped on
+        # the floor, which does not tidy the run -- it opens a hole in it. The
+        # threshold exists to keep degenerate meshes out, and the way to do
+        # that without a hole is to let the LAST module eat the remainder.
+        #
+        # MEASURED, and this is why it ships beside the corner posts rather
+        # than on its own: insetting a run by half a thickness shifts every
+        # tile boundary, so remainders that used to clear 0.05 m stop clearing
+        # it. Predicted across the shipped library, the corner change ALONE
+        # takes `ENV_RUN_GAP` from 1 to 15 -- twelve new 0.050 m gaps and three
+        # of 0.025 -- every one of them beside an opening or a run end, which
+        # is the worst place for a 5 cm crack. With the remainder absorbed it
+        # stays at 1, and that one is the pre-existing `auto_shop_a02` gap,
+        # whose whole span is under the threshold and so has no module to
+        # absorb into.
+        #
+        # The absorbed module is emitted `size_mod="end"` on purpose: a
+        # `wallEnd` is the unit box Deli Counter scales, so an odd width costs
+        # no new stem in the kit. Left as "full" it would mint a
+        # `wall_<theme>_<style>_w205`-shaped module per absorbed run.
+        absorb = n > 0 and 1e-9 < rem <= 0.05
         x = a
-        for _ in range(n):
+        for i in range(n):
+            last = absorb and i == n - 1
+            w = M + rem if last else M
             self._seg_box(f"{vbase}_seg{k}", f"{cbase}_seg{k}", center, size,
-                          axis, x + M / 2.0, M, cz, H, role="wall",
-                          material=material, size_mod="full")
-            x += M
+                          axis, x + w / 2.0, w, cz, H, role="wall",
+                          material=material,
+                          size_mod="end" if last else "full")
+            x += w
             k += 1
-        rem = b - x
-        if rem > 0.05:                   # end remainder (a 'wallEnd' partial)
+        if not absorb and rem > 0.05:    # end remainder (a 'wallEnd' partial)
             self._seg_box(f"{vbase}_seg{k}", f"{cbase}_seg{k}", center, size,
                           axis, x + rem / 2.0, rem, cz, H, role="wall",
                           material=material, size_mod="end")
@@ -857,13 +890,34 @@ class _Builder:
                           record_slot=False)
         # door / garage: aperture left void (walkable) -> nothing in the span
 
-    def _emit_wall_run(self, vbase, cbase, center, size, axis, holes, material):
+    def _emit_wall_run(self, vbase, cbase, center, size, axis, holes, material,
+                       inset=0.0, corners=False):
         """Walk the run left->right: solid spans become wall segment(s),
         each opening becomes its own piece. Every emitted object is a named
-        visual+collision pair = an art-pass swap slot."""
+        visual+collision pair = an art-pass swap slot.
+
+        `inset` pulls the SOLID spans back from each end of the run. Openings
+        do NOT move with it: they are positioned in `_exterior` as a fraction
+        of the full run and arrive here already placed. That is why the inset
+        lives at this seam rather than in the run length -- shortening the run
+        would slide every door inward and change every building's gameplay
+        anchors. Measured before it was relied on: 0 of 1088 exterior openings
+        in the shipped library reach within a half-thickness of their run's
+        end, so no aperture lands in the pulled-back zone.
+
+        `corners` seats one post at each END of the run, centred on the run's
+        own end coordinate so it spans the perpendicular wall's full
+        thickness. Two runs meeting at a corner must not both fill it, so ONE
+        axis owns it -- `_exterior` gives it to N/S, which makes the winner
+        deterministic rather than arbitrary. Roadmap item 58.
+
+        Both default OFF. The interior-partition pass calls this too and asks
+        for neither, so partitions are untouched by construction.
+        """
         full = size[0] if axis == 0 else size[1]
+        thick = size[1] if axis == 0 else size[0]
         carve = sorted(holes, key=lambda hh: hh["u"])
-        cursor = -full / 2.0
+        cursor = -full / 2.0 + inset
         k = 0
         for j, h in enumerate(carve):
             left = h["u"] - h["w"] / 2.0
@@ -871,8 +925,21 @@ class _Builder:
                                 cursor, left, k, material)
             self._opening_piece(vbase, cbase, center, size, axis, h, j, material)
             cursor = max(cursor, h["u"] + h["w"] / 2.0)
-        self._wall_span(vbase, cbase, center, size, axis,
-                        cursor, full / 2.0, k, material)
+        k = self._wall_span(vbase, cbase, center, size, axis,
+                            cursor, full / 2.0 - inset, k, material)
+        if corners:
+            # `size_mod="end"` makes `_slot_typename` return `wallEnd`, the one
+            # species Deli Counter scales -- a unit box sized per slot. So the
+            # post adds no module to any kit, only another instance of geometry
+            # every kit already carries. The `_seg{k}` name keeps
+            # `_record_wall_slot`'s `vname.rsplit("_seg", 1)[0]` returning this
+            # run's wall, so the post groups with the run that owns it.
+            for cu in (-full / 2.0, full / 2.0):
+                self._seg_box(f"{vbase}_seg{k}", f"{cbase}_seg{k}",
+                              center, size, axis, cu, thick,
+                              center[2], size[2], role="wall",
+                              material=material, size_mod="end")
+                k += 1
 
     # -- top-level build steps ---------------------------------------------
     def _vertex_nuance(self,
@@ -1223,7 +1290,14 @@ class _Builder:
                 col_name = f"ext_col_{s}_{wname}"
                 mat = spec_w.material if spec_w else None
                 if self._modular_on():
-                    self._emit_wall_run(name, col_name, c, size, axis, holes, mat)
+                    # Roadmap 58: the run stops at the perpendicular wall's
+                    # INNER face and a post seats the corner, instead of the
+                    # run ending on that wall's centreline and leaving the
+                    # outer quadrant to nobody. N/S owns the corner so the two
+                    # runs meeting there cannot both fill it.
+                    self._emit_wall_run(name, col_name, c, size, axis, holes,
+                                        mat, inset=wt / 2.0,
+                                        corners=(axis == 0))
                 else:
                     self._box_with_holes(name, c, size, holes, self.VISUAL)
                     if holes:
