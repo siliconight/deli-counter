@@ -78,6 +78,10 @@ def main():
     ap.add_argument("--archetype", default=None,
                     help="stair_place archetype for --stairs-first "
                          "(default: the preset's registered archetype)")
+    ap.add_argument("--seed", type=int, default=None,
+                    help="override the recipe's authored seed; varies stair "
+                         "extras and seeded cover, so the same preset yields a "
+                         "different building (see stair_regression.py)")
     ap.add_argument("--list", action="store_true", help="list available presets and exit")
     ap.add_argument("--force", action="store_true", help="overwrite if the spec exists")
     args = ap.parse_args()
@@ -109,6 +113,9 @@ def main():
         kwargs["stairs_first"] = True
         if args.archetype:
             kwargs["archetype"] = args.archetype
+
+    if args.seed is not None:
+        kwargs["seed"] = args.seed
 
     try:
         spec = presets.make(args.preset, **kwargs)

@@ -2409,7 +2409,8 @@ def _finish_ladders(spec: dict) -> None:
 
 
 def make(preset: str, enrich: bool = True, stairs_first: bool = False,
-         archetype: Optional[str] = None, **kwargs) -> dict:
+         archetype: Optional[str] = None, seed: Optional[int] = None,
+         **kwargs) -> dict:
     """Build a preset spec. By default the finished spec is run through
     level_design.enrich() so every building comes out with readable cover
     cadence and callout landmarks (better by construction), and every stair
@@ -2424,11 +2425,23 @@ def make(preset: str, enrich: bool = True, stairs_first: bool = False,
     adapt around the reservation -- walls trim at the shaft, enclosures gain
     doors onto the landings, overlapped rooms split around a dedicated
     stairwell, and props inside the reservation are evicted. `archetype`
-    overrides the preset's default stair_place profile."""
+    overrides the preset's default stair_place profile.
+
+    `seed` overrides the recipe's authored seed. Every recipe pins one -- a
+    year, part of the preset's identity -- so two callers asking for the same
+    preset get the same building unless one of them says otherwise. It is
+    injected HERE, between the recipe and the seed-consuming passes, because
+    that is the only place it can be: _finish_stairs rolls the probabilistic
+    extras on spec.seed and enrich seeds cover on it per room, so a seed
+    written into the finished spec changes the number the builder reports and
+    nothing about the geometry. stair_regression.generate() injects at exactly
+    this point and proves the result across 100 seeds per preset."""
     if preset not in REGISTRY:
         raise KeyError(f"unknown preset '{preset}'. "
                        f"available: {', '.join(sorted(REGISTRY))}")
     spec = REGISTRY[preset](**kwargs)
+    if seed is not None:
+        spec["seed"] = int(seed)
     # orientation FIRST: the stair's facing (and therefore its landing
     # reservation) must be settled before enrich seeds cover around it --
     # otherwise cover placed against the default-north reservation can land

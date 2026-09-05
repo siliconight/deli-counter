@@ -1,3 +1,45 @@
+## [0.103.0] - 2026-09-04
+
+`new_level.py` grows `--seed`. Every recipe pins its own seed as a literal --
+casino_tower 1989, bank 1999, fifteen of them, years -- and nothing could
+override it, so two callers asking for the same preset got the same building
+forever. Level Factory was one of those callers: five candidates of a mission
+produced five byte-identical shells (roadmap item 69).
+
+### Added
+- `new_level.py --seed N` and `presets.make(seed=N)`. The seed is injected
+  between the recipe and the seed-consuming passes, which is the only place it
+  works: `_finish_stairs` rolls the probabilistic extras on `spec.seed` and
+  `level_design.enrich` seeds each room's cover on
+  `f"{seed}:{room_id}:seed_cover"`, so a seed written into a finished spec
+  changes the number the builder prints and nothing about the geometry.
+  `stair_regression.generate()` has injected at this exact point since it was
+  written; this exposes the same lever on the CLI.
+
+### Measured, and it is narrower than the flag sounds
+Seven presets, two seeds each, level name held constant so ids do not move:
+
+    preset            stairs   ladders   volumes   markers
+    casino_tower         0/1       0/1      8/14      8/23
+    bank                 0/2       0/0      8/11      8/14
+    warehouse            0/0       0/0      7/13      7/17
+    hospital             0/2       0/0      8/18      8/22
+    pawn_shop            0/1       0/2       2/6       4/9
+    office               0/1       0/2      0/10      0/12
+    parking_garage       0/1       0/0      0/25      0/12
+
+The seed moves seeded cover and the markers derived from it. It moves NO
+stairs and NO ladders on any preset tested, and on `office` and
+`parking_garage` it moves nothing at all -- `seed_cover` skips rooms with no
+`combat_range` and rooms that already carry authored cover. A first reading of
+the raw diff said stairs varied; that was the id string carrying the level
+name, which the instrument itself had varied. Shell, rooms and partitions are
+byte-identical across seeds.
+
+So this closes "every candidate is the same file" and does not close "every
+candidate is the same building". Building variety needs a different lever --
+the preset, not the seed.
+
 ## [0.102.1] - 2026-08-25
 
 0.102.0's one regression, found by the gate it shipped with and fixed on the
