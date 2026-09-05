@@ -238,7 +238,7 @@
       "kind": "garage",
       "story": 0,
       "x": -19.0,
-      "y": 0.0,
+      "y": -0.85,
       "z": 1.5,
       "width": 3.0,
       "height": 3.0,
@@ -613,6 +613,24 @@
       }
     },
     {
+      "node": "ext_col_0_N_seg19",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_N_seg20",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
       "node": "ext_col_0_S_seg0",
       "material": {
         "id": "metal",
@@ -803,6 +821,24 @@
     },
     {
       "node": "ext_col_0_S_seg18",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_S_seg19",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_S_seg20",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -1036,6 +1072,15 @@
       }
     },
     {
+      "node": "ext_col_0_W_seg12",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
       "node": "ext_col_1_N_seg0",
       "material": {
         "id": "metal",
@@ -1199,6 +1244,24 @@
     },
     {
       "node": "ext_col_1_N_seg18",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_1_N_seg19",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_1_N_seg20",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -1406,6 +1469,24 @@
     },
     {
       "node": "ext_col_1_S_seg18",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_1_S_seg19",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_1_S_seg20",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -2172,13 +2253,13 @@
       "building": "self_storage_a02"
     },
     {
-      "id": "self_storage_a02:if:9016029f",
+      "id": "self_storage_a02:if:a3e81c34",
       "kind": "door",
       "slot_ref": "ext_0_W_open0",
       "transform": {
         "translation": [
           -19.0,
-          0.0,
+          -0.85,
           1.5
         ],
         "rot_y": 270
@@ -2545,8 +2626,8 @@
           "floor": 0,
           "kind": "garage",
           "wall": "ext_0_W",
-          "pos": 0.0,
-          "interactive": "self_storage_a02:if:9016029f",
+          "pos": -0.032692,
+          "interactive": "self_storage_a02:if:a3e81c34",
           "default_state": "closed",
           "connects_from": "exterior",
           "discharge_door": true
@@ -2779,6 +2860,8 @@
     "ext_0_N_seg16": "wall",
     "ext_0_N_seg17": "wall",
     "ext_0_N_seg18": "wall",
+    "ext_0_N_seg19": "wall",
+    "ext_0_N_seg20": "wall",
     "ext_0_S_seg0": "wall",
     "ext_0_S_seg1": "wall",
     "ext_0_S_seg2": "wall",
@@ -2801,6 +2884,8 @@
     "ext_0_S_seg16": "wall",
     "ext_0_S_seg17": "wall",
     "ext_0_S_seg18": "wall",
+    "ext_0_S_seg19": "wall",
+    "ext_0_S_seg20": "wall",
     "ext_0_E_seg0": "wall",
     "ext_0_E_seg1": "wall",
     "ext_0_E_seg2": "wall",
@@ -2826,6 +2911,7 @@
     "ext_0_W_seg9": "wall",
     "ext_0_W_seg10": "wall",
     "ext_0_W_seg11": "wall",
+    "ext_0_W_seg12": "wall",
     "ext_1_N_seg0": "wall",
     "ext_1_N_seg1": "wall",
     "ext_1_N_seg2": "wall",
@@ -2845,6 +2931,8 @@
     "ext_1_N_seg16": "wall",
     "ext_1_N_seg17": "wall",
     "ext_1_N_seg18": "wall",
+    "ext_1_N_seg19": "wall",
+    "ext_1_N_seg20": "wall",
     "ext_1_S_seg0": "wall",
     "ext_1_S_seg1": "wall",
     "ext_1_S_seg2": "wall",
@@ -2868,6 +2956,8 @@
     "ext_1_S_seg16": "wall",
     "ext_1_S_seg17": "wall",
     "ext_1_S_seg18": "wall",
+    "ext_1_S_seg19": "wall",
+    "ext_1_S_seg20": "wall",
     "ext_1_E_seg0": "wall",
     "ext_1_E_seg1": "wall",
     "ext_1_E_seg2": "wall",

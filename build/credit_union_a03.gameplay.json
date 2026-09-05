@@ -219,7 +219,7 @@
       "kind": "garage",
       "story": 0,
       "x": 13.0,
-      "y": 0.0,
+      "y": -0.85,
       "z": 1.5,
       "width": 3.0,
       "height": 3.0,
@@ -471,6 +471,24 @@
       }
     },
     {
+      "node": "ext_col_-1_N_seg13",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "ext_col_-1_N_seg14",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
       "node": "ext_col_-1_S_seg0",
       "material": {
         "id": "concrete",
@@ -580,6 +598,24 @@
     },
     {
       "node": "ext_col_-1_S_seg12",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "ext_col_-1_S_seg13",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "ext_col_-1_S_seg14",
       "material": {
         "id": "concrete",
         "acoustic": "Concrete",
@@ -885,6 +921,24 @@
       }
     },
     {
+      "node": "ext_col_0_N_seg13",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "ext_col_0_N_seg14",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
       "node": "ext_col_0_S_seg0",
       "material": {
         "id": "concrete",
@@ -1029,6 +1083,24 @@
       }
     },
     {
+      "node": "ext_col_0_S_seg12",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "ext_col_0_S_seg13",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
       "node": "ext_col_0_E_seg0",
       "material": {
         "id": "concrete",
@@ -1093,6 +1165,15 @@
     },
     {
       "node": "ext_col_0_E_seg7",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "ext_col_0_E_seg8",
       "material": {
         "id": "concrete",
         "acoustic": "Concrete",
@@ -1508,13 +1589,13 @@
       "building": "credit_union_a03"
     },
     {
-      "id": "credit_union_a03:if:2c728a06",
+      "id": "credit_union_a03:if:5acbac3e",
       "kind": "door",
       "slot_ref": "ext_0_E_open0",
       "transform": {
         "translation": [
           13.0,
-          0.0,
+          -0.85,
           1.5
         ],
         "rot_y": 90
@@ -1868,8 +1949,8 @@
           "floor": 0,
           "kind": "garage",
           "wall": "ext_0_E",
-          "pos": 0.0,
-          "interactive": "credit_union_a03:if:2c728a06",
+          "pos": -0.047222,
+          "interactive": "credit_union_a03:if:5acbac3e",
           "default_state": "closed",
           "connects_from": "exterior",
           "discharge_door": true
@@ -2196,6 +2277,8 @@
     "ext_-1_N_seg10": "wall",
     "ext_-1_N_seg11": "wall",
     "ext_-1_N_seg12": "wall",
+    "ext_-1_N_seg13": "wall",
+    "ext_-1_N_seg14": "wall",
     "ext_-1_S_seg0": "wall",
     "ext_-1_S_seg1": "wall",
     "ext_-1_S_seg2": "wall",
@@ -2209,6 +2292,8 @@
     "ext_-1_S_seg10": "wall",
     "ext_-1_S_seg11": "wall",
     "ext_-1_S_seg12": "wall",
+    "ext_-1_S_seg13": "wall",
+    "ext_-1_S_seg14": "wall",
     "ext_-1_E_seg0": "wall",
     "ext_-1_E_seg1": "wall",
     "ext_-1_E_seg2": "wall",
@@ -2242,6 +2327,8 @@
     "ext_0_N_seg10": "wall",
     "ext_0_N_seg11": "wall",
     "ext_0_N_seg12": "wall",
+    "ext_0_N_seg13": "wall",
+    "ext_0_N_seg14": "wall",
     "ext_0_S_seg0": "wall",
     "ext_0_S_seg1": "wall",
     "ext_0_S_seg2": "wall",
@@ -2258,6 +2345,8 @@
     "ext_0_S_seg9": "wall",
     "ext_0_S_seg10": "wall",
     "ext_0_S_seg11": "wall",
+    "ext_0_S_seg12": "wall",
+    "ext_0_S_seg13": "wall",
     "ext_0_E_seg0": "wall",
     "ext_0_E_seg1": "wall",
     "ext_0_E_seg2": "wall",
@@ -2266,6 +2355,7 @@
     "ext_0_E_seg5": "wall",
     "ext_0_E_seg6": "wall",
     "ext_0_E_seg7": "wall",
+    "ext_0_E_seg8": "wall",
     "ext_0_W_seg0": "wall",
     "ext_0_W_seg1": "wall",
     "ext_0_W_seg2": "wall",

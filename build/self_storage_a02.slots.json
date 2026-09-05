@@ -8,7 +8,7 @@
   "coverage": {
     "breach/generated": 2,
     "doorway/generated": 7,
-    "wall/generated": 171,
+    "wall/generated": 180,
     "window/generated": 3
   },
   "slots": [
@@ -25,7 +25,7 @@
       "facing": "N",
       "transform": {
         "translation": [
-          -18.0,
+          -17.85,
           13.0,
           1.45
         ],
@@ -60,7 +60,7 @@
       "facing": "N",
       "transform": {
         "translation": [
-          -16.0,
+          -15.85,
           13.0,
           1.45
         ],
@@ -95,7 +95,7 @@
       "facing": "N",
       "transform": {
         "translation": [
-          -14.0,
+          -13.85,
           13.0,
           1.45
         ],
@@ -130,7 +130,7 @@
       "facing": "N",
       "transform": {
         "translation": [
-          -12.0,
+          -11.85,
           13.0,
           1.45
         ],
@@ -165,7 +165,7 @@
       "facing": "N",
       "transform": {
         "translation": [
-          -10.0,
+          -9.85,
           13.0,
           1.45
         ],
@@ -200,7 +200,7 @@
       "facing": "N",
       "transform": {
         "translation": [
-          -8.0,
+          -7.85,
           13.0,
           1.45
         ],
@@ -235,7 +235,7 @@
       "facing": "N",
       "transform": {
         "translation": [
-          -6.0,
+          -5.85,
           13.0,
           1.45
         ],
@@ -270,7 +270,7 @@
       "facing": "N",
       "transform": {
         "translation": [
-          -4.0,
+          -3.85,
           13.0,
           1.45
         ],
@@ -305,7 +305,7 @@
       "facing": "N",
       "transform": {
         "translation": [
-          -2.0,
+          -1.85,
           13.0,
           1.45
         ],
@@ -340,7 +340,7 @@
       "facing": "N",
       "transform": {
         "translation": [
-          0.0,
+          0.15,
           13.0,
           1.45
         ],
@@ -375,7 +375,7 @@
       "facing": "N",
       "transform": {
         "translation": [
-          2.0,
+          2.15,
           13.0,
           1.45
         ],
@@ -410,7 +410,7 @@
       "facing": "N",
       "transform": {
         "translation": [
-          4.0,
+          4.15,
           13.0,
           1.45
         ],
@@ -445,7 +445,7 @@
       "facing": "N",
       "transform": {
         "translation": [
-          6.0,
+          6.15,
           13.0,
           1.45
         ],
@@ -480,20 +480,20 @@
       "facing": "N",
       "transform": {
         "translation": [
-          7.9,
+          7.975,
           13.0,
           1.45
         ],
         "rot_y": 0,
         "scale": [
-          1.8,
+          1.65,
           0.3,
           2.9
         ]
       },
       "fit": {
         "dims": [
-          1.8,
+          1.65,
           0.3,
           2.9
         ],
@@ -714,20 +714,90 @@
       "facing": "N",
       "transform": {
         "translation": [
-          18.6,
+          18.525,
           13.0,
           1.45
         ],
         "rot_y": 0,
         "scale": [
-          0.8,
+          0.65,
           0.3,
           2.9
         ]
       },
       "fit": {
         "dims": [
-          0.8,
+          0.65,
+          0.3,
+          2.9
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_N_seg19",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 4,
+      "material": "metal",
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_N",
+      "story": 0,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          -19.0,
+          13.0,
+          1.45
+        ],
+        "rot_y": 0,
+        "scale": [
+          0.3,
+          0.3,
+          2.9
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          0.3,
+          2.9
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_N_seg20",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 4,
+      "material": "metal",
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_N",
+      "story": 0,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          19.0,
+          13.0,
+          1.45
+        ],
+        "rot_y": 0,
+        "scale": [
+          0.3,
+          0.3,
+          2.9
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
           0.3,
           2.9
         ],
@@ -749,7 +819,7 @@
       "facing": "S",
       "transform": {
         "translation": [
-          -18.0,
+          -17.85,
           -13.0,
           1.45
         ],
@@ -784,7 +854,7 @@
       "facing": "S",
       "transform": {
         "translation": [
-          -16.0,
+          -15.85,
           -13.0,
           1.45
         ],
@@ -819,20 +889,20 @@
       "facing": "S",
       "transform": {
         "translation": [
-          -14.65,
+          -14.575,
           -13.0,
           1.45
         ],
         "rot_y": 180,
         "scale": [
-          0.7,
+          0.55,
           0.3,
           2.9
         ]
       },
       "fit": {
         "dims": [
-          0.7,
+          0.55,
           0.3,
           2.9
         ],
@@ -1476,20 +1546,90 @@
       "facing": "S",
       "transform": {
         "translation": [
-          18.9,
+          18.825,
           -13.0,
           1.45
         ],
         "rot_y": 180,
         "scale": [
-          0.2,
+          0.05,
           0.3,
           2.9
         ]
       },
       "fit": {
         "dims": [
-          0.2,
+          0.05,
+          0.3,
+          2.9
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_S_seg19",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 4,
+      "material": "metal",
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_S",
+      "story": 0,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          -19.0,
+          -13.0,
+          1.45
+        ],
+        "rot_y": 180,
+        "scale": [
+          0.3,
+          0.3,
+          2.9
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          0.3,
+          2.9
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_S_seg20",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 4,
+      "material": "metal",
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_S",
+      "story": 0,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          19.0,
+          -13.0,
+          1.45
+        ],
+        "rot_y": 180,
+        "scale": [
+          0.3,
+          0.3,
+          2.9
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
           0.3,
           2.9
         ],
@@ -1512,7 +1652,7 @@
       "transform": {
         "translation": [
           19.0,
-          -12.0,
+          -11.85,
           1.45
         ],
         "rot_y": 90,
@@ -1547,7 +1687,7 @@
       "transform": {
         "translation": [
           19.0,
-          -10.0,
+          -9.85,
           1.45
         ],
         "rot_y": 90,
@@ -1582,7 +1722,7 @@
       "transform": {
         "translation": [
           19.0,
-          -8.0,
+          -7.85,
           1.45
         ],
         "rot_y": 90,
@@ -1617,7 +1757,7 @@
       "transform": {
         "translation": [
           19.0,
-          -6.0,
+          -5.85,
           1.45
         ],
         "rot_y": 90,
@@ -1652,7 +1792,7 @@
       "transform": {
         "translation": [
           19.0,
-          -4.0,
+          -3.85,
           1.45
         ],
         "rot_y": 90,
@@ -1687,7 +1827,7 @@
       "transform": {
         "translation": [
           19.0,
-          -2.0,
+          -1.85,
           1.45
         ],
         "rot_y": 90,
@@ -1722,7 +1862,7 @@
       "transform": {
         "translation": [
           19.0,
-          0.0,
+          0.15,
           1.45
         ],
         "rot_y": 90,
@@ -1757,7 +1897,7 @@
       "transform": {
         "translation": [
           19.0,
-          2.0,
+          2.15,
           1.45
         ],
         "rot_y": 90,
@@ -1792,7 +1932,7 @@
       "transform": {
         "translation": [
           19.0,
-          4.0,
+          4.15,
           1.45
         ],
         "rot_y": 90,
@@ -1827,7 +1967,7 @@
       "transform": {
         "translation": [
           19.0,
-          6.0,
+          6.15,
           1.45
         ],
         "rot_y": 90,
@@ -1862,7 +2002,7 @@
       "transform": {
         "translation": [
           19.0,
-          8.0,
+          8.15,
           1.45
         ],
         "rot_y": 90,
@@ -1897,7 +2037,7 @@
       "transform": {
         "translation": [
           19.0,
-          10.0,
+          10.15,
           1.45
         ],
         "rot_y": 90,
@@ -1921,10 +2061,10 @@
     {
       "slot_id": "ext_0_E_seg12",
       "role": "wall",
-      "size_mod": "full",
+      "size_mod": "end",
       "style": 4,
       "material": "metal",
-      "current_ref": "wall_greybox_01",
+      "current_ref": "wallEnd_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_0_E",
       "story": 0,
@@ -1937,15 +2077,15 @@
         ],
         "rot_y": 90,
         "scale": [
-          1.0,
-          1.0,
-          1.0
+          0.3,
+          1.7,
+          2.9
         ]
       },
       "fit": {
         "dims": [
           0.3,
-          2.0,
+          1.7,
           2.9
         ],
         "pivot": "center",
@@ -1967,7 +2107,7 @@
       "transform": {
         "translation": [
           -19.0,
-          -12.0,
+          -11.85,
           1.45
         ],
         "rot_y": 270,
@@ -2002,7 +2142,7 @@
       "transform": {
         "translation": [
           -19.0,
-          -10.0,
+          -9.85,
           1.45
         ],
         "rot_y": 270,
@@ -2037,7 +2177,7 @@
       "transform": {
         "translation": [
           -19.0,
-          -8.0,
+          -7.85,
           1.45
         ],
         "rot_y": 270,
@@ -2072,7 +2212,7 @@
       "transform": {
         "translation": [
           -19.0,
-          -6.0,
+          -5.85,
           1.45
         ],
         "rot_y": 270,
@@ -2107,7 +2247,7 @@
       "transform": {
         "translation": [
           -19.0,
-          -4.0,
+          -3.85,
           1.45
         ],
         "rot_y": 270,
@@ -2142,20 +2282,20 @@
       "transform": {
         "translation": [
           -19.0,
-          -2.25,
+          -2.675,
           1.45
         ],
         "rot_y": 270,
         "scale": [
           0.3,
-          1.5,
+          0.35,
           2.9
         ]
       },
       "fit": {
         "dims": [
           0.3,
-          1.5,
+          0.35,
           2.9
         ],
         "pivot": "center",
@@ -2177,7 +2317,7 @@
       "transform": {
         "translation": [
           -19.0,
-          0.0,
+          -1.0,
           1.45
         ],
         "rot_y": 270,
@@ -2205,7 +2345,7 @@
         "collision": "convex"
       },
       "interactive": {
-        "id": "self_storage_a02:if:9016029f",
+        "id": "self_storage_a02:if:a3e81c34",
         "kind": "door",
         "states": [
           "closed",
@@ -2232,7 +2372,7 @@
       "transform": {
         "translation": [
           -19.0,
-          2.5,
+          1.5,
           1.45
         ],
         "rot_y": 270,
@@ -2267,7 +2407,7 @@
       "transform": {
         "translation": [
           -19.0,
-          4.5,
+          3.5,
           1.45
         ],
         "rot_y": 270,
@@ -2302,7 +2442,7 @@
       "transform": {
         "translation": [
           -19.0,
-          6.5,
+          5.5,
           1.45
         ],
         "rot_y": 270,
@@ -2337,7 +2477,7 @@
       "transform": {
         "translation": [
           -19.0,
-          8.5,
+          7.5,
           1.45
         ],
         "rot_y": 270,
@@ -2372,7 +2512,7 @@
       "transform": {
         "translation": [
           -19.0,
-          10.5,
+          9.5,
           1.45
         ],
         "rot_y": 270,
@@ -2396,6 +2536,41 @@
     {
       "slot_id": "ext_0_W_seg11",
       "role": "wall",
+      "size_mod": "full",
+      "style": 4,
+      "material": "metal",
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_0_W",
+      "story": 0,
+      "facing": "W",
+      "transform": {
+        "translation": [
+          -19.0,
+          11.5,
+          1.45
+        ],
+        "rot_y": 270,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          2.0,
+          2.9
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_0_W_seg12",
+      "role": "wall",
       "size_mod": "end",
       "style": 4,
       "material": "metal",
@@ -2407,20 +2582,20 @@
       "transform": {
         "translation": [
           -19.0,
-          12.25,
+          12.675,
           1.45
         ],
         "rot_y": 270,
         "scale": [
           0.3,
-          1.5,
+          0.35,
           2.9
         ]
       },
       "fit": {
         "dims": [
           0.3,
-          1.5,
+          0.35,
           2.9
         ],
         "pivot": "center",
@@ -2441,7 +2616,7 @@
       "facing": "N",
       "transform": {
         "translation": [
-          -18.0,
+          -17.85,
           13.0,
           4.65
         ],
@@ -2476,7 +2651,7 @@
       "facing": "N",
       "transform": {
         "translation": [
-          -16.0,
+          -15.85,
           13.0,
           4.65
         ],
@@ -2511,7 +2686,7 @@
       "facing": "N",
       "transform": {
         "translation": [
-          -14.0,
+          -13.85,
           13.0,
           4.65
         ],
@@ -2546,7 +2721,7 @@
       "facing": "N",
       "transform": {
         "translation": [
-          -12.0,
+          -11.85,
           13.0,
           4.65
         ],
@@ -2581,7 +2756,7 @@
       "facing": "N",
       "transform": {
         "translation": [
-          -10.0,
+          -9.85,
           13.0,
           4.65
         ],
@@ -2616,7 +2791,7 @@
       "facing": "N",
       "transform": {
         "translation": [
-          -8.0,
+          -7.85,
           13.0,
           4.65
         ],
@@ -2651,7 +2826,7 @@
       "facing": "N",
       "transform": {
         "translation": [
-          -6.0,
+          -5.85,
           13.0,
           4.65
         ],
@@ -2686,7 +2861,7 @@
       "facing": "N",
       "transform": {
         "translation": [
-          -4.0,
+          -3.85,
           13.0,
           4.65
         ],
@@ -2721,7 +2896,7 @@
       "facing": "N",
       "transform": {
         "translation": [
-          -2.0,
+          -1.85,
           13.0,
           4.65
         ],
@@ -2756,7 +2931,7 @@
       "facing": "N",
       "transform": {
         "translation": [
-          0.0,
+          0.15,
           13.0,
           4.65
         ],
@@ -2791,7 +2966,7 @@
       "facing": "N",
       "transform": {
         "translation": [
-          2.0,
+          2.15,
           13.0,
           4.65
         ],
@@ -2826,7 +3001,7 @@
       "facing": "N",
       "transform": {
         "translation": [
-          4.0,
+          4.15,
           13.0,
           4.65
         ],
@@ -2861,7 +3036,7 @@
       "facing": "N",
       "transform": {
         "translation": [
-          6.0,
+          6.15,
           13.0,
           4.65
         ],
@@ -2896,7 +3071,7 @@
       "facing": "N",
       "transform": {
         "translation": [
-          8.0,
+          8.15,
           13.0,
           4.65
         ],
@@ -2931,7 +3106,7 @@
       "facing": "N",
       "transform": {
         "translation": [
-          10.0,
+          10.15,
           13.0,
           4.65
         ],
@@ -2966,7 +3141,7 @@
       "facing": "N",
       "transform": {
         "translation": [
-          12.0,
+          12.15,
           13.0,
           4.65
         ],
@@ -3001,7 +3176,7 @@
       "facing": "N",
       "transform": {
         "translation": [
-          14.0,
+          14.15,
           13.0,
           4.65
         ],
@@ -3036,7 +3211,7 @@
       "facing": "N",
       "transform": {
         "translation": [
-          16.0,
+          16.15,
           13.0,
           4.65
         ],
@@ -3061,10 +3236,10 @@
     {
       "slot_id": "ext_1_N_seg18",
       "role": "wall",
-      "size_mod": "full",
+      "size_mod": "end",
       "style": 4,
       "material": "metal",
-      "current_ref": "wall_greybox_01",
+      "current_ref": "wallEnd_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_1_N",
       "story": 1,
@@ -3077,14 +3252,84 @@
         ],
         "rot_y": 0,
         "scale": [
-          1.0,
-          1.0,
-          1.0
+          1.7,
+          0.3,
+          2.9
         ]
       },
       "fit": {
         "dims": [
-          2.0,
+          1.7,
+          0.3,
+          2.9
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_1_N_seg19",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 4,
+      "material": "metal",
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_N",
+      "story": 1,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          -19.0,
+          13.0,
+          4.65
+        ],
+        "rot_y": 0,
+        "scale": [
+          0.3,
+          0.3,
+          2.9
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          0.3,
+          2.9
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_1_N_seg20",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 4,
+      "material": "metal",
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_N",
+      "story": 1,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          19.0,
+          13.0,
+          4.65
+        ],
+        "rot_y": 0,
+        "scale": [
+          0.3,
+          0.3,
+          2.9
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
           0.3,
           2.9
         ],
@@ -3106,7 +3351,7 @@
       "facing": "S",
       "transform": {
         "translation": [
-          -18.0,
+          -17.85,
           -13.0,
           4.65
         ],
@@ -3141,7 +3386,7 @@
       "facing": "S",
       "transform": {
         "translation": [
-          -16.0,
+          -15.85,
           -13.0,
           4.65
         ],
@@ -3176,7 +3421,7 @@
       "facing": "S",
       "transform": {
         "translation": [
-          -14.0,
+          -13.85,
           -13.0,
           4.65
         ],
@@ -3211,20 +3456,20 @@
       "facing": "S",
       "transform": {
         "translation": [
-          -12.65,
+          -12.575,
           -13.0,
           4.65
         ],
         "rot_y": 180,
         "scale": [
-          0.7,
+          0.55,
           0.3,
           2.9
         ]
       },
       "fit": {
         "dims": [
-          0.7,
+          0.55,
           0.3,
           2.9
         ],
@@ -3820,20 +4065,90 @@
       "facing": "S",
       "transform": {
         "translation": [
-          18.65,
+          18.575,
           -13.0,
           4.65
         ],
         "rot_y": 180,
         "scale": [
-          0.7,
+          0.55,
           0.3,
           2.9
         ]
       },
       "fit": {
         "dims": [
-          0.7,
+          0.55,
+          0.3,
+          2.9
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_1_S_seg19",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 4,
+      "material": "metal",
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_S",
+      "story": 1,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          -19.0,
+          -13.0,
+          4.65
+        ],
+        "rot_y": 180,
+        "scale": [
+          0.3,
+          0.3,
+          2.9
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
+          0.3,
+          2.9
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_1_S_seg20",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 4,
+      "material": "metal",
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_S",
+      "story": 1,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          19.0,
+          -13.0,
+          4.65
+        ],
+        "rot_y": 180,
+        "scale": [
+          0.3,
+          0.3,
+          2.9
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.3,
           0.3,
           2.9
         ],
@@ -3856,7 +4171,7 @@
       "transform": {
         "translation": [
           19.0,
-          -12.0,
+          -11.85,
           4.65
         ],
         "rot_y": 90,
@@ -3891,7 +4206,7 @@
       "transform": {
         "translation": [
           19.0,
-          -10.0,
+          -9.85,
           4.65
         ],
         "rot_y": 90,
@@ -3926,7 +4241,7 @@
       "transform": {
         "translation": [
           19.0,
-          -8.0,
+          -7.85,
           4.65
         ],
         "rot_y": 90,
@@ -3961,7 +4276,7 @@
       "transform": {
         "translation": [
           19.0,
-          -6.0,
+          -5.85,
           4.65
         ],
         "rot_y": 90,
@@ -3996,7 +4311,7 @@
       "transform": {
         "translation": [
           19.0,
-          -4.0,
+          -3.85,
           4.65
         ],
         "rot_y": 90,
@@ -4031,7 +4346,7 @@
       "transform": {
         "translation": [
           19.0,
-          -2.0,
+          -1.85,
           4.65
         ],
         "rot_y": 90,
@@ -4066,7 +4381,7 @@
       "transform": {
         "translation": [
           19.0,
-          0.0,
+          0.15,
           4.65
         ],
         "rot_y": 90,
@@ -4101,7 +4416,7 @@
       "transform": {
         "translation": [
           19.0,
-          2.0,
+          2.15,
           4.65
         ],
         "rot_y": 90,
@@ -4136,7 +4451,7 @@
       "transform": {
         "translation": [
           19.0,
-          4.0,
+          4.15,
           4.65
         ],
         "rot_y": 90,
@@ -4171,7 +4486,7 @@
       "transform": {
         "translation": [
           19.0,
-          6.0,
+          6.15,
           4.65
         ],
         "rot_y": 90,
@@ -4206,7 +4521,7 @@
       "transform": {
         "translation": [
           19.0,
-          8.0,
+          8.15,
           4.65
         ],
         "rot_y": 90,
@@ -4241,7 +4556,7 @@
       "transform": {
         "translation": [
           19.0,
-          10.0,
+          10.15,
           4.65
         ],
         "rot_y": 90,
@@ -4265,10 +4580,10 @@
     {
       "slot_id": "ext_1_E_seg12",
       "role": "wall",
-      "size_mod": "full",
+      "size_mod": "end",
       "style": 4,
       "material": "metal",
-      "current_ref": "wall_greybox_01",
+      "current_ref": "wallEnd_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_1_E",
       "story": 1,
@@ -4281,15 +4596,15 @@
         ],
         "rot_y": 90,
         "scale": [
-          1.0,
-          1.0,
-          1.0
+          0.3,
+          1.7,
+          2.9
         ]
       },
       "fit": {
         "dims": [
           0.3,
-          2.0,
+          1.7,
           2.9
         ],
         "pivot": "center",
@@ -4311,7 +4626,7 @@
       "transform": {
         "translation": [
           -19.0,
-          -12.0,
+          -11.85,
           4.65
         ],
         "rot_y": 270,
@@ -4346,7 +4661,7 @@
       "transform": {
         "translation": [
           -19.0,
-          -10.0,
+          -9.85,
           4.65
         ],
         "rot_y": 270,
@@ -4381,7 +4696,7 @@
       "transform": {
         "translation": [
           -19.0,
-          -8.0,
+          -7.85,
           4.65
         ],
         "rot_y": 270,
@@ -4416,7 +4731,7 @@
       "transform": {
         "translation": [
           -19.0,
-          -6.0,
+          -5.85,
           4.65
         ],
         "rot_y": 270,
@@ -4451,7 +4766,7 @@
       "transform": {
         "translation": [
           -19.0,
-          -4.0,
+          -3.85,
           4.65
         ],
         "rot_y": 270,
@@ -4486,7 +4801,7 @@
       "transform": {
         "translation": [
           -19.0,
-          -2.0,
+          -1.85,
           4.65
         ],
         "rot_y": 270,
@@ -4521,7 +4836,7 @@
       "transform": {
         "translation": [
           -19.0,
-          0.0,
+          0.15,
           4.65
         ],
         "rot_y": 270,
@@ -4556,7 +4871,7 @@
       "transform": {
         "translation": [
           -19.0,
-          2.0,
+          2.15,
           4.65
         ],
         "rot_y": 270,
@@ -4591,7 +4906,7 @@
       "transform": {
         "translation": [
           -19.0,
-          4.0,
+          4.15,
           4.65
         ],
         "rot_y": 270,
@@ -4626,7 +4941,7 @@
       "transform": {
         "translation": [
           -19.0,
-          6.0,
+          6.15,
           4.65
         ],
         "rot_y": 270,
@@ -4661,7 +4976,7 @@
       "transform": {
         "translation": [
           -19.0,
-          8.0,
+          8.15,
           4.65
         ],
         "rot_y": 270,
@@ -4696,7 +5011,7 @@
       "transform": {
         "translation": [
           -19.0,
-          10.0,
+          10.15,
           4.65
         ],
         "rot_y": 270,
@@ -4720,10 +5035,10 @@
     {
       "slot_id": "ext_1_W_seg12",
       "role": "wall",
-      "size_mod": "full",
+      "size_mod": "end",
       "style": 4,
       "material": "metal",
-      "current_ref": "wall_greybox_01",
+      "current_ref": "wallEnd_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_1_W",
       "story": 1,
@@ -4736,15 +5051,15 @@
         ],
         "rot_y": 270,
         "scale": [
-          1.0,
-          1.0,
-          1.0
+          0.3,
+          1.7,
+          2.9
         ]
       },
       "fit": {
         "dims": [
           0.3,
-          2.0,
+          1.7,
           2.9
         ],
         "pivot": "center",

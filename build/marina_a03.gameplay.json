@@ -265,7 +265,7 @@
       "kind": "garage",
       "story": 0,
       "x": -18.0,
-      "y": 0.0,
+      "y": -0.15,
       "z": 1.5,
       "width": 3.6,
       "height": 3.0,
@@ -581,6 +581,24 @@
       }
     },
     {
+      "node": "ext_col_0_N_seg19",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_N_seg20",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
       "node": "ext_col_0_S_seg0",
       "material": {
         "id": "metal",
@@ -779,6 +797,24 @@
       }
     },
     {
+      "node": "ext_col_0_S_seg18",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "ext_col_0_S_seg19",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
       "node": "ext_col_0_E_seg0",
       "material": {
         "id": "metal",
@@ -959,7 +995,7 @@
       }
     },
     {
-      "node": "ext_col_0_W_seg5",
+      "node": "ext_col_0_W_open0_lintel",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -968,7 +1004,7 @@
       }
     },
     {
-      "node": "ext_col_0_W_open0_lintel",
+      "node": "ext_col_0_W_seg5",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -1005,24 +1041,6 @@
     },
     {
       "node": "ext_col_0_W_seg9",
-      "material": {
-        "id": "metal",
-        "acoustic": "Metal",
-        "absorption": 0.5,
-        "damping": 0.3
-      }
-    },
-    {
-      "node": "ext_col_0_W_seg10",
-      "material": {
-        "id": "metal",
-        "acoustic": "Metal",
-        "absorption": 0.5,
-        "damping": 0.3
-      }
-    },
-    {
-      "node": "ext_col_0_W_seg11",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -1426,13 +1444,13 @@
       "building": "marina_a03"
     },
     {
-      "id": "marina_a03:if:3df65997",
+      "id": "marina_a03:if:6ee5d38a",
       "kind": "door",
       "slot_ref": "ext_0_W_open0",
       "transform": {
         "translation": [
           -18.0,
-          0.0,
+          -0.15,
           1.5
         ],
         "rot_y": 270
@@ -1887,6 +1905,8 @@
     "ext_0_N_seg16": "wall",
     "ext_0_N_seg17": "wall",
     "ext_0_N_seg18": "wall",
+    "ext_0_N_seg19": "wall",
+    "ext_0_N_seg20": "wall",
     "ext_0_S_seg0": "wall",
     "ext_0_S_seg1": "wall",
     "ext_0_S_seg2": "wall",
@@ -1909,6 +1929,8 @@
     "ext_0_S_seg15": "wall",
     "ext_0_S_seg16": "wall",
     "ext_0_S_seg17": "wall",
+    "ext_0_S_seg18": "wall",
+    "ext_0_S_seg19": "wall",
     "ext_0_E_seg0": "wall",
     "ext_0_E_seg1": "wall",
     "ext_0_E_seg2": "wall",
@@ -1929,14 +1951,12 @@
     "ext_0_W_seg2": "wall",
     "ext_0_W_seg3": "wall",
     "ext_0_W_seg4": "wall",
-    "ext_0_W_seg5": "wall",
     "ext_0_W_open0_lintel": "doorway",
+    "ext_0_W_seg5": "wall",
     "ext_0_W_seg6": "wall",
     "ext_0_W_seg7": "wall",
     "ext_0_W_seg8": "wall",
     "ext_0_W_seg9": "wall",
-    "ext_0_W_seg10": "wall",
-    "ext_0_W_seg11": "wall",
     "int_0_0_seg0": "wall",
     "int_0_0_seg1": "wall",
     "int_0_0_seg2": "wall",
