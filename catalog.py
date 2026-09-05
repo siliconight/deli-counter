@@ -135,8 +135,27 @@ def render(rows):
     return "\n".join(lines)
 
 
+#: Specs Level Factory writes into this repo while a pipeline runs. They are
+#: that run's transient inputs, not this library's content, and indexing them
+#: has a cost far beyond a noisy catalogue: CATALOG.md is TRACKED, `new_level`
+#: refreshes it on every spec write, and Level Factory folds a tool repo's
+#: dirty-tracked-file hash into the build fingerprint. So one `deli_generate`
+#: job changed Deli Counter's revision mid-run, every later job cache-missed,
+#: and jobs the functional lock had already fingerprinted re-ran behind it --
+#: which moved the registries and made `verify_no_drift` refuse the export.
+#: That is roadmap 73, and it blocked cold runs 1 through 3.
+#: `building_library.index` already refuses these ids for the same reason.
+_TRANSIENT_PREFIX = "lf_"
+
+
+def _library_specs() -> list:
+    """Every authored spec in specs/, excluding pipeline transients."""
+    return [p for p in sorted(glob.glob(os.path.join(HERE, "specs", "*.json")))
+            if not os.path.basename(p).startswith(_TRANSIENT_PREFIX)]
+
+
 def main():
-    specs = sorted(glob.glob(os.path.join(HERE, "specs", "*.json")))
+    specs = _library_specs()
     rows = [summarize(p) for p in specs]
     content = render(rows)
     out = os.path.join(HERE, "specs", "CATALOG.md")

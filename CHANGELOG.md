@@ -1,3 +1,50 @@
+## [0.103.1] - 2026-09-05
+
+The catalogue indexed Level Factory's transients, and that was the one thing
+standing between a gate-clean art pass and a package (roadmap 73).
+
+### Fixed
+- `catalog.py` skips `specs/lf_*.json`. Those are Level Factory's transient
+  inputs for a running pipeline, not this library's content --
+  `.gitignore:49` already excludes them and none is tracked.
+
+  WHY IT WAS EXPENSIVE, and it is not about a noisy catalogue.
+  `specs/CATALOG.md` IS tracked, `new_level.py` refreshes it after every spec
+  write, and Level Factory folds a tool repo's dirty-TRACKED-file hash into
+  the build fingerprint (`packages/adapters/sdk.py:_read_git_commit`, whose
+  docstring excludes untracked files precisely so pipeline writes cannot bust
+  the cache). Indexing lf_ specs therefore routed the one tracked file the
+  pipeline touches straight into the fingerprint.
+
+  MEASURED, before and after. One `new_level.py --preset bank` moved the
+  revision from
+
+      099a9cdc9dffac4c68aae6ccb9c6c87c04006304
+   to 099a9cdc9dffac4c68aae6ccb9c6c87c04006304+dirty.cbd2f89b2b4fe547
+
+  with `specs/CATALOG.md` the only dirty tracked file. After this change the
+  same write leaves the revision byte-identical.
+
+  THE CONSEQUENCE IT CAUSED. One `deli_generate` job changed the revision its
+  own siblings key on, so every later job cache-missed -- including jobs the
+  functional shell lock had just fingerprinted. `cold_7003` recorded the
+  timing: lock approved 12:06:31.899, `deli_generate` re-evaluated at
+  12:06:33.247 and `lot_assemble` at 12:06:38.478, 1.3 and 6.6 seconds later.
+  The re-runs moved the gameplay-anchor and interactive registries,
+  `verify_no_drift` reported both changed after the art pass, and the export
+  was refused. `collision_fingerprint` never drifted -- the level's shape was
+  never the problem.
+
+  Cold runs 1, 2 and 3 all failed to produce a gated package; 3 failed here.
+
+- CATALOG.md regenerated: 153 -> 129 levels, the 24 removed all `lf_`.
+
+### Not bumped
+`KIT_VERSION` stays 0.103.0. It names the BUILDER that stamps a model, and
+`catalog.py` builds nothing -- the same reason 0.101.1 and 0.101.2 shipped
+without moving it. Every manifest in `build/` correctly continues to record
+the kit that produced it.
+
 ## [0.103.0] - 2026-09-04
 
 `new_level.py` grows `--seed`. Every recipe pins its own seed as a literal --
