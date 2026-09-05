@@ -135,5 +135,5 @@ def test_the_lint_is_wired_into_lint_spec():
               partitions=[{"axis": "Y", "story": 0, "pos": 2.3,
                            "start": 0.0, "end": 6.0}])
     _, fails, warns = layout_lint.lint_spec(s, "t")
-    assert any("L18" in w for w in warns)
-    assert not any("L18" in f for f in fails)   # WARN first, by decision
+    assert any("L18" in f for f in fails)       # FAIL since 0.101.2: library
+    assert not any("L18" in w for w in warns)   # clean + probe read zero

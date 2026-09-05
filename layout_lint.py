@@ -499,7 +499,7 @@ def _host_openings(spec, host, is_ext):
 
 
 def door_split_findings(spec):
-    """L18 (advisory WARN, roadmap 59): no partition may TERMINATE inside a
+    """L18 (FAIL, roadmap 59): no partition may TERMINATE inside a
     doorway's aperture span -- plus LEAF_MARGIN each side -- on the wall it
     meets.
 
@@ -510,11 +510,17 @@ def door_split_findings(spec):
     that the building asks "which half of the door do I take", and egress
     is gameplay vocabulary a building must not mumble.
 
-    WARN, not FAIL, deliberately (the stair-volume lint's reasoning): it
-    fires against the authored library first; it graduates to FAIL when the
-    library is clean, and the generator learns avoidance (nudge the opening
-    along its wall, or end the partition one bay short -- never silently
-    delete either).
+    Born WARN, deliberately (the stair-volume lint's reasoning: a new lint
+    must not red an in-flight certification). GRADUATED TO FAIL in 0.101.2
+    once both halves were measured: the authored library lints clean after
+    the 0.101.1 surgery (33 openings slid clear, 129 specs at zero L18),
+    and the built-output probe (tools/door_split_probe.py) read ZERO walls
+    inside 45 derived apertures on the composed lot_demo_001 -- the
+    founding sighting was fixed en route by the week's rebuilds. From here
+    a spec that splits a doorway FAILS its build instead of waiting for a
+    walker with a screenshot. Generator avoidance (nudge the opening along
+    its wall, or end the partition one bay short -- never silently delete
+    either) remains the right fix on the authoring side when this fires.
 
     Geometry: a terminator is a PERPENDICULAR partition on the host's story
     whose CLAMPED endpoint (clamp_partition_span -- the builder's own
@@ -611,7 +617,7 @@ def lint_spec(spec, name):
     lf14, lw15 = ladder_findings(spec)      # L14 hole-in-footprint / L15 blocked
     fails += lf14
     warns += lw15
-    warns += door_split_findings(spec)      # L18 door split by a wall (roadmap 59)
+    fails += door_split_findings(spec)      # L18 door split (FAIL since 0.101.2)
     fails += reachability_findings(spec)    # L12 sealed/unreachable rooms (all modes)
     if spec.get("mode") != "pvp_heist":
         return name, fails, warns
