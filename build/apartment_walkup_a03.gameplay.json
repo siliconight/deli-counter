@@ -317,24 +317,7 @@
       "building": "apartment_walkup_a03"
     },
     {
-      "wall": "int_1_1",
-      "kind": "door",
-      "story": 1,
-      "x": -6.6,
-      "y": 0.0,
-      "z": 4.3,
-      "width": 1.25,
-      "height": 2.2,
-      "sill": 0.0,
-      "tag": null,
-      "breach_class": null,
-      "material": null,
-      "vaultable": false,
-      "reinforceable": false,
-      "building": "apartment_walkup_a03"
-    },
-    {
-      "wall": "int_1_1",
+      "wall": "int_1_1p1",
       "kind": "door",
       "story": 1,
       "x": 6.6,
@@ -1351,7 +1334,7 @@
       }
     },
     {
-      "node": "int_col_1_1_seg1",
+      "node": "int_col_1_1p1_seg0",
       "material": {
         "id": "drywall",
         "acoustic": "Drywall",
@@ -1360,7 +1343,7 @@
       }
     },
     {
-      "node": "int_col_1_1_open0_lintel",
+      "node": "int_col_1_1p1_seg1",
       "material": {
         "id": "drywall",
         "acoustic": "Drywall",
@@ -1369,7 +1352,7 @@
       }
     },
     {
-      "node": "int_col_1_1_seg2",
+      "node": "int_col_1_1p1_seg2",
       "material": {
         "id": "drywall",
         "acoustic": "Drywall",
@@ -1378,7 +1361,7 @@
       }
     },
     {
-      "node": "int_col_1_1_seg3",
+      "node": "int_col_1_1p1_seg3",
       "material": {
         "id": "drywall",
         "acoustic": "Drywall",
@@ -1387,7 +1370,7 @@
       }
     },
     {
-      "node": "int_col_1_1_seg4",
+      "node": "int_col_1_1p1_seg4",
       "material": {
         "id": "drywall",
         "acoustic": "Drywall",
@@ -1396,7 +1379,7 @@
       }
     },
     {
-      "node": "int_col_1_1_seg5",
+      "node": "int_col_1_1p1_seg5",
       "material": {
         "id": "drywall",
         "acoustic": "Drywall",
@@ -1405,7 +1388,7 @@
       }
     },
     {
-      "node": "int_col_1_1_seg6",
+      "node": "int_col_1_1p1_open0_lintel",
       "material": {
         "id": "drywall",
         "acoustic": "Drywall",
@@ -1414,7 +1397,7 @@
       }
     },
     {
-      "node": "int_col_1_1_seg7",
+      "node": "int_col_1_1p1_seg6",
       "material": {
         "id": "drywall",
         "acoustic": "Drywall",
@@ -1423,25 +1406,7 @@
       }
     },
     {
-      "node": "int_col_1_1_open1_lintel",
-      "material": {
-        "id": "drywall",
-        "acoustic": "Drywall",
-        "absorption": null,
-        "damping": null
-      }
-    },
-    {
-      "node": "int_col_1_1_seg8",
-      "material": {
-        "id": "drywall",
-        "acoustic": "Drywall",
-        "absorption": null,
-        "damping": null
-      }
-    },
-    {
-      "node": "int_col_1_1_seg9",
+      "node": "int_col_1_1p1_seg7",
       "material": {
         "id": "drywall",
         "acoustic": "Drywall",
@@ -1644,42 +1609,9 @@
       "building": "apartment_walkup_a03"
     },
     {
-      "id": "apartment_walkup_a03:if:97f4ff0a",
+      "id": "apartment_walkup_a03:if:c5334fbf",
       "kind": "door",
-      "slot_ref": "int_1_1_open0",
-      "transform": {
-        "translation": [
-          -6.6,
-          0.0,
-          4.3
-        ],
-        "rot_y": 0
-      },
-      "states": [
-        "closed",
-        "open"
-      ],
-      "default": "closed",
-      "transitions": [
-        {
-          "event": "toggle",
-          "from": "closed",
-          "to": "open"
-        },
-        {
-          "event": "toggle",
-          "from": "open",
-          "to": "closed"
-        }
-      ],
-      "source": "inferred",
-      "reversible": true,
-      "building": "apartment_walkup_a03"
-    },
-    {
-      "id": "apartment_walkup_a03:if:f3daac20",
-      "kind": "door",
-      "slot_ref": "int_1_1_open1",
+      "slot_ref": "int_1_1p1_open0",
       "transform": {
         "translation": [
           6.6,
@@ -2091,17 +2023,15 @@
     "int_0_0_seg6": "wall",
     "int_0_0_seg7": "wall",
     "int_1_1_seg0": "wall",
-    "int_1_1_seg1": "wall",
-    "int_1_1_open0_lintel": "doorway",
-    "int_1_1_seg2": "wall",
-    "int_1_1_seg3": "wall",
-    "int_1_1_seg4": "wall",
-    "int_1_1_seg5": "wall",
-    "int_1_1_seg6": "wall",
-    "int_1_1_seg7": "wall",
-    "int_1_1_open1_lintel": "doorway",
-    "int_1_1_seg8": "wall",
-    "int_1_1_seg9": "wall",
+    "int_1_1p1_seg0": "wall",
+    "int_1_1p1_seg1": "wall",
+    "int_1_1p1_seg2": "wall",
+    "int_1_1p1_seg3": "wall",
+    "int_1_1p1_seg4": "wall",
+    "int_1_1p1_seg5": "wall",
+    "int_1_1p1_open0_lintel": "doorway",
+    "int_1_1p1_seg6": "wall",
+    "int_1_1p1_seg7": "wall",
     "stair0_0_0": "stair",
     "stair0_0_1": "stair",
     "stair0_0_2": "stair",

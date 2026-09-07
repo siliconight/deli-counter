@@ -48,6 +48,7 @@ from spec_types import (
     Ladder, Ramp, VaultLedge,
 )
 from partition_bounds import clamp_partition_span
+import partition_bounds
 import ladder_geom
 import stairwell
 import skin_style
@@ -1410,6 +1411,33 @@ class _Builder:
     def _partitions(self):
         H, wt = self.s.story_height, self.s.wall_thick
         _base, _top = self._story_range()
+        # A WALL MAY NOT STAND ON A SLAB THAT HAS BEEN CUT AWAY. Roadmap 114:
+        # `night_pawn`'s story-1 drywall runs straight across the stairwell
+        # opening its own story-0 flight climbs through, so the flight tops out
+        # into 2.05 m of headroom where the bake quantises the agent height to
+        # 2.10, the navmesh drops those polygons, and the stair bakes as two
+        # islands with no path between them. Measured by raycast in the physics
+        # world after six static hypotheses were refuted; the control is
+        # `cr_pawn`, whose stair sits clear of the same partition and passes.
+        #
+        # AND IT MAY NOT STAND IN A FLIGHT EITHER, which is the same defect
+        # keyed one storey down and is why there are two dictionaries here.
+        # Clipping night_pawn against the hole on its own storey recovered
+        # 1.35 m of the climb and left 0.6 m, because the ramp then surfaced
+        # inside the door LINTEL of `int_0_0` -- a storey-0 wall, standing on
+        # an intact storey-0 slab, with the flight passing straight through it
+        # at z 3.15. Measured by raycasting down the travel axis: the first
+        # surface under the walker between y 1.90 and 2.10 was the lintel, not
+        # the ramp.
+        #
+        # `slab_openings` RE-DERIVES the stair cuts from the spec, and that is
+        # the whole reason either question can be asked here: the builder
+        # appends them to `self.s.slab_holes` inside `_stairs`, which runs
+        # AFTER this pass, so reading the spec's own list would see an empty
+        # one on every stair-cut hole in the building. `stair_footprints` keys
+        # the SAME rectangle at the storey the flight climbs through.
+        voids = stairwell.slab_openings(self.s)
+        flights = stairwell.stair_footprints(self.s)
         for i, p in enumerate(self.s.partitions):
             z = p.story * H
             # Same cap as the exterior: an interior wall reaching the storey
@@ -1418,54 +1446,86 @@ class _Builder:
             wh = H - self._cap_thick(p.story, _top)
             cz = z + wh / 2
             # Clamp the run to the footprint on its RUNNING axis so an interior
-            # wall can never poke through the exterior shell. The 2D floorplan
-            # already clamps here; the 3D geometry MUST agree, or a wall authored
-            # past the envelope (e.g. a Y-wall given the X half-width as its end)
-            # ships as an exterior spike. In-bounds partitions are unchanged
-            # (lo/hi collapse to the raw span), so existing specs bake identically.
-            lo, hi = clamp_partition_span(p.start, p.end, p.axis,
-                                          self.s.footprint_x, self.s.footprint_y)
-            if hi - lo <= 1e-6:
-                continue  # entirely outside the footprint -> build nothing
-            length = hi - lo
-            mid = (lo + hi) / 2
-            if lo != min(p.start, p.end) or hi != max(p.start, p.end):
-                # Trimmed: keep each opening's ABSOLUTE position and drop any that
-                # fell in the removed (out-of-bounds) portion -- mirrors the 2D
-                # path so a doorway never floats past the shortened wall.
-                raw_lo, raw_hi = min(p.start, p.end), max(p.start, p.end)
-                raw_len, raw_mid = raw_hi - raw_lo, (raw_lo + raw_hi) / 2
-                openings = []
-                for op in p.openings:
-                    world = raw_mid + op.pos * raw_len
-                    npos = (world - mid) / length if length else 0.0
-                    if abs(npos) <= 0.5 + 1e-6:
-                        openings.append(replace(op, pos=npos))
-            else:
-                openings = p.openings
-            if p.axis == "Y":
-                c = (p.pos, mid, cz)
-                size = (wt, length, wh)
-                axis = 1
-            else:
-                c = (mid, p.pos, cz)
-                size = (length, wt, wh)
-                axis = 0
-            holes = [self._opening_to_hole(op, length, f"int_{p.story}_{i}",
-                                           p.story) for op in openings]
-            self._record_openings(openings, c, axis, length,
-                                  f"int_{p.story}_{i}", p.story)
-            name = f"int_{p.story}_{i}"
-            col_name = f"int_col_{p.story}_{i}"
-            if self._modular_on():
-                self._emit_wall_run(name, col_name, c, size, axis, holes, p.material)
-            else:
-                self._box_with_holes(name, c, size, holes, self.VISUAL)
-                if holes:
-                    self._wall_collision(col_name, c, size, axis, holes)
+            # wall can never poke through the exterior shell, then split what
+            # is left around any slab hole it stands over. The 3D geometry MUST
+            # agree with both, or a wall authored past the envelope (e.g. a
+            # Y-wall given the X half-width as its end) ships as an exterior
+            # spike and a wall over a stairwell ships as a ceiling. A partition
+            # that meets neither the envelope nor a void comes back as its raw
+            # span, unrounded, so existing specs bake identically.
+            raw_lo, raw_hi = min(p.start, p.end), max(p.start, p.end)
+            spans = partition_bounds.partition_spans(
+                p.start, p.end, p.axis, p.pos,
+                self.s.footprint_x, self.s.footprint_y,
+                list(voids.get(p.story, ()))
+                + list(flights.get(p.story, ())), min_span=wt)
+            if not spans:
+                continue  # outside the footprint, or wholly over a void
+            for k, (lo, hi) in enumerate(spans):
+                length = hi - lo
+                mid = (lo + hi) / 2
+                if lo != raw_lo or hi != raw_hi:
+                    # Trimmed: keep each opening's ABSOLUTE position, and NAME
+                    # any that survives in no piece rather than dropping it in
+                    # silence. A door authored inside a stairwell void is an
+                    # authoring error; the void is a full-height gap, so the
+                    # wall stays passable there, but a doorway that stops
+                    # existing has to say so on the build line.
+                    openings = []
+                    for op in p.openings:
+                        npos = partition_bounds.remap_opening(
+                            op.pos, raw_lo, raw_hi, lo, hi)
+                        if npos is not None:
+                            openings.append(replace(op, pos=npos))
+                        elif k == 0 and not self._opening_survives(
+                                op, raw_lo, raw_hi, spans):
+                            print(f"[deli_counter] WARNING: partition "
+                                  f"int_{p.story}_{i}'s {op.kind} at pos "
+                                  f"{op.pos:+.3f} sits in a cut-away part of "
+                                  f"the run and is not built")
                 else:
-                    self._col_box(col_name, c, size)
-                self._record_surface(col_name, p.material)
+                    openings = p.openings
+                if p.axis == "Y":
+                    c = (p.pos, mid, cz)
+                    size = (wt, length, wh)
+                    axis = 1
+                else:
+                    c = (mid, p.pos, cz)
+                    size = (length, wt, wh)
+                    axis = 0
+                # PIECE 0 KEEPS THE AUTHORED NAME, so an unsplit wall -- every
+                # partition in 117 of the library's 129 specs -- keeps the slot
+                # ids, interactive ids and surface names it has always had.
+                sfx = f"p{k}" if k else ""
+                name = f"int_{p.story}_{i}{sfx}"
+                col_name = f"int_col_{p.story}_{i}{sfx}"
+                holes = [self._opening_to_hole(op, length, name, p.story)
+                         for op in openings]
+                self._record_openings(openings, c, axis, length, name, p.story)
+                if self._modular_on():
+                    self._emit_wall_run(name, col_name, c, size, axis, holes,
+                                        p.material)
+                else:
+                    self._box_with_holes(name, c, size, holes, self.VISUAL)
+                    if holes:
+                        self._wall_collision(col_name, c, size, axis, holes)
+                    else:
+                        self._col_box(col_name, c, size)
+                    self._record_surface(col_name, p.material)
+
+    @staticmethod
+    def _opening_survives(op, raw_lo, raw_hi, spans):
+        """True when `op` lands in ANY built piece of its partition.
+
+        The warning above fires inside the per-piece loop, where an opening
+        belonging to piece 1 is simply absent from piece 0. Without this the
+        two-piece case would report every door in the building's split walls
+        and the operator would learn nothing from a line that fires whether or
+        not anything was actually lost.
+        """
+        return any(partition_bounds.remap_opening(op.pos, raw_lo, raw_hi,
+                                                  lo, hi) is not None
+                   for lo, hi in spans)
 
     # ---- stair local-frame helpers (facing rotation, 90-degree steps) ----
     # Stairs are authored in a LOCAL frame -- ascent along +Y, parallel-run

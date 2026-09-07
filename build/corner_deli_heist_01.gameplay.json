@@ -917,7 +917,7 @@
       "building": "corner_deli_heist_01"
     },
     {
-      "wall": "int_0_3",
+      "wall": "int_0_3p1",
       "kind": "garage",
       "story": 0,
       "x": 5.7,
@@ -934,24 +934,7 @@
       "building": "corner_deli_heist_01"
     },
     {
-      "wall": "int_0_3",
-      "kind": "door",
-      "story": 0,
-      "x": -15.2,
-      "y": 6.0,
-      "z": 1.1,
-      "width": 2.4,
-      "height": 2.2,
-      "sill": 0.0,
-      "tag": "office_stair_door",
-      "breach_class": null,
-      "material": null,
-      "vaultable": false,
-      "reinforceable": false,
-      "building": "corner_deli_heist_01"
-    },
-    {
-      "wall": "int_0_3",
+      "wall": "int_0_3p1",
       "kind": "door",
       "story": 0,
       "x": 11.761,
@@ -1053,24 +1036,7 @@
       "building": "corner_deli_heist_01"
     },
     {
-      "wall": "int_-1_6",
-      "kind": "door",
-      "story": -1,
-      "x": -13.6,
-      "y": 7.5,
-      "z": -2.2,
-      "width": 1.1,
-      "height": 2.2,
-      "sill": 0.0,
-      "tag": "stack_well_access",
-      "breach_class": null,
-      "material": null,
-      "vaultable": false,
-      "reinforceable": false,
-      "building": "corner_deli_heist_01"
-    },
-    {
-      "wall": "int_-1_6",
+      "wall": "int_-1_6p1",
       "kind": "door",
       "story": -1,
       "x": -13.6,
@@ -1080,23 +1046,6 @@
       "height": 2.2,
       "sill": 0.0,
       "tag": "cold_n_access",
-      "breach_class": null,
-      "material": null,
-      "vaultable": false,
-      "reinforceable": false,
-      "building": "corner_deli_heist_01"
-    },
-    {
-      "wall": "int_-1_7",
-      "kind": "door",
-      "story": -1,
-      "x": -16.75,
-      "y": 9.6,
-      "z": -2.2,
-      "width": 1.0,
-      "height": 2.2,
-      "sill": 0.0,
-      "tag": "cold_w_access",
       "breach_class": null,
       "material": null,
       "vaultable": false,
@@ -1441,6 +1390,15 @@
       }
     },
     {
+      "node": "int_col_0_3p1",
+      "material": {
+        "id": "drywall",
+        "acoustic": "Drywall",
+        "absorption": 0.42,
+        "damping": 0.38
+      }
+    },
+    {
       "node": "int_col_1_4",
       "material": {
         "id": "drywall",
@@ -1460,6 +1418,15 @@
     },
     {
       "node": "int_col_-1_6",
+      "material": {
+        "id": "brick_ext",
+        "acoustic": "Concrete",
+        "absorption": 0.72,
+        "damping": 0.62
+      }
+    },
+    {
+      "node": "int_col_-1_6p1",
       "material": {
         "id": "brick_ext",
         "acoustic": "Concrete",
@@ -2016,9 +1983,9 @@
       "building": "corner_deli_heist_01"
     },
     {
-      "id": "corner_deli_heist_01:if:064e5357",
+      "id": "corner_deli_heist_01:if:ba3a7475",
       "kind": "door",
-      "slot_ref": "int_0_3_open1",
+      "slot_ref": "int_0_3p1_open0",
       "transform": {
         "translation": [
           5.7,
@@ -2049,42 +2016,9 @@
       "building": "corner_deli_heist_01"
     },
     {
-      "id": "corner_deli_heist_01:if:2140fa26",
+      "id": "corner_deli_heist_01:if:5e386378",
       "kind": "door",
-      "slot_ref": "int_0_3_open0",
-      "transform": {
-        "translation": [
-          -15.2,
-          6.0,
-          1.1
-        ],
-        "rot_y": 0
-      },
-      "states": [
-        "closed",
-        "open"
-      ],
-      "default": "closed",
-      "transitions": [
-        {
-          "event": "toggle",
-          "from": "closed",
-          "to": "open"
-        },
-        {
-          "event": "toggle",
-          "from": "open",
-          "to": "closed"
-        }
-      ],
-      "source": "inferred",
-      "reversible": true,
-      "building": "corner_deli_heist_01"
-    },
-    {
-      "id": "corner_deli_heist_01:if:9229ffe6",
-      "kind": "door",
-      "slot_ref": "int_0_3_open2",
+      "slot_ref": "int_0_3p1_open1",
       "transform": {
         "translation": [
           11.761,
@@ -2241,7 +2175,7 @@
       "building": "corner_deli_heist_01"
     },
     {
-      "id": "corner_deli_heist_01:if:feba4677",
+      "id": "corner_deli_heist_01:if:fc187abb",
       "kind": "door",
       "slot_ref": "int_-1_6_open0",
       "transform": {
@@ -2274,79 +2208,13 @@
       "building": "corner_deli_heist_01"
     },
     {
-      "id": "corner_deli_heist_01:if:900d722b",
+      "id": "corner_deli_heist_01:if:2793879b",
       "kind": "door",
-      "slot_ref": "int_-1_6_open1",
-      "transform": {
-        "translation": [
-          -13.6,
-          7.5,
-          -2.2
-        ],
-        "rot_y": 90
-      },
-      "states": [
-        "closed",
-        "open"
-      ],
-      "default": "closed",
-      "transitions": [
-        {
-          "event": "toggle",
-          "from": "closed",
-          "to": "open"
-        },
-        {
-          "event": "toggle",
-          "from": "open",
-          "to": "closed"
-        }
-      ],
-      "source": "inferred",
-      "reversible": true,
-      "building": "corner_deli_heist_01"
-    },
-    {
-      "id": "corner_deli_heist_01:if:66403fba",
-      "kind": "door",
-      "slot_ref": "int_-1_6_open2",
+      "slot_ref": "int_-1_6p1_open0",
       "transform": {
         "translation": [
           -13.6,
           12.96,
-          -2.2
-        ],
-        "rot_y": 90
-      },
-      "states": [
-        "closed",
-        "open"
-      ],
-      "default": "closed",
-      "transitions": [
-        {
-          "event": "toggle",
-          "from": "closed",
-          "to": "open"
-        },
-        {
-          "event": "toggle",
-          "from": "open",
-          "to": "closed"
-        }
-      ],
-      "source": "inferred",
-      "reversible": true,
-      "building": "corner_deli_heist_01"
-    },
-    {
-      "id": "corner_deli_heist_01:if:77c490fb",
-      "kind": "door",
-      "slot_ref": "int_-1_7_open0",
-      "transform": {
-        "translation": [
-          -16.75,
-          9.6,
           -2.2
         ],
         "rot_y": 90
@@ -2993,9 +2861,11 @@
     "int_-1_1": "wall",
     "int_0_2": "wall",
     "int_0_3": "wall",
+    "int_0_3p1": "wall",
     "int_1_4": "wall",
     "int_1_5": "wall",
     "int_-1_6": "wall",
+    "int_-1_6p1": "wall",
     "int_-1_7": "wall",
     "stair0_-1_0": "stair",
     "stair0_-1_1": "stair",

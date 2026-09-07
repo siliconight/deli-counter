@@ -1104,6 +1104,30 @@ def hospital(name: str = "hospital_preset",
             if r["id"] == "roof_helipad":
                 r["role"] = "objective_room"
                 r["objective"] = True
+        # ZONES AND OBJECTIVES, WHICH THIS BRANCH NEVER DECLARED.
+        # `spec["zones"]` was set only inside the survival branch, so in
+        # every other mode this preset emitted no extraction zone and no
+        # objectives list -- and those are exactly the two things a heist
+        # scorecard reads. Cold run 6 failed all three candidates on it:
+        # "TACTICAL-ERROR: heist level has no extraction zone", exit 1,
+        # under Deli Counter's own "this is a preset bug", which was right.
+        #
+        # The helipad is the way out in BOTH modes -- the docstring says the
+        # team "reaches a rooftop helipad holdout ... to extract" -- so this
+        # reuses the survival branch's own `helipad_extract` rather than
+        # inventing a second exit. The capture objective is the one the
+        # marker below already describes; only the spec-level list was
+        # missing, which is why the room retag above looked sufficient.
+        spec["zones"] = [
+            {"id": "helipad_extract", "kind": "extraction", "story": top,
+             "bounds": [8.0, 6.0, half_x - 1, half_y - 1],
+             "meta": {"rescue": "helicopter"}},
+        ]
+        spec["objectives"] = [
+            {"id": "rooftop_capture", "kind": "capture", "x": 0.0, "y": 8.0,
+             "z": ztop, "room": "roof_helipad", "required": True,
+             "duration": 30.0},
+        ]
         markers += [
             {"type": "attacker_spawn", "id": "A", "x": 0.0, "y": -13.0, "z": 0.0, "rot_z": 0, "room": "lobby"},
             {"type": "attacker_spawn", "id": "B", "x": -18.0, "y": 0.0, "z": 0.0, "rot_z": 90, "room": "lobby"},

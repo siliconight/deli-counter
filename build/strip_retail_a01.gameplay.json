@@ -875,35 +875,6 @@
       }
     },
     {
-      "wall": "int_0_3",
-      "kind": "door",
-      "story": 0,
-      "x": 4.0,
-      "y": 4.0,
-      "z": 1.1,
-      "width": 1.4,
-      "height": 2.2,
-      "sill": 0.0,
-      "tag": "hall_stairs",
-      "breach_class": null,
-      "material": null,
-      "vaultable": false,
-      "reinforceable": false,
-      "building": "strip_retail_a01",
-      "rarity": "rare",
-      "rarity_color": {
-        "tier": "rare",
-        "rank": 2,
-        "color_name": "blue",
-        "hex": "#0070DD",
-        "rgb": [
-          0.0,
-          0.4392,
-          0.8667
-        ]
-      }
-    },
-    {
       "wall": "int_1_4",
       "kind": "door",
       "story": 1,
@@ -2569,34 +2540,7 @@
       }
     },
     {
-      "node": "int_col_0_3_seg1",
-      "material": {
-        "id": "drywall",
-        "acoustic": "Drywall",
-        "absorption": 0.42,
-        "damping": 0.38
-      }
-    },
-    {
-      "node": "int_col_0_3_open0_lintel",
-      "material": {
-        "id": "drywall",
-        "acoustic": "Drywall",
-        "absorption": 0.42,
-        "damping": 0.38
-      }
-    },
-    {
-      "node": "int_col_0_3_seg2",
-      "material": {
-        "id": "drywall",
-        "acoustic": "Drywall",
-        "absorption": 0.42,
-        "damping": 0.38
-      }
-    },
-    {
-      "node": "int_col_0_3_seg3",
+      "node": "int_col_0_3p1_seg0",
       "material": {
         "id": "drywall",
         "acoustic": "Drywall",
@@ -3310,39 +3254,6 @@
         "translation": [
           -5.0,
           2.02,
-          1.1
-        ],
-        "rot_y": 90
-      },
-      "states": [
-        "closed",
-        "open"
-      ],
-      "default": "closed",
-      "transitions": [
-        {
-          "event": "toggle",
-          "from": "closed",
-          "to": "open"
-        },
-        {
-          "event": "toggle",
-          "from": "open",
-          "to": "closed"
-        }
-      ],
-      "source": "inferred",
-      "reversible": true,
-      "building": "strip_retail_a01"
-    },
-    {
-      "id": "strip_retail_a01:if:98feaca2",
-      "kind": "door",
-      "slot_ref": "int_0_3_open0",
-      "transform": {
-        "translation": [
-          4.0,
-          4.0,
           1.1
         ],
         "rot_y": 90
@@ -4637,10 +4548,7 @@
     "int_0_2_seg2": "wall",
     "int_0_2_seg3": "wall",
     "int_0_3_seg0": "wall",
-    "int_0_3_seg1": "wall",
-    "int_0_3_open0_lintel": "doorway",
-    "int_0_3_seg2": "wall",
-    "int_0_3_seg3": "wall",
+    "int_0_3p1_seg0": "wall",
     "int_1_4_seg0": "wall",
     "int_1_4_seg1": "wall",
     "int_1_4_seg2": "wall",

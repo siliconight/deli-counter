@@ -1,3 +1,175 @@
+## [0.105.0] - 2026-09-07
+
+A wall standing where a stair goes made the stair unwalkable, in fourteen of
+the library's 129 shells.
+
+### Fixed
+- `_partitions` now clips every interior wall against the slab holes it
+  stands over AND the flights it stands in. Two spellings of one sentence,
+  and only fixing both makes a stair walkable:
+
+  - a wall on storey k over a hole in storey k's slab stands on nothing --
+    and where that hole is a stairwell, it is also a ceiling one storey
+    height above the flight climbing through it;
+  - a wall on storey k inside the footprint of a flight that CLIMBS THROUGH
+    storey k is a wall across a staircase, and its own slab is intact, so the
+    first rule never looks at it.
+
+  `_partitions` runs BEFORE `_stairs`, so `spec.slab_holes` is empty when the
+  walls are drawn and neither question can be asked from it. Both are answered
+  from `stairwell.slab_openings`, which re-derives a flight's rectangle from
+  the spec, and from the new `stairwell.stair_footprints`, which keys THE SAME
+  rectangle at the storey whose air the flight occupies rather than the slab
+  it cuts. The rectangle moved into `stairwell.flight_rect` so the two keys
+  cannot drift; getting that off-by-one wrong is exactly what the first
+  version of this fix got wrong.
+
+  MEASURED ON `night_pawn`, one change at a time:
+
+  ```
+                              navmesh island 0     stair_0
+  before                        y 0.19 .. 1.54     no_path
+  clipped against its own hole  y 0.19 .. 2.89     no_path   (+1.35 m)
+  clipped against the flight    one island         ok
+  ```
+
+  Found by raycasting UP from every tread after six static hypotheses had
+  been refuted: `int_col_1_1_seg6` sat 2.05 m above tread 6, where the bake
+  quantises the ratified 2.0 m agent to `ceil(2.0/0.15) * 0.15 = 2.10`. The
+  control is `cr_pawn`, which carries a byte-identical partition, places its
+  stair clear of it, passes, and whose treads see the 3.2-6.0 m of clear air
+  that `night_pawn`'s now see too. The remaining 0.6 m was found by a second
+  probe down the travel axis: `int_col_0_0_open1_lintel` at z 3.15, a
+  storey-0 door lintel with the ramp running through it.
+
+  THE CENTRELINE DECIDES, not the wall's thickness band. A stair's hole is
+  oversized on purpose -- `width + 0.8` across, 0.3 m behind the bottom step
+  and 0.8 m past the top -- so a band test would delete an enclosure wall
+  seated flush against the shaft it encloses.
+
+- Four doors authored inside a stairwell or an atrium void are no longer
+  built, and each prints a named WARNING instead of vanishing. `night_pawn`'s
+  `int_0_0` had one at world x 5.6, opening into the middle of a staircase.
+  The void they sat in is a full-height gap, so nothing becomes less passable.
+
+- `night_pawn` and `cbp_town_finale_midbalanced_schemafixed` come out of the
+  roadmap-113 quarantine: `nav_gate` reports `ok` for `night_pawn`'s stair and
+  for all four of `cbp_town`'s. `primos_pizza` stays quarantined -- it has no
+  partition anywhere near its stair, and the same probe found its flight
+  running through `ext_col_0_N_lintel1`, the EXTERIOR wall, because the stair
+  is placed so its reserved footprint leaves the envelope. Roadmap 115.
+
+### Added
+- `partition_bounds.hole_cuts` / `subtract` / `partition_spans` /
+  `remap_opening` -- the shared derivation, in the module whose docstring
+  already claimed to be the single source of truth for a wall's built extent.
+- `stairwell.flight_rect` / `stair_footprints`.
+- `test_wall_over_void.py` -- 19 tests, no Blender, pinning the captured case
+  and the `cr_pawn` control.
+
+## [0.104.0] - 2026-09-06
+
+`hospital` declared no zones and no objectives in any mode but `survival`, so
+the first mission that ever asked for it failed every candidate.
+
+### Fixed
+- `presets.hospital` -- the non-survival branch now declares an extraction
+  zone and an objectives list. `spec["zones"]` was assigned ONLY inside
+  `if mode == "survival"`, so in `heist`, `assault` and `pvp_heist` the spec
+  carried neither, and those are exactly the two things a heist scorecard
+  reads.
+
+  FOUND BY COLD RUN 6. `mercy_annex_001` asked for `archetype: hospital` and
+  all three candidates failed `deli_generate`:
+
+  ```
+  TACTICAL-WARN:  heist level has no objectives defined
+  TACTICAL-ERROR: heist level has no extraction zone
+  errors: 1   warnings: 1        (exit=1)
+  The generated spec has validation issues. This is a preset bug --
+  please report it
+  ```
+
+  That last line was right, and it is the only reason this was found at all:
+  `hospital` is one of fourteen presets in a seventeen-preset registry that no
+  brief had ever requested.
+
+  THE FIRST DIAGNOSIS WAS WRONG AND IS RECORDED HERE SO IT IS NOT REPEATED.
+  The obvious reading is "hospital yields zero objectives", and a probe of all
+  17 presets confirmed it is the only one that does -- but objectives are a
+  WARNING. The fatal error was the missing EXTRACTION ZONE, which the same
+  probe missed because it read the wrong key: extraction is declared in
+  `zones[kind == "extraction"]`, not in a top-level field. Reading the failure
+  log twice is what caught it.
+
+  THE FIX REUSES WHAT THE PRESET ALREADY HAD rather than inventing a level.
+  The survival branch already defines `helipad_extract`, and the docstring
+  already says the team "reaches a rooftop helipad holdout ... to extract", so
+  the helipad is the way out in both modes. The capture objective is the one
+  the branch's own `ROOFTOP` marker already describes -- the room was retagged
+  `objective_room` and the marker emitted, and only the spec-level list was
+  missing, which is why the retag looked sufficient.
+
+  `survival` is UNCHANGED: 0 objectives is correct for a survival run, which
+  has a finale rather than objectives.
+
+  VERIFIED through the real generator, not just the library: `python
+  new_level.py --preset hospital --mode heist --seed 9002` exits 0 and
+  validates, where it exited 1 before. Across modes, objectives / extraction
+  zones now read survival 0/1, heist 1/1, assault 1/1.
+
+### Known
+Nothing checks that a registry entry produces a spec that validates. This one
+was found by spending seven minutes of a cold run on it, and eleven presets
+that no brief has requested remain unexercised. A probe over
+`presets.REGISTRY` would cost seconds -- Level Factory roadmap 111.
+
+### Also fixed, because the hospital fix could not be committed without it
+`presets.py` is a geometry source, so editing it made all 139 built shells
+stale by mtime and `build_freshness` refused the commit. The mandatory
+`build.py --all` rebuild then let the pre-commit gate reach checks the stale
+library had been hiding, and it failed `nav-gate: 6/159 shell(s) FAILED
+traversal`. Attributing all six before touching any of them -- CLAUDE.md's own
+rule -- split them into two unrelated causes.
+
+- `build.py --all` and `--watch` now skip Level Factory's workspace
+  transients. LF writes one spec per mission candidate into `specs/` as
+  `lf_<mission>_<seed>`; `catalog.py` has excluded that prefix since roadmap
+  73 and `building_library.index` refuses the ids, but `build.py` -- the one
+  command that turns a spec into geometry -- had no such rule. It built 33 of
+  them into `build/`, where the nav gate gated them like archetypes, and three
+  (`lf_mercy_annex_001_9002`, `_9103`, `_9204`, from cold run 6 earlier the
+  same day) failed traversal and blocked the commit the rebuild existed to
+  unblock. Same rule, same prefix, same reason as `catalog.py`.
+
+- THREE SHELLS QUARANTINED, and the quarantine says so on every `--all`.
+  `night_pawn`, `primos_pizza` and
+  `cbp_town_finale_midbalanced_schemafixed` have stairs that do not traverse a
+  baked navmesh. Not built, which is the whole mechanism: no `.glb` for the
+  gate to gate, and no `manifest.json`, so the lot pool stops offering them
+  through the path the CLI already reports as "excluded from the lot for a
+  missing manifest".
+
+  MEASURED from the gate's own island data rather than reasoned from source
+  geometry -- `docs/NAV_GATE_FINDINGS.md` records four mechanisms proposed by
+  static measurement here and refuted by their own data. The shape is the same
+  in all three: the ramp bakes as DISCONNECTED FRAGMENTS with a hole part-way
+  up. `night_pawn` leaves a 1.95 m gap between islands at y 0.19..1.54 and
+  y 3.49..3.79, with 2-poly crumbs stranded at y 1.24 and y 2.29..2.89;
+  `primos_pizza` a 0.90 m gap. That is a DIFFERENT shape from August's
+  finding, where `cr_deli` broke at the FOOT of its flight -- and `cr_deli`
+  now passes, so the rebuild fixed the case that doc left open.
+
+  NOT NEW: `NAV_GATE_FINDINGS.md` already listed `primos_pizza` among fifteen
+  shells with markers on disconnected islands, "every one of them currently
+  reports `passed`". What changed is that the stair check fails now the shells
+  are built with current code.
+
+  The specs stay on disk and the reason is written beside each id, so
+  re-admitting one is deleting a line in `_QUARANTINE` after
+  `python nav_gate.py build/<name>.glb` passes. Tracked as Level Factory
+  roadmap 113.
+
 ## [0.103.1] - 2026-09-05
 
 The catalogue indexed Level Factory's transients, and that was the one thing

@@ -1,0 +1,175 @@
+"""A partition may not stand on a slab that has been cut away (roadmap 114).
+
+THE CAPTURED CASE is `specs/night_pawn.json`. Its story-1 drywall runs
+-7..7 at y = 0, and its story-0 switchback climbs through a slab hole spanning
+x 4.10..6.90 on that same storey -- so the wall crossed the shaft it should
+have stopped at, and the flight topped out into 2.05 m of headroom where the
+navmesh bake quantises the 2.0 m agent to `ceil(2.0/0.15) * 0.15 = 2.10`.
+Those polygons were dropped, the ramp baked as two islands, and `nav_gate`
+reported `stair_0 no_path`.
+
+Six static hypotheses were refuted before this one was measured (stair width
+at three values, two crate placements, an undersized slab cut, a missing
+discharge bridge), so the mechanism was finally settled by raycasting UP from
+every tread in the physics world. The control is `cr_pawn`, which carries a
+byte-identical partition, places its stair clear of it, and passes.
+
+These run without Blender -- partition_bounds and stairwell are bpy-free.
+
+    python -m pytest test_wall_over_void.py -q
+"""
+import os
+import sys
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+
+import partition_bounds as PB
+import spec_loader
+import stairwell
+
+FX, FY = 44.0, 32.0
+
+
+# ---- hole_cuts: which holes a wall's centreline actually crosses -----------
+
+def test_x_wall_is_cut_by_a_hole_its_centreline_crosses():
+    # hole x 4..7, y -2..4;  X-wall at y = 0 runs through it
+    assert PB.hole_cuts("X", 0.0, [(4.0, -2.0, 7.0, 4.0)]) == [(4.0, 7.0)]
+
+
+def test_x_wall_clear_of_the_hole_is_not_cut():
+    # same hole, wall at y = 5 -- outside the hole's y band
+    assert PB.hole_cuts("X", 5.0, [(4.0, -2.0, 7.0, 4.0)]) == []
+
+
+def test_y_wall_reads_the_other_pair_of_edges():
+    # a Y-wall runs along y and is positioned in x: the roles swap
+    assert PB.hole_cuts("Y", 5.0, [(4.0, -2.0, 7.0, 4.0)]) == [(-2.0, 4.0)]
+    assert PB.hole_cuts("Y", 0.0, [(4.0, -2.0, 7.0, 4.0)]) == []
+
+
+def test_a_wall_on_the_hole_edge_is_left_alone():
+    """The centreline decides, and the bound is strict. A stair's hole is
+    oversized by 0.8 m on purpose; a wall seated exactly on its edge is the
+    shaft's enclosure, not a wall over void."""
+    assert PB.hole_cuts("X", 4.0, [(0.0, 4.0, 3.0, 8.0)]) == []
+    assert PB.hole_cuts("X", 8.0, [(0.0, 4.0, 3.0, 8.0)]) == []
+
+
+# ---- subtract: what is left of the run ------------------------------------
+
+def test_a_hole_in_the_middle_leaves_two_pieces():
+    assert PB.subtract(-10.0, 10.0, [(-2.0, 2.0)]) == [(-10.0, -2.0), (2.0, 10.0)]
+
+
+def test_a_hole_at_the_end_leaves_one_piece():
+    assert PB.subtract(-10.0, 10.0, [(6.0, 12.0)]) == [(-10.0, 6.0)]
+
+
+def test_a_hole_swallowing_the_run_leaves_nothing():
+    assert PB.subtract(-1.0, 1.0, [(-5.0, 5.0)]) == []
+
+
+def test_slivers_below_min_span_are_dropped():
+    # night_pawn's own residue: 6.90..7.00, 0.10 m of drywall
+    assert PB.subtract(-7.0, 7.0, [(4.1, 6.9)], min_span=0.25) == [(-7.0, 4.1)]
+    # ...and kept when nothing asks for a minimum
+    assert PB.subtract(-7.0, 7.0, [(4.1, 6.9)]) == [(-7.0, 4.1), (6.9, 7.0)]
+
+
+def test_an_uncut_run_is_returned_untouched_by_the_threshold():
+    """A wall that meets no hole must bake byte-identically -- INCLUDING a
+    legitimately short one, which `min_span` would otherwise delete."""
+    assert PB.subtract(0.0, 0.1, [], min_span=0.25) == [(0.0, 0.1)]
+    assert PB.subtract(-7.0, 7.0, [(20.0, 30.0)], min_span=0.25) == [(-7.0, 7.0)]
+
+
+def test_two_holes_leave_three_pieces():
+    assert PB.subtract(-10.0, 10.0, [(-6.0, -4.0), (4.0, 6.0)]) == [
+        (-10.0, -6.0), (-4.0, 4.0), (6.0, 10.0)]
+
+
+# ---- partition_spans: the clamp and the cut, in that order -----------------
+
+def test_the_footprint_clamp_still_applies():
+    assert PB.partition_spans(8, 22, "Y", 10.0, FX, FY) == [(8.0, 16.0)]
+
+
+def test_clamp_and_cut_compose():
+    # Y-wall clamped to 16, then a hole at 10..12 splits what is left
+    assert PB.partition_spans(8, 22, "Y", 10.0, FX, FY,
+                              [(9.0, 10.0, 11.0, 12.0)]) == [(8.0, 10.0),
+                                                             (12.0, 16.0)]
+
+
+def test_a_wall_wholly_outside_the_footprint_builds_nothing():
+    assert PB.partition_spans(20, 30, "Y", 0.0, FX, FY) == []
+
+
+# ---- remap_opening: a doorway keeps its world position --------------------
+
+def test_an_opening_keeps_its_world_position_in_a_shortened_piece():
+    # run -7..7, door at pos 0 -> world 0. Piece -7..4.1 has mid -1.45,
+    # length 11.1, so the door sits at (0 - -1.45) / 11.1.
+    npos = PB.remap_opening(0.0, -7.0, 7.0, -7.0, 4.1)
+    assert npos is not None
+    mid, length = (-7.0 + 4.1) / 2, 4.1 - -7.0
+    assert abs((mid + npos * length) - 0.0) < 1e-9
+
+
+def test_an_opening_in_a_removed_part_is_reported_absent():
+    # door at world +5.0 with the piece ending at 4.1
+    assert PB.remap_opening(5.0 / 14.0, -7.0, 7.0, -7.0, 4.1) is None
+
+
+def test_an_untrimmed_piece_returns_the_authored_position():
+    for pos in (-0.5, -0.3, 0.0, 0.35, 0.5):
+        assert PB.remap_opening(pos, -7.0, 7.0, -7.0, 7.0) == pos
+
+
+# ---- the captured case, end to end on the real spec ------------------------
+
+def _night_pawn():
+    return spec_loader.load_spec(os.path.join(HERE, "specs", "night_pawn.json"))
+
+
+def test_night_pawn_wall_stops_at_the_stairwell():
+    spec = _night_pawn()
+    voids = stairwell.slab_openings(spec)
+    p = spec.partitions[1]
+    assert (p.story, p.axis, p.pos) == (1, "X", 0.0)
+    spans = PB.partition_spans(p.start, p.end, p.axis, p.pos,
+                               spec.footprint_x, spec.footprint_y,
+                               voids.get(p.story, ()),
+                               min_span=spec.wall_thick)
+    assert len(spans) == 1, spans
+    lo, hi = spans[0]
+    assert lo == -7.0
+    assert abs(hi - 4.1) < 1e-9, hi
+    # ...and the flight it used to cover is now open to the storey above
+    (hx0, _hy0, hx1, _hy1), = voids[1]
+    assert hx0 < 5.5 < hx1                     # the stair's own x
+    assert hi <= hx0 + 1e-9
+
+
+def test_night_pawns_door_survives_the_cut():
+    """The wall's only door is at world x = 0, well clear of the shaft. If a
+    fix for a stair silently deleted the door in it, that would be a worse
+    defect than the one being fixed."""
+    spec = _night_pawn()
+    p = spec.partitions[1]
+    assert PB.remap_opening(p.openings[0].pos, -7.0, 7.0, -7.0, 4.1) is not None
+
+
+def test_cr_pawn_is_unchanged_because_its_stair_is_clear():
+    """The control. Same partition, a stair that does not cross it -- so the
+    fix must not move a single metre of this building's geometry."""
+    spec = spec_loader.load_spec(os.path.join(HERE, "specs", "cr_pawn.json"))
+    voids = stairwell.slab_openings(spec)
+    for p in spec.partitions:
+        spans = PB.partition_spans(p.start, p.end, p.axis, p.pos,
+                                   spec.footprint_x, spec.footprint_y,
+                                   voids.get(p.story, ()),
+                                   min_span=spec.wall_thick)
+        assert spans == [(min(p.start, p.end), max(p.start, p.end))], (p, spans)

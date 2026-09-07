@@ -7,8 +7,8 @@
   "space": "spec/Blender Z-up raw coords; rot_y = degrees about up",
   "coverage": {
     "breach/generated": 2,
-    "doorway/generated": 6,
-    "wall/generated": 100,
+    "doorway/generated": 5,
+    "wall/generated": 99,
     "window/generated": 3
   },
   "slots": [
@@ -3629,17 +3629,52 @@
     {
       "slot_id": "int_1_1_seg0",
       "role": "wall",
-      "size_mod": "full",
+      "size_mod": "end",
       "style": 2,
       "material": "drywall",
-      "current_ref": "wall_greybox_01",
+      "current_ref": "wallEnd_greybox_01",
       "kit_axis": "theme",
       "wall": "int_1_1",
       "story": 1,
       "facing": "X",
       "transform": {
         "translation": [
-          -10.0,
+          -10.5,
+          0.0,
+          4.65
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          0.3,
+          2.9
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.0,
+          0.3,
+          2.9
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_1_1p1_seg0",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 2,
+      "material": "drywall",
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_1_1p1",
+      "story": 1,
+      "facing": "X",
+      "transform": {
+        "translation": [
+          -5.0,
           0.0,
           4.65
         ],
@@ -3662,19 +3697,159 @@
       }
     },
     {
-      "slot_id": "int_1_1_seg1",
+      "slot_id": "int_1_1p1_seg1",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 2,
+      "material": "drywall",
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_1_1p1",
+      "story": 1,
+      "facing": "X",
+      "transform": {
+        "translation": [
+          -3.0,
+          0.0,
+          4.65
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          2.9
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_1_1p1_seg2",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 2,
+      "material": "drywall",
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_1_1p1",
+      "story": 1,
+      "facing": "X",
+      "transform": {
+        "translation": [
+          -1.0,
+          0.0,
+          4.65
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          2.9
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_1_1p1_seg3",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 2,
+      "material": "drywall",
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_1_1p1",
+      "story": 1,
+      "facing": "X",
+      "transform": {
+        "translation": [
+          1.0,
+          0.0,
+          4.65
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          2.9
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_1_1p1_seg4",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 2,
+      "material": "drywall",
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_1_1p1",
+      "story": 1,
+      "facing": "X",
+      "transform": {
+        "translation": [
+          3.0,
+          0.0,
+          4.65
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          2.9
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_1_1p1_seg5",
       "role": "wall",
       "size_mod": "end",
       "style": 2,
       "material": "drywall",
       "current_ref": "wallEnd_greybox_01",
       "kit_axis": "theme",
-      "wall": "int_1_1",
+      "wall": "int_1_1p1",
       "story": 1,
       "facing": "X",
       "transform": {
         "translation": [
-          -8.0625,
+          4.9375,
           0.0,
           4.65
         ],
@@ -3697,279 +3872,14 @@
       }
     },
     {
-      "slot_id": "int_1_1_open0",
+      "slot_id": "int_1_1p1_open0",
       "role": "doorway",
       "size_mod": "full",
       "style": 2,
       "material": "drywall",
       "current_ref": "doorway_greybox_01",
       "kit_axis": "theme",
-      "wall": "int_1_1",
-      "story": 1,
-      "facing": "X",
-      "transform": {
-        "translation": [
-          -6.5,
-          0.0,
-          4.65
-        ],
-        "rot_y": 0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          1.25,
-          0.3,
-          2.9
-        ],
-        "pivot": "center",
-        "openings": [
-          {
-            "kind": "door",
-            "width": 1.25,
-            "height": 2.2,
-            "sill": 0.0
-          }
-        ],
-        "collision": "convex"
-      },
-      "interactive": {
-        "id": "apartment_walkup_a03:if:97f4ff0a",
-        "kind": "door",
-        "states": [
-          "closed",
-          "open"
-        ],
-        "default": "closed",
-        "collision_per_state": {
-          "closed": true,
-          "open": false
-        }
-      }
-    },
-    {
-      "slot_id": "int_1_1_seg2",
-      "role": "wall",
-      "size_mod": "full",
-      "style": 2,
-      "material": "drywall",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "int_1_1",
-      "story": 1,
-      "facing": "X",
-      "transform": {
-        "translation": [
-          -4.875,
-          0.0,
-          4.65
-        ],
-        "rot_y": 0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          2.9
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "int_1_1_seg3",
-      "role": "wall",
-      "size_mod": "full",
-      "style": 2,
-      "material": "drywall",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "int_1_1",
-      "story": 1,
-      "facing": "X",
-      "transform": {
-        "translation": [
-          -2.875,
-          0.0,
-          4.65
-        ],
-        "rot_y": 0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          2.9
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "int_1_1_seg4",
-      "role": "wall",
-      "size_mod": "full",
-      "style": 2,
-      "material": "drywall",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "int_1_1",
-      "story": 1,
-      "facing": "X",
-      "transform": {
-        "translation": [
-          -0.875,
-          0.0,
-          4.65
-        ],
-        "rot_y": 0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          2.9
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "int_1_1_seg5",
-      "role": "wall",
-      "size_mod": "full",
-      "style": 2,
-      "material": "drywall",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "int_1_1",
-      "story": 1,
-      "facing": "X",
-      "transform": {
-        "translation": [
-          1.125,
-          0.0,
-          4.65
-        ],
-        "rot_y": 0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          2.9
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "int_1_1_seg6",
-      "role": "wall",
-      "size_mod": "full",
-      "style": 2,
-      "material": "drywall",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "int_1_1",
-      "story": 1,
-      "facing": "X",
-      "transform": {
-        "translation": [
-          3.125,
-          0.0,
-          4.65
-        ],
-        "rot_y": 0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          2.9
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "int_1_1_seg7",
-      "role": "wall",
-      "size_mod": "end",
-      "style": 2,
-      "material": "drywall",
-      "current_ref": "wallEnd_greybox_01",
-      "kit_axis": "theme",
-      "wall": "int_1_1",
-      "story": 1,
-      "facing": "X",
-      "transform": {
-        "translation": [
-          5.0,
-          0.0,
-          4.65
-        ],
-        "rot_y": 0,
-        "scale": [
-          1.75,
-          0.3,
-          2.9
-        ]
-      },
-      "fit": {
-        "dims": [
-          1.75,
-          0.3,
-          2.9
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "int_1_1_open1",
-      "role": "doorway",
-      "size_mod": "full",
-      "style": 2,
-      "material": "drywall",
-      "current_ref": "doorway_greybox_01",
-      "kit_axis": "theme",
-      "wall": "int_1_1",
+      "wall": "int_1_1p1",
       "story": 1,
       "facing": "X",
       "transform": {
@@ -4003,7 +3913,7 @@
         "collision": "convex"
       },
       "interactive": {
-        "id": "apartment_walkup_a03:if:f3daac20",
+        "id": "apartment_walkup_a03:if:c5334fbf",
         "kind": "door",
         "states": [
           "closed",
@@ -4017,14 +3927,14 @@
       }
     },
     {
-      "slot_id": "int_1_1_seg8",
+      "slot_id": "int_1_1p1_seg6",
       "role": "wall",
       "size_mod": "full",
       "style": 2,
       "material": "drywall",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
-      "wall": "int_1_1",
+      "wall": "int_1_1p1",
       "story": 1,
       "facing": "X",
       "transform": {
@@ -4052,14 +3962,14 @@
       }
     },
     {
-      "slot_id": "int_1_1_seg9",
+      "slot_id": "int_1_1p1_seg7",
       "role": "wall",
       "size_mod": "end",
       "style": 2,
       "material": "drywall",
       "current_ref": "wallEnd_greybox_01",
       "kit_axis": "theme",
-      "wall": "int_1_1",
+      "wall": "int_1_1p1",
       "story": 1,
       "facing": "X",
       "transform": {

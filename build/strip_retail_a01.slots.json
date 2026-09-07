@@ -7,8 +7,8 @@
   "space": "spec/Blender Z-up raw coords; rot_y = degrees about up",
   "coverage": {
     "breach/generated": 2,
-    "doorway/generated": 11,
-    "wall/generated": 154,
+    "doorway/generated": 10,
+    "wall/generated": 152,
     "window/generated": 10
   },
   "slots": [
@@ -5359,41 +5359,6 @@
     {
       "slot_id": "int_0_3_seg0",
       "role": "wall",
-      "size_mod": "full",
-      "style": 2,
-      "material": "drywall",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "int_0_3",
-      "story": 0,
-      "facing": "Y",
-      "transform": {
-        "translation": [
-          4.0,
-          2.0,
-          1.45
-        ],
-        "rot_y": 90,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          0.3,
-          2.0,
-          2.9
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "int_0_3_seg1",
-      "role": "wall",
       "size_mod": "end",
       "style": 2,
       "material": "drywall",
@@ -5405,20 +5370,20 @@
       "transform": {
         "translation": [
           4.0,
-          3.15,
+          1.9,
           1.45
         ],
         "rot_y": 90,
         "scale": [
           0.3,
-          0.3,
+          1.8,
           2.9
         ]
       },
       "fit": {
         "dims": [
           0.3,
-          0.3,
+          1.8,
           2.9
         ],
         "pivot": "center",
@@ -5427,123 +5392,33 @@
       }
     },
     {
-      "slot_id": "int_0_3_open0",
-      "role": "doorway",
-      "size_mod": "full",
-      "style": 2,
-      "material": "drywall",
-      "current_ref": "doorway_greybox_01",
-      "kit_axis": "theme",
-      "wall": "int_0_3",
-      "story": 0,
-      "facing": "Y",
-      "transform": {
-        "translation": [
-          4.0,
-          4.0,
-          1.45
-        ],
-        "rot_y": 90,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          1.4,
-          0.3,
-          2.9
-        ],
-        "pivot": "center",
-        "openings": [
-          {
-            "kind": "door",
-            "width": 1.4,
-            "height": 2.2,
-            "sill": 0.0
-          }
-        ],
-        "collision": "convex"
-      },
-      "interactive": {
-        "id": "strip_retail_a01:if:98feaca2",
-        "kind": "door",
-        "states": [
-          "closed",
-          "open"
-        ],
-        "default": "closed",
-        "collision_per_state": {
-          "closed": true,
-          "open": false
-        }
-      }
-    },
-    {
-      "slot_id": "int_0_3_seg2",
-      "role": "wall",
-      "size_mod": "full",
-      "style": 2,
-      "material": "drywall",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "int_0_3",
-      "story": 0,
-      "facing": "Y",
-      "transform": {
-        "translation": [
-          4.0,
-          5.7,
-          1.45
-        ],
-        "rot_y": 90,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          0.3,
-          2.0,
-          2.9
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "int_0_3_seg3",
+      "slot_id": "int_0_3p1_seg0",
       "role": "wall",
       "size_mod": "end",
       "style": 2,
       "material": "drywall",
       "current_ref": "wallEnd_greybox_01",
       "kit_axis": "theme",
-      "wall": "int_0_3",
+      "wall": "int_0_3p1",
       "story": 0,
       "facing": "Y",
       "transform": {
         "translation": [
           4.0,
-          6.85,
+          6.1,
           1.45
         ],
         "rot_y": 90,
         "scale": [
           0.3,
-          0.3,
+          1.8,
           2.9
         ]
       },
       "fit": {
         "dims": [
           0.3,
-          0.3,
+          1.8,
           2.9
         ],
         "pivot": "center",

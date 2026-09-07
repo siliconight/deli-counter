@@ -311,3 +311,51 @@ something at site assembly judges it. Undecided.
 2.0 m inside the footprint. That is reachable and therefore invisible to every
 gate, but a heist you extract from without leaving the building is a design
 question, not a nav one.
+
+
+## Answered, 2026-09-07: the mid-climb break was a wall standing in the stair
+
+This doc's August run left three shells reported as fragmenting mid-climb, and
+recorded that four mechanisms proposed by static measurement here had each been
+refuted by the gate's own island data. The answer came from raycasting in the
+physics world rather than reasoning about source geometry, and it is one
+sentence: **a partition was standing where the stair goes.**
+
+Two spellings, and both had to be fixed before a stair became walkable.
+
+- A wall on storey k over a hole in storey k's slab stands on nothing -- and
+  where that hole is a stairwell, it is also a ceiling one storey height above
+  the flight. `night_pawn`'s `int_col_1_1_seg6` sat **2.05 m** over tread 6,
+  where the bake quantises the ratified 2.0 m agent to
+  `ceil(2.0 / 0.15) * 0.15 = 2.10`. Five centimetres.
+- A wall on storey k inside the footprint of a flight that CLIMBS THROUGH
+  storey k is a wall across a staircase, and its own slab is intact, so the
+  first rule never looks at it. `night_pawn`'s remaining 0.6 m was
+  `int_col_0_0_open1_lintel` at z 3.15 -- a door lintel with the ramp running
+  through it.
+
+```
+                            navmesh island 0     stair_0
+before                        y 0.19 .. 1.54     no_path
+clipped against its own hole  y 0.19 .. 2.89     no_path   (+1.35 m of climb)
+clipped against the flight    one island         ok
+```
+
+The control is `cr_pawn`: a byte-identical partition, a stair placed clear of
+it, and a pass. Fixed in Deli Counter 0.105.0 (roadmap 114); `night_pawn` and
+all four of `cbp_town_finale_midbalanced_schemafixed`'s stairs now report `ok`.
+
+**`primos_pizza` is NOT this defect, and the difference matters.** It has no
+partition anywhere near its stair. `tools/stair_probe.gd` reads **2.20 m** over
+its foot tread -- which CLEARS the 2.10 m bake -- so headroom is not the
+answer either. What the same probe shows is that `stair0_0_0` is the only tread
+in the building whose view of the sky is `parapet_N_col` rather than
+`slab_col_2`: the stair sits at y 4.5 with `run` 5.2, so its reserved rectangle
+reaches y 7.9 in a building whose north face is at y 7.0, and the flight runs
+through `ext_col_0_N_lintel1`. The stair is outside its own building. Roadmap
+115, and it stays quarantined.
+
+**The instrument is kept.** `tools/stair_probe.gd` casts up from every tread the
+build emitted and down from above it, driven off the scene rather than off
+typed-in coordinates. Six static hypotheses were refuted before anything was
+measured in the physics world; two probes settled it in two runs.

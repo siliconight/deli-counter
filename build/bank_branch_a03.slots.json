@@ -8,7 +8,7 @@
   "coverage": {
     "breach/generated": 3,
     "doorway/generated": 10,
-    "wall/generated": 214,
+    "wall/generated": 212,
     "window/generated": 6
   },
   "slots": [
@@ -6299,84 +6299,14 @@
       }
     },
     {
-      "slot_id": "int_0_0_seg1",
-      "role": "wall",
-      "size_mod": "full",
-      "style": 2,
-      "material": "drywall",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "int_0_0",
-      "story": 0,
-      "facing": "X",
-      "transform": {
-        "translation": [
-          -12.0,
-          2.0,
-          1.65
-        ],
-        "rot_y": 0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          3.3
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "int_0_0_seg2",
-      "role": "wall",
-      "size_mod": "end",
-      "style": 2,
-      "material": "drywall",
-      "current_ref": "wallEnd_greybox_01",
-      "kit_axis": "theme",
-      "wall": "int_0_0",
-      "story": 0,
-      "facing": "X",
-      "transform": {
-        "translation": [
-          -10.3125,
-          2.0,
-          1.65
-        ],
-        "rot_y": 0,
-        "scale": [
-          1.375,
-          0.3,
-          3.3
-        ]
-      },
-      "fit": {
-        "dims": [
-          1.375,
-          0.3,
-          3.3
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "int_0_0_open0",
+      "slot_id": "int_0_0p1_open0",
       "role": "doorway",
       "size_mod": "full",
       "style": 2,
       "material": "drywall",
       "current_ref": "doorway_greybox_01",
       "kit_axis": "theme",
-      "wall": "int_0_0",
+      "wall": "int_0_0p1",
       "story": 0,
       "facing": "X",
       "transform": {
@@ -6410,7 +6340,7 @@
         "collision": "convex"
       },
       "interactive": {
-        "id": "bank_branch_a03:if:dfcfa1de",
+        "id": "bank_branch_a03:if:376f2cf5",
         "kind": "door",
         "states": [
           "closed",
@@ -6424,14 +6354,14 @@
       }
     },
     {
-      "slot_id": "int_0_0_seg3",
+      "slot_id": "int_0_0p1_seg0",
       "role": "wall",
       "size_mod": "full",
       "style": 2,
       "material": "drywall",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
-      "wall": "int_0_0",
+      "wall": "int_0_0p1",
       "story": 0,
       "facing": "X",
       "transform": {
@@ -6459,14 +6389,14 @@
       }
     },
     {
-      "slot_id": "int_0_0_seg4",
+      "slot_id": "int_0_0p1_seg1",
       "role": "wall",
       "size_mod": "full",
       "style": 2,
       "material": "drywall",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
-      "wall": "int_0_0",
+      "wall": "int_0_0p1",
       "story": 0,
       "facing": "X",
       "transform": {
@@ -6494,14 +6424,14 @@
       }
     },
     {
-      "slot_id": "int_0_0_seg5",
+      "slot_id": "int_0_0p1_seg2",
       "role": "wall",
       "size_mod": "full",
       "style": 2,
       "material": "drywall",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
-      "wall": "int_0_0",
+      "wall": "int_0_0p1",
       "story": 0,
       "facing": "X",
       "transform": {
@@ -6529,14 +6459,14 @@
       }
     },
     {
-      "slot_id": "int_0_0_seg6",
+      "slot_id": "int_0_0p1_seg3",
       "role": "wall",
       "size_mod": "full",
       "style": 2,
       "material": "drywall",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
-      "wall": "int_0_0",
+      "wall": "int_0_0p1",
       "story": 0,
       "facing": "X",
       "transform": {
@@ -6564,14 +6494,14 @@
       }
     },
     {
-      "slot_id": "int_0_0_seg7",
+      "slot_id": "int_0_0p1_seg4",
       "role": "wall",
       "size_mod": "full",
       "style": 2,
       "material": "drywall",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
-      "wall": "int_0_0",
+      "wall": "int_0_0p1",
       "story": 0,
       "facing": "X",
       "transform": {
@@ -6599,14 +6529,14 @@
       }
     },
     {
-      "slot_id": "int_0_0_seg8",
+      "slot_id": "int_0_0p1_seg5",
       "role": "wall",
       "size_mod": "full",
       "style": 2,
       "material": "drywall",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
-      "wall": "int_0_0",
+      "wall": "int_0_0p1",
       "story": 0,
       "facing": "X",
       "transform": {
@@ -6634,14 +6564,14 @@
       }
     },
     {
-      "slot_id": "int_0_0_seg9",
+      "slot_id": "int_0_0p1_seg6",
       "role": "wall",
       "size_mod": "full",
       "style": 2,
       "material": "drywall",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
-      "wall": "int_0_0",
+      "wall": "int_0_0p1",
       "story": 0,
       "facing": "X",
       "transform": {
@@ -6669,14 +6599,14 @@
       }
     },
     {
-      "slot_id": "int_0_0_seg10",
+      "slot_id": "int_0_0p1_seg7",
       "role": "wall",
       "size_mod": "full",
       "style": 2,
       "material": "drywall",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
-      "wall": "int_0_0",
+      "wall": "int_0_0p1",
       "story": 0,
       "facing": "X",
       "transform": {
@@ -6704,14 +6634,14 @@
       }
     },
     {
-      "slot_id": "int_0_0_seg11",
+      "slot_id": "int_0_0p1_seg8",
       "role": "wall",
       "size_mod": "full",
       "style": 2,
       "material": "drywall",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
-      "wall": "int_0_0",
+      "wall": "int_0_0p1",
       "story": 0,
       "facing": "X",
       "transform": {
@@ -6739,14 +6669,14 @@
       }
     },
     {
-      "slot_id": "int_0_0_seg12",
+      "slot_id": "int_0_0p1_seg9",
       "role": "wall",
       "size_mod": "end",
       "style": 2,
       "material": "drywall",
       "current_ref": "wallEnd_greybox_01",
       "kit_axis": "theme",
-      "wall": "int_0_0",
+      "wall": "int_0_0p1",
       "story": 0,
       "facing": "X",
       "transform": {
@@ -6774,14 +6704,14 @@
       }
     },
     {
-      "slot_id": "int_0_0_open1",
+      "slot_id": "int_0_0p1_open1",
       "role": "doorway",
       "size_mod": "full",
       "style": 2,
       "material": "drywall",
       "current_ref": "doorway_greybox_01",
       "kit_axis": "theme",
-      "wall": "int_0_0",
+      "wall": "int_0_0p1",
       "story": 0,
       "facing": "X",
       "transform": {
@@ -6815,7 +6745,7 @@
         "collision": "convex"
       },
       "interactive": {
-        "id": "bank_branch_a03:if:a5338286",
+        "id": "bank_branch_a03:if:e403b681",
         "kind": "door",
         "states": [
           "closed",
@@ -6829,14 +6759,14 @@
       }
     },
     {
-      "slot_id": "int_0_0_seg13",
+      "slot_id": "int_0_0p1_seg10",
       "role": "wall",
       "size_mod": "full",
       "style": 2,
       "material": "drywall",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
-      "wall": "int_0_0",
+      "wall": "int_0_0p1",
       "story": 0,
       "facing": "X",
       "transform": {
@@ -6864,14 +6794,14 @@
       }
     },
     {
-      "slot_id": "int_0_0_seg14",
+      "slot_id": "int_0_0p1_seg11",
       "role": "wall",
       "size_mod": "end",
       "style": 2,
       "material": "drywall",
       "current_ref": "wallEnd_greybox_01",
       "kit_axis": "theme",
-      "wall": "int_0_0",
+      "wall": "int_0_0p1",
       "story": 0,
       "facing": "X",
       "transform": {

@@ -461,6 +461,64 @@ def ascent_surfaces(spec, st):
     return out
 
 
+def flight_rect(st, s):
+    """The plan rect ONE flight of `st` occupies crossing storey `s`.
+
+    Two questions want this rectangle and they key it to different storeys, so
+    it is derived once here rather than spelled twice. `slab_openings` files it
+    under ``s + 1``, the slab the flight cuts on the way out; `stair_footprints`
+    files it under ``s``, the storey whose air it climbs through. Getting that
+    off by one is exactly the defect roadmap 114 was: a wall clipped against
+    the hole above a flight, and left standing across the flight itself, so
+    night_pawn's ramp surfaced inside a door lintel one storey down.
+
+    It is the FOOTPRINT, margins included -- `width + 0.8` across, 0.3 m behind
+    the bottom step and 0.8 m past the top -- because the margins are where a
+    body steps on and off, not decoration.
+    """
+    lo = min(st.from_story, st.to_story)
+    if st.style == "spiral":
+        r = st.width
+        return (st.x - r - 0.25, st.y - r - 0.25,
+                st.x + r + 0.25, st.y + r + 0.25)
+    if st.style == "l_shaped":
+        w = st.width
+        lx0, lx1 = st.x - w / 2 - 0.3, st.x + w / 2 + st.run + 0.8
+        ly0, ly1 = st.y - st.run / 2 - 0.3, st.y + st.run / 2 + w + 0.3
+        px, py = _stair_pt(st, (lx0 + lx1) / 2, (ly0 + ly1) / 2)
+        sx, sy = _stair_sz(st, lx1 - lx0, ly1 - ly0)
+        return (px - sx / 2, py - sy / 2, px + sx / 2, py + sy / 2)
+    x_off = 0.0 if st.style == "straight" else st.width / 2
+    clear = 0.8                          # walk-off depth past the landing
+    hole_w = st.width + 2 * x_off + clear
+    if st.style == "scissor":
+        px, py = _stair_pt(st, st.x, st.y)
+        sx, sy = _stair_sz(st, hole_w, st.run + 2 * clear)
+    else:
+        leg = s - lo
+        sign = 1 if (leg % 2 == 0 or st.style == "straight") else -1
+        near, far = st.run / 2 + 0.3, st.run / 2 + clear
+        px, py = _stair_pt(st, st.x, st.y + sign * (far - near) / 2)
+        sx, sy = _stair_sz(st, hole_w, far + near)
+    return (px - sx / 2, py - sy / 2, px + sx / 2, py + sy / 2)
+
+
+def stair_footprints(spec):
+    """``{storey a flight CLIMBS THROUGH: [world rects]}``.
+
+    Every stair, not only the `cut_slabs` ones: a mezzanine flight that opens
+    no slab still occupies the air it climbs through, and a wall drawn across
+    it is a wall drawn across a staircase.
+    """
+    out = {}
+    for st in getattr(spec, "stairs", ()) or ():
+        lo = min(st.from_story, st.to_story)
+        hi = max(st.from_story, st.to_story)
+        for s in range(lo, hi):
+            out.setdefault(s, []).append(flight_rect(st, s))
+    return out
+
+
 def slab_openings(spec):
     """``{slab story: [world rects]}`` -- everything that opens a slab.
 
@@ -485,34 +543,7 @@ def slab_openings(spec):
         lo = min(st.from_story, st.to_story)
         hi = max(st.from_story, st.to_story)
         for s in range(lo, hi):
-            if st.style == "spiral":
-                r = st.width
-                rect = (st.x - r - 0.25, st.y - r - 0.25,
-                        st.x + r + 0.25, st.y + r + 0.25)
-            elif st.style == "l_shaped":
-                w = st.width
-                lx0, lx1 = st.x - w / 2 - 0.3, st.x + w / 2 + st.run + 0.8
-                ly0, ly1 = st.y - st.run / 2 - 0.3, st.y + st.run / 2 + w + 0.3
-                px, py = _stair_pt(st, (lx0 + lx1) / 2, (ly0 + ly1) / 2)
-                sx, sy = _stair_sz(st, lx1 - lx0, ly1 - ly0)
-                rect = (px - sx / 2, py - sy / 2, px + sx / 2, py + sy / 2)
-            else:
-                x_off = 0.0 if st.style == "straight" else st.width / 2
-                clear = 0.8              # walk-off depth past the landing
-                hole_w = st.width + 2 * x_off + clear
-                if st.style == "scissor":
-                    px, py = _stair_pt(st, st.x, st.y)
-                    sx, sy = _stair_sz(st, hole_w, st.run + 2 * clear)
-                else:
-                    leg = s - lo
-                    sign = (1 if (leg % 2 == 0 or st.style == "straight")
-                            else -1)
-                    near, far = st.run / 2 + 0.3, st.run / 2 + clear
-                    px, py = _stair_pt(st, st.x,
-                                       st.y + sign * (far - near) / 2)
-                    sx, sy = _stair_sz(st, hole_w, far + near)
-                rect = (px - sx / 2, py - sy / 2, px + sx / 2, py + sy / 2)
-            out.setdefault(s + 1, []).append(rect)
+            out.setdefault(s + 1, []).append(flight_rect(st, s))
     return out
 
 

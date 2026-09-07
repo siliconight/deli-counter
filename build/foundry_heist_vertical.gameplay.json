@@ -1333,23 +1333,6 @@
       "building": "foundry_heist_vertical"
     },
     {
-      "wall": "int_2_8",
-      "kind": "door",
-      "story": 2,
-      "x": 0.0,
-      "y": 8.001,
-      "z": 7.9,
-      "width": 1.2,
-      "height": 2.2,
-      "sill": 0.0,
-      "tag": "roof_north_to_skylight",
-      "breach_class": null,
-      "material": null,
-      "vaultable": false,
-      "reinforceable": false,
-      "building": "foundry_heist_vertical"
-    },
-    {
       "wall": "int_2_9",
       "kind": "door",
       "story": 2,
@@ -1866,6 +1849,15 @@
     },
     {
       "node": "int_col_2_8",
+      "material": {
+        "id": "poured_concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.45,
+        "damping": 0.35
+      }
+    },
+    {
+      "node": "int_col_2_8p1",
       "material": {
         "id": "poured_concrete",
         "acoustic": "Concrete",
@@ -2902,46 +2894,13 @@
       "building": "foundry_heist_vertical"
     },
     {
-      "id": "foundry_heist_vertical:if:c18402c0",
+      "id": "foundry_heist_vertical:if:2f41227e",
       "kind": "door",
       "slot_ref": "int_2_8_open0",
       "transform": {
         "translation": [
           0.0,
           -8.001,
-          7.9
-        ],
-        "rot_y": 90
-      },
-      "states": [
-        "closed",
-        "open"
-      ],
-      "default": "closed",
-      "transitions": [
-        {
-          "event": "toggle",
-          "from": "closed",
-          "to": "open"
-        },
-        {
-          "event": "toggle",
-          "from": "open",
-          "to": "closed"
-        }
-      ],
-      "source": "inferred",
-      "reversible": true,
-      "building": "foundry_heist_vertical"
-    },
-    {
-      "id": "foundry_heist_vertical:if:ebc95824",
-      "kind": "door",
-      "slot_ref": "int_2_8_open1",
-      "transform": {
-        "translation": [
-          0.0,
-          8.001,
           7.9
         ],
         "rot_y": 90
@@ -3098,7 +3057,7 @@
         "type": "exit_passage",
         "room": "central_floor",
         "via": [],
-        "destination": "west_maintenance",
+        "destination": "south_machine",
         "route_hops": 1
       },
       "egress": {
@@ -4407,6 +4366,7 @@
     "int_1_6": "wall",
     "int_1_7": "wall",
     "int_2_8": "wall",
+    "int_2_8p1": "wall",
     "int_2_9": "wall",
     "stair0_-1_0": "stair",
     "stair0_-1_1": "stair",
