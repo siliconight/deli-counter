@@ -147,29 +147,26 @@ _TRANSIENT_PREFIX = "lf_"
 #: line here after `python nav_gate.py build/<name>.glb` passes. Removing the
 #: specs instead would lose the evidence and make the fix unverifiable.
 #:
-#: ROADMAP 113. Measured 2026-09-07 from the gate's own island data rather
-#: than reasoned from source geometry -- `docs/NAV_GATE_FINDINGS.md` records
-#: four mechanisms proposed by static measurement here and refuted by their
-#: own data. The shape is the same in all three: the stair ramp bakes as
-#: DISCONNECTED FRAGMENTS with a hole part-way up, so the lower and upper
-#: endpoints land on different islands and the pathfinder correctly refuses.
-#: These are dense hand-authored interiors, the same population as `cr_deli`,
-#: which broke at the FOOT of its flight and now passes after a rebuild.
-#: TWO OF THE ORIGINAL THREE WERE RE-ADMITTED IN 0.105.0, which is the
-#: mechanism working as intended: `night_pawn` and
-#: `cbp_town_finale_midbalanced_schemafixed` had a wall standing where their
-#: stair goes (roadmap 114), and once the geometry stopped doing that both
-#: passed `nav_gate` and their lines came out of this dict. The spec that
-#: remains is a DIFFERENT defect, so it stays.
-_QUARANTINE = {
-    "primos_pizza":
-        "stair_0 no_path -- lower island y -2.90..0.10, upper y 1.00..3.55: "
-        "a 0.90 m gap. The flight runs through ext_col_0_N_lintel1, the "
-        "EXTERIOR wall: the stair sits at y 4.5 with run 5.2, so its reserved "
-        "rectangle reaches y 7.9 in a building whose north face is at y 7.0. "
-        "Roadmap 115 -- the stair has to move or shorten; cutting the shell "
-        "to let it out would breach the envelope",
-}
+#: EMPTY, AND KEPT. Roadmap 113 quarantined three shells on 2026-09-07 and all
+#: three were re-admitted the same day BY FIXING THE GENERATOR, not the shells,
+#: which is the mechanism working exactly as intended:
+#:
+#:   night_pawn, cbp_town_finale_midbalanced_schemafixed  ->  0.105.0
+#:       A partition stood where the stair goes -- over the hole in its own
+#:       storey's slab, or inside the footprint of a flight climbing through
+#:       it. 14 of 129 shells carried such a wall (roadmap 114).
+#:   primos_pizza                                         ->  0.108.0
+#:       Its stair reserved ground outside its own building and the flight ran
+#:       through the north wall's lintel. Now refused at SPEC time by
+#:       `layout_lint` L19, which measures to the wall's inner face rather
+#:       than to the footprint line (roadmap 115).
+#:
+#: The dict stays empty rather than being deleted. The next shell that fails
+#: traversal belongs here with its reason written beside its id -- not removed
+#: from `specs/`, which would lose the evidence and make the fix unverifiable,
+#: and not silently skipped, which is how a shell stays broken for a month
+#: without anybody deciding that it should.
+_QUARANTINE = {}
 
 
 def _spec_paths() -> list:

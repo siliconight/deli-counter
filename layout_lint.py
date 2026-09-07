@@ -187,6 +187,109 @@ def bounds_findings(spec):
     return fails
 
 
+def _stair_obj(raw):
+    """A spec dict's stair as an object `stairwell.flight_rect` can read.
+
+    DEFAULTS COME FROM `spec_types.Stairwell` rather than being retyped here.
+    `run` defaulting to 4.0 in one file and 4.5 in another is precisely the
+    two-spellings-of-one-number this repo keeps paying for, and a lint that
+    disagrees with the builder about a stair's size is worse than no lint.
+    """
+    import dataclasses
+    import types
+    import spec_types
+    out = {}
+    for f in dataclasses.fields(spec_types.Stairwell):
+        if f.default is not dataclasses.MISSING:
+            out[f.name] = f.default
+    for k, v in (raw or {}).items():
+        out[k] = v
+    for req in ("x", "y", "from_story", "to_story"):
+        if out.get(req) is None:
+            return None
+    return types.SimpleNamespace(**out)
+
+
+def stair_bounds_findings(spec):
+    """L19 (FAIL): a stair's reserved ground must lie inside the footprint.
+
+    THE STAIR HALF OF L14, and a FAIL for the same reason that one is. L13's
+    partition version is advisory because `deli_counter._partitions` CLAMPS an
+    out-of-bounds wall at build time, so the shipped geometry is already
+    right. NOTHING CLAMPS A STAIR. It builds exactly where it was authored,
+    and the shell wall stays where it is, so the flight runs through it.
+
+    THE CAPTURED CASE is `primos_pizza`, quarantined since 2026-09-07 for a
+    stair the navmesh bakes as two islands (roadmap 113/115). Its stair sits
+    at y 4.5 with `run` 5.2, so the rectangle it reserves reaches y 7.9 in a
+    building whose north face is at y 7.0. Raycasting down the travel axis,
+    the first surface under the walker at the foot of the climb is
+    `ext_col_0_N_lintel1` -- the exterior wall. `audit_specs` returned four
+    warnings about that very stair and not one of them was this;
+    `layout_lint` passed the spec clean.
+
+    AND IT IS NOT HEADROOM, which is the wrong answer this attracts.
+    `tools/stair_probe.gd` reads 2.20 m over that foot tread, ABOVE the
+    2.10 m the bake quantises a 2.0 m agent to. The tread is simply outside
+    the shell, under the parapet, and the walkable ground beside it is eroded
+    away by the agent radius against the wall.
+
+    Measured across all 162 specs when the rule was written: ONE stair in one
+    spec, so it is not a rule looking for work. `flight_rect` is the
+    rectangle asked about -- what the builder actually cuts and a body walks,
+    margins included -- rather than the tighter `footprint_rect`, which
+    reports only 0.10 m of overshoot on the same stair and would have made
+    this look like a rounding argument.
+
+    DO NOT FIX A FINDING HERE BY CUTTING THE WALL. The wall is right and the
+    stair is wrong; punching the flight through the shell breaches the
+    envelope, which is what `clamp_partition_span` exists to prevent. Move the
+    stair or shorten its run -- and check the pitch afterwards, because
+    shortening a run steepens a flight and `agent_max_slope_deg` 55 is not
+    `floor_max_angle` 45.
+    """
+    import stairwell
+    fails = []
+    fx, fy = spec.get("footprint_x"), spec.get("footprint_y")
+    if not fx or not fy:
+        return fails
+    wt = spec.get("wall_thick") or 0.3
+    for i, raw in enumerate(spec.get("stairs", []) or []):
+        if raw.get("exterior"):
+            continue          # an exterior tower stands outside BY DESIGN (s8.4)
+        st = _stair_obj(raw)
+        if st is None:
+            continue
+        lo = min(st.from_story, st.to_story)
+        hi = max(st.from_story, st.to_story)
+        # THE WALL'S INNER FACE, NOT THE FOOTPRINT LINE. `footprint_x / 2`
+        # is where the exterior wall is CENTRED, so a flight reaching exactly
+        # that already buries half a wall thickness of itself in solid.
+        # Measured on the captured case: the first repair of `primos_pizza`
+        # moved the stair until it overshot the centreline by 0.00 and STILL
+        # had 0.15 m of flight inside the north wall. At that moment the
+        # centreline reading returned zero findings library-wide and the face
+        # reading returned one -- the stair that was supposed to be fixed.
+        bx, by = fx / 2 - wt / 2.0, fy / 2 - wt / 2.0
+        worst, where = 0.0, None
+        for s in range(lo, hi):
+            x0, y0, x1, y1 = stairwell.flight_rect(st, s)
+            for over, edge in ((-x0 - bx, "-X"), (x1 - bx, "+X"),
+                               (-y0 - by, "-Y"), (y1 - by, "+Y")):
+                if over > worst:
+                    worst, where = over, edge
+        if worst > 0.05:
+            sid = raw.get("id") or f"stair_{i}"
+            fails.append(
+                f"L19 stair out of bounds: '{sid}' at "
+                f"({st.x:.1f}, {st.y:.1f}) run={st.run:.1f} reserves ground "
+                f"{worst:.2f} m past the inner face of the {where} wall "
+                f"of a {fx:.0f}x{fy:.0f} footprint -- the flight runs into the "
+                f"exterior wall. Move the stair or shorten its run (and "
+                f"re-check the pitch); do NOT cut the shell to let it out")
+    return fails
+
+
 def ladder_findings(spec):
     """L14/L15: every ladder must be TRAVERSABLE, not just present.
       L14 (FAIL): the through-hole a climbing body needs pokes past the slab
@@ -618,6 +721,7 @@ def lint_spec(spec, name):
     fails += lf14
     warns += lw15
     fails += door_split_findings(spec)      # L18 door split (FAIL since 0.101.2)
+    fails += stair_bounds_findings(spec)    # L19 stair outside the footprint
     fails += reachability_findings(spec)    # L12 sealed/unreachable rooms (all modes)
     if spec.get("mode") != "pvp_heist":
         return name, fails, warns

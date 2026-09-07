@@ -1,3 +1,56 @@
+## [0.108.0] - 2026-09-07
+
+A stair may not reserve ground outside its own building. Roadmap 115, and the
+quarantine is empty.
+
+### Added
+- `layout_lint.stair_bounds_findings` -- L19 (FAIL). The stair half of L14,
+  and a FAIL for the same reason that one is: L13's partition version is
+  advisory because `_partitions` CLAMPS an out-of-bounds wall at build time,
+  so the shipped geometry is already right. NOTHING CLAMPS A STAIR. It builds
+  exactly where it was authored and the shell wall stays put, so the flight
+  runs into it.
+
+  IT MEASURES TO THE WALL'S INNER FACE, `footprint / 2 - wall_thick / 2`, and
+  that is the whole point rather than a detail. `footprint_x / 2` is where the
+  exterior wall is CENTRED, so a flight reaching exactly that already buries
+  half a wall thickness of itself in solid. The first repair of
+  `primos_pizza` moved the stair until it overshot the centreline by 0.00 --
+  at which moment the centreline reading returned ZERO findings across all
+  162 specs and the face reading returned one: the stair that was supposed to
+  have just been fixed, still 0.15 m inside the north wall.
+
+  An exterior stair is exempt: it stands outside the shell against a facade by
+  design (spec s8.4).
+
+  Measured across all 162 specs when written: ONE stair in one spec. It is not
+  a rule looking for work.
+
+- `test_stair_bounds.py` -- 7 tests, pinning the captured case, the failed
+  first repair, the exemption, and the fact that no other spec trips it.
+
+### Fixed
+- `specs/primos_pizza.json` -- the stair moves from y 4.5 to 3.9 and its run
+  shortens from 5.2 to 4.0. It now clears the north wall's inner face by
+  0.15 m of real margin rather than sitting tangent to it, clips no partition,
+  and pitches at 38.7 degrees.
+
+  THE PITCH IS CHECKED BECAUSE SHORTENING A RUN STEEPENS A FLIGHT.
+  `nav_bake.agent_max_slope_deg` is 55 and `CharacterBody3D.floor_max_angle`
+  -- what a body actually stands on -- is 45, and `CLAUDE.md` records 20 of 38
+  buildings already emitting 45.0-51.3 degrees. 38.7 sits in the same band as
+  `walkup_siege`, which walks fine.
+
+  The alternative was rejected on measurement: keeping `run` at 5.2 and only
+  moving the stair puts its foot across the storey-0 partition at y 1.0, which
+  would clip that wall and drop the door in it. Fixing a stair by deleting a
+  door is not a fix.
+
+- `primos_pizza` comes out of the roadmap-113 quarantine, which is now EMPTY.
+  All three shells were re-admitted by fixing the generator rather than the
+  shells. The dict is kept, with the history in its comment, because the next
+  shell that fails traversal belongs there with its reason beside its id.
+
 ## [0.107.0] - 2026-09-07
 
 The wall-over-void rule reaches ramps, not just stairs. Roadmap 117, the half
