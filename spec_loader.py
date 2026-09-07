@@ -13,7 +13,7 @@ import os
 
 from spec_types import (
     LevelSpec, ExtWall, Opening, Partition, Stairwell,
-    SlabHole, Volume, Parapet, Asset, Placement,
+    SlabHole, Volume, Parapet, Setback, Asset, Placement,
     Room, VerticalLink, Marker, Objective, LootSpawn, Zone, Material,
     Ladder, Ramp, VaultLedge, Platform, FireEscape,
 )
@@ -49,6 +49,7 @@ def spec_from_dict(d: dict) -> LevelSpec:
     slab_holes = [SlabHole(**h) for h in d.get("slab_holes", [])]
     volumes = [Volume(**v) for v in d.get("volumes", [])]
     parapets = [Parapet(**p) for p in d.get("parapets", [])]
+    setbacks = [Setback(**p) for p in d.get("setbacks", [])]
     assets = [Asset(**a) for a in d.get("assets", [])]
     placements = []
     for p in d.get("placements", []):
@@ -68,7 +69,7 @@ def spec_from_dict(d: dict) -> LevelSpec:
     top = {k: v for k, v in d.items() if k not in (
         "$schema",
         "ext_walls", "partitions", "stairs", "slab_holes", "volumes",
-        "parapets", "assets", "placements",
+        "parapets", "setbacks", "assets", "placements",
         "rooms", "vertical_links", "markers",
         "objectives", "loot", "zones", "materials",
         "ladders", "ramps", "vault_ledges", "platforms",
@@ -79,6 +80,7 @@ def spec_from_dict(d: dict) -> LevelSpec:
         ladders=ladders, ramps=ramps, vault_ledges=vault_ledges,
         platforms=platforms, fire_escapes=fire_escapes,
         slab_holes=slab_holes, volumes=volumes, parapets=parapets,
+        setbacks=setbacks,
         assets=assets, placements=placements,
         rooms=rooms, vertical_links=vertical_links, markers=markers,
         objectives=objectives, loot=loot, zones=zones,

@@ -16,7 +16,8 @@ import math
 import os
 import sys
 
-from partition_bounds import partition_overshoot
+from partition_bounds import (clamp_partition_span,
+                              partition_overshoot)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
@@ -176,7 +177,12 @@ def bounds_findings(spec):
         s, e = part.get("start"), part.get("end")
         if s is None or e is None:
             continue
-        over = partition_overshoot(s, e, ax, fx, fy)
+        # PER STOREY (roadmap 116): on a stepped building the wall an interior
+        # partition must not poke through is THAT storey's facade.
+        import setbacks as _sb2
+        _ex = _sb2.storey_extent(_LintSpec(spec), int(part.get("story", 0)))
+        _lo, _hi = clamp_partition_span(s, e, ax, fx, fy, extent=_ex)
+        over = max(0.0, _lo - min(s, e), max(s, e) - _hi)
         if over > 0.05:
             b = (fy / 2) if str(ax).upper() == "Y" else (fx / 2)
             fails.append(
@@ -185,6 +191,29 @@ def bounds_findings(spec):
                 f"the {ax}-half {b:.1f} (overshoots {over:.1f} m -- interior wall "
                 f"pokes through the exterior shell)")
     return fails
+
+
+class _LintSpec:
+    """Attribute view over a spec DICT, so `setbacks.py` can be asked the same
+    question the builder asks it. layout_lint works on raw JSON; every other
+    consumer holds a loaded `LevelSpec`. One derivation, two shapes of input.
+    """
+
+    def __init__(self, d):
+        self._d = d
+        self.setbacks = [_Setback(s) for s in (d.get("setbacks") or [])]
+
+    def __getattr__(self, k):
+        return self._d.get(k)
+
+
+class _Setback:
+    def __init__(self, d):
+        self.story = int(d.get("story", 0))
+        self.inset_n = float(d.get("inset_n", 0.0) or 0.0)
+        self.inset_s = float(d.get("inset_s", 0.0) or 0.0)
+        self.inset_e = float(d.get("inset_e", 0.0) or 0.0)
+        self.inset_w = float(d.get("inset_w", 0.0) or 0.0)
 
 
 def _stair_obj(raw):
@@ -270,12 +299,19 @@ def stair_bounds_findings(spec):
         # had 0.15 m of flight inside the north wall. At that moment the
         # centreline reading returned zero findings library-wide and the face
         # reading returned one -- the stair that was supposed to be fixed.
-        bx, by = fx / 2 - wt / 2.0, fy / 2 - wt / 2.0
+        # PER STOREY, because a setback moves the wall the flight has to stay
+        # inside of (roadmap 116). A stair climbing through an inset storey is
+        # bounded by THAT storey's facade, not by the base footprint -- which
+        # would be the same class of miss this rule was written to catch.
+        import setbacks as _sb
         worst, where = 0.0, None
         for s in range(lo, hi):
+            ex0, ey0, ex1, ey1 = _sb.storey_extent(_LintSpec(spec), s)
             x0, y0, x1, y1 = stairwell.flight_rect(st, s)
-            for over, edge in ((-x0 - bx, "-X"), (x1 - bx, "+X"),
-                               (-y0 - by, "-Y"), (y1 - by, "+Y")):
+            for over, edge in ((ex0 + wt / 2.0 - x0, "-X"),
+                               (x1 - (ex1 - wt / 2.0), "+X"),
+                               (ey0 + wt / 2.0 - y0, "-Y"),
+                               (y1 - (ey1 - wt / 2.0), "+Y")):
                 if over > worst:
                     worst, where = over, edge
         if worst > 0.05:
@@ -722,6 +758,8 @@ def lint_spec(spec, name):
     warns += lw15
     fails += door_split_findings(spec)      # L18 door split (FAIL since 0.101.2)
     fails += stair_bounds_findings(spec)    # L19 stair outside the footprint
+    fails += [f"L20 {c}: {m}"                # L20 unbuildable setback
+              for c, m in __import__("setbacks").findings(_LintSpec(spec))]
     fails += reachability_findings(spec)    # L12 sealed/unreachable rooms (all modes)
     if spec.get("mode") != "pvp_heist":
         return name, fails, warns

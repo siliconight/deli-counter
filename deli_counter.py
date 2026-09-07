@@ -49,6 +49,7 @@ from spec_types import (
 )
 from partition_bounds import clamp_partition_span
 import partition_bounds
+import setbacks as setbacks_mod
 import ladder_geom
 import stairwell
 import skin_style
@@ -1188,6 +1189,14 @@ class _Builder:
             # a slab's top face is the floor of story s; the topmost slab caps
             # the building (roof) and reads as a ceiling/roof surface.
             role = "ceiling" if is_roof else "floor"
+            # A SLAB CAPS THE STOREY BELOW IT, so it takes that storey's
+            # extent -- which is what turns a setback into a walkable terrace
+            # with a real collider rather than a ledge the upper wall stands
+            # on the edge of. Collapses to the full footprint when nothing is
+            # inset. (roadmap 116)
+            ex0, ey0, ex1, ey1 = setbacks_mod.slab_extent(self.s, s)
+            sx, sy = ex1 - ex0, ey1 - ey0
+            scx, scy = (ex0 + ex1) / 2, (ey0 + ey1) / 2
             # VISUAL: skip only the roof mesh when authoring open-top; the
             # collision below is unaffected, so grenades/projectiles still bounce.
             # Full footprint. The slab is NOT inset: an earlier attempt shrank
@@ -1206,9 +1215,9 @@ class _Builder:
                 # as before, suffix and all. Collision below stays ONE
                 # trimesh slab: authoritative, holed by the boolean cut, and
                 # a collider has no light budget.
-                for suffix, (dx, dy), (tx, ty) in floors.slab_tiles(
-                        self.s.footprint_x, self.s.footprint_y):
-                    self._box(f"slab_{s}{suffix}", (dx, dy, z - ft / 2),
+                for suffix, (dx, dy), (tx, ty) in floors.slab_tiles(sx, sy):
+                    self._box(f"slab_{s}{suffix}", (scx + dx, scy + dy,
+                                                    z - ft / 2),
                               (tx, ty, ft), self.VISUAL, role=role)
             # Slabs use TRIMESH collision regardless of the spec default, which
             # is convex. Stairwells, ramps, and hatches boolean-cut holes in the
@@ -1216,9 +1225,8 @@ class _Builder:
             # opening with invisible collision (you see the gap but can't pass).
             # A flat slab as trimesh is cheap and is the only shape that keeps
             # the hole. The roof keeps collision even when its visual is hidden.
-            self._col_box(f"slab_col_{s}", (0, 0, z - ft / 2),
-                          (self.s.footprint_x, self.s.footprint_y, ft),
-                          mode="trimesh")
+            self._col_box(f"slab_col_{s}", (scx, scy, z - ft / 2),
+                          (sx, sy, ft), mode="trimesh")
             # The roof swap-slot is NOT emitted here any more -- see
             # `_record_roof_slots`, now called next to `_record_slab_slots`
             # after the holes are cut. Emitting it from this loop meant it was
@@ -1284,21 +1292,29 @@ class _Builder:
 
     def _exterior(self):
         base, top = self._story_range()
-        hx, hy = self.s.footprint_x / 2, self.s.footprint_y / 2
         H, wt = self.s.story_height, self.s.wall_thick
         # index explicit ext walls by (wall, story)
         explicit = {(w.wall, w.story): w for w in self.s.ext_walls}
         for s in range(base, top):
             z = s * H
+            # PER-STOREY EXTENT (roadmap 116). With no setback this collapses
+            # to +/- half the footprint and the storey bakes byte-identically,
+            # which is the whole reason the feature is opt-in. With one, the
+            # storey's walls stand on ITS extent, and an asymmetric inset moves
+            # the storey's centre -- so a wall placed at +/- half a size would
+            # be in the wrong place, and the centre is read rather than assumed.
+            x0, y0, x1, y1 = setbacks_mod.storey_extent(self.s, s)
+            cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+            fx, fy = x1 - x0, y1 - y0
             # Stop under the slab above, not at the storey line. Uniform across
             # every segment, so identical tiles still share one mesh datablock.
             wh = H - self._cap_thick(s, top)
             cz = z + wh / 2
             wall_geo = {
-                "N": ((0, hy, cz), (self.s.footprint_x, wt, wh), 0),
-                "S": ((0, -hy, cz), (self.s.footprint_x, wt, wh), 0),
-                "E": ((hx, 0, cz), (wt, self.s.footprint_y, wh), 1),
-                "W": ((-hx, 0, cz), (wt, self.s.footprint_y, wh), 1),
+                "N": ((cx, y1, cz), (fx, wt, wh), 0),
+                "S": ((cx, y0, cz), (fx, wt, wh), 0),
+                "E": ((x1, cy, cz), (wt, fy, wh), 1),
+                "W": ((x0, cy, cz), (wt, fy, wh), 1),
             }
             for wname, (c, size, axis) in wall_geo.items():
                 spec_w = explicit.get((wname, s))
@@ -1487,7 +1503,8 @@ class _Builder:
             spans = partition_bounds.partition_spans(
                 p.start, p.end, p.axis, p.pos,
                 self.s.footprint_x, self.s.footprint_y,
-                voids.get(p.story, ()), min_span=wt)
+                voids.get(p.story, ()), min_span=wt,
+                extent=setbacks_mod.storey_extent(self.s, p.story))
             if not spans:
                 continue  # outside the footprint, or wholly over a void
             self._partition_pieces[i] = list(spans)
@@ -2540,8 +2557,15 @@ class _Builder:
                 "center": [cx, cy, cz], "meta": zn.meta})
 
     def _parapets(self):
-        hx, hy = self.s.footprint_x / 2, self.s.footprint_y / 2
         for p in self.s.parapets:
+            # A PARAPET RINGS THE ROOF IT STANDS ON, so it takes that slab's
+            # extent, not the base footprint. On a stepped building the two
+            # differ and a base-footprint ring would hang in the air off the
+            # inset facade. Collapses to +/- half the footprint when nothing
+            # is inset. (roadmap 116)
+            _px0, _py0, _px1, _py1 = setbacks_mod.slab_extent(self.s, p.story)
+            hx, hy = (_px1 - _px0) / 2, (_py1 - _py0) / 2
+            _pcx, _pcy = (_px0 + _px1) / 2, (_py0 + _py1) / 2
             z = p.story * self.s.story_height
             cz = z + p.height / 2
             t = p.thick
@@ -2561,17 +2585,17 @@ class _Builder:
             # No hole is left -- N and S already span the full X footprint, so
             # they cover the column E and W give up. The two runs now abut,
             # which is how geometry is supposed to meet.
-            ey = self.s.footprint_y - 2 * t
+            ex, ey = _px1 - _px0, (_py1 - _py0) - 2 * t
             segs = [
-                ("N", (0, hy - t / 2, cz), (self.s.footprint_x, t, p.height)),
-                ("S", (0, -hy + t / 2, cz), (self.s.footprint_x, t, p.height)),
+                ("N", (_pcx, _pcy + hy - t / 2, cz), (ex, t, p.height)),
+                ("S", (_pcx, _pcy - hy + t / 2, cz), (ex, t, p.height)),
             ]
             if ey > 1e-6:
                 # A footprint narrower than two parapet thicknesses has no room
                 # for a side run at all; N and S already meet.
                 segs += [
-                    ("E", (hx - t / 2, 0, cz), (t, ey, p.height)),
-                    ("W", (-hx + t / 2, 0, cz), (t, ey, p.height)),
+                    ("E", (_pcx + hx - t / 2, _pcy, cz), (t, ey, p.height)),
+                    ("W", (_pcx - hx + t / 2, _pcy, cz), (t, ey, p.height)),
                 ]
             for n, c, size in segs:
                 # The VISUAL is tiled under the same law as the slabs

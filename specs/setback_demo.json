@@ -1,0 +1,357 @@
+{
+  "$schema": "../schema/level.schema.json",
+  "name": "setback_demo",
+  "mode": "pvp_heist",
+  "seed": 116,
+  "footprint_x": 40.0,
+  "footprint_y": 26.0,
+  "story_height": 4.0,
+  "n_stories": 2,
+  "has_basement": false,
+  "collision": "convex",
+  "auto_exterior": true,
+  "scale_ref": false,
+  "default_material": "concrete",
+  "materials": [
+    {
+      "id": "concrete",
+      "acoustic": "Concrete",
+      "absorption": 0.7,
+      "damping": 0.6
+    },
+    {
+      "id": "drywall",
+      "acoustic": "Drywall"
+    },
+    {
+      "id": "glass",
+      "acoustic": "Glass",
+      "absorption": 0.1,
+      "damping": 0.05
+    },
+    {
+      "id": "metal",
+      "acoustic": "Metal",
+      "absorption": 0.5,
+      "damping": 0.3
+    },
+    {
+      "id": "wood",
+      "acoustic": "Wood"
+    }
+  ],
+  "ext_walls": [
+    {
+      "wall": "N",
+      "story": 0,
+      "material": "metal",
+      "openings": [
+        {
+          "kind": "garage",
+          "pos": 0.0,
+          "width": 4.0,
+          "tag": "dock_north"
+        }
+      ]
+    },
+    {
+      "wall": "W",
+      "story": 0,
+      "material": "concrete",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.2,
+          "width": 1.25,
+          "tag": "service_entry"
+        }
+      ]
+    },
+    {
+      "wall": "S",
+      "story": 0,
+      "material": "concrete",
+      "openings": [
+        {
+          "kind": "window",
+          "pos": -0.25,
+          "width": 1.8,
+          "sill": 1.4,
+          "vaultable": false
+        },
+        {
+          "kind": "breach",
+          "pos": 0.25,
+          "width": 1.4,
+          "breach_class": "soft_wall",
+          "material": "drywall"
+        }
+      ]
+    },
+    {
+      "wall": "E",
+      "story": 0,
+      "material": "concrete",
+      "openings": [
+        {
+          "kind": "window",
+          "pos": 0.0,
+          "width": 1.8,
+          "sill": 1.4,
+          "vaultable": false
+        }
+      ]
+    }
+  ],
+  "partitions": [
+    {
+      "story": 0,
+      "axis": "X",
+      "pos": -3.0,
+      "start": -20.0,
+      "end": 20.0,
+      "material": "metal",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.3,
+          "width": 1.4
+        },
+        {
+          "kind": "door",
+          "pos": 0.3,
+          "width": 1.4
+        }
+      ]
+    },
+    {
+      "story": 0,
+      "axis": "X",
+      "pos": 8.0,
+      "start": -20.0,
+      "end": -3.0,
+      "material": "metal",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": 0.0,
+          "width": 1.25,
+          "reinforceable": true,
+          "tag": "cage_door"
+        }
+      ]
+    },
+    {
+      "story": 0,
+      "axis": "Y",
+      "pos": -3.0,
+      "start": 8.0,
+      "end": 13.0,
+      "material": "metal",
+      "openings": [
+        {
+          "kind": "breach",
+          "pos": 0.0,
+          "width": 1.4,
+          "breach_class": "soft_wall",
+          "material": "drywall"
+        }
+      ]
+    }
+  ],
+  "stairs": [
+    {
+      "x": -15.0,
+      "y": 4.0,
+      "from_story": 0,
+      "to_story": 1,
+      "style": "switchback",
+      "cut_slabs": true,
+      "facing": "E",
+      "id": "wa02_stair_0",
+      "role": "public_convenience"
+    }
+  ],
+  "ladders": [],
+  "vertical_links": [],
+  "parapets": [
+    {
+      "story": 2,
+      "height": 1.0,
+      "thick": 0.2
+    }
+  ],
+  "volumes": [
+    {
+      "name": "rack_long_a",
+      "x": -6.0,
+      "y": -8.0,
+      "z": 1.5,
+      "size_x": 14.0,
+      "size_y": 1.2,
+      "size_z": 3.0,
+      "collision": "convex",
+      "material": "metal"
+    },
+    {
+      "name": "rack_long_b",
+      "x": -6.0,
+      "y": -3.0,
+      "z": 1.5,
+      "size_x": 14.0,
+      "size_y": 1.2,
+      "size_z": 3.0,
+      "collision": "convex",
+      "material": "metal"
+    },
+    {
+      "name": "forklift_bay",
+      "x": 16.0,
+      "y": -3.0,
+      "z": 1.0,
+      "size_x": 3.0,
+      "size_y": 2.0,
+      "size_z": 2.0,
+      "collision": "convex",
+      "material": "metal"
+    }
+  ],
+  "rooms": [
+    {
+      "id": "main_floor",
+      "story": 0,
+      "bounds": [
+        -20.0,
+        -13.0,
+        20.0,
+        -3.0
+      ],
+      "role": "public_entry",
+      "combat_range": "long"
+    },
+    {
+      "id": "north_aisles",
+      "story": 0,
+      "bounds": [
+        -20.0,
+        -3.0,
+        20.0,
+        8.0
+      ],
+      "role": "open_floor",
+      "combat_range": "long"
+    },
+    {
+      "id": "floor_cage",
+      "story": 0,
+      "bounds": [
+        -20.0,
+        8.0,
+        -3.0,
+        13.0
+      ],
+      "role": "fortifiable",
+      "fortifiable": true,
+      "combat_range": "close"
+    },
+    {
+      "id": "north_dock",
+      "story": 0,
+      "bounds": [
+        -3.0,
+        8.0,
+        20.0,
+        13.0
+      ],
+      "role": "connector",
+      "combat_range": "medium"
+    },
+    {
+      "id": "mezz_office",
+      "story": 1,
+      "bounds": [
+        -20.0,
+        -13.0,
+        14.0,
+        5.0
+      ],
+      "role": "connector",
+      "combat_range": "close"
+    }
+  ],
+  "markers": [
+    {
+      "type": "attacker_spawn",
+      "id": "DOCK",
+      "x": 0.0,
+      "y": 15.0,
+      "z": 0,
+      "rot_z": 270,
+      "room": "north_aisles"
+    },
+    {
+      "type": "attacker_spawn",
+      "id": "SERVICE",
+      "x": -22.0,
+      "y": -8.0,
+      "z": 0,
+      "rot_z": 0,
+      "room": "main_floor"
+    },
+    {
+      "type": "defender_spawn",
+      "x": -12.0,
+      "y": 10.5,
+      "z": 0,
+      "rot_z": 0,
+      "room": "floor_cage"
+    },
+    {
+      "type": "extraction",
+      "id": "YARD",
+      "x": -8.0,
+      "y": -15.0,
+      "z": 0
+    },
+    {
+      "type": "cover_high",
+      "x": 8.0,
+      "y": -8.0,
+      "z": 0,
+      "room": "main_floor"
+    },
+    {
+      "type": "cover_low",
+      "x": -2.0,
+      "y": 4.0,
+      "z": 0,
+      "room": "north_aisles"
+    },
+    {
+      "type": "camera_socket",
+      "id": "01",
+      "x": 18.0,
+      "y": 11.0,
+      "z": 3.4,
+      "room": "north_aisles"
+    },
+    {
+      "type": "objective",
+      "id": "A",
+      "x": 8.0,
+      "y": -2.0,
+      "z": 4.0,
+      "room": "mezz_office",
+      "meta": {
+        "kind": "capture"
+      }
+    }
+  ],
+  "setbacks": [
+    {
+      "story": 1,
+      "inset_n": 8.0,
+      "inset_e": 6.0
+    }
+  ]
+}

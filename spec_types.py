@@ -334,6 +334,28 @@ class Parapet:
 
 
 @dataclass
+class Setback:
+    """An upper storey inset from the base footprint, per side (roadmap 116).
+
+    `story` names the LOWEST storey the inset applies to; it carries upward
+    until a higher setback overrides it, so one entry steps a building once
+    and two entries step it twice. A side left at 0.0 stays flush, which is
+    what a street frontage usually wants: the facade holds the building line
+    while the rear and sides step back.
+
+    Insets only ever SUBTRACT from `footprint_x` / `footprint_y`, so those two
+    keep meaning the base footprint and therefore the building's maximum
+    extent -- which is what the 24 files that read them, `lot` included,
+    require. See `setbacks.py` for the derivation everything shares.
+    """
+    story: int
+    inset_n: float = 0.0
+    inset_s: float = 0.0
+    inset_e: float = 0.0
+    inset_w: float = 0.0
+
+
+@dataclass
 class Material:
     """An acoustic material in the level's palette. Deli Counter does NOT bake
     visual PBR (you texture in Godot); it writes this acoustic data into
@@ -516,6 +538,7 @@ class LevelSpec:
     slab_holes: list[SlabHole] = field(default_factory=list)
     volumes: list[Volume] = field(default_factory=list)
     parapets: list[Parapet] = field(default_factory=list)
+    setbacks: list[Setback] = field(default_factory=list)
 
     # kitbashing: a library of source models + their placed instances
     assets: list[Asset] = field(default_factory=list)

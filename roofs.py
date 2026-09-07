@@ -92,8 +92,15 @@ def roof_slots(spec, story, cz, ft):
                                  voids=room_voids(spec, r, story,
                                                   cx, cy, sx, sy)))
         return out
-    return [_slot("roof_footprint", story, 0.0, 0.0, cz,
-                  spec.footprint_x, spec.footprint_y, ft,
+    # THE ROOF CAPS THE STOREY BELOW IT, so it takes that storey's extent --
+    # the same rule `Builder._slabs` follows, and on a stepped building the
+    # base footprint would float a roof slab out past the inset facade.
+    # Collapses to the full footprint when nothing is inset. (roadmap 116)
+    import setbacks as _sb
+    _rx0, _ry0, _rx1, _ry1 = _sb.slab_extent(spec, story)
+    return [_slot("roof_footprint", story, (_rx0 + _rx1) / 2.0,
+                  (_ry0 + _ry1) / 2.0, cz,
+                  _rx1 - _rx0, _ry1 - _ry0, ft,
                   style=style, material=mat,
                   voids=room_voids(spec, None, story, 0.0, 0.0,
-                                   spec.footprint_x, spec.footprint_y))]
+                                   _rx1 - _rx0, _ry1 - _ry0))]

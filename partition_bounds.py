@@ -16,15 +16,29 @@ def axis_bound(axis, footprint_x, footprint_y):
     return (footprint_y / 2.0) if str(axis).upper() == "Y" else (footprint_x / 2.0)
 
 
-def clamp_partition_span(start, end, axis, footprint_x, footprint_y):
+def clamp_partition_span(start, end, axis, footprint_x, footprint_y,
+                         extent=None):
     """Clamp [start, end] to the footprint on the wall's running axis.
 
     Returns (lo, hi) with lo <= hi; ``hi - lo <= 0`` means the wall lies
     entirely outside the envelope and should not be built.
+
+    `extent` is the storey's own ``(x0, y0, x1, y1)`` from `setbacks.py`, and
+    it exists because a SETBACK CAN BE ASYMMETRIC (roadmap 116). The
+    half-extent form below cannot express that: a storey inset 4 m from the
+    north face alone runs -7..3, not +/-5, and clamping such a wall to a
+    symmetric bound would both let it poke out of the stepped facade and cut
+    it short at the face that did not move. When `extent` is None the
+    behaviour is exactly as before, which is every spec that sets no setback.
     """
-    b = axis_bound(axis, footprint_x, footprint_y)
-    lo = max(min(start, end), -b)
-    hi = min(max(start, end), b)
+    if extent is not None:
+        x0, y0, x1, y1 = extent
+        blo, bhi = ((y0, y1) if str(axis).upper() == "Y" else (x0, x1))
+    else:
+        b = axis_bound(axis, footprint_x, footprint_y)
+        blo, bhi = -b, b
+    lo = max(min(start, end), blo)
+    hi = min(max(start, end), bhi)
     return lo, hi
 
 
@@ -89,14 +103,15 @@ def subtract(lo, hi, cuts, min_span=0.0, eps=1e-6):
 
 
 def partition_spans(start, end, axis, pos, footprint_x, footprint_y,
-                    hole_rects=(), min_span=0.0):
+                    hole_rects=(), min_span=0.0, extent=None):
     """Every piece of one authored partition that actually gets built.
 
     Clamped to the footprint on its running axis (`clamp_partition_span`),
     then split around any slab hole it stands over. An empty list means the
     wall builds nothing at all.
     """
-    lo, hi = clamp_partition_span(start, end, axis, footprint_x, footprint_y)
+    lo, hi = clamp_partition_span(start, end, axis, footprint_x, footprint_y,
+                                  extent=extent)
     if hi - lo <= 1e-6:
         return []
     return subtract(lo, hi, hole_cuts(axis, pos, hole_rects), min_span)

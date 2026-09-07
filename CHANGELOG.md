@@ -1,3 +1,65 @@
+## [0.110.0] - 2026-09-07
+
+A building can step. Roadmap 116, the first massing move the pipeline has
+ever been able to make.
+
+### Added
+- `Setback` on `LevelSpec`, and `setbacks.py` -- the per-storey footprint,
+  which is the single source everything asks. `story` names the LOWEST storey
+  an inset applies to and carries upward until a higher setback overrides it,
+  so one entry steps a building once and two step it twice. Insets are
+  per-side, so a side left at 0.0 stays flush: a street frontage holds the
+  building line while the rear and sides step back.
+
+  `footprint_x` / `footprint_y` KEEP THEIR MEANING. 24 source files read them,
+  `lot/preview.py` and `lot/site_layout_lint.py` among them, and those place
+  the building on a site and must know its widest extent. Setbacks only ever
+  subtract, so those two remain the base footprint and therefore the maximum.
+
+  OPT-IN, AND VERIFIED BY HASH: with no setback every expression collapses to
+  what was there before. `night_pawn.glb` rebuilt bit-for-bit identical across
+  the change, with only the manifest's `built_utc` moving.
+
+- `layout_lint` L20 refuses a setback that cannot be built: deeper than the
+  footprint, thinner than the storey's own two walls, at or below the base
+  storey, or above the roof. The builder would happily emit all four.
+
+- `specs/setback_demo.json` and `test_setbacks.py` (13 tests).
+
+### Changed
+- `_exterior`, `_slabs`, `_parapets` and `roofs.record` take the storey's own
+  extent. An asymmetric inset MOVES the storey's centre, so each reads the
+  centre rather than assuming zero -- a wall placed at +/- half a size would
+  be in the wrong place.
+
+  A SLAB CAPS THE STOREY BELOW IT, so it takes that storey's extent. That is
+  what turns a setback into a walkable roof terrace with a real collider
+  rather than a ledge the upper wall stands on the edge of, and it is the
+  whole argument for changing the mass instead of adding a layer on top.
+  Verified by raycast in the physics world on `setback_demo`: the strip beyond
+  the inset reports a floor at z 4.00 on `slab_col_1` with 8 m of clear air
+  above it -- open sky -- while a control point inside the upper storey
+  reports the same floor with 3.70 m of head. It is a terrace, not a texture.
+
+- `partition_bounds.clamp_partition_span` and `partition_spans` accept the
+  storey's `extent`. The half-extent form cannot express an asymmetric
+  setback: a storey inset 4 m from the north face alone runs -7..3, not +/-5,
+  and a symmetric bound would let a wall poke out of the stepped facade AND
+  cut it short at the face that did not move.
+
+- `layout_lint` L13 and L19 measure against the storey's own facade, and the
+  2D floorplan draws each storey on its own line.
+
+### Measured
+```
+                        fill-Y  fill-X  masses
+setback_demo             0.927   0.852       2
+warehouse_a02 (twin)     1.000   1.000       1
+```
+
+The library baseline stays 127 shells at min 1.000, mean 1.000, because
+nothing else opts in yet. `tools/massing.py` is the check.
+
 ## [0.109.0] - 2026-09-07
 
 `fit.dims` means one thing now. Roadmap 119.

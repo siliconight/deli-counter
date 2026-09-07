@@ -488,11 +488,19 @@ def render_story(spec, story):
 
     # ---- walls + openings ----
     walls, opens = [], []
-    hx, hy = tx.hx, tx.hy
-    sides = {"S": ((-hx, -hy), (hx, -hy), "x", +1),
-             "N": ((-hx, hy), (hx, hy), "x", -1),
-             "W": ((-hx, -hy), (-hx, hy), "y", +1),
-             "E": ((hx, -hy), (hx, hy), "y", -1)}
+    # PER-STOREY EXTENT (roadmap 116). A stepped storey's exterior stands on
+    # its own inset line, so drawing the base footprint here would put the
+    # plan and the geometry back into disagreement -- the thing the partition
+    # work in 0.106.0 had just finished fixing.
+    try:
+        import setbacks as _sb
+        _ex0, _ey0, _ex1, _ey1 = _sb.storey_extent(spec, story)
+    except Exception:
+        _ex0, _ey0, _ex1, _ey1 = -tx.hx, -tx.hy, tx.hx, tx.hy
+    sides = {"S": ((_ex0, _ey0), (_ex1, _ey0), "x", +1),
+             "N": ((_ex0, _ey1), (_ex1, _ey1), "x", -1),
+             "W": ((_ex0, _ey0), (_ex0, _ey1), "y", +1),
+             "E": ((_ex1, _ey0), (_ex1, _ey1), "y", -1)}
     wall_t = getattr(spec, "wall_thick", 0.3) or 0.3
     ewalls = {}
     for w in getattr(spec, "ext_walls", []) or []:
