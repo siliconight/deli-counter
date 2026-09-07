@@ -1,3 +1,53 @@
+## [0.109.0] - 2026-09-07
+
+`fit.dims` means one thing now. Roadmap 119.
+
+### Fixed
+- `_record_wall_slot` records MODULE-LOCAL dims instead of world ones. The
+  manifest carried two frames in one field, written by two sibling functions
+  forty lines apart: `_record_opening_slot` has always put the opening WIDTH
+  first regardless of which axis the wall runs on -- the module's own frame,
+  waiting on `rot_y` -- while this function passed the world size straight
+  through. On a N/S wall the two coincide, which is why it survived. On an E/W
+  wall the world reading puts the wall's THICKNESS in `dims[0]`.
+
+  Both consumers already expect the local reading: `zoo_keeper.kit.plan_kit`
+  takes `dims[0]` as the module width, and `circulation.doorway_volume`
+  unpacks `(width, thickness, height)`.
+
+  MEASURED ACROSS EVERY MANIFEST BEFORE THE CHANGE. Every full wall segment in
+  the library has a true run length of 2.00 m, so `_resolve_module` -- which
+  correctly asks by `clen` -- requests `w200` 14704 times. `plan_kit`, reading
+  `dims[0]`, derived w200 for 9106 and w30/w35/w25 for the other 5598:
+
+  ```
+  _resolve_module asks for   w200 x 14704
+  plan_kit derived           w200 x 9106, w30 x 4819, w35 x 713, w25 x 66
+  phantom                    5598 of 14704 full wall slots (38%)
+  ```
+
+  Those 5598 asked Zoo to author wall modules at names nothing can resolve.
+  `cold-7001-ws` shipped 48 of 120 wall modules that way -- e.g.
+  `wall_rockay_01_w35`, authored with `dims [0.35, 2.0, 3.7]`: a panel 35 cm
+  wide and TWO METRES deep, built, packaged, and never placed.
+
+  THE GEOMETRY WAS NEVER WRONG, and that is worth stating plainly because the
+  numbers look alarming. Module resolution goes through `clen`, so the right
+  module was always chosen and the right wall was always built. What this cost
+  was Zoo authoring time, package size, and -- the part that matters most --
+  the accuracy of the ONE report that says which modules a theme still needs.
+  That report was 38% wrong on walls, and item 112's theme-coverage decisions
+  read it.
+
+  `scale` rides along, since it is derived from `dims` for `wallEnd`
+  remainders: a unit box scaled by LOCAL dims and then turned by `rot_y` lands
+  correctly, where world dims turned by `rot_y` would not.
+
+### Changed
+- Every shell's `.slots.json` is rewritten: wall slots on E/W walls now report
+  `dims` with the run length first. `tools/massing.py` applies `rot_y` to
+  match.
+
 ## [0.108.0] - 2026-09-07
 
 A stair may not reserve ground outside its own building. Roadmap 115, and the

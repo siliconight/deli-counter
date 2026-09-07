@@ -626,7 +626,31 @@ class _Builder:
         wall_name = vname.rsplit("_seg", 1)[0]
         facing, rot_y, story = self._slot_orient(wall_name, axis)
         typ = self._slot_typename(role, size_mod)
-        dims = [round(sz[0], 4), round(sz[1], 4), round(sz[2], 4)]
+        # MODULE-LOCAL, not world. `fit.dims` means "the module's own size,
+        # to be turned by `rot_y`", which is what `zoo_keeper.kit.plan_kit`
+        # reads as the module WIDTH, what `circulation.doorway_volume` reads
+        # as (width, thickness, height), and what `_record_opening_slot` has
+        # always written. This function wrote the WORLD size instead, and on a
+        # wall running along Y that puts the wall's THICKNESS in dims[0].
+        #
+        # MEASURED 2026-09-07 across every manifest, before the change: every
+        # full wall segment in the library has a true run length of 2.00 m, so
+        # `_resolve_module` -- which correctly asks by `clen` -- requests
+        # `w200` 14704 times. `plan_kit`, reading dims[0], derived w200 for
+        # 9106 of them and w30/w35/w25 for the other 5598, and asked Zoo to
+        # author wall modules at those widths. 5598 of 14704 (38%) were names
+        # nothing could ever resolve to: built, shipped inside the package,
+        # and never placed. It also polluted the one report that says which
+        # modules a theme still needs (roadmap 119, and it bears on 112).
+        #
+        # The GEOMETRY was never wrong, because resolution goes through
+        # `clen`. This is waste and a false coverage report, not a misplaced
+        # wall -- and `scale`, derived from `dims` just below, rides along: a
+        # unit box scaled by LOCAL dims and then turned by `rot_y` lands
+        # correctly, where world dims turned by `rot_y` would not.
+        dims = ([round(sz[0], 4), round(sz[1], 4), round(sz[2], 4)]
+                if axis == 0 else
+                [round(sz[1], 4), round(sz[0], 4), round(sz[2], 4)])
         # skin style follows the surface MATERIAL (skin_style.py) so the art
         # pass can vary skins with intent; the material rides on the slot for
         # Zoo/Pixelcoat.
