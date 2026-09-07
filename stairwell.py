@@ -37,6 +37,7 @@ reason maps straight back to the document.
 import math
 
 import agent_contract
+import partition_bounds
 import tactical
 
 # ---------------------------------------------------------------------------
@@ -950,18 +951,49 @@ _AI_COST_ENCLOSED = 1.15     # s13 example: enclosed stairs cost AI a little mor
 _AGENT_PASS_WIDTH = 0.7      # capsule pass band (docs/scale_guidelines.md)
 
 
-def _door_nodes(spec, st, served):
+def _door_nodes(spec, st, served, pieces=None):
     """The doors a body moves through to use this stair: every partition
     opening with the stair's approach room on one side (per served, roomed
     story), plus the approach room's exterior doors at grade (discharge).
     `interactive` carries the SAME stable id the builder bakes -- computed
     through interactives.derive_interactive on the same wall-name convention
     (int_{story}_{index} / ext_{story}_{wall}) -- so netcode, slots, and this
-    egress contract all key on one id."""
+    egress contract all key on one id.
+
+    THAT PROMISE NEEDS WORK NOW THAT A WALL CAN BE SPLIT (roadmap 114). The
+    builder clips a partition against the slab holes it stands over and the
+    flights it stands in, so a door can end up in piece 1 -- baked as
+    `int_1_1p1` with a position measured from THAT piece's centre -- or in no
+    piece at all. Deriving the id from the authored name and the authored
+    position would name a node that does not exist, which is worse than
+    naming none: it is an egress contract that reads as satisfied. Both are
+    taken from `partition_bounds`, the same call the builder makes.
+
+    A door in no piece is SKIPPED. There is no wall left to hang it on, the
+    build says so by name on its own line, and a route through a doorway that
+    was not built is not a route.
+
+    `pieces` IS THE BUILDER HANDING OVER WHAT IT ACTUALLY BAKED -- `{partition
+    index: [(lo, hi), ...]}` -- and passing it is what makes the promise true
+    rather than likely. Re-deriving the pieces here agreed with the builder on
+    880 of the library's 882 door nodes and disagreed on 2, because
+    `slab_openings` reads `spec.slab_holes` and THE BUILDER MUTATES THAT LIST
+    DURING THE BUILD: `_partitions` asks before `_ramps` appends its hole,
+    this pass asks after, and `foundry_heist_vertical`'s `int_0_4` is split
+    for one of them and not the other. Two derivations of one fact will
+    diverge eventually; one derivation and a handoff cannot.
+
+    Without it (review time, `echo_stairs`, a plan drawn from a spec nothing
+    has built) the spec carries only authored holes, so re-deriving is exactly
+    what `_partitions` will do, and the two agree.
+    """
     import interactives
     nodes = []
     if not spec.rooms:
         return nodes
+    voids = slab_openings(spec)
+    flights = stair_footprints(spec)
+    min_span = float(getattr(spec, "wall_thick", 0.0) or 0.0)
     for s in served:
         if not any(r.story == s for r in spec.rooms):
             continue
@@ -973,7 +1005,19 @@ def _door_nodes(spec, st, served):
                 continue
             eps = 0.6
             lo = min(p.start, p.end)
-            length = abs(p.end - p.start)
+            hi = max(p.start, p.end)
+            length = hi - lo
+            if pieces is not None:
+                spans = pieces.get(i)
+                if not spans:
+                    continue      # the builder emitted no wall here at all
+            else:
+                spans = partition_bounds.partition_spans(
+                    p.start, p.end, p.axis, p.pos,
+                    spec.footprint_x, spec.footprint_y,
+                    list(voids.get(p.story, ()))
+                    + list(flights.get(p.story, ())),
+                    min_span=min_span)
             for op in p.openings:
                 if op.kind not in _DOOR_KINDS:
                     continue
@@ -986,12 +1030,22 @@ def _door_nodes(spec, st, served):
                     b = tactical._room_at(spec, s, along, p.pos + eps)
                 if room.id not in (a, b):
                     continue
-                wall = f"int_{p.story}_{i}"
+                built = None
+                for k, (plo, phi) in enumerate(spans):
+                    npos = partition_bounds.remap_opening(
+                        op.pos, lo, hi, plo, phi)
+                    if npos is not None:
+                        built = (k, npos)
+                        break
+                if built is None:
+                    continue          # not built -- no wall left to hang it on
+                wall = partition_bounds.piece_name(f"int_{p.story}_{i}",
+                                                   built[0])
                 m = interactives.derive_interactive(
-                    spec.name, wall, s, op.kind, op.pos,
+                    spec.name, wall, s, op.kind, built[1],
                     breakable=bool(op.breakable), override=op.interactive)
                 nodes.append({
-                    "floor": s, "kind": op.kind, "wall": wall, "pos": op.pos,
+                    "floor": s, "kind": op.kind, "wall": wall, "pos": built[1],
                     "interactive": m["id"] if m else None,
                     "default_state": (m or {}).get("default"),
                     "connects_from": (b if a == room.id else a),
@@ -1093,10 +1147,15 @@ def _gameplay_block(role, enclosed, width):
 # Derivation: LevelSpec -> stair_systems (gameplay.json section 13 subset)
 # ---------------------------------------------------------------------------
 
-def derive(spec):
+def derive(spec, pieces=None):
     """One semantic dict per Stairwell: identity, role, stack, floors served,
     reserved footprint, per-floor approach, and the ground discharge route.
-    Pure and offline-derivable; the builder serializes this verbatim."""
+    Pure and offline-derivable; the builder serializes this verbatim.
+
+    `pieces` is the builder's record of the partition pieces it emitted,
+    passed straight through to `_door_nodes` -- see there for why a second
+    derivation of the same fact is not good enough.
+    """
     systems = []
     have_rooms = bool(spec.rooms)
     adj = tactical.build_graph(spec) if have_rooms else {}
@@ -1190,7 +1249,7 @@ def derive(spec):
                        for ap in sysd["approach"])
         sysd["enclosure"] = "protected" if enclosed else "open"
         sysd["door_nodes"] = (_tower_door_nodes(spec, st, served) if exterior
-                              else _door_nodes(spec, st, served))
+                              else _door_nodes(spec, st, served, pieces))
         gp = _gameplay_block(role, enclosed, st.width)
         meta = getattr(st, "meta", None)
         if meta:

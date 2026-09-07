@@ -35,6 +35,8 @@ PX_PER_M = 12         # scale: pixels per meter
 WALL_W = 3            # (legacy) exterior wall stroke width
 PART_W = 2            # (legacy) partition stroke width
 PART_T = 0.15         # interior partition thickness (m) for poché fill
+
+from dataclasses import replace as _replace
 INK = "#1f2933"       # poché wall fill
 LEGEND_H = 58         # extra px below the footprint for scale bar + legend
 
@@ -500,16 +502,49 @@ def render_story(spec, story):
         wlist = ewalls.get(side, [])
         ops = [o for w in wlist for o in w.openings]
         _wall_and_openings(tx, walls, opens, p0, p1, axis, ops, wall_t, isign)
+    # A PARTITION IS DRAWN IN PIECES, because it is BUILT in pieces (roadmap
+    # 114): clipped against the slab holes it stands over and the flights it
+    # stands in. `_wall_and_openings` has always clamped the drawn extent to
+    # the footprint, so the plan already agreed with the builder about the
+    # envelope -- it just did not know about the voids, and drew a wall ruled
+    # straight across its own OPEN-TO-BELOW hatch.
+    #
+    # The pieces come from `partition_bounds`, the same call `_partitions`
+    # makes, and each is drawn in ITS OWN frame with its openings remapped --
+    # so a doorway keeps its world position and one that fell in a removed
+    # part is not drawn at all, exactly as it is not built.
+    try:
+        import stairwell as _sw
+        _voids = _sw.slab_openings(spec)
+        _flights = _sw.stair_footprints(spec)
+    except Exception:
+        _voids, _flights = {}, {}       # a plan still draws without the cuts
+    import partition_bounds as _pb
     for p in getattr(spec, "partitions", []) or []:
         if p.story != story:
             continue
-        if p.axis == "X":
-            p0, p1, axis = (p.start, p.pos), (p.end, p.pos), "x"
-        else:
-            p0, p1, axis = (p.pos, p.start), (p.pos, p.end), "y"
+        raw_lo = min(p.start, p.end)
+        raw_hi = max(p.start, p.end)
         isign = -1 if (getattr(p, "pos", 0) or 0) > 0 else 1
-        _wall_and_openings(tx, walls, opens, p0, p1, axis,
-                           getattr(p, "openings", []), PART_T, isign)
+        spans = _pb.partition_spans(
+            p.start, p.end, p.axis, p.pos, spec.footprint_x, spec.footprint_y,
+            list(_voids.get(p.story, ())) + list(_flights.get(p.story, ())),
+            min_span=wall_t)
+        for k, (plo, phi) in enumerate(spans):
+            if plo != raw_lo or phi != raw_hi:
+                ops = []
+                for op in getattr(p, "openings", []) or []:
+                    npos = _pb.remap_opening(op.pos, raw_lo, raw_hi, plo, phi)
+                    if npos is not None:
+                        ops.append(_replace(op, pos=npos))
+            else:
+                ops = getattr(p, "openings", [])
+            if p.axis == "X":
+                p0, p1, axis = (plo, p.pos), (phi, p.pos), "x"
+            else:
+                p0, p1, axis = (p.pos, plo), (p.pos, phi), "y"
+            _wall_and_openings(tx, walls, opens, p0, p1, axis, ops,
+                               PART_T, isign)
     out += ['<g id="walls">'] + walls + ['</g>']
     out += ['<g id="openings">'] + opens + ['</g>']
 

@@ -2362,26 +2362,6 @@
       "enclosure": "protected",
       "door_nodes": [
         {
-          "floor": -1,
-          "kind": "door",
-          "wall": "int_-1_6",
-          "pos": 0.0,
-          "interactive": "corner_deli_heist_01:if:900d722b",
-          "default_state": "closed",
-          "connects_from": "cold_storage_e",
-          "discharge_door": false
-        },
-        {
-          "floor": -1,
-          "kind": "door",
-          "wall": "int_-1_7",
-          "pos": 0.0,
-          "interactive": "corner_deli_heist_01:if:77c490fb",
-          "default_state": "closed",
-          "connects_from": "cold_storage_w",
-          "discharge_door": false
-        },
-        {
           "floor": 0,
           "kind": "breach",
           "wall": "int_0_2",
@@ -2389,16 +2369,6 @@
           "interactive": "corner_deli_heist_01:if:aa1d64f5",
           "default_state": "intact",
           "connects_from": "stockroom_loading",
-          "discharge_door": false
-        },
-        {
-          "floor": 0,
-          "kind": "door",
-          "wall": "int_0_3",
-          "pos": -0.4,
-          "interactive": "corner_deli_heist_01:if:2140fa26",
-          "default_state": "closed",
-          "connects_from": "deli_counter",
           "discharge_door": false
         },
         {

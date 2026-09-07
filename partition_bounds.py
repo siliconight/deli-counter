@@ -102,6 +102,22 @@ def partition_spans(start, end, axis, pos, footprint_x, footprint_y,
     return subtract(lo, hi, hole_cuts(axis, pos, hole_rects), min_span)
 
 
+def piece_name(base, k):
+    """The name of piece `k` of a split partition.
+
+    PIECE 0 KEEPS THE AUTHORED NAME, so an unsplit wall -- every partition in
+    115 of the library's 129 specs -- keeps the slot ids, interactive ids and
+    surface names it has always had.
+
+    It lives here because three passes have to agree on it and they run in
+    different processes: `_partitions` bakes the object, `floorplan` draws it,
+    and `stairwell._door_nodes` derives the interactive id a body opens. A
+    fourth spelling of "p1" is exactly the kind of drift that makes an egress
+    contract point at a node that is not there.
+    """
+    return base if k == 0 else "%sp%d" % (base, k)
+
+
 def remap_opening(op_pos, raw_lo, raw_hi, lo, hi, eps=1e-6):
     """An opening's position in one piece's own frame, or None if it is not in
     that piece.

@@ -1,3 +1,58 @@
+## [0.106.0] - 2026-09-07
+
+The two passes that CONSUME a partition learn that it can be built in pieces.
+0.105.0 changed the geometry and left them reading the authored wall.
+
+### Fixed
+- `stairwell._door_nodes` derives a door's interactive id from the piece the
+  door is actually in. The docstring has always promised "the SAME stable id
+  the builder bakes", and a split breaks both halves of the derivation: the
+  wall NAME (piece 1 bakes as `int_1_1p1`) and the POSITION (measured from
+  that piece's centre, not the authored run's).
+
+  MEASURED ON THE SHIPPED 0.105.0 BUILD of `night_pawn`: 3 of its 4 door
+  nodes named an interactive that appears in no baked set. One of the three
+  was the door in the middle of the staircase, which is not built at all. A
+  door that survives in no piece is now SKIPPED -- a route through a doorway
+  that was not built is not a route -- and an egress contract citing a node
+  that does not exist reads as satisfied, which is worse than citing none.
+  After: 3 nodes, 0 mismatches.
+
+- `floorplan` draws a partition in pieces, from the same `partition_bounds`
+  call, each in its own frame with its openings remapped. A doorway keeps its
+  world position and one that fell in a removed part is not drawn, exactly as
+  it is not built.
+
+  A CORRECTION TO WHAT 0.105.0's NOTES CLAIMED: `_wall_and_openings` has
+  always clamped the drawn extent to the footprint via `tx.hx`/`tx.hy`, so the
+  plan and the builder never disagreed about the envelope -- only about the
+  voids. It drew a wall ruled straight across its own OPEN TO BELOW hatch.
+
+  The check that says so computes BOTH rectangles from floorplan's own
+  transform rather than scraping the SVG: the first version regex-matched
+  nothing and reported a clean bill of health over zero rows. Isolated against
+  the old drawing it finds one overlap 33.6 px wide, the full width of
+  night_pawn's shaft, so it owns exactly this change and can actually fail.
+
+- `stairwell.derive` / `_door_nodes` take the pieces the builder actually
+  emitted, instead of re-deriving them. Two derivations of one fact agreed on
+  880 of the library's 882 door nodes and disagreed on 2: `slab_openings`
+  reads `spec.slab_holes`, and the builder APPENDS to that list during the
+  build, so `_partitions` asks before `_ramps` does its work and the gameplay
+  pass asks after. `foundry_heist_vertical`'s `int_0_4` came back split for
+  one caller and whole for the other. One derivation and a handoff cannot
+  drift. The wall over that ramp is a real defect and is filed as roadmap 117
+  rather than fixed here -- it needs the same per-producer count 114 made
+  before it changes any geometry.
+
+### Added
+- `partition_bounds.piece_name` -- piece 0 keeps the authored name; later
+  pieces take a `p<k>` suffix. It lives in the shared module because three
+  passes in three processes have to agree on it, and a fourth spelling of
+  "p1" is how an egress contract starts pointing at a node that is not there.
+- 5 more tests in `test_wall_over_void.py` (24 total), covering the name, the
+  door-node agreement, the skipped door, and the plan.
+
 ## [0.105.0] - 2026-09-07
 
 A wall standing where a stair goes made the stair unwalkable, in fourteen of

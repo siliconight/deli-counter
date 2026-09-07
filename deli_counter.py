@@ -1438,6 +1438,13 @@ class _Builder:
         # the SAME rectangle at the storey the flight climbs through.
         voids = stairwell.slab_openings(self.s)
         flights = stairwell.stair_footprints(self.s)
+        # RECORDED, because the gameplay pass must cite the pieces that were
+        # baked rather than re-derive them. `slab_openings` reads
+        # `self.s.slab_holes`, and `_ramps`, `_ladders` and `_vertical_links`
+        # all APPEND to that list after this pass runs -- so the same call
+        # made later sees more holes and splits a wall this pass did not.
+        # Measured: 880 of 882 door nodes agreed, 2 did not.
+        self._partition_pieces = {}
         for i, p in enumerate(self.s.partitions):
             z = p.story * H
             # Same cap as the exterior: an interior wall reaching the storey
@@ -1461,6 +1468,7 @@ class _Builder:
                 + list(flights.get(p.story, ())), min_span=wt)
             if not spans:
                 continue  # outside the footprint, or wholly over a void
+            self._partition_pieces[i] = list(spans)
             for k, (lo, hi) in enumerate(spans):
                 length = hi - lo
                 mid = (lo + hi) / 2
@@ -1493,12 +1501,13 @@ class _Builder:
                     c = (mid, p.pos, cz)
                     size = (length, wt, wh)
                     axis = 0
-                # PIECE 0 KEEPS THE AUTHORED NAME, so an unsplit wall -- every
-                # partition in 117 of the library's 129 specs -- keeps the slot
-                # ids, interactive ids and surface names it has always had.
-                sfx = f"p{k}" if k else ""
-                name = f"int_{p.story}_{i}{sfx}"
-                col_name = f"int_col_{p.story}_{i}{sfx}"
+                # `piece_name` rather than an f-string: `floorplan` and
+                # `stairwell._door_nodes` have to produce the same name for the
+                # same piece, and they do it in other processes.
+                name = partition_bounds.piece_name(
+                    f"int_{p.story}_{i}", k)
+                col_name = partition_bounds.piece_name(
+                    f"int_col_{p.story}_{i}", k)
                 holes = [self._opening_to_hole(op, length, name, p.story)
                          for op in openings]
                 self._record_openings(openings, c, axis, length, name, p.story)
@@ -2382,7 +2391,8 @@ class _Builder:
         marker empty at each stair base so the post-import can anchor them.
         Geometry is untouched -- this is contract data over what _stairs baked."""
         import stairwell
-        systems = stairwell.derive(self.s)
+        systems = stairwell.derive(
+            self.s, pieces=getattr(self, "_partition_pieces", None))
         self.gameplay["stair_systems"] = systems
         # v0.78 compliance stamp: LOT/Zoo/the game verify the shell's
         # vertical circulation from this block instead of trusting it

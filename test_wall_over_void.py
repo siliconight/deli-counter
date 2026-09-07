@@ -173,3 +173,94 @@ def test_cr_pawn_is_unchanged_because_its_stair_is_clear():
                                    voids.get(p.story, ()),
                                    min_span=spec.wall_thick)
         assert spans == [(min(p.start, p.end), max(p.start, p.end))], (p, spans)
+
+
+# ---- the name three passes have to agree on --------------------------------
+
+def test_piece_zero_keeps_the_authored_name():
+    """An unsplit wall -- 115 of the library's 129 specs -- must keep the slot
+    ids, interactive ids and surface names it has always had."""
+    assert PB.piece_name("int_1_1", 0) == "int_1_1"
+    assert PB.piece_name("int_col_1_1", 0) == "int_col_1_1"
+
+
+def test_later_pieces_are_suffixed():
+    assert PB.piece_name("int_1_1", 1) == "int_1_1p1"
+    assert PB.piece_name("int_col_-1_2", 2) == "int_col_-1_2p2"
+
+
+# ---- the egress contract must name a door that was actually built ----------
+
+def test_door_nodes_name_pieces_that_exist():
+    """`_door_nodes` promises "the SAME stable id the builder bakes". Measured
+    on the shipped build before this was fixed: 3 of night_pawn's 4 door nodes
+    named an interactive that was in no baked set, because the wall they cite
+    had been split and the position they cite is in the authored frame."""
+    spec = _night_pawn()
+    st = spec.stairs[0]
+    served = stairwell.floors_served(spec, st)
+    nodes = stairwell._door_nodes(spec, st, served)
+    assert nodes, "no door nodes -- the test would prove nothing"
+    voids = stairwell.slab_openings(spec)
+    flights = stairwell.stair_footprints(spec)
+    interior = [n for n in nodes if n["wall"].startswith("int_")]
+    assert interior, "no interior door nodes -- the test would prove nothing"
+    for n in interior:
+        story = int(n["wall"].split("_")[1])
+        i = int(n["wall"].split("_")[2].split("p")[0])
+        p = spec.partitions[i]
+        spans = PB.partition_spans(
+            p.start, p.end, p.axis, p.pos, spec.footprint_x, spec.footprint_y,
+            list(voids.get(story, ())) + list(flights.get(story, ())),
+            min_span=spec.wall_thick)
+        k = int(n["wall"].split("p")[1]) if "p" in n["wall"].split("_")[-1]             else 0
+        lo, hi = spans[k]
+        # the node's position must land inside the piece it names
+        assert abs(n["pos"]) <= 0.5 + 1e-6, n
+        world = (lo + hi) / 2 + n["pos"] * (hi - lo)
+        assert lo - 1e-6 <= world <= hi + 1e-6, (n, lo, hi, world)
+
+
+def test_a_door_in_a_removed_part_leaves_the_egress_contract():
+    """night_pawn's `int_0_0` carries a door at world x 5.6 -- inside the
+    stairwell. It is not built, so a route through it is not a route."""
+    spec = _night_pawn()
+    st = spec.stairs[0]
+    nodes = stairwell._door_nodes(spec, st, stairwell.floors_served(spec, st))
+    p = spec.partitions[0]
+    raw_lo, raw_hi = min(p.start, p.end), max(p.start, p.end)
+    dropped = [op for op in p.openings if abs(raw_lo + (op.pos + 0.5)
+                                              * (raw_hi - raw_lo) - 5.6) < 0.2]
+    assert dropped, "the captured door moved -- re-measure before editing this"
+    assert not [n for n in nodes
+                if n["wall"].startswith("int_0_0")
+                and abs(n["pos"] - dropped[0].pos) < 1e-9]
+
+
+# ---- the plan must not rule a wall across its own OPEN hatch ---------------
+
+def test_the_plan_draws_no_wall_across_the_void():
+    """Both rectangles come from floorplan's OWN transform rather than from a
+    regex over the SVG: a pattern that matches nothing gives a clean bill of
+    health over zero rows, which is how this check failed the first time it
+    was written."""
+    import re
+    import floorplan as F
+    spec = _night_pawn()
+    tx = F._Tx(spec)
+    voids = stairwell.slab_openings(spec).get(1, [])
+    assert voids, "no void on story 1 -- the test would prove nothing"
+    vpx = [(tx.x(x0), tx.y(y1), tx.x(x1), tx.y(y0)) for x0, y0, x1, y1 in voids]
+    svg = F.render_story(spec, 1)
+    block = re.search(r'<g id="walls">(.*?)</g>', svg, re.S)
+    assert block, "no walls group in the plan"
+    walls = [(float(a), float(b), float(a) + float(c), float(b) + float(d))
+             for a, b, c, d in re.findall(
+                 r'x="([-\d.]+)" y="([-\d.]+)" width="([\d.]+)" '
+                 r'height="([\d.]+)"', block.group(1))]
+    assert walls, "no wall bands parsed -- the test would prove nothing"
+    for v in vpx:
+        for w in walls:
+            ox = min(v[2], w[2]) - max(v[0], w[0])
+            oy = min(v[3], w[3]) - max(v[1], w[1])
+            assert not (ox > 0.5 and oy > 0.5), (v, w, ox, oy)

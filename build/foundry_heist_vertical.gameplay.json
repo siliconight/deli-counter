@@ -3057,7 +3057,7 @@
         "type": "exit_passage",
         "room": "central_floor",
         "via": [],
-        "destination": "south_machine",
+        "destination": "west_maintenance",
         "route_hops": 1
       },
       "egress": {
@@ -3235,16 +3235,6 @@
           "interactive": "foundry_heist_vertical:if:7c07f611",
           "default_state": "intact",
           "connects_from": "archive_room",
-          "discharge_door": false
-        },
-        {
-          "floor": 2,
-          "kind": "door",
-          "wall": "int_2_8",
-          "pos": 0.2667,
-          "interactive": "foundry_heist_vertical:if:ebc95824",
-          "default_state": "closed",
-          "connects_from": "skylight_room",
           "discharge_door": false
         },
         {
@@ -3466,8 +3456,8 @@
           "floor": 2,
           "kind": "door",
           "wall": "int_2_8",
-          "pos": -0.2667,
-          "interactive": "foundry_heist_vertical:if:c18402c0",
+          "pos": -0.1257219251336898,
+          "interactive": "foundry_heist_vertical:if:2f41227e",
           "default_state": "closed",
           "connects_from": "comms_room",
           "discharge_door": false
