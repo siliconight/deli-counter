@@ -477,7 +477,7 @@
       "building": "parking_garage_a02"
     },
     {
-      "wall": "int_1_0",
+      "wall": "int_1_0p1",
       "kind": "breach",
       "story": 1,
       "x": 17.6,
@@ -2067,7 +2067,7 @@
       }
     },
     {
-      "node": "int_col_1_0_seg5",
+      "node": "int_col_1_0p1_open0_lintel",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -2076,7 +2076,7 @@
       }
     },
     {
-      "node": "int_col_1_0_seg6",
+      "node": "int_col_1_0p1_open0_BREACHPANEL",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -2085,25 +2085,7 @@
       }
     },
     {
-      "node": "int_col_1_0_open1_lintel",
-      "material": {
-        "id": "metal",
-        "acoustic": "Metal",
-        "absorption": 0.5,
-        "damping": 0.3
-      }
-    },
-    {
-      "node": "int_col_1_0_open1_BREACHPANEL",
-      "material": {
-        "id": "metal",
-        "acoustic": "Metal",
-        "absorption": 0.5,
-        "damping": 0.3
-      }
-    },
-    {
-      "node": "int_col_1_0_seg7",
+      "node": "int_col_1_0p1_seg0",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -2678,7 +2660,7 @@
       "building": "parking_garage_a02"
     },
     {
-      "id": "parking_garage_a02:if:11f54d5a",
+      "id": "parking_garage_a02:if:981c1ddd",
       "kind": "door",
       "slot_ref": "int_1_0_open0",
       "transform": {
@@ -2711,9 +2693,9 @@
       "building": "parking_garage_a02"
     },
     {
-      "id": "parking_garage_a02:if:28257634",
+      "id": "parking_garage_a02:if:741ef9e6",
       "kind": "breach_wall",
-      "slot_ref": "int_1_0_open1",
+      "slot_ref": "int_1_0p1_open0",
       "transform": {
         "translation": [
           17.6,
@@ -3358,11 +3340,9 @@
     "int_1_0_seg2": "wall",
     "int_1_0_seg3": "wall",
     "int_1_0_seg4": "wall",
-    "int_1_0_seg5": "wall",
-    "int_1_0_seg6": "wall",
-    "int_1_0_open1_lintel": "breach",
-    "int_1_0_open1_BREACHPANEL": "breach",
-    "int_1_0_seg7": "wall",
+    "int_1_0p1_open0_lintel": "breach",
+    "int_1_0p1_open0_BREACHPANEL": "breach",
+    "int_1_0p1_seg0": "wall",
     "int_1_1_seg0": "wall",
     "int_1_1_seg1": "wall",
     "int_1_1_open0_lintel": "doorway",

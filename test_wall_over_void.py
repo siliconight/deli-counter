@@ -24,6 +24,7 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
+import ladder_geom
 import partition_bounds as PB
 import spec_loader
 import stairwell
@@ -264,3 +265,75 @@ def test_the_plan_draws_no_wall_across_the_void():
             ox = min(v[2], w[2]) - max(v[0], w[0])
             oy = min(v[3], w[3]) - max(v[1], w[1])
             assert not (ox > 0.5 and oy > 0.5), (v, w, ox, oy)
+
+
+# ---- every producer that opens a slab, not just stairs (roadmap 117) -------
+
+def test_wall_voids_carries_a_ramps_cut_and_its_footprint():
+    """A ramp cuts the slab at its TOP and occupies the air of every storey it
+    climbs through, and those are DIFFERENT rectangles -- the cut is offset
+    half a run along the ascent axis. cbp_town's `int_0_1` stands in the
+    footprint and in no cut, so a rule written from cuts alone leaves a wall
+    across a ramp."""
+    spec = spec_loader.load_spec(
+        os.path.join(HERE, "specs", "foundry_heist_vertical.json"))
+    rp = spec.ramps[0]
+    cut = stairwell.ramp_hole(rp)
+    fp = stairwell.ramp_footprint_rect(rp)
+    assert cut[:2] != (rp.x, rp.y), "the cut is not centred on the ramp"
+    assert abs(fp[0] + fp[2]) / 2 == abs(rp.x)
+    voids = stairwell.wall_voids(spec)
+    assert voids.get(rp.to_story), "no cut at the ramp's top storey"
+    assert voids.get(min(rp.from_story, rp.to_story)), "no air on the climb"
+
+
+def test_the_ramp_wall_that_exposed_this_is_clipped():
+    """`foundry_heist_vertical`'s `int_0_4` stands over the ramp's slab cut.
+    It was found because two derivations of a wall's pieces disagreed on it --
+    880 of 882 door nodes agreed, and this was one of the 2 that did not."""
+    spec = spec_loader.load_spec(
+        os.path.join(HERE, "specs", "foundry_heist_vertical.json"))
+    p = spec.partitions[4]
+    assert (p.story, p.axis, p.pos) == (0, "X", -4.0)
+    spans = PB.partition_spans(p.start, p.end, p.axis, p.pos,
+                               spec.footprint_x, spec.footprint_y,
+                               stairwell.wall_voids(spec).get(p.story, ()),
+                               min_span=spec.wall_thick)
+    assert len(spans) == 2, spans
+    assert spans != [(min(p.start, p.end), max(p.start, p.end))]
+
+
+def test_ladders_and_hatches_are_deliberately_not_voids():
+    """Both open a slab, so the same argument reaches them -- and an earlier
+    draft of `wall_voids` included both. The per-producer count is why they
+    came back out: 0 walls in 162 specs stand over either, so shipping the
+    arms would change geometry on an argument alone, with no case to check the
+    result against. This pins the decision so it is re-taken deliberately,
+    with the spec that needs it, rather than drifting back in."""
+    spec = spec_loader.load_spec(
+        os.path.join(HERE, "specs", "foundry_heist_vertical.json"))
+    assert spec.ladders, "no ladders -- the test would prove nothing"
+    assert [v for v in (spec.vertical_links or [])
+            if v.kind in ("floor_hole", "hatch")], "no links to check"
+    voids = stairwell.wall_voids(spec)
+    for ld in spec.ladders:
+        rect = ladder_geom.hole_rect(ld.x, ld.y, ld.width, ld.facing)
+        for rects in voids.values():
+            assert rect not in rects, (ld.id, rect)
+
+
+def test_wall_voids_is_a_superset_of_what_it_replaced():
+    """`wall_voids` took over from two calls unioned at three sites. It must
+    not have lost a rectangle on the way."""
+    for stem in ("night_pawn", "cbp_town_finale_midbalanced_schemafixed",
+                 "foundry_heist_vertical", "primos_pizza"):
+        spec = spec_loader.load_spec(os.path.join(HERE, "specs", stem + ".json"))
+        old = {}
+        for d in (stairwell.slab_openings(spec), stairwell.stair_footprints(spec)):
+            for k, v in d.items():
+                old.setdefault(k, []).extend(v)
+        new = stairwell.wall_voids(spec)
+        assert old, "nothing to compare -- the test would prove nothing"
+        for story, rects in old.items():
+            for r in rects:
+                assert r in new.get(story, []), (stem, story, r)

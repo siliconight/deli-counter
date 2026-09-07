@@ -8,7 +8,7 @@
   "coverage": {
     "breach/generated": 2,
     "doorway/generated": 9,
-    "wall/generated": 148,
+    "wall/generated": 146,
     "window/generated": 8
   },
   "slots": [
@@ -5210,20 +5210,20 @@
       "facing": "X",
       "transform": {
         "translation": [
-          6.15,
+          6.225,
           6.0,
           4.35
         ],
         "rot_y": 0,
         "scale": [
-          0.3,
+          0.45,
           0.35,
           2.7
         ]
       },
       "fit": {
         "dims": [
-          0.3,
+          0.45,
           0.35,
           2.7
         ],
@@ -5245,7 +5245,7 @@
       "facing": "X",
       "transform": {
         "translation": [
-          7.0,
+          7.15,
           6.0,
           4.35
         ],
@@ -5274,7 +5274,7 @@
         "collision": "convex"
       },
       "interactive": {
-        "id": "parking_garage_a02:if:11f54d5a",
+        "id": "parking_garage_a02:if:981c1ddd",
         "kind": "door",
         "states": [
           "closed",
@@ -5300,7 +5300,7 @@
       "facing": "X",
       "transform": {
         "translation": [
-          8.7,
+          8.85,
           6.0,
           4.35
         ],
@@ -5335,7 +5335,7 @@
       "facing": "X",
       "transform": {
         "translation": [
-          10.7,
+          10.85,
           6.0,
           4.35
         ],
@@ -5360,76 +5360,6 @@
     {
       "slot_id": "int_1_0_seg4",
       "role": "wall",
-      "size_mod": "full",
-      "style": 4,
-      "material": "metal",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "int_1_0",
-      "story": 1,
-      "facing": "X",
-      "transform": {
-        "translation": [
-          12.7,
-          6.0,
-          4.35
-        ],
-        "rot_y": 0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.35,
-          2.7
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "int_1_0_seg5",
-      "role": "wall",
-      "size_mod": "full",
-      "style": 4,
-      "material": "metal",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "int_1_0",
-      "story": 1,
-      "facing": "X",
-      "transform": {
-        "translation": [
-          14.7,
-          6.0,
-          4.35
-        ],
-        "rot_y": 0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.35,
-          2.7
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "int_1_0_seg6",
-      "role": "wall",
       "size_mod": "end",
       "style": 4,
       "material": "metal",
@@ -5440,20 +5370,20 @@
       "facing": "X",
       "transform": {
         "translation": [
-          16.225,
+          12.575,
           6.0,
           4.35
         ],
         "rot_y": 0,
         "scale": [
-          1.05,
+          1.45,
           0.35,
           2.7
         ]
       },
       "fit": {
         "dims": [
-          1.05,
+          1.45,
           0.35,
           2.7
         ],
@@ -5463,19 +5393,19 @@
       }
     },
     {
-      "slot_id": "int_1_0_open1",
+      "slot_id": "int_1_0p1_open0",
       "role": "breach",
       "size_mod": "full",
       "style": 4,
       "material": "metal",
       "current_ref": "breach_greybox_01",
       "kit_axis": "theme",
-      "wall": "int_1_0",
+      "wall": "int_1_0p1",
       "story": 1,
       "facing": "X",
       "transform": {
         "translation": [
-          17.5,
+          17.35,
           6.0,
           4.35
         ],
@@ -5504,7 +5434,7 @@
         "collision": "convex"
       },
       "interactive": {
-        "id": "parking_garage_a02:if:28257634",
+        "id": "parking_garage_a02:if:741ef9e6",
         "kind": "breach_wall",
         "states": [
           "intact",
@@ -5522,32 +5452,32 @@
       }
     },
     {
-      "slot_id": "int_1_0_seg7",
+      "slot_id": "int_1_0p1_seg0",
       "role": "wall",
       "size_mod": "end",
       "style": 4,
       "material": "metal",
       "current_ref": "wallEnd_greybox_01",
       "kit_axis": "theme",
-      "wall": "int_1_0",
+      "wall": "int_1_0p1",
       "story": 1,
       "facing": "X",
       "transform": {
         "translation": [
-          19.125,
+          19.05,
           6.0,
           4.35
         ],
         "rot_y": 0,
         "scale": [
-          1.75,
+          1.9,
           0.35,
           2.7
         ]
       },
       "fit": {
         "dims": [
-          1.75,
+          1.9,
           0.35,
           2.7
         ],

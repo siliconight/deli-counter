@@ -520,6 +520,92 @@ def stair_footprints(spec):
     return out
 
 
+def ramp_hole(rp):
+    """``(cx, cy, size_x, size_y)`` of the slab cut a ramp makes at its TOP.
+
+    THE SINGLE SOURCE for a shape `Builder._ramps` used to spell inline. Note
+    the centre is offset half a run along the ascent axis -- the cut is at the
+    head of the climb, not over the ramp's middle -- which is why the hole and
+    the FOOTPRINT below are different rectangles and neither substitutes for
+    the other.
+    """
+    return (rp.x,
+            rp.y + (rp.run / 2 if rp.axis == "Y" else 0),
+            rp.width + 0.4 if rp.axis == "Y" else rp.run,
+            rp.run if rp.axis == "Y" else rp.width + 0.4)
+
+
+def ramp_footprint_rect(rp):
+    """The ramp body's PLAN rect: the air it climbs through on each storey.
+
+    `run`, not `length3d` -- the box is built at the slope length and then
+    rotated, so its horizontal projection is the run. Measured need: cbp_town's
+    `int_0_1` stands in this rectangle and in no hole, so a rule written from
+    holes alone would leave a wall across a ramp.
+    """
+    w, r = rp.width, rp.run
+    sx, sy = (w, r) if rp.axis == "Y" else (r, w)
+    return (rp.x - sx / 2, rp.y - sy / 2, rp.x + sx / 2, rp.y + sy / 2)
+
+
+def wall_voids(spec):
+    """``{storey: [world rects]}`` -- everything a partition on that storey may
+    neither stand ON nor stand IN. The one call `_partitions`, the 2D plan and
+    the egress contract each make.
+
+    THREE PRODUCERS, and they are not symmetrical:
+
+    - authored `slab_holes` and each `cut_slabs` stair's cut, keyed at the
+      storey whose floor they open (`slab_openings`);
+    - each stair's footprint, keyed at the storey whose AIR it climbs through
+      (`stair_footprints`) -- a wall there is a wall across a staircase even
+      though that storey's own slab is intact;
+    - a ramp's cut, at its top storey, AND a ramp's FOOTPRINT on every storey
+      it climbs through. Those are different rectangles: the cut sits half a
+      run along the ascent axis, at the head of the climb. `cbp_town`'s
+      `int_0_1` stands in the footprint and in no cut, so a rule written from
+      cuts alone leaves a wall across a ramp.
+
+    MEASURED 2026-09-07 across all 162 specs before the rule was widened, per
+    producer, because a count that cannot be attributed cannot be checked
+    after the fix:
+
+        ramp cut          3 walls in 3 specs   (2 doors lost)
+        ramp footprint    1 wall  in 1 spec    (0 doors lost)
+        ladder hole       0
+        vertical link     0
+
+    LADDERS AND `floor_hole`/`hatch` LINKS ARE DELIBERATELY ABSENT. Both open
+    a slab, so the same argument reaches them and an earlier draft of this
+    function included both -- but the count above is why they were taken back
+    out. Nothing in the library stands a wall over either, so shipping the
+    arms would change geometry on an argument alone, with no case to check the
+    result against and no way to tell a correct rule from a wrong one. Add
+    them WITH the spec that needs them, and the count that shows it.
+
+    (A ladder would take its through-hole only, never its footprint: it is
+    mounted flat against a wall on purpose, so reserving the air in front of
+    it would delete the wall it hangs on. Worth keeping, since it is the part
+    that is easy to get wrong later.)
+    """
+    out = {}
+    for story, rects in slab_openings(spec).items():
+        out.setdefault(story, []).extend(rects)
+    for story, rects in stair_footprints(spec).items():
+        out.setdefault(story, []).extend(rects)
+    for rp in getattr(spec, "ramps", ()) or ():
+        lo = min(rp.from_story, rp.to_story)
+        hi = max(rp.from_story, rp.to_story)
+        if getattr(rp, "cut_slabs", True) and rp.to_story > rp.from_story:
+            cx, cy, sx, sy = ramp_hole(rp)
+            out.setdefault(rp.to_story, []).append(
+                (cx - sx / 2, cy - sy / 2, cx + sx / 2, cy + sy / 2))
+        fp = ramp_footprint_rect(rp)
+        for s in range(lo, hi):
+            out.setdefault(s, []).append(fp)
+    return out
+
+
 def slab_openings(spec):
     """``{slab story: [world rects]}`` -- everything that opens a slab.
 
@@ -991,8 +1077,7 @@ def _door_nodes(spec, st, served, pieces=None):
     nodes = []
     if not spec.rooms:
         return nodes
-    voids = slab_openings(spec)
-    flights = stair_footprints(spec)
+    voids = wall_voids(spec)
     min_span = float(getattr(spec, "wall_thick", 0.0) or 0.0)
     for s in served:
         if not any(r.story == s for r in spec.rooms):
@@ -1015,9 +1100,7 @@ def _door_nodes(spec, st, served, pieces=None):
                 spans = partition_bounds.partition_spans(
                     p.start, p.end, p.axis, p.pos,
                     spec.footprint_x, spec.footprint_y,
-                    list(voids.get(p.story, ()))
-                    + list(flights.get(p.story, ())),
-                    min_span=min_span)
+                    voids.get(p.story, ()), min_span=min_span)
             for op in p.openings:
                 if op.kind not in _DOOR_KINDS:
                     continue

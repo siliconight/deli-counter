@@ -515,10 +515,9 @@ def render_story(spec, story):
     # part is not drawn at all, exactly as it is not built.
     try:
         import stairwell as _sw
-        _voids = _sw.slab_openings(spec)
-        _flights = _sw.stair_footprints(spec)
+        _voids = _sw.wall_voids(spec)
     except Exception:
-        _voids, _flights = {}, {}       # a plan still draws without the cuts
+        _voids = {}                     # a plan still draws without the cuts
     import partition_bounds as _pb
     for p in getattr(spec, "partitions", []) or []:
         if p.story != story:
@@ -528,8 +527,7 @@ def render_story(spec, story):
         isign = -1 if (getattr(p, "pos", 0) or 0) > 0 else 1
         spans = _pb.partition_spans(
             p.start, p.end, p.axis, p.pos, spec.footprint_x, spec.footprint_y,
-            list(_voids.get(p.story, ())) + list(_flights.get(p.story, ())),
-            min_span=wall_t)
+            _voids.get(p.story, ()), min_span=wall_t)
         for k, (plo, phi) in enumerate(spans):
             if plo != raw_lo or phi != raw_hi:
                 ops = []

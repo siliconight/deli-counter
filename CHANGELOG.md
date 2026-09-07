@@ -1,3 +1,59 @@
+## [0.107.0] - 2026-09-07
+
+The wall-over-void rule reaches ramps, not just stairs. Roadmap 117, the half
+of it the library actually exercises.
+
+### Fixed
+- `_partitions` clips against RAMPS as well as stairs and authored holes.
+  One function --
+  `stairwell.wall_voids` -- now answers "what may a wall on this storey not
+  stand ON or IN", so the builder, the 2D plan and the egress contract each
+  make ONE call instead of unioning two dictionaries at three separate sites,
+  and a fourth producer cannot be remembered at two of them and forgotten at
+  the third.
+
+  MEASURED PER PRODUCER ACROSS ALL 162 SPECS BEFORE ANY GEOMETRY MOVED,
+  because a count that cannot be attributed cannot be checked afterwards:
+
+  ```
+  producer        walls    specs   doors lost
+  ramp cut            3        3            2
+  ramp footprint      1        1            0
+  ladder hole         0        0            0
+  vertical link       0        0            0
+  ```
+
+  A RAMP NEEDS THE SAME TWO KEYS A STAIR DOES, and that was the open question
+  when 117 was filed. Its cut and its footprint are DIFFERENT rectangles --
+  the cut sits half a run along the ascent axis, at the head of the climb --
+  and `cbp_town`'s `int_0_1` stands in the footprint and in no cut. A rule
+  written from cuts alone would have left a wall across a ramp.
+
+  LADDERS AND `floor_hole`/`hatch` LINKS ARE DELIBERATELY NOT INCLUDED. Both
+  open a slab, so the same argument reaches them, and a first cut of this
+  change did include both. The count above is why they came back out: nothing
+  in 162 specs stands a wall over either, so shipping those arms would have
+  changed geometry on an argument alone -- with no case to check the result
+  against, and no way to tell a correct rule from a wrong one. They go in with
+  the spec that needs them and the count that shows it. A test pins the
+  decision so it does not drift back in.
+
+  (A ladder would take its through-hole only, never its footprint: it is
+  mounted flat against a wall on purpose, so reserving the air in front of it
+  would delete the wall it hangs on. Recorded because it is the part that is
+  easy to get wrong later.)
+
+- `Builder._ramps` takes its slab cut from `stairwell.ramp_hole` instead of
+  spelling the rectangle inline. Two spellings of one rectangle is how a wall
+  gets clipped against a hole the builder does not make.
+
+### Added
+- `stairwell.wall_voids`, `ramp_hole`, `ramp_footprint_rect`.
+- 4 more tests in `test_wall_over_void.py` (28 total): the ramp's two
+  rectangles, the wall that exposed this, `wall_voids` as a superset of the
+  two calls it replaced, and the deliberate absence of the ladder and
+  vertical-link arms.
+
 ## [0.106.0] - 2026-09-07
 
 The two passes that CONSUME a partition learn that it can be built in pieces.

@@ -1436,8 +1436,7 @@ class _Builder:
         # AFTER this pass, so reading the spec's own list would see an empty
         # one on every stair-cut hole in the building. `stair_footprints` keys
         # the SAME rectangle at the storey the flight climbs through.
-        voids = stairwell.slab_openings(self.s)
-        flights = stairwell.stair_footprints(self.s)
+        voids = stairwell.wall_voids(self.s)
         # RECORDED, because the gameplay pass must cite the pieces that were
         # baked rather than re-derive them. `slab_openings` reads
         # `self.s.slab_holes`, and `_ramps`, `_ladders` and `_vertical_links`
@@ -1464,8 +1463,7 @@ class _Builder:
             spans = partition_bounds.partition_spans(
                 p.start, p.end, p.axis, p.pos,
                 self.s.footprint_x, self.s.footprint_y,
-                list(voids.get(p.story, ()))
-                + list(flights.get(p.story, ())), min_span=wt)
+                voids.get(p.story, ()), min_span=wt)
             if not spans:
                 continue  # outside the footprint, or wholly over a void
             self._partition_pieces[i] = list(spans)
@@ -1950,11 +1948,14 @@ class _Builder:
                                 rp.thickness), self.COLLISION)
             colobj.rotation_euler = obj.rotation_euler
             if rp.cut_slabs and rp.to_story > rp.from_story:
+                # `stairwell.ramp_hole` rather than the shape inline: this cut
+                # is one of the five things `wall_voids` clips a partition
+                # against, and two spellings of one rectangle is how a wall
+                # gets clipped against a hole the builder does not make.
+                hx, hy, hsx, hsy = stairwell.ramp_hole(rp)
                 self.s.slab_holes.append(SlabHole(
-                    story=rp.to_story, x=rp.x,
-                    y=rp.y + (rp.run / 2 if rp.axis == "Y" else 0),
-                    size_x=rp.width + 0.4 if rp.axis == "Y" else rp.run,
-                    size_y=rp.run if rp.axis == "Y" else rp.width + 0.4))
+                    story=rp.to_story, x=hx, y=hy,
+                    size_x=hsx, size_y=hsy))
 
     def _vault_ledges(self):
         """Waist-height ledge you vault over within a floor. Solid box, tagged
