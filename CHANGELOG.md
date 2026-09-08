@@ -1,3 +1,48 @@
+## [0.110.1] - 2026-09-08
+
+The contract says which radius is a body's, and its own fallbacks stop lying.
+
+### Fixed
+- `agent_contract.py`'s `_DEFAULTS` had drifted from `agent_contract.json` on
+  the two keys the contract's own derivation notes record as REFUTED:
+  `agent_max_climb_m` stood at 0.5 (the value that permitted a 0.49 m stringer
+  four walkers parked against) and `cell_size_m` at 0.15 (which capped the
+  connected slope at 45 deg against a stated 55, failing eight path proofs as
+  disjoint islands). The module's docstring promises every fallback equals the
+  ratified value; it had not since those values moved.
+
+  INERT UNTIL IT IS NOT. With the contract present the JSON wins and the
+  fallbacks are never read, which is why this survived unseen. The failure
+  path is a missing, unreadable or partial contract: `nav_env()` then exports
+  DC_NAV_CLIMB=0.5 and DC_NAV_CELL=0.15, and `nav_gate.gd` reads those with
+  `_envf(name, fallback)` -- a PRESENT environment variable beats the fallback
+  behind it. The GDScript copy was corrected when the values moved (`d7d1f70`)
+  and this one was not, so the copy that was fixed gets overwritten by the
+  copy that was not, and "degrades gracefully" means degrading to a navmesh
+  measured to disconnect.
+
+### Added
+- `test_agent_contract.py` -- asserts every key `_DEFAULTS` and the JSON share
+  holds the same value, pins the shared-key count so an empty intersection
+  cannot pass for free, and exercises the missing-contract path through
+  `nav_env()` directly. The guard is the fix; the two numbers are just today's
+  instance of it. Verified to FAIL on the pre-fix state before being kept.
+
+- `characters.player.radius_note` -- says plainly that a BODY is built from
+  0.35 and that `nav_bake.agent_radius_m` (0.4) is a bake parameter with
+  "fattest navigating character + 0.05 safety" folded in, with a matching
+  pointer added to `nav_bake.note`. This confusion has now caused two defects:
+  `clearances.unassisted_step_max_m` was once derived from the bake radius and
+  recorded 0.117 while the gate enforcing it reported 0.103, and Laser Tag's
+  evaluation pill was built at 0.40, running every door-width test against a
+  proxy 14% fatter than the character it stood for (roadmap 123).
+
+  The existing warning was real but buried inside
+  `clearances.unassisted_step_derivation`, findable only by someone reading
+  the step-height maths -- not by someone asking what radius to build a
+  character at. `characters.player` has no reader in this repo at all; it is
+  read by Level Factory, for consumers. The note belongs where they look.
+
 ## [0.110.0] - 2026-09-07
 
 A building can step. Roadmap 116, the first massing move the pipeline has

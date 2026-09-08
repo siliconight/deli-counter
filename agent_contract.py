@@ -30,9 +30,21 @@ _DEFAULTS = {
     "characters": {"player": {"radius_m": 0.35, "height_m": 1.8,
                               "eye_height_m": 1.6, "max_step_up_m": 0.5,
                               "walk_speed_mps": 4.0}},
+    # THESE MUST EQUAL agent_contract.json, and twice they did not.
+    # `agent_max_climb_m` stood at 0.5 and `cell_size_m` at 0.15 -- the two
+    # values the contract's own `*_derivation` notes record as REFUTED, with
+    # measurements: 0.5 permitted a 0.49 m stringer that four walkers parked
+    # against, and 0.15 capped the connected slope at 45 deg against a stated
+    # 55, which failed eight path proofs as disjoint islands. `nav_gate.gd`'s
+    # fallbacks were corrected when those values moved; this copy was not, and
+    # it is the copy that WINS -- a missing contract makes `nav_env` export
+    # DC_NAV_CLIMB and DC_NAV_CELL, and a present environment variable
+    # overrides the correct GDScript fallback behind it. Degrading to a number
+    # that was measured to disconnect the navmesh is not degrading gracefully.
+    # `test_agent_contract.py` now asserts this block against the file.
     "nav_bake": {"agent_radius_m": 0.4, "agent_height_m": 1.8,
-                 "agent_max_climb_m": 0.5, "agent_max_slope_deg": 55.0,
-                 "cell_size_m": 0.15, "cell_height_m": 0.15},
+                 "agent_max_climb_m": 0.15, "agent_max_slope_deg": 55.0,
+                 "cell_size_m": 0.1, "cell_height_m": 0.15},
     "clearances": {"min_door_width_m": 1.25, "min_corridor_width_m": 1.1,
                    "min_headroom_m": 2.0},
     "qa": {"arrive_dist_m": 1.5, "stuck_seconds": 4.0, "snap_max_m": 2.0,
