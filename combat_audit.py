@@ -60,7 +60,30 @@ def _op_width(op):
     return w if w is not None else KIND_DEFAULT_W.get(op.kind, 1.2)
 CRAMP_MIN_DIM = 2.2      # a combat room narrower than this can't hold a fight
 KILLBOX_AREA = 35.0      # combat room bigger than this with no cover = flag
-COVER_MIN_H = 0.6        # >= waist high; taller solids block sight = also cover
+COVER_MIN_H = 0.6        # >= waist high: furniture rather than a kerb
+
+
+def _cover_break_h():
+    """Height at which a solid stops BOTH sides seeing each other.
+
+    Derived in agent_contract.json from the heights the evaluator sights and
+    aims from; the fallback matches the ratified value the way every other
+    consumer of that contract degrades.
+    """
+    try:
+        from agent_contract import cover_break_height
+        return float(cover_break_height())
+    except Exception:
+        return 1.2222
+
+
+#: The line between a room you can fight in and a room with furniture in it.
+#: `COVER_MIN_H` answers "is this furniture"; this answers "does it do
+#: anything in a firefight", and the two were one number until 2026-09-10 --
+#: the comment on COVER_MIN_H used to read "taller solids block sight = also
+#: cover", which is true of a 2 m shelf and false of the 0.9 m crate the
+#: number actually admits.
+COVER_BREAK_H = _cover_break_h()
 UTILITY_ROLES = {"utility", "restroom", "storage", "closet"}
 
 
@@ -235,20 +258,34 @@ def _openings_into(spec, room_id):
     return out
 
 
-def _cover_in_room(spec, r):
+def _cover_in_room(spec, r, min_h=COVER_MIN_H):
+    """Count solids and cover markers in a room.
+
+    ``min_h`` is the question being asked. At the default it counts FURNITURE
+    -- crates, counters, machines, pillars, shelving, the vault box -- which
+    is what "is this room bare" wants. At `COVER_BREAK_H` it counts only what
+    stops the two sides seeing each other, which is what "can this room be
+    fought in" wants. The comment here used to claim the first answered the
+    second; `_pack_cqb`'s COVER_ALL_LOW is what came of measuring it.
+
+    A marker carries no height, so above the furniture threshold only
+    `cover_high` counts -- and that is exact rather than a guess, because
+    `level_design._COVER_HIGH_Z` IS the break height, so a `cover_high`
+    marker means precisely "a solid here breaks the line".
+    """
     n = 0
     for v in spec.volumes:
-        # anything solid and at least waist-high breaks sightlines: crates,
-        # counters, machines, pillars, shelving, the vault box itself
-        if v.size_z < COVER_MIN_H or min(v.size_x, v.size_y) < 0.3:
+        if v.size_z < min_h or min(v.size_x, v.size_y) < 0.3:
             continue
         x0, y0, x1, y1 = r.bounds
         if x0 <= v.x <= x1 and y0 <= v.y <= y1:
             base = getattr(v, "z", 0.0)
             if abs(base - r.story * spec.story_height) < spec.story_height:
                 n += 1
+    kinds = (("cover_high",) if min_h > COVER_MIN_H
+             else ("cover_low", "cover_high"))
     for m in spec.markers:
-        if getattr(m, "type", "") in ("cover_low", "cover_high"):
+        if getattr(m, "type", "") in kinds:
             x0, y0, x1, y1 = r.bounds
             if x0 <= m.x <= x1 and y0 <= m.y <= y1:
                 n += 1
@@ -805,11 +842,42 @@ def audit(spec, name=None, rules=None):
                f"{_room_min_dim(r):.1f} m at its narrowest: four capsules + "
                f"enemies do not fit. Drop the combat intent or widen it."))
         area = _room_area(r)
-        if area >= KILLBOX_AREA and _cover_in_room(spec, r) == 0:
+        furniture = _cover_in_room(spec, r)
+        if area >= KILLBOX_AREA and furniture == 0:
             F(("MED", "KILLBOX",
                f"room '{r.id}' is {area:.0f} m^2 with combat intent and ZERO "
                f"waist-high volumes or cover markers: an open kill box. "
-               f"Two or three 0.9-1.2 m volumes fix it."))
+               f"Two or three volumes at least {COVER_BREAK_H:.2f} m tall fix "
+               f"it -- this line used to say 0.9-1.2 m, which is furniture "
+               f"and leaves both sides a free shot."))
+        elif furniture and _cover_in_room(spec, r, COVER_BREAK_H) == 0:
+            # THE ROOM IS FURNISHED AND CANNOT BE FOUGHT IN. Distinct from
+            # KILLBOX on purpose: KILLBOX says the room is bare and reads as
+            # obviously wrong to anyone who opens it. This one looks fine --
+            # crates, desks, a counter, all of it modelled and lit -- and
+            # every solid in it is short enough that both sides shoot over
+            # the top. It is the failure that survives a look at the screen,
+            # which is why it needed a number rather than an eye.
+            #
+            # Not HIGH: low furniture is what the room is made of, it reads
+            # as life, and a consuming game that implements crouch gets real
+            # shelter out of it. Nothing in THIS toolchain crouches, so the
+            # evaluator sees a bare room -- and that is the gap being
+            # reported, not a verdict on the shipped game.
+            tallest = max(
+                [v.size_z for v in spec.volumes
+                 if v.size_z >= COVER_MIN_H
+                 and min(v.size_x, v.size_y) >= 0.3
+                 and r.bounds[0] <= v.x <= r.bounds[2]
+                 and r.bounds[1] <= v.y <= r.bounds[3]] or [0.0])
+            F(("MED", "COVER_ALL_LOW",
+               f"room '{r.id}' has {furniture} piece(s) of cover and not one "
+               f"of them breaks a sightline: the tallest is {tallest:.2f} m "
+               f"against the {COVER_BREAK_H:.2f} m where the crew's line and "
+               f"the enemy's cross (agent_contract.json sightlines). The room "
+               f"is furnished and cannot be fought in -- both sides see over "
+               f"everything in it. Raise one or two pieces past "
+               f"{COVER_BREAK_H:.2f} m and leave the rest as life."))
 
     # --- axis-swap lint: a partition whose doors all open within a single
     # room, but which would connect two distinct rooms with its axis flipped,

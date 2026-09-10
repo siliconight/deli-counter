@@ -1,3 +1,86 @@
+## [0.111.0] - 2026-09-10
+
+Cover is measured against the firefight instead of against furniture.
+
+### Added
+- `agent_contract.json` grows a `sightlines` block, and `agent_contract.py` a
+  `cover_break_height()` that DERIVES from it. A sightline is two lines: each
+  side sights from its own eye at the other's chest, so one descends while the
+  other climbs, and a solid tall enough to break one can sit under the other.
+  Half a broken sightline is not half a fix -- Laser Tag stamps first contact
+  on the first shot by *either* side, so the free shot that remains starts the
+  clock exactly where it was. The shortest solid that breaks both is where the
+  lines cross: `h = a - (a - c)^2 / (a + b - 2c)` = 1.2222 m, from the crew's
+  1.4 m sight, the enemy's 1.5 m, and the 1.0 m chest both aim at. When the
+  two sides sight from the same height it reduces to `(a + c) / 2`, which is
+  the form `lot/site_cover.MIN_COVER_HEIGHT` already derives.
+
+  The value is stored in the JSON and RECOMPUTED on read; a stored figure that
+  disagrees with its own inputs by more than a millimetre raises rather than
+  being quietly preferred. It is deliberately absent from `_DEFAULTS`, because
+  a copy there would merge into every contract that omits it -- a studio
+  setting its own sight heights would inherit ours, and the derivation would
+  then be refused for disagreeing with a number that studio never wrote.
+
+- `combat_audit` reports `COVER_ALL_LOW`: a combat room with cover in it,
+  none of which breaks a sightline. Distinct from `KILLBOX` on purpose.
+  KILLBOX says the room is bare and reads as obviously wrong to anyone who
+  opens it; this one looks finished -- crates, desks, a counter, modelled and
+  lit -- and every solid is short enough that both sides shoot over the top.
+  It is the failure that survives a look at the screen, which is why it needed
+  a number rather than an eye. **39 of the 91 combat rooms in the shipped
+  presets, and every combat room in `pawn_shop` and `suburban_safehouse`.**
+
+### Fixed
+- `_COVER_HIGH_Z` was a chosen 1.4, which put the high/low boundary 0.18 m
+  above the height where cover starts working and called the gap "low cover".
+  Now derived. On the shipped corpus this moves exactly one piece
+  (`compound/boss_desk`, 1.20 m) -- the authored heights already cluster
+  either side of the crossing, with nothing at all between 1.10 and 1.20, so
+  the corpus was split by this number and had no way to say so.
+- `_room_has_cover` carried a fourth hand-written `0.6` instead of reading
+  `_COVER_MIN_Z`, and would have gone stale the first time the constant moved.
+- `combat_audit`'s `COVER_MIN_H` comment claimed "taller solids block sight =
+  also cover", which is true of a 2 m shelf and false of the 0.9 m crate the
+  threshold admits. Two questions were being asked of one number.
+- The `KILLBOX` remedy advised "two or three 0.9-1.2 m volumes fix it" --
+  heights that leave both sides a free shot. A remedy that reproduces the
+  defect it is fixing is worse than none.
+
+### Not changed, on purpose
+- `_COVER_MIN_Z` stays 0.6 and low furniture keeps its `cover_low` marker. A
+  0.9 m crate is a thing in the room, it reads as life, and a consuming game
+  that implements crouch gets real shelter from it. Nothing in THIS toolchain
+  crouches -- `characters.player.crouch_height_m` has no consumer in Laser Tag
+  or Lot -- so what the new finding reports is that the EVALUATOR sees a bare
+  room, not that the shipped game does.
+- `_SEED_ARCHETYPES` heights are untouched. Seven of the nine pieces Deli
+  Counter creates as cover stand below the crossing height, which is now
+  reported per room rather than silently raised: how much of a room should be
+  shelter and how much should be life is a design call, and the over-cover
+  thesis this module is built on argues against answering it by raising
+  everything.
+
+### Measured
+- 14 non-facade presets, on `combat_audit`'s basis (any solid over 0.6 m with
+  a footprint of 0.3 m or more): 177 solids, 100 of them (56%) below the
+  crossing height; 39 of 91 combat rooms furnished entirely below it.
+- A narrower first pass counted only NAME-TAGGED furniture and reported 43 of
+  91. It was wrong: it missed `parking_garage`, whose combat rooms are covered
+  by structural columns that no name hint matches, and called two of them
+  bare. Recorded rather than dropped.
+- `test_cover_breaks_sightlines.py`: 11 tests, all 11 verified failing against
+  the pre-fix modules. Full suite 648 passed, 2 skipped.
+
+### Unreconciled, recorded in the contract
+- FOUR heights describe one firefight and no two agree.
+  `characters.player.eye_height_m` is 1.6 and `LT_PlayerPill.tscn` puts the
+  Camera3D there, so the crew SHOOTS from 1.55 (the muzzle marker) and decides
+  what it can SEE from 1.4 -- a body whose own muzzle sits 0.15 m above its
+  visibility probe. The enemy sees from 1.5 and shoots from 1.3. Which of
+  these moves is Laser Tag's call, not this file's, and moving one would move
+  the crossing under a measurement taken this week.
+
 ## [0.110.1] - 2026-09-08
 
 The contract says which radius is a body's, and its own fallbacks stop lying.

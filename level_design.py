@@ -56,9 +56,58 @@ _COVER_NAME_SKIP = (
     "foundation", "platform_base", "ramp", "stair",
 )
 
-_COVER_MIN_Z = 0.6      # below this it's a kerb, not cover
-_COVER_MAX_Z = 2.4      # above this it's a wall, not cover
-_COVER_HIGH_Z = 1.4     # >= this stands as high cover, else low cover
+# TWO DIFFERENT QUESTIONS, SO TWO DIFFERENT NUMBERS, and asking one of them
+# for both is how 75% of the cover in this repo came to be furniture that does
+# nothing in a fight.
+#
+#   * "is this a thing you'd shelter behind" -- furniture, waist high, not a
+#     kerb and not a wall. That is `_COVER_MIN_Z`/`_COVER_MAX_Z`, it decides
+#     what gets TAGGED, and a low piece still earns its tag: it is a thing in
+#     the room, it reads as life, and the consuming game may well let a body
+#     crouch behind it.
+#   * "does it stop the two sides seeing each other" -- geometry, derived in
+#     agent_contract.json from the heights the evaluator actually sights
+#     from. That is `cover_breaks_sightline()` below, and it is the one that
+#     decides whether a room can be FOUGHT in.
+#
+# Measured across the 14 non-facade presets 2026-09-10, on `combat_audit`'s
+# basis (any solid over 0.6 m with a footprint of 0.3 m or more, which is
+# the right question for "can this room be fought in" -- a structural column
+# breaks a line and carries no furniture name): 177 solids, 100 of them
+# (56%) below the crossing height, and 39 of 91 combat rooms furnished
+# entirely below it. The heights cluster cleanly either side -- nothing at
+# all sits between 1.10 and 1.20 -- so the corpus was already split by this
+# number and had no way to say so.
+#
+# A narrower first pass counted only NAME-TAGGED furniture and reported 43
+# of 91. It was wrong and is kept here rather than dropped: it missed
+# `parking_garage`, whose combat rooms are covered by structural columns
+# that no name hint matches, and reported two of them bare.
+_COVER_MIN_Z = 0.6      # below this it's a kerb, not furniture
+_COVER_MAX_Z = 2.4      # above this it's a wall, not furniture
+
+
+def cover_break_height():
+    """Height at which a solid stops BOTH sides seeing each other.
+
+    From `agent_contract.json`, which derives it from the evaluator's own
+    sight and aim heights. Falls back to the ratified value the way every
+    other consumer of that contract does, so a missing file degrades rather
+    than breaking a build.
+    """
+    try:
+        from agent_contract import cover_break_height as _h
+        return float(_h())
+    except Exception:
+        return 1.2222
+
+
+#: >= this stands as high cover, else low. Was a flat 1.4, chosen -- which
+#: put the boundary 0.18 m above the height where cover starts working and
+#: called the gap "low cover". On the shipped corpus the correction moves
+#: exactly one piece (`compound/boss_desk`, 1.20 m), because the authored
+#: heights cluster either side of it already.
+_COVER_HIGH_Z = cover_break_height()
 _COVER_MAX_FOOTPRINT = 7.0   # if BOTH plan dims exceed this it's massing, not cover
 _COVER_DEDUPE_R = 1.6   # don't add a cover marker within this of an existing one
 _COVER_PER_ROOM_CAP = 5      # readability ceiling (thesis: don't over-cover)
@@ -268,7 +317,11 @@ def _room_has_cover(spec, room):
     x0, y0, x1, y1 = room["bounds"]
     sh = _story_height(spec)
     for v in spec.get("volumes", []):
-        if v.get("size_z", 0) < 0.6 or min(v.get("size_x", 0), v.get("size_y", 0)) < 0.3:
+        # `_COVER_MIN_Z`, not a fourth hand-written 0.6. The literal was
+        # copied here and would have gone stale the first time the constant
+        # moved -- the same shape as a threshold asked of two spellings of
+        # one number.
+        if v.get("size_z", 0) < _COVER_MIN_Z or min(v.get("size_x", 0), v.get("size_y", 0)) < 0.3:
             continue
         if x0 <= v["x"] <= x1 and y0 <= v["y"] <= y1 and                 abs(v.get("z", 0) - (room.get("story", 0) * sh + v.get("size_z", 0) / 2)) < sh:
             return True

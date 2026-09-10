@@ -47,6 +47,19 @@ _DEFAULTS = {
                  "cell_size_m": 0.1, "cell_height_m": 0.15},
     "clearances": {"min_door_width_m": 1.25, "min_corridor_width_m": 1.1,
                    "min_headroom_m": 2.0},
+    # Read `sightlines.derivation` before touching these. They are the
+    # firefight's geometry, not a body's, and they are measured off Laser Tag
+    # rather than chosen here.
+    #
+    # `cover_break_height_m` is deliberately ABSENT. The contract stores it
+    # so a reader of the file can see the answer without doing the algebra,
+    # but a copy here would be merged into every contract that omits it --
+    # so a studio setting its own sight heights would inherit OUR crossing,
+    # and `cover_break_height` would then refuse its own correct derivation
+    # for disagreeing with a number the studio never wrote. The three heights
+    # are the contract; the fourth is a result.
+    "sightlines": {"crew_sight_height_m": 1.4, "enemy_sight_height_m": 1.5,
+                   "aim_height_m": 1.0},
     "qa": {"arrive_dist_m": 1.5, "stuck_seconds": 4.0, "snap_max_m": 2.0,
            "walker_capsule_radius_m": 0.35, "walker_capsule_height_m": 1.8},
     "review": {"character_reference_height_m": 1.8,
@@ -99,6 +112,42 @@ def min_door_width():
 
 def min_corridor_width():
     return float(contract()["clearances"]["min_corridor_width_m"])
+
+
+def cover_break_height():
+    """The shortest solid that stops BOTH sides of a firefight seeing each other.
+
+    Below this a solid is scenery: one side keeps a free shot, and Laser Tag
+    stamps first contact on the first shot by *either*, so the clock starts
+    exactly where it would have. Derived in the contract from the two sight
+    heights and the shared aim height rather than chosen -- and it is a
+    STANDING number, because nothing in this toolchain crouches.
+
+    Recomputed here rather than trusted, for the reason the contract's other
+    derivations are: a stored value and a formula are two spellings of one
+    quantity, and the file is edited by hand. A stored figure that disagrees
+    with its own inputs by more than a millimetre is the finding, so it
+    raises rather than being quietly preferred.
+    """
+    s = contract()["sightlines"]
+    a = float(s["crew_sight_height_m"])
+    b = float(s["enemy_sight_height_m"])
+    c = float(s["aim_height_m"])
+    spread = a + b - 2.0 * c
+    if spread <= 0.0:
+        # Both sides aim at or above their own eyes: no solid short enough to
+        # call cover breaks the pair, and there is no crossing to report.
+        raise ValueError(
+            "sightlines: aim_height_m %.3f is not below both sight heights "
+            "(%.3f, %.3f), so the two lines never cross" % (c, a, b))
+    derived = a - (a - c) ** 2 / spread
+    stored = s.get("cover_break_height_m")
+    if stored is not None and abs(float(stored) - derived) > 0.001:
+        raise ValueError(
+            "agent_contract.json sightlines: cover_break_height_m is %s but "
+            "its own inputs derive %.4f -- re-derive it or fix the heights"
+            % (stored, derived))
+    return derived
 
 
 def min_headroom():
