@@ -65,7 +65,12 @@ def test_the_shipped_contract_agrees_with_its_own_inputs():
     c = float(s["aim_height_m"])
     assert AC.cover_break_height() == pytest.approx(
         a - (a - c) ** 2 / (a + b - 2.0 * c))
-    assert AC.cover_break_height() == pytest.approx(1.2222, abs=1e-4)
+    # 1.6 / 1.6 / 1.0 -> 1.3, from Laser Tag 0.20.0. It was 1.2222 when the
+    # crew sighted from 1.4 and the enemy from 1.5; the number MOVING when the
+    # evaluator's own heights moved is the derivation doing its job, and the
+    # corpus flags the same 39 rooms either way because nothing in it stands
+    # between 1.20 m and 1.40 m.
+    assert AC.cover_break_height() == pytest.approx(1.3, abs=1e-4)
 
 
 def test_a_stored_value_that_drifted_is_refused(tmp_path, monkeypatch):
@@ -97,7 +102,7 @@ def test_a_missing_contract_degrades_to_the_ratified_value(tmp_path,
     """Same rule every other consumer of this contract follows: a build that
     refuses because a tool moved a file is worse than one that degrades."""
     _reload_contract(monkeypatch, tmp_path / "nope.json")
-    assert AC.cover_break_height() == pytest.approx(1.2222, abs=1e-4)
+    assert AC.cover_break_height() == pytest.approx(1.3, abs=1e-4)
 
 
 # ---- the consumers ----------------------------------------------------------

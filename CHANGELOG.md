@@ -1,3 +1,26 @@
+## [0.111.1] - 2026-09-10
+
+The derivation follows the evaluator, which is what it was built to do.
+
+### Changed
+- `agent_contract.json`'s `sightlines` block re-derived against Laser Tag
+  0.20.0 (roadmap 131), which gave every body ONE eye: crew 1.4 -> 1.6, enemy
+  1.5 -> 1.6, aim unchanged at 1.0, so the crossing moves 1.2222 -> 1.3000.
+  `level_design._COVER_HIGH_Z` and `combat_audit.COVER_BREAK_H` follow with no
+  edit, and `_DEFAULTS` moves with the file because
+  `test_every_fallback_equals_the_ratified_value` catches it otherwise -- which
+  it did, on the first run after the contract changed.
+- The block's `unreconciled` note becomes `resolved`. It recorded four
+  disagreeing heights; reading the rest of Laser Tag's call sites found seven,
+  and 0.20.0 collapsed them to one per body.
+
+### Not changed
+**The corpus flags the same 39 of 91 combat rooms at 1.3000 as at 1.2222**,
+because nothing in it stands between 1.20 m and 1.40 m. That is the same
+clustering 0.111.0 measured, and it means the two tools disagreeing about this
+number by 8 cm had never once changed a verdict -- which is exactly why it went
+unnoticed for as long as it did.
+
 ## [0.111.0] - 2026-09-10
 
 Cover is measured against the firefight instead of against furniture.

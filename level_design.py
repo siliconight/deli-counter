@@ -99,7 +99,7 @@ def cover_break_height():
         from agent_contract import cover_break_height as _h
         return float(_h())
     except Exception:
-        return 1.2222
+        return 1.3
 
 
 #: >= this stands as high cover, else low. Was a flat 1.4, chosen -- which

@@ -58,7 +58,7 @@ _DEFAULTS = {
     # and `cover_break_height` would then refuse its own correct derivation
     # for disagreeing with a number the studio never wrote. The three heights
     # are the contract; the fourth is a result.
-    "sightlines": {"crew_sight_height_m": 1.4, "enemy_sight_height_m": 1.5,
+    "sightlines": {"crew_sight_height_m": 1.6, "enemy_sight_height_m": 1.6,
                    "aim_height_m": 1.0},
     "qa": {"arrive_dist_m": 1.5, "stuck_seconds": 4.0, "snap_max_m": 2.0,
            "walker_capsule_radius_m": 0.35, "walker_capsule_height_m": 1.8},

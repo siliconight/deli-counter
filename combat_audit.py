@@ -74,7 +74,7 @@ def _cover_break_h():
         from agent_contract import cover_break_height
         return float(cover_break_height())
     except Exception:
-        return 1.2222
+        return 1.3
 
 
 #: The line between a room you can fight in and a room with furniture in it.
