@@ -1,3 +1,32 @@
+## [0.111.2] - 2026-09-10
+
+The aim point belongs to a body.
+
+### Added
+- `characters.player.chest_height_m`, beside the eye. `sightlines.aim_height_m`
+  was settable and derived from nothing: 1.0 m is where a 1.8 m body's chest
+  is, and no field said so, so a studio stating a 2.05 m character got an eye
+  height that followed and an aim point that stayed at ours.
+
+  Derived as the centre of mass of a standing adult, about 0.55 of stature --
+  0.55 * 1.8 = 0.99, ratified at 1.0, so the value does not move and nothing
+  measured changes.
+
+- `agent_contract.chest_height()`, which CHECKS the constraint rather than
+  documenting it. **The hard constraint is not anthropometry.** A line-of-sight
+  ray is cast AT this height and LOS is granted only when it hits the target
+  body first, so an aim point outside the target's own capsule misses: nothing
+  ever sees anything, and the report fills with zeroes that read like a map
+  problem. The safe band is the cylindrical section, `radius <= chest <=
+  height - radius` (0.35 to 1.45 here) -- above it the ray grazes a hemisphere,
+  and at the apex it misses. **A 1.0 m character aimed at a fixed 1.0 m is
+  aimed at the top of its own head.**
+
+- `cover_break_height()` now takes the aim height from the BODY and refuses
+  when `sightlines.aim_height_m` disagrees with it. The sightline block carries
+  a copy because the crossing needs all three numbers in one place, and a value
+  carried twice is a value that rots.
+
 ## [0.111.1] - 2026-09-10
 
 The derivation follows the evaluator, which is what it was built to do.

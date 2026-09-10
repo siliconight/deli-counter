@@ -28,7 +28,8 @@ _cache = None
 
 _DEFAULTS = {
     "characters": {"player": {"radius_m": 0.35, "height_m": 1.8,
-                              "eye_height_m": 1.6, "max_step_up_m": 0.5,
+                              "eye_height_m": 1.6, "chest_height_m": 1.0,
+                              "max_step_up_m": 0.5,
                               "walk_speed_mps": 4.0}},
     # THESE MUST EQUAL agent_contract.json, and twice they did not.
     # `agent_max_climb_m` stood at 0.5 and `cell_size_m` at 0.15 -- the two
@@ -114,6 +115,41 @@ def min_corridor_width():
     return float(contract()["clearances"]["min_corridor_width_m"])
 
 
+def chest_height():
+    """Where a shot is aimed on a body, in metres above its feet.
+
+    A PROPERTY OF THE TARGET, not a constant, and that is the whole of why
+    this function exists. `sightlines.aim_height_m` was settable and derived
+    from nothing: 1.0 m is where a 1.8 m body's chest is, so a studio that
+    stated a 2.05 m character got an eye height that followed and an aim
+    point that stayed put.
+
+    The band is not a matter of taste. A line-of-sight ray is cast AT this
+    height and LOS is granted only when it hits the target body first, so an
+    aim point outside the target's own capsule misses and every sightline on
+    the map reads blocked. Inside the cylindrical section --
+    ``radius <= chest <= height - radius`` -- the ray meets the full width;
+    above it the ray grazes a hemisphere, and at the apex it misses. A 1.0 m
+    character aimed at a fixed 1.0 m is aimed at the top of its own head.
+
+    So the constraint is CHECKED rather than documented. A contract that puts
+    the aim point outside its own body would produce a run in which nothing
+    ever sees anything, and a report full of zeroes reads like a map problem.
+    """
+    player = contract()["characters"]["player"]
+    chest = float(player["chest_height_m"])
+    radius = float(player["radius_m"])
+    height = float(player["height_m"])
+    if not (radius <= chest <= height - radius):
+        raise ValueError(
+            "characters.player.chest_height_m %.3f is outside the body's own "
+            "capsule (%.3f to %.3f for radius %.3f, height %.3f) -- a "
+            "line-of-sight ray aimed there misses the target and every "
+            "sightline reads blocked" % (chest, radius, height - radius,
+                                         radius, height))
+    return chest
+
+
 def cover_break_height():
     """The shortest solid that stops BOTH sides of a firefight seeing each other.
 
@@ -132,7 +168,17 @@ def cover_break_height():
     s = contract()["sightlines"]
     a = float(s["crew_sight_height_m"])
     b = float(s["enemy_sight_height_m"])
-    c = float(s["aim_height_m"])
+    # THE BODY'S, not this block's. `aim_height_m` is carried in `sightlines`
+    # too, because the crossing needs all three numbers in one place -- but a
+    # value carried twice is a value that rots, so the body decides and the
+    # copy is checked against it.
+    c = chest_height()
+    stored_aim = s.get("aim_height_m")
+    if stored_aim is not None and abs(float(stored_aim) - c) > 1e-6:
+        raise ValueError(
+            "sightlines.aim_height_m is %s and characters.player."
+            "chest_height_m is %.3f -- one body, one aim point"
+            % (stored_aim, c))
     spread = a + b - 2.0 * c
     if spread <= 0.0:
         # Both sides aim at or above their own eyes: no solid short enough to

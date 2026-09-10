@@ -87,14 +87,83 @@ def test_a_stored_value_that_drifted_is_refused(tmp_path, monkeypatch):
 
 def test_lines_that_never_cross_are_refused(tmp_path, monkeypatch):
     """Aiming at or above both eyes means no solid short enough to be cover
-    breaks the pair. Returning a number there would invent a crossing."""
+    breaks the pair. Returning a number there would invent a crossing.
+
+    The body has to be tall enough to CONTAIN a 1.5 m aim point, or the
+    containment check refuses first and this stops testing what it says."""
     path = tmp_path / "agent_contract.json"
-    path.write_text(json.dumps({"sightlines": {
-        "crew_sight_height_m": 1.4, "enemy_sight_height_m": 1.5,
-        "aim_height_m": 1.5}}), encoding="utf-8")
+    path.write_text(json.dumps({
+        "characters": {"player": {"radius_m": 0.35, "height_m": 2.4,
+                                  "chest_height_m": 1.5}},
+        "sightlines": {"crew_sight_height_m": 1.4,
+                       "enemy_sight_height_m": 1.5,
+                       "aim_height_m": 1.5}}), encoding="utf-8")
     _reload_contract(monkeypatch, path)
     with pytest.raises(ValueError, match="never cross"):
         AC.cover_break_height()
+
+
+# ---- the aim point belongs to a body -----------------------------------------
+
+def test_the_aim_point_is_a_property_of_the_body(tmp_path, monkeypatch):
+    """`aim_height_m` was settable and derived from nothing: 1.0 m is where a
+    1.8 m body's chest is, and no field said so. A studio stating a 2.05 m
+    character got an eye that followed and an aim point that did not."""
+    path = tmp_path / "agent_contract.json"
+    path.write_text(json.dumps({
+        "characters": {"player": {"radius_m": 0.45, "height_m": 2.05,
+                                  "chest_height_m": 1.13}},
+        "sightlines": {"crew_sight_height_m": 1.85,
+                       "enemy_sight_height_m": 1.85,
+                       "aim_height_m": 1.13}}), encoding="utf-8")
+    _reload_contract(monkeypatch, path)
+    assert AC.chest_height() == pytest.approx(1.13)
+    assert AC.cover_break_height() == pytest.approx((1.85 + 1.13) / 2.0)
+
+
+def test_an_aim_point_outside_its_own_body_is_refused(tmp_path, monkeypatch):
+    """THE FAILURE THIS PREVENTS, and it is not a rounding complaint. LOS is
+    granted only when the ray cast AT this height hits the target body first,
+    so an aim point above the capsule misses -- nothing ever sees anything and
+    the report is full of zeroes that read like a map problem. A 1.0 m
+    character aimed at a fixed 1.0 m is aimed at the top of its own head."""
+    path = tmp_path / "agent_contract.json"
+    path.write_text(json.dumps({
+        "characters": {"player": {"radius_m": 0.35, "height_m": 1.0,
+                                  "chest_height_m": 1.0}},
+        "sightlines": {"crew_sight_height_m": 0.9,
+                       "enemy_sight_height_m": 0.9, "aim_height_m": 1.0}}),
+        encoding="utf-8")
+    _reload_contract(monkeypatch, path)
+    with pytest.raises(ValueError, match="outside the body's own capsule"):
+        AC.chest_height()
+
+
+def test_the_two_copies_of_the_aim_point_must_agree(tmp_path, monkeypatch):
+    """It is carried in `sightlines` as well, because the crossing needs all
+    three numbers in one place. A value carried twice is a value that rots, so
+    the body decides and the copy is checked against it."""
+    path = tmp_path / "agent_contract.json"
+    path.write_text(json.dumps({
+        "characters": {"player": {"radius_m": 0.35, "height_m": 1.8,
+                                  "chest_height_m": 1.0}},
+        "sightlines": {"crew_sight_height_m": 1.6,
+                       "enemy_sight_height_m": 1.6, "aim_height_m": 1.2}}),
+        encoding="utf-8")
+    _reload_contract(monkeypatch, path)
+    with pytest.raises(ValueError, match="one body, one aim point"):
+        AC.cover_break_height()
+
+
+def test_the_shipped_aim_point_sits_in_the_shipped_body():
+    """The contract as it stands, not a fixture."""
+    player = AC.contract()["characters"]["player"]
+    assert (float(player["radius_m"]) <= AC.chest_height()
+            <= float(player["height_m"]) - float(player["radius_m"]))
+    # And it is where a standing body's centre of mass is: about 0.55 of
+    # stature, so 0.55 * 1.8 = 0.99, ratified at 1.0.
+    assert AC.chest_height() == pytest.approx(
+        0.55 * float(player["height_m"]), abs=0.02)
 
 
 def test_a_missing_contract_degrades_to_the_ratified_value(tmp_path,
