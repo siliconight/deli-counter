@@ -202,28 +202,100 @@ def test_room_has_cover_reads_the_constant_not_a_copy():
     assert "0.6" not in code
 
 
+class _Thing:
+    def __init__(self, **kw):
+        self.__dict__.update(kw)
+
+
+def _room_of(*heights):
+    """A 10x10 combat room furnished with solids of the given heights.
+
+    A FIXTURE RATHER THAN A PRESET, and it did not start that way: this
+    asserted against `suburban_safehouse`, which had six such rooms, and 0.112
+    left the corpus with none. A check that can only be written while the
+    defect is present stops being a check the moment somebody fixes it.
+    """
+    room = _Thing(id="r", bounds=(0.0, 0.0, 10.0, 10.0), story=0,
+                  combat_range="medium", role="")
+    volumes = [_Thing(name="crate_%d" % i, x=2.0 + i, y=5.0, z=h / 2.0,
+                      size_x=1.0, size_y=1.0, size_z=h)
+               for i, h in enumerate(heights)]
+    return _Thing(rooms=[room], volumes=volumes, markers=[],
+                  story_height=3.5), room
+
+
 def test_furniture_alone_does_not_credit_a_room():
     """A room of 0.95 m crates counts as covered for "is it bare" and not for
     "can it be fought in". Before the split it counted for both."""
-    spec = spec_from_dict(P.make("suburban_safehouse", enrich=True))
-    room = next(r for r in spec.rooms
-                if getattr(r, "combat_range", None)
-                and CA._cover_in_room(spec, r) > 0
-                and CA._cover_in_room(spec, r, CA.COVER_BREAK_H) == 0)
-    assert CA._cover_in_room(spec, room) > 0
+    spec, room = _room_of(0.95, 0.95, 1.05)
+    assert CA._cover_in_room(spec, room) == 3          # furnished
+    assert CA._cover_in_room(spec, room, CA.COVER_BREAK_H) == 0   # unfightable
 
 
-def test_the_corpus_reports_the_rooms_that_cannot_be_fought_in():
-    """The finding exists and fires on the shipped presets rather than only
-    on a fixture. 39 of 91 combat rooms when this was written; pinned as a
-    floor, not an equality, so authoring cover does not fail the suite."""
-    flagged = 0
+def test_one_piece_over_the_crossing_is_enough_to_credit_it():
+    """What the shelter pass adds, and why one piece is the fix rather than a
+    raise of all the furniture."""
+    spec, room = _room_of(0.95, 0.95, LD.shelter_height())
+    assert CA._cover_in_room(spec, room, CA.COVER_BREAK_H) == 1
+
+
+def test_the_corpus_has_no_room_that_cannot_be_fought_in():
+    """WAS 39 OF 91 (0.111.0), IS 0 (0.112.0). The regression guard, and the
+    direction it guards has flipped: the finding used to be evidence that the
+    corpus had the defect, and is now evidence that it does not."""
+    flagged = []
     for name in sorted(P.REGISTRY):
         if P.make(name, enrich=False).get("facade"):
             continue
         res = CA.audit(spec_from_dict(P.make(name, enrich=True)), name=name)
-        flagged += sum(1 for f in res["findings"] if f[1] == "COVER_ALL_LOW")
-    assert flagged > 0, "the corpus had this defect when the check was written"
+        flagged += [(name, f[2]) for f in res["findings"]
+                    if f[1] == "COVER_ALL_LOW"]
+    assert flagged == [], flagged
+
+
+def test_every_combat_room_big_enough_to_seed_has_shelter():
+    """The producer's side of the same claim, asked of the volumes rather
+    than of the audit. Rooms below `_SEED_MIN_AREA` are exempt on purpose --
+    a small bare room still reads fine -- and so is one where nothing fits,
+    which keeps its finding rather than getting a crate in a doorway."""
+    missing = []
+    for name in sorted(P.REGISTRY):
+        raw = P.make(name, enrich=False)
+        if raw.get("facade"):
+            continue
+        d = P.make(name, enrich=True)
+        for r in d.get("rooms", []):
+            if not r.get("combat_range"):
+                continue
+            x0, y0, x1, y1 = r["bounds"]
+            if (x1 - x0) * (y1 - y0) < LD._SEED_MIN_AREA:
+                continue
+            if not LD._room_has_shelter(d, r):
+                missing.append((name, r["id"]))
+    # Named rather than counted: a room that cannot hold shelter is a fact
+    # about that room, and the list is how somebody finds out which.
+    assert missing == [], missing
+
+
+def test_the_shelter_pass_is_idempotent():
+    """`enrich` promises additive and idempotent. A shelter piece that
+    re-seeded on every run would multiply on every re-enrich."""
+    import copy
+    d = P.make("hospital", enrich=True)
+    again = copy.deepcopy(d)
+    report = LD.enrich(again)
+    assert report == {"cover_seeded": 0, "cover_added": 0, "landmarks_added": 0}
+    assert len(again["volumes"]) == len(d["volumes"])
+
+
+def test_shelter_is_taller_than_the_height_cover_starts_working_at():
+    """Two ends of one question. At the crossing a solid works at exactly one
+    position on the line and a producer has to land on it; at the taller eye
+    the whole line works, which is what a producer should build to."""
+    assert LD.shelter_height() > AC.cover_break_height()
+    assert LD.shelter_height() == pytest.approx(max(
+        AC.contract()["sightlines"]["crew_sight_height_m"],
+        AC.contract()["sightlines"]["enemy_sight_height_m"]))
 
 
 def test_the_killbox_remedy_does_not_recommend_furniture():

@@ -150,6 +150,35 @@ def chest_height():
     return chest
 
 
+def shelter_height():
+    """The shortest solid that breaks a mutual sightline ANYWHERE along it.
+
+    `cover_break_height` is the other end of the same question and answers a
+    narrower one: the shortest solid that works AT ALL. At exactly that height
+    there is one position on the line where it works and nowhere else, so a
+    producer building to it has to land a crate within centimetres of a
+    computed point -- and the first constraint that vetoes the position takes
+    the whole sightline with it.
+
+    A solid as tall as the taller EYE works from any position on the line,
+    because the requirement along the line is
+    ``max(a + (c - a)t, c + (b - c)t)`` and that is largest at the ends, where
+    it equals each side's own eye. So this is a derivation and not a margin:
+    below it the workable interval shrinks to a point, at it the whole line is
+    available, and above it nothing further is bought.
+
+    Measured on the shipped contract, 1.6 / 1.6 / 1.0::
+
+        h=1.30  ->  t in [0.50, 0.50]   width 0.00   the crossing
+        h=1.40  ->  t in [0.33, 0.67]   width 0.33
+        h=1.50  ->  t in [0.17, 0.83]   width 0.67
+        h=1.60  ->  t in [0.00, 1.00]   width 1.00   this
+    """
+    s = contract()["sightlines"]
+    return max(float(s["crew_sight_height_m"]),
+               float(s["enemy_sight_height_m"]))
+
+
 def cover_break_height():
     """The shortest solid that stops BOTH sides of a firefight seeing each other.
 

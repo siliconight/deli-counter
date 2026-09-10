@@ -1,3 +1,80 @@
+## [0.112.0] - 2026-09-10
+
+Every combat room has somewhere to fight from. **39 of 91 -> 0.**
+
+Roadmap 130's open half. 0.111.0 could say which rooms were furnished and
+unfightable; this is the half that does something about them.
+
+### The defect
+`seed_cover` guarded on `_room_has_cover`, which answers "is there furniture
+here". So a room full of 0.9 m crates was covered, was skipped, and the one
+thing it lacked was the one thing never added. Two ways a combat room fails and
+only one of them was being looked at:
+
+- BARE. Big room, combat intent, not one solid in it. The audit calls it a kill
+  box, and this was already handled.
+- FURNISHED AND UNFIGHTABLE. Crates, desks, a counter, all modelled and lit,
+  and every one short enough that both sides shoot over the top. **Invisible,
+  and the failure that survives a look at the screen.**
+
+### Added
+- `agent_contract.shelter_height()` -- the shortest solid that breaks a mutual
+  sightline ANYWHERE along it, as against `cover_break_height()`, which is the
+  shortest that works AT ALL. Derived, not a margin: the requirement along the
+  line is `max(a + (c-a)t, c + (b-c)t)` and that is largest at the ends, where
+  it equals each side's own eye. So a solid as tall as the taller eye works
+  from any position. On the shipped contract:
+
+  ```
+  h=1.30  ->  t in [0.50, 0.50]   width 0.00   the crossing
+  h=1.40  ->  t in [0.33, 0.67]   width 0.33
+  h=1.50  ->  t in [0.17, 0.83]   width 0.67
+  h=1.60  ->  t in [0.00, 1.00]   width 1.00   this
+  ```
+
+  At the crossing a producer has to land a piece within centimetres of one
+  computed point, and the first constraint that vetoes the position takes the
+  sightline with it. This is what a producer should build to.
+
+- `_SEED_SHELTER`: one piece per room that lacks shelter, FOOTPRINT ONLY --
+  the height comes from the contract, so **the archetype decides what the
+  thing looks like and the contract decides how tall it has to be.** A roof
+  gets a water tank, an office a shelf unit, a ward a locker bank, a bay a
+  tall crate stack, a lobby a kiosk. Roof is matched above bay on purpose:
+  "deck" is in both word lists and a helipad is not a loading bay.
+- `_room_has_shelter`, and `"tank"` / `"unit"` in the cover-name vocabulary --
+  a seeded piece no hint matches is a solid the room has and the tagger cannot
+  see, which is the same defect facing the other way.
+
+### Not done, and this is the design call
+**The furniture heights are untouched.** Seven of the nine archetype pieces
+stand below the crossing and stay there. The brief for these levels is props
+that give cover AND life without overkill; a furnished room is not short of
+life, it is short of somewhere to fight from, so the fix is ONE of the first
+rather than a raise of all the second. The over-cover thesis this module is
+built on argues against the alternative directly.
+
+### Measured
+- `COVER_ALL_LOW` **39 -> 0** across the 14 non-facade presets. No other audit
+  finding moved: SIGHT_INTENT 65, OBJ_AT_DOOR 9, VERT_DEAD_END 2, OBJ_ONE_DOOR
+  1, OBJ_NARROW 1, unchanged.
+- 50 pieces added over 91 combat rooms -- 39 to rooms that had furniture and no
+  shelter, 11 to rooms that were bare and now get shelter as well as furniture.
+- `layout_lint` over the enriched corpus: **49 fails and 3 warnings with the
+  shelter pass, and 49 fails and 3 warnings without it.** Every one of those is
+  a pre-existing wall, opening or marker defect (L10/L11/L16/L18) and none is
+  about a volume. Attributed by running the gate with the change stashed
+  rather than by reading the codes and assuming.
+- `enrich` stays idempotent: a second pass over an enriched hospital adds
+  nothing.
+
+### Note on the guard
+`COVER_ALL_LOW` now fires nowhere in the corpus, so it has become a regression
+guard rather than a finding. The test that pinned it moved with it -- it used
+to assert the corpus HAD the defect, which is a check that stops working the
+moment somebody fixes it, and it now asserts the corpus does not, with the
+mechanism tested on a fixture instead.
+
 ## [0.111.2] - 2026-09-10
 
 The aim point belongs to a body.

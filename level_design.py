@@ -49,6 +49,10 @@ _COVER_NAME_HINTS = (
     "cabinet", "sofa", "couch", "pew", "teller", "register", "machine", "cart",
     "dumpster", "pallet", "stack", "column", "pillar", "statue", "barrier",
     "partition_cover", "low_wall", "half_wall", "planter_box",
+    # Added with the shelter pass: a seeded piece that no hint matches is a
+    # solid the room has and the tagger cannot see, which is the same defect
+    # facing the other way.
+    "tank", "unit",
 )
 # Names that look big/structural and must never be tagged as cover.
 _COVER_NAME_SKIP = (
@@ -100,6 +104,23 @@ def cover_break_height():
         return float(_h())
     except Exception:
         return 1.3
+
+
+def shelter_height():
+    """Height at which a solid breaks a mutual sightline ANYWHERE along it.
+
+    `cover_break_height` is where a solid starts working; this is where it
+    works from every position on the line, and it is what a PRODUCER should
+    build to. At the crossing there is one workable spot and a piece has to
+    land on it; at the taller eye the whole line is available and the placer
+    can satisfy its other constraints. Derived in the contract from the two
+    sight heights, so it follows the evaluator.
+    """
+    try:
+        from agent_contract import shelter_height as _h
+        return float(_h())
+    except Exception:
+        return 1.6
 
 
 #: >= this stands as high cover, else low. Was a flat 1.4, chosen -- which
@@ -304,6 +325,42 @@ _SEED_DEFAULT = [("crate_stack", 1.1, 1.1, 0.95)]
 _SEED_MIN_AREA = 30.0     # below this a bare room still reads fine
 _SEED_MAX_PIECES = 4      # thesis: don't over-cover
 
+#: ONE PIECE PER ROOM THAT CAN ACTUALLY BE FOUGHT BEHIND, and its FOOTPRINT
+#: only -- the height comes from `shelter_height()`, so the archetype decides
+#: what the thing looks like and the contract decides how tall it has to be.
+#:
+#: Separate from `_SEED_ARCHETYPES` because they answer different questions.
+#: Those are the room's furniture: a room reads as lived-in because there are
+#: desks and pallets in it, and 7 of the 9 stand below the height at which
+#: cover works. That is not a defect in them. It becomes one only when a room
+#: has NOTHING else, which is what this fixes -- the level's brief is props for
+#: cover AND life, so the fix is one of the first rather than a raise of all
+#: the second.
+#:
+#: Matched in order, and roof sits above bay on purpose: "deck" appears in
+#: both and a helipad is not a loading bay.
+_SEED_SHELTER = (
+    (("roof", "helipad", "rooftop", "penthouse"), ("water_tank", 1.6, 1.6)),
+    (("office", "manager", "exec", "admin", "suite"), ("shelf_unit", 1.0, 0.5)),
+    (("storage", "stock", "back", "parts", "ware", "utility"),
+     ("shelf_run", 2.6, 0.6)),
+    (("ward", "clinic", "exam", "recovery", "holding", "cell"),
+     ("locker_bank", 1.4, 0.6)),
+    (("bay", "garage", "loading", "deck", "service"),
+     ("crate_stack_tall", 1.2, 1.2)),
+    (("lobby", "floor", "hall", "concourse", "public", "booking"),
+     ("kiosk", 1.2, 1.2)),
+)
+_SEED_SHELTER_DEFAULT = ("crate_stack_tall", 1.1, 1.1)
+
+
+def _seed_shelter(room):
+    key = ((room.get("role") or "") + " " + room["id"]).lower()
+    for words, piece in _SEED_SHELTER:
+        if any(w in key for w in words):
+            return piece
+    return _SEED_SHELTER_DEFAULT
+
 
 def _seed_archetype(room):
     key = ((room.get("role") or "") + " " + room["id"]).lower()
@@ -327,6 +384,34 @@ def _room_has_cover(spec, room):
             return True
     for m in spec.get("markers", []):
         if m.get("type") in ("cover_low", "cover_high") and                 x0 <= m.get("x", 1e9) <= x1 and y0 <= m.get("y", 1e9) <= y1:
+            return True
+    return False
+
+
+def _room_has_shelter(spec, room):
+    """Is there anything in this room a body can actually fight from?
+
+    `_room_has_cover` asks whether the room is FURNISHED, which is what "is
+    this a bare kill box" wants. This asks whether any of that furniture stops
+    the two sides seeing each other, which is what "can this room be fought
+    in" wants -- and 39 of the 91 combat rooms in the shipped presets answered
+    yes to the first and no to the second.
+
+    A `cover_high` marker counts whatever its volume; `_COVER_HIGH_Z` IS the
+    break height, so the marker means precisely "a solid here breaks the
+    line". Same reasoning as `combat_audit._cover_in_room`, and deliberately
+    the same answer -- an audit and a producer disagreeing about what shelter
+    is would be two instruments for one question.
+    """
+    x0, y0, x1, y1 = room["bounds"]
+    sh = _story_height(spec)
+    for v in spec.get("volumes", []):
+        if v.get("size_z", 0) < _COVER_HIGH_Z or min(v.get("size_x", 0), v.get("size_y", 0)) < 0.3:
+            continue
+        if x0 <= v["x"] <= x1 and y0 <= v["y"] <= y1 and                 abs(v.get("z", 0) - (room.get("story", 0) * sh + v.get("size_z", 0) / 2)) < sh:
+            return True
+    for m in spec.get("markers", []):
+        if m.get("type") == "cover_high" and                 x0 <= m.get("x", 1e9) <= x1 and y0 <= m.get("y", 1e9) <= y1:
             return True
     return False
 
@@ -421,13 +506,33 @@ def _seed_clear(spec, room, px, py, placed, half=0.0):
 
 
 def seed_cover(spec):
-    """Create actual cover VOLUMES in combat-intent rooms that have none --
-    the audit calls these kill boxes: big rooms with combat_range and not one
-    solid to shelter behind. Deterministic (spec seed + room id), additive,
-    idempotent (rooms that already have any waist-high solid are untouched),
-    and respectful of the over-cover thesis (2-4 pieces, spread out, never
-    near a door, an objective, a stair, or a ladder). cover_from_volumes then
-    tags the new pieces as engagement points like any authored furniture.
+    """Give every combat room something to fight from, and bare ones furniture.
+
+    TWO PASSES, BECAUSE THERE ARE TWO WAYS A COMBAT ROOM FAILS and only one of
+    them used to be looked at.
+
+      * BARE. Big room, combat intent, not one solid in it -- the audit calls
+        it a kill box. Gets 2-4 archetype pieces, spread out.
+      * FURNISHED AND UNFIGHTABLE. Crates, desks, a counter, all modelled and
+        lit, and every one of them short enough that both sides shoot over the
+        top. Gets ONE piece at `shelter_height()` and keeps its furniture.
+
+    The second was invisible: the guard was `_room_has_cover`, which answers
+    "is there furniture here", so a room full of 0.9 m crates was covered and
+    skipped, and the one thing it lacked was the one thing never added. **39
+    of the 91 combat rooms in the shipped presets.** They look built and they
+    cannot be fought in, which is the failure that survives a look at the
+    screen.
+
+    ONE piece, not a raise of the furniture. The brief for these levels is
+    props that give cover AND life without overkill; a furnished room is not
+    short of life. The over-cover thesis this module is built on argues
+    against the alternative directly.
+
+    Deterministic (spec seed + room id), additive, idempotent -- a re-run sees
+    the shelter piece and skips -- and it never places near a door, an
+    objective, a stair or a ladder. A room where nothing fits keeps its
+    finding rather than getting a crate jammed into a doorway.
 
     Returns the number of volumes created.
     """
@@ -439,11 +544,15 @@ def seed_cover(spec):
             continue
         x0, y0, x1, y1 = room["bounds"]
         area = max(0.0, x1 - x0) * max(0.0, y1 - y0)
-        if area < _SEED_MIN_AREA or _room_has_cover(spec, room):
+        if area < _SEED_MIN_AREA:
+            continue
+        bare = not _room_has_cover(spec, room)
+        needs_shelter = not _room_has_shelter(spec, room)
+        if not bare and not needs_shelter:
             continue
         rng = random.Random(f"{base_seed}:{room['id']}:seed_cover")
         arch = _seed_archetype(room)
-        want = min(_SEED_MAX_PIECES, max(2, int(area // 45) + 1))
+        want = min(_SEED_MAX_PIECES, max(2, int(area // 45) + 1)) if bare else 0
         # jittered grid candidates, then greedy spread
         cands = []
         for i in range(6):
@@ -454,6 +563,38 @@ def seed_cover(spec):
         rng.shuffle(cands)
         placed = []
         sh = _story_height(spec)
+
+        # THE SHELTER PIECE FIRST, and only when the room has none. A room
+        # full of 0.9 m crates used to be "covered" and skipped entirely, so
+        # the one thing it was missing was the one thing never added.
+        #
+        # It is ONE piece. The brief for these levels is props that give cover
+        # AND life without overkill, and a room that already has furniture is
+        # not short of life -- it is short of somewhere to fight from. A room
+        # that has neither gets this and then its furniture below.
+        if needs_shelter:
+            s_name, s_x, s_y = _seed_shelter(room)
+            s_z = shelter_height()
+            s_half = max(s_x, s_y) / 2.0
+            for (px, py) in cands:
+                if not _seed_clear(spec, room, px, py, placed, half=s_half):
+                    continue
+                sx, sy = (s_y, s_x) if rng.random() < 0.5 else (s_x, s_y)
+                spec.setdefault("volumes", []).append({
+                    "name": f"{s_name}_{room['id']}_shelter",
+                    "x": round(px, 2), "y": round(py, 2),
+                    "z": round(room.get("story", 0) * sh + s_z / 2, 3),
+                    "size_x": sx, "size_y": sy, "size_z": round(s_z, 3),
+                    "collision": "convex",
+                })
+                placed.append((px, py))
+                added += 1
+                break
+            # A room where nothing fits keeps its finding rather than getting
+            # a piece jammed into a doorway. `combat_audit` still reports it,
+            # which is the honest outcome: the geometry has no room for
+            # shelter, and that is a fact about the room.
+
         arch_half = max(max(sx, sy) / 2 for _, sx, sy, _ in arch)
         for (px, py) in cands:
             if len(placed) >= want:
