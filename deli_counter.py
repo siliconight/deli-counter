@@ -2689,6 +2689,10 @@ def write_light_manifest(builder, path):
         builder.gameplay.get("openings", []),
         builder.s.story_height,
         cap_thick=lambda story: builder._cap_thick(int(story), _top),
+        # The facade emitters are placed proud of the wall FACE and the
+        # opening coordinate is the centreline; the spec's wall thickness is
+        # the same number the wall emitters build to.
+        wall_thick=builder.s.wall_thick,
         authored=getattr(builder.s, "lights", None),
         theme=getattr(builder.s, "theme", None),
         ceiling_voids=_voids,

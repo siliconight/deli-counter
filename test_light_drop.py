@@ -16,7 +16,7 @@ def _cap(_story):
 def test_the_drop_reaches_the_rooms_own_floor():
     rooms = [{"id": "hall", "story": 0, "center": [0.0, 0.0, 0.0],
               "bounds": [-10.0, -8.0, 10.0, 8.0]}]
-    anchors = lights.derive_light_anchors(rooms, [], 6.0, cap_thick=_cap)
+    anchors = lights.derive_light_anchors(rooms, [], 6.0, cap_thick=_cap, wall_thick=0.3)
     flu = [a for a in anchors if a["type"] == "fluorescent"]
     assert flu, "a room must derive a ceiling row"
     for a in flu:
@@ -33,7 +33,7 @@ def test_an_upper_storey_drop_is_storey_local_not_building_global():
     range."""
     rooms = [{"id": "up", "story": 1, "center": [0.0, 0.0, 3.7],
               "bounds": [-4.0, -4.0, 4.0, 4.0]}]
-    anchors = lights.derive_light_anchors(rooms, [], 3.7, cap_thick=_cap)
+    anchors = lights.derive_light_anchors(rooms, [], 3.7, cap_thick=_cap, wall_thick=0.3)
     a = [x for x in anchors if x["type"] == "fluorescent"][0]
     assert abs((a["pos"][2] - a["drop"]) - 3.7) < 1e-6
     assert a["drop"] < 3.7
@@ -44,7 +44,7 @@ def test_split_runs_share_one_drop():
     rooms = [{"id": "cut", "story": 0, "center": [0.0, 0.0, 0.0],
               "bounds": [-8.0, -2.0, 8.0, 2.0]}]
     voids = [{"story": 0, "x0": -1.0, "y0": -1.0, "x1": 1.0, "y1": 1.0}]
-    anchors = lights.derive_light_anchors(rooms, [], 3.7, cap_thick=_cap,
+    anchors = lights.derive_light_anchors(rooms, [], 3.7, cap_thick=_cap, wall_thick=0.3,
                                           ceiling_voids=voids)
     flu = [a for a in anchors if a["type"] == "fluorescent"]
     assert len({a["drop"] for a in flu}) == 1
@@ -58,7 +58,7 @@ def test_only_ceiling_lamps_carry_a_drop():
     openings = [{"kind": "window", "wall": "ext_0_N", "x": 0.0, "y": 4.0,
                  "z": 1.5, "width": 1.2, "height": 1.4}]
     anchors = lights.derive_light_anchors(rooms, openings, 3.7,
-                                          cap_thick=_cap)
+                                          cap_thick=_cap, wall_thick=0.3)
     for a in anchors:
         if a["type"] != "fluorescent":
             assert "drop" not in a, a["type"]

@@ -29,7 +29,7 @@ STAIRWELL = {"story": 0, "x0": -13.0, "y0": 4.2, "x1": -9.0, "y1": 9.3}
 
 
 def _derive(rooms, voids):
-    return lights.derive_light_anchors(rooms, [], SH, cap_thick=CAP,
+    return lights.derive_light_anchors(rooms, [], SH, cap_thick=CAP, wall_thick=0.3,
                                        ceiling_voids=voids)
 
 
@@ -124,7 +124,7 @@ def test_authored_override_supersedes_the_split_runs():
     """An author placing `manager_office_ceiling` by hand gets ONE fixture,
     not their own plus the two derived halves."""
     m = lights.build_light_manifest(
-        "b", [OFFICE], [], SH, cap_thick=CAP,
+        "b", [OFFICE], [], SH, cap_thick=CAP, wall_thick=0.3,
         ceiling_voids=[STAIRWELL],
         authored=[{"id": "manager_office_ceiling", "type": "fluorescent",
                    "pos": [-7.5, 6.5, 3.2], "rot_y": 0.0,
@@ -138,7 +138,7 @@ def test_an_override_does_not_eat_an_unrelated_anchor():
     """`_0` suffix stripping must not reach past its own base id, and must
     not touch anchors of another type or another source."""
     m = lights.build_light_manifest(
-        "b", [OFFICE, LOBBY], [], SH, cap_thick=CAP,
+        "b", [OFFICE, LOBBY], [], SH, cap_thick=CAP, wall_thick=0.3,
         ceiling_voids=[STAIRWELL],
         authored=[{"id": "manager_office_ceiling", "type": "fluorescent",
                    "pos": [-7.5, 6.5, 3.2], "rot_y": 0.0}])

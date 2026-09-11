@@ -1,3 +1,37 @@
+## [0.113.0] - 2026-09-11
+
+The facade hardware hangs outside the wall it is mounted on.
+
+Roadmap 85, raised on one screenshot: a hanging light half-buried in a wall
+at a wall/ceiling junction. Measured before touching anything, with the new
+`tools/anchor_wall_probe.py` (factory root) over 125 shipped buildings:
+
+- ceiling rows are clean -- 2,422 fluorescent and pendant lamp points, none
+  inside a wall, minimum clearance 1.35 m;
+- wall packs are not -- 334 anchors at a median clearance of **0.000** to
+  the nearest wall (min -0.025 in a 0.35 m wall), signs at 0.050.
+
+An opening's `(x, y)` is its wall's CENTRELINE (425 of 425 exterior doors at
+0.000 from it), and `_WALL_PACK_OUT` / `_SIGN_OUT` were added to that point.
+Their comments said "proud of the wall face"; Zoo built to the comment -- the
+wall pack's body is centred on the anchor with an arm reaching 0.15 m back to
+the wall plane, the sign's cabinet hangs entirely behind its face plane -- so
+half of every pack and most of every sign cabinet sat inside the wall.
+
+### Fixed
+- `derive_light_anchors` and `build_light_manifest` take `wall_thick`
+  (required, no default -- the `cap_thick` rule) and place both facade types
+  half a wall further out, so the constants mean what they say.
+  `write_light_manifest` passes the spec's `wall_thick`, the same number the
+  wall emitters build to. Re-derived over the library: pack clearance
+  0.000 -> 0.150, sign 0.050 -> 0.200, ceiling rows unchanged.
+- `test_lights.py`: the two positional pins move (12.15 -> 12.30, -0.2 ->
+  -0.35, each explained), plus a clearance test across 0.25 / 0.30 / 0.35 m
+  walls that also holds Zoo's deepest genome body outside the wall, and a
+  required-parameter test.
+
+Light manifest schema unchanged (1.1.0): the same anchors, moved.
+
 ## [0.112.0] - 2026-09-10
 
 Every combat room has somewhere to fight from. **39 of 91 -> 0.**

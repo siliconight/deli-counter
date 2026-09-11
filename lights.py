@@ -62,7 +62,22 @@ _CEILING_GAP = 0.1      # hang fixtures this far below the ceiling PLANE
 # lamp Lux spawns is never inside the hardware Zoo bakes: the sign's pos is
 # its FACE plane (cabinet hangs behind it, toward the wall), the wall pack's
 # pos is under the wedge's overhang (body hangs above it, against the wall).
-_WALL_PACK_OUT = 0.15   # emitter proud of the wall face
+#
+# PROUD OF THE FACE, NOT OF THE CENTRELINE. An opening's (x, y) is the wall's
+# centreline -- measured 2026-09-11 over 425 exterior doors in 125 shipped
+# buildings, every one at 0.000 from its wall's centre -- and these offsets
+# were added to that point directly, so a pack's emitter landed ON the face
+# of a 0.30 m wall (0.025 m inside a 0.35 m one) and a sign's face plane
+# 0.05 m proud of it. Zoo builds both fixtures on the promise written above:
+# the wall pack's 0.22 m body is centred on the anchor with an arm reaching
+# 0.15 m back to the wall plane, the sign's 0.18 m cabinet hangs entirely
+# behind its face. So half the pack and most of the cabinet were inside the
+# wall -- the "hanging light half-buried at a wall/ceiling junction" that
+# roadmap 85 was raised on. `tools/anchor_wall_probe.py` is the instrument:
+# wall_pack clearance to the nearest wall read median 0.000 / min -0.025,
+# sign 0.050, across 334 packs and 91 signs. Half the wall's thickness is
+# added now, so the constants mean what they say.
+_WALL_PACK_OUT = 0.15   # emitter proud of the wall FACE
 _WALL_PACK_RISE = 0.25  # emitter above the door head
 _SIGN_OUT = 0.2         # sign FACE plane proud of the wall
 _SIGN_RISE = 0.35       # sign centre above the door head
@@ -173,12 +188,16 @@ def _exterior_doors(openings):
             and _wall_facing(o.get("wall")) is not None]
 
 
-def _storefront_sign(openings):
+def _storefront_sign(openings, wall_thick):
     """The building's one derived sign: above the widest door on the facade
     with the most windows. A facade with windows and a door is a storefront;
     a building with no exterior windows gets no derived sign (a foundry's
     service doors aren't signage — authored anchors can always add one).
-    Deterministic: window count, then door width, then wall name."""
+    Deterministic: window count, then door width, then wall name.
+
+    ``wall_thick`` is the wall the door is in; the face plane goes
+    ``_SIGN_OUT`` beyond that wall's FACE, half a thickness out from the
+    opening's centreline coordinate."""
     win_walls = {}
     for o in openings or []:
         if o.get("kind") == "window" and _wall_facing(o.get("wall")):
@@ -201,12 +220,13 @@ def _storefront_sign(openings):
     facing = _wall_facing(d["wall"])
     rot, (ox, oy) = _outward(facing)
     w = round(float(d.get("width", 1.1)) + _SIGN_PAD, 3)
+    out = float(wall_thick) * 0.5 + _SIGN_OUT
     return {
         "id": "%s_sign" % d["wall"],
         "type": "sign",
         "source": "derived",
-        "pos": [round(float(d.get("x", 0.0)) + ox * _SIGN_OUT, 3),
-                round(float(d.get("y", 0.0)) + oy * _SIGN_OUT, 3),
+        "pos": [round(float(d.get("x", 0.0)) + ox * out, 3),
+                round(float(d.get("y", 0.0)) + oy * out, 3),
                 round(_opening_top(d) + _SIGN_RISE, 3)],
         "rot_y": rot,
         "wall": d["wall"],
@@ -216,7 +236,7 @@ def _storefront_sign(openings):
 
 
 def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
-                         ceiling_voids=None):
+                         wall_thick, ceiling_voids=None):
     """Derive default light anchors: one fluorescent ceiling row per interior
     room, one area light per window opening, a wall pack over every exterior
     door, and one storefront sign.
@@ -226,6 +246,11 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
     of different thickness than a floor). It is REQUIRED and has no default on
     purpose: a default of zero would silently reproduce the defect it exists to
     fix, and this kit does not ship guards that pass by omission.
+
+    `wall_thick` is the exterior wall's thickness, and is required for the
+    same reason: the facade emitters are placed proud of the wall FACE, and
+    an opening's coordinate is the wall's centreline, so without it the pack
+    and sign land inside the wall they hang on (see `_WALL_PACK_OUT`).
     """
     anchors = []
     for r in rooms or []:
@@ -308,12 +333,13 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
     # v1.1: the storefront sign, then a wall pack over every other exterior
     # door. Both on building power (`reacts_to_alarm: true`) — cutting the
     # power kills the facade with the interiors, the classic heist beat.
-    sign = _storefront_sign(openings)
+    sign = _storefront_sign(openings, wall_thick)
     sign_door = None
     if sign:
         anchor, sign_door = sign
         anchors.append(anchor)
 
+    pack_out = float(wall_thick) * 0.5 + _WALL_PACK_OUT
     pack_n = {}
     for d in _exterior_doors(openings):
         if d is sign_door:
@@ -326,8 +352,8 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
             "id": "%s_pack_%d" % (wall, pack_n[wall]),
             "type": "wall_pack",
             "source": "derived",
-            "pos": [round(float(d.get("x", 0.0)) + ox * _WALL_PACK_OUT, 3),
-                    round(float(d.get("y", 0.0)) + oy * _WALL_PACK_OUT, 3),
+            "pos": [round(float(d.get("x", 0.0)) + ox * pack_out, 3),
+                    round(float(d.get("y", 0.0)) + oy * pack_out, 3),
                     round(_opening_top(d) + _WALL_PACK_RISE, 3)],
             "rot_y": rot,
             "wall": wall,
@@ -337,13 +363,13 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
 
 
 def build_light_manifest(building_id, rooms, openings, story_height,
-                         *, cap_thick, authored=None, theme=None,
+                         *, cap_thick, wall_thick, authored=None, theme=None,
                          ceiling_voids=None):
     """Full `<name>.lights.json` manifest. `authored` is an optional list of
     hand-placed anchors; an authored anchor replaces a derived one with the
     same id (auto defaults + spec overrides, like props)."""
     anchors = derive_light_anchors(rooms, openings, story_height,
-                                   cap_thick=cap_thick,
+                                   cap_thick=cap_thick, wall_thick=wall_thick,
                                    ceiling_voids=ceiling_voids)
     if authored:
         by_id = {a["id"]: a for a in anchors}
