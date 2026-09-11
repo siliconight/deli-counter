@@ -1,3 +1,17 @@
+## [0.114.0] - 2026-09-11
+
+The corner stem is mirrored.
+
+Roadmap 64. Zoo 0.60.0 keys `wallCorner` on width, depth and height
+(`CORNER_ROLES`), because a corner's width is the wall thickness and `_w30`
+alone would have named fourteen solids in this library. `themed_tscn` is the
+mirror of that naming law and the two must change together, so
+`resolve_themed_stem` gives a `wallCorner` slot the same
+`_w<t>_d<t>_h<storey>` key and the same literal is pinned in
+`test_themed_stem.py`. No shipped slot carries the role yet: every corner
+is still the `wallEnd` unit post of 0.102.0, and stays so until the corner
+has art a post does not.
+
 ## [0.113.0] - 2026-09-11
 
 The facade hardware hangs outside the wall it is mounted on.

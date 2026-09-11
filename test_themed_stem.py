@@ -77,6 +77,18 @@ def test_wall_floor_and_ceiling_names_are_untouched():
     assert stem == "floor_rockay_01_w4400_d2400"
 
 
+def test_a_corner_slot_is_keyed_on_thickness_and_height():
+    """The mirror of Zoo's `test_a_corner_is_keyed_on_every_axis_it_is_free_on`
+    (roadmap 64): the same literal on both sides, or a corner resolves to a
+    module that was never built."""
+    stem, scaled = themed_tscn.resolve_themed_stem(
+        _slot("wallCorner", [0.3, 0.3, 3.3]), "delco", 1)
+    assert stem == "wallCorner_delco_01_w30_d30_h330" and scaled is False
+    tall, _ = themed_tscn.resolve_themed_stem(
+        _slot("wallCorner", [0.3, 0.3, 5.2]), "delco", 1)
+    assert tall != stem
+
+
 def test_a_wall_remainder_is_still_one_unit_module():
     slot = _slot("wall", [1.3, 0.35, 3.7])
     slot["size_mod"] = "end"

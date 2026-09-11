@@ -59,6 +59,12 @@ PLATE_ROLES = ("floor", "ceiling", "roof")
 #: Mirror of ``zoo_keeper.core.kit.VOLUME_ROLES``.
 VOLUME_ROLES = ("prop",)
 
+#: The corner: its width and depth are the wall thickness and its height the
+#: storey, so width alone names fourteen solids in this library (950 posts
+#: across 17 (thickness, height) pairs, 2026-09-11). Keyed on all three.
+#: Mirror of ``zoo_keeper.core.kit.CORNER_ROLES`` (roadmap 64).
+CORNER_ROLES = ("wallCorner",)
+
 #: Roles whose geometry is a hole in a standing slab, cut to the slot's own
 #: ``fit.openings``. Mirror of ``zoo_keeper.core.kit.OPENING_ROLES``.
 OPENING_ROLES = ("doorway", "window", "breach", "vault_door")
@@ -174,9 +180,10 @@ def resolve_themed_stem(slot: dict, theme: str, style: int, state: str = None):
     exact = typ != "wallEnd"
     width_cm = int(round(dims[0] * 100)) if exact else None
     depth_cm = (int(round(dims[1] * 100))
-                if exact and typ in PLATE_ROLES + VOLUME_ROLES else None)
+                if exact and typ in PLATE_ROLES + VOLUME_ROLES + CORNER_ROLES
+                else None)
     height_cm = (int(round(dims[2] * 100))
-                 if exact and typ in VOLUME_ROLES else None)
+                 if exact and typ in VOLUME_ROLES + CORNER_ROLES else None)
     vtag = void_tag(fit.get("voids")) if typ in PLATE_ROLES else None
     otag = opening_tag(fit.get("openings")) if typ in OPENING_ROLES else None
     eff_style = int(slot.get("style") or style or 1)
