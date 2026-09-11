@@ -204,3 +204,121 @@ def test_a_hole_listed_twice_is_carried_once():
                     _Hole(1, 4.0, -6.0, 3.0, 4.0)]
     ids = _by_id(floors.slab_slots(s, top=2))
     assert len(ids["ceiling_gaming_floor"]["fit"]["voids"]) == 1
+
+
+# --------------------------------------------------------------------------- #
+# The role maps and the finish palette (0.115.0): floor != ceiling != wall
+# --------------------------------------------------------------------------- #
+
+#: Every room role an authored spec emits, counted over specs/*.json on
+#: 2026-09-11 (176 specs): connector 362, objective_room 217, public_entry
+#: 181, fortifiable 119, open_floor 18, route_node 17, loot_room 13,
+#: safe_room 4, staging 3, utility 3, vault 2, stairwell 1, finale 1 -- and
+#: None 12, which is the fallback's job. A role added to a preset without a
+#: row in both maps fails here, which is the point.
+_EMITTED_ROLES = (
+    "connector", "objective_room", "public_entry", "fortifiable",
+    "open_floor", "route_node", "loot_room", "safe_room", "staging",
+    "utility", "vault", "stairwell", "finale",
+)
+
+#: What a partition wears in every preset that has partitions.
+_PARTITION_MATERIAL = "drywall"
+
+
+def test_every_emitted_role_has_a_floor_and_a_ceiling_material():
+    for role in _EMITTED_ROLES:
+        assert role in floors.FLOOR_BY_ROLE, role
+        assert role in floors.CEILING_BY_ROLE, role
+    assert set(floors.FLOOR_BY_ROLE) == set(floors.CEILING_BY_ROLE)
+
+
+def test_the_floor_and_the_ceiling_are_never_the_same_material():
+    """The walk rule: floor, wall and ceiling different, uniform by role."""
+    for role, fmat in floors.FLOOR_BY_ROLE.items():
+        assert fmat != floors.CEILING_BY_ROLE[role], role
+
+
+def test_no_floor_wears_the_partition_material():
+    """A ceiling may (fortifiable: drywall over concrete); a floor never."""
+    for role, fmat in floors.FLOOR_BY_ROLE.items():
+        assert fmat != _PARTITION_MATERIAL, role
+
+
+def test_every_mapped_material_is_in_the_finish_palette():
+    named = set(floors.FLOOR_BY_ROLE.values()) | set(floors.CEILING_BY_ROLE.values())
+    assert named <= {m["id"] for m in floors.FINISH_PALETTE}
+
+
+def test_the_finish_palette_repeats_the_presets_palette_for_shared_ids():
+    """concrete / drywall / wood must not drift between the two tables."""
+    import presets
+    for m in floors.FINISH_PALETTE:
+        if m["id"] in presets._PALETTE:
+            assert m == presets._PALETTE[m["id"]], m["id"]
+
+
+def _authored():
+    from spec_types import Material
+    return [Material(**{"id": i, "acoustic": a}) for i, a in (
+        ("concrete", "Concrete"), ("drywall", "Drywall"), ("glass", "Glass"),
+        ("metal", "Metal"), ("wood", "Wood"))]
+
+
+def test_every_mapped_material_gets_a_style_of_its_own():
+    """Before 0.115.0 carpet, tile and ceiling_tile fell to concrete's
+    style -- 7 of 9 floors and 9 of 9 ceilings at style 1 on the shell
+    walked 2026-09-11. Now each finish numbers its own style."""
+    import skin_style
+    spec = _spec()
+    spec.materials = _authored()
+    mapping = skin_style.material_styles(floors.palette_ids(spec))
+    named = set(floors.FLOOR_BY_ROLE.values()) | set(floors.CEILING_BY_ROLE.values())
+    styles = {m: skin_style.style_for(m, mapping, "concrete") for m in named}
+    assert len(set(styles.values())) == len(named), styles
+    slots = _by_id(floors.slab_slots(spec, top=2))
+    assert slots["floor_gaming_floor"]["style"] != slots["floor_cashier_cage"]["style"]
+    assert slots["ceiling_gaming_floor"]["style"] not in (
+        1, slots["floor_gaming_floor"]["style"])
+
+
+def test_the_finish_palette_appends_after_the_authored_one_and_is_stable():
+    """Authored materials keep their style index; the additions follow in
+    FINISH_PALETTE order; running it twice adds nothing."""
+    spec = _spec()
+    spec.materials = _authored()
+    before = [m.id for m in spec.materials]
+    added = floors.ensure_finish_palette(spec)
+    assert added == ["carpet", "tile", "ceiling_tile", "plaster"]
+    assert [m.id for m in spec.materials] == before + added
+    assert floors.ensure_finish_palette(spec) == []
+    assert [m.id for m in spec.materials] == before + added
+    # and the pure view agrees with the mutated list
+    assert floors.palette_ids(spec) == before + added
+
+
+def test_an_authored_palette_missing_wood_still_floors_the_finale():
+    spec = _Spec([_Room("roof_helipad", 0, "finale", [0, 0, 4, 4])])
+    from spec_types import Material
+    spec.materials = [Material(id="concrete", acoustic="Concrete")]
+    assert "wood" in floors.palette_ids(spec)
+    ids = _by_id(floors.slab_slots(spec, top=2))
+    assert ids["floor_roof_helipad"]["material"] == "wood"
+    assert ids["floor_roof_helipad"]["style"] != 1
+
+
+def test_a_per_surface_override_beats_the_room_material_and_the_role_map():
+    r = _Room("odd", 0, "public_entry", [0, 0, 4, 4], material="wood")
+    r.floor_material = "tile"
+    ids = _by_id(floors.slab_slots(_Spec([r]), top=2))
+    assert ids["floor_odd"]["material"] == "tile"
+    assert ids["ceiling_odd"]["material"] == "wood"
+
+
+def test_the_walked_hospital_reads_as_three_surfaces():
+    """cold run 9005's county_hospital: lobby safe_room, wards route_node,
+    corridor connector, drywall partitions. Every room: floor != ceiling,
+    neither the partitions' drywall."""
+    for role in ("safe_room", "route_node", "connector", "objective_room"):
+        f, c = floors.FLOOR_BY_ROLE[role], floors.CEILING_BY_ROLE[role]
+        assert len({f, c, _PARTITION_MATERIAL}) == 3, (role, f, c)

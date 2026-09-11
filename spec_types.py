@@ -389,6 +389,11 @@ class Room:
     fortifiable: Optional[bool] = None
     objective: bool = False                # convenience flag; role may also imply it
     roofed: bool = True                    # roof_mode="per_room": False = open-air (no roof slot)
+    # Floor/ceiling skin overrides (floors.py). Unset = the role maps decide.
+    # `material` sets both surfaces; the per-surface pair beats it.
+    material: Optional[str] = None
+    floor_material: Optional[str] = None
+    ceiling_material: Optional[str] = None
 
 
 @dataclass

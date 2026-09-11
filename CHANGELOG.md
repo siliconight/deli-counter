@@ -1,3 +1,46 @@
+## [0.115.0] - 2026-09-11
+
+The floor, the wall and the ceiling are three surfaces.
+
+Walked on cold run 9005's county hospital (2026-09-11): a ward whose
+floor, partitions and ceiling all wore concrete read as generated -- "the
+floor, side and ceiling shouldn't all be the same texture; it looks good
+when they are different but uniform in some way". Measured on that shell's
+`shell.slots.json`: 7 of 9 floors and 9 of 9 ceilings at style 1,
+concrete's -- the two `ceiling_tile` ceilings included, because
+`ceiling_tile` was in no authored palette and `skin_style.style_for` fell
+through to the default. `floors.FLOOR_BY_ROLE` / `CEILING_BY_ROLE` knew
+four roles; this hospital's rooms are `safe_room`, `route_node`,
+`connector` and `finale`, so three of the four fell to the default too.
+The builder had been printing UNRESOLVED MATERIALS about exactly this
+since 2026-08-21 and nothing read it.
+
+Two changes in `floors.py`. The role maps now cover every role an
+authored spec emits (13, counted over 176 specs; `test_floors` pins the
+list) and obey a rule the tests hold: for every role the floor and the
+ceiling are different materials, and no floor wears the partitions'
+drywall. `objective_room`'s ceiling moves from concrete to plaster for
+that reason. And a `FINISH_PALETTE` -- carpet, tile, ceiling_tile,
+plaster, plus the concrete/drywall/wood the maps also name -- is appended
+to `spec.materials` by the spec loader (`ensure_finish_palette`), after
+the authored list so authored style indices do not move. Each finish now
+numbers a style of its own, which is the Pixelcoat pack (`carpet_<theme>`,
+`tile_<theme>`, `ceiling_tile_<theme>`, `plaster_<theme>` all ship in the
+theme library) and the module filename. `palette_ids(spec)` is the pure
+view of the same list, used by `slab_slots`, so a bare test spec and a
+loaded spec number their styles identically.
+
+`Room` gains `material` (both surfaces), `floor_material` and
+`ceiling_material` overrides -- `floors._material` had read a `material`
+attribute the dataclass never declared, so the documented override could
+not be authored.
+
+On the hospital this makes the lobby carpet / drywall / ceiling_tile, the
+wards and corridor tile / drywall / ceiling_tile, the roof room concrete /
+drywall / plaster. Every shell rebuilds (floors.py is a geometry source):
+the gameplay materials list grows by four entries per spec and the floor
+and ceiling module stems change style number.
+
 ## [0.114.0] - 2026-09-11
 
 The corner stem is mirrored.

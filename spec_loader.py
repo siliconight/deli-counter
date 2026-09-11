@@ -11,6 +11,7 @@ and specs/bank.json for the canonical structure.
 import json
 import os
 
+import floors
 from spec_types import (
     LevelSpec, ExtWall, Opening, Partition, Stairwell,
     SlabHole, Volume, Parapet, Setback, Asset, Placement,
@@ -87,6 +88,12 @@ def spec_from_dict(d: dict) -> LevelSpec:
         materials=materials, **top,
     )
     _derive_opening_defaults(spec)
+    # The floor/ceiling role maps name finishes (carpet, tile, ceiling_tile,
+    # plaster) that no authored palette declares. Declare them here, once,
+    # after the authored list, so the builder's material index, `validate`,
+    # the style numbering and gameplay.json all see one palette. See
+    # floors.FINISH_PALETTE for the values and the measurement behind it.
+    floors.ensure_finish_palette(spec)
     return spec
 
 

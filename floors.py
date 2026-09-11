@@ -54,29 +54,146 @@ SKIN_THICK = 0.02
 #:   public_entry   a gaming floor is carpeted -- real ones carpet to deaden
 #:                  sound and hide wear, and it reads instantly as "front of
 #:                  house".
+#:   safe_room      the same front-of-house read: a hospital lobby, a bank
+#:                  hall. Carpet says "you are meant to be here".
 #:   connector      circulation takes the traffic; tile is what a concourse
 #:                  gets and it changes underfoot from the carpet either side.
+#:   route_node     a ward, an office bay, a sales floor: the rooms a route
+#:                  passes through. Hard-wearing tile, like the corridor.
+#:   open_floor     a hall. Tile for the same reason.
+#:   loot_room      an office with something in it: carpet, like the offices
+#:                  around it, so the loot is not announced by the floor.
+#:   finale         the set piece. Wood, the one floor nothing else gets.
 #:   fortifiable    back-of-house. Concrete says "not for customers".
 #:   objective_room the money rooms are the plainest; a vault floor is a slab.
+#:   vault          a slab, by definition.
+#:   utility        plant rooms are poured concrete, painted at best.
+#:   staging        a loading dock, a prep area: concrete.
+#:   stairwell      concrete; the flight itself is (roadmap 144).
 #:
-#: A room carrying its own ``material`` overrides this. Unknown roles fall back
-#: to the spec default, so a new role never fails -- it just looks ordinary.
+#: THE RULE THE TWO MAPS OBEY: for every role, the floor and the ceiling are
+#: DIFFERENT materials, and neither is the material a partition wears
+#: (drywall, in every preset that has partitions). Walked on cold run 9005
+#: (2026-09-11): a ward whose floor, walls and ceiling all wore concrete read
+#: as generated -- "the floor, side and ceiling shouldn't all be the same
+#: texture; it looks good when they are different but uniform in some way".
+#: Uniform by ROLE, different by SURFACE. `test_floors` asserts the rule
+#: over both maps so a later edit cannot quietly break it.
+#:
+#: Every material named here is guaranteed a style by `FINISH_PALETTE` below.
+#: Before that guarantee, `carpet`, `tile` and `ceiling_tile` were absent from
+#: every authored palette, so `skin_style.style_for` fell through to the
+#: default and hand them all concrete's style -- concrete's Pixelcoat pack and
+#: concrete's module filename. On the shell walked above: 7 of 9 floors and
+#: 9 of 9 ceilings at style 1, the two `ceiling_tile` ceilings included.
+#:
+#: A room carrying its own ``floor_material`` / ``ceiling_material`` (or
+#: ``material``, for both) overrides this. Unknown roles fall back to the spec
+#: default, so a new role never fails -- it just looks ordinary.
 FLOOR_BY_ROLE = {
     "public_entry": "carpet",
+    "safe_room": "carpet",
     "connector": "tile",
+    "route_node": "tile",
+    "open_floor": "tile",
+    "loot_room": "carpet",
+    "finale": "wood",
     "fortifiable": "concrete",
     "objective_room": "concrete",
+    "vault": "concrete",
+    "utility": "concrete",
+    "staging": "concrete",
+    "stairwell": "concrete",
 }
 
 #: Room role -> ceiling material. Ceilings differ from floors on purpose: a
 #: suspended acoustic grid over a public room, hard plaster or bare concrete
 #: behind the counter. Same override and fallback rules.
+#:
+#:   ceiling_tile   the dropped grid: every public and circulation room in a
+#:                  1990s commercial building, wards and offices included.
+#:   drywall        a hard flat ceiling behind the counter -- the one place a
+#:                  ceiling may share the partitions' material, because a
+#:                  fortifiable room's floor is concrete and the pair is
+#:                  still two surfaces.
+#:   plaster        the money rooms and the plant: a painted hard ceiling over
+#:                  a slab floor. NOT concrete, which was the old answer and
+#:                  made the vault a concrete box on every face.
+#:   wood           nowhere. A wood ceiling is a lodge, not a building here.
 CEILING_BY_ROLE = {
     "public_entry": "ceiling_tile",
+    "safe_room": "ceiling_tile",
     "connector": "ceiling_tile",
+    "route_node": "ceiling_tile",
+    "open_floor": "ceiling_tile",
+    "loot_room": "ceiling_tile",
+    "finale": "plaster",
     "fortifiable": "drywall",
-    "objective_room": "concrete",
+    "objective_room": "plaster",
+    "vault": "plaster",
+    "utility": "plaster",
+    "staging": "plaster",
+    "stairwell": "plaster",
 }
+
+#: The FINISH PALETTE: every material the two maps can name, with the
+#: acoustic descriptor it carries into `gameplay.json` when the authored
+#: palette does not declare it. Appended AFTER the authored materials, in
+#: this order, by `ensure_finish_palette` (called by the spec loader) -- so
+#: an authored material keeps the style index it always had, every finish
+#: gains one that exists, and two builds of one spec agree on the numbering.
+#:
+#: Acoustics are gool's enum (`spec_types.AcousticMaterial`), which has no
+#: Carpet or Tile: carpet and an acoustic tile are `Curtain` (soft, absorbent
+#: -- that is what the grid is for), tile is `Concrete` (a hard glossy
+#: surface over a slab), plaster is `Drywall`. The absorption/damping floats
+#: sit against the authored palette's own scale (concrete 0.7/0.6, glass
+#: 0.1/0.05, metal 0.5/0.3): carpet and the grid above concrete, tile below
+#: it. Opinions, like the maps; edit them here and nowhere else.
+#:
+#: concrete / drywall / wood repeat `presets._PALETTE` byte for byte, and a
+#: test holds the two together, because a spec whose author dropped `wood`
+#: from the palette still has a `finale` role to floor.
+FINISH_PALETTE = (
+    {"id": "concrete", "acoustic": "Concrete", "absorption": 0.7, "damping": 0.6},
+    {"id": "drywall", "acoustic": "Drywall"},
+    {"id": "wood", "acoustic": "Wood"},
+    {"id": "carpet", "acoustic": "Curtain", "absorption": 0.85, "damping": 0.75},
+    {"id": "tile", "acoustic": "Concrete", "absorption": 0.3, "damping": 0.2},
+    {"id": "ceiling_tile", "acoustic": "Curtain", "absorption": 0.9, "damping": 0.8},
+    {"id": "plaster", "acoustic": "Drywall", "absorption": 0.45, "damping": 0.4},
+)
+
+
+def missing_finish_materials(spec):
+    """The `FINISH_PALETTE` entries the spec's own palette does not declare,
+    in palette order. Pure: reads ``spec.materials``, writes nothing."""
+    have = {m.id for m in getattr(spec, "materials", None) or ()}
+    return [dict(m) for m in FINISH_PALETTE if m["id"] not in have]
+
+
+def palette_ids(spec):
+    """Material ids in STYLE order: the authored palette, then whatever the
+    finish palette adds to it. This is the list `skin_style.material_styles`
+    should be handed everywhere, and it is the same list whether or not
+    `ensure_finish_palette` has run on the spec -- so a slot derived from a
+    bare test spec and one derived from a loaded spec number their styles
+    identically."""
+    ids = [m.id for m in getattr(spec, "materials", None) or ()]
+    return ids + [m["id"] for m in missing_finish_materials(spec)]
+
+
+def ensure_finish_palette(spec):
+    """Append the missing finish materials to ``spec.materials`` so the
+    builder's material index, `validate`, and the gameplay materials list all
+    see the palette the floor and ceiling slots draw from. Returns the ids
+    added; idempotent. The list is rebound, not extended in place, because a
+    spec class may share one default list between instances."""
+    from spec_types import Material
+    missing = missing_finish_materials(spec)
+    spec.materials = list(getattr(spec, "materials", None) or ()) + [
+        Material(**m) for m in missing]
+    return [m["id"] for m in missing]
 
 
 def cap_thick(spec, story, top):
@@ -257,9 +374,12 @@ def _slot(sid, role, ref, story, cx, cy, cz, sx, sy, facing, room=None,
     }
 
 
-def _material(room, mapping, default):
-    """A room's own material wins; then the role map; then the spec default."""
-    own = getattr(room, "material", None)
+def _material(room, surface, mapping, default):
+    """A room's own per-surface material wins (``floor_material`` /
+    ``ceiling_material``); then its ``material`` for both; then the role
+    map; then the spec default."""
+    own = (getattr(room, "%s_material" % surface, None)
+           or getattr(room, "material", None))
     if own:
         return own
     return mapping.get(getattr(room, "role", None), default)
@@ -278,8 +398,7 @@ def slab_slots(spec, top, skin=SKIN_THICK):
     """
     import skin_style
     default = getattr(spec, "default_material", None)
-    mapping = skin_style.material_styles(
-        [m.id for m in getattr(spec, "materials", [])])
+    mapping = skin_style.material_styles(palette_ids(spec))
     out = []
     for r in getattr(spec, "rooms", []):
         s = int(getattr(r, "story", 0))
@@ -289,7 +408,7 @@ def slab_slots(spec, top, skin=SKIN_THICK):
         cx, cy = (b[0] + b[2]) / 2.0, (b[1] + b[3]) / 2.0
         sx, sy = b[2] - b[0], b[3] - b[1]
 
-        fmat = _material(r, FLOOR_BY_ROLE, default)
+        fmat = _material(r, "floor", FLOOR_BY_ROLE, default)
         out.append(_slot(
             "floor_%s" % r.id, FLOOR_SLOT_ROLE, FLOOR_GREYBOX_REF, s,
             cx, cy, s * spec.story_height + skin / 2.0, sx, sy, "up",
@@ -297,7 +416,7 @@ def slab_slots(spec, top, skin=SKIN_THICK):
             material=fmat,
             voids=room_voids(spec, r, s, cx, cy, sx, sy)))
 
-        cmat = _material(r, CEILING_BY_ROLE, default)
+        cmat = _material(r, "ceiling", CEILING_BY_ROLE, default)
         under = (s + 1) * spec.story_height - cap_thick(spec, s, top)
         out.append(_slot(
             "ceiling_%s" % r.id, CEILING_SLOT_ROLE, CEILING_GREYBOX_REF, s,
