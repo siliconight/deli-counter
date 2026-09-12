@@ -120,8 +120,9 @@ def void_tag(voids) -> str | None:
 def module_stem(typ: str, theme: str, style: int,
                 width_cm: int = None, state: str = None,
                 depth_cm: int = None, voids_tag: str = None,
-                openings_tag: str = None, height_cm: int = None) -> str:
-    """``<type>_<theme>_<style:02d>[_w<cm>][_d<cm>][_h<cm>][_v<hash>][_o<hash>][_<state>]``.
+                openings_tag: str = None, height_cm: int = None,
+                species: str = None) -> str:
+    """``<type>[_<species>]_<theme>_<style:02d>[_w<cm>][_d<cm>][_h<cm>][_v<hash>][_o<hash>][_<state>]``.
 
     THE MIRROR OF ``zoo_keeper.core.kit.module_stem``, and the two must change
     together. Neither side parses a stem; both CONSTRUCT it from the same slot,
@@ -135,7 +136,12 @@ def module_stem(typ: str, theme: str, style: int,
     on all three, and inherited the wall's argument by mistake: `cr_gas` put a
     0.9x10.0x1.8 counter and a 0.9x0.9x1.0 cube on one `prop_delco_04_w90`.
     """
-    base = f"{typ}_{theme}_{style:02d}"
+    # A VOLUME'S SPECIES IS IN THE NAME (roadmap 44): `prop_desk_...` is a
+    # desk built to the slot, `prop_...` the box. Two different geometries
+    # of one size must not share a filename, and the composer must be
+    # able to ask for the desk and fall back to the box (resolve_slot_ref).
+    base = (f"{typ}_{species}_{theme}_{style:02d}"
+            if species and species != typ else f"{typ}_{theme}_{style:02d}")
     if width_cm is not None:
         base += f"_w{int(round(width_cm))}"
     if depth_cm is not None:
@@ -187,9 +193,13 @@ def resolve_themed_stem(slot: dict, theme: str, style: int, state: str = None):
     vtag = void_tag(fit.get("voids")) if typ in PLATE_ROLES else None
     otag = opening_tag(fit.get("openings")) if typ in OPENING_ROLES else None
     eff_style = int(slot.get("style") or style or 1)
+    # A volume's species hint (roadmap 44) names the module Zoo builds when
+    # the species fits the slot; `species=None` on the slot, or a slot from
+    # an older manifest, resolves the plain box exactly as before.
+    species = slot.get("species") if typ in VOLUME_ROLES else None
     stem = module_stem(typ, theme, eff_style, width_cm,
                        state if state else _default_stem_state(slot),
-                       depth_cm, vtag, otag, height_cm)
+                       depth_cm, vtag, otag, height_cm, species=species)
     return stem, (not exact)
 
 
@@ -209,13 +219,23 @@ def resolve_slot_ref(slot, theme, style, library_dir):
     the placement gate MUST all resolve through here -- when they disagreed,
     fallback modules were placed over unstripped greybox walls and the whole
     building z-fought (caught by the z-fight gate, 0.88.0)."""
-    stem, scaled = resolve_themed_stem(slot, theme, style)
-    if stem and _themed_available(library_dir, stem):
-        return stem, scaled, False
-    if stem and int(slot.get("style") or 1) != 1:
-        stem01, scaled01 = resolve_themed_stem(dict(slot, style=1), theme, 1)
-        if stem01 and _themed_available(library_dir, stem01):
-            return stem01, scaled01, True
+    # A hinted volume asks for its species module first and the plain box
+    # second (roadmap 44): Zoo builds the box when the species does not fit
+    # the slot, and the composer must land on whichever one exists rather
+    # than on greybox. The style-01 degrade applies to each in turn.
+    candidates = [slot]
+    if slot.get("species") and slot.get("role") in VOLUME_ROLES:
+        candidates.append(dict(slot, species=None))
+    for cand in candidates:
+        stem, scaled = resolve_themed_stem(cand, theme, style)
+        if stem and _themed_available(library_dir, stem):
+            return stem, scaled, False
+    for cand in candidates:
+        stem, _scaled = resolve_themed_stem(cand, theme, style)
+        if stem and int(cand.get("style") or 1) != 1:
+            stem01, scaled01 = resolve_themed_stem(dict(cand, style=1), theme, 1)
+            if stem01 and _themed_available(library_dir, stem01):
+                return stem01, scaled01, True
     return None, False, False
 
 

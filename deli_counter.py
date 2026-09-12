@@ -53,6 +53,7 @@ import setbacks as setbacks_mod
 import ladder_geom
 import stairwell
 import skin_style
+import prop_species
 from rarity import resolve_rarity
 import interactives
 import roofs
@@ -2185,6 +2186,10 @@ class _Builder:
                     "style": skin_style.style_for(v.material, self._mat_style,
                                                   self.s.default_material),
                     "material": v.material or self.s.default_material,
+                    # What the name says it is (roadmap 44): a HINT Zoo
+                    # honours when the species fits these dims, else the
+                    # box. None = a box is fine (crates, columns).
+                    "species": prop_species.species_for_name(v.name),
                     "current_ref": "prop_greybox_01", "kit_axis": "material",
                     "wall": None, "story": None, "facing": None,
                     "transform": {"translation": [round(c[0], 4),

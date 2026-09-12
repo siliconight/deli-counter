@@ -1,3 +1,23 @@
+## [0.117.0] - 2026-09-12
+
+A placement says what it is.
+
+Roadmap 44, re-raised by the walker from inside the hospital: "the blocks
+should really just be placeholders until they are replaced by something
+more diegetic." Every volume is named for what it is and every one reached
+Zoo as a `prop` slot, which is a box. `prop_species.species_for_name`
+(pure, keyword table in that file) stamps a `species` hint on each volume
+slot -- `nurse_station` -> counter, `desk_manager_office` -> desk,
+`aisle_shelf` -> shelving, `teller_counter` -> teller_line; crates,
+columns, pallets and things no species exists for stay None. Zoo decides
+whether the species fits the slot (its genome's ranges) and builds the box
+otherwise. `themed_tscn.module_stem` carries the species between type and
+theme (`prop_desk_delco_02_w160_d80_h75`), mirrored in Zoo 0.61.0, and
+`resolve_slot_ref` asks for the species module first and the plain box
+second before the style-01 degrade, so a hinted slot never lands on
+greybox because its species did not fit. Measured over 1,443 placements:
+721 hinted, 142 fit today; the rest are runs (roadmap 44, step 3).
+
 ## [0.116.0] - 2026-09-11
 
 A ceiling row steps off the partitions.
