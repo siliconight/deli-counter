@@ -399,12 +399,11 @@ def _fit_rotation(module_ext, gb_ext, fallback=0, scale=None):
     fitting the unscaled module ties at all four and answers 0 -- which put
     237 of 777 remainders across the wall they belong to (see
     tscn_export.godot_basis). Fit what will be placed."""
-    from tscn_export import godot_basis
+    from tscn_export import godot_basis, placed_extent
     best, best_err = fallback, 1e18
     for rot in (0, 90, 180, 270):
         b = godot_basis(rot, scale or [1.0, 1.0, 1.0])
-        pl = [abs(b[i]) * module_ext[0] + abs(b[3 + i]) * module_ext[1]
-              + abs(b[6 + i]) * module_ext[2] for i in range(3)]
+        pl = placed_extent(b, module_ext)
         err = abs(pl[0] - gb_ext[0]) + abs(pl[2] - gb_ext[2])
         if err < best_err - 1e-9:
             best_err, best = err, rot

@@ -2,35 +2,45 @@
 
 `wallEnd` is the one module Deli Counter scales: a unit cube whose slot
 carries `scale = [length, thickness, height]` in the module's own frame
-(`_volumes`). Two things had to agree for it to land, and from 0.81.0 to
-0.119.0 neither did: `tscn_export.godot_basis` applied the scale in WORLD
-axes after the rotation, and `themed_tscn._fit_rotation` fitted the unscaled
-cube -- which has the same extents at every angle, so it tied and answered
-0. At 0 the two errors cancel; on a wall that runs along Y they stack, and
-the remainder stood with its length across the wall. Measured on cold runs
-9001-9012: 237 of 777 wallEnd nodes. These pin the fix at both seams.
+(`_volumes`). From 0.81.0 to 0.119.0 `themed_tscn._fit_rotation` fitted the
+unscaled cube -- which has the same extents at every angle, so it tied and
+answered 0 -- and the remainder on any wall that runs along Y stood with
+its length across the wall: 237 of 777 wallEnd nodes on cold runs
+9001-9012. 0.120.0 gave the fit the scale AND rewrote `godot_basis` on the
+belief that its nine numbers were axes; they are Godot's ROWS, the old
+numbers were right, and cold run 9013 shipped the pieces across the other
+way (the engine's census: 6 across; the gate, summing columns: 165/165).
+These pin the fit, the rows, and the extent sum -- against the engine's
+reading, not the writer's.
 """
 import math
 
 import themed_tscn
-from tscn_export import godot_basis
+from tscn_export import godot_basis, placed_extent
 
 
 def _placed(basis, ext):
-    """Horizontal/vertical extents of a box of local extents `ext` placed by
-    `basis` (9 floats, column-major) -- the same sum the placement gate uses."""
-    return [abs(basis[i]) * ext[0] + abs(basis[3 + i]) * ext[1]
-            + abs(basis[6 + i]) * ext[2] for i in range(3)]
+    return placed_extent(basis, ext)
 
 
 def test_scale_is_applied_in_the_module_frame_then_turned():
     """A 1.875 x 0.3 x 3.3 remainder turned 90 degrees puts its LENGTH along
-    Godot Z (DC Y). The old basis put 0.3 there."""
+    Godot Z (DC Y): the rows of Ry(-90) x diag(1.875, 3.3, 0.3)."""
     b = godot_basis(90, [1.875, 0.3, 3.3])
+    assert [round(v, 6) for v in b] == [0.0, 0.0, -0.3, 0.0, 3.3, 0.0, 1.875, 0.0, 0.0]
     px, py, pz = _placed(b, [1.0, 1.0, 1.0])
     assert math.isclose(px, 0.3, abs_tol=1e-9)
     assert math.isclose(py, 3.3, abs_tol=1e-9)
     assert math.isclose(pz, 1.875, abs_tol=1e-9)
+
+
+def test_the_extent_sum_reads_rows_not_columns():
+    """The transpose's answer is the footprint swapped: the gate said 165 of
+    165 on cold run 9013's bank while the engine measured 6 across."""
+    b = godot_basis(90, [1.7, 0.3, 4.3])
+    assert [round(v, 3) for v in placed_extent(b, [1.0, 1.0, 1.0])] == [0.3, 4.3, 1.7]
+    cols = [abs(b[i]) + abs(b[3 + i]) + abs(b[6 + i]) for i in range(3)]
+    assert [round(v, 3) for v in cols] == [1.7, 4.3, 0.3]
 
 
 def test_at_zero_degrees_the_two_orders_agree():

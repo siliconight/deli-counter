@@ -41,34 +41,52 @@ def godot_basis(rot_y_deg, scale):
     source of truth for module orientation -- the placement verifier reuses it,
     so the scene and its check can never drift apart.
 
-    basis = Ry(t) x Scale_local. The rotation is NOT the slot's raw rot_y; it
-    is chosen per-slot by fitting the module to the greybox extent (the ground
-    truth) in themed_tscn, with nothing hard-coded. Scale is the slot's
-    fit.dims in the MODULE'S OWN frame -- deli_counter emits a wall
-    remainder's scale as [length, thickness, height] whatever way the wall
-    runs (`_volumes`: "a unit box scaled by LOCAL dims and then turned by
-    rot_y lands correctly") -- so it is applied BEFORE the rotation.
+    THE NINE NUMBERS ARE THE MATRIX'S ROWS, not its axes. Godot's text
+    format writes `Transform3D(` + basis.rows[0], rows[1], rows[2], origin
+    `)`; an axis (column) is read down the three triplets. Read as rows, this
+    list is M = Ry(-t) x Scale_local: the slot's scale in the MODULE'S OWN
+    frame -- deli_counter emits a wall remainder's scale as [length,
+    thickness, height] whatever way the wall runs (`_volumes`: "a unit box
+    scaled by LOCAL dims and then turned by rot_y") -- applied BEFORE the
+    turn. The angle's sign is the convention every opening module in every
+    package has been placed with; do not change it.
 
-    This docstring said the opposite from 0.81.0 to 0.119.0 ("scale is
-    world-axis-aligned, applied AFTER the rotation") and the code did what it
-    said: Scale_world x Ry(t). Nothing noticed, because every scaled module is
-    a `wallEnd` unit cube, whose extents are 1 x 1 x 1 at every rotation, so
-    `_fit_rotation` tied at all four angles and answered 0 -- and at 0 the
-    two orders agree. On any wall that runs along Y (rot_y 90/270) the
-    remainder therefore stood with its LENGTH across the wall: a fin. Measured
-    2026-09-12 on cold runs 9001-9012: 237 of 777 wallEnd nodes, every one on
-    a turned wall (`int_0_1_seg1` of bank_branch_a03: slot rot_y 90, scale
-    [1.875, 0.3, 3.3], placed basis scale-only, 1.875 m along X beside a
-    doorway). The walker saw it on 9005 and again on 9012; the pose census
-    could not, because it compares the SORTED horizontal extents.
+    The rotation is not the slot's raw rot_y; it is chosen per-slot by fitting
+    the module to the greybox extent (the ground truth) in themed_tscn.
+
+    HISTORY, KEPT. From 0.81.0 to 0.119.0 this docstring called the triplets
+    "transformed axes" and the product "Scale_world x Ry(t), scale applied
+    after the rotation" -- a description of the transpose of what the engine
+    builds from these numbers. The numbers were right; the words were wrong,
+    and nothing could tell, because the only scaled module is a unit cube and
+    `_fit_rotation` fitted it unscaled, tied at all four angles and answered
+    0 -- and a scale-only basis reads the same either way. 0.120.0 believed
+    the words, "corrected" the code to Ry(t) x S in column terms, and cold
+    run 9013 shipped the remainders across their walls in the other
+    direction (`module_pose_census`, off the engine: 6 across on
+    bank_tower_a01, where the gate -- computing extents from the same
+    columns -- said 165 of 165 sat). 0.120.1 restores the numbers, says what
+    they are, and sums extents by rows where the placed footprint is
+    computed. The fit given the slot's scale is the fix that stands.
     """
     t = math.radians(rot_y_deg or 0.0)
     c, s = math.cos(t), math.sin(t)
     sc = (scale or [1.0, 1.0, 1.0])
     gsx, gsy, gsz = sc[0], sc[2], sc[1]      # y<->z remap with the axis change
-    return [c * gsx, 0.0, -s * gsx,          # transformed X axis (module length)
-            0.0, gsy, 0.0,                   # transformed Y axis (up)
-            s * gsz, 0.0, c * gsz]           # transformed Z axis (module depth)
+    return [c * gsx, 0.0, -s * gsz,          # row 0: world X from (local X, Y, Z)
+            0.0, gsy, 0.0,                   # row 1: world Y (up)
+            s * gsx, 0.0, c * gsz]           # row 2: world Z
+
+
+def placed_extent(basis, ext):
+    """World-axis extents of a box of module-local extents `ext` placed by
+    `basis` (the nine numbers as written to the scene, i.e. ROWS): the extent
+    along world axis i is the row-i sum of |M[i][j]| * ext[j]. Summing the
+    triplets as if they were columns gives the transpose's answer, which for
+    a turned, scaled unit cube is the footprint swapped -- the gate agreed
+    with a wrong scene on cold run 9013 exactly that way."""
+    return [abs(basis[3 * i]) * ext[0] + abs(basis[3 * i + 1]) * ext[1]
+            + abs(basis[3 * i + 2]) * ext[2] for i in range(3)]
 
 
 def _ref_path(res_root, ref):

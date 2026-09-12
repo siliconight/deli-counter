@@ -1,3 +1,29 @@
+## [0.120.1] - 2026-09-12
+
+0.120.0's basis rewrite was wrong, and the engine said so within the hour.
+
+Cold run 9013, the first package on 0.120.0: `tools/module_pose_census.py`
+-- which reads world AABBs off the engine -- reported 6 wall remainders
+`across` on bank_tower_a01, while `verify_placement` said 165 of 165 sat
+on their slots. Two instruments disagreed; the engine is the one that is
+right by definition. The nine numbers `godot_basis` writes are the
+matrix's ROWS (Godot's text format writes `basis.rows[i][j]`), not its
+axes. Read as rows, the 0.81.0 numbers were `Ry(-t) x Scale_local` all
+along -- the scale in the module's frame, the docstring wrong and the code
+right -- and the fins had ONE cause, the fit that tied on the unscaled
+unit cube and answered 0. 0.120.0 believed the docstring, transposed the
+product, and moved the remainders across their walls the other way.
+
+0.120.1 restores the numbers and says what they are; the fit given the
+slot's scale stands; and `placed_extent()` sums a placed box's extents by
+rows, which is where the gate and the fit had been reading the transpose
+(columns) -- harmless for a rotation alone, the footprint swapped for a
+turned scaled cube, which is why the gate agreed with the wrong scene.
+Recomposed bank_tower_a01 in the 9013 walk copy, read off the engine: 195
+standing, 0 across; gate 187 of 187. The lesson belongs beside the
+0.120.0 entry: a writer and a checker that share one convention agree with
+each other, not with the engine. Check against the engine.
+
 ## [0.120.0] - 2026-09-12
 
 A wall remainder stands along its wall whichever way the wall runs.

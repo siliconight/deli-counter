@@ -467,8 +467,7 @@ def verify_placement(greybox_glb, slots, module_dir, theme, style, tol=0.25):
         rot = themed_tscn._fit_rotation(me, ge, fallback=(tf.get("rot_y") or 0),
                                         scale=tf.get("scale"))
         b = _te.godot_basis(rot, tf.get("scale"))
-        placed = [round(abs(b[i]) * me[0] + abs(b[3 + i]) * me[1]
-                        + abs(b[6 + i]) * me[2], 3) for i in range(3)]
+        placed = [round(v, 3) for v in _te.placed_extent(b, me)]
         checked += 1
         horiz_ok = abs(placed[0] - ge[0]) <= tol and abs(placed[2] - ge[2]) <= tol
         if horiz_ok:
