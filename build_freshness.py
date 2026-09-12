@@ -53,6 +53,7 @@ GEOMETRY_SOURCES = (
     "stair_place.py",
     "floorplan.py",
     "floors.py",
+    "lights.py",            # the light manifest is a build output (0.116.0)
     "wallruns.py",
     "roofs.py",
     "ladder.py",

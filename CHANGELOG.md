@@ -1,3 +1,38 @@
+## [0.116.0] - 2026-09-11
+
+A ceiling row steps off the partitions.
+
+Roadmap 143, walked on cold run 9005's hospital as "light inside the wall".
+`tools/anchor_wall_probe.py` over that shell: 35 lamp points, NINE at
+-0.150 m -- the partition centreline exactly. Two shapes. The lobby and
+ward_south rows (40 m long, five lamps at 8 m) put lamps 2 and 4 on the
+ward partitions at x = +-8: a row laid across a room's length at its
+derived spacing lands on a partition whenever the partitions fall on that
+spacing, which the library's rooms happened not to (2,422 lamp points,
+none inside a wall) and this hospital's do. And the roof's five bulbs lay
+ALONG the y = 0 spine partition, every one of them in it.
+
+`lights.partition_rects` turns the spec's partitions -- as the builder's
+trimmed `_partition_pieces`, at the wall thickness the emitters build to
+-- into world rects, and `derive_light_anchors` takes them the way it
+takes ceiling voids. `_row_runs` NUDGES a lamp whose centre lands within
+`wall_clearance` of a band to the nearer edge of it along the row (as
+its own run, since a run's points are equally spaced by contract), and
+DROPS one with no landing inside half a spacing, counting both. A
+partition lying along the row (`_colinear_shift`: its band holds the
+row's line over half the row's length) moves the whole row to the centre
+of the larger side -- one row, one side, and the report says so, because
+the other side is a room-splitting question for the spec.
+
+The clearance is derived, not chosen: half the wall + half Zoo's
+`fluorescent_fixture` troffer (`depth` 0.3 in its genome) + the same
+0.1 m air gap the row keeps below the ceiling = 0.40 m on a 0.30 wall. On
+the hospital spec this makes the lobby and ward rows five single-lamp
+runs each with the two wall lamps at x = +-8.4, and the roof bulbs at
+y = 7.5. `write_light_manifest` prints the counts beside the void count.
+`lights.py` joins `build_freshness.GEOMETRY_SOURCES`: it writes a build
+output, and a stale one is a stale shell.
+
 ## [0.115.0] - 2026-09-11
 
 The floor, the wall and the ceiling are three surfaces.

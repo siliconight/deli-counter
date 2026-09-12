@@ -38,6 +38,11 @@ change; derived lights need zero authoring.
 - **One `fluorescent` row per room** — at the room center, mounted just below
   the ceiling (`center.z + story_height`), running along the room's longer
   axis, fixture count scaled to the room's length. `reacts_to_alarm: true`.
+  The row is split into runs around the ceiling voids (stairwells, hatches)
+  and stepped off the partitions: a lamp that would hang inside a wall is
+  nudged along the row to 0.40 m off the centreline (its own run), one
+  with nowhere to go is dropped, and a row lying along a partition moves to
+  the larger side of it (DC 0.116.0, roadmap 143).
 - **One `window` area light per window opening** — at the opening center, sized
   to the opening, facing inward (from the wall's N/S/E/W suffix).
   `reacts_to_alarm: false`.

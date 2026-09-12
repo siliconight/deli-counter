@@ -43,6 +43,117 @@ _PENDANT_MIN_SPACING = 3.5   # metres between bulbs, minimum
 _MAX_FIXTURES = 5       # cap a single room's row
 _CEILING_GAP = 0.1      # hang fixtures this far below the ceiling PLANE
 
+#: A ceiling row must not put a lamp INSIDE a partition. Walked 2026-09-11 on
+#: cold run 9005's hospital as "light inside the wall": nine lamp points on
+#: that shell sat at -0.150 m, the partition centreline exactly -- the lobby
+#: and ward rows at x = +-8.0 crossing the ward partitions, and the roof's
+#: bulb row lying ALONG the y = 0 spine (roadmap 143). A row laid across a
+#: room's length at its derived spacing lands on a partition whenever the
+#: partitions fall on that spacing, which the library's rooms happened not
+#: to and this hospital's do (`tools/anchor_wall_probe.py`: 2,422 library
+#: lamp points, none inside a wall; this shell, 9 of 35).
+#:
+#: The clearance a lamp CENTRE keeps from a wall's CENTRELINE is derived,
+#: not chosen: half the wall (the caller's `wall_thick`, 0.30 on 18,469 of
+#: the shipped wall slots) + half the fixture across the row + an air gap.
+#: The fixture is Zoo's `fluorescent_fixture` troffer, `depth` default 0.3
+#: (0.2..0.6) in its genome; the gap is `_CEILING_GAP`, the same air the
+#: row already keeps below the ceiling plane. 0.15 + 0.15 + 0.10 = 0.40 m
+#: for a 0.30 wall.
+_FIXTURE_DEPTH = 0.3
+_FIXTURE_GAP = _CEILING_GAP
+
+
+def wall_clearance(wall_thick):
+    """Lamp-centre to wall-centreline clearance, metres (derivation above)."""
+    return float(wall_thick) * 0.5 + _FIXTURE_DEPTH * 0.5 + _FIXTURE_GAP
+
+
+def _g(o, k, default=None):
+    return o.get(k, default) if isinstance(o, dict) else getattr(o, k, default)
+
+
+def partition_rects(partitions, wall_thick, pieces=None):
+    """Interior walls as world XY rects: ``[{story, x0, y0, x1, y1}]``.
+
+    ``partitions`` are spec `Partition`s (or dicts with the same keys): an
+    ``axis`` ("X" runs along x at y = ``pos``; "Y" along y at x = ``pos``)
+    and a ``start``..``end`` span. ``pieces`` is the builder's
+    ``_partition_pieces`` -- ``{index: [(lo, hi), ...]}`` -- the spans that
+    were actually built after the envelope and the stairwell voids trimmed
+    them; a partition with no entry is taken at its authored span. The
+    thickness is the caller's, the same number the wall emitters build to.
+    """
+    t = float(wall_thick) * 0.5
+    out = []
+    for i, p in enumerate(partitions or ()):
+        spans = (pieces or {}).get(i) if pieces else None
+        if not spans:
+            a, b = float(_g(p, "start")), float(_g(p, "end"))
+            spans = [(min(a, b), max(a, b))]
+        pos = float(_g(p, "pos"))
+        for lo, hi in spans:
+            lo, hi = float(lo), float(hi)
+            if str(_g(p, "axis")) == "X":
+                r = (lo, pos - t, hi, pos + t)
+            else:
+                r = (pos - t, lo, pos + t, hi)
+            out.append({"story": int(_g(p, "story", 0) or 0),
+                        "x0": round(r[0], 4), "y0": round(r[1], 4),
+                        "x1": round(r[2], 4), "y1": round(r[3], 4)})
+    return out
+
+
+def _band(w, clear):
+    """The keep-out rect around a wall: ``clear`` either side of its
+    CENTRELINE across the thin axis (``clear`` already holds half the wall,
+    see `wall_clearance`), and the same air past each end face along it."""
+    hx, hy = (w["x1"] - w["x0"]) * 0.5, (w["y1"] - w["y0"]) * 0.5
+    cx, cy = (w["x0"] + w["x1"]) * 0.5, (w["y0"] + w["y1"]) * 0.5
+    if hx <= hy:                      # thin in x: runs along y
+        ex, ey = clear, hy + max(clear - hx, 0.0)
+    else:                             # thin in y: runs along x
+        ex, ey = hx + max(clear - hy, 0.0), clear
+    return (cx - ex, cy - ey, cx + ex, cy + ey)
+
+
+def _colinear_shift(bounds, rot, walls, clear):
+    """Where a partition runs ALONG the row -- its band contains the row's
+    line over at least half the row's length -- the row is not crossing a
+    wall, it is lying in one, and no point-wise nudge can save it. The
+    partition has divided the room into two spaces; the row moves to the
+    centre of the larger one (equal: the positive side). Returns the new
+    perpendicular coordinate, or None when no wall is colinear.
+
+    One row, one side, on purpose: the other side stays unlit and the
+    caller reports the shift so a re-walk can judge whether that space
+    wanted its own row -- which is a room-splitting question for the spec,
+    not a lighting one.
+    """
+    minx, miny, maxx, maxy = bounds
+    along_x = abs(rot) < 45.0
+    if along_x:
+        perp, lo, hi, a0, a1 = (miny + maxy) / 2.0, miny, maxy, minx, maxx
+    else:
+        perp, lo, hi, a0, a1 = (minx + maxx) / 2.0, minx, maxx, miny, maxy
+    row_len = max(a1 - a0, 1e-9)
+    for w in walls or ():
+        b = _band(w, clear)
+        if along_x:
+            p0, p1, s0, s1 = b[1], b[3], w["x0"], w["x1"]
+        else:
+            p0, p1, s0, s1 = b[0], b[2], w["y0"], w["y1"]
+        if not (p0 <= perp <= p1):
+            continue
+        overlap = min(s1, a1) - max(s0, a0)
+        if overlap < 0.5 * row_len:
+            continue
+        wc = (p0 + p1) / 2.0
+        below, above = wc - lo, hi - wc
+        side = (wc, hi) if above >= below else (lo, wc)
+        return round((side[0] + side[1]) / 2.0, 3)
+    return None
+
 # The ceiling of a storey is the UNDERSIDE of the slab that caps it, which is
 # one slab-thickness below the next storey's floor. Deriving a fixture height
 # from `floor + story_height` alone puts it on the wrong side of that slab:
@@ -100,8 +211,10 @@ def _row_for_bounds(bounds):
     return rot, count, spacing
 
 
-def _row_runs(centre, rot, count, spacing, voids):
-    """Split a ceiling row into contiguous RUNS that miss every ceiling void.
+def _row_runs(centre, rot, count, spacing, voids, walls=None, clear=0.0,
+              report=None):
+    """Split a ceiling row into contiguous RUNS that miss every ceiling void
+    and step every lamp point off the partitions it would otherwise hang in.
 
     A FIXTURE MUST BE MOUNTED TO SOMETHING. A hole is not a surface, and a
     fluorescent hanging in a stairwell opening reads as a bug on sight --
@@ -122,6 +235,16 @@ def _row_runs(centre, rot, count, spacing, voids):
     unchanged when there are none -- but the CALLER must say out loud that it
     had none, because "no voids supplied" and "no voids hit" are different
     facts and only one of them is a pass.
+
+    ``walls`` are `partition_rects` on this storey and ``clear`` is
+    `wall_clearance`. A point whose centre lands within ``clear`` of a
+    wall's band is NUDGED along the row to the nearer edge of that band,
+    provided the landing is clear of every wall and void and no further than
+    half a spacing away (so it stays inside the room, whose row is inset by
+    half a spacing from its bounds). A nudged point is its own run -- a run's
+    points are equally spaced by contract, and the nudge breaks that. A
+    point with nowhere to go is DROPPED and counted, not silently kept in
+    the wall. ``report`` (a dict) receives the counts.
     """
     cx, cy, cz = centre
     if count <= 1 or spacing <= 0.0:
@@ -136,14 +259,52 @@ def _row_runs(centre, rot, count, spacing, voids):
         return any(x0 <= x <= x1 and y0 <= y <= y1
                    for (x0, y0, x1, y1) in (voids or ()))
 
-    runs, cur = [], []
+    bands = [_band(w, clear) for w in (walls or ())]
+
+    def _walls_at(x, y):
+        # strict: a point exactly `clear` from the centreline is clear
+        return [b for b in bands if b[0] < x < b[2] and b[1] < y < b[3]]
+
+    along_x = abs(rot) < 45.0
+    max_shift = (spacing if spacing > 0.0 else _TARGET_SPACING) * 0.5
+    rep = report if report is not None else {}
+    rep.setdefault("nudged", 0)
+    rep.setdefault("dropped", 0)
+
+    tagged = []
     for x, y in pts:
         if _in_void(x, y):
-            if cur:
-                runs.append(cur)
-                cur = []
+            tagged.append((x, y, "void"))
             continue
-        cur.append((x, y))
+        hit = _walls_at(x, y)
+        if not hit:
+            tagged.append((x, y, "ok"))
+            continue
+        cands = []
+        for (bx0, by0, bx1, by1) in hit:
+            cands += ([(bx0, y), (bx1, y)] if along_x
+                      else [(x, by0), (x, by1)])
+        cands = [(cx, cy) for cx, cy in cands
+                 if not _walls_at(cx, cy) and not _in_void(cx, cy)
+                 and abs(cx - x) + abs(cy - y) <= max_shift + 1e-9]
+        if cands:
+            cx, cy = min(cands, key=lambda c: abs(c[0] - x) + abs(c[1] - y))
+            tagged.append((round(cx, 3), round(cy, 3), "nudged"))
+            rep["nudged"] += 1
+        else:
+            tagged.append((x, y, "dropped"))
+            rep["dropped"] += 1
+
+    runs, cur = [], []
+    for x, y, kind in tagged:
+        if kind == "ok":
+            cur.append((x, y))
+            continue
+        if cur:
+            runs.append(cur)
+            cur = []
+        if kind == "nudged":
+            runs.append([(x, y)])
     if cur:
         runs.append(cur)
 
@@ -236,7 +397,8 @@ def _storefront_sign(openings, wall_thick):
 
 
 def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
-                         wall_thick, ceiling_voids=None):
+                         wall_thick, ceiling_voids=None, partitions=None,
+                         report=None):
     """Derive default light anchors: one fluorescent ceiling row per interior
     room, one area light per window opening, a wall pack over every exterior
     door, and one storefront sign.
@@ -251,8 +413,18 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
     same reason: the facade emitters are placed proud of the wall FACE, and
     an opening's coordinate is the wall's centreline, so without it the pack
     and sign land inside the wall they hang on (see `_WALL_PACK_OUT`).
+
+    `partitions` are `partition_rects` -- the interior walls as world rects
+    with a storey -- and are optional the way `ceiling_voids` are: a caller
+    that has none gets rows laid across the room as before, and must say so.
+    With them, a row steps off every partition it would cross and moves off
+    any it would lie along (`_row_runs`, `_colinear_shift`). `report`, a
+    dict, receives the counts: nudged, dropped, rows_shifted.
     """
     anchors = []
+    rep = report if report is not None else {}
+    rep.setdefault("rows_shifted", 0)
+    clear = wall_clearance(wall_thick)
     for r in rooms or []:
         c = r.get("center")
         bounds = r.get("bounds")
@@ -283,7 +455,20 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
         holes = [v for v in (ceiling_voids or ())
                  if int(v.get("story", story)) == story]
         rects = [(v["x0"], v["y0"], v["x1"], v["y1"]) for v in holes]
-        runs = _row_runs([c[0], c[1], lamp_z], rot, count, spacing, rects)
+        walls = [w for w in (partitions or ()) if int(w["story"]) == story]
+        # A partition ALONG the row (the hospital roof's y = 0 spine under a
+        # row laid at y = 0) is not a crossing: the row moves to the larger
+        # side of it before any point is judged.
+        rx, ry = c[0], c[1]
+        shifted = _colinear_shift(bounds, rot, walls, clear)
+        if shifted is not None:
+            if abs(rot) < 45.0:
+                ry = shifted
+            else:
+                rx = shifted
+            rep["rows_shifted"] += 1
+        runs = _row_runs([rx, ry, lamp_z], rot, count, spacing, rects,
+                         walls=walls, clear=clear, report=rep)
         base_id = ("%s_bulbs" if moody else "%s_ceiling") % r.get("id", "room")
         for i, (pos, n, sp) in enumerate(runs):
             anchors.append({
@@ -364,13 +549,14 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
 
 def build_light_manifest(building_id, rooms, openings, story_height,
                          *, cap_thick, wall_thick, authored=None, theme=None,
-                         ceiling_voids=None):
+                         ceiling_voids=None, partitions=None, report=None):
     """Full `<name>.lights.json` manifest. `authored` is an optional list of
     hand-placed anchors; an authored anchor replaces a derived one with the
     same id (auto defaults + spec overrides, like props)."""
     anchors = derive_light_anchors(rooms, openings, story_height,
                                    cap_thick=cap_thick, wall_thick=wall_thick,
-                                   ceiling_voids=ceiling_voids)
+                                   ceiling_voids=ceiling_voids,
+                                   partitions=partitions, report=report)
     if authored:
         by_id = {a["id"]: a for a in anchors}
         for a in authored:

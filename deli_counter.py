@@ -2683,6 +2683,14 @@ def write_light_manifest(builder, path):
     # in this file is a second thing to get wrong, and a light splitting
     # around a different hole than the skin cuts is worse than neither.
     _voids = floors.ceiling_voids(builder.s)
+    # The partitions the rows must not hang in (roadmap 143), as the pieces
+    # that were BUILT -- `_partition_pieces` is what the envelope and the
+    # stairwell voids left of each authored span -- at the wall thickness
+    # the wall emitters build to.
+    _walls = _lights.partition_rects(
+        builder.s.partitions, builder.s.wall_thick,
+        pieces=getattr(builder, "_partition_pieces", None))
+    _report = {}
     data = _lights.build_light_manifest(
         builder.s.name,
         builder.gameplay.get("rooms", []),
@@ -2696,6 +2704,8 @@ def write_light_manifest(builder, path):
         authored=getattr(builder.s, "lights", None),
         theme=getattr(builder.s, "theme", None),
         ceiling_voids=_voids,
+        partitions=_walls,
+        report=_report,
     )
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
@@ -2704,7 +2714,11 @@ def write_light_manifest(builder, path):
     # the second when it is nearly always the first.
     print(f"[deli_counter] light manifest -> {path} "
           f"({len(data['anchors'])} anchors; "
-          f"{len(_voids)} ceiling void(s) subtracted)")
+          f"{len(_voids)} ceiling void(s) subtracted; "
+          f"{len(_walls)} partition piece(s): "
+          f"{_report.get('nudged', 0)} lamp(s) nudged, "
+          f"{_report.get('dropped', 0)} dropped, "
+          f"{_report.get('rows_shifted', 0)} row(s) moved off a wall)")
     return data
 
 
