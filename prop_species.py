@@ -33,10 +33,20 @@ that are boxes by nature (``crate``, ``col_``, ``pallet``) are listed with
 
 #: (keywords, species). Order matters.
 PROP_SPECIES = (
-    (("crate", "pallet", "col_", "pillar", "column", "stack", "pump",
+    (("crate", "pallet", "col_", "pillar", "column", "stack", "pump_island",
       "cart", "planter", "canopy", "kiosk", "vault"), None),
-    (("teller",), "teller_line"),
-    (("counter", "reception", "station", "island", "cage", "bar_"), "counter"),
+    # MINTED 2026-09-12 by zoo/tools/new_species.py (roadmap 150): the
+    # first species the library asked for by name (42 `pump` placements,
+    # 1.0 x 1.2 x 1.4, metal) and nobody had drawn. A placeholder box
+    # today, counted as a pump in every report until its recipe is shaped.
+    (("pump",), "pump"),
+    # A TELLER COUNTER IS A COUNTER. Every `teller_counter` in the library is
+    # 8-10 m x 0.8-0.9 x 1.0-1.1: the waist-high counter, not the
+    # floor-to-header glass barrier Zoo's `teller_line` builds (2.0 m
+    # minimum) -- all 38 failed that species on height (2026-09-12). The
+    # barrier stays an interactive's `state_geometry` species.
+    (("teller", "counter", "reception", "station", "island", "cage", "bar_",
+      "workbench", "tool_bench"), "counter"),
     (("desk", "cubicle"), "desk"),
     (("cabinet", "locker"), "filing_cabinet"),
     (("shelf", "shelving", "rack", "stock"), "shelving"),
@@ -44,7 +54,7 @@ PROP_SPECIES = (
     (("atm",), "atm"),
     (("hvac", "roof_unit"), "hvac_unit"),
     (("tank",), "water_tank"),
-    (("seat", "bench", "waiting"), "chair"),
+    (("chair", "seat", "bench", "waiting"), "chair"),
     (("table",), "table"),
     (("safe",), "drop_safe"),
 )
@@ -57,3 +67,22 @@ def species_for_name(name):
         if any(w in key for w in words):
             return species
     return None
+
+
+def long_axis_first(size):
+    """``(dims, rot_y)`` for a hinted volume: its long horizontal side as the
+    module WIDTH, turned 90 degrees when that side is y.
+
+    A recipe builds width along its local x, and Deli Counter authors an
+    aisle shelf as 1.0 x 6.0 (deep along y) as readily as 6.0 x 1.0.
+    Measured 2026-09-12: turning alone takes desks from 58 to 91 fits of
+    153 and counters from 35 to 54 of 137. The slot's dims are what the
+    stem and the plan are built from on both sides, so the turn happens
+    HERE, once, at emission, and the composer's `_fit_rotation` finds the
+    same 90 from the extents. Only hinted volumes are turned -- an unhinted
+    box's slot stays byte for byte what it was.
+    """
+    sx, sy, sz = (float(size[0]), float(size[1]), float(size[2]))
+    if sy > sx + 1e-9:
+        return [sy, sx, sz], 90.0
+    return [sx, sy, sz], 0.0

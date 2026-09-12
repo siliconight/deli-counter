@@ -9,7 +9,9 @@ import themed_tscn
 
 def test_the_hospital_and_bank_names_route_where_they_say():
     f = prop_species.species_for_name
-    assert f("teller_counter") == "teller_line"          # teller before counter
+    assert f("teller_counter") == "counter"              # a waist-high counter, not the glass barrier
+    assert f("tool_bench") == "counter"                  # a workbench, not a chair
+    assert f("chair_row") == "chair"
     assert f("nurse_station_0") == "counter"
     assert f("lobby_reception") == "counter"
     assert f("counter_island_north_concourse") == "counter"
@@ -27,6 +29,7 @@ def test_boxes_by_nature_and_unknown_things_get_no_hint():
     assert f("col_0") is None
     assert f("supply_cart_0") is None
     assert f("pump_island") is None
+    assert f("pump") == "pump"                        # minted 2026-09-12, zoo/tools/new_species.py
     assert f("VAULT") is None
     assert f("") is None
     assert f(None) is None
@@ -42,6 +45,13 @@ def test_every_species_in_the_table_is_a_real_zoo_species_name():
     for _words, sp in prop_species.PROP_SPECIES:
         if sp is not None:
             assert sp in known, sp
+
+
+def test_a_hinted_volume_is_recorded_long_side_first():
+    """An aisle shelf authored 1.0 x 6.0 is a 6.0-wide run turned 90."""
+    assert prop_species.long_axis_first((1.0, 6.0, 1.6)) == ([6.0, 1.0, 1.6], 90.0)
+    assert prop_species.long_axis_first((6.0, 1.0, 1.6)) == ([6.0, 1.0, 1.6], 0.0)
+    assert prop_species.long_axis_first((1.1, 1.1, 0.95)) == ([1.1, 1.1, 0.95], 0.0)
 
 
 def _prop(dims, species):

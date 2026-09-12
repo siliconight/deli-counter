@@ -1,3 +1,25 @@
+## [0.118.0] - 2026-09-12
+
+A hinted volume is recorded long side first, and a teller counter is a counter.
+
+Roadmap 44, step 3 (with Zoo 0.62.0's bays). Measured 2026-09-12 over the
+1,443 placements: turning a volume so its long horizontal side is the
+module's width takes desks from 58 to 91 fits of 153 and counters from 35
+to 54 of 137 before any bay is built, and every `teller_counter` (38) is
+a 1.0 m waist-high counter that Zoo's `teller_line` barrier (2.0 m
+minimum) could never be.
+
+### Changed
+- `prop_species.long_axis_first`: a HINTED volume's slot carries its long
+  side as `fit.dims[0]` and `rot_y` 90 when that side is y; unhinted boxes
+  are byte for byte what they were. The greybox box is drawn axis-aligned
+  as before and is symmetric, so nothing it collides with moves; the
+  composer's `_fit_rotation` finds the same 90 from the extents.
+- Keywords: `teller`, `workbench` and `tool_bench` route to `counter`;
+  `chair` joins seat / bench / waiting; `pump` routes to Zoo 0.63.0's
+  minted `pump` species (roadmap 150), `pump_island` stays a box. Library
+  rebuilt.
+
 ## [0.117.0] - 2026-09-12
 
 A placement says what it is.

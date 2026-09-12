@@ -2181,23 +2181,31 @@ class _Builder:
                 # dims lands on it 1:1. Species that Zoo cannot build yet come
                 # back in plan_kit's `missing_modules` -- which turns "what art
                 # do props need" from a guess into a report.
+                # What the name says it is (roadmap 44): a HINT Zoo honours
+                # when the species fits these dims, else the box. None = a
+                # box is fine (crates, columns). A hinted volume is recorded
+                # with its LONG side as the width, turned 90 when that side
+                # is y (`prop_species.long_axis_first`); the greybox box
+                # itself is drawn axis-aligned above and is symmetric, so
+                # nothing it collides with moves.
+                species = prop_species.species_for_name(v.name)
+                slot_dims, slot_rot = ((list(size), 0.0) if species is None
+                                       else prop_species.long_axis_first(size))
                 self.slots.append({
                     "slot_id": v.name, "role": "prop", "size_mod": "full",
                     "style": skin_style.style_for(v.material, self._mat_style,
                                                   self.s.default_material),
                     "material": v.material or self.s.default_material,
-                    # What the name says it is (roadmap 44): a HINT Zoo
-                    # honours when the species fits these dims, else the
-                    # box. None = a box is fine (crates, columns).
-                    "species": prop_species.species_for_name(v.name),
+                    "species": species,
                     "current_ref": "prop_greybox_01", "kit_axis": "material",
                     "wall": None, "story": None, "facing": None,
                     "transform": {"translation": [round(c[0], 4),
                                                   round(c[1], 4),
                                                   round(c[2], 4)],
-                                  "rot_y": 0.0, "scale": [1.0, 1.0, 1.0]},
-                    "fit": {"dims": [round(size[0], 4), round(size[1], 4),
-                                     round(size[2], 4)],
+                                  "rot_y": slot_rot, "scale": [1.0, 1.0, 1.0]},
+                    "fit": {"dims": [round(slot_dims[0], 4),
+                                     round(slot_dims[1], 4),
+                                     round(slot_dims[2], 4)],
                             "pivot": "center", "openings": [],
                             "collision": v.collision},
                 })
