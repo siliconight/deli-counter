@@ -1,3 +1,26 @@
+## [0.119.0] - 2026-09-12
+
+A teller line is a glass barrier over a counter, and it is authored as one.
+
+The walker's references (2026-09-12): a teller line is a continuous counter
+at waist height, a glass barrier over it to a header, one service window
+per station with a pass-through at the counter, posts between stations,
+staff behind. Zoo's `teller_line` builds exactly that and never fired,
+because every `teller_counter` volume in the library was authored as the
+counter alone (1.0-1.2 m) -- so 0.118.0 routed the name to `counter` and
+the bank shipped a plain wooden run. The volume was the placeholder for
+the counter; the line is what the name meant.
+
+### Changed
+- The bank preset authors `teller_counter` as the full line, 12 x 0.8 x
+  2.4 (centre z 1.2): a barrier on purpose -- the lobby is 30 m wide and
+  the line 12, so the crew walks around either end. `specs/`: the 37
+  committed specs carrying a waist-high teller volume are migrated the
+  same way (size_z 2.4, z 1.2; the 3.0-3.2 x 1.2 bank-tower tellers too).
+- `prop_species`: `teller` routes to `teller_line` again; a teller volume
+  still at counter height falls to `counter` by Zoo 0.65.0's alternate
+  rule, said in the kit index. Library rebuilt.
+
 ## [0.118.0] - 2026-09-12
 
 A hinted volume is recorded long side first, and a teller counter is a counter.

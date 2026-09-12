@@ -185,8 +185,14 @@ def bank(name: str = "bank_preset",
 
     # --- volumes: teller line (cover), vault box, roof unit ------------------
     vols = [
-        {"name": "teller_counter", "x": 0.0, "y": -2.0, "z": 0.55,
-         "size_x": 12.0, "size_y": 0.8, "size_z": 1.1, "collision": "convex",
+        # THE FULL TELLER LINE, not the counter alone (roadmap 44,
+        # 2026-09-12): a counter at waist height with a glass barrier over
+        # it to a header, one service window per station -- Zoo's
+        # `teller_line` builds exactly that, and it needs the volume to be
+        # the line's height. A barrier, on purpose: the lobby is 30 m wide
+        # and the line 12, so the crew walks around either end.
+        {"name": "teller_counter", "x": 0.0, "y": -2.0, "z": 1.2,
+         "size_x": 12.0, "size_y": 0.8, "size_z": 2.4, "collision": "convex",
          "material": "wood"},
     ]
     if basement:

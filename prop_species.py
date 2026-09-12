@@ -40,12 +40,14 @@ PROP_SPECIES = (
     # 1.0 x 1.2 x 1.4, metal) and nobody had drawn. A placeholder box
     # today, counted as a pump in every report until its recipe is shaped.
     (("pump",), "pump"),
-    # A TELLER COUNTER IS A COUNTER. Every `teller_counter` in the library is
-    # 8-10 m x 0.8-0.9 x 1.0-1.1: the waist-high counter, not the
-    # floor-to-header glass barrier Zoo's `teller_line` builds (2.0 m
-    # minimum) -- all 38 failed that species on height (2026-09-12). The
-    # barrier stays an interactive's `state_geometry` species.
-    (("teller", "counter", "reception", "station", "island", "cage", "bar_",
+    # A TELLER LINE IS A GLASS BARRIER OVER A COUNTER, one service window
+    # per station (the walker's references, 2026-09-12): Zoo's
+    # `teller_line`. The volumes were authored waist-high for a day and
+    # routed to `counter`; they are now authored as the full line (2.4 m)
+    # and any still at counter height fall to `counter` by Zoo's alternate
+    # rule, said in the kit index.
+    (("teller",), "teller_line"),
+    (("counter", "reception", "station", "island", "cage", "bar_",
       "workbench", "tool_bench"), "counter"),
     (("desk", "cubicle"), "desk"),
     (("cabinet", "locker"), "filing_cabinet"),

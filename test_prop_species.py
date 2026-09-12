@@ -9,7 +9,7 @@ import themed_tscn
 
 def test_the_hospital_and_bank_names_route_where_they_say():
     f = prop_species.species_for_name
-    assert f("teller_counter") == "counter"              # a waist-high counter, not the glass barrier
+    assert f("teller_counter") == "teller_line"          # the glass barrier over the counter; a low one falls to counter in Zoo
     assert f("tool_bench") == "counter"                  # a workbench, not a chair
     assert f("chair_row") == "chair"
     assert f("nurse_station_0") == "counter"
