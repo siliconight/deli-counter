@@ -1,3 +1,37 @@
+## [0.120.0] - 2026-09-12
+
+A wall remainder stands along its wall whichever way the wall runs.
+
+The walker, on cold run 9012's bank: "this rotation looks wrong? (opening
+in the building)", circling a narrow panel standing out from the wall
+beside a doorway. Measured off the composed scene: `int_0_1_seg1`, a
+`wallEnd` remainder on a wall that runs along Y (slot rot_y 90, scale
+[1.875, 0.3, 3.3]), placed with a scale-only basis -- 1.875 m along X,
+across the wall it belongs to. Every full wall segment beside it carried
+the turn. Across the cold packages on disk (9001-9012): 237 of 777
+wallEnd nodes, every one on a turned wall.
+
+Two seams had it, and they cancelled at 0 degrees. `tscn_export.godot_basis`
+documented and did Scale_world x Ry(t) -- the scale in world axes after the
+rotation -- while `deli_counter._volumes` emits a remainder's scale as
+[length, thickness, height] in the module's own frame and says so ("a unit
+box scaled by LOCAL dims and then turned by rot_y lands correctly"). And
+`themed_tscn._fit_rotation` fitted the UNSCALED module: a unit cube has the
+same extents at every angle, so the fit tied at all four and answered 0.
+The basis is now Ry(t) x Scale_local, and the fit is given the slot's scale
+so it fits what will be placed. Exact-fit modules carry scale 1 and are
+untouched. Recomposed bank_branch_a03: 0 remainders across their wall;
+`verify_placement` 242 of 242 matched, where before the change it reported
+18 mismatches on the same shell.
+
+Which raises the second finding: the gate SAW it. `verify_placement` ran in
+every one of those packages and reported `ok: False` with the eighteen
+slots named, and no stage read the verdict. That belongs to the caller.
+The pose census in the factory root (`tools/module_pose_census.py`)
+compared sorted horizontal extents and could not see it either; it now
+judges the footprint in world axes and reports the pose as `across`.
+`test_wallend_pose.py` pins both seams.
+
 ## [0.119.0] - 2026-09-12
 
 A teller line is a glass barrier over a counter, and it is authored as one.

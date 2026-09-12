@@ -464,7 +464,8 @@ def verify_placement(greybox_glb, slots, module_dir, theme, style, tol=0.25):
         if me is None:
             continue
         tf = s.get("transform", {})
-        rot = themed_tscn._fit_rotation(me, ge, fallback=(tf.get("rot_y") or 0))
+        rot = themed_tscn._fit_rotation(me, ge, fallback=(tf.get("rot_y") or 0),
+                                        scale=tf.get("scale"))
         b = _te.godot_basis(rot, tf.get("scale"))
         placed = [round(abs(b[i]) * me[0] + abs(b[3 + i]) * me[1]
                         + abs(b[6 + i]) * me[2], 3) for i in range(3)]

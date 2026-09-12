@@ -41,20 +41,34 @@ def godot_basis(rot_y_deg, scale):
     source of truth for module orientation -- the placement verifier reuses it,
     so the scene and its check can never drift apart.
 
-    basis = Scale_world x Ry(t). The rotation is NOT the slot's raw rot_y; it is
-    chosen per-slot by fitting the module to the greybox extent (the ground
-    truth) in themed_tscn -- walls (already world-oriented by deli) fit at 0 deg,
-    canonical openings at 90/270, with nothing hard-coded. Scale is
-    world-axis-aligned (deli's fit-scale gives a wall's final extents), so it is
-    applied AFTER the rotation, not in the module's local frame.
+    basis = Ry(t) x Scale_local. The rotation is NOT the slot's raw rot_y; it
+    is chosen per-slot by fitting the module to the greybox extent (the ground
+    truth) in themed_tscn, with nothing hard-coded. Scale is the slot's
+    fit.dims in the MODULE'S OWN frame -- deli_counter emits a wall
+    remainder's scale as [length, thickness, height] whatever way the wall
+    runs (`_volumes`: "a unit box scaled by LOCAL dims and then turned by
+    rot_y lands correctly") -- so it is applied BEFORE the rotation.
+
+    This docstring said the opposite from 0.81.0 to 0.119.0 ("scale is
+    world-axis-aligned, applied AFTER the rotation") and the code did what it
+    said: Scale_world x Ry(t). Nothing noticed, because every scaled module is
+    a `wallEnd` unit cube, whose extents are 1 x 1 x 1 at every rotation, so
+    `_fit_rotation` tied at all four angles and answered 0 -- and at 0 the
+    two orders agree. On any wall that runs along Y (rot_y 90/270) the
+    remainder therefore stood with its LENGTH across the wall: a fin. Measured
+    2026-09-12 on cold runs 9001-9012: 237 of 777 wallEnd nodes, every one on
+    a turned wall (`int_0_1_seg1` of bank_branch_a03: slot rot_y 90, scale
+    [1.875, 0.3, 3.3], placed basis scale-only, 1.875 m along X beside a
+    doorway). The walker saw it on 9005 and again on 9012; the pose census
+    could not, because it compares the SORTED horizontal extents.
     """
     t = math.radians(rot_y_deg or 0.0)
     c, s = math.cos(t), math.sin(t)
     sc = (scale or [1.0, 1.0, 1.0])
     gsx, gsy, gsz = sc[0], sc[2], sc[1]      # y<->z remap with the axis change
-    return [c * gsx, 0.0, -s * gsz,          # transformed X axis
+    return [c * gsx, 0.0, -s * gsx,          # transformed X axis (module length)
             0.0, gsy, 0.0,                   # transformed Y axis (up)
-            s * gsx, 0.0, c * gsz]           # transformed Z axis
+            s * gsz, 0.0, c * gsz]           # transformed Z axis (module depth)
 
 
 def _ref_path(res_root, ref):

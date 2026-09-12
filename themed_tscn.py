@@ -389,14 +389,20 @@ def _slot_extent(per, slot_id):
     return [hi[i] - lo[i] for i in range(3)] if found else None
 
 
-def _fit_rotation(module_ext, gb_ext, fallback=0):
+def _fit_rotation(module_ext, gb_ext, fallback=0, scale=None):
     """Up-axis rotation (0/90/180/270) whose placed HORIZONTAL footprint best
     matches the greybox slot. Height (Y) is not scored -- some opening modules
-    differ in height from the greybox opening frame."""
+    differ in height from the greybox opening frame.
+
+    `scale` is the slot's scale (a wallEnd's [length, thickness, height]) and
+    MUST be fitted with: a unit cube has the same extents at every angle, so
+    fitting the unscaled module ties at all four and answers 0 -- which put
+    237 of 777 remainders across the wall they belong to (see
+    tscn_export.godot_basis). Fit what will be placed."""
     from tscn_export import godot_basis
     best, best_err = fallback, 1e18
     for rot in (0, 90, 180, 270):
-        b = godot_basis(rot, [1.0, 1.0, 1.0])
+        b = godot_basis(rot, scale or [1.0, 1.0, 1.0])
         pl = [abs(b[i]) * module_ext[0] + abs(b[3 + i]) * module_ext[1]
               + abs(b[6 + i]) * module_ext[2] for i in range(3)]
         err = abs(pl[0] - gb_ext[0]) + abs(pl[2] - gb_ext[2])
@@ -509,7 +515,8 @@ def write_themed_tscn(slots, building_id, out_path, *, theme, style=1,
             ge = _slot_extent(gb_per, sl.get("slot_id", ""))
             me = _glb_extent(os.path.join(library_dir, ref + ".glb"))
             if ge and me:
-                fit = _fit_rotation(me, ge, fallback=(tf.get("rot_y") or 0))
+                fit = _fit_rotation(me, ge, fallback=(tf.get("rot_y") or 0),
+                                    scale=tf.get("scale"))
                 if fit != (tf.get("rot_y") or 0):
                     refit += 1
                 rot = fit
