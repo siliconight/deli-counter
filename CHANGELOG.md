@@ -1,3 +1,58 @@
+## [0.121.0] - 2026-09-13  the twin, a roof that is not the walls, and a slot that names a kind
+
+Three changes from the walker's art direction
+(`docs/DELCO_1997_ART_DIRECTION.md`), all measured before they were made.
+
+**`material_kind.py`: the slot manifest names a KIND the art pass can
+resolve.** Measured across all 281 specs: 25 distinct material ids in 6,716
+surface references, 16 of them outside the skin resolver's vocabulary, 326
+references in all. `find_pack` returns None for those and the material
+factory falls back to a FLAT colour, so the 131 surfaces that say
+`brick_ext` were exactly the ones that never got brick. The spec keeps its
+descriptive name -- the acoustic table and `skin_style` both key on it --
+and only the emitted slot moves. Manifest version 1.3.0.
+
+The first build after it printed 8 slots with no kind, and they were not
+from any spec: `floors.FINISH_PALETTE` is appended to every palette so a
+room role can name its floor and ceiling, and two of its seven ids appear
+in no spec file. `test_material_kind.py` reads the palette as well as
+`specs/` for that reason -- a test that reads only what is authored cannot
+see what is generated.
+
+**`roof_material`: a roof can be made of something other than the walls.**
+`roofs.roof_slots` took it from `default_material` and always had, so 232 of
+281 specs -- everything defaulting to `concrete` -- had concrete roofs,
+mansions and houses included. Optional, falls back, so every spec that does
+not set it bakes byte-identically.
+
+**The TWIN.** Of 133 built archetypes, 7 were housing of any kind, 1 was a
+rowhouse and 0 were twins, in a county the walker describes as brick and
+stone twins that "should appear FREQUENTLY". `twin_a01` is two 8 m halves
+either side of a solid party wall -- a partition on the centre line, both
+storeys, no openings -- each with its own front door, back door and stair.
+Storey 0 is `stone_ext` and storey 1 is `siding`: the first spec in this
+library whose walls are made of two things, from two dates. The roof is
+`shingle`. The halves diverge the way a real pair does: the left carries a
+full-width open porch, the right a stoop and a door hood. 178 slots: 89
+stone, 40 siding, 3 shingle.
+
+Two gates moved it, and both were right. `test_cover_breaks_sightlines`
+named all four back rooms as having nothing to fight from -- a 0.9 m counter
+is furniture and `cover_break_height` is 1.30, so they now hold a fridge
+downstairs and a wardrobe up. The nav gate refused 1.0 m interior doors for
+a 0.4 m-radius agent and the upstairs objective was unreachable; every door
+is 1.2 m or wider now and the shell passes.
+
+AND ONE PLACE WHERE THE TACTICAL REVIEW AND THE NAV GATE DISAGREE, recorded
+in the preset. The review reports stair pitch as `atan(story_height / run)`
+whatever the style, so a switchback whose two flights each climb half the
+storey is judged as though one flight climbed all of it -- 44 degrees at 2.9
+over 3.0, which `rowhome` also carries. Lengthening the run to the 4.1 m the
+warning asks for was tried and measured WORSE: `stair_footprints` lays a
+switchback's run along Y, 4.1 pushed the footprint past the back room, and
+the nav gate went from two traversable stairs to two disjoint islands. The
+gate is the authority on traversal.
+
 ## [0.120.1] - 2026-09-12
 
 0.120.0's basis rewrite was wrong, and the engine said so within the hour.

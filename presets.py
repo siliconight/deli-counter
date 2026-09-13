@@ -2307,6 +2307,203 @@ def facade_industrial(name: str = "facade_industrial", floors: int = 1,
 # ---------------------------------------------------------------------------
 # REGISTRY
 # ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
+# TWIN  --  the Delaware County double house: two dwellings, one structure
+# ---------------------------------------------------------------------------
+def twin(name: str = "twin_preset",
+         mode: str = "assault",
+         floors: int = 2,
+         scale_ref: bool = False,
+         basement: bool = True) -> dict:
+    """A stone-based, sided twin: two 8 m halves either side of a solid party
+    wall, each with its own front door, back door and stair. The halves
+    diverge the way a real pair does -- one carries a full-width open porch,
+    the other a stoop and a door hood.
+
+    floors fixed at 2 (a Delco twin is two over a basement); params mode
+    (assault default; heist supported), basement, scale_ref.
+    """
+    # A SWITCHBACK OVER 3.0 m OF RUN, and the tactical review's 44 degrees
+    # is its own simplification rather than this stair's pitch: it reports
+    # `atan(story_height / run)` whatever the style, so a switchback whose
+    # two flights each climb HALF the storey is judged as though one flight
+    # climbed all of it. `rowhome` carries the same warning at 3.0 over 3.0
+    # and ships. Lengthening the run to the 4.1 m the warning asks for was
+    # tried and MEASURED WORSE: `stair_footprints` puts a switchback's run
+    # along Y, so 4.1 pushed the footprint from y 0.05..5.25 out past the
+    # back room, and the nav gate went from two traversable stairs to two
+    # disjoint islands. The gate is the authority on traversal; the review
+    # line is a heuristic, and this is where they disagree.
+    sh = 2.9
+    fx, fy = 16.0, 11.0      # two 8 m halves, front to back
+    hx, hy = fx / 2, fy / 2
+    qx = fx / 4              # centre of a half: 4.0 m off the party wall
+    spec = {
+        "$schema": "../schema/level.schema.json",
+        "name": name, "mode": mode, "seed": 1997, "grid": 0.5,
+        "footprint_x": fx, "footprint_y": fy, "story_height": sh,
+        "n_stories": 2, "has_basement": bool(basement), "wall_thick": 0.3,
+        "floor_thick": 0.25, "collision": "convex", "auto_exterior": True,
+        "scale_ref": bool(scale_ref),
+        # THE SHELL IS STONE AND THE DECADE IS SIDING OVER IT. The first
+        # spec in this library whose walls are made of two things.
+        "default_material": "stone_ext",
+        "roof_material": "shingle",
+        "materials": [
+            {"id": "stone_ext", "acoustic": "Concrete", "absorption": 0.72, "damping": 0.62},
+            {"id": "siding", "acoustic": "Wood", "absorption": 0.40, "damping": 0.34},
+            {"id": "shingle", "acoustic": "Wood", "absorption": 0.45, "damping": 0.40},
+            {"id": "drywall", "acoustic": "Drywall", "absorption": 0.42, "damping": 0.38},
+            {"id": "wood", "acoustic": "Wood", "absorption": 0.35, "damping": 0.3},
+            {"id": "glass", "acoustic": "Glass", "absorption": 0.1, "damping": 0.05},
+            {"id": "concrete", "acoustic": "Concrete", "absorption": 0.7, "damping": 0.6},
+            {"id": "metal", "acoustic": "Metal", "absorption": 0.2, "damping": 0.15},
+        ],
+    }
+    # storey 0 is the stone shell; storey 1 is the siding the 1990s put on it
+    wall_mat = {0: "stone_ext", 1: "siding"}
+    ext = []
+    for st in (0, 1):
+        m = wall_mat[st]
+        if st == 0:
+            front = [{"kind": "door", "pos": -0.25, "width": 1.3, "tag": "front_door_left"},
+                     {"kind": "door", "pos": 0.25, "width": 1.3, "tag": "front_door_right"},
+                     {"kind": "window", "pos": -0.40, "width": 1.2, "sill": 0.95, "vaultable": True, "material": "glass"},
+                     {"kind": "window", "pos": 0.40, "width": 1.2, "sill": 0.95, "vaultable": True, "material": "glass"}]
+            back = [{"kind": "door", "pos": -0.25, "width": 1.2, "tag": "back_door_left"},
+                    {"kind": "door", "pos": 0.25, "width": 1.2, "tag": "back_door_right"}]
+        else:
+            front = [{"kind": "window", "pos": p, "width": 1.1, "sill": 1.0,
+                      "vaultable": True, "material": "glass"}
+                     for p in (-0.36, -0.14, 0.14, 0.36)]
+            back = [{"kind": "window", "pos": p, "width": 1.0, "sill": 1.0,
+                     "vaultable": True, "material": "glass"}
+                    for p in (-0.25, 0.25)]
+        ext.append({"wall": "S", "story": st, "material": m, "openings": front})
+        ext.append({"wall": "N", "story": st, "material": m, "openings": back})
+        # gable ends: one window a side, the way a twin's end wall is built
+        for w in ("W", "E"):
+            ext.append({"wall": w, "story": st, "material": m, "openings": [
+                {"kind": "window", "pos": 0.0, "width": 1.0, "sill": 1.05,
+                 "vaultable": True, "material": "glass"}]})
+    spec["ext_walls"] = ext
+    # THE PARTY WALL: solid, both storeys, no openings. This is the type.
+    parts = []
+    for st in (0, 1):
+        parts.append({"story": st, "axis": "Y", "pos": 0.0,
+                      "start": -hy, "end": hy, "material": "stone_ext",
+                      "openings": []})
+        # one cross-partition per half, front room from back. Runs along X
+        # (east-west) at y = 0.5, stopping either side of the party wall.
+        for x_lo, x_hi, door in ((-hx, -0.3, -0.35), (0.3, hx, 0.35)):
+            parts.append({"story": st, "axis": "X", "pos": 0.5,
+                          "start": x_lo, "end": x_hi,
+                          "material": "drywall",
+                          "openings": [{"kind": "door", "pos": door, "width": 1.2}]})
+    spec["partitions"] = parts
+    stair_lo = -1 if basement else 0
+    spec["stairs"] = [
+        {"x": -qx + 1.6, "y": hy - 2.6, "from_story": stair_lo, "to_story": 1,
+         "width": 0.9, "run": 3.0, "style": "switchback", "cut_slabs": True},
+        {"x": qx - 1.6, "y": hy - 2.6, "from_story": stair_lo, "to_story": 1,
+         "width": 0.9, "run": 3.0, "style": "switchback", "cut_slabs": True},
+    ]
+    spec["vertical_links"] = [
+        {"kind": "stair", "from_story": stair_lo, "to_story": 1, "role": "main_route"},
+    ]
+    # THE HALVES DIVERGE. Left: a full-width open porch. Right: a stoop and a
+    # door hood. Decks are 0.2 m (a step), canopies 2.6 m (over a head), so
+    # the difference never stands in a doorway.
+    py = -hy - 1.0
+    spec["volumes"] = [
+        # left half, open porch
+        {"name": "porch_deck_left", "x": -qx, "y": py, "z": 0.1,
+         "size_x": 6.0, "size_y": 2.0, "size_z": 0.2,
+         "collision": "convex", "material": "concrete"},
+        {"name": "porch_post_left_w", "x": -qx - 2.8, "y": py - 0.85, "z": 1.3,
+         "size_x": 0.18, "size_y": 0.18, "size_z": 2.4,
+         "collision": "convex", "material": "wood"},
+        {"name": "porch_post_left_e", "x": -qx + 2.8, "y": py - 0.85, "z": 1.3,
+         "size_x": 0.18, "size_y": 0.18, "size_z": 2.4,
+         "collision": "convex", "material": "wood"},
+        {"name": "porch_roof_left", "x": -qx, "y": py, "z": 2.6,
+         "size_x": 6.2, "size_y": 2.2, "size_z": 0.18,
+         "collision": "convex", "material": "shingle"},
+        # right half, a stoop and a hood over the door only
+        {"name": "stoop_right", "x": qx, "y": -hy - 0.6, "z": 0.1,
+         "size_x": 1.8, "size_y": 1.2, "size_z": 0.2,
+         "collision": "convex", "material": "concrete"},
+        {"name": "door_hood_right", "x": qx, "y": -hy - 0.5, "z": 2.6,
+         "size_x": 2.2, "size_y": 1.1, "size_z": 0.16,
+         "collision": "convex", "material": "shingle"},
+        # the concrete steps that rise straight off a Delco sidewalk
+        {"name": "steps_left", "x": -qx, "y": py - 1.3, "z": 0.05,
+         "size_x": 1.6, "size_y": 0.6, "size_z": 0.1,
+         "collision": "convex", "material": "concrete"},
+        {"name": "steps_right", "x": qx, "y": -hy - 1.5, "z": 0.05,
+         "size_x": 1.6, "size_y": 0.6, "size_z": 0.1,
+         "collision": "convex", "material": "concrete"},
+    ]
+    # THE BACK ROOMS ARE THE KITCHEN AND THE BACK BEDROOM, and each needs one
+    # thing tall enough to fight from: `agent_contract.cover_break_height` is
+    # 1.30 m, so a 0.9 m counter is furniture and a fridge is shelter.
+    # `test_cover_breaks_sightlines` named all four of these rooms before they
+    # were furnished, which is what that gate is for.
+    for st in (0, 1):
+        for side, sgn in (("left", -1), ("right", 1)):
+            tall = ((0.75, 0.75, 1.80, "metal", "fridge")
+                    if st == 0 else (1.20, 0.60, 1.90, "wood", "wardrobe"))
+            sx, sy, sz, mat, what = tall
+            spec["volumes"].append(
+                {"name": f"{what}_{side}_{st}", "x": sgn * 6.0, "y": 4.6,
+                 "z": st * sh + sz / 2.0,
+                 "size_x": sx, "size_y": sy, "size_z": sz,
+                 "collision": "convex", "material": mat})
+    rooms = []
+    for st in (0, 1):
+        for side, sgn in (("left", -1), ("right", 1)):
+            x_lo, x_hi = (-hx, -0.3) if sgn < 0 else (0.3, hx)
+            rooms.append({"id": f"front_{side}_{st}", "story": st,
+                          "bounds": [x_lo, -hy, x_hi, 0.5],
+                          "role": "public_entry" if st == 0 else "objective_room",
+                          "combat_range": "close",
+                          **({"objective": True, "fortifiable": True}
+                             if st == 1 and sgn > 0 else {})})
+            rooms.append({"id": f"back_{side}_{st}", "story": st,
+                          "bounds": [x_lo, 0.5, x_hi, hy],
+                          "role": "connector", "combat_range": "close"})
+    spec["rooms"] = rooms
+    markers = []
+    if mode == "heist":
+        spec["objectives"] = [{"id": "upstairs_right", "kind": "bag",
+                               "x": qx, "y": -3.0, "z": sh + 0.4,
+                               "room": "front_right_1", "required": True,
+                               "duration": 6.0}]
+        spec["loot"] = [{"id": "right_stash", "kind": "cash", "x": qx,
+                         "y": -3.0, "z": sh + 0.4, "value": 2500, "bags": 2,
+                         "room": "front_right_1"}]
+        spec["zones"] = [{"id": "front_extract", "kind": "extraction",
+                          "story": 0, "bounds": [-hx, -hy, hx, -3.0]}]
+        markers += [
+            {"type": "objective", "id": "UP", "x": qx, "y": -3.0,
+             "z": sh + 0.4, "room": "front_right_1"},
+            {"type": "extraction", "id": "FRONT", "x": -qx, "y": -4.6,
+             "z": 0.0, "room": "front_left_0"}]
+    else:
+        markers += [
+            {"type": "attacker_spawn", "id": "A", "x": -qx, "y": -4.8,
+             "z": 0.0, "rot_z": 0, "room": "front_left_0"},
+            {"type": "attacker_spawn", "id": "B", "x": qx, "y": 4.8,
+             "z": 0.0, "rot_z": 180, "room": "back_right_0"},
+            {"type": "defender_spawn", "id": "D", "x": qx, "y": -3.0,
+             "z": sh, "rot_z": 180, "room": "front_right_1"},
+            {"type": "objective", "id": "UPSTAIRS", "x": qx, "y": -3.0,
+             "z": sh, "room": "front_right_1", "meta": {"kind": "capture"}}]
+    spec["markers"] = markers
+    return spec
+
+
 REGISTRY = {
     "bank": bank,
     "police_station": police_station,
@@ -2316,6 +2513,7 @@ REGISTRY = {
     "warehouse": warehouse,
     "suburban_safehouse": suburban_safehouse,
     "rowhome": rowhome,
+    "twin": twin,
     "casino_tower": casino_tower,
     "gas_station": gas_station,
     "office": office,

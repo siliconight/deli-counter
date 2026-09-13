@@ -65,6 +65,10 @@
         "per_room"
       ]
     },
+    "roof_material": {
+      "type": "string",
+      "description": "Skin material for the roof slab. Omit to use default_material, which is what every roof took before this field existed."
+    },
     "roof_thick": {
       "type": [
         "number",

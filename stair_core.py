@@ -52,6 +52,10 @@ DEFAULT_ARCHETYPE = {
     "hospital": "school_wings",
     "casino_tower": "office_midrise",
     "rowhome": "residential_house",
+    # A twin is two houses sharing a party wall, and each half's stair is a
+    # house stair -- the same straight run against a side wall the rowhome
+    # takes, not a core.
+    "twin": "residential_house",
     "suburban_safehouse": "residential_house",
     "office": "office_lowrise",
     "parking_garage": "parking_structure",

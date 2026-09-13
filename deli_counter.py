@@ -2645,8 +2645,29 @@ def write_slot_manifest(builder, path):
     `<type>_<theme>_<style>.glb` files and the manifest pulls them in. Output-only
     -- no schema change. See docs/SLOT_MANIFEST.md."""
     import json
+    import material_kind
+    # THE SLOT CARRIES A KIND, NOT THE BUILDER'S NAME FOR THE SURFACE. A spec
+    # says `brick_ext` because that is what a builder calls the outside leaf;
+    # the art pass resolves a pack by KIND and has never heard of it, so those
+    # walls came out flat. The name stays on the spec -- the acoustic table
+    # and `skin_style` both key on it -- and only what is written here moves.
+    # An id with no kind is REPORTED rather than guessed at: a slot carrying
+    # an unresolvable kind is a grey wall that looks like a styling decision.
+    _slots = []
+    _unmapped = []
+    for _s in builder.slots:
+        _m = _s.get("material")
+        _k = material_kind.kind_for(_m)
+        if _m and _k is None:
+            _unmapped.append(_m)
+            _k = _m
+        _slots.append(dict(_s, material=_k) if _m else _s)
+    if _unmapped:
+        print(f"[deli_counter] slot manifest: {len(_unmapped)} slot(s) name a "
+              f"material with no skin kind and were written through unchanged: "
+              f"{material_kind.unmapped(_unmapped)}")
     data = {
-        "slot_manifest_version": "1.2.0",
+        "slot_manifest_version": "1.3.0",
         "building_id": builder.s.name,
         "theme": getattr(builder.s, "theme", None) or "greybox",
         "module_library": getattr(builder.s, "module_library", None) or "art/zoo",
@@ -2658,7 +2679,7 @@ def write_slot_manifest(builder, path):
         # module, a greybox module, or fell back to generated geometry.
         "coverage": {f"{r}/{k}": n
                      for (r, k), n in sorted(builder._coverage.items())},
-        "slots": builder.slots,
+        "slots": _slots,
     }
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)

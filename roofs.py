@@ -75,7 +75,11 @@ def roof_slots(spec, story, cz, ft):
     # hole itself. `room_voids` clips to the rect it is handed and never reads
     # its `room` argument, so it is already the general function this needs.
     from floors import room_voids
-    mat = getattr(spec, "default_material", None)
+    # The roof's own material when the spec names one, else the walls'.
+    # Falls back rather than defaults, so a spec written before the field
+    # existed bakes byte-identically.
+    mat = (getattr(spec, "roof_material", None)
+           or getattr(spec, "default_material", None))
     mapping = skin_style.material_styles(
         [m.id for m in getattr(spec, "materials", [])])
     style = skin_style.style_for(mat, mapping, mat)

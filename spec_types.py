@@ -515,6 +515,12 @@ class LevelSpec:
     # slot per top-story room, honoring Room.roofed (open-air rooms opt out).
     roof_mode: str = "footprint"
     roof_thick: Optional[float] = None   # None -> floor_thick
+    # The roof's SKIN material. None -> `default_material`, which is what
+    # every roof took before this field existed -- so 232 of 281 specs had
+    # concrete roofs because their walls were concrete, houses included.
+    # A Delco house has a brown asphalt-shingle roof
+    # (docs/DELCO_1997_ART_DIRECTION.md point 5) and nothing could say so.
+    roof_material: Optional[str] = None
 
     # egress-pair separation heuristic (stairwell.py, Rule 6):
     # required = max(8.0 m, floor_plate_diagonal * separation_factor).
