@@ -1,220 +1,412 @@
 {
-  "$schema": "../schema/level.schema.json",
-  "name": "survival_demo",
-  "mode": "survival",
-  "footprint_x": 30,
-  "footprint_y": 24,
-  "story_height": 3.3,
-  "n_stories": 2,
-  "has_basement": false,
-  "collision": "convex",
-  "auto_exterior": true,
-  "default_material": "concrete",
-  "materials": [
+ "$schema": "../schema/level.schema.json",
+ "name": "survival_demo",
+ "mode": "survival",
+ "footprint_x": 30,
+ "footprint_y": 24,
+ "story_height": 3.3,
+ "n_stories": 2,
+ "has_basement": false,
+ "collision": "convex",
+ "auto_exterior": true,
+ "default_material": "concrete",
+ "materials": [
+  {
+   "id": "concrete",
+   "acoustic": "Concrete"
+  },
+  {
+   "id": "drywall",
+   "acoustic": "Drywall"
+  }
+ ],
+ "ext_walls": [
+  {
+   "wall": "S",
+   "story": 0,
+   "openings": [
     {
-      "id": "concrete",
-      "acoustic": "Concrete"
-    },
-    {
-      "id": "drywall",
-      "acoustic": "Drywall"
+     "kind": "door",
+     "pos": -0.3,
+     "width": 1.4,
+     "tag": "entry"
     }
-  ],
-  "ext_walls": [
+   ]
+  },
+  {
+   "wall": "N",
+   "story": 0,
+   "openings": [
     {
-      "wall": "S",
-      "story": 0,
-      "openings": [
-        {
-          "kind": "door",
-          "pos": -0.3,
-          "width": 1.4,
-          "tag": "entry"
-        }
-      ]
-    },
-    {
-      "wall": "N",
-      "story": 0,
-      "openings": [
-        {
-          "kind": "breach",
-          "pos": 0.2,
-          "width": 1.5,
-          "breach_class": "soft_wall",
-          "material": "drywall"
-        }
-      ]
+     "kind": "breach",
+     "pos": 0.2,
+     "width": 1.5,
+     "breach_class": "soft_wall",
+     "material": "drywall"
     }
-  ],
-  "partitions": [
+   ]
+  }
+ ],
+ "partitions": [
+  {
+   "story": 0,
+   "axis": "X",
+   "pos": 0,
+   "start": -15,
+   "end": 15,
+   "material": "drywall",
+   "openings": [
     {
-      "story": 0,
-      "axis": "X",
-      "pos": 0,
-      "start": -15,
-      "end": 15,
-      "material": "drywall",
-      "openings": [
-        {
-          "kind": "door",
-          "pos": 0
-        }
-      ]
-    },
-    {
-      "story": 1,
-      "axis": "X",
-      "pos": 0,
-      "start": -15,
-      "end": 15,
-      "material": "drywall",
-      "openings": [
-        {
-          "kind": "door",
-          "pos": 0
-        }
-      ]
+     "kind": "door",
+     "pos": 0
     }
-  ],
-  "stairs": [
+   ]
+  },
+  {
+   "story": 1,
+   "axis": "X",
+   "pos": 0,
+   "start": -15,
+   "end": 15,
+   "material": "drywall",
+   "openings": [
     {
-      "x": -12.0,
-      "y": 8.5,
-      "from_story": 0,
-      "to_story": 1,
-      "style": "switchback",
-      "cut_slabs": true,
-      "facing": "S",
-      "id": "survival_demo_stair_0",
-      "meta": {
-        "generated_by": "presets"
-      },
-      "role": "public_convenience"
+     "kind": "door",
+     "pos": 0
     }
-  ],
-  "vertical_links": [
-    {
-      "kind": "stair",
-      "from_story": 0,
-      "to_story": 1,
-      "role": "main_route"
-    }
-  ],
-  "rooms": [
-    {
-      "id": "start_lobby",
-      "story": 0,
-      "bounds": [
-        -15,
-        -12,
-        15,
-        0
-      ],
-      "role": "safe_room",
-      "combat_range": "medium"
-    },
-    {
-      "id": "ground_back",
-      "story": 0,
-      "bounds": [
-        -15,
-        0,
-        15,
-        12
-      ],
-      "role": "route_node",
-      "combat_range": "medium"
-    },
-    {
-      "id": "upper_hall",
-      "story": 1,
-      "bounds": [
-        -15,
-        -12,
-        15,
-        0
-      ],
-      "role": "route_node",
-      "combat_range": "medium"
-    },
-    {
-      "id": "roof_holdout",
-      "story": 1,
-      "bounds": [
-        -15,
-        0,
-        15,
-        12
-      ],
-      "role": "finale",
-      "combat_range": "close"
-    }
-  ],
-  "zones": [
-    {
-      "id": "start",
-      "kind": "safe_room",
-      "story": 0,
-      "bounds": [
-        -14,
-        -11,
-        14,
-        -1
-      ]
-    },
-    {
-      "id": "holdout",
-      "kind": "finale",
-      "story": 1,
-      "bounds": [
-        -14,
-        1,
-        14,
-        11
-      ]
-    }
-  ],
-  "markers": [
-    {
-      "type": "survivor_spawn",
-      "id": "START",
-      "x": 0,
-      "y": -8,
-      "z": 0,
-      "room": "start_lobby"
-    },
-    {
-      "type": "horde_spawn",
-      "id": "H1",
-      "x": -10,
-      "y": 8,
-      "z": 0,
-      "room": "ground_back"
-    },
-    {
-      "type": "horde_spawn",
-      "id": "H2",
-      "x": 10,
-      "y": -8,
-      "z": 3.3,
-      "room": "upper_hall"
-    },
-    {
-      "type": "horde_spawn",
-      "id": "H3",
-      "x": 0,
-      "y": 10,
-      "z": 3.3,
-      "room": "roof_holdout"
-    },
-    {
-      "type": "rescue",
-      "id": "CHOPPER",
-      "x": 0,
-      "y": 6,
-      "z": 3.3,
-      "room": "roof_holdout"
-    }
-  ]
+   ]
+  }
+ ],
+ "stairs": [
+  {
+   "x": -12.0,
+   "y": 8.5,
+   "from_story": 0,
+   "to_story": 1,
+   "style": "switchback",
+   "cut_slabs": true,
+   "facing": "S",
+   "id": "survival_demo_stair_0",
+   "meta": {
+    "generated_by": "presets"
+   },
+   "role": "public_convenience"
+  }
+ ],
+ "vertical_links": [
+  {
+   "kind": "stair",
+   "from_story": 0,
+   "to_story": 1,
+   "role": "main_route"
+  }
+ ],
+ "rooms": [
+  {
+   "id": "start_lobby",
+   "story": 0,
+   "bounds": [
+    -15,
+    -12,
+    15,
+    0
+   ],
+   "role": "safe_room",
+   "combat_range": "medium"
+  },
+  {
+   "id": "ground_back",
+   "story": 0,
+   "bounds": [
+    -15,
+    0,
+    15,
+    12
+   ],
+   "role": "route_node",
+   "combat_range": "medium"
+  },
+  {
+   "id": "upper_hall",
+   "story": 1,
+   "bounds": [
+    -15,
+    -12,
+    15,
+    0
+   ],
+   "role": "route_node",
+   "combat_range": "medium"
+  },
+  {
+   "id": "roof_holdout",
+   "story": 1,
+   "bounds": [
+    -15,
+    0,
+    15,
+    12
+   ],
+   "role": "finale",
+   "combat_range": "close"
+  }
+ ],
+ "zones": [
+  {
+   "id": "start",
+   "kind": "safe_room",
+   "story": 0,
+   "bounds": [
+    -14,
+    -11,
+    14,
+    -1
+   ]
+  },
+  {
+   "id": "holdout",
+   "kind": "finale",
+   "story": 1,
+   "bounds": [
+    -14,
+    1,
+    14,
+    11
+   ]
+  }
+ ],
+ "markers": [
+  {
+   "type": "survivor_spawn",
+   "id": "START",
+   "x": 0,
+   "y": -8,
+   "z": 0,
+   "room": "start_lobby"
+  },
+  {
+   "type": "horde_spawn",
+   "id": "H1",
+   "x": -10,
+   "y": 8,
+   "z": 0,
+   "room": "ground_back"
+  },
+  {
+   "type": "horde_spawn",
+   "id": "H2",
+   "x": 10,
+   "y": -8,
+   "z": 3.3,
+   "room": "upper_hall"
+  },
+  {
+   "type": "horde_spawn",
+   "id": "H3",
+   "x": 0,
+   "y": 10,
+   "z": 3.3,
+   "room": "roof_holdout"
+  },
+  {
+   "type": "rescue",
+   "id": "CHOPPER",
+   "x": 0,
+   "y": 6,
+   "z": 3.3,
+   "room": "roof_holdout"
+  }
+ ],
+ "volumes": [
+  {
+   "name": "safe_floor_start_lobby_3",
+   "x": 10.69,
+   "y": -5.94,
+   "z": 0.5,
+   "size_x": 0.9,
+   "size_y": 0.9,
+   "size_z": 1.0,
+   "collision": "convex"
+  },
+  {
+   "name": "safe_floor_start_lobby_6",
+   "x": -7.38,
+   "y": -4.79,
+   "z": 0.5,
+   "size_x": 0.9,
+   "size_y": 0.9,
+   "size_z": 1.0,
+   "collision": "convex"
+  },
+  {
+   "name": "safe_floor_start_lobby_9",
+   "x": -7.36,
+   "y": -7.96,
+   "z": 0.5,
+   "size_x": 0.9,
+   "size_y": 0.9,
+   "size_z": 1.0,
+   "collision": "convex"
+  },
+  {
+   "name": "table_work_ground_back_3",
+   "x": 10.9,
+   "y": 7.0,
+   "z": 0.275,
+   "size_x": 1.6,
+   "size_y": 0.8,
+   "size_z": 0.55,
+   "collision": "convex"
+  },
+  {
+   "name": "table_work_ground_back_6",
+   "x": -11.89,
+   "y": 1.3,
+   "z": 0.275,
+   "size_x": 1.6,
+   "size_y": 0.8,
+   "size_z": 0.55,
+   "collision": "convex"
+  },
+  {
+   "name": "table_work_ground_back_9",
+   "x": 9.57,
+   "y": 4.12,
+   "z": 0.275,
+   "size_x": 1.6,
+   "size_y": 0.8,
+   "size_z": 0.55,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_upper_hall_2",
+   "x": -0.57,
+   "y": -4.96,
+   "z": 3.525,
+   "size_x": 1.0,
+   "size_y": 0.6,
+   "size_z": 0.45,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_upper_hall_5",
+   "x": -10.78,
+   "y": -3.91,
+   "z": 3.525,
+   "size_x": 1.0,
+   "size_y": 0.6,
+   "size_z": 0.45,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_upper_hall_8",
+   "x": -0.76,
+   "y": -8.67,
+   "z": 3.525,
+   "size_x": 1.0,
+   "size_y": 0.6,
+   "size_z": 0.45,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_roof_holdout_1",
+   "x": -2.47,
+   "y": 5.51,
+   "z": 3.55,
+   "size_x": 1.2,
+   "size_y": 0.8,
+   "size_z": 0.5,
+   "collision": "convex"
+  },
+  {
+   "name": "chair_roof_holdout_2",
+   "x": -5.91,
+   "y": 1.93,
+   "z": 3.525,
+   "size_x": 0.55,
+   "size_y": 0.55,
+   "size_z": 0.45,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_roof_holdout_3",
+   "x": 3.45,
+   "y": 1.84,
+   "z": 3.55,
+   "size_x": 1.2,
+   "size_y": 0.8,
+   "size_z": 0.5,
+   "collision": "convex"
+  },
+  {
+   "name": "chair_roof_holdout_4",
+   "x": 4.99,
+   "y": 10.12,
+   "z": 3.525,
+   "size_x": 0.55,
+   "size_y": 0.55,
+   "size_z": 0.45,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_roof_holdout_5",
+   "x": 8.64,
+   "y": 9.28,
+   "z": 3.55,
+   "size_x": 1.2,
+   "size_y": 0.8,
+   "size_z": 0.5,
+   "collision": "convex"
+  },
+  {
+   "name": "chair_roof_holdout_6",
+   "x": 4.96,
+   "y": 7.64,
+   "z": 3.525,
+   "size_x": 0.55,
+   "size_y": 0.55,
+   "size_z": 0.45,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_roof_holdout_7",
+   "x": -8.13,
+   "y": 6.08,
+   "z": 3.55,
+   "size_x": 1.2,
+   "size_y": 0.8,
+   "size_z": 0.5,
+   "collision": "convex"
+  },
+  {
+   "name": "chair_roof_holdout_8",
+   "x": -8.32,
+   "y": 9.69,
+   "z": 3.525,
+   "size_x": 0.55,
+   "size_y": 0.55,
+   "size_z": 0.45,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_roof_holdout_9",
+   "x": 10.53,
+   "y": 1.82,
+   "z": 3.55,
+   "size_x": 1.2,
+   "size_y": 0.8,
+   "size_z": 0.5,
+   "collision": "convex"
+  },
+  {
+   "name": "chair_roof_holdout_10",
+   "x": -13.96,
+   "y": 1.79,
+   "z": 3.525,
+   "size_x": 0.55,
+   "size_y": 0.55,
+   "size_z": 0.45,
+   "collision": "convex"
+  }
+ ]
 }

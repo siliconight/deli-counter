@@ -951,6 +951,24 @@
         "absorption": 0.1,
         "damping": 0.05
       }
+    },
+    {
+      "node": "table_low_showroom_2_col",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "table_low_showroom_5_col",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
     }
   ],
   "interactives": [
@@ -1287,6 +1305,8 @@
     "int_0_1_seg1": "wall",
     "int_0_1_seg2": "wall",
     "case_row_a": "prop",
-    "case_row_b": "prop"
+    "case_row_b": "prop",
+    "table_low_showroom_2": "prop",
+    "table_low_showroom_5": "prop"
   }
 }

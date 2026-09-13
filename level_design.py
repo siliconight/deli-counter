@@ -616,6 +616,216 @@ def seed_cover(spec):
     return added
 
 
+#: Room role/id keywords -> the FURNITURE placed there, as
+#: ``(name, w, d, h, where)``. `where` is "wall" for anything that stands
+#: against one and "floor" for anything that does not.
+#:
+#: NOTHING MID-FLOOR REACHES SHELTER HEIGHT, which is the invariant and not
+#: the one first written here. The first draft said every floor piece sits
+#: below `_COVER_MIN_Z` (0.60) and `test_furnish` refuted it on its first
+#: run: a desk is 0.75 and a floor safe is 1.00. A desk IS low cover, here
+#: and in a real office, and furnishing rooms with nothing but chairs to
+#: avoid saying so would be the tail wagging the dog. What `seed_cover`'s
+#: over-cover thesis protects is SHELTER -- somewhere a body can fight
+#: from, at `cover_break_height` -- and this pass never creates one:
+#: anything that tall goes flush against a wall, where it is a bookcase
+#: rather than a redoubt.
+#:
+#: Names are chosen so `prop_species.species_for_name` routes every one of
+#: them to a species Zoo builds. A furniture volume that comes out a grey
+#: box is the defect this pass exists to reduce.
+_FURNITURE = (
+    (("office", "manager", "exec", "admin", "suite", "detective", "staff"),
+     (("desk", 1.6, 0.8, 0.75, "floor"),
+      ("chair", 0.55, 0.55, 0.45, "floor"),
+      ("cabinet_file", 0.9, 0.5, 1.4, "wall"),
+      ("shelf_run", 2.0, 0.4, 1.9, "wall"))),
+    (("storage", "stock", "back", "parts", "ware", "supply"),
+     (("shelf_run", 2.6, 0.6, 1.9, "wall"),
+      ("cabinet_supply", 1.0, 0.5, 1.8, "wall"),
+      ("table_work", 1.6, 0.8, 0.55, "floor"))),
+    (("bay", "garage", "loading", "dock", "shop", "service"),
+     (("workbench", 2.0, 0.8, 0.9, "wall"),
+      ("shelf_run", 2.4, 0.6, 1.9, "wall"),
+      ("cabinet_tool", 0.9, 0.5, 1.8, "wall"))),
+    (("vault", "loot", "safe_room", "armory", "evidence"),
+     (("shelf_run", 2.2, 0.5, 1.9, "wall"),
+      ("cabinet_locker", 1.2, 0.5, 1.9, "wall"),
+      ("safe_floor", 0.9, 0.9, 1.0, "floor"))),
+    (("utility", "plant", "mech", "boiler", "server"),
+     (("tank_water", 1.2, 1.2, 1.8, "wall"),
+      ("cabinet_panel", 0.9, 0.4, 1.8, "wall"),
+      ("shelf_run", 2.0, 0.5, 1.9, "wall"))),
+    (("lobby", "public", "hall", "concourse", "booking", "ward", "waiting",
+      "entry", "floor", "retail", "shop_floor"),
+     (("chair_waiting", 2.4, 0.6, 0.45, "wall"),
+      ("table_low", 1.0, 0.6, 0.45, "floor"),
+      ("counter_service", 2.2, 0.8, 1.05, "wall"))),
+)
+#: Anything whose role matches nothing above. A room with a table and two
+#: chairs reads as a room; a room with nothing reads as a corridor.
+_FURNITURE_DEFAULT = (("table_low", 1.2, 0.8, 0.5, "floor"),
+                      ("chair", 0.55, 0.55, 0.45, "floor"))
+_FURNISH_MIN_AREA = 9.0    # below this a room is a cupboard
+_FURNISH_PER_AREA = 16.0   # one piece per this many square metres
+_FURNISH_MAX = 10          # past this a room stops being walkable
+
+
+def _furniture_for(room):
+    key = ((room.get("role") or "") + " " + str(room.get("id", ""))).lower()
+    for words, pieces in _FURNITURE:
+        if any(w in key for w in words):
+            return pieces
+    return _FURNITURE_DEFAULT
+
+
+def _room_volume_count(spec, room):
+    """Volumes standing in this room on its own storey -- what is already
+    there, so an authored room is topped up rather than doubled."""
+    x0, y0, x1, y1 = room["bounds"]
+    sh = _story_height(spec)
+    story = room.get("story", 0)
+    n = 0
+    for v in spec.get("volumes", []):
+        if not (x0 <= v.get("x", 1e9) <= x1 and y0 <= v.get("y", 1e9) <= y1):
+            continue
+        if abs(v.get("z", 0) - (story * sh + v.get("size_z", 0) / 2)) < sh:
+            n += 1
+    return n
+
+
+#: How close a wall line may be to the building's own edge before furniture
+#: stops standing against it.
+_FURNISH_EXT_KEEPOUT = 0.5
+
+
+def _wall_slots(spec, room, w, d, rng):
+    """Candidate ``(x, y, sx, sy)`` flush against the room's INTERIOR walls,
+    the piece's long axis lying ALONG the wall. A shelf run standing across a
+    wall rather than along it is how a 2.6 m unit ends up sticking into the
+    middle of the floor.
+
+    EXTERIOR WALLS ARE SKIPPED, and that is a correction rather than a
+    preference. `_seed_clear` keeps a piece a metre off any PARTITION, which
+    is where interior doors are, and knows nothing about the openings in an
+    exterior wall -- so a shelf run went flush against the outside wall of
+    `office`'s exec suite, across its door, and the nav gate reported the
+    objective unreachable. One shell of 130, found by the gate and not by
+    reading. Putting shelving back on outside walls needs the opening
+    positions, which live in `ext_walls` as fractions of a run this function
+    cannot see; until then the loss is a bookcase that could have stood
+    under a window.
+    """
+    x0, y0, x1, y1 = room["bounds"]
+    hx = float(spec.get("footprint_x", 0.0)) / 2.0
+    hy = float(spec.get("footprint_y", 0.0)) / 2.0
+    out = []
+    long_side, short_side = max(w, d), min(w, d)
+    # N and S walls: the long axis runs in x
+    for wy, inset in ((y0, +1), (y1, -1)):
+        if hy and abs(abs(wy) - hy) < _FURNISH_EXT_KEEPOUT:
+            continue
+        span = (x1 - x0) - long_side - 0.6
+        if span <= 0:
+            continue
+        for _ in range(3):
+            px = x0 + 0.3 + long_side / 2.0 + rng.random() * span
+            out.append((px, wy + inset * (short_side / 2.0 + 0.12),
+                        long_side, short_side))
+    # E and W walls: the long axis runs in y
+    for wx, inset in ((x0, +1), (x1, -1)):
+        if hx and abs(abs(wx) - hx) < _FURNISH_EXT_KEEPOUT:
+            continue
+        span = (y1 - y0) - long_side - 0.6
+        if span <= 0:
+            continue
+        for _ in range(3):
+            py = y0 + 0.3 + long_side / 2.0 + rng.random() * span
+            out.append((wx + inset * (short_side / 2.0 + 0.12), py,
+                        short_side, long_side))
+    rng.shuffle(out)
+    return out
+
+
+def furnish(spec):
+    """Put FURNITURE in the rooms -- a different question from cover.
+
+    `seed_cover` asks whether a room can be fought in and deliberately keeps
+    its count low; this asks whether a room looks lived in, and the two do
+    not trade against each other because everything placed mid-floor here is
+    below `_COVER_MIN_Z` and everything tall goes flush against a wall.
+
+    Deterministic (spec seed + room id), additive and idempotent: existing
+    volumes count toward the target, so a second run adds nothing. Returns
+    the number of volumes created.
+    """
+    import random
+    base_seed = spec.get("seed", 0)
+    sh = _story_height(spec)
+    added = 0
+    for room in spec.get("rooms", []):
+        x0, y0, x1, y1 = room["bounds"]
+        area = max(0.0, x1 - x0) * max(0.0, y1 - y0)
+        if area < _FURNISH_MIN_AREA:
+            continue
+        pieces = _furniture_for(room)
+        # IDEMPOTENT BY MARK, NOT BY COUNT. Counting the room's volumes is
+        # not enough: a first pass that ran out of clear floor leaves the
+        # count short, and a second pass then finds the spots the first
+        # pass's own pieces opened up and adds more. `test_the_shelter_pass
+        # _is_idempotent` caught exactly that -- five extra pieces in a
+        # hospital on a re-enrich. A room this pass has already touched is
+        # recognisable from its volume NAMES and is skipped outright.
+        stems = {p[0] for p in pieces}
+        mark = f"_{room['id']}_"
+        # `rsplit("_", 2)[0]` was the first spelling of this and it fails on
+        # any room id carrying an underscore -- `chair_waiting` in room
+        # `waiting_area` splits to `chair_waiting_waiting`, matches no stem,
+        # and the room is furnished a second time under the same names.
+        # Prefix and mark, which neither the stem nor the id can confuse.
+        if any(mark in v.get("name", "") and
+               any(v["name"].startswith(s + "_") for s in stems)
+               for v in spec.get("volumes", [])):
+            continue
+        have = _room_volume_count(spec, room)
+        want = max(0, min(_FURNISH_MAX,
+                          max(1, int(round(area / _FURNISH_PER_AREA)))) - have)
+        if want <= 0:
+            continue
+        rng = random.Random(f"{base_seed}:{room['id']}:furnish")
+        story = room.get("story", 0)
+        placed = []
+        floor_cands = []
+        for i in range(5):
+            for j in range(5):
+                px = x0 + 1.0 + (i + rng.random() * 0.6) * (x1 - x0 - 2.0) / 5
+                py = y0 + 1.0 + (j + rng.random() * 0.6) * (y1 - y0 - 2.0) / 5
+                floor_cands.append((px, py))
+        rng.shuffle(floor_cands)
+        for k in range(want):
+            name, pw, pd, ph, where = pieces[k % len(pieces)]
+            half = max(pw, pd) / 2.0
+            spots = (_wall_slots(spec, room, pw, pd, rng) if where == "wall"
+                     else [(px, py, pw, pd) for px, py in floor_cands])
+            for (px, py, sx, sy) in spots:
+                if not _seed_clear(spec, room, px, py, placed, half=half):
+                    continue
+                spec.setdefault("volumes", []).append({
+                    "name": f"{name}_{room['id']}_{k + 1}",
+                    "x": round(px, 2), "y": round(py, 2),
+                    "z": round(story * sh + ph / 2.0, 3),
+                    "size_x": round(sx, 3), "size_y": round(sy, 3),
+                    "size_z": round(ph, 3),
+                    "collision": "convex",
+                })
+                placed.append((px, py))
+                added += 1
+                break
+            # A piece that fits nowhere is simply not placed. A room with no
+            # wall long enough for a shelf run is a fact about the room.
+    return added
+
+
 def enrich(spec):
     """Apply the full felt-space layer to a finished spec, in place.
 
@@ -623,7 +833,15 @@ def enrich(spec):
     see what was added.
     """
     report = {
+        # COVER FIRST, FURNITURE SECOND, and the order is load-bearing.
+        # Furniture ran first for one draft and `test_cover_breaks_sightlines`
+        # refused it: eleven rooms across the corpus ended with cover and no
+        # SHELTER, because a furnished room fills the candidate grid and
+        # `_seed_clear` then has nowhere to stand the one piece a body can
+        # fight from. Gameplay-critical placement gets first pick of the
+        # floor; furniture counts what is already there and fills the rest.
         "cover_seeded": seed_cover(spec),
+        "furnished": furnish(spec),
         "cover_added": cover_from_volumes(spec),
         "landmarks_added": add_landmarks(spec),
     }

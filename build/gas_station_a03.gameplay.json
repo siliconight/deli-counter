@@ -1215,6 +1215,24 @@
         "absorption": null,
         "damping": null
       }
+    },
+    {
+      "node": "table_low_sales_floor_2_col",
+      "material": {
+        "id": "block_wall",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "table_low_sales_floor_5_col",
+      "material": {
+        "id": "block_wall",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
     }
   ],
   "interactives": [
@@ -1682,6 +1700,8 @@
     "aisle_shelf_1": "prop",
     "aisle_shelf_2": "prop",
     "cooler_backstock": "prop",
-    "stock_shelf": "prop"
+    "stock_shelf": "prop",
+    "table_low_sales_floor_2": "prop",
+    "table_low_sales_floor_5": "prop"
   }
 }

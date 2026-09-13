@@ -284,7 +284,10 @@ def test_the_shelter_pass_is_idempotent():
     d = P.make("hospital", enrich=True)
     again = copy.deepcopy(d)
     report = LD.enrich(again)
-    assert report == {"cover_seeded": 0, "cover_added": 0, "landmarks_added": 0}
+    # `furnished` joined the report when rooms started getting furniture as
+    # well as cover (roadmap 154). Same promise, one more pass to keep it.
+    assert report == {"cover_seeded": 0, "cover_added": 0,
+                      "landmarks_added": 0, "furnished": 0}
     assert len(again["volumes"]) == len(d["volumes"])
 
 

@@ -1,3 +1,70 @@
+## [0.122.0] - 2026-09-13  the rooms get furniture
+
+The walker: great progress outside the buildings, what about the props
+inside. Measured over the 130 built shells: 819 prop slots in all, a median
+of FOUR per building, 29 buildings with none. A bank tower's whole interior
+was three teller lines; a funeral home had nothing.
+
+`seed_cover` could not be the answer and must not be made into one. It fires
+only when a room is BARE or has no SHELTER, caps at four pieces, and its
+docstring argues the case directly: "props that give cover AND life without
+overkill". That thesis is about COVER -- a mid-floor blocker changes how a
+room plays -- and raising its density would trade a gameplay property for an
+art one without saying so.
+
+So `furnish` is a separate pass with its own rule. One piece per 16 square
+metres, capped at ten, existing volumes counting toward the target so an
+authored room is topped up rather than doubled. Every name it writes routes
+through `prop_species` to a species Zoo already builds, asserted by a test:
+a furniture volume that comes out a grey box is the defect this exists to
+reduce.
+
+    prop slots        819 -> 3809
+    naming a species  328 -> 3214
+    shells with none   29 -> 2
+    median per shell    4 -> 26
+
+FOUR THINGS THE GATES TAUGHT IT, in the order they said them.
+
+The invariant is about SHELTER, not cover. The first draft claimed nothing
+it placed mid-floor reached `_COVER_MIN_Z` and `test_furnish` refuted that on
+its first run: a desk is 0.75 and a floor safe is 1.00. A desk IS low cover,
+here and in a real office. What the over-cover thesis protects is somewhere
+a body can FIGHT from, at `cover_break_height`, and this pass never creates
+one -- anything that tall goes flush against a wall.
+
+Cover runs FIRST. Furniture ran first for one draft and
+`test_cover_breaks_sightlines` refused it: eleven rooms across the corpus
+ended with cover and no shelter, because a furnished room fills the
+candidate grid and `_seed_clear` then has nowhere to stand the one piece
+that matters. Gameplay-critical placement gets first pick of the floor.
+
+Idempotence is by MARK, not by count. A first pass that runs out of clear
+floor leaves the count short, and a second pass then finds the spots the
+first pass's own pieces opened up -- five extra pieces in a hospital, caught
+by the existing idempotence test. A room this pass has touched is now
+recognised from its volume names. The first spelling of that check,
+`rsplit("_", 2)[0]`, failed on any room id containing an underscore.
+
+Furniture stays OFF exterior walls. `_seed_clear` keeps a piece a metre off
+any partition, which is where interior doors are, and knows nothing about
+the openings in an outside wall -- so a shelf run stood flush across the
+door of `office`'s exec suite and the nav gate reported the objective
+unreachable. One shell of 130, found by the gate. Putting shelving back
+under a window needs the opening positions, which live in `ext_walls` as
+fractions of a run the placer cannot see.
+
+After the fix the nav verdicts are identical to before furnishing: the same
+14 pre-existing shells report unreachable markers, none added, none fixed.
+
+AND AN INSTRUMENT DISAGREEMENT, recorded rather than fixed here. `nav_gate`
+prints "navigable: NO" for 14 shells and then "nav-gate: 129 shell(s)
+passed", and on a single shell it prints "1 shell(s) passed" directly under
+its own NO. The summary is counting something other than the verdict above
+it. It behaved that way before this change and the 14 are the same 14, so
+nothing here rests on it -- but a gate whose summary contradicts its own
+findings is the shape of defect this repo has written down twice.
+
 ## [0.121.0] - 2026-09-13  the twin, a roof that is not the walls, and a slot that names a kind
 
 Three changes from the walker's art direction

@@ -1,954 +1,1544 @@
 {
-  "$schema": "../schema/level.schema.json",
-  "name": "final_stand",
-  "mode": "assault",
-  "seed": 1983,
-  "footprint_x": 42.0,
-  "footprint_y": 30.0,
-  "story_height": 3.8,
-  "n_stories": 3,
-  "has_basement": false,
-  "collision": "convex",
-  "auto_exterior": true,
-  "scale_ref": false,
-  "default_material": "concrete",
-  "materials": [
+ "$schema": "../schema/level.schema.json",
+ "name": "final_stand",
+ "mode": "assault",
+ "seed": 1983,
+ "footprint_x": 42.0,
+ "footprint_y": 30.0,
+ "story_height": 3.8,
+ "n_stories": 3,
+ "has_basement": false,
+ "collision": "convex",
+ "auto_exterior": true,
+ "scale_ref": false,
+ "default_material": "concrete",
+ "materials": [
+  {
+   "id": "concrete",
+   "acoustic": "Concrete",
+   "absorption": 0.7,
+   "damping": 0.6
+  },
+  {
+   "id": "drywall",
+   "acoustic": "Drywall"
+  },
+  {
+   "id": "glass",
+   "acoustic": "Glass",
+   "absorption": 0.1,
+   "damping": 0.05
+  },
+  {
+   "id": "metal",
+   "acoustic": "Metal",
+   "absorption": 0.5,
+   "damping": 0.3
+  },
+  {
+   "id": "wood",
+   "acoustic": "Wood"
+  }
+ ],
+ "ext_walls": [
+  {
+   "wall": "S",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
     {
-      "id": "concrete",
-      "acoustic": "Concrete",
-      "absorption": 0.7,
-      "damping": 0.6
+     "kind": "garage",
+     "pos": -0.34,
+     "width": 4.2,
+     "tag": "garage_entry"
     },
     {
-      "id": "drywall",
-      "acoustic": "Drywall"
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.8,
+     "tag": "front_entry"
     },
     {
-      "id": "glass",
-      "acoustic": "Glass",
-      "absorption": 0.1,
-      "damping": 0.05
+     "kind": "window",
+     "pos": 0.28,
+     "width": 2.2,
+     "sill": 1.0,
+     "vaultable": true
     },
     {
-      "id": "metal",
-      "acoustic": "Metal",
-      "absorption": 0.5,
-      "damping": 0.3
-    },
-    {
-      "id": "wood",
-      "acoustic": "Wood"
+     "kind": "window",
+     "pos": 0.42,
+     "width": 2.2,
+     "sill": 1.0,
+     "vaultable": true
     }
-  ],
-  "ext_walls": [
+   ]
+  },
+  {
+   "wall": "N",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
     {
-      "wall": "S",
-      "story": 0,
-      "material": "concrete",
-      "openings": [
-        {
-          "kind": "garage",
-          "pos": -0.34,
-          "width": 4.2,
-          "tag": "garage_entry"
-        },
-        {
-          "kind": "door",
-          "pos": 0.0,
-          "width": 1.8,
-          "tag": "front_entry"
-        },
-        {
-          "kind": "window",
-          "pos": 0.28,
-          "width": 2.2,
-          "sill": 1.0,
-          "vaultable": true
-        },
-        {
-          "kind": "window",
-          "pos": 0.42,
-          "width": 2.2,
-          "sill": 1.0,
-          "vaultable": true
-        }
-      ]
+     "kind": "door",
+     "pos": -0.167857,
+     "width": 1.2,
+     "tag": "rear_service"
     },
     {
-      "wall": "N",
-      "story": 0,
-      "material": "concrete",
-      "openings": [
-        {
-          "kind": "door",
-          "pos": -0.167857,
-          "width": 1.2,
-          "tag": "rear_service"
-        },
-        {
-          "kind": "breach",
-          "pos": 0.22,
-          "width": 1.5,
-          "breach_class": "soft_wall",
-          "material": "drywall",
-          "tag": "rear_breach"
-        }
-      ]
-    },
-    {
-      "wall": "W",
-      "story": 0,
-      "material": "concrete",
-      "openings": [
-        {
-          "kind": "door",
-          "pos": -0.13,
-          "width": 1.1,
-          "tag": "west_entry"
-        },
-        {
-          "kind": "window",
-          "pos": 0.28,
-          "width": 2.0,
-          "sill": 1.0,
-          "vaultable": true
-        }
-      ]
-    },
-    {
-      "wall": "E",
-      "story": 0,
-      "material": "concrete",
-      "openings": [
-        {
-          "kind": "door",
-          "pos": 0.1,
-          "width": 1.1,
-          "tag": "east_entry"
-        },
-        {
-          "kind": "breach",
-          "pos": -0.25,
-          "width": 1.5,
-          "breach_class": "soft_wall",
-          "material": "drywall",
-          "tag": "east_breach"
-        }
-      ]
-    },
-    {
-      "wall": "S",
-      "story": 1,
-      "material": "concrete",
-      "openings": [
-        {
-          "kind": "window",
-          "pos": -0.35,
-          "width": 2.0,
-          "sill": 0.9,
-          "vaultable": true
-        },
-        {
-          "kind": "window",
-          "pos": -0.1,
-          "width": 2.0,
-          "sill": 0.9,
-          "vaultable": true
-        },
-        {
-          "kind": "window",
-          "pos": 0.15,
-          "width": 2.0,
-          "sill": 0.9,
-          "vaultable": true
-        },
-        {
-          "kind": "window",
-          "pos": 0.4,
-          "width": 2.0,
-          "sill": 0.9,
-          "vaultable": true
-        }
-      ]
-    },
-    {
-      "wall": "N",
-      "story": 1,
-      "material": "concrete",
-      "openings": [
-        {
-          "kind": "window",
-          "pos": -0.3,
-          "width": 1.8,
-          "sill": 0.9,
-          "vaultable": true
-        },
-        {
-          "kind": "window",
-          "pos": 0.0,
-          "width": 1.8,
-          "sill": 0.9,
-          "vaultable": true
-        },
-        {
-          "kind": "window",
-          "pos": 0.3,
-          "width": 1.8,
-          "sill": 0.9,
-          "vaultable": true
-        }
-      ]
-    },
-    {
-      "wall": "W",
-      "story": 1,
-      "material": "concrete",
-      "openings": [
-        {
-          "kind": "window",
-          "pos": -0.2,
-          "width": 1.8,
-          "sill": 0.9,
-          "vaultable": true
-        },
-        {
-          "kind": "window",
-          "pos": 0.22,
-          "width": 1.8,
-          "sill": 0.9,
-          "vaultable": true
-        }
-      ]
-    },
-    {
-      "wall": "E",
-      "story": 1,
-      "material": "concrete",
-      "openings": [
-        {
-          "kind": "window",
-          "pos": -0.22,
-          "width": 1.8,
-          "sill": 0.9,
-          "vaultable": true
-        },
-        {
-          "kind": "window",
-          "pos": 0.22,
-          "width": 1.8,
-          "sill": 0.9,
-          "vaultable": true
-        }
-      ]
-    },
-    {
-      "wall": "S",
-      "story": 2,
-      "material": "glass",
-      "openings": [
-        {
-          "kind": "window",
-          "pos": -0.28,
-          "width": 2.2,
-          "sill": 0.9,
-          "vaultable": true
-        },
-        {
-          "kind": "window",
-          "pos": 0.0,
-          "width": 2.4,
-          "sill": 0.9,
-          "vaultable": true
-        },
-        {
-          "kind": "window",
-          "pos": 0.28,
-          "width": 2.2,
-          "sill": 0.9,
-          "vaultable": true
-        }
-      ]
-    },
-    {
-      "wall": "N",
-      "story": 2,
-      "material": "concrete",
-      "openings": [
-        {
-          "kind": "window",
-          "pos": -0.25,
-          "width": 1.8,
-          "sill": 0.9,
-          "vaultable": true
-        },
-        {
-          "kind": "window",
-          "pos": 0.25,
-          "width": 1.8,
-          "sill": 0.9,
-          "vaultable": true
-        }
-      ]
-    },
-    {
-      "wall": "W",
-      "story": 2,
-      "material": "concrete",
-      "openings": [
-        {
-          "kind": "window",
-          "pos": -0.18,
-          "width": 1.8,
-          "sill": 0.9,
-          "vaultable": true
-        },
-        {
-          "kind": "window",
-          "pos": 0.18,
-          "width": 1.8,
-          "sill": 0.9,
-          "vaultable": true
-        }
-      ]
-    },
-    {
-      "wall": "E",
-      "story": 2,
-      "material": "concrete",
-      "openings": [
-        {
-          "kind": "window",
-          "pos": -0.18,
-          "width": 1.8,
-          "sill": 0.9,
-          "vaultable": true
-        },
-        {
-          "kind": "window",
-          "pos": 0.18,
-          "width": 1.8,
-          "sill": 0.9,
-          "vaultable": true
-        }
-      ]
+     "kind": "breach",
+     "pos": 0.22,
+     "width": 1.5,
+     "breach_class": "soft_wall",
+     "material": "drywall",
+     "tag": "rear_breach"
     }
-  ],
-  "partitions": [
+   ]
+  },
+  {
+   "wall": "W",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
     {
-      "story": 0,
-      "axis": "X",
-      "pos": -3.0,
-      "start": -21.0,
-      "end": 21.0,
-      "material": "drywall",
-      "openings": [
-        {
-          "kind": "door",
-          "pos": -0.18
-        },
-        {
-          "kind": "door",
-          "pos": 0.18
-        }
-      ]
+     "kind": "door",
+     "pos": -0.13,
+     "width": 1.1,
+     "tag": "west_entry"
     },
     {
-      "story": 0,
-      "axis": "X",
-      "pos": 6.5,
-      "start": -21.0,
-      "end": 21.0,
-      "material": "drywall",
-      "openings": [
-        {
-          "kind": "door",
-          "pos": -0.35
-        },
-        {
-          "kind": "door",
-          "pos": 0.0
-        },
-        {
-          "kind": "door",
-          "pos": 0.35
-        }
-      ]
-    },
-    {
-      "story": 0,
-      "axis": "Y",
-      "pos": -8.0,
-      "start": 6.5,
-      "end": 15.0,
-      "material": "drywall",
-      "openings": [
-        {
-          "kind": "door",
-          "pos": 0.0
-        }
-      ]
-    },
-    {
-      "story": 0,
-      "axis": "Y",
-      "pos": 8.0,
-      "start": 6.5,
-      "end": 15.0,
-      "material": "drywall",
-      "openings": [
-        {
-          "kind": "door",
-          "pos": 0.0
-        }
-      ]
-    },
-    {
-      "story": 1,
-      "axis": "X",
-      "pos": 0.0,
-      "start": -21.0,
-      "end": 21.0,
-      "material": "drywall",
-      "openings": [
-        {
-          "kind": "door",
-          "pos": -0.28
-        },
-        {
-          "kind": "door",
-          "pos": 0.28
-        }
-      ]
-    },
-    {
-      "story": 1,
-      "axis": "Y",
-      "pos": -6.0,
-      "start": 0.0,
-      "end": 15.0,
-      "material": "drywall",
-      "openings": [
-        {
-          "kind": "door",
-          "pos": -0.15
-        }
-      ]
-    },
-    {
-      "story": 1,
-      "axis": "Y",
-      "pos": 6.0,
-      "start": 0.0,
-      "end": 15.0,
-      "material": "drywall",
-      "openings": [
-        {
-          "kind": "door",
-          "pos": 0.15
-        }
-      ]
-    },
-    {
-      "story": 2,
-      "axis": "X",
-      "pos": 1.0,
-      "start": -21.0,
-      "end": 21.0,
-      "material": "drywall",
-      "openings": [
-        {
-          "kind": "door",
-          "pos": -0.2
-        },
-        {
-          "kind": "door",
-          "pos": 0.2
-        }
-      ]
-    },
-    {
-      "story": 2,
-      "axis": "Y",
-      "pos": -7.5,
-      "start": 1.0,
-      "end": 15.0,
-      "material": "drywall",
-      "openings": [
-        {
-          "kind": "door",
-          "pos": 0.0
-        }
-      ]
-    },
-    {
-      "story": 2,
-      "axis": "Y",
-      "pos": 7.5,
-      "start": 1.0,
-      "end": 15.0,
-      "material": "drywall",
-      "openings": [
-        {
-          "kind": "door",
-          "pos": 0.0
-        }
-      ]
+     "kind": "window",
+     "pos": 0.28,
+     "width": 2.0,
+     "sill": 1.0,
+     "vaultable": true
     }
-  ],
-  "stairs": [
+   ]
+  },
+  {
+   "wall": "E",
+   "story": 0,
+   "material": "concrete",
+   "openings": [
     {
-      "x": 0.0,
-      "y": 11.0,
-      "from_story": 0,
-      "to_story": 2,
-      "style": "switchback",
-      "cut_slabs": true,
-      "facing": "N",
-      "id": "final_stand_stair_0",
-      "meta": {
-        "generated_by": "presets"
-      },
-      "role": "public_convenience"
+     "kind": "door",
+     "pos": 0.1,
+     "width": 1.1,
+     "tag": "east_entry"
     },
     {
-      "x": -15.0,
-      "y": 10.5,
-      "from_story": 0,
-      "to_story": 2,
-      "style": "switchback",
-      "cut_slabs": true,
-      "facing": "N",
-      "id": "final_stand_stair_1",
-      "meta": {
-        "generated_by": "presets"
-      },
-      "role": "service"
+     "kind": "breach",
+     "pos": -0.25,
+     "width": 1.5,
+     "breach_class": "soft_wall",
+     "material": "drywall",
+     "tag": "east_breach"
     }
-  ],
-  "slab_holes": [
+   ]
+  },
+  {
+   "wall": "S",
+   "story": 1,
+   "material": "concrete",
+   "openings": [
     {
-      "story": 1,
-      "x": 0.0,
-      "y": 0.5,
-      "size_x": 10.0,
-      "size_y": 8.0
+     "kind": "window",
+     "pos": -0.35,
+     "width": 2.0,
+     "sill": 0.9,
+     "vaultable": true
     },
     {
-      "story": 2,
-      "x": 0.0,
-      "y": 0.5,
-      "size_x": 8.0,
-      "size_y": 6.0
+     "kind": "window",
+     "pos": -0.1,
+     "width": 2.0,
+     "sill": 0.9,
+     "vaultable": true
+    },
+    {
+     "kind": "window",
+     "pos": 0.15,
+     "width": 2.0,
+     "sill": 0.9,
+     "vaultable": true
+    },
+    {
+     "kind": "window",
+     "pos": 0.4,
+     "width": 2.0,
+     "sill": 0.9,
+     "vaultable": true
     }
-  ],
-  "rooms": [
+   ]
+  },
+  {
+   "wall": "N",
+   "story": 1,
+   "material": "concrete",
+   "openings": [
     {
-      "id": "entry_hall",
-      "story": 0,
-      "bounds": [
-        -21.0,
-        -15.0,
-        21.0,
-        -3.0
-      ],
-      "role": "public_entry",
-      "combat_range": "long"
+     "kind": "window",
+     "pos": -0.3,
+     "width": 1.8,
+     "sill": 0.9,
+     "vaultable": true
     },
     {
-      "id": "main_hall",
-      "story": 0,
-      "bounds": [
-        -21.0,
-        -3.0,
-        21.0,
-        6.5
-      ],
-      "role": "connector",
-      "combat_range": "long"
+     "kind": "window",
+     "pos": 0.0,
+     "width": 1.8,
+     "sill": 0.9,
+     "vaultable": true
     },
     {
-      "id": "garage",
-      "story": 0,
-      "bounds": [
-        -21.0,
-        6.5,
-        -8.0,
-        15.0
-      ],
-      "role": "fortifiable",
-      "fortifiable": true,
-      "combat_range": "close"
-    },
-    {
-      "id": "stair_core",
-      "story": 0,
-      "bounds": [
-        -8.0,
-        6.5,
-        8.0,
-        15.0
-      ],
-      "role": "connector",
-      "combat_range": "close"
-    },
-    {
-      "id": "east_security",
-      "story": 0,
-      "bounds": [
-        8.0,
-        6.5,
-        21.0,
-        15.0
-      ],
-      "role": "fortifiable",
-      "fortifiable": true,
-      "combat_range": "close"
-    },
-    {
-      "id": "south_gallery",
-      "story": 1,
-      "bounds": [
-        -21.0,
-        -15.0,
-        21.0,
-        0.0
-      ],
-      "role": "connector",
-      "combat_range": "medium"
-    },
-    {
-      "id": "west_office",
-      "story": 1,
-      "bounds": [
-        -21.0,
-        0.0,
-        -6.0,
-        15.0
-      ],
-      "role": "fortifiable",
-      "fortifiable": true,
-      "combat_range": "close"
-    },
-    {
-      "id": "central_overlook",
-      "story": 1,
-      "bounds": [
-        -6.0,
-        0.0,
-        6.0,
-        15.0
-      ],
-      "role": "connector",
-      "combat_range": "medium"
-    },
-    {
-      "id": "east_lounge",
-      "story": 1,
-      "bounds": [
-        6.0,
-        0.0,
-        21.0,
-        15.0
-      ],
-      "role": "fortifiable",
-      "fortifiable": true,
-      "combat_range": "close"
-    },
-    {
-      "id": "south_balcony",
-      "story": 2,
-      "bounds": [
-        -21.0,
-        -15.0,
-        21.0,
-        1.0
-      ],
-      "role": "connector",
-      "combat_range": "medium"
-    },
-    {
-      "id": "boss_antechamber",
-      "story": 2,
-      "bounds": [
-        -21.0,
-        1.0,
-        -7.5,
-        15.0
-      ],
-      "role": "fortifiable",
-      "fortifiable": true,
-      "combat_range": "close"
-    },
-    {
-      "id": "boss_suite",
-      "story": 2,
-      "bounds": [
-        -7.5,
-        1.0,
-        7.5,
-        15.0
-      ],
-      "role": "objective_room",
-      "objective": true,
-      "fortifiable": true,
-      "combat_range": "close"
-    },
-    {
-      "id": "trophy_room",
-      "story": 2,
-      "bounds": [
-        7.5,
-        1.0,
-        21.0,
-        15.0
-      ],
-      "role": "fortifiable",
-      "fortifiable": true,
-      "combat_range": "close"
+     "kind": "window",
+     "pos": 0.3,
+     "width": 1.8,
+     "sill": 0.9,
+     "vaultable": true
     }
-  ],
-  "volumes": [
+   ]
+  },
+  {
+   "wall": "W",
+   "story": 1,
+   "material": "concrete",
+   "openings": [
     {
-      "name": "front_desk",
-      "x": 0.0,
-      "y": -7.5,
-      "z": 0.55,
-      "size_x": 8.0,
-      "size_y": 1.0,
-      "size_z": 1.1,
-      "collision": "convex",
-      "material": "wood"
+     "kind": "window",
+     "pos": -0.2,
+     "width": 1.8,
+     "sill": 0.9,
+     "vaultable": true
     },
     {
-      "name": "center_bar",
-      "x": 0.0,
-      "y": 1.5,
-      "z": 0.55,
-      "size_x": 10.0,
-      "size_y": 1.2,
-      "size_z": 1.1,
-      "collision": "convex",
-      "material": "wood"
-    },
-    {
-      "name": "garage_cover",
-      "x": -15.0,
-      "y": 10.5,
-      "z": 0.8,
-      "size_x": 4.0,
-      "size_y": 2.0,
-      "size_z": 1.6,
-      "collision": "convex",
-      "material": "metal"
-    },
-    {
-      "name": "security_block",
-      "x": 15.0,
-      "y": 10.0,
-      "z": 0.8,
-      "size_x": 4.0,
-      "size_y": 2.0,
-      "size_z": 1.6,
-      "collision": "convex",
-      "material": "metal"
-    },
-    {
-      "name": "upper_cover_west",
-      "x": -12.0,
-      "y": 8.0,
-      "z": 4.35,
-      "size_x": 3.5,
-      "size_y": 1.0,
-      "size_z": 1.1,
-      "collision": "convex",
-      "material": "wood"
-    },
-    {
-      "name": "upper_cover_east",
-      "x": 12.0,
-      "y": 8.0,
-      "z": 4.35,
-      "size_x": 3.5,
-      "size_y": 1.0,
-      "size_z": 1.1,
-      "collision": "convex",
-      "material": "wood"
-    },
-    {
-      "name": "boss_desk",
-      "x": 0.0,
-      "y": 9.0,
-      "z": 8.15,
-      "size_x": 5.0,
-      "size_y": 1.6,
-      "size_z": 1.2,
-      "collision": "convex",
-      "material": "wood"
-    },
-    {
-      "name": "north_statue",
-      "x": 0.0,
-      "y": 13.0,
-      "z": 8.5,
-      "size_x": 2.0,
-      "size_y": 2.0,
-      "size_z": 3.0,
-      "collision": "convex",
-      "material": "metal"
-    },
-    {
-      "name": "roof_unit",
-      "x": 15.0,
-      "y": 10.0,
-      "z": 12.0,
-      "size_x": 4.0,
-      "size_y": 3.0,
-      "size_z": 1.4,
-      "collision": "convex",
-      "material": "metal"
+     "kind": "window",
+     "pos": 0.22,
+     "width": 1.8,
+     "sill": 0.9,
+     "vaultable": true
     }
-  ],
-  "vault_ledges": [
+   ]
+  },
+  {
+   "wall": "E",
+   "story": 1,
+   "material": "concrete",
+   "openings": [
     {
-      "x": -10.0,
-      "y": -0.5,
-      "story": 1,
-      "length": 6.0,
-      "axis": "X",
-      "height": 1.1,
-      "material": "wood"
+     "kind": "window",
+     "pos": -0.22,
+     "width": 1.8,
+     "sill": 0.9,
+     "vaultable": true
     },
     {
-      "x": 10.0,
-      "y": -0.5,
-      "story": 1,
-      "length": 6.0,
-      "axis": "X",
-      "height": 1.1,
-      "material": "wood"
-    },
-    {
-      "x": 0.0,
-      "y": 4.0,
-      "story": 2,
-      "length": 8.0,
-      "axis": "X",
-      "height": 1.1,
-      "material": "wood"
+     "kind": "window",
+     "pos": 0.22,
+     "width": 1.8,
+     "sill": 0.9,
+     "vaultable": true
     }
-  ],
-  "markers": [
+   ]
+  },
+  {
+   "wall": "S",
+   "story": 2,
+   "material": "glass",
+   "openings": [
     {
-      "type": "attacker_spawn",
-      "id": "A",
-      "x": 0.0,
-      "y": -19.0,
-      "z": 0.0,
-      "rot_z": 90,
-      "room": "entry_hall"
+     "kind": "window",
+     "pos": -0.28,
+     "width": 2.2,
+     "sill": 0.9,
+     "vaultable": true
     },
     {
-      "type": "attacker_spawn",
-      "id": "B",
-      "x": -26.0,
-      "y": 0.0,
-      "z": 0.0,
-      "rot_z": 0,
-      "room": "entry_hall"
+     "kind": "window",
+     "pos": 0.0,
+     "width": 2.4,
+     "sill": 0.9,
+     "vaultable": true
     },
     {
-      "type": "attacker_spawn",
-      "id": "C",
-      "x": 26.0,
-      "y": 2.0,
-      "z": 0.0,
-      "rot_z": 180,
-      "room": "entry_hall"
-    },
-    {
-      "type": "defender_spawn",
-      "id": "boss",
-      "x": 0.0,
-      "y": 10.0,
-      "z": 7.6,
-      "rot_z": 180,
-      "room": "boss_suite"
-    },
-    {
-      "type": "objective",
-      "id": "final_boss",
-      "x": 0.0,
-      "y": 10.0,
-      "z": 7.6,
-      "room": "boss_suite",
-      "meta": {
-        "kind": "eliminate"
-      }
-    },
-    {
-      "type": "cover_high",
-      "x": 0.0,
-      "y": -7.5,
-      "z": 0.0,
-      "room": "entry_hall"
-    },
-    {
-      "type": "cover_high",
-      "x": 0.0,
-      "y": 1.5,
-      "z": 0.0,
-      "room": "main_hall"
-    },
-    {
-      "type": "cover_high",
-      "x": -12.0,
-      "y": 8.0,
-      "z": 3.8,
-      "room": "west_office"
-    },
-    {
-      "type": "cover_high",
-      "x": 12.0,
-      "y": 8.0,
-      "z": 3.8,
-      "room": "east_lounge"
-    },
-    {
-      "type": "cover_high",
-      "x": 0.0,
-      "y": 9.0,
-      "z": 7.6,
-      "room": "boss_suite"
-    },
-    {
-      "type": "camera_socket",
-      "id": "01",
-      "x": 18.0,
-      "y": -10.0,
-      "z": 3.2,
-      "room": "entry_hall"
-    },
-    {
-      "type": "camera_socket",
-      "id": "02",
-      "x": -18.0,
-      "y": 10.0,
-      "z": 3.2,
-      "room": "garage"
-    },
-    {
-      "type": "camera_socket",
-      "id": "03",
-      "x": 0.0,
-      "y": 12.0,
-      "z": 10.8,
-      "room": "boss_suite"
+     "kind": "window",
+     "pos": 0.28,
+     "width": 2.2,
+     "sill": 0.9,
+     "vaultable": true
     }
-  ],
-  "parapets": [
+   ]
+  },
+  {
+   "wall": "N",
+   "story": 2,
+   "material": "concrete",
+   "openings": [
     {
-      "story": 3,
-      "height": 1.1
+     "kind": "window",
+     "pos": -0.25,
+     "width": 1.8,
+     "sill": 0.9,
+     "vaultable": true
+    },
+    {
+     "kind": "window",
+     "pos": 0.25,
+     "width": 1.8,
+     "sill": 0.9,
+     "vaultable": true
     }
-  ]
+   ]
+  },
+  {
+   "wall": "W",
+   "story": 2,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "window",
+     "pos": -0.18,
+     "width": 1.8,
+     "sill": 0.9,
+     "vaultable": true
+    },
+    {
+     "kind": "window",
+     "pos": 0.18,
+     "width": 1.8,
+     "sill": 0.9,
+     "vaultable": true
+    }
+   ]
+  },
+  {
+   "wall": "E",
+   "story": 2,
+   "material": "concrete",
+   "openings": [
+    {
+     "kind": "window",
+     "pos": -0.18,
+     "width": 1.8,
+     "sill": 0.9,
+     "vaultable": true
+    },
+    {
+     "kind": "window",
+     "pos": 0.18,
+     "width": 1.8,
+     "sill": 0.9,
+     "vaultable": true
+    }
+   ]
+  }
+ ],
+ "partitions": [
+  {
+   "story": 0,
+   "axis": "X",
+   "pos": -3.0,
+   "start": -21.0,
+   "end": 21.0,
+   "material": "drywall",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.18
+    },
+    {
+     "kind": "door",
+     "pos": 0.18
+    }
+   ]
+  },
+  {
+   "story": 0,
+   "axis": "X",
+   "pos": 6.5,
+   "start": -21.0,
+   "end": 21.0,
+   "material": "drywall",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.35
+    },
+    {
+     "kind": "door",
+     "pos": 0.0
+    },
+    {
+     "kind": "door",
+     "pos": 0.35
+    }
+   ]
+  },
+  {
+   "story": 0,
+   "axis": "Y",
+   "pos": -8.0,
+   "start": 6.5,
+   "end": 15.0,
+   "material": "drywall",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0
+    }
+   ]
+  },
+  {
+   "story": 0,
+   "axis": "Y",
+   "pos": 8.0,
+   "start": 6.5,
+   "end": 15.0,
+   "material": "drywall",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0
+    }
+   ]
+  },
+  {
+   "story": 1,
+   "axis": "X",
+   "pos": 0.0,
+   "start": -21.0,
+   "end": 21.0,
+   "material": "drywall",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.28
+    },
+    {
+     "kind": "door",
+     "pos": 0.28
+    }
+   ]
+  },
+  {
+   "story": 1,
+   "axis": "Y",
+   "pos": -6.0,
+   "start": 0.0,
+   "end": 15.0,
+   "material": "drywall",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.15
+    }
+   ]
+  },
+  {
+   "story": 1,
+   "axis": "Y",
+   "pos": 6.0,
+   "start": 0.0,
+   "end": 15.0,
+   "material": "drywall",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.15
+    }
+   ]
+  },
+  {
+   "story": 2,
+   "axis": "X",
+   "pos": 1.0,
+   "start": -21.0,
+   "end": 21.0,
+   "material": "drywall",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": -0.2
+    },
+    {
+     "kind": "door",
+     "pos": 0.2
+    }
+   ]
+  },
+  {
+   "story": 2,
+   "axis": "Y",
+   "pos": -7.5,
+   "start": 1.0,
+   "end": 15.0,
+   "material": "drywall",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0
+    }
+   ]
+  },
+  {
+   "story": 2,
+   "axis": "Y",
+   "pos": 7.5,
+   "start": 1.0,
+   "end": 15.0,
+   "material": "drywall",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0
+    }
+   ]
+  }
+ ],
+ "stairs": [
+  {
+   "x": 0.0,
+   "y": 11.0,
+   "from_story": 0,
+   "to_story": 2,
+   "style": "switchback",
+   "cut_slabs": true,
+   "facing": "N",
+   "id": "final_stand_stair_0",
+   "meta": {
+    "generated_by": "presets"
+   },
+   "role": "public_convenience"
+  },
+  {
+   "x": -15.0,
+   "y": 10.5,
+   "from_story": 0,
+   "to_story": 2,
+   "style": "switchback",
+   "cut_slabs": true,
+   "facing": "N",
+   "id": "final_stand_stair_1",
+   "meta": {
+    "generated_by": "presets"
+   },
+   "role": "service"
+  }
+ ],
+ "slab_holes": [
+  {
+   "story": 1,
+   "x": 0.0,
+   "y": 0.5,
+   "size_x": 10.0,
+   "size_y": 8.0
+  },
+  {
+   "story": 2,
+   "x": 0.0,
+   "y": 0.5,
+   "size_x": 8.0,
+   "size_y": 6.0
+  }
+ ],
+ "rooms": [
+  {
+   "id": "entry_hall",
+   "story": 0,
+   "bounds": [
+    -21.0,
+    -15.0,
+    21.0,
+    -3.0
+   ],
+   "role": "public_entry",
+   "combat_range": "long"
+  },
+  {
+   "id": "main_hall",
+   "story": 0,
+   "bounds": [
+    -21.0,
+    -3.0,
+    21.0,
+    6.5
+   ],
+   "role": "connector",
+   "combat_range": "long"
+  },
+  {
+   "id": "garage",
+   "story": 0,
+   "bounds": [
+    -21.0,
+    6.5,
+    -8.0,
+    15.0
+   ],
+   "role": "fortifiable",
+   "fortifiable": true,
+   "combat_range": "close"
+  },
+  {
+   "id": "stair_core",
+   "story": 0,
+   "bounds": [
+    -8.0,
+    6.5,
+    8.0,
+    15.0
+   ],
+   "role": "connector",
+   "combat_range": "close"
+  },
+  {
+   "id": "east_security",
+   "story": 0,
+   "bounds": [
+    8.0,
+    6.5,
+    21.0,
+    15.0
+   ],
+   "role": "fortifiable",
+   "fortifiable": true,
+   "combat_range": "close"
+  },
+  {
+   "id": "south_gallery",
+   "story": 1,
+   "bounds": [
+    -21.0,
+    -15.0,
+    21.0,
+    0.0
+   ],
+   "role": "connector",
+   "combat_range": "medium"
+  },
+  {
+   "id": "west_office",
+   "story": 1,
+   "bounds": [
+    -21.0,
+    0.0,
+    -6.0,
+    15.0
+   ],
+   "role": "fortifiable",
+   "fortifiable": true,
+   "combat_range": "close"
+  },
+  {
+   "id": "central_overlook",
+   "story": 1,
+   "bounds": [
+    -6.0,
+    0.0,
+    6.0,
+    15.0
+   ],
+   "role": "connector",
+   "combat_range": "medium"
+  },
+  {
+   "id": "east_lounge",
+   "story": 1,
+   "bounds": [
+    6.0,
+    0.0,
+    21.0,
+    15.0
+   ],
+   "role": "fortifiable",
+   "fortifiable": true,
+   "combat_range": "close"
+  },
+  {
+   "id": "south_balcony",
+   "story": 2,
+   "bounds": [
+    -21.0,
+    -15.0,
+    21.0,
+    1.0
+   ],
+   "role": "connector",
+   "combat_range": "medium"
+  },
+  {
+   "id": "boss_antechamber",
+   "story": 2,
+   "bounds": [
+    -21.0,
+    1.0,
+    -7.5,
+    15.0
+   ],
+   "role": "fortifiable",
+   "fortifiable": true,
+   "combat_range": "close"
+  },
+  {
+   "id": "boss_suite",
+   "story": 2,
+   "bounds": [
+    -7.5,
+    1.0,
+    7.5,
+    15.0
+   ],
+   "role": "objective_room",
+   "objective": true,
+   "fortifiable": true,
+   "combat_range": "close"
+  },
+  {
+   "id": "trophy_room",
+   "story": 2,
+   "bounds": [
+    7.5,
+    1.0,
+    21.0,
+    15.0
+   ],
+   "role": "fortifiable",
+   "fortifiable": true,
+   "combat_range": "close"
+  }
+ ],
+ "volumes": [
+  {
+   "name": "front_desk",
+   "x": 0.0,
+   "y": -7.5,
+   "z": 0.55,
+   "size_x": 8.0,
+   "size_y": 1.0,
+   "size_z": 1.1,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "center_bar",
+   "x": 0.0,
+   "y": 1.5,
+   "z": 0.55,
+   "size_x": 10.0,
+   "size_y": 1.2,
+   "size_z": 1.1,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "garage_cover",
+   "x": -15.0,
+   "y": 10.5,
+   "z": 0.8,
+   "size_x": 4.0,
+   "size_y": 2.0,
+   "size_z": 1.6,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "security_block",
+   "x": 15.0,
+   "y": 10.0,
+   "z": 0.8,
+   "size_x": 4.0,
+   "size_y": 2.0,
+   "size_z": 1.6,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "upper_cover_west",
+   "x": -12.0,
+   "y": 8.0,
+   "z": 4.35,
+   "size_x": 3.5,
+   "size_y": 1.0,
+   "size_z": 1.1,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "upper_cover_east",
+   "x": 12.0,
+   "y": 8.0,
+   "z": 4.35,
+   "size_x": 3.5,
+   "size_y": 1.0,
+   "size_z": 1.1,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "boss_desk",
+   "x": 0.0,
+   "y": 9.0,
+   "z": 8.15,
+   "size_x": 5.0,
+   "size_y": 1.6,
+   "size_z": 1.2,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "north_statue",
+   "x": 0.0,
+   "y": 13.0,
+   "z": 8.5,
+   "size_x": 2.0,
+   "size_y": 2.0,
+   "size_z": 3.0,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "roof_unit",
+   "x": 15.0,
+   "y": 10.0,
+   "z": 12.0,
+   "size_x": 4.0,
+   "size_y": 3.0,
+   "size_z": 1.4,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "table_low_entry_hall_2",
+   "x": 12.95,
+   "y": -6.95,
+   "z": 0.225,
+   "size_x": 1.0,
+   "size_y": 0.6,
+   "size_z": 0.45,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_entry_hall_5",
+   "x": -17.79,
+   "y": -10.91,
+   "z": 0.225,
+   "size_x": 1.0,
+   "size_y": 0.6,
+   "size_z": 0.45,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_entry_hall_8",
+   "x": -7.79,
+   "y": -12.82,
+   "z": 0.225,
+   "size_x": 1.0,
+   "size_y": 0.6,
+   "size_z": 0.45,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_main_hall_2",
+   "x": -3.13,
+   "y": -1.9,
+   "z": 0.225,
+   "size_x": 1.0,
+   "size_y": 0.6,
+   "size_z": 0.45,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_main_hall_5",
+   "x": -19.17,
+   "y": -1.59,
+   "z": 0.225,
+   "size_x": 1.0,
+   "size_y": 0.6,
+   "size_z": 0.45,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_main_hall_8",
+   "x": 15.17,
+   "y": -1.4,
+   "z": 0.225,
+   "size_x": 1.0,
+   "size_y": 0.6,
+   "size_z": 0.45,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_stair_core_1",
+   "x": -3.57,
+   "y": 13.03,
+   "z": 0.25,
+   "size_x": 1.2,
+   "size_y": 0.8,
+   "size_z": 0.5,
+   "collision": "convex"
+  },
+  {
+   "name": "chair_stair_core_2",
+   "x": 4.88,
+   "y": 12.88,
+   "z": 0.225,
+   "size_x": 0.55,
+   "size_y": 0.55,
+   "size_z": 0.45,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_stair_core_3",
+   "x": 5.29,
+   "y": 8.99,
+   "z": 0.25,
+   "size_x": 1.2,
+   "size_y": 0.8,
+   "size_z": 0.5,
+   "collision": "convex"
+  },
+  {
+   "name": "chair_stair_core_4",
+   "x": -6.68,
+   "y": 7.93,
+   "z": 0.225,
+   "size_x": 0.55,
+   "size_y": 0.55,
+   "size_z": 0.45,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_stair_core_5",
+   "x": -6.08,
+   "y": 11.96,
+   "z": 0.25,
+   "size_x": 1.2,
+   "size_y": 0.8,
+   "size_z": 0.5,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_east_security_1",
+   "x": 19.05,
+   "y": 9.32,
+   "z": 0.25,
+   "size_x": 1.2,
+   "size_y": 0.8,
+   "size_z": 0.5,
+   "collision": "convex"
+  },
+  {
+   "name": "chair_east_security_2",
+   "x": 14.05,
+   "y": 13.12,
+   "z": 0.225,
+   "size_x": 0.55,
+   "size_y": 0.55,
+   "size_z": 0.45,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_east_security_3",
+   "x": 9.89,
+   "y": 12.77,
+   "z": 0.25,
+   "size_x": 1.2,
+   "size_y": 0.8,
+   "size_z": 0.5,
+   "collision": "convex"
+  },
+  {
+   "name": "chair_east_security_4",
+   "x": 9.77,
+   "y": 10.57,
+   "z": 0.225,
+   "size_x": 0.55,
+   "size_y": 0.55,
+   "size_z": 0.45,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_east_security_5",
+   "x": 18.91,
+   "y": 12.99,
+   "z": 0.25,
+   "size_x": 1.2,
+   "size_y": 0.8,
+   "size_z": 0.5,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_south_gallery_1",
+   "x": -11.61,
+   "y": -12.99,
+   "z": 4.05,
+   "size_x": 1.2,
+   "size_y": 0.8,
+   "size_z": 0.5,
+   "collision": "convex"
+  },
+  {
+   "name": "chair_south_gallery_2",
+   "x": 12.41,
+   "y": -8.61,
+   "z": 4.025,
+   "size_x": 0.55,
+   "size_y": 0.55,
+   "size_z": 0.45,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_south_gallery_3",
+   "x": -7.83,
+   "y": -5.49,
+   "z": 4.05,
+   "size_x": 1.2,
+   "size_y": 0.8,
+   "size_z": 0.5,
+   "collision": "convex"
+  },
+  {
+   "name": "chair_south_gallery_4",
+   "x": -2.1,
+   "y": -10.65,
+   "z": 4.025,
+   "size_x": 0.55,
+   "size_y": 0.55,
+   "size_z": 0.45,
+   "collision": "convex"
+  },
+  {
+   "name": "desk_west_office_1",
+   "x": -18.97,
+   "y": 9.82,
+   "z": 4.175,
+   "size_x": 1.6,
+   "size_y": 0.8,
+   "size_z": 0.75,
+   "collision": "convex"
+  },
+  {
+   "name": "chair_west_office_2",
+   "x": -17.36,
+   "y": 12.77,
+   "z": 4.025,
+   "size_x": 0.55,
+   "size_y": 0.55,
+   "size_z": 0.45,
+   "collision": "convex"
+  },
+  {
+   "name": "desk_west_office_5",
+   "x": -9.24,
+   "y": 2.56,
+   "z": 4.175,
+   "size_x": 1.6,
+   "size_y": 0.8,
+   "size_z": 0.75,
+   "collision": "convex"
+  },
+  {
+   "name": "chair_west_office_6",
+   "x": -16.51,
+   "y": 2.31,
+   "z": 4.025,
+   "size_x": 0.55,
+   "size_y": 0.55,
+   "size_z": 0.45,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_central_overlook_1",
+   "x": -2.77,
+   "y": 6.46,
+   "z": 4.05,
+   "size_x": 1.2,
+   "size_y": 0.8,
+   "size_z": 0.5,
+   "collision": "convex"
+  },
+  {
+   "name": "chair_central_overlook_2",
+   "x": -4.83,
+   "y": 9.98,
+   "z": 4.025,
+   "size_x": 0.55,
+   "size_y": 0.55,
+   "size_z": 0.45,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_central_overlook_3",
+   "x": -0.84,
+   "y": 4.12,
+   "z": 4.05,
+   "size_x": 1.2,
+   "size_y": 0.8,
+   "size_z": 0.5,
+   "collision": "convex"
+  },
+  {
+   "name": "chair_central_overlook_4",
+   "x": 3.33,
+   "y": 11.73,
+   "z": 4.025,
+   "size_x": 0.55,
+   "size_y": 0.55,
+   "size_z": 0.45,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_central_overlook_5",
+   "x": 3.94,
+   "y": 4.38,
+   "z": 4.05,
+   "size_x": 1.2,
+   "size_y": 0.8,
+   "size_z": 0.5,
+   "collision": "convex"
+  },
+  {
+   "name": "chair_central_overlook_6",
+   "x": 1.53,
+   "y": 4.26,
+   "z": 4.025,
+   "size_x": 0.55,
+   "size_y": 0.55,
+   "size_z": 0.45,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_central_overlook_7",
+   "x": 1.15,
+   "y": 6.7,
+   "z": 4.05,
+   "size_x": 1.2,
+   "size_y": 0.8,
+   "size_z": 0.5,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_east_lounge_1",
+   "x": 18.12,
+   "y": 2.07,
+   "z": 4.05,
+   "size_x": 1.2,
+   "size_y": 0.8,
+   "size_z": 0.5,
+   "collision": "convex"
+  },
+  {
+   "name": "chair_east_lounge_2",
+   "x": 10.68,
+   "y": 1.67,
+   "z": 4.025,
+   "size_x": 0.55,
+   "size_y": 0.55,
+   "size_z": 0.45,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_east_lounge_3",
+   "x": 8.28,
+   "y": 4.03,
+   "z": 4.05,
+   "size_x": 1.2,
+   "size_y": 0.8,
+   "size_z": 0.5,
+   "collision": "convex"
+  },
+  {
+   "name": "chair_east_lounge_4",
+   "x": 8.56,
+   "y": 7.36,
+   "z": 4.025,
+   "size_x": 0.55,
+   "size_y": 0.55,
+   "size_z": 0.45,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_east_lounge_5",
+   "x": 7.7,
+   "y": 9.99,
+   "z": 4.05,
+   "size_x": 1.2,
+   "size_y": 0.8,
+   "size_z": 0.5,
+   "collision": "convex"
+  },
+  {
+   "name": "chair_east_lounge_6",
+   "x": 18.38,
+   "y": 4.69,
+   "z": 4.025,
+   "size_x": 0.55,
+   "size_y": 0.55,
+   "size_z": 0.45,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_east_lounge_7",
+   "x": 14.91,
+   "y": 4.3,
+   "z": 4.05,
+   "size_x": 1.2,
+   "size_y": 0.8,
+   "size_z": 0.5,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_south_balcony_1",
+   "x": -7.4,
+   "y": -10.45,
+   "z": 7.85,
+   "size_x": 1.2,
+   "size_y": 0.8,
+   "size_z": 0.5,
+   "collision": "convex"
+  },
+  {
+   "name": "chair_south_balcony_2",
+   "x": -9.6,
+   "y": -13.24,
+   "z": 7.825,
+   "size_x": 0.55,
+   "size_y": 0.55,
+   "size_z": 0.45,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_south_balcony_3",
+   "x": 14.31,
+   "y": -5.14,
+   "z": 7.85,
+   "size_x": 1.2,
+   "size_y": 0.8,
+   "size_z": 0.5,
+   "collision": "convex"
+  },
+  {
+   "name": "chair_south_balcony_4",
+   "x": -17.08,
+   "y": -4.35,
+   "z": 7.825,
+   "size_x": 0.55,
+   "size_y": 0.55,
+   "size_z": 0.45,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_south_balcony_5",
+   "x": 6.32,
+   "y": -13.55,
+   "z": 7.85,
+   "size_x": 1.2,
+   "size_y": 0.8,
+   "size_z": 0.5,
+   "collision": "convex"
+  },
+  {
+   "name": "chair_south_balcony_6",
+   "x": 13.29,
+   "y": -1.31,
+   "z": 7.825,
+   "size_x": 0.55,
+   "size_y": 0.55,
+   "size_z": 0.45,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_south_balcony_7",
+   "x": -8.75,
+   "y": -2.49,
+   "z": 7.85,
+   "size_x": 1.2,
+   "size_y": 0.8,
+   "size_z": 0.5,
+   "collision": "convex"
+  },
+  {
+   "name": "chair_south_balcony_8",
+   "x": -19.49,
+   "y": -13.27,
+   "z": 7.825,
+   "size_x": 0.55,
+   "size_y": 0.55,
+   "size_z": 0.45,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_boss_antechamber_1",
+   "x": -19.79,
+   "y": 11.76,
+   "z": 7.85,
+   "size_x": 1.2,
+   "size_y": 0.8,
+   "size_z": 0.5,
+   "collision": "convex"
+  },
+  {
+   "name": "chair_boss_antechamber_2",
+   "x": -19.46,
+   "y": 6.91,
+   "z": 7.825,
+   "size_x": 0.55,
+   "size_y": 0.55,
+   "size_z": 0.45,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_boss_antechamber_3",
+   "x": -11.95,
+   "y": 4.41,
+   "z": 7.85,
+   "size_x": 1.2,
+   "size_y": 0.8,
+   "size_z": 0.5,
+   "collision": "convex"
+  },
+  {
+   "name": "chair_boss_antechamber_4",
+   "x": -19.52,
+   "y": 2.8,
+   "z": 7.825,
+   "size_x": 0.55,
+   "size_y": 0.55,
+   "size_z": 0.45,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_boss_antechamber_5",
+   "x": -9.42,
+   "y": 5.81,
+   "z": 7.85,
+   "size_x": 1.2,
+   "size_y": 0.8,
+   "size_z": 0.5,
+   "collision": "convex"
+  },
+  {
+   "name": "chair_boss_antechamber_6",
+   "x": -15.1,
+   "y": 5.22,
+   "z": 7.825,
+   "size_x": 0.55,
+   "size_y": 0.55,
+   "size_z": 0.45,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_boss_antechamber_7",
+   "x": -12.69,
+   "y": 2.28,
+   "z": 7.85,
+   "size_x": 1.2,
+   "size_y": 0.8,
+   "size_z": 0.5,
+   "collision": "convex"
+  },
+  {
+   "name": "chair_boss_antechamber_8",
+   "x": -10.07,
+   "y": 9.94,
+   "z": 7.825,
+   "size_x": 0.55,
+   "size_y": 0.55,
+   "size_z": 0.45,
+   "collision": "convex"
+  },
+  {
+   "name": "desk_boss_suite_1",
+   "x": -5.1,
+   "y": 4.47,
+   "z": 7.975,
+   "size_x": 1.6,
+   "size_y": 0.8,
+   "size_z": 0.75,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_trophy_room_1",
+   "x": 11.66,
+   "y": 5.38,
+   "z": 7.85,
+   "size_x": 1.2,
+   "size_y": 0.8,
+   "size_z": 0.5,
+   "collision": "convex"
+  },
+  {
+   "name": "chair_trophy_room_2",
+   "x": 11.45,
+   "y": 9.87,
+   "z": 7.825,
+   "size_x": 0.55,
+   "size_y": 0.55,
+   "size_z": 0.45,
+   "collision": "convex"
+  },
+  {
+   "name": "table_low_trophy_room_3",
+   "x": 18.91,
+   "y": 6.9,
+   "z": 7.85,
+   "size_x": 1.2,
+   "size_y": 0.8,
+   "size_z": 0.5,
+   "collision": "convex"
+  },
+  {
+   "name": "chair_trophy_room_4",
+   "x": 16.2,
+   "y": 12.97,
+   "z": 7.825,
+   "size_x": 0.55,
+   "size_y": 0.55,
+   "size_z": 0.45,
+   "collision": "convex"
+  }
+ ],
+ "vault_ledges": [
+  {
+   "x": -10.0,
+   "y": -0.5,
+   "story": 1,
+   "length": 6.0,
+   "axis": "X",
+   "height": 1.1,
+   "material": "wood"
+  },
+  {
+   "x": 10.0,
+   "y": -0.5,
+   "story": 1,
+   "length": 6.0,
+   "axis": "X",
+   "height": 1.1,
+   "material": "wood"
+  },
+  {
+   "x": 0.0,
+   "y": 4.0,
+   "story": 2,
+   "length": 8.0,
+   "axis": "X",
+   "height": 1.1,
+   "material": "wood"
+  }
+ ],
+ "markers": [
+  {
+   "type": "attacker_spawn",
+   "id": "A",
+   "x": 0.0,
+   "y": -19.0,
+   "z": 0.0,
+   "rot_z": 90,
+   "room": "entry_hall"
+  },
+  {
+   "type": "attacker_spawn",
+   "id": "B",
+   "x": -26.0,
+   "y": 0.0,
+   "z": 0.0,
+   "rot_z": 0,
+   "room": "entry_hall"
+  },
+  {
+   "type": "attacker_spawn",
+   "id": "C",
+   "x": 26.0,
+   "y": 2.0,
+   "z": 0.0,
+   "rot_z": 180,
+   "room": "entry_hall"
+  },
+  {
+   "type": "defender_spawn",
+   "id": "boss",
+   "x": 0.0,
+   "y": 10.0,
+   "z": 7.6,
+   "rot_z": 180,
+   "room": "boss_suite"
+  },
+  {
+   "type": "objective",
+   "id": "final_boss",
+   "x": 0.0,
+   "y": 10.0,
+   "z": 7.6,
+   "room": "boss_suite",
+   "meta": {
+    "kind": "eliminate"
+   }
+  },
+  {
+   "type": "cover_high",
+   "x": 0.0,
+   "y": -7.5,
+   "z": 0.0,
+   "room": "entry_hall"
+  },
+  {
+   "type": "cover_high",
+   "x": 0.0,
+   "y": 1.5,
+   "z": 0.0,
+   "room": "main_hall"
+  },
+  {
+   "type": "cover_high",
+   "x": -12.0,
+   "y": 8.0,
+   "z": 3.8,
+   "room": "west_office"
+  },
+  {
+   "type": "cover_high",
+   "x": 12.0,
+   "y": 8.0,
+   "z": 3.8,
+   "room": "east_lounge"
+  },
+  {
+   "type": "cover_high",
+   "x": 0.0,
+   "y": 9.0,
+   "z": 7.6,
+   "room": "boss_suite"
+  },
+  {
+   "type": "camera_socket",
+   "id": "01",
+   "x": 18.0,
+   "y": -10.0,
+   "z": 3.2,
+   "room": "entry_hall"
+  },
+  {
+   "type": "camera_socket",
+   "id": "02",
+   "x": -18.0,
+   "y": 10.0,
+   "z": 3.2,
+   "room": "garage"
+  },
+  {
+   "type": "camera_socket",
+   "id": "03",
+   "x": 0.0,
+   "y": 12.0,
+   "z": 10.8,
+   "room": "boss_suite"
+  }
+ ],
+ "parapets": [
+  {
+   "story": 3,
+   "height": 1.1
+  }
+ ]
 }
