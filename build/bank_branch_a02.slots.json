@@ -7,8 +7,8 @@
   "space": "spec/Blender Z-up raw coords; rot_y = degrees about up",
   "coverage": {
     "breach/generated": 2,
-    "doorway/generated": 7,
-    "wall/generated": 195,
+    "doorway/generated": 9,
+    "wall/generated": 201,
     "window/generated": 10
   },
   "slots": [
@@ -6572,14 +6572,84 @@
       }
     },
     {
-      "slot_id": "int_0_0p1_open0",
+      "slot_id": "int_0_0_seg1",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 2,
+      "material": "drywall",
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_0_0",
+      "story": 0,
+      "facing": "X",
+      "transform": {
+        "translation": [
+          -12.0,
+          2.0,
+          1.65
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_0_0_seg2",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 2,
+      "material": "drywall",
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_0_0",
+      "story": 0,
+      "facing": "X",
+      "transform": {
+        "translation": [
+          -10.3125,
+          2.0,
+          1.65
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.375,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.375,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_0_0_open0",
       "role": "doorway",
       "size_mod": "full",
       "style": 2,
       "material": "drywall",
       "current_ref": "doorway_greybox_01",
       "kit_axis": "theme",
-      "wall": "int_0_0p1",
+      "wall": "int_0_0",
       "story": 0,
       "facing": "X",
       "transform": {
@@ -6613,7 +6683,7 @@
         "collision": "convex"
       },
       "interactive": {
-        "id": "bank_branch_a02:if:74a6cce5",
+        "id": "bank_branch_a02:if:220ba683",
         "kind": "door",
         "states": [
           "closed",
@@ -6627,14 +6697,14 @@
       }
     },
     {
-      "slot_id": "int_0_0p1_seg0",
+      "slot_id": "int_0_0_seg3",
       "role": "wall",
       "size_mod": "full",
       "style": 2,
       "material": "drywall",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
-      "wall": "int_0_0p1",
+      "wall": "int_0_0",
       "story": 0,
       "facing": "X",
       "transform": {
@@ -6662,14 +6732,14 @@
       }
     },
     {
-      "slot_id": "int_0_0p1_seg1",
+      "slot_id": "int_0_0_seg4",
       "role": "wall",
       "size_mod": "full",
       "style": 2,
       "material": "drywall",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
-      "wall": "int_0_0p1",
+      "wall": "int_0_0",
       "story": 0,
       "facing": "X",
       "transform": {
@@ -6697,14 +6767,14 @@
       }
     },
     {
-      "slot_id": "int_0_0p1_seg2",
+      "slot_id": "int_0_0_seg5",
       "role": "wall",
       "size_mod": "full",
       "style": 2,
       "material": "drywall",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
-      "wall": "int_0_0p1",
+      "wall": "int_0_0",
       "story": 0,
       "facing": "X",
       "transform": {
@@ -6732,14 +6802,14 @@
       }
     },
     {
-      "slot_id": "int_0_0p1_seg3",
+      "slot_id": "int_0_0_seg6",
       "role": "wall",
       "size_mod": "full",
       "style": 2,
       "material": "drywall",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
-      "wall": "int_0_0p1",
+      "wall": "int_0_0",
       "story": 0,
       "facing": "X",
       "transform": {
@@ -6767,14 +6837,14 @@
       }
     },
     {
-      "slot_id": "int_0_0p1_seg4",
+      "slot_id": "int_0_0_seg7",
       "role": "wall",
       "size_mod": "full",
       "style": 2,
       "material": "drywall",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
-      "wall": "int_0_0p1",
+      "wall": "int_0_0",
       "story": 0,
       "facing": "X",
       "transform": {
@@ -6802,14 +6872,14 @@
       }
     },
     {
-      "slot_id": "int_0_0p1_seg5",
+      "slot_id": "int_0_0_seg8",
       "role": "wall",
       "size_mod": "full",
       "style": 2,
       "material": "drywall",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
-      "wall": "int_0_0p1",
+      "wall": "int_0_0",
       "story": 0,
       "facing": "X",
       "transform": {
@@ -6837,14 +6907,14 @@
       }
     },
     {
-      "slot_id": "int_0_0p1_seg6",
+      "slot_id": "int_0_0_seg9",
       "role": "wall",
       "size_mod": "full",
       "style": 2,
       "material": "drywall",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
-      "wall": "int_0_0p1",
+      "wall": "int_0_0",
       "story": 0,
       "facing": "X",
       "transform": {
@@ -6872,14 +6942,14 @@
       }
     },
     {
-      "slot_id": "int_0_0p1_seg7",
+      "slot_id": "int_0_0_seg10",
       "role": "wall",
       "size_mod": "full",
       "style": 2,
       "material": "drywall",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
-      "wall": "int_0_0p1",
+      "wall": "int_0_0",
       "story": 0,
       "facing": "X",
       "transform": {
@@ -6907,14 +6977,14 @@
       }
     },
     {
-      "slot_id": "int_0_0p1_seg8",
+      "slot_id": "int_0_0_seg11",
       "role": "wall",
       "size_mod": "full",
       "style": 2,
       "material": "drywall",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
-      "wall": "int_0_0p1",
+      "wall": "int_0_0",
       "story": 0,
       "facing": "X",
       "transform": {
@@ -6942,14 +7012,14 @@
       }
     },
     {
-      "slot_id": "int_0_0p1_seg9",
+      "slot_id": "int_0_0_seg12",
       "role": "wall",
       "size_mod": "end",
       "style": 2,
       "material": "drywall",
       "current_ref": "wallEnd_greybox_01",
       "kit_axis": "theme",
-      "wall": "int_0_0p1",
+      "wall": "int_0_0",
       "story": 0,
       "facing": "X",
       "transform": {
@@ -6977,14 +7047,14 @@
       }
     },
     {
-      "slot_id": "int_0_0p1_open1",
+      "slot_id": "int_0_0_open1",
       "role": "doorway",
       "size_mod": "full",
       "style": 2,
       "material": "drywall",
       "current_ref": "doorway_greybox_01",
       "kit_axis": "theme",
-      "wall": "int_0_0p1",
+      "wall": "int_0_0",
       "story": 0,
       "facing": "X",
       "transform": {
@@ -7018,7 +7088,7 @@
         "collision": "convex"
       },
       "interactive": {
-        "id": "bank_branch_a02:if:29f85b4a",
+        "id": "bank_branch_a02:if:64033802",
         "kind": "door",
         "states": [
           "closed",
@@ -7032,14 +7102,14 @@
       }
     },
     {
-      "slot_id": "int_0_0p1_seg10",
+      "slot_id": "int_0_0_seg13",
       "role": "wall",
       "size_mod": "full",
       "style": 2,
       "material": "drywall",
       "current_ref": "wall_greybox_01",
       "kit_axis": "theme",
-      "wall": "int_0_0p1",
+      "wall": "int_0_0",
       "story": 0,
       "facing": "X",
       "transform": {
@@ -7067,14 +7137,14 @@
       }
     },
     {
-      "slot_id": "int_0_0p1_seg11",
+      "slot_id": "int_0_0_seg14",
       "role": "wall",
       "size_mod": "end",
       "style": 2,
       "material": "drywall",
       "current_ref": "wallEnd_greybox_01",
       "kit_axis": "theme",
-      "wall": "int_0_0p1",
+      "wall": "int_0_0",
       "story": 0,
       "facing": "X",
       "transform": {
@@ -7761,6 +7831,260 @@
       }
     },
     {
+      "slot_id": "int_0_3_seg0",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 2,
+      "material": "drywall",
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_0_3",
+      "story": 0,
+      "facing": "Y",
+      "transform": {
+        "translation": [
+          -6.0,
+          -1.3125,
+          1.65
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.375,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.375,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_0_3_open0",
+      "role": "doorway",
+      "size_mod": "full",
+      "style": 2,
+      "material": "drywall",
+      "current_ref": "doorway_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_0_3",
+      "story": 0,
+      "facing": "Y",
+      "transform": {
+        "translation": [
+          -6.0,
+          0.0,
+          1.65
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.25,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [
+          {
+            "kind": "door",
+            "width": 1.25,
+            "height": 2.2,
+            "sill": 0.0
+          }
+        ],
+        "collision": "convex"
+      },
+      "interactive": {
+        "id": "bank_branch_a02:if:011409ec",
+        "kind": "door",
+        "states": [
+          "locked",
+          "closed",
+          "open"
+        ],
+        "default": "locked",
+        "collision_per_state": {
+          "locked": true,
+          "closed": true,
+          "open": false
+        }
+      }
+    },
+    {
+      "slot_id": "int_0_3_seg1",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 2,
+      "material": "drywall",
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_0_3",
+      "story": 0,
+      "facing": "Y",
+      "transform": {
+        "translation": [
+          -6.0,
+          1.3125,
+          1.65
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.375,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.375,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_0_4_seg0",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 2,
+      "material": "drywall",
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_0_4",
+      "story": 0,
+      "facing": "Y",
+      "transform": {
+        "translation": [
+          6.0,
+          -1.3125,
+          1.65
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.375,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.375,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_0_4_open0",
+      "role": "doorway",
+      "size_mod": "full",
+      "style": 2,
+      "material": "drywall",
+      "current_ref": "doorway_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_0_4",
+      "story": 0,
+      "facing": "Y",
+      "transform": {
+        "translation": [
+          6.0,
+          0.0,
+          1.65
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.25,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [
+          {
+            "kind": "door",
+            "width": 1.25,
+            "height": 2.2,
+            "sill": 0.0
+          }
+        ],
+        "collision": "convex"
+      },
+      "interactive": {
+        "id": "bank_branch_a02:if:e99cf0d1",
+        "kind": "door",
+        "states": [
+          "locked",
+          "closed",
+          "open"
+        ],
+        "default": "locked",
+        "collision_per_state": {
+          "locked": true,
+          "closed": true,
+          "open": false
+        }
+      }
+    },
+    {
+      "slot_id": "int_0_4_seg1",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 2,
+      "material": "drywall",
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_0_4",
+      "story": 0,
+      "facing": "Y",
+      "transform": {
+        "translation": [
+          6.0,
+          1.3125,
+          1.65
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.375,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.375,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
       "slot_id": "roof_footprint",
       "role": "roof",
       "size_mod": "full",
@@ -7832,12 +8156,6 @@
         "openings": [],
         "collision": "none",
         "voids": [
-          {
-            "x0": -13.0,
-            "y0": 5.35,
-            "x1": -9.0,
-            "y1": 11.15
-          },
           {
             "x0": 7.85,
             "y0": -2.7,
@@ -7921,9 +8239,9 @@
         "voids": [
           {
             "x0": -5.5,
-            "y0": -5.65,
+            "y0": -3.15,
             "x1": -1.5,
-            "y1": 0.15
+            "y1": 2.65
           }
         ]
       }
@@ -8113,9 +8431,9 @@
         "voids": [
           {
             "x0": -5.5,
-            "y0": 0.85,
+            "y0": 3.35,
             "x1": -1.5,
-            "y1": 6.65
+            "y1": 9.15
           }
         ]
       }
@@ -8199,6 +8517,80 @@
             "y1": -4.8
           }
         ]
+      }
+    },
+    {
+      "slot_id": "floor_teller_staff_0",
+      "role": "floor",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "floor_greybox_01",
+      "kit_axis": "theme",
+      "wall": null,
+      "story": 0,
+      "facing": "up",
+      "room": "teller_staff_0",
+      "transform": {
+        "translation": [
+          0.0,
+          0.0,
+          0.01
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          12.0,
+          4.0,
+          0.02
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "none",
+        "voids": []
+      }
+    },
+    {
+      "slot_id": "ceiling_teller_staff_0",
+      "role": "ceiling",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "ceiling_greybox_01",
+      "kit_axis": "theme",
+      "wall": null,
+      "story": 0,
+      "facing": "down",
+      "room": "teller_staff_0",
+      "transform": {
+        "translation": [
+          0.0,
+          0.0,
+          3.29
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          12.0,
+          4.0,
+          0.02
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "none",
+        "voids": []
       }
     },
     {
@@ -8313,8 +8705,8 @@
       "slot_id": "desk_manager_office_0",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 5,
+      "material": "wood",
       "species": "desk",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -8349,8 +8741,8 @@
       "slot_id": "cabinet_manager_office_1",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 5,
+      "material": "wood",
       "species": "filing_cabinet",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -8385,8 +8777,8 @@
       "slot_id": "desk_manager_office_2",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 5,
+      "material": "wood",
       "species": "desk",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -8421,8 +8813,8 @@
       "slot_id": "cabinet_manager_office_3",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 5,
+      "material": "wood",
       "species": "filing_cabinet",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -8457,8 +8849,8 @@
       "slot_id": "crate_stack_security_room_0",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 5,
+      "material": "wood",
       "species": null,
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -8493,8 +8885,8 @@
       "slot_id": "crate_stack_security_room_1",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 5,
+      "material": "wood",
       "species": null,
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -8529,8 +8921,8 @@
       "slot_id": "crate_stack_security_room_2",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 5,
+      "material": "wood",
       "species": null,
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -8565,8 +8957,8 @@
       "slot_id": "crate_stack_security_room_3",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 5,
+      "material": "wood",
       "species": null,
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -8601,8 +8993,8 @@
       "slot_id": "chair_waiting_rcce455f7_1",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 5,
+      "material": "wood",
       "species": "chair",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -8615,7 +9007,7 @@
           -3.24,
           0.45
         ],
-        "rot_y": 90.0,
+        "rot_y": 270.0,
         "scale": [
           1.0,
           1.0,
@@ -8637,8 +9029,8 @@
       "slot_id": "table_low_rcce455f7_2",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 5,
+      "material": "wood",
       "species": "table",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -8673,8 +9065,8 @@
       "slot_id": "chair_set_rcce455f7_2_1",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 5,
+      "material": "wood",
       "species": "chair",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -8709,8 +9101,8 @@
       "slot_id": "chair_set_rcce455f7_2_2",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 5,
+      "material": "wood",
       "species": "chair",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -8745,8 +9137,8 @@
       "slot_id": "counter_service_rcce455f7_3",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 5,
+      "material": "wood",
       "species": "counter",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -8759,7 +9151,7 @@
           -9.3,
           0.525
         ],
-        "rot_y": 90.0,
+        "rot_y": 270.0,
         "scale": [
           1.0,
           1.0,
@@ -8781,8 +9173,8 @@
       "slot_id": "chair_waiting_rcce455f7_4",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 5,
+      "material": "wood",
       "species": "chair",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -8795,7 +9187,7 @@
           -10.58,
           0.45
         ],
-        "rot_y": 0.0,
+        "rot_y": 180.0,
         "scale": [
           1.0,
           1.0,
@@ -8817,8 +9209,8 @@
       "slot_id": "table_low_rcce455f7_5",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 5,
+      "material": "wood",
       "species": "table",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -8853,8 +9245,8 @@
       "slot_id": "chair_set_rcce455f7_5_1",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 5,
+      "material": "wood",
       "species": "chair",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -8889,8 +9281,8 @@
       "slot_id": "counter_service_rcce455f7_6",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 5,
+      "material": "wood",
       "species": "counter",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -8925,8 +9317,8 @@
       "slot_id": "chair_waiting_rcce455f7_7",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 5,
+      "material": "wood",
       "species": "chair",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -8961,8 +9353,8 @@
       "slot_id": "table_low_rcce455f7_8",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 5,
+      "material": "wood",
       "species": "table",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -8997,8 +9389,8 @@
       "slot_id": "chair_set_rcce455f7_8_2",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 5,
+      "material": "wood",
       "species": "chair",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -9033,8 +9425,8 @@
       "slot_id": "desk_rb2746d70_1",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 5,
+      "material": "wood",
       "species": "desk",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -9069,8 +9461,8 @@
       "slot_id": "chair_rb2746d70_2",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 5,
+      "material": "wood",
       "species": "chair",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -9079,8 +9471,8 @@
       "facing": null,
       "transform": {
         "translation": [
-          -8.56,
-          8.62,
+          -5.26,
+          4.88,
           0.45
         ],
         "rot_y": 0.0,
@@ -9105,8 +9497,8 @@
       "slot_id": "cabinet_file_rb2746d70_3",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 5,
+      "material": "wood",
       "species": "filing_cabinet",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -9119,7 +9511,7 @@
           4.93,
           0.7
         ],
-        "rot_y": 90.0,
+        "rot_y": 270.0,
         "scale": [
           1.0,
           1.0,
@@ -9141,8 +9533,8 @@
       "slot_id": "shelf_run_rb2746d70_4",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 5,
+      "material": "wood",
       "species": "shelving",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -9177,8 +9569,8 @@
       "slot_id": "table_low_rad8edd5a_1",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 5,
+      "material": "wood",
       "species": "table",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -9213,8 +9605,8 @@
       "slot_id": "chair_set_rad8edd5a_1_2",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 5,
+      "material": "wood",
       "species": "chair",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -9249,8 +9641,8 @@
       "slot_id": "chair_rad8edd5a_2",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 5,
+      "material": "wood",
       "species": "chair",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -9285,8 +9677,8 @@
       "slot_id": "table_low_rad8edd5a_3",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 5,
+      "material": "wood",
       "species": "table",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -9321,8 +9713,8 @@
       "slot_id": "chair_set_rad8edd5a_3_1",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 5,
+      "material": "wood",
       "species": "chair",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -9357,8 +9749,8 @@
       "slot_id": "chair_set_rad8edd5a_3_2",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 5,
+      "material": "wood",
       "species": "chair",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -9393,8 +9785,8 @@
       "slot_id": "chair_rad8edd5a_4",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 5,
+      "material": "wood",
       "species": "chair",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -9429,8 +9821,8 @@
       "slot_id": "shelf_run_r3a1da818_1",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 5,
+      "material": "wood",
       "species": "shelving",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -9443,7 +9835,7 @@
           1.6,
           -2.65
         ],
-        "rot_y": 90.0,
+        "rot_y": 270.0,
         "scale": [
           1.0,
           1.0,
@@ -9465,8 +9857,8 @@
       "slot_id": "cabinet_locker_r3a1da818_2",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 4,
+      "material": "metal",
       "species": "filing_cabinet",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -9479,7 +9871,7 @@
           -10.63,
           -2.65
         ],
-        "rot_y": 0.0,
+        "rot_y": 180.0,
         "scale": [
           1.0,
           1.0,
@@ -9501,8 +9893,8 @@
       "slot_id": "safe_floor_r3a1da818_3",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 4,
+      "material": "metal",
       "species": "drop_safe",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -9537,8 +9929,8 @@
       "slot_id": "shelf_run_r3a1da818_4",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 5,
+      "material": "wood",
       "species": "shelving",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -9551,7 +9943,7 @@
           -10.63,
           -2.65
         ],
-        "rot_y": 0.0,
+        "rot_y": 180.0,
         "scale": [
           1.0,
           1.0,
@@ -9573,8 +9965,8 @@
       "slot_id": "cabinet_locker_r3a1da818_5",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 4,
+      "material": "metal",
       "species": "filing_cabinet",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -9587,7 +9979,7 @@
           -10.63,
           -2.65
         ],
-        "rot_y": 0.0,
+        "rot_y": 180.0,
         "scale": [
           1.0,
           1.0,
@@ -9609,8 +10001,8 @@
       "slot_id": "safe_floor_r3a1da818_6",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 4,
+      "material": "metal",
       "species": "drop_safe",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -9645,8 +10037,8 @@
       "slot_id": "shelf_run_r3a1da818_7",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 5,
+      "material": "wood",
       "species": "shelving",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -9659,7 +10051,7 @@
           -10.63,
           -2.65
         ],
-        "rot_y": 0.0,
+        "rot_y": 180.0,
         "scale": [
           1.0,
           1.0,
@@ -9681,8 +10073,8 @@
       "slot_id": "cabinet_locker_r3a1da818_8",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 4,
+      "material": "metal",
       "species": "filing_cabinet",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -9695,7 +10087,7 @@
           7.55,
           -2.65
         ],
-        "rot_y": 90.0,
+        "rot_y": 270.0,
         "scale": [
           1.0,
           1.0,
@@ -9717,8 +10109,8 @@
       "slot_id": "safe_floor_r3a1da818_9",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 4,
+      "material": "metal",
       "species": "drop_safe",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -9727,8 +10119,8 @@
       "facing": null,
       "transform": {
         "translation": [
-          -2.26,
-          8.5,
+          -10.22,
+          2.5,
           -3.1
         ],
         "rot_y": 0.0,
@@ -9753,8 +10145,8 @@
       "slot_id": "shelf_run_rc7049fd0_1",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 5,
+      "material": "wood",
       "species": "shelving",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -9789,8 +10181,8 @@
       "slot_id": "cabinet_locker_rc7049fd0_2",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 4,
+      "material": "metal",
       "species": "filing_cabinet",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -9825,8 +10217,8 @@
       "slot_id": "safe_floor_rc7049fd0_3",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 4,
+      "material": "metal",
       "species": "drop_safe",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -9861,8 +10253,8 @@
       "slot_id": "shelf_run_rc7049fd0_4",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 5,
+      "material": "wood",
       "species": "shelving",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -9897,8 +10289,8 @@
       "slot_id": "cabinet_locker_rc7049fd0_5",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 4,
+      "material": "metal",
       "species": "filing_cabinet",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -9911,7 +10303,7 @@
           -10.63,
           -2.65
         ],
-        "rot_y": 0.0,
+        "rot_y": 180.0,
         "scale": [
           1.0,
           1.0,
@@ -9933,8 +10325,8 @@
       "slot_id": "safe_floor_rc7049fd0_6",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 4,
+      "material": "metal",
       "species": "drop_safe",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -9969,8 +10361,8 @@
       "slot_id": "shelf_run_rc7049fd0_7",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 5,
+      "material": "wood",
       "species": "shelving",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -9983,7 +10375,7 @@
           -10.63,
           -2.65
         ],
-        "rot_y": 0.0,
+        "rot_y": 180.0,
         "scale": [
           1.0,
           1.0,
@@ -10005,8 +10397,8 @@
       "slot_id": "safe_floor_rc7049fd0_9",
       "role": "prop",
       "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
+      "style": 4,
+      "material": "metal",
       "species": "drop_safe",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -10031,6 +10423,366 @@
           0.9,
           0.9,
           1.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "stair_guard_side_0",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "species": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          -13.05,
+          5.225,
+          -1.95
+        ],
+        "rot_y": 0.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.1,
+          3.75,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "stair_guard_rail_1",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 5,
+      "material": "wood",
+      "species": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          -13.05,
+          7.185,
+          0.535
+        ],
+        "rot_y": 0.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.1,
+          3.57,
+          1.07
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "stair_guard_side_2",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "species": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          -8.95,
+          5.225,
+          -1.95
+        ],
+        "rot_y": 0.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.1,
+          3.75,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "stair_guard_rail_3",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 5,
+      "material": "wood",
+      "species": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          -8.95,
+          7.275,
+          0.535
+        ],
+        "rot_y": 0.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.1,
+          3.75,
+          1.07
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "stair_guard_rail_4",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 5,
+      "material": "wood",
+      "species": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          -10.885,
+          9.2,
+          0.535
+        ],
+        "rot_y": 0.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          3.97,
+          0.1,
+          1.07
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "stair_guard_side_5",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "species": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          9.725,
+          -7.25,
+          -1.95
+        ],
+        "rot_y": 0.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          3.75,
+          0.1,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "stair_guard_rail_6",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 5,
+      "material": "wood",
+      "species": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          11.775,
+          -7.25,
+          0.535
+        ],
+        "rot_y": 0.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          3.75,
+          0.1,
+          1.07
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "stair_guard_side_7",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "species": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          9.725,
+          -4.75,
+          -1.95
+        ],
+        "rot_y": 0.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          3.75,
+          0.1,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "stair_guard_rail_8",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 5,
+      "material": "wood",
+      "species": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          11.775,
+          -4.75,
+          0.535
+        ],
+        "rot_y": 0.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          3.75,
+          0.1,
+          1.07
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "stair_guard_rail_9",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 5,
+      "material": "wood",
+      "species": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          13.7,
+          -6.0,
+          0.535
+        ],
+        "rot_y": 0.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.1,
+          2.6,
+          1.07
         ],
         "pivot": "center",
         "openings": [],

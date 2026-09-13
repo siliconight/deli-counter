@@ -10,6 +10,21 @@ def _run(fn):
     print(f"[ok] {fn.__name__}")
 
 
+class _NoGuards:
+    """The review's arithmetic on an UNGUARDED stair. Since 0.126.0 the
+    builder guards every slab-cutting flight (`stairwell.stair_guards`) and the
+    review counts those guards, so the tests that exercise what an open side
+    looks like to the review take the guards away rather than build a stair
+    the builder would never leave open."""
+
+    def __enter__(self):
+        self._real = S.stair_guards
+        S.stair_guards = lambda spec: []
+
+    def __exit__(self, *exc):
+        S.stair_guards = self._real
+
+
 def _codes(pairs):
     return {c for c, _ in pairs}
 
@@ -30,31 +45,37 @@ def _straight(**kw):
 # --- the core failure: a flight open on its sides -----------------------------
 
 def test_open_flight_flags_both_lateral_sides():
-    sp = _shell(_straight())
-    codes = _codes(S.containment_findings(sp, sp.stairs[0], "a"))
-    assert codes == {"STAIR_LATERAL_OPEN"}, codes
-    # exactly the two non-mouth sides (W, E); the N/S mouths are never demanded
-    msgs = [m for _, m in S.containment_findings(sp, sp.stairs[0], "a")]
-    assert len(msgs) == 2
-    assert all(" side of the flight is open" in m for m in msgs)
+    with _NoGuards():
+        sp = _shell(_straight())
+        codes = _codes(S.containment_findings(sp, sp.stairs[0], "a"))
+        assert codes == {"STAIR_LATERAL_OPEN"}, codes
+        # exactly the two non-mouth sides (W, E); the N/S mouths are never demanded
+        msgs = [m for _, m in S.containment_findings(sp, sp.stairs[0], "a")]
+        assert len(msgs) == 2
+        assert all(" side of the flight is open" in m for m in msgs)
 
 
 def test_mouth_edges_are_never_required_to_be_guarded():
-    # facing N -> mouths on S and N; a finding may only ever cite W or E.
-    sp = _shell(_straight())
-    for _, m in S.containment_findings(sp, sp.stairs[0], "a"):
-        assert m.startswith("'a' W") or m.startswith("'a' E"), m
+    with _NoGuards():
+        # facing N -> mouths on S and N; a finding may only ever cite W or E.
+        sp = _shell(_straight())
+        for _, m in S.containment_findings(sp, sp.stairs[0], "a"):
+            assert m.startswith("'a' W") or m.startswith("'a' E"), m
 
 
 # --- what satisfies containment ----------------------------------------------
 
 def test_partitions_along_both_sides_clear_it():
     st = _straight()
-    # vertical (axis Y) walls at x = -0.6 and +0.6, spanning the flight in Y
-    parts = [Partition(story=0, axis="Y", pos=-0.6, start=-2.0, end=2.0),
-             Partition(story=0, axis="Y", pos=0.6, start=-2.0, end=2.0)]
+    # vertical (axis Y) walls just outside the reserved rectangle (x +-1.0),
+    # spanning it in Y. Walls INSIDE the rectangle -- the +-0.6 this test used
+    # to stand them at -- are deleted by the builder (`wall_voids`) and no
+    # longer count; `test_a_wall_the_stair_deletes_does_not_contain_it`.
+    parts = [Partition(story=0, axis="Y", pos=-1.05, start=-3.0, end=3.0),
+             Partition(story=0, axis="Y", pos=1.05, start=-3.0, end=3.0)]
     sp = _shell(st, partitions=parts)
-    assert S.containment_findings(sp, st, "a") == []
+    with _NoGuards():
+        assert S.containment_findings(sp, st, "a") == []
 
 
 def test_solid_guard_volumes_clear_it():
@@ -66,48 +87,105 @@ def test_solid_guard_volumes_clear_it():
 
 
 def test_decorative_guard_without_collision_does_not_count():
-    # audit M1: a rail named like a guard but with collision='none' is not a
-    # body-retaining barrier -- the side stays flagged.
-    st = _straight()
-    rail = lambda x: Volume(name=f"stair_rail_{x}", x=x, y=0.0, z=1.05,
-                            size_x=0.1, size_y=4.0, size_z=1.1,
-                            collision="none")
-    sp = _shell(st, volumes=[rail(-0.6), rail(0.6)])
-    assert _codes(S.containment_findings(sp, st, "a")) == {"STAIR_LATERAL_OPEN"}
+    with _NoGuards():
+        # audit M1: a rail named like a guard but with collision='none' is not a
+        # body-retaining barrier -- the side stays flagged.
+        st = _straight()
+        rail = lambda x: Volume(name=f"stair_rail_{x}", x=x, y=0.0, z=1.05,
+                                size_x=0.1, size_y=4.0, size_z=1.1,
+                                collision="none")
+        sp = _shell(st, volumes=[rail(-0.6), rail(0.6)])
+        assert _codes(S.containment_findings(sp, st, "a")) == {"STAIR_LATERAL_OPEN"}
 
 
 def test_person_sized_gap_still_flags():
-    # a wall covering only part of the side leaves a gap wider than the capsule
-    st = _straight()
-    parts = [Partition(story=0, axis="Y", pos=-0.6, start=-2.0, end=2.0),
-             Partition(story=0, axis="Y", pos=0.6, start=-2.0, end=0.5)]  # short
-    sp = _shell(st, partitions=parts)
-    codes = _codes(S.containment_findings(sp, st, "a"))
-    assert codes == {"STAIR_LATERAL_OPEN"}, codes  # the E side gap remains
+    with _NoGuards():
+        # a wall covering only part of the side leaves a gap wider than the capsule
+        st = _straight()
+        parts = [Partition(story=0, axis="Y", pos=-0.6, start=-2.0, end=2.0),
+                 Partition(story=0, axis="Y", pos=0.6, start=-2.0, end=0.5)]  # short
+        sp = _shell(st, partitions=parts)
+        codes = _codes(S.containment_findings(sp, st, "a"))
+        assert codes == {"STAIR_LATERAL_OPEN"}, codes  # the E side gap remains
 
 
 def test_shell_wall_counts_as_containment():
-    # tuck the stair against the east inner face (ix = 12 - wall_thick)
-    ix = 24 / 2 - LevelSpec(name="_").wall_thick
-    st = _straight(x=ix - 0.6)           # E edge lands on the inner face
-    sp = _shell(st)
-    msgs = [m for _, m in S.containment_findings(sp, st, "a")]
-    assert len(msgs) == 1 and msgs[0].startswith("'a' W"), msgs
+    with _NoGuards():
+        # tuck the stair against the east inner face (ix = 12 - wall_thick)
+        ix = 24 / 2 - LevelSpec(name="_").wall_thick
+        st = _straight(x=ix - 0.6)           # E edge lands on the inner face
+        sp = _shell(st)
+        msgs = [m for _, m in S.containment_findings(sp, st, "a")]
+        assert len(msgs) == 1 and msgs[0].startswith("'a' W"), msgs
 
 
 # --- the floor-opening (walk-in) failure --------------------------------------
 
 def test_non_mouth_end_flags_opening_unguarded():
-    # a 2-leg switchback tops out on the same (S) end it entered, so the N end
-    # of the reserved opening is a dangling edge a body on the upper floor walks
-    # into -> STAIR_OPENING_UNGUARDED, distinct from the flight-side code.
-    st = Stairwell(x=0, y=0, from_story=0, to_story=2, width=1.2, run=4.0,
-                   style="switchback", id="a")
-    sp = LevelSpec(name="s", n_stories=3, footprint_x=40, footprint_y=40,
-                   stairs=[st])
-    codes = _codes(S.containment_findings(sp, st, "a"))
-    assert "STAIR_OPENING_UNGUARDED" in codes, codes
-    assert "STAIR_LATERAL_OPEN" in codes           # the sides are still open too
+    with _NoGuards():
+        # a 2-leg switchback tops out on the same (S) end it entered, so the N end
+        # of the reserved opening is a dangling edge a body on the upper floor walks
+        # into -> STAIR_OPENING_UNGUARDED, distinct from the flight-side code.
+        st = Stairwell(x=0, y=0, from_story=0, to_story=2, width=1.2, run=4.0,
+                       style="switchback", id="a")
+        sp = LevelSpec(name="s", n_stories=3, footprint_x=40, footprint_y=40,
+                       stairs=[st])
+        codes = _codes(S.containment_findings(sp, st, "a"))
+        assert "STAIR_OPENING_UNGUARDED" in codes, codes
+        assert "STAIR_LATERAL_OPEN" in codes           # the sides are still open too
+
+
+# --- the guards themselves (0.126.0) -------------------------------------------
+
+def test_a_solid_stair_is_guarded_on_both_sides_and_at_the_pit_end():
+    """The walker, cold run 9048: "a large opening to a lower level". A
+    slab-cutting stair with the default solid underside gets full-storey side
+    walls and waist-high rails. The landing end stays open from the side
+    (`twin_a01`), and the review reports exactly that opening and no more."""
+    st = _straight()
+    sp = _shell(st)
+    g = S.stair_guards(sp)
+    kinds = sorted((p["kind"], p["story"], p["axis"]) for p in g)
+    assert kinds == [("rail", 1, "X"), ("rail", 1, "Y"), ("rail", 1, "Y"),
+                     ("side", 0, "Y"), ("side", 0, "Y")], kinds
+    # every piece stands outside the reserved rectangle
+    x0, y0, x1, y1 = S.flight_rect(st, 0)
+    for p in g:
+        if p["axis"] == "Y":
+            assert p["pos"] <= x0 or p["pos"] >= x1, p
+        else:
+            assert p["pos"] <= y0 or p["pos"] >= y1, p
+    out = S.containment_findings(sp, st, "a")
+    assert {c for c, _ in out} <= {"STAIR_LATERAL_OPEN"}, out
+    import re
+    open_ = 0.8 + S.agent_contract.min_door_width()
+    for _c, m in out:
+        gap = float(re.search(r"largest gap ([0-9.]+) m", m).group(1))
+        # footprint_rect starts 0.3 m inside the reserved rectangle's entry
+        assert gap <= open_ - 0.3 + 1e-6, (gap, m)
+
+
+def test_an_open_underside_keeps_its_sides_open_and_says_so():
+    """The underside toggle exists for sightlines and routes beside a flight,
+    so an open stair gets no side walls -- and a rail on the floor above does
+    not count as containing a body on the flight."""
+    st = _straight(open_under=True)
+    sp = _shell(st)
+    assert not [p for p in S.stair_guards(sp) if p["kind"] == "side"]
+    assert _codes(S.containment_findings(sp, st, "a")) == {"STAIR_LATERAL_OPEN"}
+
+
+def test_a_wall_the_stair_deletes_does_not_contain_it():
+    """`corner_deli_heist_01`: walls inside a flight's reserved rectangle are
+    removed by the builder (`wall_voids`), so they cannot be its barrier."""
+    st = _straight()
+    x0, _y0, x1, _y1 = S.flight_rect(st, 0)
+    inside = [Partition(story=0, axis="Y", pos=x0 + 0.3, start=-2.0, end=2.0),
+              Partition(story=0, axis="Y", pos=x1 - 0.3, start=-2.0, end=2.0)]
+    sp = _shell(st, partitions=inside)
+    with _NoGuards():
+        assert _codes(S.containment_findings(sp, st, "a")) == {
+            "STAIR_LATERAL_OPEN"}
 
 
 # --- scope: what is out of scope ---------------------------------------------
@@ -128,28 +206,30 @@ def test_out_of_scope_stairs_report_nothing():
 # --- wiring: severity + contract stamp respect the rollout flag ---------------
 
 def test_check_reports_containment_as_warning_by_default():
-    assert S.CONTAINMENT_ENFORCED is False
-    sp = _shell(_straight())
-    errors, warnings, _ = S.check(sp)
-    assert "STAIR_LATERAL_OPEN" not in _codes_from_msgs(errors)
-    assert "STAIR_LATERAL_OPEN" in _codes_from_msgs(warnings)
+    with _NoGuards():
+        assert S.CONTAINMENT_ENFORCED is False
+        sp = _shell(_straight())
+        errors, warnings, _ = S.check(sp)
+        assert "STAIR_LATERAL_OPEN" not in _codes_from_msgs(errors)
+        assert "STAIR_LATERAL_OPEN" in _codes_from_msgs(warnings)
 
 
 def test_check_promotes_to_hard_error_when_enforced():
-    sp = _shell(_straight())
-    S.CONTAINMENT_ENFORCED = True
-    try:
-        errors, _, _ = S.check(sp)[0], *S.check(sp)[1:]
-        errs = S.check(sp)[0]
-        assert "STAIR_LATERAL_OPEN" in _codes_from_msgs(errs)
-        # and it joins the compliance stamp
-        contract = S.circulation_contract(sp)
-        assert "STAIR_LATERAL_OPEN" in contract["checks"]
-        assert contract["all_compliant"] is False
-    finally:
-        S.CONTAINMENT_ENFORCED = False
-    # once reset, the stamp drops back to the longitudinal checks only
-    assert "STAIR_LATERAL_OPEN" not in S.circulation_contract(sp)["checks"]
+    with _NoGuards():
+        sp = _shell(_straight())
+        S.CONTAINMENT_ENFORCED = True
+        try:
+            errors, _, _ = S.check(sp)[0], *S.check(sp)[1:]
+            errs = S.check(sp)[0]
+            assert "STAIR_LATERAL_OPEN" in _codes_from_msgs(errs)
+            # and it joins the compliance stamp
+            contract = S.circulation_contract(sp)
+            assert "STAIR_LATERAL_OPEN" in contract["checks"]
+            assert contract["all_compliant"] is False
+        finally:
+            S.CONTAINMENT_ENFORCED = False
+        # once reset, the stamp drops back to the longitudinal checks only
+        assert "STAIR_LATERAL_OPEN" not in S.circulation_contract(sp)["checks"]
 
 
 def _codes_from_msgs(msgs):

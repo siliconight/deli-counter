@@ -281,3 +281,42 @@ def test_a_set_chair_faces_its_table_by_the_compass_convention():
         assert fx * tx + fy * ty > 0, (c["name"], c["rot_z"], (tx, ty))
         checked += 1
     assert checked, "no set chairs were placed"
+
+
+def test_nothing_it_places_wears_the_building_default():
+    """The walker, cold run 9048: chairs wearing the floor-and-wall skin were
+    nearly invisible, "making it easy to stumble into things". Every piece
+    furnish and seed_cover place names its own material."""
+    for role in ("office", "storage", "bay", "vault", "utility", "lobby",
+                 "something_unmatched"):
+        s = _spec(20.0, 16.0, role=role)
+        s["default_material"] = "concrete"
+        level_design.seed_cover(s)
+        level_design.furnish(s)
+        bare = [v["name"] for v in s["volumes"] if not v.get("material")]
+        assert not bare, (role, bare)
+        assert all(v["material"] != "concrete" for v in s["volumes"]), role
+        declared = {m["id"] for m in s.get("materials", [])} | {"wood"}
+        assert {v["material"] for v in s["volumes"]} <= declared, role
+
+
+def test_wall_pieces_face_into_the_room():
+    """ "Chairs shouldnt face walls like this where humans couldnt sit in
+    them." A wall piece's front (its module's -Y) must point away from the
+    wall it stands against. Front bearing = long-axis turn + rot_z + 180,
+    compass convention; the long-axis turn is 90 when the piece is long in y."""
+    import math as _m
+    s = _spec(20.0, 16.0, role="lobby")
+    level_design.furnish(s)
+    x0, y0, x1, y1 = s["rooms"][0]["bounds"]
+    checked = 0
+    for v in s["volumes"]:
+        if not v["name"].startswith(("chair_waiting", "counter_service")):
+            continue
+        long_turn = 90.0 if v["size_y"] > v["size_x"] else 0.0
+        front = (long_turn + v.get("rot_z", 0.0) + 180.0) % 360.0
+        fx, fy = _m.sin(_m.radians(front)), _m.cos(_m.radians(front))
+        cx, cy = (x0 + x1) / 2.0, (y0 + y1) / 2.0
+        assert fx * (cx - v["x"]) + fy * (cy - v["y"]) > 0, (v["name"], front)
+        checked += 1
+    assert checked, "no wall seating placed"

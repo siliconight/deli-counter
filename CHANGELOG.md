@@ -1,3 +1,105 @@
+## [0.126.0] - 2026-09-13  a stair's hole cuts no wall, a stair is guarded, a teller line is locked
+
+The walker's second round of in-game feedback, from cold run 9048's walk copy.
+
+**"A large opening to a lower level ... a door opening that doesnt seem
+right" (the "13" frame).** `bank_branch_a03`'s basement stair reserved
+y 0.85..6.65 and the manager's office wall stands at y = 2.0: the hole
+straddled it by 1.15 m, `stairwell.wall_voids` did its job and deleted 3.4 m
+of wall, and the office door stood beside the gap with 0.6 m of its aperture
+over the pit. Nothing refused it. A first reading here blamed 0.124.0's stair
+lengthening; the spec before it refutes that -- at the old 4.0 m default run
+the hole already crossed the wall, and lengthening moved it 0.35 m further.
+
+- **`layout_lint` L21 (FAIL)**, `stair_wall_findings`: a partition whose line
+  lies inside a stair's reserved rectangle on the storey it climbs through or
+  the storey whose slab it opens, and a doorway on the hole's storey whose
+  aperture overlaps the hole within `DOOR_APPROACH_M` of it. The approach is
+  derived from the BODY, `2 * characters.player.radius_m + 0.3` = 1.0 m, not
+  from `min_corridor_width_m`, which is built from the bake radius. A door at
+  the ARRIVAL end, across the travel axis, is the stair's own door (the delis'
+  `office_stair_door`) and is not a finding. A wall inside the 0.8 m walk-off
+  margin that carries the stair's own doorway is a WARNING (`strip_retail_a01`:
+  the builder trims a jamb over the discharge plate, not a hole between rooms).
+  Measured when written: 42 findings in 25 specs, and 6 of 18 presets --
+  `bank`, the preset behind every cold run's main building, among them.
+- **`stair_pitch.clear_walls`** re-seats a named stair: its own facing then the
+  other three, one-axis shifts, then a two-axis grid out to 6 m, nearest first.
+  A seat is refused if it adds ANY new lint failure, stairwell error, or solid
+  volume inside a reserved rectangle. The first draft filtered out findings
+  naming the moved stair and let through an error that named both it and its
+  neighbour (the `bank` stair-core preset); the second seated three stairs over
+  existing props. **`presets._finish_stairs`** runs it (pass 3), so no preset
+  generates L21; **`migrate_stair_walls.py`** ran it over the library: 16
+  stairs re-seated. Two could not be: `primos_pizza`'s kitchen door moved 2.1 m
+  along its wall, and `corner_deli_heist_01`'s basement stairwell, 2.8 m wide
+  around a 3.6 m reservation, was widened to it (stair +0.6 m). Walls and rooms
+  are otherwise untouched.
+
+**"Stair placement needs to be thicker", and the open pit.**
+`containment_findings` reported 289 open flight sides and 12 unguarded hole
+ends across the library, as warnings, and nothing built a guard anywhere.
+
+- **`stairwell.stair_guards`**: per slab-cutting straight / switchback /
+  scissor flight, a `side` wall along each long edge of the reserved rectangle
+  from the storey floor to the slab above, and a `rail` (`GUARD_HEIGHT` 1.07 m)
+  on the floor above along both long edges and across the entry end. The
+  arrival end stays open, and so does the LANDING END FROM THE SIDE: each
+  long-edge piece stops the walk-off margin plus a door's width (2.05 m) short
+  of the end a body uses on its storey. The first draft walled the whole
+  length and the nav gate caught it: `twin_a01`'s landing ends 0.35 m short of
+  the back wall, so its only way on and off is sideways, and the upstairs
+  objective became unreachable; `bank_job` and `foundry_heist_vertical` lost
+  stair traversal the same way. An `open` underside gets no side walls -- that toggle
+  is for sightlines and routes beside a flight -- and says so in review. Pieces
+  give way to a built wall on their line, another stair's rectangle, a doorway
+  in a perpendicular wall, and a solid volume. **The builder bakes them as
+  volumes** (`Builder._stair_guards`, before `_stairs`), so each gets
+  collision, a recorded slot and a surface material; rails wear wood.
+- **The containment review reads the same list**, and it now reads the wall
+  PIECES the builder builds instead of the authored run. Measured in
+  `corner_deli_heist_01`'s glb: its basement stairwell walls, standing inside
+  the flight's reserved rectangle, are absent along the whole flight, and the
+  review counted them as the barrier that contained it. A rail counts only for
+  a hole's end, never for a flight's side. It now reports the landing
+  openings it used to be blind to: 259 lateral findings, each no wider than
+  the deliberate opening, and 12 unguarded hole ends -> 0.
+- Furniture clears a stair's reserved rectangle, not only its footprint: the
+  guards stand up to 0.55 m past `footprint_rect`.
+
+**"The chairs being the same texture as the floor and walls almost make them
+invisible."** `seed_cover` and `furnish` wrote no `material`, so every piece
+wore the building's `default_material`, the wall skin. Every piece now names
+one (`_prop_material`: metal for safes, tanks, lockers, vaults; wood
+otherwise), and `migrate_prop_materials.py` gave the 67 pieces already in the
+library theirs -- 29 crate stacks, 10 planters, 9 counter islands among them,
+the likely "boxes that are the same texture as the wall". **"Chairs shouldnt
+face walls"**: a wall-placed piece gets the `rot_z` that turns its front into
+the room. Not measured yet: the contrast itself.
+
+**"This bank teller booth should connect and be locked to the public."**
+`level_design.enclose_teller_lines` closes the staff side of a teller line
+into a `staff_only` room: two partitions from the counter's ends to the wall
+behind it, each with a `staff_door` that ships LOCKED (`STAFF_DOOR_MACHINE`:
+locked / closed / open, unlock and lock, `access: staff`). The public side is
+the side the room's exterior doors are on. A line is left open, with the
+reason, when the staff side is under 1.85 m or over 6 m deep, when the back
+wall has a doorway in the line, or when a stair, ladder or solid stands where
+a wall would. Enclosed: the `bank` preset, `bank_branch_a02`, `bank_branch_a03`
+and `bank_job`; left open: `bank_branch_a04` (10.9 m deep), `credit_union_a01`
+(1.1 m), and `specs/bank.json` (it has no rooms). Adds one advisory L1 per enclosure: two doors to
+the same lobby count as one way out.
+
+**Gate bookkeeping.** `specs/bank.json` entered the nav gate (129 -> 130
+shells) without a geometry change: `_run_in_blender` writes gameplay.json only
+when a spec has markers, rooms, links, objectives, loot, zones or surfaces;
+bank.json has only the last, and its first material palette (the migration's
+metal vault) gave it surface records. It has no spawn marker, so it is
+UNJUDGED, and `navgate_baseline.json` records it with that reason. Nav gate
+against the pre-furniture baseline: 14 unnavigable shells, all pre-existing;
+new none. `roof_ac`, `ac_unit`, `condenser`, `generator` and `dumpster` now
+name metal (the migration had made bank.json's rooftop unit wood).
+
 ## [0.125.0] - 2026-09-13  the stair underside toggle
 
 The walker: "Stairs being solid should be the new default, and for gameplay

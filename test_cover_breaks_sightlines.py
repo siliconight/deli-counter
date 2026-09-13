@@ -286,8 +286,10 @@ def test_the_shelter_pass_is_idempotent():
     report = LD.enrich(again)
     # `furnished` joined the report when rooms started getting furniture as
     # well as cover (roadmap 154). Same promise, one more pass to keep it.
+    # `tellers_enclosed` joined it with the locked teller line (0.126.0).
     assert report == {"cover_seeded": 0, "cover_added": 0,
-                      "landmarks_added": 0, "furnished": 0}
+                      "landmarks_added": 0, "furnished": 0,
+                      "tellers_enclosed": 0}
     assert len(again["volumes"]) == len(d["volumes"])
 
 

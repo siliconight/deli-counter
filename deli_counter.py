@@ -1123,6 +1123,7 @@ class _Builder:
         self._slabs()
         self._exterior()
         self._partitions()
+        self._stair_guards()
         self._stairs()
         self._ladders()
         self._ramps()
@@ -1617,6 +1618,44 @@ class _Builder:
         if f == "E":
             return (-angle, 0.0, 0.0)
         return (angle, 0.0, 0.0)
+
+    def _stair_guards(self):
+        """Bake `stairwell.stair_guards` as volumes, so each guard gets the
+        geometry, collision, recorded slot and surface material every volume
+        gets -- an unrecorded box renders as an untextured white box in a
+        themed scene (see `_volumes`).
+
+        The walker, cold run 9048: "a large opening to a lower level", and a
+        stair that "needs to be thicker". Side walls wear the building's own
+        wall; the waist-high rails at a hole's edge wear wood where the palette
+        has it, so the edge of a drop reads against the floor and the wall.
+
+        Runs BEFORE `_stairs`, for the reason `_partitions` gives: the stair
+        pass appends its cuts to `slab_holes`, and `wall_voids` re-derives
+        them, so reading after it would count each hole twice.
+        """
+        H = self.s.story_height
+        _base, top = self._story_range()
+        have = {m.id for m in (self.s.materials or [])}
+        T = stairwell.GUARD_THICK
+        for k, g in enumerate(stairwell.stair_guards(self.s)):
+            z0 = g["story"] * H
+            if g["kind"] == "side":
+                h = H - self._cap_thick(g["story"], top)
+                mat = None
+            else:
+                h = stairwell.GUARD_HEIGHT
+                mat = "wood" if "wood" in have else None
+            along, mid = g["hi"] - g["lo"], (g["lo"] + g["hi"]) / 2.0
+            if g["axis"] == "Y":
+                x, y, sx, sy = g["pos"], mid, T, along
+            else:
+                x, y, sx, sy = mid, g["pos"], along, T
+            self.s.volumes.append(Volume(
+                name=f"stair_guard_{g['kind']}_{k}", x=round(x, 4),
+                y=round(y, 4), z=round(z0 + h / 2.0, 4), size_x=round(sx, 4),
+                size_y=round(sy, 4), size_z=round(h, 4), collision="convex",
+                material=mat))
 
     def _stair_hole(self, st, story, lx, ly, size_x, size_y):
         wx, wy = self._stair_pt(st, lx, ly)

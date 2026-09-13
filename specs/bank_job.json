@@ -245,6 +245,112 @@
      "material": "concrete"
     }
    ]
+  },
+  {
+   "story": 0,
+   "axis": "Y",
+   "pos": -6.0,
+   "start": -2.0,
+   "end": 2.0,
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.25,
+     "tag": "staff_door_0a",
+     "interactive": {
+      "states": [
+       "locked",
+       "closed",
+       "open"
+      ],
+      "default": "locked",
+      "transitions": [
+       {
+        "event": "unlock",
+        "from": "locked",
+        "to": "closed"
+       },
+       {
+        "event": "lock",
+        "from": "closed",
+        "to": "locked"
+       },
+       {
+        "event": "toggle",
+        "from": "closed",
+        "to": "open"
+       },
+       {
+        "event": "toggle",
+        "from": "open",
+        "to": "closed"
+       }
+      ],
+      "reversible": true,
+      "collision_per_state": {
+       "locked": true,
+       "closed": true,
+       "open": false
+      },
+      "access": "staff"
+     }
+    }
+   ],
+   "material": "drywall"
+  },
+  {
+   "story": 0,
+   "axis": "Y",
+   "pos": 6.0,
+   "start": -2.0,
+   "end": 2.0,
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.25,
+     "tag": "staff_door_0b",
+     "interactive": {
+      "states": [
+       "locked",
+       "closed",
+       "open"
+      ],
+      "default": "locked",
+      "transitions": [
+       {
+        "event": "unlock",
+        "from": "locked",
+        "to": "closed"
+       },
+       {
+        "event": "lock",
+        "from": "closed",
+        "to": "locked"
+       },
+       {
+        "event": "toggle",
+        "from": "closed",
+        "to": "open"
+       },
+       {
+        "event": "toggle",
+        "from": "open",
+        "to": "closed"
+       }
+      ],
+      "reversible": true,
+      "collision_per_state": {
+       "locked": true,
+       "closed": true,
+       "open": false
+      },
+      "access": "staff"
+     }
+    }
+   ],
+   "material": "drywall"
   }
  ],
  "stairs": [
@@ -343,6 +449,19 @@
    "combat_range": "close",
    "role": "objective_room",
    "objective": true
+  },
+  {
+   "id": "teller_staff_0",
+   "story": 0,
+   "bounds": [
+    -6.0,
+    -2.0,
+    6.0,
+    2.0
+   ],
+   "role": "staff_only",
+   "fortifiable": true,
+   "combat_range": "close"
   }
  ],
  "volumes": [
@@ -387,7 +506,8 @@
    "size_x": 1.6,
    "size_y": 0.8,
    "size_z": 0.75,
-   "collision": "convex"
+   "collision": "convex",
+   "material": "wood"
   },
   {
    "name": "cabinet_manager_office_1",
@@ -397,7 +517,8 @@
    "size_x": 0.9,
    "size_y": 0.5,
    "size_z": 1.4,
-   "collision": "convex"
+   "collision": "convex",
+   "material": "wood"
   },
   {
    "name": "desk_manager_office_2",
@@ -407,7 +528,8 @@
    "size_x": 1.6,
    "size_y": 0.8,
    "size_z": 0.75,
-   "collision": "convex"
+   "collision": "convex",
+   "material": "wood"
   },
   {
    "name": "cabinet_manager_office_3",
@@ -417,7 +539,8 @@
    "size_x": 0.5,
    "size_y": 0.9,
    "size_z": 1.4,
-   "collision": "convex"
+   "collision": "convex",
+   "material": "wood"
   },
   {
    "name": "crate_stack_security_room_0",
@@ -427,7 +550,8 @@
    "size_x": 1.1,
    "size_y": 1.1,
    "size_z": 0.95,
-   "collision": "convex"
+   "collision": "convex",
+   "material": "wood"
   },
   {
    "name": "crate_stack_security_room_1",
@@ -437,7 +561,8 @@
    "size_x": 1.1,
    "size_y": 1.1,
    "size_z": 0.95,
-   "collision": "convex"
+   "collision": "convex",
+   "material": "wood"
   },
   {
    "name": "crate_stack_security_room_2",
@@ -447,7 +572,8 @@
    "size_x": 1.1,
    "size_y": 1.1,
    "size_z": 0.95,
-   "collision": "convex"
+   "collision": "convex",
+   "material": "wood"
   },
   {
    "name": "crate_stack_security_room_3",
@@ -457,7 +583,8 @@
    "size_x": 1.1,
    "size_y": 1.1,
    "size_z": 0.95,
-   "collision": "convex"
+   "collision": "convex",
+   "material": "wood"
   },
   {
    "name": "chair_waiting_rcce455f7_1",
@@ -467,7 +594,9 @@
    "size_x": 2.4,
    "size_y": 0.6,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "material": "wood",
+   "rot_z": 180.0
   },
   {
    "name": "table_low_rcce455f7_2",
@@ -477,9 +606,11 @@
    "size_x": 1.0,
    "size_y": 0.6,
    "size_z": 0.45,
-   "collision": "convex"
+   "collision": "convex",
+   "material": "wood"
   },
   {
+   "material": "wood",
    "name": "chair_set_rcce455f7_2_1",
    "x": -7.97,
    "y": -7.68,
@@ -491,6 +622,7 @@
    "rot_z": 180.0
   },
   {
+   "material": "wood",
    "name": "chair_set_rcce455f7_2_2",
    "x": -7.97,
    "y": -6.18,
@@ -509,7 +641,9 @@
    "size_x": 0.8,
    "size_y": 2.2,
    "size_z": 1.05,
-   "collision": "convex"
+   "collision": "convex",
+   "material": "wood",
+   "rot_z": 180.0
   },
   {
    "name": "chair_waiting_rcce455f7_4",
@@ -519,7 +653,8 @@
    "size_x": 0.6,
    "size_y": 2.4,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "material": "wood"
   },
   {
    "name": "table_low_rcce455f7_5",
@@ -529,9 +664,11 @@
    "size_x": 1.0,
    "size_y": 0.6,
    "size_z": 0.45,
-   "collision": "convex"
+   "collision": "convex",
+   "material": "wood"
   },
   {
+   "material": "wood",
    "name": "chair_set_rcce455f7_5_1",
    "x": -10.2,
    "y": -7.37,
@@ -543,6 +680,7 @@
    "rot_z": 180.0
   },
   {
+   "material": "wood",
    "name": "chair_set_rcce455f7_5_2",
    "x": -10.2,
    "y": -5.87,
@@ -561,7 +699,9 @@
    "size_x": 0.8,
    "size_y": 2.2,
    "size_z": 1.05,
-   "collision": "convex"
+   "collision": "convex",
+   "material": "wood",
+   "rot_z": 180.0
   },
   {
    "name": "table_low_rcce455f7_8",
@@ -571,9 +711,11 @@
    "size_x": 1.0,
    "size_y": 0.6,
    "size_z": 0.45,
-   "collision": "convex"
+   "collision": "convex",
+   "material": "wood"
   },
   {
+   "material": "wood",
    "name": "chair_set_rcce455f7_8_1",
    "x": -12.75,
    "y": -1.27,
@@ -585,6 +727,7 @@
    "rot_z": 180.0
   },
   {
+   "material": "wood",
    "name": "chair_set_rcce455f7_8_2",
    "x": -12.75,
    "y": 0.23,
@@ -603,17 +746,19 @@
    "size_x": 1.6,
    "size_y": 0.8,
    "size_z": 0.75,
-   "collision": "convex"
+   "collision": "convex",
+   "material": "wood"
   },
   {
    "name": "chair_rb2746d70_2",
-   "x": -8.66,
-   "y": 8.91,
+   "x": -5.93,
+   "y": 4.94,
    "z": 0.45,
    "size_x": 0.55,
    "size_y": 0.55,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "material": "wood"
   },
   {
    "name": "cabinet_file_rb2746d70_3",
@@ -623,17 +768,20 @@
    "size_x": 0.5,
    "size_y": 0.9,
    "size_z": 1.4,
-   "collision": "convex"
+   "collision": "convex",
+   "material": "wood",
+   "rot_z": 180.0
   },
   {
    "name": "shelf_run_rb2746d70_4",
-   "x": -3.65,
+   "x": -6.89,
    "y": 10.68,
    "z": 0.95,
    "size_x": 2.0,
    "size_y": 0.4,
    "size_z": 1.9,
-   "collision": "convex"
+   "collision": "convex",
+   "material": "wood"
   },
   {
    "name": "table_low_rad8edd5a_1",
@@ -643,9 +791,11 @@
    "size_x": 1.2,
    "size_y": 0.8,
    "size_z": 0.5,
-   "collision": "convex"
+   "collision": "convex",
+   "material": "wood"
   },
   {
+   "material": "wood",
    "name": "chair_set_rad8edd5a_1_2",
    "x": 9.04,
    "y": 9.49,
@@ -664,7 +814,8 @@
    "size_x": 0.55,
    "size_y": 0.55,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "material": "wood"
   },
   {
    "name": "table_low_rad8edd5a_3",
@@ -674,9 +825,11 @@
    "size_x": 1.2,
    "size_y": 0.8,
    "size_z": 0.5,
-   "collision": "convex"
+   "collision": "convex",
+   "material": "wood"
   },
   {
+   "material": "wood",
    "name": "chair_set_rad8edd5a_3_1",
    "x": 12.94,
    "y": 7.97,
@@ -688,6 +841,7 @@
    "rot_z": 180.0
   },
   {
+   "material": "wood",
    "name": "chair_set_rad8edd5a_3_2",
    "x": 12.94,
    "y": 9.67,
@@ -706,7 +860,8 @@
    "size_x": 0.55,
    "size_y": 0.55,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "material": "wood"
   },
   {
    "name": "shelf_run_r21075e64_1",
@@ -716,27 +871,31 @@
    "size_x": 2.2,
    "size_y": 0.5,
    "size_z": 1.9,
-   "collision": "convex"
+   "collision": "convex",
+   "material": "wood",
+   "rot_z": 180.0
   },
   {
    "name": "cabinet_locker_r21075e64_2",
-   "x": -12.91,
-   "y": -10.63,
+   "x": -4.08,
+   "y": 10.63,
    "z": -2.65,
    "size_x": 1.2,
    "size_y": 0.5,
    "size_z": 1.9,
-   "collision": "convex"
+   "collision": "convex",
+   "material": "metal"
   },
   {
    "name": "safe_floor_r21075e64_3",
-   "x": -4.96,
-   "y": 4.91,
+   "x": -7.77,
+   "y": -4.28,
    "z": -3.1,
    "size_x": 0.9,
    "size_y": 0.9,
    "size_z": 1.0,
-   "collision": "convex"
+   "collision": "convex",
+   "material": "metal"
   },
   {
    "name": "shelf_run_r21075e64_4",
@@ -746,57 +905,55 @@
    "size_x": 2.2,
    "size_y": 0.5,
    "size_z": 1.9,
-   "collision": "convex"
+   "collision": "convex",
+   "material": "wood",
+   "rot_z": 180.0
   },
   {
    "name": "cabinet_locker_r21075e64_5",
-   "x": -6.47,
-   "y": 10.63,
+   "x": -14.63,
+   "y": 5.03,
    "z": -2.65,
-   "size_x": 1.2,
-   "size_y": 0.5,
+   "size_x": 0.5,
+   "size_y": 1.2,
    "size_z": 1.9,
-   "collision": "convex"
+   "collision": "convex",
+   "material": "metal",
+   "rot_z": 180.0
   },
   {
    "name": "safe_floor_r21075e64_6",
-   "x": -7.77,
-   "y": -4.28,
-   "z": -3.1,
-   "size_x": 0.9,
-   "size_y": 0.9,
-   "size_z": 1.0,
-   "collision": "convex"
-  },
-  {
-   "name": "shelf_run_r21075e64_7",
-   "x": -14.63,
-   "y": 4.51,
-   "z": -2.65,
-   "size_x": 0.5,
-   "size_y": 2.2,
-   "size_z": 1.9,
-   "collision": "convex"
-  },
-  {
-   "name": "cabinet_locker_r21075e64_8",
-   "x": -11.33,
-   "y": 10.63,
-   "z": -2.65,
-   "size_x": 1.2,
-   "size_y": 0.5,
-   "size_z": 1.9,
-   "collision": "convex"
-  },
-  {
-   "name": "safe_floor_r21075e64_9",
    "x": -10.48,
    "y": -0.3,
    "z": -3.1,
    "size_x": 0.9,
    "size_y": 0.9,
    "size_z": 1.0,
-   "collision": "convex"
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "cabinet_locker_r21075e64_8",
+   "x": -12.15,
+   "y": -10.63,
+   "z": -2.65,
+   "size_x": 1.2,
+   "size_y": 0.5,
+   "size_z": 1.9,
+   "collision": "convex",
+   "material": "metal",
+   "rot_z": 180.0
+  },
+  {
+   "name": "safe_floor_r21075e64_9",
+   "x": -5.28,
+   "y": -6.67,
+   "z": -3.1,
+   "size_x": 0.9,
+   "size_y": 0.9,
+   "size_z": 1.0,
+   "collision": "convex",
+   "material": "metal"
   },
   {
    "name": "shelf_run_rdc1e69ac_1",
@@ -806,7 +963,9 @@
    "size_x": 2.2,
    "size_y": 0.5,
    "size_z": 1.9,
-   "collision": "convex"
+   "collision": "convex",
+   "material": "wood",
+   "rot_z": 180.0
   },
   {
    "name": "cabinet_locker_rdc1e69ac_2",
@@ -816,7 +975,8 @@
    "size_x": 0.5,
    "size_y": 1.2,
    "size_z": 1.9,
-   "collision": "convex"
+   "collision": "convex",
+   "material": "metal"
   },
   {
    "name": "safe_floor_rdc1e69ac_3",
@@ -826,7 +986,8 @@
    "size_x": 0.9,
    "size_y": 0.9,
    "size_z": 1.0,
-   "collision": "convex"
+   "collision": "convex",
+   "material": "metal"
   },
   {
    "name": "shelf_run_rdc1e69ac_4",
@@ -836,7 +997,9 @@
    "size_x": 2.2,
    "size_y": 0.5,
    "size_z": 1.9,
-   "collision": "convex"
+   "collision": "convex",
+   "material": "wood",
+   "rot_z": 180.0
   },
   {
    "name": "cabinet_locker_rdc1e69ac_5",
@@ -846,7 +1009,8 @@
    "size_x": 1.2,
    "size_y": 0.5,
    "size_z": 1.9,
-   "collision": "convex"
+   "collision": "convex",
+   "material": "metal"
   },
   {
    "name": "safe_floor_rdc1e69ac_6",
@@ -856,7 +1020,8 @@
    "size_x": 0.9,
    "size_y": 0.9,
    "size_z": 1.0,
-   "collision": "convex"
+   "collision": "convex",
+   "material": "metal"
   },
   {
    "name": "cabinet_locker_rdc1e69ac_8",
@@ -866,7 +1031,8 @@
    "size_x": 1.2,
    "size_y": 0.5,
    "size_z": 1.9,
-   "collision": "convex"
+   "collision": "convex",
+   "material": "metal"
   },
   {
    "name": "safe_floor_rdc1e69ac_9",
@@ -876,7 +1042,30 @@
    "size_x": 0.9,
    "size_y": 0.9,
    "size_z": 1.0,
-   "collision": "convex"
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "desk_r83237949_1",
+   "x": 3.3,
+   "y": 0.21,
+   "z": 0.375,
+   "size_x": 1.6,
+   "size_y": 0.8,
+   "size_z": 0.75,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "chair_r83237949_2",
+   "x": -2.76,
+   "y": 0.21,
+   "z": 0.45,
+   "size_x": 0.55,
+   "size_y": 0.55,
+   "size_z": 0.9,
+   "collision": "convex",
+   "material": "wood"
   }
  ],
  "vault_ledges": [

@@ -2614,6 +2614,15 @@ def _finish_stairs(spec: dict) -> None:
                 break
         sd["role"] = chosen
 
+    # pass 3: A GENERATED STAIR CUTS NO WALL AND OPENS UNDER NO DOOR
+    # (`layout_lint` L21). Measured when the rule was written: six of eighteen
+    # presets failed it, `bank` among them -- the preset behind every cold
+    # run's main building, whose basement stair's hole had a partition door
+    # 1.0 m of its aperture over it. The walker found the same defect in a
+    # library bank ("a large opening to a lower level ... a door opening that
+    # doesnt seem right"). The stair moves; the plan does not.
+    stair_pitch.clear_walls(spec)
+
 
 def _finish_ladders(spec: dict) -> None:
     """The ladder counterpart of _finish_stairs: every preset ladder leaves

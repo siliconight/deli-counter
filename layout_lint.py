@@ -326,6 +326,181 @@ def stair_bounds_findings(spec):
     return fails
 
 
+#: How far in front of a doorway a body needs floor before it can use the
+#: door: a BODY's width plus the 0.3 m body margin the contract's corridor
+#: derivation uses -- `2 * characters.player.radius_m + 0.3` = 1.0 m.
+#: Derived from the body, not from `min_corridor_width_m` (1.1), which is
+#: built from the BAKE radius the contract says never to build a body from.
+#: The boundary case is the office preset's stair core: its side doors stand
+#: exactly 1.00 m from the hole. At 1.1 all four would be findings.
+def _door_approach_m():
+    import agent_contract
+    r = float(agent_contract.contract()["characters"]["player"]["radius_m"])
+    return 2.0 * r + 0.3
+
+
+DOOR_APPROACH_M = _door_approach_m()
+#: A wall this close inside a stair's rectangle is on its edge, not across it:
+#: half an interior wall's thickness.
+STAIR_WALL_EDGE_TOL = 0.1
+#: The walk-off margin past the top of a flight: `flight_rect`'s `clear`.
+ARRIVAL_WALKOFF_M = 0.8
+
+
+def stair_wall_findings(spec, warnings=None):
+    """L21 (FAIL): a stair's hole may not cut a wall or open under a doorway.
+
+    THE CAPTURED CASE is `bank_branch_a03`, walked by the walker on cold run
+    9048 ("a large opening to a lower level ... a door opening that doesnt
+    seem right"). Its basement stair's slab hole, `flight_rect` y 0.85..6.65,
+    straddles the ground-floor partition at y = 2.0 by 1.15 m. Nothing
+    refused it: `stairwell.wall_voids` exists so that a wall never stands
+    across a staircase, and it did its job by deleting 3.4 m of the wall
+    between the manager's office and the lobby. The office door at x = -9.0
+    then stood beside the gap with 0.6 m of its aperture over the hole.
+
+    MEASURED BEFORE THIS WAS WRITTEN: 17 walls in 14 non-LF specs had a
+    stair's rectangle straddling them by at least 0.5 m on both sides. It was
+    NOT caused by the 0.124.0 stair lengthening: at the old 4.0 m default run
+    the bank's hole already crossed its wall; lengthening moved it 0.35 m
+    further. A first reading here blamed the migration; the old spec refuted
+    it.
+
+    DO NOT FIX A FINDING BY MOVING THE WALL. The rooms are the plan and the
+    wall is the room boundary; move the stair (`stair_pitch.make_walkable`'s
+    re-seat does, and `migrate_stair_walls.py` runs it over the library).
+
+    Two questions, both on the rectangle `flight_rect` returns -- what the
+    builder cuts and what `wall_voids` clears walls from:
+
+    * A PARTITION on the storey whose floor the hole opens, or on the storey
+      the flight climbs through, whose line lies inside the rectangle.
+    * A DOORWAY on the hole's storey (partition or exterior) whose aperture
+      overlaps the hole's span and whose wall is within `DOOR_APPROACH_M` of
+      the hole: the door opens onto a pit.
+    """
+    import stairwell
+    from partition_bounds import clamp_partition_span
+    fails = []
+    fx, fy = spec.get("footprint_x"), spec.get("footprint_y")
+    if not fx or not fy:
+        return fails
+    hx, hy = fx / 2.0, fy / 2.0
+    eps = STAIR_WALL_EDGE_TOL
+    for i, raw in enumerate(spec.get("stairs", []) or []):
+        if raw.get("exterior"):
+            continue
+        st = _stair_obj(raw)
+        if st is None or st.style == "spiral":
+            continue
+        sid = raw.get("id") or f"stair_{i}"
+        lo = min(st.from_story, st.to_story)
+        hi = max(st.from_story, st.to_story)
+        for s in range(lo, hi):
+            x0, y0, x1, y1 = stairwell.flight_rect(st, s)
+            # THE ARRIVAL END IS WHERE A STAIR'S DOOR BELONGS. The delis'
+            # `office_stair_door` stands just past the top of the basement
+            # flight on purpose: open it and step onto the discharge plate.
+            # A door beyond that edge, across the flight's travel axis, is the
+            # stair's own door; a door on any other side of the hole opens onto
+            # the pit. A scissor arrives at both ends.
+            travel = ("Y" if (getattr(st, "facing", "N") or "N") in ("N", "S")
+                      else "X")
+            leg = s - lo
+            sign = 1 if (leg % 2 == 0 or st.style == "straight") else -1
+            tx, ty = stairwell._stair_pt(st, st.x, st.y + sign * st.run / 2.0)
+            t_lo, t_hi = (y0, y1) if travel == "Y" else (x0, x1)
+            t_top = ty if travel == "Y" else tx
+            arrivals = ({+1, -1} if st.style == "scissor" else
+                        {+1 if abs(t_top - t_hi) < abs(t_top - t_lo) else -1})
+            storeys = (s, s + 1) if getattr(st, "cut_slabs", True) else (s,)
+            for p in spec.get("partitions", []) or []:
+                if p.get("story", 0) not in storeys:
+                    continue
+                ax = str(p.get("axis", "X")).upper()
+                pos = float(p.get("pos", 0.0))
+                ps, pe = p.get("start"), p.get("end")
+                ps = (-hx if ax == "X" else -hy) if ps is None else ps
+                pe = (hx if ax == "X" else hy) if pe is None else pe
+                plo, phi = clamp_partition_span(ps, pe, ax, fx, fy)
+                n_lo, n_hi, s_lo, s_hi = ((y0, y1, x0, x1) if ax == "X"
+                                          else (x0, x1, y0, y1))
+                across = min(phi, s_hi) - max(plo, s_lo)
+                if not (n_lo + eps < pos < n_hi - eps and across > eps):
+                    continue
+                # A WALL THE STAIR ARRIVES THROUGH. `strip_retail_a01`'s
+                # basement flight tops out through `hall_stairs`, and the wall
+                # stands inside the flight's walk-off margin at its top -- over
+                # the solid discharge plate, not over the pit -- so the builder
+                # trims only the wall beside that door. A trimmed jamb, not a
+                # hole between rooms: a warning. No stair seat in that 6 m room
+                # clears it.
+                band = (pos - n_lo) if -1 in arrivals else (n_hi - pos)
+                if ax != travel and p.get("story", 0) == s + 1                         and band <= ARRIVAL_WALKOFF_M + 1e-9:
+                    own = [lab for along, w, lab in _host_openings(spec, p, False)
+                           if min(along + w / 2, s_hi) - max(along - w / 2, s_lo)
+                           >= min(w, s_hi - s_lo) - 1e-9]
+                    if own:
+                        if warnings is not None:
+                            warnings.append(
+                                f"L21 stair arrives through a wall: '{sid}' "
+                                f"tops out through '{own[0]}' on the story "
+                                f"{s + 1} {ax}-partition at pos={pos:g}, "
+                                f"{band:.2f} m inside its walk-off margin; "
+                                f"the builder trims {across:.2f} m of that "
+                                f"wall around the door")
+                        continue
+                fails.append(
+                    f"L21 stair cuts a wall: '{sid}' reserves "
+                    f"({x0:.2f}, {y0:.2f})-({x1:.2f}, {y1:.2f}) and the "
+                    f"story {p.get('story', 0)} {ax}-partition at "
+                    f"pos={pos:g} runs {across:.2f} m through it, "
+                    f"{pos - n_lo:.2f} m from one edge and "
+                    f"{n_hi - pos:.2f} m from the other -- the builder "
+                    f"deletes that length of wall and the rooms either "
+                    f"side share a hole. Move the stair, not the wall")
+            if not getattr(st, "cut_slabs", True):
+                continue
+            hosts = [(p, False) for p in spec.get("partitions", []) or []
+                     if p.get("story", 0) == s + 1]
+            hosts += [(w, True) for w in spec.get("ext_walls", []) or []
+                      if w.get("story", 0) == s + 1]
+            for host, is_ext in hosts:
+                if is_ext:
+                    face = host.get("wall")
+                    ax = "X" if face in ("N", "S") else "Y"
+                    pos = {"N": hy, "S": -hy, "E": hx, "W": -hx}.get(face)
+                    if pos is None:
+                        continue
+                else:
+                    ax = str(host.get("axis", "X")).upper()
+                    pos = float(host.get("pos", 0.0))
+                n_lo, n_hi, s_lo, s_hi = ((y0, y1, x0, x1) if ax == "X"
+                                          else (x0, x1, y0, y1))
+                gap = max(n_lo - pos, pos - n_hi, 0.0)
+                if gap >= DOOR_APPROACH_M - 1e-9:
+                    continue
+                if n_lo + eps < pos < n_hi - eps:
+                    continue          # a wall across the hole: reported above
+                if ax != travel:      # the wall crosses the travel axis
+                    side = +1 if pos >= n_hi - eps else -1
+                    if side in arrivals:
+                        continue      # the stair's own door, at its top
+                for along, w, label in _host_openings(spec, host, is_ext):
+                    over = min(along + w / 2, s_hi) - max(along - w / 2, s_lo)
+                    if over > eps:
+                        where = (f"{host.get('wall')} exterior wall" if is_ext
+                                 else f"{ax}-partition at pos={pos:g}")
+                        fails.append(
+                            f"L21 door opens onto a stair hole: '{label}' on "
+                            f"the story {s + 1} {where} (center {along:g}, "
+                            f"width {w:g}) has {over:.2f} m of its aperture "
+                            f"over '{sid}''s hole, {gap:.2f} m away (a body "
+                            f"needs {DOOR_APPROACH_M:g} m of floor in front of "
+                            f"a door). Move the stair")
+    return fails
+
+
 def ladder_findings(spec):
     """L14/L15: every ladder must be TRAVERSABLE, not just present.
       L14 (FAIL): the through-hole a climbing body needs pokes past the slab
@@ -758,6 +933,7 @@ def lint_spec(spec, name):
     warns += lw15
     fails += door_split_findings(spec)      # L18 door split (FAIL since 0.101.2)
     fails += stair_bounds_findings(spec)    # L19 stair outside the footprint
+    fails += stair_wall_findings(spec, warns)  # L21 stair hole cuts a wall / door
     fails += [f"L20 {c}: {m}"                # L20 unbuildable setback
               for c, m in __import__("setbacks").findings(_LintSpec(spec))]
     fails += reachability_findings(spec)    # L12 sealed/unreachable rooms (all modes)

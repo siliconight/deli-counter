@@ -132,7 +132,14 @@ def test_an_untrimmed_piece_returns_the_authored_position():
 # ---- the captured case, end to end on the real spec ------------------------
 
 def _night_pawn():
-    return spec_loader.load_spec(os.path.join(HERE, "specs", "night_pawn.json"))
+    """The captured case AT ITS CAPTURED SEAT. Deli Counter 0.126.0 moved the
+    shipped stair out of both walls it crossed (`migrate_stair_walls`,
+    layout_lint L21), so the wall-over-void mechanism is pinned at the seat it
+    was measured at: x 5.5, y 0.5, facing N."""
+    spec = spec_loader.load_spec(os.path.join(HERE, "specs", "night_pawn.json"))
+    st = spec.stairs[0]
+    st.x, st.y, st.facing = 5.5, 0.5, "N"
+    return spec
 
 
 def test_night_pawn_wall_stops_at_the_stairwell():

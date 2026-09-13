@@ -65,10 +65,9 @@ def lengthen(spec):
     return changed
 
 
-def make_walkable(spec):
-    """Lengthen, then re-seat any lengthened stair the circulation contract now
-    refuses. Returns ``{"lengthened": [...], "reseated": {id: (facing, axis,
-    shift)}, "unresolved": [...]}``; the spec dict is edited in place."""
+def _checks(spec):
+    """The three questions a seated stair must answer, as closures over the
+    spec DICT (read fresh on every call, because the search edits it)."""
     import contextlib
     import io
     from spec_loader import spec_from_dict
@@ -80,16 +79,70 @@ def make_walkable(spec):
         with contextlib.redirect_stdout(io.StringIO()):
             return stairwell.circulation_contract(spec_from_dict(spec))
 
-    def out_of_bounds(sid):
-        """`layout_lint` L19 for this stair: a longer run can reserve ground
-        past the exterior wall while the circulation contract is satisfied --
-        `harbor_score` did, by 0.15 m, on the first migration."""
-        return any(f"'{sid}'" in f for f in layout_lint.stair_bounds_findings(spec))
+    def mine(findings, sid):
+        return [f for f in findings if f"'{sid}'" in f]
 
     def ok(sid):
+        """Compliant with the circulation contract, inside the footprint
+        (`layout_lint` L19 -- a longer run can reserve ground past the exterior
+        wall while the contract is satisfied; `harbor_score` did, by 0.15 m),
+        and cutting no wall and opening under no doorway (L21)."""
         me = [s for s in contract()["stairs"] if s["id"] == sid]
-        return bool(me) and me[0]["compliant"] and not out_of_bounds(sid)
+        return (bool(me) and me[0]["compliant"]
+                and not mine(layout_lint.stair_bounds_findings(spec), sid)
+                and not mine(layout_lint.stair_wall_findings(spec), sid))
 
+    return contract, ok, mine
+
+
+def _reseat(spec, st, ok, also=None):
+    """Try the stair's own facing then the other three, each with short shifts
+    along both axes; keep the first seat `ok` accepts (and `also`, if given).
+    Returns ``(facing, axis, shift)`` or None, restoring the seat on None."""
+    sid = st.get("id")
+    x0, y0, f0 = st["x"], st["y"], st.get("facing")
+    for facing in [f0] + [f for f in ("N", "E", "S", "W") if f != f0]:
+        for axis in ("x", "y"):
+            for d in (0.0,) + _SHIFTS:
+                st["x"], st["y"], st["facing"] = x0, y0, facing
+                st[axis] = round(st[axis] + d, 3)
+                if ok(sid) and (also is None or also()):
+                    return (facing, axis, d)
+    st["x"], st["y"], st["facing"] = x0, y0, f0
+    return None
+
+
+#: The wider search `clear_walls` falls back to: both axes at once, out to
+#: this far, nearest seat first. A stair in a tight plan can need a diagonal
+#: move the one-axis search never tries.
+WIDE_SHIFT_MAX = 6.0
+WIDE_SHIFT_STEP = 0.5
+
+
+def _reseat_wide(spec, st, ok, also=None):
+    """As `_reseat`, over a two-axis grid of shifts ordered by distance.
+    Returns ``(facing, "xy", (dx, dy))`` or None, restoring the seat on None."""
+    sid = st.get("id")
+    x0, y0, f0 = st["x"], st["y"], st.get("facing")
+    n = int(round(WIDE_SHIFT_MAX / WIDE_SHIFT_STEP))
+    steps = [i * WIDE_SHIFT_STEP for i in range(-n, n + 1)]
+    grid = sorted(((dx, dy) for dx in steps for dy in steps),
+                  key=lambda d: (abs(d[0]) + abs(d[1]), abs(d[0]), d))
+    for facing in [f0] + [f for f in ("N", "E", "S", "W") if f != f0]:
+        for dx, dy in grid:
+            st["x"], st["y"], st["facing"] = (round(x0 + dx, 3),
+                                              round(y0 + dy, 3), facing)
+            if ok(sid) and (also is None or also()):
+                return (facing, "xy", (dx, dy))
+    st["x"], st["y"], st["facing"] = x0, y0, f0
+    return None
+
+
+def make_walkable(spec):
+    """Lengthen, then re-seat any lengthened stair the circulation contract now
+    refuses. Returns ``{"lengthened": [...], "reseated": {id: (facing, axis,
+    shift)}, "unresolved": [...]}``; the spec dict is edited in place."""
+    contract, ok, _mine = _checks(spec)
     out = {"lengthened": lengthen(spec), "reseated": {}, "unresolved": []}
     if not out["lengthened"]:
         return out
@@ -98,23 +151,92 @@ def make_walkable(spec):
         st = by_id.get(sid)
         if st is None or sid not in out["lengthened"]:
             continue            # it was already failing; not ours to move
-        x0, y0, f0 = st["x"], st["y"], st.get("facing")
-        found = None
-        for facing in [f0] + [f for f in ("N", "E", "S", "W") if f != f0]:
-            for axis in ("x", "y"):
-                for d in (0.0,) + _SHIFTS:
-                    st["x"], st["y"], st["facing"] = x0, y0, facing
-                    st[axis] = round(st[axis] + d, 3)
-                    if ok(sid):
-                        found = (facing, axis, d)
-                        break
-                if found:
-                    break
-            if found:
-                break
+        found = _reseat(spec, st, ok)
         if found:
             out["reseated"][sid] = found
         else:
-            st["x"], st["y"], st["facing"] = x0, y0, f0
+            out["unresolved"].append(sid)
+    return out
+
+
+def _rect_intrusions(spec):
+    """``{"INTRUDES <volume> <stair> <storey>"}`` -- every solid volume standing
+    in a stair's reserved rectangle on the storey it climbs through or the
+    storey whose slab it opens. Measured on the first run of `clear_walls`:
+    the two-axis search seated three stairs over existing props
+    (`primos_pizza`'s prep island and crates, `night_pawn`'s display case,
+    `strip_retail_a01`'s prep island), none of which any gate refused."""
+    from spec_loader import spec_from_dict
+    import stairwell
+    s = spec_from_dict(spec)
+    H = s.story_height
+    out = set()
+    for j, st in enumerate(s.stairs):
+        if st.style == "spiral":
+            continue
+        lo = min(st.from_story, st.to_story)
+        hi = max(st.from_story, st.to_story)
+        for k in range(lo, hi):
+            a0, b0, a1, b1 = stairwell.flight_rect(st, k)
+            for v in s.volumes:
+                if v.collision == "none" or v.name.startswith("stair_guard_"):
+                    continue
+                base = v.z - v.size_z / 2.0
+                if not (k * H - 0.01 <= base < (k + 2) * H - 0.01):
+                    continue
+                if (min(v.x + v.size_x / 2.0, a1) - max(v.x - v.size_x / 2.0, a0)
+                        > 0.05 and
+                        min(v.y + v.size_y / 2.0, b1) - max(v.y - v.size_y / 2.0, b0)
+                        > 0.05):
+                    out.add(f"INTRUDES {v.name} {stairwell.stair_ident(st, j)} {k}")
+    return out
+
+
+def _stair_errors(spec):
+    """Every stairwell review ERROR for the spec, as a set of strings."""
+    import contextlib
+    import io
+    from spec_loader import spec_from_dict
+    import stairwell
+    with contextlib.redirect_stdout(io.StringIO()):
+        errors, _warnings, _summary = stairwell.check(spec_from_dict(spec))
+    return set(errors)
+
+
+def clear_walls(spec):
+    """Re-seat every stair whose hole cuts a wall or opens under a doorway
+    (`layout_lint` L21). A stair already refused by the contract or L19 for
+    another reason is still moved if L21 names it, but only to a seat that
+    passes all three -- and that adds no lint failure naming anything else.
+    Returns ``{"reseated": {id: seat}, "unresolved": [...]}``."""
+    import layout_lint
+    _contract, ok, mine = _checks(spec)
+    out = {"reseated": {}, "unresolved": []}
+    for st in spec.get("stairs") or []:
+        sid = st.get("id")
+        if sid is None or st.get("exterior"):
+            continue
+        if not mine(layout_lint.stair_wall_findings(spec), sid):
+            continue
+        before = (set(layout_lint.gate(spec)[0]) | _stair_errors(spec)
+                  | _rect_intrusions(spec))
+
+        def no_new_failures():
+            # Nothing may get worse: no new lint failure and no new stairwell
+            # error. Measured on the `bank` stair-core
+            # preset: a seat that satisfied this stair's own contract took
+            # the lower landing of the core beside it.
+            # The error that proved it named BOTH stairs, so a filter on
+            # "findings that do not mention this stair" let it through: any
+            # finding that was not there before refuses the seat.
+            now = (set(layout_lint.gate(spec)[0]) | _stair_errors(spec)
+                   | _rect_intrusions(spec))
+            return not (now - before)
+
+        found = (_reseat(spec, st, ok, also=no_new_failures)
+                 or _reseat_wide(spec, st, ok, also=no_new_failures))
+        if found:
+            out["reseated"][sid] = found
+        else:
             out["unresolved"].append(sid)
     return out

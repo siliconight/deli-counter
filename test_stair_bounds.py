@@ -43,8 +43,16 @@ def _spec():
         return json.load(f)
 
 
+#: The seat this file's captured cases were measured at. Deli Counter 0.126.0
+#: moved the shipped stair (`migrate_stair_walls`, layout_lint L21: its hole
+#: opened under the kitchen door), so the cases pin the old seat explicitly
+#: rather than read whatever the spec holds today.
+_CAPTURED_SEAT = {"x": 7.5, "y": 3.9, "facing": "N"}
+
+
 def _with_stair(**kw):
     d = _spec()
+    d["stairs"][0].update(_CAPTURED_SEAT)
     d["stairs"][0].update(kw)
     return d
 

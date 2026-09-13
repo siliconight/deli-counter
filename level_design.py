@@ -29,10 +29,14 @@ not attacker/defender entrance symmetry.
 
 CONTRACT
   * Pure Python, no bpy. Operates on the spec dict.
-  * ADDITIVE and IDEMPOTENT: only ever appends anchors, never moves or removes
-    one, and re-running is a no-op. Geometry is never touched -- an enrichment
-    pass can no more break a level than an art pass can.
-  * Anchors only (markers). The game still owns what an anchor *means*.
+  * ADDITIVE and IDEMPOTENT: only ever appends, never moves or removes, and
+    re-running is a no-op.
+  * RETRACTED: "Geometry is never touched" and "anchors only". Both stopped
+    being true when `seed_cover` and `furnish` began appending solid volumes
+    (0.122.0), and `enclose_teller_lines` appends PARTITIONS and a room
+    (0.126.0). What still holds is that nothing authored is moved or removed;
+    every addition is gated by the same validators as authored geometry.
+    The game still owns what an anchor *means*.
 
 Tunables live in the module-level constants so a preset author can reason about
 them. enrich(spec) is the single entry point; make() calls it by default.
@@ -437,6 +441,16 @@ def _stair_reserved_rects(spec):
             continue
         rects.append(stairwell.footprint_rect(st))
         rects.extend(e["rect"] for e in stairwell.stair_endpoints(st))
+        # ...and the RESERVED rectangle the builder cuts and guards
+        # (`flight_rect`). The guards stand just outside it
+        # (`stairwell.stair_guards`, up to GUARD_THICK past its edge), up to
+        # 0.55 m beyond `footprint_rect`, so a piece cleared against the
+        # footprint alone could stand inside a guard wall.
+        if getattr(st, "style", None) != "spiral":
+            lo = min(st.from_story, st.to_story)
+            hi = max(st.from_story, st.to_story)
+            for k in range(lo, hi):
+                rects.append(stairwell.flight_rect(st, k))
     return rects
 
 
@@ -588,6 +602,7 @@ def seed_cover(spec):
                     "z": round(room.get("story", 0) * sh + s_z / 2, 3),
                     "size_x": sx, "size_y": sy, "size_z": round(s_z, 3),
                     "collision": "convex",
+                    "material": _prop_material(spec, s_name),
                 })
                 placed.append((px, py))
                 added += 1
@@ -612,6 +627,7 @@ def seed_cover(spec):
                 "z": round(room.get("story", 0) * sh + sz / 2, 3),
                 "size_x": sx, "size_y": sy, "size_z": sz,
                 "collision": "convex",
+                "material": _prop_material(spec, name),
             })
             placed.append((px, py))
             added += 1
@@ -686,6 +702,36 @@ def _room_tag(room):
     return "r%08x" % (zlib.crc32(str(room.get("id", "")).encode("utf-8")) & 0xFFFFFFFF)
 
 
+#: What a placed piece is made of, by the first keyword in its name. A piece
+#: that names nothing is wood. NEVER the building's `default_material`: that is
+#: the wall skin, and a solid wearing the wall is a solid nobody sees until they
+#: walk into it (the walker, cold run 9048).
+_PROP_MATERIALS = (
+    (("safe", "tank", "locker", "panel", "hvac", "vault", "roof_ac", "ac_unit",
+      "condenser", "generator", "dumpster"), "metal"),
+)
+_PROP_MATERIAL_DEFAULT = "wood"
+_PROP_ACOUSTIC = {"wood": ("Wood", 0.35, 0.3), "metal": ("Metal", 0.2, 0.15)}
+
+
+def _prop_material(spec, name):
+    """The material a placed piece wears, declared in the spec's palette if it
+    is not already -- the validator refuses an undeclared material id."""
+    key = (name or "").lower()
+    mat = _PROP_MATERIAL_DEFAULT
+    for words, m in _PROP_MATERIALS:
+        if any(w in key for w in words):
+            mat = m
+            break
+    have = {m.get("id") for m in spec.get("materials") or []}
+    if mat not in have and mat != "wood":
+        acoustic, absorption, damping = _PROP_ACOUSTIC[mat]
+        spec.setdefault("materials", []).append(
+            {"id": mat, "acoustic": acoustic, "absorption": absorption,
+             "damping": damping})
+    return mat
+
+
 def _furniture_for(room):
     key = ((room.get("role") or "") + " " + str(room.get("id", ""))).lower()
     for words, pieces in _FURNITURE:
@@ -756,7 +802,7 @@ def _clear_of_openings(openings, wall, centre, half_len):
 
 
 def _wall_slots(spec, room, w, d, rng):
-    """Candidate ``(x, y, sx, sy)`` flush against the room's walls, the
+    """Candidate ``(x, y, sx, sy, rot_z)`` flush against the room's walls, the
     piece's long axis lying ALONG the wall. A shelf run standing across a
     wall rather than along it is how a 2.6 m unit ends up sticking into the
     middle of the floor.
@@ -796,8 +842,10 @@ def _wall_slots(spec, room, w, d, rng):
             px = x0 + 0.3 + long_side / 2.0 + rng.random() * span
             if ext and not _clear_of_openings(openings, ext, px, long_side / 2.0):
                 continue
+            # against the S wall (inset +1) the front must face N; against
+            # the N wall, S. Long axis along x, so no long-axis turn is added.
             out.append((px, wy + inset * (short_side / 2.0 + 0.12),
-                        long_side, short_side))
+                        long_side, short_side, 180.0 if inset > 0 else 0.0))
     # E and W walls: the long axis runs in y
     for wx, inset in ((x0, +1), (x1, -1)):
         ext = _wall_of(wx, hx, "W", "E")
@@ -810,8 +858,11 @@ def _wall_slots(spec, room, w, d, rng):
             py = y0 + 0.3 + long_side / 2.0 + rng.random() * span
             if ext and not _clear_of_openings(openings, ext, py, long_side / 2.0):
                 continue
+            # against the W wall the front must face E; against the E wall,
+            # W. `long_axis_first` already turns this piece 90, so the front
+            # sits at 90 + rot_z + 180: 180 here gives E, 0 gives W.
             out.append((wx + inset * (short_side / 2.0 + 0.12), py,
-                        short_side, long_side))
+                        short_side, long_side, 180.0 if inset > 0 else 0.0))
     rng.shuffle(out)
     return out
 
@@ -901,18 +952,25 @@ def furnish(spec):
             name, pw, pd, ph, where = pieces[k % len(pieces)]
             half = max(pw, pd) / 2.0
             spots = (_wall_slots(spec, room, pw, pd, rng) if where == "wall"
-                     else [(px, py, pw, pd) for px, py in floor_cands])
-            for (px, py, sx, sy) in spots:
+                     else [(px, py, pw, pd, 0.0) for px, py in floor_cands])
+            for (px, py, sx, sy, face_room) in spots:
                 if not _seed_clear(spec, room, px, py, placed, half=half):
                     continue
-                spec.setdefault("volumes", []).append({
+                vol = {
                     "name": f"{name}_{rtag}_{k + 1}",
                     "x": round(px, 2), "y": round(py, 2),
                     "z": round(story * sh + ph / 2.0, 3),
                     "size_x": round(sx, 3), "size_y": round(sy, 3),
                     "size_z": round(ph, 3),
                     "collision": "convex",
-                })
+                    "material": _prop_material(spec, name),
+                }
+                # a wall piece's front faces into the room, not the wall
+                # ("Chairs shouldnt face walls like this where humans couldnt
+                # sit in them", the walker, cold run 9048)
+                if face_room:
+                    vol["rot_z"] = face_room
+                spec.setdefault("volumes", []).append(vol)
                 placed.append((px, py))
                 added += 1
                 # A TABLE BRINGS ITS CHAIRS. Scattered tables read as crates;
@@ -956,6 +1014,7 @@ def furnish(spec):
                         # wall convention before a rebuild rather than after.
                         face = math.degrees(math.atan2(cx - px, cy - py))
                         spec["volumes"].append({
+                            "material": _prop_material(spec, "chair"),
                             "name": f"chair_set_{rtag}_{k + 1}_{j + 1}",
                             "x": round(cx, 2), "y": round(cy, 2),
                             "z": round(story * sh + _CHAIR_H / 2.0, 3),
@@ -984,9 +1043,254 @@ def enrich(spec):
         # `_seed_clear` then has nowhere to stand the one piece a body can
         # fight from. Gameplay-critical placement gets first pick of the
         # floor; furniture counts what is already there and fills the rest.
+        # The teller line's staff side is walled BEFORE anything is placed,
+        # so cover and furniture clear its walls and its locked doors.
+        "tellers_enclosed": sum(r["enclosed"]
+                                for r in enclose_teller_lines(spec)),
         "cover_seeded": seed_cover(spec),
         "furnished": furnish(spec),
         "cover_added": cover_from_volumes(spec),
         "landmarks_added": add_landmarks(spec),
     }
+    return report
+
+
+# ---------------------------------------------------------------------------
+# TELLER ENCLOSURE -- the staff side of a teller line is its own locked room
+# ---------------------------------------------------------------------------
+#
+# The walker, cold run 9048: "this bank teller booth should connect and be
+# locked to the public... So its a section where only employees can be there
+# and enter/exit, we only have the front of the teller windows." Measured
+# before this existed: the bank preset and every `bank_branch` / `bank_job`
+# spec author the teller line as a free-standing 12 x 0.8 x 2.4 m glass
+# barrier in the lobby (Deli Counter 0.119.0), walked round at either end --
+# the public side and the staff side were one room.
+
+#: A teller line: a volume this long and this tall whose name says teller.
+#: `teller_desk_*` (the towers' discrete desks) are islands, not a line.
+_TELLER_NAMES = ("teller_counter", "teller_line")
+_TELLER_MIN_LENGTH = 6.0
+_TELLER_MIN_HEIGHT = 2.0
+#: How deep the staff side may be, counter face to back wall. Shallower than
+#: a body plus a door leaf cannot hold a person working the counter; deeper
+#: is a back office, not the space behind a teller line.
+_STAFF_MIN_DEPTH = 1.85
+_STAFF_MAX_DEPTH = 6.0
+_STAFF_DOOR_WIDTH = 1.25            # agent_contract min_door_width_m
+_LEAF_MARGIN = 0.3                  # layout_lint.LEAF_MARGIN
+
+#: The staff door's state machine: an ordinary door that ships LOCKED, with
+#: unlock / lock and the usual toggle once unlocked. Merged over the inferred
+#: door machine (`interactives.derive_interactive`), so the id, material and
+#: breach class still come from the opening.
+STAFF_DOOR_MACHINE = {
+    "states": ["locked", "closed", "open"],
+    "default": "locked",
+    "transitions": [
+        {"event": "unlock", "from": "locked", "to": "closed"},
+        {"event": "lock", "from": "closed", "to": "locked"},
+        {"event": "toggle", "from": "closed", "to": "open"},
+        {"event": "toggle", "from": "open", "to": "closed"},
+    ],
+    "reversible": True,
+    "collision_per_state": {"locked": True, "closed": True, "open": False},
+    "access": "staff",
+}
+
+
+def _teller_lines(spec):
+    H = float(spec.get("story_height") or 3.0)
+    out = []
+    for v in spec.get("volumes") or []:
+        name = (v.get("name") or "").lower()
+        if not any(n in name for n in _TELLER_NAMES):
+            continue
+        sx, sy, sz = v.get("size_x", 0), v.get("size_y", 0), v.get("size_z", 0)
+        if max(sx, sy) < _TELLER_MIN_LENGTH or sz < _TELLER_MIN_HEIGHT:
+            continue
+        story = int(round((v["z"] - sz / 2.0) / H))
+        out.append((v, story, "X" if sx >= sy else "Y"))
+    return out
+
+
+def _room_containing(spec, story, x, y):
+    best, area = None, None
+    for r in spec.get("rooms") or []:
+        if r.get("story", 0) != story or not r.get("bounds"):
+            continue
+        x0, y0, x1, y1 = r["bounds"]
+        if x0 - 1e-6 <= x <= x1 + 1e-6 and y0 - 1e-6 <= y <= y1 + 1e-6:
+            a = (x1 - x0) * (y1 - y0)
+            if area is None or a < area:
+                best, area = r, a
+    return best
+
+
+def _public_side(spec, story, room, axis, centre):
+    """+1 / -1: the side of the counter line the room's exterior doors are
+    on, or None when the room has no exterior door on either side."""
+    hx = spec["footprint_x"] / 2.0
+    hy = spec["footprint_y"] / 2.0
+    x0, y0, x1, y1 = room["bounds"]
+    votes = 0
+    for w in spec.get("ext_walls") or []:
+        if w.get("story", 0) != story:
+            continue
+        face = w.get("wall")
+        for op in w.get("openings") or []:
+            if op.get("kind") not in ("door", "garage"):
+                continue
+            if face in ("N", "S"):
+                u, fixed = op.get("pos", 0.0) * spec["footprint_x"], (
+                    hy if face == "N" else -hy)
+                if not (x0 - 1e-6 <= u <= x1 + 1e-6):
+                    continue
+                if axis == "X":
+                    votes += 1 if fixed > centre else -1
+            else:
+                u, fixed = op.get("pos", 0.0) * spec["footprint_y"], (
+                    hx if face == "E" else -hx)
+                if not (y0 - 1e-6 <= u <= y1 + 1e-6):
+                    continue
+                if axis == "Y":
+                    votes += 1 if fixed > centre else -1
+    return None if votes == 0 else (1 if votes > 0 else -1)
+
+
+def _back_wall(spec, story, axis, centre, c0, c1, side):
+    """The nearest wall parallel to the counter on `side`, spanning it:
+    ``(pos, host_partition_or_None)`` or None."""
+    hx = spec["footprint_x"] / 2.0
+    hy = spec["footprint_y"] / 2.0
+    best = None
+    for p in spec.get("partitions") or []:
+        if p.get("story", 0) != story or str(p.get("axis")).upper() != axis:
+            continue
+        pos = float(p["pos"])
+        if (pos - centre) * side <= 0:
+            continue
+        lo, hi = sorted((p.get("start", -1e9), p.get("end", 1e9)))
+        if lo > c0 + 1e-6 or hi < c1 - 1e-6:
+            continue
+        if best is None or abs(pos - centre) < abs(best[0] - centre):
+            best = (pos, p)
+    ext = (hy if side > 0 else -hy) if axis == "X" else (hx if side > 0 else -hx)
+    if best is None or abs(ext - centre) < abs(best[0] - centre):
+        best = (ext - side * (spec.get("wall_thick") or 0.3) / 2.0, None)
+    return best
+
+
+def enclose_teller_lines(spec):
+    """Close the staff side of every teller line into its own room behind two
+    LOCKED staff doors. Idempotent: a spec that already has a
+    ``teller_staff_*`` room is left alone. Returns ``[report]``, one entry per
+    teller line: ``{"volume", "enclosed": bool, "why"}``.
+
+    For a teller line along x at y = c: the public side is the side the
+    room's exterior doors are on; the staff side runs from the counter's
+    centre line to the nearest parallel wall on the other side, across the
+    counter's length. Two partitions close its ends, each with a locked
+    `staff_door` (`STAFF_DOOR_MACHINE`), and a `staff_only` room is added
+    innermost inside the host room. A line is left open, and the report says
+    why, when the staff side is shallower than `_STAFF_MIN_DEPTH` or deeper
+    than `_STAFF_MAX_DEPTH`, when the back wall has a doorway inside the
+    counter's span (the space would not be closed), or when a stair, ladder
+    or solid volume stands where a new wall would.
+    """
+    report = []
+    if any(str(r.get("id", "")).startswith("teller_staff")
+           for r in spec.get("rooms") or []):
+        return report
+    if not spec.get("footprint_x") or not spec.get("footprint_y"):
+        return report
+    for k, (v, story, axis) in enumerate(_teller_lines(spec)):
+        entry = {"volume": v["name"], "enclosed": False, "why": ""}
+        report.append(entry)
+        room = _room_containing(spec, story, v["x"], v["y"])
+        if room is None:
+            entry["why"] = "no room holds the teller line"
+            continue
+        centre = v["y"] if axis == "X" else v["x"]
+        along = v["x"] if axis == "X" else v["y"]
+        length = v["size_x"] if axis == "X" else v["size_y"]
+        thick = v["size_y"] if axis == "X" else v["size_x"]
+        c0, c1 = along - length / 2.0, along + length / 2.0
+        public = _public_side(spec, story, room, axis, centre)
+        if public is None:
+            entry["why"] = "no exterior door says which side is public"
+            continue
+        staff = -public
+        back = _back_wall(spec, story, axis, centre, c0, c1, staff)
+        if back is None:
+            entry["why"] = "no wall behind the counter"
+            continue
+        wall_pos, host = back
+        depth = abs(wall_pos - centre) - thick / 2.0
+        if not (_STAFF_MIN_DEPTH <= depth <= _STAFF_MAX_DEPTH):
+            entry["why"] = f"staff side {depth:.2f} m deep"
+            continue
+        if host is not None:
+            lo, hi = sorted((host["start"], host["end"]))
+            blocked = False
+            for op in host.get("openings") or []:
+                if op.get("kind", "door") not in ("door", "garage", "breach"):
+                    continue
+                u = (lo + hi) / 2.0 + op.get("pos", 0.0) * (hi - lo)
+                w = float(op.get("width") or 1.0)
+                if u + w / 2.0 > c0 - _LEAF_MARGIN and u - w / 2.0 < c1 + _LEAF_MARGIN:
+                    blocked = True
+            if blocked:
+                entry["why"] = "the back wall has a doorway inside the line"
+                continue
+        z_lo = story * float(spec.get("story_height") or 3.0)
+        n_lo, n_hi = sorted((centre, wall_pos))
+        clash = None
+        for other in spec.get("volumes") or []:
+            if other is v or other.get("collision") == "none":
+                continue
+            if other["z"] + other["size_z"] / 2.0 <= z_lo + 1e-6:
+                continue
+            if other["z"] - other["size_z"] / 2.0 >= z_lo + spec["story_height"] - 1e-6:
+                continue
+            ox0, ox1 = other["x"] - other["size_x"] / 2.0, other["x"] + other["size_x"] / 2.0
+            oy0, oy1 = other["y"] - other["size_y"] / 2.0, other["y"] + other["size_y"] / 2.0
+            a_lo, a_hi, p_lo, p_hi = ((ox0, ox1, oy0, oy1) if axis == "X"
+                                      else (oy0, oy1, ox0, ox1))
+            for line in (c0, c1):
+                if a_lo - 0.1 < line < a_hi + 0.1 and p_hi > n_lo and p_lo < n_hi:
+                    clash = other["name"]
+        for rect in _stair_reserved_rects(spec):
+            x0, y0, x1, y1 = rect
+            zx0, zx1 = (c0, c1) if axis == "X" else (n_lo, n_hi)
+            zy0, zy1 = (n_lo, n_hi) if axis == "X" else (c0, c1)
+            if x1 > zx0 - 0.5 and x0 < zx1 + 0.5 and y1 > zy0 - 0.5 and y0 < zy1 + 0.5:
+                clash = "a stair"
+        for lad in spec.get("ladders") or []:
+            lx, ly = lad["x"], lad["y"]
+            a, p = (lx, ly) if axis == "X" else (ly, lx)
+            if c0 - 1.0 < a < c1 + 1.0 and n_lo - 1.0 < p < n_hi + 1.0:
+                clash = "a ladder"
+        if clash:
+            entry["why"] = f"{clash} stands where a staff wall would"
+            continue
+        wall_axis = "Y" if axis == "X" else "X"
+        material = (host or {}).get("material") or spec.get("default_material")
+        for end, tag in ((c0, "a"), (c1, "b")):
+            part = {"story": story, "axis": wall_axis, "pos": round(end, 3),
+                    "start": round(centre, 3), "end": round(wall_pos, 3),
+                    "openings": [{"kind": "door", "pos": 0.0,
+                                  "width": _STAFF_DOOR_WIDTH,
+                                  "tag": f"staff_door_{k}{tag}",
+                                  "interactive": dict(STAFF_DOOR_MACHINE)}]}
+            if material:
+                part["material"] = material
+            spec.setdefault("partitions", []).append(part)
+        bx = ([c0, n_lo, c1, n_hi] if axis == "X" else [n_lo, c0, n_hi, c1])
+        spec.setdefault("rooms", []).append({
+            "id": f"teller_staff_{k}", "story": story,
+            "bounds": [round(b, 3) for b in bx], "role": "staff_only",
+            "fortifiable": True, "combat_range": "close"})
+        entry["enclosed"] = True
+        entry["why"] = f"staff side {depth:.2f} m deep, two locked doors"
     return report

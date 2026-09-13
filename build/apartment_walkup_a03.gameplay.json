@@ -317,7 +317,24 @@
       "building": "apartment_walkup_a03"
     },
     {
-      "wall": "int_1_1p1",
+      "wall": "int_1_1",
+      "kind": "door",
+      "story": 1,
+      "x": -6.6,
+      "y": 0.0,
+      "z": 4.3,
+      "width": 1.25,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": null,
+      "breach_class": null,
+      "material": null,
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "apartment_walkup_a03"
+    },
+    {
+      "wall": "int_1_1",
       "kind": "door",
       "story": 1,
       "x": 6.6,
@@ -1358,7 +1375,7 @@
       }
     },
     {
-      "node": "int_col_1_1p1_seg0",
+      "node": "int_col_1_1_seg1",
       "material": {
         "id": "drywall",
         "acoustic": "Drywall",
@@ -1367,7 +1384,7 @@
       }
     },
     {
-      "node": "int_col_1_1p1_seg1",
+      "node": "int_col_1_1_open0_lintel",
       "material": {
         "id": "drywall",
         "acoustic": "Drywall",
@@ -1376,7 +1393,7 @@
       }
     },
     {
-      "node": "int_col_1_1p1_seg2",
+      "node": "int_col_1_1_seg2",
       "material": {
         "id": "drywall",
         "acoustic": "Drywall",
@@ -1385,7 +1402,7 @@
       }
     },
     {
-      "node": "int_col_1_1p1_seg3",
+      "node": "int_col_1_1_seg3",
       "material": {
         "id": "drywall",
         "acoustic": "Drywall",
@@ -1394,7 +1411,7 @@
       }
     },
     {
-      "node": "int_col_1_1p1_seg4",
+      "node": "int_col_1_1_seg4",
       "material": {
         "id": "drywall",
         "acoustic": "Drywall",
@@ -1403,7 +1420,7 @@
       }
     },
     {
-      "node": "int_col_1_1p1_seg5",
+      "node": "int_col_1_1_seg5",
       "material": {
         "id": "drywall",
         "acoustic": "Drywall",
@@ -1412,7 +1429,7 @@
       }
     },
     {
-      "node": "int_col_1_1p1_open0_lintel",
+      "node": "int_col_1_1_seg6",
       "material": {
         "id": "drywall",
         "acoustic": "Drywall",
@@ -1421,7 +1438,7 @@
       }
     },
     {
-      "node": "int_col_1_1p1_seg6",
+      "node": "int_col_1_1_seg7",
       "material": {
         "id": "drywall",
         "acoustic": "Drywall",
@@ -1430,7 +1447,25 @@
       }
     },
     {
-      "node": "int_col_1_1p1_seg7",
+      "node": "int_col_1_1_open1_lintel",
+      "material": {
+        "id": "drywall",
+        "acoustic": "Drywall",
+        "absorption": null,
+        "damping": null
+      }
+    },
+    {
+      "node": "int_col_1_1_seg8",
+      "material": {
+        "id": "drywall",
+        "acoustic": "Drywall",
+        "absorption": null,
+        "damping": null
+      }
+    },
+    {
+      "node": "int_col_1_1_seg9",
       "material": {
         "id": "drywall",
         "acoustic": "Drywall",
@@ -1441,438 +1476,465 @@
     {
       "node": "chair_waiting_r784cd688_1_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "table_low_r784cd688_2_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "chair_set_r784cd688_2_1_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "chair_set_r784cd688_2_2_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "counter_service_r784cd688_3_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "chair_waiting_r784cd688_4_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "table_low_r784cd688_5_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "chair_set_r784cd688_5_1_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "chair_set_r784cd688_5_2_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "counter_service_r784cd688_6_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
-      }
-    },
-    {
-      "node": "chair_waiting_r784cd688_7_col",
-      "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "table_low_r784cd688_8_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "chair_set_r784cd688_8_1_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
+      }
+    },
+    {
+      "node": "chair_set_r784cd688_8_2_col",
+      "material": {
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "counter_service_r784cd688_9_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "workbench_r35d033ba_1_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "shelf_run_r35d033ba_2_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "shelf_run_r35d033ba_5_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "table_low_rc4e54904_1_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "chair_set_rc4e54904_1_1_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "chair_set_rc4e54904_1_2_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "chair_rc4e54904_2_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "table_low_rc4e54904_3_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "chair_set_rc4e54904_3_1_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "chair_set_rc4e54904_3_2_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "chair_rc4e54904_4_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "table_low_rc4e54904_5_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "chair_set_rc4e54904_5_1_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "chair_rc4e54904_6_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "table_low_rc4e54904_7_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "chair_set_rc4e54904_7_1_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "chair_rc4e54904_8_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "table_low_rc4e54904_9_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "chair_set_rc4e54904_9_2_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "chair_rc4e54904_10_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "table_low_rc7f9c857_1_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "chair_set_rc7f9c857_1_2_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "chair_rc7f9c857_2_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "table_low_rc7f9c857_3_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "chair_set_rc7f9c857_3_1_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "chair_set_rc7f9c857_3_2_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "chair_rc7f9c857_4_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "table_low_rc7f9c857_5_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "chair_set_rc7f9c857_5_2_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "chair_rc7f9c857_6_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "table_low_rc7f9c857_7_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "chair_set_rc7f9c857_7_1_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "chair_set_rc7f9c857_7_2_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "chair_rc7f9c857_8_col",
       "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "table_low_rc7f9c857_9_col",
       "material": {
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
+      }
+    },
+    {
+      "node": "chair_set_rc7f9c857_9_2_col",
+      "material": {
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
+      }
+    },
+    {
+      "node": "chair_rc7f9c857_10_col",
+      "material": {
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
+      }
+    },
+    {
+      "node": "stair_guard_side_0_col",
+      "material": {
         "id": "concrete",
         "acoustic": "Concrete",
         "absorption": 0.7,
@@ -1880,12 +1942,39 @@
       }
     },
     {
-      "node": "chair_rc7f9c857_10_col",
+      "node": "stair_guard_rail_1_col",
+      "material": {
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
+      }
+    },
+    {
+      "node": "stair_guard_side_2_col",
       "material": {
         "id": "concrete",
         "acoustic": "Concrete",
         "absorption": 0.7,
         "damping": 0.6
+      }
+    },
+    {
+      "node": "stair_guard_rail_3_col",
+      "material": {
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
+      }
+    },
+    {
+      "node": "stair_guard_rail_4_col",
+      "material": {
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     }
   ],
@@ -2083,9 +2172,42 @@
       "building": "apartment_walkup_a03"
     },
     {
-      "id": "apartment_walkup_a03:if:c5334fbf",
+      "id": "apartment_walkup_a03:if:97f4ff0a",
       "kind": "door",
-      "slot_ref": "int_1_1p1_open0",
+      "slot_ref": "int_1_1_open0",
+      "transform": {
+        "translation": [
+          -6.6,
+          0.0,
+          4.3
+        ],
+        "rot_y": 0
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "apartment_walkup_a03"
+    },
+    {
+      "id": "apartment_walkup_a03:if:f3daac20",
+      "kind": "door",
+      "slot_ref": "int_1_1_open1",
       "transform": {
         "translation": [
           6.6,
@@ -2135,19 +2257,19 @@
       "footprint_polygon": [
         [
           -9.6,
-          -0.5
+          1.5
         ],
         [
           -6.4,
-          -0.5
+          1.5
         ],
         [
           -6.4,
-          3.5
+          5.5
         ],
         [
           -9.6,
-          3.5
+          5.5
         ]
       ],
       "clear_width_m": 1.6,
@@ -2180,13 +2302,13 @@
           "story": 0,
           "rect": [
             -8.0,
-            -1.7000000000000002,
+            0.2999999999999998,
             -6.4,
-            -0.5
+            1.5
           ],
           "point": [
             -7.2,
-            -1.1,
+            0.8999999999999999,
             0.0
           ],
           "dir": [
@@ -2199,13 +2321,13 @@
           "story": 1,
           "rect": [
             -8.0,
-            4.3,
+            6.3,
             -6.4,
-            5.5
+            7.5
           ],
           "point": [
             -7.2,
-            4.9,
+            6.9,
             3.2
           ],
           "dir": [
@@ -2217,12 +2339,12 @@
       "nav_endpoints": {
         "lower": [
           -7.2,
-          -1.1,
+          0.8999999999999999,
           0.0
         ],
         "upper": [
           -7.2,
-          4.9,
+          6.9,
           3.2
         ]
       },
@@ -2271,9 +2393,19 @@
         {
           "floor": 1,
           "kind": "door",
-          "wall": "int_1_1p1",
-          "pos": 0.24117647058823527,
-          "interactive": "apartment_walkup_a03:if:c5334fbf",
+          "wall": "int_1_1",
+          "pos": -0.3,
+          "interactive": "apartment_walkup_a03:if:97f4ff0a",
+          "default_state": "closed",
+          "connects_from": "upper_front",
+          "discharge_door": false
+        },
+        {
+          "floor": 1,
+          "kind": "door",
+          "wall": "int_1_1",
+          "pos": 0.3,
+          "interactive": "apartment_walkup_a03:if:f3daac20",
           "default_state": "closed",
           "connects_from": "upper_front",
           "discharge_door": false
@@ -2488,15 +2620,17 @@
     "int_0_0_seg6": "wall",
     "int_0_0_seg7": "wall",
     "int_1_1_seg0": "wall",
-    "int_1_1p1_seg0": "wall",
-    "int_1_1p1_seg1": "wall",
-    "int_1_1p1_seg2": "wall",
-    "int_1_1p1_seg3": "wall",
-    "int_1_1p1_seg4": "wall",
-    "int_1_1p1_seg5": "wall",
-    "int_1_1p1_open0_lintel": "doorway",
-    "int_1_1p1_seg6": "wall",
-    "int_1_1p1_seg7": "wall",
+    "int_1_1_seg1": "wall",
+    "int_1_1_open0_lintel": "doorway",
+    "int_1_1_seg2": "wall",
+    "int_1_1_seg3": "wall",
+    "int_1_1_seg4": "wall",
+    "int_1_1_seg5": "wall",
+    "int_1_1_seg6": "wall",
+    "int_1_1_seg7": "wall",
+    "int_1_1_open1_lintel": "doorway",
+    "int_1_1_seg8": "wall",
+    "int_1_1_seg9": "wall",
     "stair0_0_0": "stair",
     "stair0_0_1": "stair",
     "stair0_0_2": "stair",
@@ -2524,9 +2658,9 @@
     "chair_set_r784cd688_5_1": "prop",
     "chair_set_r784cd688_5_2": "prop",
     "counter_service_r784cd688_6": "prop",
-    "chair_waiting_r784cd688_7": "prop",
     "table_low_r784cd688_8": "prop",
     "chair_set_r784cd688_8_1": "prop",
+    "chair_set_r784cd688_8_2": "prop",
     "counter_service_r784cd688_9": "prop",
     "workbench_r35d033ba_1": "prop",
     "shelf_run_r35d033ba_2": "prop",
@@ -2563,6 +2697,12 @@
     "chair_set_rc7f9c857_7_2": "prop",
     "chair_rc7f9c857_8": "prop",
     "table_low_rc7f9c857_9": "prop",
-    "chair_rc7f9c857_10": "prop"
+    "chair_set_rc7f9c857_9_2": "prop",
+    "chair_rc7f9c857_10": "prop",
+    "stair_guard_side_0": "prop",
+    "stair_guard_rail_1": "prop",
+    "stair_guard_side_2": "prop",
+    "stair_guard_rail_3": "prop",
+    "stair_guard_rail_4": "prop"
   }
 }

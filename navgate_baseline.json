@@ -5,9 +5,9 @@
   "not_certified": "This says nothing about whether these shells SHOULD have spawn markers. Five of the seventeen were absent from the note that first recorded this set, and the note said 18 where the measurement says 17.",
   "counts": {
     "shells": 135,
-    "unjudged": 8,
+    "unjudged": 9,
     "stair_failures": 3,
-    "navigable_null": 7
+    "navigable_null": 8
   },
   "navigable_null_reconciliation": {
     "unjudged": 8,
@@ -77,6 +77,13 @@
       "navigable": null,
       "stairs_ok": true,
       "reason": "no marker whose type ends in _spawn. RECORDED, NOT EXPLAINED -- whether this shell should have one is an author decision that has not been made"
+    },
+    {
+      "shell": "bank",
+      "checked": 0,
+      "navigable": null,
+      "stairs_ok": true,
+      "reason": "no marker whose type ends in _spawn. ENTERED THE GATE IN 0.126.0 without a geometry change: _run_in_blender writes gameplay.json only when markers, rooms, vertical_links, objectives, loot, zones or surfaces exist, specs/bank.json has none but surfaces, and migrate_prop_materials gave it its first material palette (metal for its vault), so it now records surfaces and nav_gate --all picks it up (129 -> 130 shells). Whether it should have a spawn marker is an author decision that has not been made."
     }
   ],
   "stair_failures": [

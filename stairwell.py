@@ -606,6 +606,226 @@ def wall_voids(spec):
     return out
 
 
+#: A guard's height above the floor it protects: 42 in, the building-code guard
+#: height for a floor opening.
+GUARD_HEIGHT = 1.07
+#: A guard's thickness. It stands OUTSIDE the stair's reserved rectangle, so it
+#: never enters the ground `flight_rect` keeps clear for a body.
+GUARD_THICK = 0.1
+#: An existing wall this close to a guard's line already does the guard's job.
+_GUARD_COVER_TOL = 0.25
+
+
+def stair_guards(spec):
+    """``[dict]`` -- the solids that keep a body out of a stair's shaft.
+
+    THE WALKER, cold run 9048, at the bank's basement stair: "a large opening
+    to a lower level", and a stair that "needs to be thicker". Measured
+    before this existed: `containment_findings` reported every flight in the
+    bank open on both long sides, as WARNINGS, and nothing built a guard
+    anywhere. Worse, where the spec DID enclose a flight the builder removed
+    the enclosure: `corner_deli_heist_01`'s basement stairwell walls at
+    x = -13.6 and -16.75 stand inside the flight's reserved rectangle, so
+    `wall_voids` deleted them over the whole flight -- measured in the built
+    glb, the x = -13.6 wall stops at y 4.34 and resumes at 12.29 -- while
+    `_barrier_intervals`, reading the SPEC's partitions, counted them as the
+    barrier that made the stair contained. Two instruments, one of them wrong.
+
+    ONE DERIVATION, READ BY THE BUILDER AND BY THE REVIEW. Per slab-cutting,
+    interior, straight / switchback / scissor stair, per flight:
+
+    * ``side`` -- on the storey the flight climbs through, a wall along each
+      LONG edge of the reserved rectangle, from that storey's floor to the
+      slab above. Omitted when the stair's underside is ``open``: that toggle
+      exists for sightlines and routes under and beside a flight
+      (`deli_a03`), and a side wall would close both. An open stair's sides
+      stay open, and the review keeps reporting them.
+    * ``rail`` -- on the storey whose slab the hole opens, `GUARD_HEIGHT`
+      high: along both long edges, and across the ENTRY end, which from the
+      floor above is the back of a pit. The arrival end stays open; it is the
+      way off the stair. A scissor arrives at both ends and gets no end rail.
+
+    Each piece stands `GUARD_THICK / 2` outside the rectangle's edge. Pieces
+    are dropped where a built wall (a partition piece surviving `wall_voids`,
+    or the storey's exterior wall) already stands within `_GUARD_COVER_TOL`
+    of the line, and a rail is trimmed where a ``side`` of a higher flight
+    of the same stair already occupies that line, so no two solids share a
+    face. Spirals and L-shaped stairs build their own geometry and are not
+    covered here.
+
+    A piece: ``{"stair", "story", "kind", "axis", "pos", "lo", "hi"}`` --
+    ``axis`` is the guard's RUNNING axis (a Y guard runs along y at x = pos),
+    ``story`` the floor it stands on.
+    """
+    import setbacks as _sb
+    H = spec.story_height
+    wt = getattr(spec, "wall_thick", 0.3) or 0.3
+    T = GUARD_THICK
+    voids = wall_voids(spec)
+    # the walk-off margin past a flight (`flight_rect`'s `clear`) plus one
+    # doorway's width: enough to step onto a landing from beside it
+    landing_open = 0.8 + agent_contract.min_door_width()
+    raw = []
+    for i, st in enumerate(getattr(spec, "stairs", ()) or ()):
+        if (getattr(st, "exterior", False) or st.style not in
+                ("straight", "switchback", "scissor")
+                or not getattr(st, "cut_slabs", True)
+                or st.from_story == st.to_story):
+            continue
+        sid = stair_ident(st, i)
+        solid = stair_underside(spec, st) == "solid"
+        travel = "Y" if (getattr(st, "facing", "N") or "N") in ("N", "S") \
+            else "X"
+        lateral = "X" if travel == "Y" else "Y"
+        lo_s = min(st.from_story, st.to_story)
+        hi_s = max(st.from_story, st.to_story)
+        for s in range(lo_s, hi_s):
+            x0, y0, x1, y1 = flight_rect(st, s)
+            t_lo, t_hi = (y0, y1) if travel == "Y" else (x0, x1)
+            l_lo, l_hi = (x0, x1) if travel == "Y" else (y0, y1)
+            leg = s - lo_s
+            sign = 1 if (leg % 2 == 0 or st.style == "straight") else -1
+            tx, ty = _stair_pt(st, st.x, st.y + sign * st.run / 2.0)
+            t_top = ty if travel == "Y" else tx
+            arrive_hi = abs(t_top - t_hi) < abs(t_top - t_lo)
+            # THE LANDING END STAYS OPEN FROM THE SIDE. A body reaches a flight
+            # from beside its landing as often as head-on: `twin_a01`'s
+            # landing ends 0.35 m short of the back wall, so its only way on
+            # and off is sideways, and the first draft of these guards --
+            # walls along the whole reserved length -- sealed the upstairs
+            # objective off (nav gate, 0.126.0 candidate). Each long-edge
+            # piece now stops `landing_open` short of the end a body uses on
+            # ITS storey: the entry (bottom) end for a `side`, the arrival
+            # (top) end for a `rail`. A scissor is used at both ends.
+            open_ = landing_open
+            if st.style == "scissor":
+                side_span = (t_lo + open_, t_hi - open_)
+                rail_span = side_span
+            elif arrive_hi:
+                side_span = (t_lo + open_, t_hi)
+                rail_span = (t_lo, t_hi - open_)
+            else:
+                side_span = (t_lo, t_hi - open_)
+                rail_span = (t_lo + open_, t_hi)
+            for pos in (l_lo - T / 2.0, l_hi + T / 2.0):
+                if solid and side_span[1] - side_span[0] > T:
+                    raw.append({"stair": sid, "story": s, "kind": "side",
+                                "axis": travel, "pos": pos,
+                                "lo": side_span[0], "hi": side_span[1]})
+                if rail_span[1] - rail_span[0] > T:
+                    raw.append({"stair": sid, "story": s + 1, "kind": "rail",
+                                "axis": travel, "pos": pos,
+                                "lo": rail_span[0], "hi": rail_span[1]})
+            if st.style != "scissor":
+                entry = (t_lo - T / 2.0) if arrive_hi else (t_hi + T / 2.0)
+                raw.append({"stair": sid, "story": s + 1, "kind": "rail",
+                            "axis": lateral, "pos": entry,
+                            "lo": l_lo - T, "hi": l_hi + T})
+
+    def covered_by_walls(p):
+        """Intervals of the piece's line a built wall already holds."""
+        out = []
+        for part in getattr(spec, "partitions", ()) or ():
+            if part.story != p["story"] or part.axis != p["axis"] \
+                    or abs(part.pos - p["pos"]) > _GUARD_COVER_TOL:
+                continue
+            ext = _sb.storey_extent(spec, part.story)
+            out += partition_bounds.partition_spans(
+                part.start, part.end, part.axis, part.pos,
+                spec.footprint_x, spec.footprint_y,
+                voids.get(part.story, ()), min_span=wt, extent=ext)
+        ex0, ey0, ex1, ey1 = _sb.storey_extent(spec, p["story"])
+        faces = (ex0, ex1) if p["axis"] == "Y" else (ey0, ey1)
+        if any(abs(f - p["pos"]) <= wt / 2.0 + T + _GUARD_COVER_TOL
+               for f in faces):
+            out.append((p["lo"], p["hi"]))
+        return out
+
+    def other_stairs(p):
+        """Intervals of the line inside ANOTHER stair's reserved rectangle on
+        this storey (its air, or its hole). Measured on `deli_a01..a03`: the
+        basement stair and the up stair stand side by side, and each one's
+        guard ran through the other's flight."""
+        out = []
+        for j, other in enumerate(getattr(spec, "stairs", ()) or ()):
+            if stair_ident(other, j) == p["stair"] or other.style == "spiral":
+                continue
+            olo = min(other.from_story, other.to_story)
+            ohi = max(other.from_story, other.to_story)
+            for k in range(olo, ohi):
+                if p["story"] not in (k, k + 1):
+                    continue
+                if k + 1 == p["story"] and not getattr(other, "cut_slabs",
+                                                      True):
+                    continue
+                a0, b0, a1, b1 = flight_rect(other, k)
+                if p["axis"] == "Y" and a0 - T < p["pos"] < a1 + T:
+                    out.append((b0 - T, b1 + T))
+                elif p["axis"] == "X" and b0 - T < p["pos"] < b1 + T:
+                    out.append((a0 - T, a1 + T))
+        return out
+
+    def doorways(p):
+        """Intervals of the line a doorway needs: a guard crossing a
+        perpendicular wall inside that wall's door aperture would stand in
+        the doorway (`credit_union_a02`). The guard stops a body's approach
+        depth either side of the wall."""
+        import layout_lint as _ll
+        out = []
+        hx, hy = spec.footprint_x / 2.0, spec.footprint_y / 2.0
+        for part in getattr(spec, "partitions", ()) or ():
+            if part.story != p["story"] or part.axis == p["axis"]:
+                continue
+            host = {"axis": part.axis, "start": part.start, "end": part.end,
+                    "openings": [{"kind": o.kind, "pos": o.pos,
+                                  "width": o.width} for o in part.openings]}
+            spec_dims = {"footprint_x": spec.footprint_x,
+                         "footprint_y": spec.footprint_y}
+            for along, w, _label in _ll._host_openings(spec_dims, host,
+                                                        False):
+                if abs(along - p["pos"]) < w / 2.0 + T:
+                    r = _ll.DOOR_APPROACH_M
+                    out.append((part.pos - r, part.pos + r))
+        return out
+
+    def solid_volumes(p):
+        """Intervals of the line a solid volume already stands on. Measured
+        across the library when the guards were first derived: 12 volumes in
+        6 specs stood where a guard would -- `bank_job`'s VAULT, a manager's
+        filing cabinet, a console cluster -- and a guard through a solid is
+        two boxes in one place. The volume is the barrier there."""
+        out = []
+        z_lo = p["story"] * H
+        z_hi = z_lo + (H if p["kind"] == "side" else GUARD_HEIGHT)
+        for v in getattr(spec, "volumes", ()) or ():
+            if getattr(v, "collision", "convex") == "none" \
+                    or v.name.startswith("stair_guard_"):
+                continue                    # the builder bakes guards AS volumes
+            if v.z + v.size_z / 2.0 <= z_lo + 1e-6 \
+                    or v.z - v.size_z / 2.0 >= z_hi - 1e-6:
+                continue
+            vx0, vx1 = v.x - v.size_x / 2.0, v.x + v.size_x / 2.0
+            vy0, vy1 = v.y - v.size_y / 2.0, v.y + v.size_y / 2.0
+            if p["axis"] == "Y" and vx0 - T / 2 < p["pos"] < vx1 + T / 2:
+                out.append((vy0 - T, vy1 + T))
+            elif p["axis"] == "X" and vy0 - T / 2 < p["pos"] < vy1 + T / 2:
+                out.append((vx0 - T, vx1 + T))
+        return out
+
+    pieces = []
+    for p in raw:
+        cuts = (covered_by_walls(p) + other_stairs(p) + doorways(p)
+                + solid_volumes(p))
+        if p["kind"] == "rail":
+            cuts += [(q["lo"], q["hi"]) for q in raw
+                     if q["kind"] == "side" and q["stair"] == p["stair"]
+                     and q["story"] == p["story"] and q["axis"] == p["axis"]
+                     and abs(q["pos"] - p["pos"]) < 1e-6]
+        for a, b in partition_bounds.subtract(p["lo"], p["hi"], cuts, T):
+            pieces.append(dict(p, lo=a, hi=b))
+    return pieces
+
+
 def slab_openings(spec):
     """``{slab story: [world rects]}`` -- everything that opens a slab.
 
@@ -816,7 +1036,7 @@ def _largest_gap(span_lo, span_hi, covered):
     return max(gap, span_hi - cursor)
 
 
-def _barrier_intervals(spec, st, edge):
+def _barrier_intervals(spec, st, edge, guard_kinds=("side", "rail")):
     """Covered intervals along `edge` from any body-retaining barrier: the
     exterior shell, an interior partition, or a solid guard/wall volume with
     REAL collision. Returns [(lo, hi)] on the edge's span axis. A named guard
@@ -837,16 +1057,40 @@ def _barrier_intervals(spec, st, edge):
             or (fixed_axis == "Y" and abs(abs(fixed_val) - iy) <= env):
         covered.append((span_lo, span_hi))
 
-    # interior partitions parallel to the edge, within envelope of its line
+    # interior partitions parallel to the edge, within envelope of its line --
+    # THE PIECES THE BUILDER BUILDS, not the authored run. `wall_voids` deletes
+    # a wall standing inside a stair's reserved rectangle; measured in
+    # `corner_deli_heist_01`'s glb, its basement stairwell walls are absent
+    # along the whole flight, and this review used to count them as the
+    # barrier that contained it.
+    import setbacks as _sb
+    voids = wall_voids(spec)
     for p in spec.partitions:
         if p.story not in served:
             continue
-        p_lo, p_hi = min(p.start, p.end), max(p.start, p.end)
-        if fixed_axis == "X" and p.axis == "Y" and abs(p.pos - fixed_val) <= env:
-            covered.append((p_lo, p_hi))
-        elif fixed_axis == "Y" and p.axis == "X" \
-                and abs(p.pos - fixed_val) <= env:
-            covered.append((p_lo, p_hi))
+        parallel = ((fixed_axis == "X" and p.axis == "Y") or
+                    (fixed_axis == "Y" and p.axis == "X"))
+        if not parallel or abs(p.pos - fixed_val) > env:
+            continue
+        covered += partition_bounds.partition_spans(
+            p.start, p.end, p.axis, p.pos, spec.footprint_x,
+            spec.footprint_y, voids.get(p.story, ()),
+            min_span=spec.wall_thick,
+            extent=_sb.storey_extent(spec, p.story))
+
+    # the stair guards the builder bakes (`stair_guards`) -- the same list, so
+    # this review and the geometry cannot disagree about what contains a body
+    # A RAIL guards a hole's edge on the floor above; it does nothing for a
+    # body on the flight beside it, so a flight SIDE counts only `side` pieces.
+    for g in stair_guards(spec):
+        if g["story"] not in served or g["kind"] not in guard_kinds:
+            continue
+        if fixed_axis == "X" and g["axis"] == "Y" \
+                and abs(g["pos"] - fixed_val) <= env:
+            covered.append((g["lo"], g["hi"]))
+        elif fixed_axis == "Y" and g["axis"] == "X" \
+                and abs(g["pos"] - fixed_val) <= env:
+            covered.append((g["lo"], g["hi"]))
 
     # solid guard / wall volumes with real collision, overlapping the flight z
     for v in spec.volumes:
@@ -891,7 +1135,9 @@ def containment_findings(spec, st, sid):
         fixed_axis, _, span_lo, span_hi, normal = edge
         if normal in mouths:
             continue                    # authorized entry/exit -- must stay open
-        gap = _largest_gap(span_lo, span_hi, _barrier_intervals(spec, st, edge))
+        kinds = ("side", "rail") if fixed_axis == mouth_axis else ("side",)
+        gap = _largest_gap(span_lo, span_hi,
+                           _barrier_intervals(spec, st, edge, kinds))
         if gap <= LATERAL_ENVELOPE:
             continue                    # contained: no person-sized gap
         if fixed_axis == mouth_axis:

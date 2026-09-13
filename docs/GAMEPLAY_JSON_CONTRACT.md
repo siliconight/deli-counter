@@ -196,6 +196,24 @@ Rules of the road for consumers:
   route under the high end. It is a level-design toggle (stair, building, or
   build; default solid -- see AUTHORING.md), so AI line-of-sight and cover
   logic should read it rather than assume either.
+- Stair guards (kit 0.126+) are baked as ordinary solid volumes named
+  `stair_guard_side_<n>` (a wall along a flight's long edge, storey floor to
+  slab) and `stair_guard_rail_<n>` (1.07 m, around the hole on the floor
+  above). They carry collision and appear in `slots.json` as props, so AI
+  cover and line-of-sight code should treat them like any other wall-height
+  or waist-height solid. Each long-edge guard stops 2.05 m short of the end a
+  body uses on its storey, so a flight is always reachable from beside its
+  landing; `stairwell.stair_guards` is the derivation.
+
+### staff doors (kit 0.126+)
+
+A teller line's staff side is its own room (`role: "staff_only"`,
+`id: "teller_staff_<n>"`) behind doors tagged `staff_door_<n><a|b>`. Their
+interactive machine is authored, not inferred, and ships LOCKED:
+`states: ["locked", "closed", "open"]`, `default: "locked"`, `unlock`
+(locked -> closed), `lock` (closed -> locked), `toggle` (closed <-> open), and
+`access: "staff"`. A mission layer decides who may unlock one; the building
+only says it starts locked and is for staff.
 
 ### circulation_contract (kit 0.78+)
 
