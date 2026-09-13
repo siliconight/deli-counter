@@ -2335,9 +2335,20 @@ def twin(name: str = "twin_preset",
     # gate was a hand-placed stair, and `migrate_stair_pitch` re-seats one
     # the circulation contract refuses.
     sh = 2.9
-    fx, fy = 16.0, 11.0      # two 8 m halves, front to back
+    # 13 m deep, not 11: a stair a body can climb is 3.8 m of run over this
+    # 2.9 m storey (`stair_pitch`), and a switchback's footprint is its run
+    # plus about 2.2 m of landing -- 6.0 m, which an 11 m twin's 5 m back
+    # room cannot hold. Measured: at 11 m the lengthened stairs passed the
+    # circulation contract and layout lint L19 and the nav gate still found
+    # the upstairs objective unreachable. A Delco twin half is 12-14 m deep.
+    fx, fy = 16.0, 13.0      # two 8 m halves, front to back
     hx, hy = fx / 2, fy / 2
     qx = fx / 4              # centre of a half: 4.0 m off the party wall
+    # Front room / back room partition line, 1.5 m forward of centre: the
+    # switchback's top flight ascends toward the front and at xp = 0 the
+    # stair review refused it (STAIR_EXIT_FACES_SOLID) -- nav passed, a body
+    # would have stepped off into drywall.
+    xp = -1.5
     spec = {
         "$schema": "../schema/level.schema.json",
         "name": name, "mode": mode, "seed": 1997, "grid": 0.5,
@@ -2394,18 +2405,22 @@ def twin(name: str = "twin_preset",
                       "start": -hy, "end": hy, "material": "stone_ext",
                       "openings": []})
         # one cross-partition per half, front room from back. Runs along X
-        # (east-west) at y = 0.5, stopping either side of the party wall.
+        # (east-west) at y = xp, stopping either side of the party wall.
         for x_lo, x_hi, door in ((-hx, -0.3, -0.35), (0.3, hx, 0.35)):
-            parts.append({"story": st, "axis": "X", "pos": 0.5,
+            parts.append({"story": st, "axis": "X", "pos": xp,
                           "start": x_lo, "end": x_hi,
                           "material": "drywall",
                           "openings": [{"kind": "door", "pos": door, "width": 1.2}]})
     spec["partitions"] = parts
     stair_lo = -1 if basement else 0
     spec["stairs"] = [
-        {"x": -qx + 1.6, "y": hy - 2.6, "from_story": stair_lo, "to_story": 1,
+        # CENTRED IN EACH HALF. At 1.6 m off the half's centre a 3.8 m flight
+        # tops out against the party wall and its 0.8 m walk-off lands inside
+        # the wall: the nav gate's "objective unreachable" on the lengthened
+        # twin, with both stairs reported traversable.
+        {"x": -qx, "y": hy - 3.2, "from_story": stair_lo, "to_story": 1,
          "width": 0.9, "run": 3.0, "style": "switchback", "cut_slabs": True},
-        {"x": qx - 1.6, "y": hy - 2.6, "from_story": stair_lo, "to_story": 1,
+        {"x": qx, "y": hy - 3.2, "from_story": stair_lo, "to_story": 1,
          "width": 0.9, "run": 3.0, "style": "switchback", "cut_slabs": True},
     ]
     spec["vertical_links"] = [
@@ -2455,7 +2470,7 @@ def twin(name: str = "twin_preset",
                     if st == 0 else (1.20, 0.60, 1.90, "wood", "wardrobe"))
             sx, sy, sz, mat, what = tall
             spec["volumes"].append(
-                {"name": f"{what}_{side}_{st}", "x": sgn * 6.0, "y": 4.6,
+                {"name": f"{what}_{side}_{st}", "x": sgn * 6.0, "y": hy - 1.4,
                  "z": st * sh + sz / 2.0,
                  "size_x": sx, "size_y": sy, "size_z": sz,
                  "collision": "convex", "material": mat})
@@ -2464,13 +2479,13 @@ def twin(name: str = "twin_preset",
         for side, sgn in (("left", -1), ("right", 1)):
             x_lo, x_hi = (-hx, -0.3) if sgn < 0 else (0.3, hx)
             rooms.append({"id": f"front_{side}_{st}", "story": st,
-                          "bounds": [x_lo, -hy, x_hi, 0.5],
+                          "bounds": [x_lo, -hy, x_hi, xp],
                           "role": "public_entry" if st == 0 else "objective_room",
                           "combat_range": "close",
                           **({"objective": True, "fortifiable": True}
                              if st == 1 and sgn > 0 else {})})
             rooms.append({"id": f"back_{side}_{st}", "story": st,
-                          "bounds": [x_lo, 0.5, x_hi, hy],
+                          "bounds": [x_lo, xp, x_hi, hy],
                           "role": "connector", "combat_range": "close"})
     spec["rooms"] = rooms
     markers = []

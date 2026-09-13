@@ -493,6 +493,10 @@
           },
           "transfer": {
             "type": "boolean"
+          },
+          "open_under": {
+            "type": "boolean",
+            "description": "Leave the space under the flight open rather than solid to the floor; set only where a route passes under the stair, with the reason in meta.open_under_why."
           }
         }
       }

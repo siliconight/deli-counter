@@ -1,3 +1,29 @@
+## [0.124.1] - 2026-09-13  two shells the walkable stairs broke, and why
+
+0.124.0's gate log, compared shell by shell with the one before any furniture,
+had two new unreachable objectives: `deli_a03` and `twin_a01`. The pre-commit
+hook passed anyway, because `nav_gate`'s summary counts traversal, not the
+verdict it prints above it. Each was diagnosed by building the variants apart.
+
+**`deli_a03`: the solid underside.** Unchanged stairs and no furniture still
+failed; the same build with the underside disabled passed. Its basement
+stair's slab hole leaves 0.4 m beside the upper flight, so the only route to
+the upstairs objective ran under that flight's high end. `Stairwell.open_under`
+leaves a flight's underside open; it is set on `deli_stair_up` alone, with the
+measurement in `meta.open_under_why`. One stair in the library.
+
+**`twin_a01`: the plan was too shallow for a stair a body can climb.**
+Lengthening its 44 degree switchbacks to 38 passed the circulation contract and
+L19 and failed the nav gate, underside or not. Three measured corrections to
+the preset: 13 m deep instead of 11 (a switchback is its run plus about 2.2 m
+of landing); stairs centred in each half, because 1.6 m off centre a 3.8 m
+flight topped out against the party wall with its walk-off inside it; and the
+cross partition 1.5 m forward, because at the centre line the stair review
+refused the top exit as facing drywall.
+
+After both: 714 tests, and the regenerated twin and furnished `deli_a03` pass
+the nav gate.
+
 ## [0.124.0] - 2026-09-13  the walker's first in-game feedback
 
 On cold run 9046's walk copy the walker reported three things: "chairs should

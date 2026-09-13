@@ -1661,6 +1661,12 @@ class _Builder:
                 # beneath it. Scissor channels share a shaft and stay open.
                 solid_under = ((st.style == "straight" and leg == 0) or
                                (st.style == "switchback" and leg < 2))
+                # ...unless the plan walks under it. Measured on `deli_a03`:
+                # its basement stair's slab hole leaves 0.4 m beside the
+                # upper flight, the only route to the upstairs objective ran
+                # under that flight's high end, and a solid fill made the
+                # objective unreachable (with the fill disabled, reachable).
+                solid_under = solid_under and not getattr(st, "open_under", False)
                 # A leg that ends in a landing does not need a top tread: the
                 # landing tops out at the same z + H, spans both runs, and sits
                 # at the turn. Two plates for one surface is what made the top

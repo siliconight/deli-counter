@@ -160,6 +160,11 @@ class Stairwell:
     # may shift footprint at the junction floor, provided the review can walk
     # between the two approach rooms on that floor.
     transfer: bool = False
+    # Leave the space under this flight OPEN instead of building it solid to
+    # the floor. The default is solid (the walker: "stairs should have a solid
+    # bottom to the ground"); a plan whose only route passes under a stair's
+    # high end sets this, with the measurement in `meta.open_under_why`.
+    open_under: bool = False
     cut_slabs: bool = True           # punch holes in slabs it passes through
     step_rise: float = 0.2           # target rise per step (m); game-feel default
     n_steps: Optional[int] = None    # override; else derived per floor
