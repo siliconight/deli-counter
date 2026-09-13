@@ -1,3 +1,14 @@
+## [0.123.2] - 2026-09-13  a room's name cannot steal its furniture
+
+Cold run 9046's kit reported 17 species fallbacks, all in one kind of room.
+`prop_species` matches keywords anywhere in a volume's name, in table order,
+and `furnish` put the room id in every name -- so in a room called
+`teller_line`, `chair_set_teller_line_1_1` routed to `teller_line` before
+`chair` was tried, and Zoo built a box. Any room id containing a keyword
+(`safe`, `counter`, `tank`, `station`, `desk`) did the same. Names now carry
+`r` plus a crc32 of the room id; a test proves no species keyword can occur
+inside that tag at any alignment.
+
 ## [0.123.1] - 2026-09-13  the chairs are chairs
 
 Cold run 9045's hall frame: a table between two wooden cubes. Every chair

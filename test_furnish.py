@@ -223,3 +223,37 @@ def test_every_piece_is_a_size_its_species_builds():
             if not lo - 1e-9 <= v <= hi + 1e-9:
                 bad.append(f"{name} -> {sp}: {label} {v} outside {lo}-{hi}")
     assert not bad, bad
+
+
+def test_a_room_id_cannot_hijack_its_furniture_into_another_species():
+    """`prop_species` matches keywords anywhere in a name, in table order. In
+    a room called `teller_line`, `chair_set_teller_line_1_1` routed to
+    `teller_line` before `chair` was tried, and Zoo built the fallback box --
+    17 of them on cold run 9046. Furniture names carry a crc32 tag of the
+    room id instead, and a tag is `r` plus hex digits."""
+    for rid in ("teller_line", "safe_room", "counter_area", "tank_room",
+                "desk_pool", "station_1", "bar_back", "col_bay"):
+        s = _spec(20.0, 16.0, role="lobby")
+        s["rooms"][0]["id"] = rid
+        level_design.furnish(s)
+        for v in s["volumes"]:
+            want = v["name"].split("_r")[0]
+            got = prop_species.species_for_name(v["name"])
+            assert got == prop_species.species_for_name(want + "_x_1"), \
+                (rid, v["name"], got)
+    # and no species keyword can occur inside a tag at ANY alignment. The tag
+    # is `_r` then eight hex digits then `_`; a set-of-letters check was the
+    # first spelling of this and wrongly flagged `bar_`, whose `r` would have
+    # to be followed by `_` where a tag's `r` is followed by a hex digit.
+    template = ["_", "r"] + [None] * 8 + ["_"]      # None: any hex digit
+    hexd = set("0123456789abcdef")
+
+    def fits(word, at):
+        for i, ch in enumerate(word):
+            slot = template[at + i]
+            if (slot is None and ch not in hexd) or                     (slot is not None and ch != slot):
+                return False
+        return True
+    for words, _sp in prop_species.PROP_SPECIES:
+        for w in words:
+            assert not any(fits(w, at) for at in range(len(template) - len(w) + 1)), w

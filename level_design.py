@@ -679,6 +679,13 @@ _FURNISH_PER_AREA = 16.0   # one piece per this many square metres
 _FURNISH_MAX = 10          # past this a room stops being walkable
 
 
+def _room_tag(room):
+    """A room's tag for furniture names: ``r`` and a crc32 of its id. Digits
+    only after the ``r``, so no species keyword can appear in it."""
+    import zlib
+    return "r%08x" % (zlib.crc32(str(room.get("id", "")).encode("utf-8")) & 0xFFFFFFFF)
+
+
 def _furniture_for(room):
     key = ((room.get("role") or "") + " " + str(room.get("id", ""))).lower()
     for words, pieces in _FURNITURE:
@@ -854,7 +861,15 @@ def furnish(spec):
         # hospital on a re-enrich. A room this pass has already touched is
         # recognisable from its volume NAMES and is skipped outright.
         stems = {p[0] for p in pieces} | {"chair_set"}
-        mark = f"_{room['id']}_"
+        # THE ROOM IS NAMED BY A HASH, NOT BY ITS ID. `prop_species` matches
+        # keywords anywhere in a volume's name, in table order, so a room id
+        # that contains one hijacks every piece in it: in a room called
+        # `teller_line`, `chair_set_teller_line_1_1` routes to `teller_line`
+        # before `chair` is ever tried, and Zoo builds the fallback box.
+        # Cold run 9046's kit reported 17 such fallbacks. A crc32 of the id
+        # is deterministic and made of digits, which no keyword is.
+        rtag = _room_tag(room)
+        mark = f"_{rtag}_"
         # `rsplit("_", 2)[0]` was the first spelling of this and it fails on
         # any room id carrying an underscore -- `chair_waiting` in room
         # `waiting_area` splits to `chair_waiting_waiting`, matches no stem,
@@ -891,7 +906,7 @@ def furnish(spec):
                 if not _seed_clear(spec, room, px, py, placed, half=half):
                     continue
                 spec.setdefault("volumes", []).append({
-                    "name": f"{name}_{room['id']}_{k + 1}",
+                    "name": f"{name}_{rtag}_{k + 1}",
                     "x": round(px, 2), "y": round(py, 2),
                     "z": round(story * sh + ph / 2.0, 3),
                     "size_x": round(sx, 3), "size_y": round(sy, 3),
@@ -929,7 +944,7 @@ def furnish(spec):
                                            half=0.25):
                             continue
                         spec["volumes"].append({
-                            "name": f"chair_set_{room['id']}_{k + 1}_{j + 1}",
+                            "name": f"chair_set_{rtag}_{k + 1}_{j + 1}",
                             "x": round(cx, 2), "y": round(cy, 2),
                             "z": round(story * sh + _CHAIR_H / 2.0, 3),
                             "size_x": 0.5, "size_y": 0.5, "size_z": _CHAIR_H,
