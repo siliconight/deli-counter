@@ -639,7 +639,7 @@ def seed_cover(spec):
 _FURNITURE = (
     (("office", "manager", "exec", "admin", "suite", "detective", "staff"),
      (("desk", 1.6, 0.8, 0.75, "floor"),
-      ("chair", 0.55, 0.55, 0.45, "floor"),
+      ("chair", 0.55, 0.55, 0.9, "floor"),
       ("cabinet_file", 0.9, 0.5, 1.4, "wall"),
       ("shelf_run", 2.0, 0.4, 1.9, "wall"))),
     (("storage", "stock", "back", "parts", "ware", "supply"),
@@ -656,19 +656,25 @@ _FURNITURE = (
       ("safe_floor", 0.9, 0.9, 1.0, "floor"))),
     (("utility", "plant", "mech", "boiler", "server"),
      (("tank_water", 1.2, 1.2, 1.8, "wall"),
-      ("cabinet_panel", 0.9, 0.4, 1.8, "wall"),
+      ("cabinet_panel", 0.9, 0.5, 1.8, "wall"),
       ("shelf_run", 2.0, 0.5, 1.9, "wall"))),
     (("lobby", "public", "hall", "concourse", "booking", "ward", "waiting",
       "entry", "floor", "retail", "shop_floor"),
-     (("chair_waiting", 2.4, 0.6, 0.45, "wall"),
+     (("chair_waiting", 2.4, 0.6, 0.9, "wall"),
       ("table_low", 1.0, 0.6, 0.45, "floor"),
       ("counter_service", 2.2, 0.8, 1.05, "wall"))),
 )
 #: Anything whose role matches nothing above. A room with a table and two
 #: chairs reads as a room; a room with nothing reads as a corridor.
 _FURNITURE_DEFAULT = (("table_low", 1.2, 0.8, 0.5, "floor"),
-                      ("chair", 0.55, 0.55, 0.45, "floor"))
+                      ("chair", 0.55, 0.55, 0.9, "floor"))
 _FURNISH_MIN_AREA = 9.0    # below this a room is a cupboard
+#: A chair is a SEAT AND A BACK, 0.9 m to the top of the back. 0.45 m -- the
+#: seat alone -- was the first value here, and it is below Zoo's `chair`
+#: height range (0.5-1.1), so every chair this pass wrote in 0.122.0 and
+#: 0.123.0 fell back to a plain box: cold run 9045's hall frame is a table
+#: flanked by two wooden cubes. Still well under shelter height.
+_CHAIR_H = 0.9
 _FURNISH_PER_AREA = 16.0   # one piece per this many square metres
 _FURNISH_MAX = 10          # past this a room stops being walkable
 
@@ -925,8 +931,8 @@ def furnish(spec):
                         spec["volumes"].append({
                             "name": f"chair_set_{room['id']}_{k + 1}_{j + 1}",
                             "x": round(cx, 2), "y": round(cy, 2),
-                            "z": round(story * sh + 0.45 / 2.0, 3),
-                            "size_x": 0.5, "size_y": 0.5, "size_z": 0.45,
+                            "z": round(story * sh + _CHAIR_H / 2.0, 3),
+                            "size_x": 0.5, "size_y": 0.5, "size_z": _CHAIR_H,
                             "collision": "convex",
                         })
                         added += 1

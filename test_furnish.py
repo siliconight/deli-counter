@@ -185,3 +185,41 @@ def test_a_table_brings_its_chairs_and_the_set_is_still_idempotent():
     assert all(prop_species.species_for_name(c["name"]) == "chair" for c in chairs)
     assert level_design.furnish(s) == 0
     assert len(s["volumes"]) == first
+
+
+#: Zoo's genome ranges for every species furnish routes to, as of Zoo 0.76.0,
+#: ``species: (width, depth, height)`` as (min, max). Duplicated rather than
+#: imported because Zoo is a separate repo -- the same reason
+#: `material_kind.SKIN_KINDS` is a literal. A slot outside its species' range
+#: is built as a plain box, so this is what "routes to a species" has to mean.
+_ZOO_RANGES = {
+    "desk": ((1.0, 12.0), (0.5, 6.0), (0.65, 1.3)),
+    "chair": ((0.38, 12.0), (0.38, 2.0), (0.5, 1.1)),
+    "table": ((0.6, 8.0), (0.6, 2.0), (0.4, 0.95)),
+    "counter": ((0.8, 12.0), (0.5, 2.0), (0.85, 1.2)),
+    "shelving": ((0.6, 20.0), (0.3, 1.4), (0.9, 4.5)),
+    "filing_cabinet": ((0.35, 4.0), (0.5, 0.9), (0.7, 2.1)),
+    "drop_safe": ((0.4, 1.2), (0.4, 1.0), (0.4, 1.5)),
+    "water_tank": ((1.2, 3.0), (1.2, 3.0), (1.8, 4.5)),
+}
+
+
+def test_every_piece_is_a_size_its_species_builds():
+    """The name test above passed while every chair this pass wrote was a
+    box: `chair` routes to the species by NAME, and at 0.45 m it was below
+    the species' 0.5 m minimum, so Zoo built the fallback. Cold run 9045's
+    hall frame showed a table between two wooden cubes. Routing by name and
+    building as the species are two different claims; this is the second."""
+    pieces = [p for _, ps in level_design._FURNITURE for p in ps]
+    pieces += list(level_design._FURNITURE_DEFAULT)
+    pieces.append(("chair_set", 0.5, 0.5, level_design._CHAIR_H, "floor"))
+    bad = []
+    for name, w, d, h, _where in pieces:
+        sp = prop_species.species_for_name(name + "_room_1")
+        rng = _ZOO_RANGES.get(sp)
+        assert rng is not None, (name, sp)
+        for label, v, (lo, hi) in zip(("width", "depth", "height"),
+                                      (max(w, d), min(w, d), h), rng):
+            if not lo - 1e-9 <= v <= hi + 1e-9:
+                bad.append(f"{name} -> {sp}: {label} {v} outside {lo}-{hi}")
+    assert not bad, bad
