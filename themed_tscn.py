@@ -401,7 +401,15 @@ def _fit_rotation(module_ext, gb_ext, fallback=0, scale=None):
     tscn_export.godot_basis). Fit what will be placed."""
     from tscn_export import godot_basis, placed_extent
     best, best_err = fallback, 1e18
-    for rot in (0, 90, 180, 270):
+    # THE SLOT'S OWN ROTATION IS TRIED FIRST, SO A TIE KEEPS IT. In the order
+    # 0, 90, 180, 270 a module whose footprint is symmetric -- a square chair
+    # -- tied at 0 and 180 and always came out at 0, so no rotation written
+    # upstream could ever turn one round (the walker, cold run 9046: chairs
+    # should face the table).
+    fb = int(round(float(fallback or 0))) % 360
+    order = ([fb] if fb in (0, 90, 180, 270) else []) + \
+        [r for r in (0, 90, 180, 270) if r != fb]
+    for rot in order:
         b = godot_basis(rot, scale or [1.0, 1.0, 1.0])
         pl = placed_extent(b, module_ext)
         err = abs(pl[0] - gb_ext[0]) + abs(pl[2] - gb_ext[2])

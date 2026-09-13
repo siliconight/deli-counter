@@ -196,17 +196,18 @@
  "stairs": [
   {
    "x": -17.0,
-   "y": 7.5,
+   "y": 6.5,
    "from_story": -1,
    "to_story": 0,
    "style": "switchback",
    "cut_slabs": true,
    "facing": "N",
    "id": "dp02_stair_n",
-   "role": "service"
+   "role": "service",
+   "run": 6.4
   },
   {
-   "x": -17.0,
+   "x": -16.0,
    "y": -7.0,
    "from_story": -1,
    "to_story": 0,
@@ -214,7 +215,8 @@
    "cut_slabs": true,
    "facing": "E",
    "id": "dp02_stair_s",
-   "role": "public_convenience"
+   "role": "public_convenience",
+   "run": 6.4
   }
  ],
  "ladders": [
@@ -276,7 +278,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_rbe45d62e_2_2",
@@ -286,7 +289,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "counter_service_rbe45d62e_3",
@@ -326,7 +330,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_rbe45d62e_5_2",
@@ -336,7 +341,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "counter_service_rbe45d62e_6",
@@ -360,8 +366,8 @@
   },
   {
    "name": "table_low_rbe45d62e_8",
-   "x": -14.27,
-   "y": -4.74,
+   "x": 1.38,
+   "y": -10.93,
    "z": 0.225,
    "size_x": 1.0,
    "size_y": 0.6,
@@ -369,24 +375,15 @@
    "collision": "convex"
   },
   {
-   "name": "chair_set_rbe45d62e_8_1",
-   "x": -14.27,
-   "y": -5.49,
-   "z": 0.45,
-   "size_x": 0.5,
-   "size_y": 0.5,
-   "size_z": 0.9,
-   "collision": "convex"
-  },
-  {
    "name": "chair_set_rbe45d62e_8_2",
-   "x": -14.27,
-   "y": -3.99,
+   "x": 1.38,
+   "y": -10.18,
    "z": 0.45,
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "counter_service_rbe45d62e_9",
@@ -410,8 +407,8 @@
   },
   {
    "name": "table_low_rbe45d62e_11",
-   "x": 1.38,
-   "y": -10.93,
+   "x": 1.15,
+   "y": -7.02,
    "z": 0.225,
    "size_x": 1.0,
    "size_y": 0.6,
@@ -419,14 +416,26 @@
    "collision": "convex"
   },
   {
-   "name": "chair_set_rbe45d62e_11_2",
-   "x": 1.38,
-   "y": -10.18,
+   "name": "chair_set_rbe45d62e_11_1",
+   "x": 1.15,
+   "y": -7.77,
    "z": 0.45,
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
+  },
+  {
+   "name": "chair_set_rbe45d62e_11_2",
+   "x": 1.15,
+   "y": -6.27,
+   "z": 0.45,
+   "size_x": 0.5,
+   "size_y": 0.5,
+   "size_z": 0.9,
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "counter_service_rbe45d62e_12",
@@ -440,8 +449,8 @@
   },
   {
    "name": "table_low_rbe45d62e_14",
-   "x": 1.15,
-   "y": -7.02,
+   "x": -4.53,
+   "y": 0.42,
    "z": 0.225,
    "size_x": 1.0,
    "size_y": 0.6,
@@ -450,23 +459,25 @@
   },
   {
    "name": "chair_set_rbe45d62e_14_1",
-   "x": 1.15,
-   "y": -7.77,
+   "x": -4.53,
+   "y": -0.33,
    "z": 0.45,
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_rbe45d62e_14_2",
-   "x": 1.15,
-   "y": -6.27,
+   "x": -4.53,
+   "y": 1.17,
    "z": 0.45,
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "counter_service_rbe45d62e_15",
@@ -480,8 +491,8 @@
   },
   {
    "name": "table_low_rbe45d62e_17",
-   "x": -4.53,
-   "y": 0.42,
+   "x": -5.22,
+   "y": -7.24,
    "z": 0.225,
    "size_x": 1.0,
    "size_y": 0.6,
@@ -490,23 +501,25 @@
   },
   {
    "name": "chair_set_rbe45d62e_17_1",
-   "x": -4.53,
-   "y": -0.33,
+   "x": -5.22,
+   "y": -7.99,
    "z": 0.45,
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_rbe45d62e_17_2",
-   "x": -4.53,
-   "y": 1.17,
+   "x": -5.22,
+   "y": -6.49,
    "z": 0.45,
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_waiting_r3d03d21b_1",
@@ -536,7 +549,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_r3d03d21b_2_2",
@@ -546,7 +560,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "counter_service_r3d03d21b_3",
@@ -586,7 +601,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_r3d03d21b_5_2",
@@ -596,7 +612,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "counter_service_r3d03d21b_6",
@@ -636,7 +653,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "counter_service_r3d03d21b_9",
@@ -676,7 +694,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "counter_service_r55335a56_3",
@@ -716,7 +735,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_r55335a56_5_2",
@@ -726,7 +746,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "table_low_r55335a56_8",
@@ -746,7 +767,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_r55335a56_8_2",
@@ -756,7 +778,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "counter_service_r55335a56_9",
@@ -796,7 +819,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_r55335a56_11_2",
@@ -806,7 +830,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "table_low_r0499d2c6_1",
@@ -826,7 +851,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_r0499d2c6_1_2",
@@ -836,7 +862,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_r0499d2c6_2",
@@ -866,7 +893,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_r0499d2c6_4",
@@ -896,7 +924,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_r0499d2c6_5_2",
@@ -906,7 +935,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_r0499d2c6_6",
@@ -936,7 +966,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_r0499d2c6_7_2",
@@ -946,7 +977,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_r0499d2c6_8",
@@ -976,7 +1008,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_r0499d2c6_9_2",
@@ -986,7 +1019,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_r0499d2c6_10",
@@ -1016,7 +1050,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_r0499d2c6_11_2",
@@ -1026,7 +1061,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_r0499d2c6_12",
@@ -1056,7 +1092,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_r0499d2c6_13_2",
@@ -1066,7 +1103,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   }
  ],
  "markers": [

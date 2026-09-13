@@ -101,7 +101,7 @@
  ],
  "stairs": [
   {
-   "x": 13.0,
+   "x": 12.0,
    "y": -8.0,
    "from_story": -1,
    "to_story": 0,
@@ -110,10 +110,10 @@
    "facing": "W",
    "id": "ma01_stair_n",
    "role": "service",
-   "run": 4.2
+   "run": 6.4
   },
   {
-   "x": -13.0,
+   "x": -12.0,
    "y": -8.0,
    "from_story": -1,
    "to_story": 0,
@@ -122,7 +122,7 @@
    "facing": "E",
    "id": "ma01_stair_s",
    "role": "public_convenience",
-   "run": 4.2
+   "run": 6.4
   }
  ],
  "rooms": [
@@ -446,7 +446,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_r1075959c_1_2",
@@ -456,7 +457,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_r1075959c_2",
@@ -470,8 +472,8 @@
   },
   {
    "name": "table_low_r1075959c_3",
-   "x": 6.31,
-   "y": -6.31,
+   "x": 13.57,
+   "y": -4.76,
    "z": -4.75,
    "size_x": 1.2,
    "size_y": 0.8,
@@ -480,28 +482,30 @@
   },
   {
    "name": "chair_set_r1075959c_3_1",
-   "x": 6.31,
-   "y": -7.16,
+   "x": 13.57,
+   "y": -5.61,
    "z": -4.55,
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_r1075959c_3_2",
-   "x": 6.31,
-   "y": -5.46,
+   "x": 13.57,
+   "y": -3.91,
    "z": -4.55,
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_r1075959c_4",
-   "x": 13.57,
-   "y": -4.76,
+   "x": 6.31,
+   "y": -6.31,
    "z": -4.55,
    "size_x": 0.55,
    "size_y": 0.55,
@@ -526,7 +530,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_r1075959c_6",
@@ -556,7 +561,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_r1075959c_8",
@@ -586,7 +592,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_r1075959c_9_2",
@@ -596,7 +603,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_r1075959c_10",

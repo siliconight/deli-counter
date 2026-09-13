@@ -2669,15 +2669,6 @@
       }
     },
     {
-      "node": "chair_waiting_r7b022869_16_col",
-      "material": {
-        "id": "metal",
-        "acoustic": "Metal",
-        "absorption": 0.5,
-        "damping": 0.3
-      }
-    },
-    {
       "node": "table_low_r7b022869_17_col",
       "material": {
         "id": "metal",
@@ -2697,15 +2688,6 @@
     },
     {
       "node": "chair_set_r7b022869_17_2_col",
-      "material": {
-        "id": "metal",
-        "acoustic": "Metal",
-        "absorption": 0.5,
-        "damping": 0.3
-      }
-    },
-    {
-      "node": "counter_service_r7b022869_18_col",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -3011,6 +2993,15 @@
       }
     },
     {
+      "node": "counter_service_r2c06326c_6_col",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
       "node": "chair_waiting_r2c06326c_7_col",
       "material": {
         "id": "metal",
@@ -3047,6 +3038,15 @@
       }
     },
     {
+      "node": "counter_service_r2c06326c_9_col",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
       "node": "table_low_r2c06326c_11_col",
       "material": {
         "id": "metal",
@@ -3066,15 +3066,6 @@
     },
     {
       "node": "chair_set_r2c06326c_11_2_col",
-      "material": {
-        "id": "metal",
-        "acoustic": "Metal",
-        "absorption": 0.5,
-        "damping": 0.3
-      }
-    },
-    {
-      "node": "counter_service_r2c06326c_12_col",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -3111,15 +3102,6 @@
     },
     {
       "node": "chair_set_r2c06326c_14_2_col",
-      "material": {
-        "id": "metal",
-        "acoustic": "Metal",
-        "absorption": 0.5,
-        "damping": 0.3
-      }
-    },
-    {
-      "node": "chair_waiting_r2c06326c_16_col",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -3828,19 +3810,19 @@
       ],
       "footprint_polygon": [
         [
-          -21.650000000000002,
+          -22.85,
           9.2
         ],
         [
-          -16.95,
+          -15.75,
           9.2
         ],
         [
-          -16.95,
+          -15.75,
           10.8
         ],
         [
-          -21.650000000000002,
+          -22.85,
           10.8
         ]
       ],
@@ -3873,13 +3855,13 @@
           "end": "lower",
           "story": -1,
           "rect": [
-            -22.85,
+            -24.05,
             9.2,
-            -21.650000000000002,
+            -22.85,
             10.8
           ],
           "point": [
-            -22.25,
+            -23.450000000000003,
             10.0,
             -5.5
           ],
@@ -3892,13 +3874,13 @@
           "end": "upper",
           "story": 0,
           "rect": [
-            -16.15,
-            9.2,
             -14.950000000000001,
+            9.2,
+            -13.75,
             10.8
           ],
           "point": [
-            -15.55,
+            -14.350000000000001,
             10.0,
             0.0
           ],
@@ -3910,12 +3892,12 @@
       ],
       "nav_endpoints": {
         "lower": [
-          -22.25,
+          -23.450000000000003,
           10.0,
           -5.5
         ],
         "upper": [
-          -15.55,
+          -14.350000000000001,
           10.0,
           0.0
         ]
@@ -4034,19 +4016,19 @@
       ],
       "footprint_polygon": [
         [
-          -21.650000000000002,
+          -22.85,
           -10.8
         ],
         [
-          -16.95,
+          -15.75,
           -10.8
         ],
         [
-          -16.95,
+          -15.75,
           -9.2
         ],
         [
-          -21.650000000000002,
+          -22.85,
           -9.2
         ]
       ],
@@ -4079,13 +4061,13 @@
           "end": "lower",
           "story": -1,
           "rect": [
-            -22.85,
+            -24.05,
             -10.8,
-            -21.650000000000002,
+            -22.85,
             -9.2
           ],
           "point": [
-            -22.25,
+            -23.450000000000003,
             -10.0,
             -5.5
           ],
@@ -4098,13 +4080,13 @@
           "end": "upper",
           "story": 0,
           "rect": [
-            -16.15,
-            -10.8,
             -14.950000000000001,
+            -10.8,
+            -13.75,
             -9.2
           ],
           "point": [
-            -15.55,
+            -14.350000000000001,
             -10.0,
             0.0
           ],
@@ -4116,12 +4098,12 @@
       ],
       "nav_endpoints": {
         "lower": [
-          -22.25,
+          -23.450000000000003,
           -10.0,
           -5.5
         ],
         "upper": [
-          -15.55,
+          -14.350000000000001,
           -10.0,
           0.0
         ]
@@ -4744,11 +4726,9 @@
     "chair_set_r7b022869_14_1": "prop",
     "chair_set_r7b022869_14_2": "prop",
     "counter_service_r7b022869_15": "prop",
-    "chair_waiting_r7b022869_16": "prop",
     "table_low_r7b022869_17": "prop",
     "chair_set_r7b022869_17_1": "prop",
     "chair_set_r7b022869_17_2": "prop",
-    "counter_service_r7b022869_18": "prop",
     "table_low_r7b022869_20": "prop",
     "chair_set_r7b022869_20_1": "prop",
     "table_low_r4d6f6c92_1": "prop",
@@ -4782,19 +4762,19 @@
     "table_low_r2c06326c_5": "prop",
     "chair_set_r2c06326c_5_1": "prop",
     "chair_set_r2c06326c_5_2": "prop",
+    "counter_service_r2c06326c_6": "prop",
     "chair_waiting_r2c06326c_7": "prop",
     "table_low_r2c06326c_8": "prop",
     "chair_set_r2c06326c_8_1": "prop",
     "chair_set_r2c06326c_8_2": "prop",
+    "counter_service_r2c06326c_9": "prop",
     "table_low_r2c06326c_11": "prop",
     "chair_set_r2c06326c_11_1": "prop",
     "chair_set_r2c06326c_11_2": "prop",
-    "counter_service_r2c06326c_12": "prop",
     "chair_waiting_r2c06326c_13": "prop",
     "table_low_r2c06326c_14": "prop",
     "chair_set_r2c06326c_14_1": "prop",
     "chair_set_r2c06326c_14_2": "prop",
-    "chair_waiting_r2c06326c_16": "prop",
     "table_low_r2c06326c_17": "prop",
     "chair_set_r2c06326c_17_1": "prop",
     "table_low_rf06a2e24_1": "prop",

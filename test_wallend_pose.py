@@ -56,11 +56,19 @@ def test_unit_scale_is_the_plain_rotation():
 
 def test_the_fit_sees_the_scaled_cube_not_the_unit_cube():
     """Greybox extent of `int_0_1_seg1` (bank_branch_a03): 0.3 along X,
-    1.875 along Z. The unscaled unit cube ties at every angle and the fit
-    answers 0 -- the first angle tried, NOT the fallback, which only stands
-    when no angle scores at all; the scaled one fits at 90."""
+    1.875 along Z. The scaled cube fits at 90; the unscaled one ties at every
+    angle, which is the mechanism of the 237 misplaced remainders this file
+    was written about.
+
+    SUPERSEDED, kept. This asserted the unscaled tie answered 0 whatever the
+    fallback -- "the first angle tried, NOT the fallback". That was an
+    observation of the tie-break, not a property anyone wanted, and it is the
+    same tie-break that made a square chair impossible to turn toward its
+    table (the walker, cold run 9046). A tie now keeps the slot's own
+    rotation, so the unscaled cube answers the fallback it was given. The
+    scaled fits below, which are what this test protects, are unchanged."""
     ge = [0.3, 3.3, 1.875]
-    assert themed_tscn._fit_rotation([1.0, 1.0, 1.0], ge, fallback=90) == 0
+    assert themed_tscn._fit_rotation([1.0, 1.0, 1.0], ge, fallback=90) == 90
     assert themed_tscn._fit_rotation([1.0, 1.0, 1.0], ge, fallback=0) == 0
     assert themed_tscn._fit_rotation([1.0, 1.0, 1.0], ge, fallback=0,
                                      scale=[1.875, 0.3, 3.3]) in (90, 270)

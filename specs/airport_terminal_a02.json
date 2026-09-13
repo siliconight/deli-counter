@@ -235,7 +235,7 @@
    "facing": "E",
    "id": "at02_stair_n",
    "role": "service",
-   "run": 5.1
+   "run": 7.7
   },
   {
    "x": -21.0,
@@ -247,7 +247,7 @@
    "facing": "E",
    "id": "at02_stair_s",
    "role": "public_convenience",
-   "run": 5.1
+   "run": 7.7
   }
  ],
  "ladders": [],
@@ -315,7 +315,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_rbdf78977_2_2",
@@ -325,7 +326,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "counter_service_rbdf78977_3",
@@ -365,7 +367,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_rbdf78977_5_2",
@@ -375,7 +378,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "counter_service_rbdf78977_6",
@@ -389,8 +393,8 @@
   },
   {
    "name": "chair_waiting_rbdf78977_7",
-   "x": -26.58,
-   "y": -9.8,
+   "x": 26.58,
+   "y": -8.84,
    "z": 0.45,
    "size_x": 0.6,
    "size_y": 2.4,
@@ -415,7 +419,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_rbdf78977_8_2",
@@ -425,12 +430,13 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "counter_service_rbdf78977_9",
    "x": -26.48,
-   "y": -13.48,
+   "y": -8.14,
    "z": 0.525,
    "size_x": 0.8,
    "size_y": 2.2,
@@ -465,7 +471,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_rbdf78977_11_2",
@@ -475,15 +482,16 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "counter_service_rbdf78977_12",
-   "x": 26.48,
-   "y": -9.37,
+   "x": -5.18,
+   "y": -15.48,
    "z": 0.525,
-   "size_x": 0.8,
-   "size_y": 2.2,
+   "size_x": 2.2,
+   "size_y": 0.8,
    "size_z": 1.05,
    "collision": "convex"
   },
@@ -515,7 +523,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_rbdf78977_14_2",
@@ -525,26 +534,17 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "counter_service_rbdf78977_15",
    "x": 26.48,
-   "y": -6.16,
+   "y": -12.9,
    "z": 0.525,
    "size_x": 0.8,
    "size_y": 2.2,
    "size_z": 1.05,
-   "collision": "convex"
-  },
-  {
-   "name": "chair_waiting_rbdf78977_16",
-   "x": 26.58,
-   "y": -13.68,
-   "z": 0.45,
-   "size_x": 0.6,
-   "size_y": 2.4,
-   "size_z": 0.9,
    "collision": "convex"
   },
   {
@@ -565,7 +565,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_rbdf78977_17_2",
@@ -575,15 +576,16 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "counter_service_rbdf78977_18",
-   "x": -4.03,
-   "y": -15.48,
+   "x": -26.48,
+   "y": 2.81,
    "z": 0.525,
-   "size_x": 2.2,
-   "size_y": 0.8,
+   "size_x": 0.8,
+   "size_y": 2.2,
    "size_z": 1.05,
    "collision": "convex"
   },
@@ -605,7 +607,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_rbdf78977_20_2",
@@ -615,7 +618,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "counter_service_rbdf78977_21",
@@ -655,7 +659,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "table_low_rbdf78977_26",
@@ -675,7 +680,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_rbdf78977_26_2",
@@ -685,7 +691,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "table_low_rfc6ee72e_1",
@@ -705,7 +712,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_rfc6ee72e_2",
@@ -735,7 +743,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_rfc6ee72e_3_2",
@@ -745,7 +754,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_rfc6ee72e_4",
@@ -775,7 +785,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_rfc6ee72e_5_2",
@@ -785,7 +796,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_rfc6ee72e_6",
@@ -815,7 +827,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_rfc6ee72e_7_2",
@@ -825,7 +838,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_rfc6ee72e_8",
@@ -855,7 +869,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_rfc6ee72e_10",
@@ -885,7 +900,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_rfc6ee72e_12",
@@ -915,7 +931,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_rfc6ee72e_14",
@@ -955,7 +972,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_r2c06326c_2_2",
@@ -965,7 +983,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "counter_service_r2c06326c_3",
@@ -1005,7 +1024,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_r2c06326c_5_2",
@@ -1015,7 +1035,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "counter_service_r2c06326c_6",
@@ -1055,7 +1076,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_r2c06326c_8_2",
@@ -1065,7 +1087,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "counter_service_r2c06326c_9",
@@ -1125,7 +1148,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "counter_service_r2c06326c_15",
@@ -1139,6 +1163,38 @@
   },
   {
    "name": "table_low_r2c06326c_17",
+   "x": -25.49,
+   "y": -14.31,
+   "z": -5.775,
+   "size_x": 1.0,
+   "size_y": 0.6,
+   "size_z": 0.45,
+   "collision": "convex"
+  },
+  {
+   "name": "chair_set_r2c06326c_17_1",
+   "x": -25.49,
+   "y": -15.06,
+   "z": -5.55,
+   "size_x": 0.5,
+   "size_y": 0.5,
+   "size_z": 0.9,
+   "collision": "convex",
+   "rot_z": 180.0
+  },
+  {
+   "name": "chair_set_r2c06326c_17_2",
+   "x": -25.49,
+   "y": -13.56,
+   "z": -5.55,
+   "size_x": 0.5,
+   "size_y": 0.5,
+   "size_z": 0.9,
+   "collision": "convex",
+   "rot_z": 0.0
+  },
+  {
+   "name": "table_low_r2c06326c_20",
    "x": -8.9,
    "y": 10.17,
    "z": -5.775,
@@ -1148,44 +1204,26 @@
    "collision": "convex"
   },
   {
-   "name": "chair_set_r2c06326c_17_1",
+   "name": "chair_set_r2c06326c_20_1",
    "x": -8.9,
    "y": 9.42,
    "z": -5.55,
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
-   "name": "chair_set_r2c06326c_17_2",
+   "name": "chair_set_r2c06326c_20_2",
    "x": -8.9,
    "y": 10.92,
    "z": -5.55,
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
-  },
-  {
-   "name": "table_low_r2c06326c_20",
-   "x": -6.15,
-   "y": -11.73,
-   "z": -5.775,
-   "size_x": 1.0,
-   "size_y": 0.6,
-   "size_z": 0.45,
-   "collision": "convex"
-  },
-  {
-   "name": "chair_set_r2c06326c_20_1",
-   "x": -6.15,
-   "y": -12.48,
-   "z": -5.55,
-   "size_x": 0.5,
-   "size_y": 0.5,
-   "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "table_low_rcb773d79_1",
@@ -1205,7 +1243,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_rcb773d79_2",
@@ -1235,7 +1274,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_rcb773d79_3_2",
@@ -1245,7 +1285,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_rcb773d79_4",
@@ -1275,7 +1316,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_rcb773d79_6",
@@ -1305,7 +1347,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_rcb773d79_7_2",
@@ -1315,7 +1358,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_rcb773d79_8",
@@ -1345,7 +1389,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_rcb773d79_9_2",
@@ -1355,7 +1400,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_rcb773d79_10",
@@ -1385,7 +1431,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_rcb773d79_11_2",
@@ -1395,7 +1442,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_rcb773d79_12",
@@ -1425,7 +1473,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_rcb773d79_13_2",
@@ -1435,7 +1484,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_rcb773d79_14",
@@ -1465,7 +1515,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_rcb773d79_15_2",
@@ -1475,7 +1526,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_rcb773d79_16",
@@ -1505,7 +1557,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_rcb773d79_17_2",
@@ -1515,7 +1568,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_rcb773d79_18",
@@ -1545,7 +1599,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_rcb773d79_20",
@@ -1575,7 +1630,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_rcb773d79_21_2",
@@ -1585,7 +1641,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_rcb773d79_22",

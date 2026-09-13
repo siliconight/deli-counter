@@ -269,7 +269,7 @@
  ],
  "stairs": [
   {
-   "x": -17.0,
+   "x": -15.5,
    "y": -7.0,
    "from_story": 0,
    "to_story": 1,
@@ -278,10 +278,10 @@
    "facing": "N",
    "id": "rs01_stair_w",
    "role": "public_convenience",
-   "run": 3.9
+   "run": 5.9
   },
   {
-   "x": 17.0,
+   "x": 14.0,
    "y": -7.0,
    "from_story": 0,
    "to_story": 1,
@@ -290,7 +290,7 @@
    "facing": "N",
    "id": "rs01_stair_e",
    "role": "public_convenience",
-   "run": 3.9
+   "run": 5.9
   }
  ],
  "ladders": [],
@@ -347,7 +347,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_r76773c77_2_2",
@@ -357,7 +358,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "counter_service_r76773c77_3",
@@ -397,7 +399,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_r76773c77_5_2",
@@ -407,7 +410,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "counter_service_r76773c77_6",
@@ -447,7 +451,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_r76773c77_8_2",
@@ -457,7 +462,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "counter_service_r76773c77_9",
@@ -497,7 +503,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_r76773c77_11_2",
@@ -507,7 +514,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "counter_service_r76773c77_12",
@@ -520,9 +528,19 @@
    "collision": "convex"
   },
   {
+   "name": "chair_waiting_r76773c77_13",
+   "x": 17.42,
+   "y": -11.58,
+   "z": 0.45,
+   "size_x": 2.4,
+   "size_y": 0.6,
+   "size_z": 0.9,
+   "collision": "convex"
+  },
+  {
    "name": "table_low_r76773c77_14",
-   "x": -14.14,
-   "y": -4.88,
+   "x": -2.96,
+   "y": -9.78,
    "z": 0.225,
    "size_x": 1.0,
    "size_y": 0.6,
@@ -531,23 +549,25 @@
   },
   {
    "name": "chair_set_r76773c77_14_1",
-   "x": -14.14,
-   "y": -5.63,
+   "x": -2.96,
+   "y": -10.53,
    "z": 0.45,
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_r76773c77_14_2",
-   "x": -14.14,
-   "y": -4.13,
+   "x": -2.96,
+   "y": -9.03,
    "z": 0.45,
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "counter_service_r76773c77_15",
@@ -561,8 +581,8 @@
   },
   {
    "name": "table_low_r76773c77_17",
-   "x": -2.96,
-   "y": -9.78,
+   "x": 18.51,
+   "y": -6.75,
    "z": 0.225,
    "size_x": 1.0,
    "size_y": 0.6,
@@ -571,23 +591,25 @@
   },
   {
    "name": "chair_set_r76773c77_17_1",
-   "x": -2.96,
-   "y": -10.53,
+   "x": 18.51,
+   "y": -7.5,
    "z": 0.45,
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_r76773c77_17_2",
-   "x": -2.96,
-   "y": -9.03,
+   "x": 18.51,
+   "y": -6.0,
    "z": 0.45,
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "table_low_r9d13f29c_1",
@@ -607,7 +629,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_r9d13f29c_1_2",
@@ -617,7 +640,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_r9d13f29c_2",
@@ -647,7 +671,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_r9d13f29c_3_2",
@@ -657,7 +682,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_r9d13f29c_4",
@@ -687,7 +713,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_r9d13f29c_6",
@@ -797,7 +824,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_waiting_r734911f0_4",
@@ -827,7 +855,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_r734911f0_5_2",
@@ -837,7 +866,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "counter_service_r734911f0_6",
@@ -877,7 +907,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "table_low_r734911f0_11",
@@ -897,7 +928,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "table_low_ree765446_1",
@@ -917,7 +949,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_ree765446_1_2",
@@ -927,7 +960,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_ree765446_2",
@@ -957,7 +991,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_ree765446_3_2",
@@ -967,7 +1002,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_ree765446_4",
@@ -997,7 +1033,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_ree765446_5_2",
@@ -1007,7 +1044,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_ree765446_6",
@@ -1037,7 +1075,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_ree765446_8",
@@ -1067,7 +1106,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_ree765446_10",
@@ -1097,7 +1137,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_ree765446_11_2",
@@ -1107,7 +1148,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_ree765446_12",
@@ -1137,7 +1179,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_ree765446_13_2",
@@ -1147,7 +1190,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_ree765446_14",

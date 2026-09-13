@@ -324,6 +324,10 @@ class Volume:
     collision: Collision = "convex"
     visual: bool = True
     material: Optional[str] = None   # palette id; overrides default_material
+    # Degrees about up, added to the prop slot's rotation. A species module's
+    # front is its local -Y, so 180 turns a chair round. The greybox box is
+    # axis-aligned and unaffected; only the themed module turns.
+    rot_z: float = 0.0
 
 
 @dataclass

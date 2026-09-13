@@ -4024,6 +4024,15 @@
       }
     },
     {
+      "node": "chair_set_r1d196568_2_1_col",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
       "node": "chair_set_r1d196568_2_2_col",
       "material": {
         "id": "concrete",
@@ -5266,15 +5275,6 @@
       }
     },
     {
-      "node": "chair_set_r46321b90_15_1_col",
-      "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
-      }
-    },
-    {
       "node": "chair_set_r46321b90_15_2_col",
       "material": {
         "id": "concrete",
@@ -5294,6 +5294,15 @@
     },
     {
       "node": "table_low_r46321b90_17_col",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "chair_set_r46321b90_17_1_col",
       "material": {
         "id": "concrete",
         "acoustic": "Concrete",
@@ -5798,19 +5807,19 @@
       ],
       "footprint_polygon": [
         [
-          -26.0,
+          -26.2,
           -11.6
         ],
         [
-          -22.0,
+          -19.8,
           -11.6
         ],
         [
-          -22.0,
+          -19.8,
           -8.4
         ],
         [
-          -26.0,
+          -26.2,
           -8.4
         ]
       ],
@@ -5843,13 +5852,13 @@
           "end": "lower",
           "story": -1,
           "rect": [
-            -27.2,
+            -27.4,
             -11.6,
-            -26.0,
+            -26.2,
             -10.0
           ],
           "point": [
-            -26.6,
+            -26.8,
             -10.8,
             -5.0
           ],
@@ -5862,13 +5871,13 @@
           "end": "upper",
           "story": 0,
           "rect": [
-            -21.2,
+            -19.0,
             -11.6,
-            -20.0,
+            -17.8,
             -10.0
           ],
           "point": [
-            -20.6,
+            -18.4,
             -10.8,
             0.0
           ],
@@ -5880,12 +5889,12 @@
       ],
       "nav_endpoints": {
         "lower": [
-          -26.6,
+          -26.8,
           -10.8,
           -5.0
         ],
         "upper": [
-          -20.6,
+          -18.4,
           -10.8,
           0.0
         ]
@@ -6024,19 +6033,19 @@
       ],
       "footprint_polygon": [
         [
-          -26.0,
+          -26.2,
           11.2
         ],
         [
-          -22.0,
+          -19.8,
           11.2
         ],
         [
-          -22.0,
+          -19.8,
           12.8
         ],
         [
-          -26.0,
+          -26.2,
           12.8
         ]
       ],
@@ -6069,13 +6078,13 @@
           "end": "lower",
           "story": -1,
           "rect": [
-            -27.2,
+            -27.4,
             11.2,
-            -26.0,
+            -26.2,
             12.8
           ],
           "point": [
-            -26.6,
+            -26.8,
             12.0,
             -5.0
           ],
@@ -6088,13 +6097,13 @@
           "end": "upper",
           "story": 0,
           "rect": [
-            -21.2,
+            -19.0,
             11.2,
-            -20.0,
+            -17.8,
             12.8
           ],
           "point": [
-            -20.6,
+            -18.4,
             12.0,
             0.0
           ],
@@ -6106,12 +6115,12 @@
       ],
       "nav_endpoints": {
         "lower": [
-          -26.6,
+          -26.8,
           12.0,
           -5.0
         ],
         "upper": [
-          -20.6,
+          -18.4,
           12.0,
           0.0
         ]
@@ -6210,19 +6219,19 @@
       ],
       "footprint_polygon": [
         [
-          22.0,
+          19.8,
           -13.6
         ],
         [
-          26.0,
+          26.2,
           -13.6
         ],
         [
-          26.0,
+          26.2,
           -10.4
         ],
         [
-          22.0,
+          19.8,
           -10.4
         ]
       ],
@@ -6255,13 +6264,13 @@
           "end": "lower",
           "story": 0,
           "rect": [
-            26.0,
+            26.2,
             -12.0,
-            27.2,
+            27.4,
             -10.4
           ],
           "point": [
-            26.6,
+            26.8,
             -11.2,
             0.0
           ],
@@ -6274,13 +6283,13 @@
           "end": "upper",
           "story": 1,
           "rect": [
-            20.0,
+            17.8,
             -12.0,
-            21.2,
+            19.0,
             -10.4
           ],
           "point": [
-            20.6,
+            18.4,
             -11.2,
             5.0
           ],
@@ -6292,12 +6301,12 @@
       ],
       "nav_endpoints": {
         "lower": [
-          26.6,
+          26.8,
           -11.2,
           0.0
         ],
         "upper": [
-          20.6,
+          18.4,
           -11.2,
           5.0
         ]
@@ -7457,6 +7466,7 @@
     "rack_4": "prop",
     "chair_waiting_r1d196568_1": "prop",
     "table_low_r1d196568_2": "prop",
+    "chair_set_r1d196568_2_1": "prop",
     "chair_set_r1d196568_2_2": "prop",
     "counter_service_r1d196568_3": "prop",
     "chair_waiting_r1d196568_4": "prop",
@@ -7595,10 +7605,10 @@
     "chair_set_r46321b90_13_2": "prop",
     "chair_r46321b90_14": "prop",
     "table_low_r46321b90_15": "prop",
-    "chair_set_r46321b90_15_1": "prop",
     "chair_set_r46321b90_15_2": "prop",
     "chair_r46321b90_16": "prop",
     "table_low_r46321b90_17": "prop",
+    "chair_set_r46321b90_17_1": "prop",
     "chair_set_r46321b90_17_2": "prop",
     "chair_r46321b90_18": "prop",
     "table_low_r46321b90_19": "prop",

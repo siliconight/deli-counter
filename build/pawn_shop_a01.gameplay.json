@@ -1564,15 +1564,6 @@
       }
     },
     {
-      "node": "cabinet_tool_r79538c7c_6_col",
-      "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
-      }
-    },
-    {
       "node": "cabinet_locker_r6aa17a30_2_col",
       "material": {
         "id": "concrete",
@@ -1967,19 +1958,19 @@
       ],
       "footprint_polygon": [
         [
-          1.5,
+          1.2999999999999998,
           -6.3
         ],
         [
-          5.5,
+          5.7,
           -6.3
         ],
         [
-          5.5,
+          5.7,
           -4.7
         ],
         [
-          1.5,
+          1.2999999999999998,
           -4.7
         ]
       ],
@@ -2012,13 +2003,13 @@
           "end": "lower",
           "story": 0,
           "rect": [
-            5.5,
+            5.7,
             -6.3,
-            6.7,
+            6.9,
             -4.7
           ],
           "point": [
-            6.1,
+            6.300000000000001,
             -5.5,
             0.0
           ],
@@ -2031,13 +2022,13 @@
           "end": "upper",
           "story": 1,
           "rect": [
-            -0.5,
+            -0.7000000000000002,
             -6.3,
-            0.7000000000000002,
+            0.5,
             -4.7
           ],
           "point": [
-            0.10000000000000009,
+            -0.10000000000000009,
             -5.5,
             3.4
           ],
@@ -2049,12 +2040,12 @@
       ],
       "nav_endpoints": {
         "lower": [
-          6.1,
+          6.300000000000001,
           -5.5,
           0.0
         ],
         "upper": [
-          0.10000000000000009,
+          -0.10000000000000009,
           -5.5,
           3.4
         ]
@@ -2700,7 +2691,6 @@
     "crate_stack_safe_room_1": "prop",
     "workbench_r79538c7c_1": "prop",
     "cabinet_tool_r79538c7c_3": "prop",
-    "cabinet_tool_r79538c7c_6": "prop",
     "cabinet_locker_r6aa17a30_2": "prop",
     "safe_floor_r6aa17a30_3": "prop",
     "table_low_r4d7e6854_1": "prop",

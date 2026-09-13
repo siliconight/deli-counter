@@ -2324,17 +2324,16 @@ def twin(name: str = "twin_preset",
     floors fixed at 2 (a Delco twin is two over a basement); params mode
     (assault default; heist supported), basement, scale_ref.
     """
-    # A SWITCHBACK OVER 3.0 m OF RUN, and the tactical review's 44 degrees
-    # is its own simplification rather than this stair's pitch: it reports
-    # `atan(story_height / run)` whatever the style, so a switchback whose
-    # two flights each climb HALF the storey is judged as though one flight
-    # climbed all of it. `rowhome` carries the same warning at 3.0 over 3.0
-    # and ships. Lengthening the run to the 4.1 m the warning asks for was
-    # tried and MEASURED WORSE: `stair_footprints` puts a switchback's run
-    # along Y, so 4.1 pushed the footprint from y 0.05..5.25 out past the
-    # back room, and the nav gate went from two traversable stairs to two
-    # disjoint islands. The gate is the authority on traversal; the review
-    # line is a heuristic, and this is where they disagree.
+    # RETRACTED, kept above what replaced it. This said the tactical
+    # review's 44 degrees was its own simplification, because "a switchback
+    # whose two flights each climb HALF the storey" was judged as one flight.
+    # That was wrong: `Builder._stairs` gives every leg the full storey at
+    # `atan(H / run)` and alternates direction. The review was right, and the
+    # walker could not climb a 49.5 degree flight in cold run 9046. The run
+    # authored below is now lengthened by `_finish_stairs` to
+    # `stair_pitch.TARGET_PITCH_DEG`; the 4.1 m attempt that failed the nav
+    # gate was a hand-placed stair, and `migrate_stair_pitch` re-seats one
+    # the circulation contract refuses.
     sh = 2.9
     fx, fy = 16.0, 11.0      # two 8 m halves, front to back
     hx, hy = fx / 2, fy / 2
@@ -2544,6 +2543,11 @@ def _finish_stairs(spec: dict) -> None:
     stairs = spec.get("stairs") or []
     if not stairs or spec.get("facade"):
         return
+    # A GENERATED STAIR IS ONE A BODY CAN CLIMB: lengthen any flight over
+    # `stair_pitch.MAX_WALKABLE_PITCH_DEG` before it is oriented, so the
+    # facing search below sees the footprint that will be built.
+    import stair_pitch
+    stair_pitch.lengthen(spec)
     from spec_loader import spec_from_dict
     import stairwell as _sw
 

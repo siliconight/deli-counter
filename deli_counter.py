@@ -1652,6 +1652,15 @@ class _Builder:
             for s in range(st.from_story, st.to_story):
                 z = s * H
                 leg = s - st.from_story
+                # A SOLID UNDERSIDE, where nothing of this stair is below.
+                # The walker, cold run 9046: "stairs should have a solid
+                # bottom to the ground". Straight legs stack in ONE run and a
+                # switchback's legs alternate between TWO, so only the first
+                # leg of each run stands on the storey floor; filling a
+                # higher one would put mass in the headroom of the flight
+                # beneath it. Scissor channels share a shaft and stay open.
+                solid_under = ((st.style == "straight" and leg == 0) or
+                               (st.style == "switchback" and leg < 2))
                 # A leg that ends in a landing does not need a top tread: the
                 # landing tops out at the same z + H, spans both runs, and sits
                 # at the turn. Two plates for one surface is what made the top
@@ -1674,9 +1683,28 @@ class _Builder:
                         cz = z + step_h * (i + 0.5)
                         cy = st.y + sign * (step_d * (i + 0.5) - st.run / 2)
                         wx, wy = self._stair_pt(st, sx, cy)
-                        self._box(f"stair{si}{ch}_{s}_{i}", (wx, wy, cz),
-                                  self._stair_sz(st, st.width, step_d, step_h),
-                                  self.VISUAL, role="stair")
+                        if solid_under:
+                            # the tread as a column to the storey floor
+                            col_h = step_h * (i + 1)
+                            self._box(f"stair{si}{ch}_{s}_{i}",
+                                      (wx, wy, z + col_h / 2),
+                                      self._stair_sz(st, st.width, step_d,
+                                                     col_h),
+                                      self.VISUAL, role="stair")
+                            # and solid to a body, but stopping ONE RISER
+                            # below the tread, so the smooth ramp riding the
+                            # nosings is still the only surface a foot meets
+                            if i >= 1:
+                                self._col_box(
+                                    f"stair{si}{ch}col_under_{s}_{i}",
+                                    (wx, wy, z + step_h * i / 2),
+                                    self._stair_sz(st, st.width, step_d,
+                                                   step_h * i))
+                        else:
+                            self._box(f"stair{si}{ch}_{s}_{i}", (wx, wy, cz),
+                                      self._stair_sz(st, st.width, step_d,
+                                                     step_h),
+                                      self.VISUAL, role="stair")
                     # COLLISION is a single smooth ramp under the visual steps,
                     # NOT a box per step. Boxy per-step colliders catch a
                     # CharacterBody3D on every riser (you stick / have to
@@ -2191,6 +2219,11 @@ class _Builder:
                 species = prop_species.species_for_name(v.name)
                 slot_dims, slot_rot = ((list(size), 0.0) if species is None
                                        else prop_species.long_axis_first(size))
+                # A VOLUME CAN BE TURNED (`Volume.rot_z`): a chair facing its
+                # table. Added to the long-axis turn, so a volume that has
+                # none emits exactly the rotation it always did.
+                if getattr(v, "rot_z", 0.0):
+                    slot_rot = round((slot_rot + float(v.rot_z)) % 360.0, 4)
                 self.slots.append({
                     "slot_id": v.name, "role": "prop", "size_mod": "full",
                     "style": skin_style.style_for(v.material, self._mat_style,

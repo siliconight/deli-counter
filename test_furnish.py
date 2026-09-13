@@ -257,3 +257,27 @@ def test_a_room_id_cannot_hijack_its_furniture_into_another_species():
     for words, _sp in prop_species.PROP_SPECIES:
         for w in words:
             assert not any(fits(w, at) for at in range(len(template) - len(w) + 1)), w
+
+
+def test_a_set_chair_faces_its_table_by_the_compass_convention():
+    """Slot rotation is a compass bearing (N 0, E 90, S 180, W 270) turning a
+    module's +Y onto it, and a chair's front is its -Y, so its front bearing
+    is rot_z + 180. The walker, cold run 9046: chairs should face the table."""
+    import math as _m
+    s = _spec(20.0, 16.0, role="lobby")
+    level_design.furnish(s)
+    tables = {v["name"]: v for v in s["volumes"]
+              if v["name"].startswith("table_")}
+    checked = 0
+    for c in s["volumes"]:
+        if not c["name"].startswith("chair_set_"):
+            continue
+        key = "table_low_" + "_".join(c["name"].split("_")[2:4])
+        t = tables.get(key)
+        assert t is not None, (c["name"], sorted(tables))
+        front = (c["rot_z"] + 180.0) % 360.0
+        fx, fy = _m.sin(_m.radians(front)), _m.cos(_m.radians(front))
+        tx, ty = t["x"] - c["x"], t["y"] - c["y"]
+        assert fx * tx + fy * ty > 0, (c["name"], c["rot_z"], (tx, ty))
+        checked += 1
+    assert checked, "no set chairs were placed"

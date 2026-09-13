@@ -1,3 +1,44 @@
+## [0.124.0] - 2026-09-13  the walker's first in-game feedback
+
+On cold run 9046's walk copy the walker reported three things: "chairs should
+face each the table", "cant get up the steps", and "stairs should have a
+solid bottom to the ground", with a drawing of the outline.
+
+**Stairs a body can climb** (`stair_pitch.py`, `migrate_stair_pitch.py`).
+Measured across every shipped straight, switchback and scissor flight: 36 at
+40 degrees or less, 51 between 40 and 45, 61 over 45. A CharacterBody3D
+stands on 45; the bake allows 55, which is why every nav gate passed. That is
+the contract tension CLAUDE.md names, found by a person on a screen. Every
+leg climbs a full storey at `atan(H / run)`, and runs were authored near 4 m
+under 4.6-6.5 m storeys. A flight may not exceed 40 degrees and is lengthened
+to 38; a lengthened stair the circulation contract or layout lint L19 now
+refuses is re-seated by a turn or a short shift. On the library: 112 flights
+lengthened, 25 re-seated, none unresolved. `presets._finish_stairs` applies
+the same rule, and `test_stair_pitch` holds every shipped flight to it.
+
+**A solid underside.** Treads were one-riser boxes floating at their own
+heights. A flight with nothing of its own stair beneath it now builds each
+tread as a column to the storey floor, with a collision block per tread that
+stops one riser below the tread, so the smooth ramp is still the only
+surface a foot meets. The first leg of a straight stair and the first leg in
+each run of a switchback qualify; a leg stacked over a lower leg of the same
+stair does not, because that mass would sit in the headroom beneath.
+
+**Chairs face their table.** Three changes, because the first alone could
+not work. `Volume.rot_z` turns a prop slot. `furnish` sets it for set chairs
+by the compass convention `_slot_orient` already uses (N 0, E 90; a module's
++Y turned onto the bearing; a chair's front is its -Y). And
+`themed_tscn._fit_rotation` now tries the slot's own rotation first so a tie
+keeps it -- in the order 0, 90, 180, 270 a square chair tied at 0 and 180 and
+always came out at 0. `test_wallend_pose` asserted that old tie-break as an
+observation and is updated with why.
+
+TWO RETRACTIONS. The twin's stair note (0.121.0) said the review's 44 degrees
+was a simplification because a switchback climbs half a storey per flight; it
+does not, and the review was right. And the first chair angle here was
+`atan2(-dx, dy)`, right north and south of a table and backwards east and
+west, caught by re-reading the wall convention before the rebuild.
+
 ## [0.123.2] - 2026-09-13  a room's name cannot steal its furniture
 
 Cold run 9046's kit reported 17 species fallbacks, all in one kind of room.

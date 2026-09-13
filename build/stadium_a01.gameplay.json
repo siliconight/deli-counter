@@ -3056,15 +3056,6 @@
       }
     },
     {
-      "node": "chair_waiting_rf6f9e27a_22_col",
-      "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
-      }
-    },
-    {
       "node": "table_low_rf6f9e27a_23_col",
       "material": {
         "id": "concrete",
@@ -3515,15 +3506,6 @@
       }
     },
     {
-      "node": "chair_waiting_r2c06326c_10_col",
-      "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
-      }
-    },
-    {
       "node": "table_low_r2c06326c_11_col",
       "material": {
         "id": "concrete",
@@ -3624,6 +3606,15 @@
     },
     {
       "node": "chair_set_r2c06326c_20_1_col",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "chair_set_r2c06326c_20_2_col",
       "material": {
         "id": "concrete",
         "acoustic": "Concrete",
@@ -4476,19 +4467,19 @@
       ],
       "footprint_polygon": [
         [
-          -24.650000000000002,
+          -25.85,
           13.2
         ],
         [
-          -19.95,
+          -18.75,
           13.2
         ],
         [
-          -19.95,
+          -18.75,
           14.8
         ],
         [
-          -24.650000000000002,
+          -25.85,
           14.8
         ]
       ],
@@ -4521,13 +4512,13 @@
           "end": "lower",
           "story": -1,
           "rect": [
-            -25.85,
+            -27.05,
             13.2,
-            -24.650000000000002,
+            -25.85,
             14.8
           ],
           "point": [
-            -25.25,
+            -26.450000000000003,
             14.0,
             -5.5
           ],
@@ -4540,13 +4531,13 @@
           "end": "upper",
           "story": 0,
           "rect": [
-            -19.15,
-            13.2,
             -17.950000000000003,
+            13.2,
+            -16.75,
             14.8
           ],
           "point": [
-            -18.55,
+            -17.35,
             14.0,
             0.0
           ],
@@ -4558,12 +4549,12 @@
       ],
       "nav_endpoints": {
         "lower": [
-          -25.25,
+          -26.450000000000003,
           14.0,
           -5.5
         ],
         "upper": [
-          -18.55,
+          -17.35,
           14.0,
           0.0
         ]
@@ -4682,19 +4673,19 @@
       ],
       "footprint_polygon": [
         [
-          -24.650000000000002,
+          -25.85,
           -14.8
         ],
         [
-          -19.95,
+          -18.75,
           -14.8
         ],
         [
-          -19.95,
+          -18.75,
           -13.2
         ],
         [
-          -24.650000000000002,
+          -25.85,
           -13.2
         ]
       ],
@@ -4727,13 +4718,13 @@
           "end": "lower",
           "story": -1,
           "rect": [
-            -25.85,
+            -27.05,
             -14.8,
-            -24.650000000000002,
+            -25.85,
             -13.2
           ],
           "point": [
-            -25.25,
+            -26.450000000000003,
             -14.0,
             -5.5
           ],
@@ -4746,13 +4737,13 @@
           "end": "upper",
           "story": 0,
           "rect": [
-            -19.15,
-            -14.8,
             -17.950000000000003,
+            -14.8,
+            -16.75,
             -13.2
           ],
           "point": [
-            -18.55,
+            -17.35,
             -14.0,
             0.0
           ],
@@ -4764,12 +4755,12 @@
       ],
       "nav_endpoints": {
         "lower": [
-          -25.25,
+          -26.450000000000003,
           -14.0,
           -5.5
         ],
         "upper": [
-          -18.55,
+          -17.35,
           -14.0,
           0.0
         ]
@@ -5543,7 +5534,6 @@
     "chair_set_rf6f9e27a_20_1": "prop",
     "chair_set_rf6f9e27a_20_2": "prop",
     "counter_service_rf6f9e27a_21": "prop",
-    "chair_waiting_rf6f9e27a_22": "prop",
     "table_low_rf6f9e27a_23": "prop",
     "chair_set_rf6f9e27a_23_1": "prop",
     "chair_set_rf6f9e27a_23_2": "prop",
@@ -5594,7 +5584,6 @@
     "chair_set_r2c06326c_8_1": "prop",
     "chair_set_r2c06326c_8_2": "prop",
     "counter_service_r2c06326c_9": "prop",
-    "chair_waiting_r2c06326c_10": "prop",
     "table_low_r2c06326c_11": "prop",
     "chair_set_r2c06326c_11_1": "prop",
     "chair_set_r2c06326c_11_2": "prop",
@@ -5607,6 +5596,7 @@
     "chair_set_r2c06326c_17_2": "prop",
     "table_low_r2c06326c_20": "prop",
     "chair_set_r2c06326c_20_1": "prop",
+    "chair_set_r2c06326c_20_2": "prop",
     "table_low_r2c06326c_23": "prop",
     "chair_set_r2c06326c_23_1": "prop",
     "table_low_r1c92a876_1": "prop",

@@ -1772,15 +1772,6 @@
       }
     },
     {
-      "node": "chair_set_r2090556b_8_1_col",
-      "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
-      }
-    },
-    {
       "node": "chair_set_r2090556b_8_2_col",
       "material": {
         "id": "concrete",
@@ -1880,6 +1871,15 @@
       }
     },
     {
+      "node": "chair_set_r4d792bbe_5_1_col",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
       "node": "chair_set_r4d792bbe_5_2_col",
       "material": {
         "id": "concrete",
@@ -1899,6 +1899,15 @@
     },
     {
       "node": "table_low_r4d792bbe_7_col",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "chair_set_r4d792bbe_7_2_col",
       "material": {
         "id": "concrete",
         "acoustic": "Concrete",
@@ -2061,15 +2070,6 @@
     },
     {
       "node": "safe_floor_r0369897d_9_col",
-      "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
-      }
-    },
-    {
-      "node": "shelf_run_r0369897d_10_col",
       "material": {
         "id": "concrete",
         "acoustic": "Concrete",
@@ -2355,19 +2355,19 @@
       ],
       "footprint_polygon": [
         [
-          -10.0,
+          -10.2,
           4.4
         ],
         [
-          -6.0,
+          -5.8,
           4.4
         ],
         [
-          -6.0,
+          -5.8,
           7.6
         ],
         [
-          -10.0,
+          -10.2,
           7.6
         ]
       ],
@@ -2400,13 +2400,13 @@
           "end": "lower",
           "story": -1,
           "rect": [
-            -11.2,
+            -11.4,
             4.4,
-            -10.0,
+            -10.2,
             6.0
           ],
           "point": [
-            -10.6,
+            -10.8,
             5.2,
             -3.4
           ],
@@ -2419,13 +2419,13 @@
           "end": "upper",
           "story": 0,
           "rect": [
-            -5.2,
+            -5.0,
             4.4,
-            -4.0,
+            -3.8,
             6.0
           ],
           "point": [
-            -4.6,
+            -4.4,
             5.2,
             0.0
           ],
@@ -2437,12 +2437,12 @@
       ],
       "nav_endpoints": {
         "lower": [
-          -10.6,
+          -10.8,
           5.2,
           -3.4
         ],
         "upper": [
-          -4.6,
+          -4.4,
           5.2,
           0.0
         ]
@@ -2541,19 +2541,19 @@
       ],
       "footprint_polygon": [
         [
-          7.0,
+          6.8,
           -6.8
         ],
         [
-          11.0,
+          11.2,
           -6.8
         ],
         [
-          11.0,
+          11.2,
           -5.2
         ],
         [
-          7.0,
+          6.8,
           -5.2
         ]
       ],
@@ -2586,13 +2586,13 @@
           "end": "lower",
           "story": -1,
           "rect": [
-            11.0,
+            11.2,
             -6.8,
-            12.2,
+            12.4,
             -5.2
           ],
           "point": [
-            11.6,
+            11.8,
             -6.0,
             -3.4
           ],
@@ -2605,13 +2605,13 @@
           "end": "upper",
           "story": 0,
           "rect": [
-            5.0,
+            4.8,
             -6.8,
-            6.2,
+            6.0,
             -5.2
           ],
           "point": [
-            5.6,
+            5.4,
             -6.0,
             0.0
           ],
@@ -2623,12 +2623,12 @@
       ],
       "nav_endpoints": {
         "lower": [
-          11.6,
+          11.8,
           -6.0,
           -3.4
         ],
         "upper": [
-          5.6,
+          5.4,
           -6.0,
           0.0
         ]
@@ -3007,7 +3007,6 @@
     "counter_service_r2090556b_6": "prop",
     "chair_waiting_r2090556b_7": "prop",
     "table_low_r2090556b_8": "prop",
-    "chair_set_r2090556b_8_1": "prop",
     "chair_set_r2090556b_8_2": "prop",
     "counter_service_r2090556b_9": "prop",
     "chair_waiting_r2090556b_10": "prop",
@@ -3019,9 +3018,11 @@
     "chair_set_r4d792bbe_3_1": "prop",
     "chair_r4d792bbe_4": "prop",
     "table_low_r4d792bbe_5": "prop",
+    "chair_set_r4d792bbe_5_1": "prop",
     "chair_set_r4d792bbe_5_2": "prop",
     "chair_r4d792bbe_6": "prop",
     "table_low_r4d792bbe_7": "prop",
+    "chair_set_r4d792bbe_7_2": "prop",
     "chair_r4d792bbe_8": "prop",
     "table_low_r4d792bbe_9": "prop",
     "chair_set_r4d792bbe_9_2": "prop",
@@ -3039,7 +3040,6 @@
     "cabinet_locker_r0369897d_5": "prop",
     "safe_floor_r0369897d_6": "prop",
     "cabinet_locker_r0369897d_8": "prop",
-    "safe_floor_r0369897d_9": "prop",
-    "shelf_run_r0369897d_10": "prop"
+    "safe_floor_r0369897d_9": "prop"
   }
 }

@@ -211,7 +211,8 @@
    "cut_slabs": true,
    "facing": "E",
    "id": "ph02_stair_w",
-   "role": "service"
+   "role": "service",
+   "run": 4.4
   },
   {
    "x": 9.0,
@@ -222,7 +223,8 @@
    "cut_slabs": true,
    "facing": "W",
    "id": "ph02_stair_e",
-   "role": "public_convenience"
+   "role": "public_convenience",
+   "run": 4.4
   }
  ],
  "ladders": [],
@@ -257,7 +259,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_r2090556b_2_2",
@@ -267,7 +270,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "counter_service_r2090556b_3",
@@ -307,7 +311,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_r2090556b_5_2",
@@ -317,7 +322,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "counter_service_r2090556b_6",
@@ -350,16 +356,6 @@
    "collision": "convex"
   },
   {
-   "name": "chair_set_r2090556b_8_1",
-   "x": 4.31,
-   "y": -5.11,
-   "z": 0.45,
-   "size_x": 0.5,
-   "size_y": 0.5,
-   "size_z": 0.9,
-   "collision": "convex"
-  },
-  {
    "name": "chair_set_r2090556b_8_2",
    "x": 4.31,
    "y": -3.61,
@@ -367,7 +363,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "counter_service_r2090556b_9",
@@ -407,7 +404,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_set_r4d792bbe_1_2",
@@ -417,7 +415,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_r4d792bbe_2",
@@ -447,12 +446,13 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
   },
   {
    "name": "chair_r4d792bbe_4",
-   "x": -10.67,
-   "y": 7.44,
+   "x": 10.68,
+   "y": 4.46,
    "z": 0.45,
    "size_x": 0.55,
    "size_y": 0.55,
@@ -461,8 +461,8 @@
   },
   {
    "name": "table_low_r4d792bbe_5",
-   "x": 10.68,
-   "y": 4.46,
+   "x": -4.76,
+   "y": 7.53,
    "z": 0.25,
    "size_x": 1.2,
    "size_y": 0.8,
@@ -470,19 +470,31 @@
    "collision": "convex"
   },
   {
-   "name": "chair_set_r4d792bbe_5_2",
-   "x": 10.68,
-   "y": 5.31,
+   "name": "chair_set_r4d792bbe_5_1",
+   "x": -4.76,
+   "y": 6.68,
    "z": 0.45,
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 180.0
+  },
+  {
+   "name": "chair_set_r4d792bbe_5_2",
+   "x": -4.76,
+   "y": 8.38,
+   "z": 0.45,
+   "size_x": 0.5,
+   "size_y": 0.5,
+   "size_z": 0.9,
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_r4d792bbe_6",
-   "x": -4.76,
-   "y": 7.53,
+   "x": 0.75,
+   "y": 4.04,
    "z": 0.45,
    "size_x": 0.55,
    "size_y": 0.55,
@@ -491,8 +503,8 @@
   },
   {
    "name": "table_low_r4d792bbe_7",
-   "x": 0.75,
-   "y": 4.04,
+   "x": 3.43,
+   "y": 7.23,
    "z": 0.25,
    "size_x": 1.2,
    "size_y": 0.8,
@@ -500,9 +512,20 @@
    "collision": "convex"
   },
   {
-   "name": "chair_r4d792bbe_8",
+   "name": "chair_set_r4d792bbe_7_2",
    "x": 3.43,
-   "y": 7.23,
+   "y": 8.08,
+   "z": 0.45,
+   "size_x": 0.5,
+   "size_y": 0.5,
+   "size_z": 0.9,
+   "collision": "convex",
+   "rot_z": 0.0
+  },
+  {
+   "name": "chair_r4d792bbe_8",
+   "x": -10.55,
+   "y": 8.28,
    "z": 0.45,
    "size_x": 0.55,
    "size_y": 0.55,
@@ -527,7 +550,8 @@
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
-   "collision": "convex"
+   "collision": "convex",
+   "rot_z": 0.0
   },
   {
    "name": "chair_r4d792bbe_10",
@@ -611,8 +635,8 @@
   },
   {
    "name": "shelf_run_r0369897d_1",
-   "x": -12.63,
-   "y": 5.15,
+   "x": 12.63,
+   "y": 7.25,
    "z": -2.45,
    "size_x": 0.5,
    "size_y": 2.2,
@@ -622,7 +646,7 @@
   {
    "name": "cabinet_locker_r0369897d_2",
    "x": 12.63,
-   "y": 8.67,
+   "y": 3.85,
    "z": -2.45,
    "size_x": 0.5,
    "size_y": 1.2,
@@ -677,16 +701,6 @@
    "size_x": 0.9,
    "size_y": 0.9,
    "size_z": 1.0,
-   "collision": "convex"
-  },
-  {
-   "name": "shelf_run_r0369897d_10",
-   "x": 3.07,
-   "y": 9.63,
-   "z": -2.45,
-   "size_x": 2.2,
-   "size_y": 0.5,
-   "size_z": 1.9,
    "collision": "convex"
   }
  ],

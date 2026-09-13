@@ -943,12 +943,25 @@ def furnish(spec):
                         if not _seed_clear(view, room, cx, cy, others,
                                            half=0.25):
                             continue
+                        # FACING THE TABLE. Slot rotation is a COMPASS
+                        # bearing -- `Builder._slot_orient` puts N at 0, E at
+                        # 90, S at 180, W at 270 -- turning a module's local
+                        # +Y onto that bearing. A chair's seated front is its
+                        # local -Y (its back panel is at +Y), so the front
+                        # points at bearing + 180, and aiming it at the table
+                        # from a chair offset (dx, dy) gives atan2(dx, dy).
+                        # The first draft used atan2(-dx, dy): right for the
+                        # chairs north and south of a table, backwards for
+                        # the ones east and west, caught by re-reading the
+                        # wall convention before a rebuild rather than after.
+                        face = math.degrees(math.atan2(cx - px, cy - py))
                         spec["volumes"].append({
                             "name": f"chair_set_{rtag}_{k + 1}_{j + 1}",
                             "x": round(cx, 2), "y": round(cy, 2),
                             "z": round(story * sh + _CHAIR_H / 2.0, 3),
                             "size_x": 0.5, "size_y": 0.5, "size_z": _CHAIR_H,
                             "collision": "convex",
+                            "rot_z": float(int(round(face / 90.0)) * 90 % 360),
                         })
                         added += 1
                 break
