@@ -1,3 +1,29 @@
+## [0.127.0] - 2026-09-13  a one-storey switchback cuts one run, not two
+
+Found by cold run 9050's frames of the fix for the walker's "13" frame, before
+the walker saw it: `bank_branch_a03`'s basement stair is a switchback that
+climbs one storey. A switchback's legs alternate between two parallel runs,
+so `flight_rect` and the builder cut every slab both runs wide -- and with one
+leg the second run holds nothing. It stood open to the basement beside the top
+of the flight for the 2.05 m that 0.126.0's guards leave clear at a landing.
+
+`stairwell.single_run` / `stairwell.hole_span` are now the one source for a
+cut's centre and width: a single-storey switchback cuts only the run its leg
+climbs in (width + 0.8 m, centred on that run), and `footprint_rect` reserves
+only that run. Multi-storey switchbacks keep both runs, because their landings
+bridge them and the next leg climbs from the turn. 59 stairs in 53 library
+specs and 4 in presets are single-storey switchbacks. The guards follow the
+narrower rectangle without change, since they are derived from it.
+
+Measured across the library before and after, the only new gate findings were
+two L21s where 0.126.0 had seated a stair against the old, wider rectangle
+(`credit_union_a01`, `night_pawn`); `migrate_stair_walls.py` re-seated both
+(0 lint failures, 0 stairwell errors after). Solid volumes inside a stair's
+reserved rectangle: 39 -> 38. Tests that pinned the two-run width on a
+one-storey switchback now pin a two-storey one for the old shape and the
+one-storey one for the new; `night_pawn`'s wall now stops at x 5.1 instead of
+4.1, still exactly at the hole's edge.
+
 ## [0.126.0] - 2026-09-13  a stair's hole cuts no wall, a stair is guarded, a teller line is locked
 
 The walker's second round of in-game feedback, from cold run 9048's walk copy.

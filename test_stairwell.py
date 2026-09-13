@@ -16,10 +16,13 @@ def _codes(msgs):
 
 def test_footprint_and_floors():
     sp = LevelSpec(name="s", n_stories=2)
-    st = Stairwell(x=10, y=7.5, from_story=0, to_story=1,
+    st = Stairwell(x=10, y=7.5, from_story=0, to_story=2,
                    width=1.2, run=5.0, style="switchback")
     # switchback reserves both parallel runs: width + 2*(width/2) = 2*width
     assert S.footprint_rect(st) == (10 - 1.2, 5.0, 10 + 1.2, 10.0)
+    # a one-storey switchback reserves only the run its one leg climbs in
+    st.to_story = 1
+    assert S.footprint_rect(st) == (10.0, 5.0, 10 + 1.2, 10.0)
     st2 = Stairwell(x=0, y=0, from_story=0, to_story=1, width=1.2, run=4.0,
                     style="straight")
     assert S.footprint_rect(st2) == (-0.6, -2.0, 0.6, 2.0)

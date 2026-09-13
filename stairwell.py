@@ -119,6 +119,8 @@ def footprint_rect(st):
         lx1, ly1 = w / 2 + run, run / 2 + w
     elif style == "straight":
         lx0, ly0, lx1, ly1 = -w / 2, -run / 2, w / 2, run / 2
+    elif single_run(st):         # one leg: the run at local x 0..w only
+        lx0, ly0, lx1, ly1 = 0.0, -run / 2, w, run / 2
     else:                        # switchback, scissor: two parallel runs
         lx0, ly0, lx1, ly1 = -w, -run / 2, w, run / 2
     f = getattr(st, "facing", "N") or "N"
@@ -491,7 +493,7 @@ def flight_rect(st, s):
         return (px - sx / 2, py - sy / 2, px + sx / 2, py + sy / 2)
     x_off = 0.0 if st.style == "straight" else st.width / 2
     clear = 0.8                          # walk-off depth past the landing
-    hole_w = st.width + 2 * x_off + clear
+    hole_cx, hole_w = hole_span(st)
     if st.style == "scissor":
         px, py = _stair_pt(st, st.x, st.y)
         sx, sy = _stair_sz(st, hole_w, st.run + 2 * clear)
@@ -499,9 +501,35 @@ def flight_rect(st, s):
         leg = s - lo
         sign = 1 if (leg % 2 == 0 or st.style == "straight") else -1
         near, far = st.run / 2 + 0.3, st.run / 2 + clear
-        px, py = _stair_pt(st, st.x, st.y + sign * (far - near) / 2)
+        px, py = _stair_pt(st, hole_cx, st.y + sign * (far - near) / 2)
         sx, sy = _stair_sz(st, hole_w, far + near)
     return (px - sx / 2, py - sy / 2, px + sx / 2, py + sy / 2)
+
+
+def single_run(st):
+    """A switchback that climbs ONE storey: one leg, in one run.
+
+    A switchback's legs alternate between two parallel runs, so its reserved
+    rectangle and every slab cut were both runs wide. With one leg the second
+    run holds nothing -- and it was cut anyway. Cold run 9050's frames, at
+    `bank_branch_a03`'s basement stair: the unused run stood open to the
+    basement beside the top of the flight, for the 2.05 m the stair guards
+    leave clear at a landing. 59 stairs in 53 specs are single-storey
+    switchbacks. A multi-storey switchback keeps both runs: its landings
+    bridge them."""
+    return (st.style == "switchback"
+            and abs(st.to_story - st.from_story) == 1)
+
+
+def hole_span(st):
+    """``(local centre x, width)`` of a straight / switchback / scissor stair's
+    slab cut across its runs, in the stair's own unrotated frame. THE single
+    source for the builder's `_stairs` and for `flight_rect`."""
+    clear = 0.8
+    x_off = 0.0 if st.style == "straight" else st.width / 2
+    if single_run(st):
+        return st.x + x_off, st.width + clear
+    return st.x, st.width + 2 * x_off + clear
 
 
 def stair_footprints(spec):

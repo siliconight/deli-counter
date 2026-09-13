@@ -8,7 +8,7 @@
   "coverage": {
     "breach/generated": 2,
     "doorway/generated": 4,
-    "wall/generated": 120,
+    "wall/generated": 121,
     "window/generated": 2
   },
   "slots": [
@@ -3626,6 +3626,41 @@
       }
     },
     {
+      "slot_id": "int_0_0_seg1",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 2,
+      "material": "drywall",
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_0_0",
+      "story": 0,
+      "facing": "X",
+      "transform": {
+        "translation": [
+          -10.25,
+          2.0,
+          1.55
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.5,
+          0.3,
+          3.1
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.5,
+          0.3,
+          3.1
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
       "slot_id": "int_0_0p1_seg0",
       "role": "wall",
       "size_mod": "full",
@@ -3638,7 +3673,7 @@
       "facing": "X",
       "transform": {
         "translation": [
-          -6.0,
+          -6.1,
           2.0,
           1.55
         ],
@@ -3673,7 +3708,7 @@
       "facing": "X",
       "transform": {
         "translation": [
-          -4.0,
+          -4.1,
           2.0,
           1.55
         ],
@@ -3708,7 +3743,7 @@
       "facing": "X",
       "transform": {
         "translation": [
-          -2.0,
+          -2.1,
           2.0,
           1.55
         ],
@@ -3743,7 +3778,7 @@
       "facing": "X",
       "transform": {
         "translation": [
-          0.0,
+          -0.1,
           2.0,
           1.55
         ],
@@ -3778,7 +3813,7 @@
       "facing": "X",
       "transform": {
         "translation": [
-          2.0,
+          1.9,
           2.0,
           1.55
         ],
@@ -3813,7 +3848,7 @@
       "facing": "X",
       "transform": {
         "translation": [
-          4.0,
+          3.9,
           2.0,
           1.55
         ],
@@ -3848,7 +3883,7 @@
       "facing": "X",
       "transform": {
         "translation": [
-          6.0,
+          5.9,
           2.0,
           1.55
         ],
@@ -3883,20 +3918,20 @@
       "facing": "X",
       "transform": {
         "translation": [
-          7.1875,
+          7.1125,
           2.0,
           1.55
         ],
         "rot_y": 0,
         "scale": [
-          0.375,
+          0.425,
           0.3,
           3.1
         ]
       },
       "fit": {
         "dims": [
-          0.375,
+          0.425,
           0.3,
           3.1
         ],
@@ -3918,7 +3953,7 @@
       "facing": "X",
       "transform": {
         "translation": [
-          8.0,
+          7.95,
           2.0,
           1.55
         ],
@@ -3947,7 +3982,7 @@
         "collision": "convex"
       },
       "interactive": {
-        "id": "credit_union_a01:if:e810c5da",
+        "id": "credit_union_a01:if:b33080c7",
         "kind": "door",
         "states": [
           "closed",
@@ -3973,7 +4008,7 @@
       "facing": "X",
       "transform": {
         "translation": [
-          9.625,
+          9.575,
           2.0,
           1.55
         ],
@@ -4008,7 +4043,7 @@
       "facing": "X",
       "transform": {
         "translation": [
-          11.625,
+          11.575,
           2.0,
           1.55
         ],
@@ -4043,20 +4078,20 @@
       "facing": "X",
       "transform": {
         "translation": [
-          12.8125,
+          12.7875,
           2.0,
           1.55
         ],
         "rot_y": 0,
         "scale": [
-          0.375,
+          0.425,
           0.3,
           3.1
         ]
       },
       "fit": {
         "dims": [
-          0.375,
+          0.425,
           0.3,
           3.1
         ],
@@ -4707,9 +4742,9 @@
         "collision": "none",
         "voids": [
           {
-            "x0": -11.0,
+            "x0": -9.5,
             "y0": 5.0,
-            "x1": -7.0,
+            "x1": -7.1,
             "y1": 10.5
           },
           {
@@ -4794,9 +4829,9 @@
         "collision": "none",
         "voids": [
           {
-            "x0": -11.0,
+            "x0": -9.5,
             "y0": -4.0,
-            "x1": -7.0,
+            "x1": -7.1,
             "y1": 1.5
           }
         ]
@@ -4993,9 +5028,9 @@
         "collision": "none",
         "voids": [
           {
-            "x0": -11.0,
+            "x0": -9.5,
             "y0": -3.5,
-            "x1": -7.0,
+            "x1": -7.1,
             "y1": 2.0
           }
         ]
@@ -6347,7 +6382,7 @@
       "facing": null,
       "transform": {
         "translation": [
-          -11.05,
+          -9.55,
           3.225,
           -1.85
         ],
@@ -6383,7 +6418,7 @@
       "facing": null,
       "transform": {
         "translation": [
-          -11.05,
+          -9.55,
           5.275,
           0.535
         ],
@@ -6419,7 +6454,7 @@
       "facing": null,
       "transform": {
         "translation": [
-          -6.95,
+          -7.05,
           3.475,
           -1.85
         ],
@@ -6455,7 +6490,7 @@
       "facing": null,
       "transform": {
         "translation": [
-          -6.95,
+          -7.05,
           5.275,
           0.535
         ],
@@ -6491,7 +6526,7 @@
       "facing": null,
       "transform": {
         "translation": [
-          -9.0,
+          -8.3,
           7.05,
           0.535
         ],
@@ -6504,7 +6539,7 @@
       },
       "fit": {
         "dims": [
-          4.2,
+          2.6,
           0.1,
           1.07
         ],

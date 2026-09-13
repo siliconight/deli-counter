@@ -154,7 +154,10 @@ def test_night_pawn_wall_stops_at_the_stairwell():
     assert len(spans) == 1, spans
     lo, hi = spans[0]
     assert lo == -7.0
-    assert abs(hi - 4.1) < 1e-9, hi
+    # 4.1 when this was captured: the hole was cut both runs wide. Since
+    # 0.127.0 a one-storey switchback cuts only its leg's run, so the wall
+    # stops at 5.1 -- still exactly at the hole's edge, which is the claim.
+    assert abs(hi - 5.1) < 1e-9, hi
     # ...and the flight it used to cover is now open to the storey above
     (hx0, _hy0, hx1, _hy1), = voids[1]
     assert hx0 < 5.5 < hx1                     # the stair's own x

@@ -29,11 +29,15 @@ def test_facing_rotates_footprint():
 
 
 def test_style_footprints():
-    sw = S.footprint_rect(Stairwell(x=0, y=0, from_story=0, to_story=1,
+    sw = S.footprint_rect(Stairwell(x=0, y=0, from_story=0, to_story=2,
                                     width=1.2, run=5.0, style="switchback"))
     sc = S.footprint_rect(Stairwell(x=0, y=0, from_story=0, to_story=1,
                                     width=1.2, run=5.0, style="scissor"))
     assert sw == sc == (-1.2, -2.5, 1.2, 2.5)    # same two-channel shaft
+    # ...but a ONE-storey switchback has one leg in one run (0.127.0)
+    one = S.footprint_rect(Stairwell(x=0, y=0, from_story=0, to_story=1,
+                                     width=1.2, run=5.0, style="switchback"))
+    assert one == (0.0, -2.5, 1.2, 2.5)
     sp = S.footprint_rect(Stairwell(x=0, y=0, from_story=0, to_story=1,
                                     width=1.5, style="spiral"))
     assert sp == (-1.5, -1.5, 1.5, 1.5)          # disc, width = radius

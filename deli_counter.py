@@ -1716,7 +1716,10 @@ class _Builder:
                 has_landing = (st.style == "switchback"
                                and s < st.to_story - 1)
                 clear = 0.8                  # walk-off depth past the landing
-                hole_w = st.width + 2 * x_offset + clear
+                # ONE SOURCE for the cut's width and centre: a single-storey
+                # switchback cuts only the run its one leg climbs in
+                # (`stairwell.hole_span`; cold run 9050's open unused run).
+                hole_cx, hole_w = stairwell.hole_span(st)
                 if st.style == "scissor":
                     flights = [(1, st.x - x_offset, "a"),
                                (-1, st.x + x_offset, "b")]
@@ -1825,7 +1828,7 @@ class _Builder:
                         near = st.run / 2 + 0.3    # behind the bottom step
                         far = st.run / 2 + clear   # past the top landing
                         hole_y = st.y + sign * (far - near) / 2
-                        self._stair_hole(st, s + 1, st.x, hole_y,
+                        self._stair_hole(st, s + 1, hole_cx, hole_y,
                                          hole_w, far + near)
                         # The headroom margin above cuts away the very floor
                         # the climber discharges onto -- a 0.7-0.8 m walk-off
@@ -1849,7 +1852,7 @@ class _Builder:
                         if d_depth > 1e-6:
                             disch_y = st.y + sign * (st.run / 2 + d_near
                                                      + d_depth / 2)
-                            wx, wy = self._stair_pt(st, st.x, disch_y)
+                            wx, wy = self._stair_pt(st, hole_cx, disch_y)
                             dz = z + H - step_h / 2
                             self._box(f"stair{si}_discharge_{s}",
                                       (wx, wy, dz),

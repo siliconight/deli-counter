@@ -8,7 +8,7 @@
   "coverage": {
     "breach/generated": 2,
     "doorway/generated": 5,
-    "wall/generated": 167,
+    "wall/generated": 168,
     "window/generated": 1
   },
   "slots": [
@@ -5111,6 +5111,41 @@
     {
       "slot_id": "int_0_0_seg2",
       "role": "wall",
+      "size_mod": "full",
+      "style": 4,
+      "material": "metal",
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_0_0",
+      "story": 0,
+      "facing": "X",
+      "transform": {
+        "translation": [
+          -16.0,
+          4.0,
+          2.35
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          4.7
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_0_0_seg3",
+      "role": "wall",
       "size_mod": "end",
       "style": 4,
       "material": "metal",
@@ -5121,20 +5156,20 @@
       "facing": "X",
       "transform": {
         "translation": [
-          -16.25,
+          -14.45,
           4.0,
           2.35
         ],
         "rot_y": 0,
         "scale": [
-          1.5,
+          1.1,
           0.3,
           4.7
         ]
       },
       "fit": {
         "dims": [
-          1.5,
+          1.1,
           0.3,
           4.7
         ],
@@ -6378,7 +6413,7 @@
         "collision": "none",
         "voids": [
           {
-            "x0": -15.5,
+            "x0": -13.9,
             "y0": 1.0,
             "x1": -11.5,
             "y1": 8.5
@@ -6465,7 +6500,7 @@
         "collision": "none",
         "voids": [
           {
-            "x0": -15.5,
+            "x0": -13.9,
             "y0": -11.0,
             "x1": -11.5,
             "y1": -3.5
@@ -6596,7 +6631,7 @@
         "collision": "none",
         "voids": [
           {
-            "x0": -5.0,
+            "x0": -3.4,
             "y0": -3.0,
             "x1": -1.0,
             "y1": 4.5
@@ -9650,7 +9685,7 @@
       "facing": null,
       "transform": {
         "translation": [
-          -15.55,
+          -13.95,
           1.775,
           -2.65
         ],
@@ -9686,7 +9721,7 @@
       "facing": null,
       "transform": {
         "translation": [
-          -15.55,
+          -13.95,
           -0.275,
           0.535
         ],
@@ -9794,7 +9829,7 @@
       "facing": null,
       "transform": {
         "translation": [
-          -13.5,
+          -12.7,
           -3.05,
           0.535
         ],
@@ -9807,7 +9842,7 @@
       },
       "fit": {
         "dims": [
-          4.2,
+          2.6,
           0.1,
           1.07
         ],

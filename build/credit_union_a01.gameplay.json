@@ -1315,6 +1315,15 @@
       }
     },
     {
+      "node": "int_col_0_0_seg1",
+      "material": {
+        "id": "drywall",
+        "acoustic": "Drywall",
+        "absorption": null,
+        "damping": null
+      }
+    },
+    {
       "node": "int_col_0_0p1_seg0",
       "material": {
         "id": "drywall",
@@ -2088,7 +2097,7 @@
       "building": "credit_union_a01"
     },
     {
-      "id": "credit_union_a01:if:e810c5da",
+      "id": "credit_union_a01:if:b33080c7",
       "kind": "door",
       "slot_ref": "int_0_0p1_open0",
       "transform": {
@@ -2202,19 +2211,19 @@
       ],
       "footprint_polygon": [
         [
-          -10.6,
+          -9.1,
           2.3
         ],
         [
-          -7.4,
+          -7.5,
           2.3
         ],
         [
-          -7.4,
+          -7.5,
           6.7
         ],
         [
-          -10.6,
+          -9.1,
           6.7
         ]
       ],
@@ -2247,13 +2256,13 @@
           "end": "lower",
           "story": -1,
           "rect": [
-            -10.6,
+            -9.1,
             6.7,
-            -9.0,
+            -7.5,
             7.9
           ],
           "point": [
-            -9.8,
+            -8.3,
             7.300000000000001,
             -3.4
           ],
@@ -2266,13 +2275,13 @@
           "end": "upper",
           "story": 0,
           "rect": [
-            -10.6,
+            -9.1,
             0.2999999999999998,
-            -9.0,
+            -7.5,
             1.5
           ],
           "point": [
-            -9.8,
+            -8.3,
             0.8999999999999999,
             0.0
           ],
@@ -2284,12 +2293,12 @@
       ],
       "nav_endpoints": {
         "lower": [
-          -9.8,
+          -8.3,
           7.300000000000001,
           -3.4
         ],
         "upper": [
-          -9.8,
+          -8.3,
           0.8999999999999999,
           0.0
         ]
@@ -2320,8 +2329,8 @@
           "floor": 0,
           "kind": "door",
           "wall": "int_0_0p1",
-          "pos": 0.24,
-          "interactive": "credit_union_a01:if:e810c5da",
+          "pos": 0.24129353233830841,
+          "interactive": "credit_union_a01:if:b33080c7",
           "default_state": "closed",
           "connects_from": "lobby",
           "discharge_door": false
@@ -2487,8 +2496,8 @@
           "floor": 0,
           "kind": "door",
           "wall": "int_0_0p1",
-          "pos": 0.24,
-          "interactive": "credit_union_a01:if:e810c5da",
+          "pos": 0.24129353233830841,
+          "interactive": "credit_union_a01:if:b33080c7",
           "default_state": "closed",
           "connects_from": "back_office",
           "discharge_door": false
@@ -2742,6 +2751,7 @@
     "ext_0_W_seg8": "wall",
     "ext_0_W_seg9": "wall",
     "int_0_0_seg0": "wall",
+    "int_0_0_seg1": "wall",
     "int_0_0p1_seg0": "wall",
     "int_0_0p1_seg1": "wall",
     "int_0_0p1_seg2": "wall",
