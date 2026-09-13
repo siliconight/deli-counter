@@ -124,15 +124,64 @@ def test_the_same_seed_and_room_furnish_the_same_way():
            [(v["name"], v["x"], v["y"]) for v in b["volumes"]]
 
 
-def test_furniture_does_not_stand_against_an_outside_wall():
-    """One shell of 130 said why. A shelf run went flush against the outside
-    wall of `office`'s exec suite, across its door, and the nav gate reported
-    the objective unreachable -- `_seed_clear` keeps a piece a metre off any
-    PARTITION, which is where interior doors are, and knows nothing about
-    the openings in an exterior wall."""
-    s = _spec(12.0, 10.0)
+def test_wall_furniture_stands_on_outside_walls_but_never_in_an_opening():
+    """SUPERSEDED, kept above the result that replaced it. 0.122.0 asserted
+    furniture stayed OFF exterior walls: a shelf run had stood across the door
+    of `office`'s exec suite, because `_seed_clear` guards partitions and knew
+    nothing about exterior openings. The ban emptied every hall whose long
+    walls are exterior, which cold run 9044's brewery frame showed. The rule
+    now is the real one: exterior walls are allowed, and no piece may overlap
+    an opening plus its clearance."""
+    s = _spec(12.0, 10.0, role="storage")
     s["footprint_x"], s["footprint_y"] = 12.0, 10.0      # the room IS the shell
-    assert level_design.furnish(s) >= 0
-    hx, hy = 6.0, 5.0
+    s["ext_walls"] = [
+        {"wall": "S", "story": 0, "openings": [
+            {"kind": "door", "pos": 0.0, "width": 1.2}]},
+        {"wall": "E", "story": 0, "openings": [
+            {"kind": "window", "pos": 0.1, "width": 1.0, "sill": 1.0}]}]
+    level_design.furnish(s)
+    clear = level_design._FURNISH_OPENING_CLEAR
+    on_ext = 0
     for v in s["volumes"]:
-        assert abs(abs(v["x"]) - hx) > level_design._FURNISH_EXT_KEEPOUT or                abs(abs(v["y"]) - hy) > level_design._FURNISH_EXT_KEEPOUT, v
+        if abs(v["y"] + 5.0) < 1.0:                        # against S
+            on_ext += 1
+            assert abs(v["x"] - 0.0) >= v["size_x"] / 2 + 0.6 + clear - 1e-6, v
+        if abs(v["x"] - 6.0) < 1.0:                        # against E
+            on_ext += 1
+            assert abs(v["y"] - 1.0) >= v["size_y"] / 2 + 0.5 + clear - 1e-6, v
+    assert on_ext > 0, "no wall piece stood on an exterior wall at all"
+
+
+def test_a_setback_storey_keeps_its_outside_walls_bare():
+    """The one place the exclusion survives: with a setback the storey's
+    extent is not the footprint, and the opening positions are not re-derived
+    here, so guessing them would be the defect this replaced."""
+    s = _spec(12.0, 10.0, role="storage")
+    s["footprint_x"], s["footprint_y"] = 12.0, 10.0
+    s["setbacks"] = [{"story": 1, "n": 1.0}]
+    level_design.furnish(s)
+    for v in s["volumes"]:
+        if v["size_z"] >= level_design.shelter_height():
+            edge = min(6.0 - abs(v["x"]), 5.0 - abs(v["y"]))
+            assert edge > level_design._FURNISH_EXT_KEEPOUT + 0.2, v
+
+
+def test_a_hall_is_furnished_sparser_than_an_office_but_not_capped_at_ten():
+    """Cold run 9044's brewery hall, about 1,000 m2: 63 pieces at office
+    density, 10 under the old cap, 25 now."""
+    assert level_design._furnish_target(120.0) == 8
+    assert level_design._furnish_target(160.0) == 10
+    assert level_design._furnish_target(1000.0) == 25
+    assert level_design._furnish_target(5000.0) == level_design._FURNISH_HALL_MAX
+
+
+def test_a_table_brings_its_chairs_and_the_set_is_still_idempotent():
+    s = _spec(20.0, 16.0, role="lobby")
+    first = level_design.furnish(s)
+    chairs = [v for v in s["volumes"] if v["name"].startswith("chair_set_")]
+    tables = [v for v in s["volumes"] if v["name"].startswith("table_")]
+    assert tables and chairs, [v["name"] for v in s["volumes"]]
+    assert len(chairs) <= 2 * len(tables)
+    assert all(prop_species.species_for_name(c["name"]) == "chair" for c in chairs)
+    assert level_design.furnish(s) == 0
+    assert len(s["volumes"]) == first

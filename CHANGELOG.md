@@ -1,3 +1,45 @@
+## [0.123.0] - 2026-09-13  the halls are furnished
+
+Cold run 9044's frames, the first with furnished interiors: a bank office
+read as a room and a brewery hall of about a thousand square metres read as
+an empty carpet with a bar along one side. Three causes in `furnish`, found
+in the code rather than guessed from the picture.
+
+**The hall's long walls are exterior**, and 0.122.0 banned wall furniture
+from exterior walls outright after a shelf run stood across the door of
+`office`'s exec suite. The ban was the cheap fix; the reason for it was that
+nothing knew where exterior openings are. They are readable --
+`_opening_to_hole` puts an opening at `pos * run` from its wall's centre --
+so wall furniture now stands on exterior walls clear of every opening by its
+half width plus 0.9 m. A storey with a setback keeps the exclusion, because
+its extent is not the footprint.
+
+**The cap of ten.** A thousand square metres wanted 63 pieces at office
+density and got 10. Halls are sparser than offices, so past ten pieces the
+density drops to one per 40 square metres, capped at 30: that hall gets 25.
+A 120 square metre office still gets exactly 8.
+
+**A table alone is not a place people sit.** A floor table brings up to two
+chairs on its long sides, named `chair_set_*` so they route to `chair` and
+the idempotence mark recognises them.
+
+TWO REGRESSIONS THE GATES CAUGHT, and one of them was older than this work.
+
+The chairs skipped `_seed_clear` in the first draft and one landed on
+`credit_union_a02`'s upper stair landing (STAIR_UPPER_LANDING_BLOCKED, the
+spec-corpus contract test). They pass it now, minus their own table and its
+2.2 m spread rule, which is right for tables and wrong for a table's chairs.
+
+And `office`'s objective went unreachable again, which exposed a defect in
+`_seed_clear` itself. Its docstring says clearances are measured from the
+piece's EDGE, and the stair, landing and ladder checks honour that with
+`+ half` -- but the exterior- and partition-OPENING checks measured a flat
+1.5 m from the CENTRE. A 1.6 m desk centred 1.5 m from a 1.0 m door stands
+0.2 m off its jamb. Cover pieces are small enough that it rarely bit; a hall
+of furniture found it. Both opening checks now add `half`, which also makes
+`seed_cover` slightly more conservative around doors, as its docstring
+always said it was.
+
 ## [0.122.0] - 2026-09-13  the rooms get furniture
 
 The walker: great progress outside the buildings, what about the props

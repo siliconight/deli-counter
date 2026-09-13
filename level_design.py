@@ -488,7 +488,9 @@ def _seed_clear(spec, room, px, py, placed, half=0.0):
         for op in w.get("openings", []):
             u = op.get("pos", 0.0) * run
             ox, oy = {"N": (u, hy), "S": (u, -hy), "E": (hx, u), "W": (-hx, u)}[w["wall"]]
-            if math.hypot(ox - px, oy - py) < 1.5:
+            # FROM THE EDGE, like every other check here: a flat 1.5 m from
+            # the CENTRE let a 1.6 m desk stand 0.2 m off a door jamb.
+            if math.hypot(ox - px, oy - py) < 1.5 + half:
                 return False
     for p in spec.get("partitions", []):
         if p.get("story", 0) != story:
@@ -497,7 +499,7 @@ def _seed_clear(spec, room, px, py, placed, half=0.0):
         for op in p.get("openings", []):
             u = p["start"] + (op.get("pos", 0.0) + 0.5) * run
             ox, oy = (p["pos"], u) if p["axis"] == "Y" else (u, p["pos"])
-            if math.hypot(ox - px, oy - py) < 1.5:
+            if math.hypot(ox - px, oy - py) < 1.5 + half:
                 return False
     for (qx, qy) in placed:
         if math.hypot(qx - px, qy - py) < 2.2:
@@ -694,57 +696,124 @@ def _room_volume_count(spec, room):
     return n
 
 
-#: How close a wall line may be to the building's own edge before furniture
-#: stops standing against it.
+#: How close a wall line may be to the building's own edge before it is
+#: treated as an EXTERIOR wall, whose openings furniture must clear.
 _FURNISH_EXT_KEEPOUT = 0.5
+#: Clearance either side of an exterior opening, beyond its half width. A
+#: door needs its approach and a window its sill; 0.9 m is `_seed_clear`'s
+#: own clearance between pieces, so a doorway gets what a desk gets.
+_FURNISH_OPENING_CLEAR = 0.9
+#: Past `_FURNISH_MAX` pieces a room is a HALL, and halls are furnished
+#: sparser than offices: one piece per this many square metres, to a hard cap.
+_FURNISH_HALL_PER_AREA = 40.0
+_FURNISH_HALL_MAX = 30
+
+
+def _ext_openings(spec, story):
+    """``{wall: [(centre_along, half_width), ...]}`` for one storey's exterior
+    openings, in the room coordinates `bounds` use -- or None when the storey
+    has a setback, whose extent is not the footprint and is not re-derived
+    here.
+
+    The position rule is `Builder._opening_to_hole`'s: an opening sits at
+    `pos * run` from its wall's centre, `run` being the storey's extent along
+    that wall (`footprint_x` for N and S, `footprint_y` for E and W)."""
+    if spec.get("setbacks"):
+        return None
+    fx = float(spec.get("footprint_x", 0.0))
+    fy = float(spec.get("footprint_y", 0.0))
+    out = {"N": [], "S": [], "E": [], "W": []}
+    for w in spec.get("ext_walls", []) or []:
+        if w.get("story", 0) != story or w.get("wall") not in out:
+            continue
+        run = fx if w["wall"] in ("N", "S") else fy
+        for op in w.get("openings", []) or []:
+            out[w["wall"]].append((float(op.get("pos", 0.0)) * run,
+                                   float(op.get("width", 1.0)) / 2.0))
+    return out
+
+
+def _clear_of_openings(openings, wall, centre, half_len):
+    """Does a piece centred at `centre` along `wall`, `half_len` either side,
+    stay clear of every opening in that wall?"""
+    for c, hw in (openings or {}).get(wall, ()):
+        if abs(centre - c) < half_len + hw + _FURNISH_OPENING_CLEAR:
+            return False
+    return True
 
 
 def _wall_slots(spec, room, w, d, rng):
-    """Candidate ``(x, y, sx, sy)`` flush against the room's INTERIOR walls,
-    the piece's long axis lying ALONG the wall. A shelf run standing across a
+    """Candidate ``(x, y, sx, sy)`` flush against the room's walls, the
+    piece's long axis lying ALONG the wall. A shelf run standing across a
     wall rather than along it is how a 2.6 m unit ends up sticking into the
     middle of the floor.
 
-    EXTERIOR WALLS ARE SKIPPED, and that is a correction rather than a
-    preference. `_seed_clear` keeps a piece a metre off any PARTITION, which
-    is where interior doors are, and knows nothing about the openings in an
-    exterior wall -- so a shelf run went flush against the outside wall of
-    `office`'s exec suite, across its door, and the nav gate reported the
-    objective unreachable. One shell of 130, found by the gate and not by
-    reading. Putting shelving back on outside walls needs the opening
-    positions, which live in `ext_walls` as fractions of a run this function
-    cannot see; until then the loss is a bookcase that could have stood
-    under a window.
+    EXTERIOR WALLS, AND WHY THEY WERE BANNED FOR ONE VERSION. `_seed_clear`
+    keeps a piece a metre off any PARTITION, which is where interior doors
+    are, and knows nothing about the openings in an exterior wall -- so in
+    0.122.0's first build a shelf run stood across the door of `office`'s
+    exec suite and the nav gate reported the objective unreachable. The ban
+    that fixed it also emptied every hall whose long walls are exterior,
+    which cold run 9044's brewery frame showed. Exterior walls are back,
+    clear of each opening by `_ext_openings`, and only a storey with a
+    setback -- whose extent is not the footprint -- keeps the exclusion.
     """
     x0, y0, x1, y1 = room["bounds"]
     hx = float(spec.get("footprint_x", 0.0)) / 2.0
     hy = float(spec.get("footprint_y", 0.0)) / 2.0
+    openings = _ext_openings(spec, room.get("story", 0))
     out = []
     long_side, short_side = max(w, d), min(w, d)
+
+    def _wall_of(value, half, lo_name, hi_name):
+        """The exterior wall a room edge lies on, or None when interior."""
+        if not half or abs(abs(value) - half) >= _FURNISH_EXT_KEEPOUT:
+            return None
+        return lo_name if value < 0 else hi_name
+
     # N and S walls: the long axis runs in x
     for wy, inset in ((y0, +1), (y1, -1)):
-        if hy and abs(abs(wy) - hy) < _FURNISH_EXT_KEEPOUT:
+        ext = _wall_of(wy, hy, "S", "N")
+        if ext and openings is None:
             continue
         span = (x1 - x0) - long_side - 0.6
         if span <= 0:
             continue
-        for _ in range(3):
+        for _ in range(4):
             px = x0 + 0.3 + long_side / 2.0 + rng.random() * span
+            if ext and not _clear_of_openings(openings, ext, px, long_side / 2.0):
+                continue
             out.append((px, wy + inset * (short_side / 2.0 + 0.12),
                         long_side, short_side))
     # E and W walls: the long axis runs in y
     for wx, inset in ((x0, +1), (x1, -1)):
-        if hx and abs(abs(wx) - hx) < _FURNISH_EXT_KEEPOUT:
+        ext = _wall_of(wx, hx, "W", "E")
+        if ext and openings is None:
             continue
         span = (y1 - y0) - long_side - 0.6
         if span <= 0:
             continue
-        for _ in range(3):
+        for _ in range(4):
             py = y0 + 0.3 + long_side / 2.0 + rng.random() * span
+            if ext and not _clear_of_openings(openings, ext, py, long_side / 2.0):
+                continue
             out.append((wx + inset * (short_side / 2.0 + 0.12), py,
                         short_side, long_side))
     rng.shuffle(out)
     return out
+
+
+def _furnish_target(area):
+    """How many pieces a room of `area` square metres wants.
+
+    One per `_FURNISH_PER_AREA` up to `_FURNISH_MAX`: an office. Past that the
+    room is a hall and gets one per `_FURNISH_HALL_PER_AREA`, to
+    `_FURNISH_HALL_MAX`. A 120 m2 office wants 8; cold run 9044's brewery
+    hall, about 1,000 m2, wanted 63 at office density, got 10 under the old
+    cap and wants 25 now."""
+    office = max(1, int(round(area / _FURNISH_PER_AREA)))
+    hall = max(_FURNISH_MAX, int(round(area / _FURNISH_HALL_PER_AREA)))
+    return min(office, hall, _FURNISH_HALL_MAX)
 
 
 def furnish(spec):
@@ -752,8 +821,10 @@ def furnish(spec):
 
     `seed_cover` asks whether a room can be fought in and deliberately keeps
     its count low; this asks whether a room looks lived in, and the two do
-    not trade against each other because everything placed mid-floor here is
-    below `_COVER_MIN_Z` and everything tall goes flush against a wall.
+    not trade against each other because nothing placed mid-floor here
+    reaches SHELTER height and everything that tall goes flush against a
+    wall. (An earlier line here said mid-floor pieces stay below
+    `_COVER_MIN_Z`; `test_furnish` refuted it -- a desk is 0.75 m.)
 
     Deterministic (spec seed + room id), additive and idempotent: existing
     volumes count toward the target, so a second run adds nothing. Returns
@@ -776,7 +847,7 @@ def furnish(spec):
         # _is_idempotent` caught exactly that -- five extra pieces in a
         # hospital on a re-enrich. A room this pass has already touched is
         # recognisable from its volume NAMES and is skipped outright.
-        stems = {p[0] for p in pieces}
+        stems = {p[0] for p in pieces} | {"chair_set"}
         mark = f"_{room['id']}_"
         # `rsplit("_", 2)[0]` was the first spelling of this and it fails on
         # any room id carrying an underscore -- `chair_waiting` in room
@@ -788,18 +859,21 @@ def furnish(spec):
                for v in spec.get("volumes", [])):
             continue
         have = _room_volume_count(spec, room)
-        want = max(0, min(_FURNISH_MAX,
-                          max(1, int(round(area / _FURNISH_PER_AREA)))) - have)
+        want = max(0, _furnish_target(area) - have)
         if want <= 0:
             continue
         rng = random.Random(f"{base_seed}:{room['id']}:furnish")
         story = room.get("story", 0)
         placed = []
         floor_cands = []
-        for i in range(5):
-            for j in range(5):
-                px = x0 + 1.0 + (i + rng.random() * 0.6) * (x1 - x0 - 2.0) / 5
-                py = y0 + 1.0 + (j + rng.random() * 0.6) * (y1 - y0 - 2.0) / 5
+        # the candidate grid scales with the room: a fixed 5 x 5 capped every
+        # hall at 25 floor positions before clearance removed any of them
+        gx = max(5, min(14, int((x1 - x0) // 3.0)))
+        gy = max(5, min(14, int((y1 - y0) // 3.0)))
+        for i in range(gx):
+            for j in range(gy):
+                px = x0 + 1.0 + (i + rng.random() * 0.6) * (x1 - x0 - 2.0) / gx
+                py = y0 + 1.0 + (j + rng.random() * 0.6) * (y1 - y0 - 2.0) / gy
                 floor_cands.append((px, py))
         rng.shuffle(floor_cands)
         for k in range(want):
@@ -820,6 +894,42 @@ def furnish(spec):
                 })
                 placed.append((px, py))
                 added += 1
+                # A TABLE BRINGS ITS CHAIRS. Scattered tables read as crates;
+                # a table with a chair either side reads as a place people
+                # sit. Up to two, on the long sides, only where they clear.
+                # They belong to the table and do not count toward `want`.
+                if where == "floor" and name.startswith("table") and \
+                        name != "table_work":
+                    table = spec["volumes"][-1]
+                    along_x = sx >= sy
+                    for j, sgn in enumerate((-1, 1)):
+                        cx = px if along_x else px + sgn * (sx / 2 + 0.45)
+                        cy = py + sgn * (sy / 2 + 0.45) if along_x else py
+                        if not (x0 + 0.4 < cx < x1 - 0.4 and
+                                y0 + 0.4 < cy < y1 - 0.4):
+                            continue
+                        # THE CHAIR PASSES THE SAME CLEARANCE AS EVERY OTHER
+                        # PIECE, minus its own table, which it must stand
+                        # beside. The first draft skipped the check and put a
+                        # chair on `credit_union_a02`'s upper stair landing.
+                        view = dict(spec, volumes=[v for v in spec["volumes"]
+                                                   if v is not table])
+                        # `placed` enforces a 2.2 m SPREAD between pieces,
+                        # which is right for tables and wrong for a table's
+                        # own chairs, 0.75 m from it -- so the set is checked
+                        # against every other placed piece, not its own.
+                        others = [q for q in placed if q != (px, py)]
+                        if not _seed_clear(view, room, cx, cy, others,
+                                           half=0.25):
+                            continue
+                        spec["volumes"].append({
+                            "name": f"chair_set_{room['id']}_{k + 1}_{j + 1}",
+                            "x": round(cx, 2), "y": round(cy, 2),
+                            "z": round(story * sh + 0.45 / 2.0, 3),
+                            "size_x": 0.5, "size_y": 0.5, "size_z": 0.45,
+                            "collision": "convex",
+                        })
+                        added += 1
                 break
             # A piece that fits nowhere is simply not placed. A room with no
             # wall long enough for a shelf run is a fact about the room.
