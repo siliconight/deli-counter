@@ -1230,6 +1230,36 @@ def _gameplay_block(role, enclosed, width):
 # Derivation: LevelSpec -> stair_systems (gameplay.json section 13 subset)
 # ---------------------------------------------------------------------------
 
+#: The two underside settings, and the default the walker asked for.
+STAIR_UNDERSIDES = ("solid", "open")
+STAIR_UNDERSIDE_DEFAULT = "solid"
+
+
+def stair_underside(spec, st):
+    """"solid" or "open" for one stair -- THE resolver; the builder builds it
+    and `derive` reports it, so the two cannot disagree.
+
+    Most specific first: the stair's `open_under` (True open / False solid),
+    the building's `stair_undersides`, the DC_STAIR_UNDERSIDES env var, then
+    "solid". An unrecognised building or env value is REFUSED rather than read
+    as a default: a toggle that silently ignores a typo is a toggle nobody can
+    trust to have been flipped."""
+    import os
+    own = getattr(st, "open_under", None)
+    if own is not None:
+        return "open" if own else "solid"
+    for source, value in (("stair_undersides", getattr(spec, "stair_undersides", None)),
+                          ("DC_STAIR_UNDERSIDES",
+                           os.environ.get("DC_STAIR_UNDERSIDES", "").strip() or None)):
+        if value is None:
+            continue
+        v = str(value).strip().lower()
+        if v not in STAIR_UNDERSIDES:
+            raise ValueError(f"{source}={value!r}: expected one of {STAIR_UNDERSIDES}")
+        return v
+    return STAIR_UNDERSIDE_DEFAULT
+
+
 def derive(spec, pieces=None):
     """One semantic dict per Stairwell: identity, role, stack, floors served,
     reserved footprint, per-floor approach, and the ground discharge route.
@@ -1259,6 +1289,11 @@ def derive(spec, pieces=None):
             "channels": 2 if st.style == "scissor" else 1,
             "roof_access": max(st.from_story, st.to_story) >= spec.n_stories,
             "transfer": bool(getattr(st, "transfer", False)),
+            # "solid": the flight is built to the floor beneath it and blocks
+            # sight and movement there. "open": treads over air, a sightline
+            # and a route under the high end. Legs stacked over a lower leg of
+            # the same stair are open either way (headroom).
+            "underside": stair_underside(spec, st),
             "floors_served": served,
             "footprint_polygon": [[rect[0], rect[1]], [rect[2], rect[1]],
                                   [rect[2], rect[3]], [rect[0], rect[3]]],

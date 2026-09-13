@@ -69,6 +69,18 @@
       "type": "string",
       "description": "Skin material for the roof slab. Omit to use default_material, which is what every roof took before this field existed."
     },
+    "stair_undersides": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "solid",
+        "open",
+        null
+      ],
+      "description": "Stair underside toggle for the whole building: solid (default) builds each flight to the floor beneath it; open leaves treads over air for more sightlines. A stair's own open_under wins. Omitted/null -> DC_STAIR_UNDERSIDES env -> solid."
+    },
     "roof_thick": {
       "type": [
         "number",
@@ -495,8 +507,11 @@
             "type": "boolean"
           },
           "open_under": {
-            "type": "boolean",
-            "description": "Leave the space under the flight open rather than solid to the floor; set only where a route passes under the stair, with the reason in meta.open_under_why."
+            "type": [
+              "boolean",
+              "null"
+            ],
+            "description": "This flight's underside: true open, false solid, null/omitted inherits the building's stair_undersides (then DC_STAIR_UNDERSIDES, then solid)."
           }
         }
       }

@@ -109,6 +109,37 @@ Each wall run becomes named swap-slots: identical tiles share one mesh, and ever
 slot is a 1:1 swap point a theme kit replaces. This is your shell. Author it for
 *function* first; the art rides on top for free.
 
+#### Stair undersides: solid by default, a toggle for sightlines
+
+A flight is built **solid to the floor beneath it** by default: each tread is a
+column down to the storey floor, with collision stopping one riser below the
+tread so the smooth ramp stays the walking surface. An **open** underside leaves
+the treads over air, which gives sightlines through the space under the stair
+and a route under its high end. Which one a level wants is a gameplay decision,
+so it is a toggle at three levels, most specific first:
+
+| Level | Set it with | Values |
+| --- | --- | --- |
+| One stair | `"open_under"` on the stair | `true` open, `false` solid, omit to inherit |
+| One building | `"stair_undersides"` at the top of the spec | `"solid"`, `"open"`, omit to inherit |
+| One build | the `DC_STAIR_UNDERSIDES` environment variable | `solid`, `open` |
+
+With nothing set it is solid. A misspelt value is refused, not read as the
+default. Legs stacked over a lower leg of the same stair stay open whatever the
+setting, because filling them would put mass in the headroom of the flight
+below. The resolved value is written to `gameplay.json` as
+`stair_systems[].underside` (see GAMEPLAY_JSON_CONTRACT.md).
+
+To try a whole library open without editing a spec:
+
+```bash
+DC_STAIR_UNDERSIDES=open python build.py --all
+```
+
+If you open a stair because a route has to pass under it rather than for
+sightlines, say so in `meta.open_under_why` -- `deli_a03`'s upper flight is the
+example.
+
 ### Repeated props — pumps, lockers, shelves, crates, pillars, counters
 
 Anything that appears more than once should be **one `asset` placed N times via

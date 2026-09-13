@@ -1666,7 +1666,10 @@ class _Builder:
                 # upper flight, the only route to the upstairs objective ran
                 # under that flight's high end, and a solid fill made the
                 # objective unreachable (with the fill disabled, reachable).
-                solid_under = solid_under and not getattr(st, "open_under", False)
+                # THE TOGGLE: per stair, per building, per build, default
+                # solid -- one resolver, also what gameplay.json reports.
+                solid_under = (solid_under and
+                               stairwell.stair_underside(self.s, st) == "solid")
                 # A leg that ends in a landing does not need a top tread: the
                 # landing tops out at the same z + H, spans both runs, and sits
                 # at the turn. Two plates for one surface is what made the top

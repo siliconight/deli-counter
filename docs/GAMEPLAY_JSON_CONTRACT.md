@@ -154,7 +154,7 @@ mission layer (Dispatch) must respect when locking doors or placing blockers:
 ```json
 {
   "id": "main_stack", "stack_id": null, "role": "primary_egress",
-  "shape": "switchback", "enclosure": "protected",
+  "shape": "switchback", "enclosure": "protected", "underside": "solid",
   "floors_served": [-1, 0, 1],
   "footprint_polygon": [[-16.4, 6.25], ...],
   "clear_width_m": 1.4,
@@ -191,6 +191,11 @@ Rules of the road for consumers:
   group's routes untouched.
 - `congestion` is AI intel (route cost, agents abreast), advisory like
   `reversible` on interactives -- never an instruction to the netcode.
+- `underside` (kit 0.125+) is what was BUILT under the flight: `"solid"` blocks
+  sight and movement beneath it to the floor, `"open"` leaves a sightline and a
+  route under the high end. It is a level-design toggle (stair, building, or
+  build; default solid -- see AUTHORING.md), so AI line-of-sight and cover
+  logic should read it rather than assume either.
 
 ### circulation_contract (kit 0.78+)
 

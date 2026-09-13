@@ -1,3 +1,26 @@
+## [0.125.0] - 2026-09-13  the stair underside toggle
+
+The walker: "Stairs being solid should be the new default, and for gameplay
+reasons having that be a toggle we flip on and off if we want more sightlines
+would be interesting." An open underside is a sightline and a route through
+the space beneath a flight; a solid one is a wall. That is a level-design
+lever, so it is now one, resolved by `stairwell.stair_underside` at three
+levels, most specific first:
+
+    one stair      "open_under": true | false   (omit to inherit)
+    one building   "stair_undersides": "solid" | "open"
+    one build      DC_STAIR_UNDERSIDES=solid|open   (like DC_MODULAR, DC_THEME)
+    default        solid
+
+The builder builds the resolver's answer and `stairwell.derive` writes it to
+gameplay.json as `stair_systems[].underside`, so the game's AI and cover logic
+are told what was built instead of assuming. A misspelt building or env value
+is refused, not read as the default -- a toggle that silently ignores a typo is
+one nobody can trust to have been flipped. `open_under` was a bool defaulting
+False and is now Optional defaulting None; False still means solid, so every
+shipped spec builds as before. Documented in AUTHORING.md and
+GAMEPLAY_JSON_CONTRACT.md; `test_stair_underside` holds the order.
+
 ## [0.124.1] - 2026-09-13  two shells the walkable stairs broke, and why
 
 0.124.0's gate log, compared shell by shell with the one before any furniture,
