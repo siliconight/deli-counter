@@ -1,3 +1,29 @@
+## [0.128.1] - 2026-09-13  a facade shell's windows are opaque again
+
+0.80.0 (501c9db) made `_record_opening_slot` tag a `window` slot on a `facade`
+shell `glazing: "facade"`, so Zoo glazes a hollow building's panes with opaque
+`glass_facade`. f54ebfe, eleven hours later, committed a working copy that
+predated it: its `deli_counter.py` hunk is that change inverted line for line,
+and the same commit set VERSION back from 0.81.0 to 0.80.0 and deleted both the
+0.80.0 and 0.81.0 changelog entries, reusing 0.80.0 for the Phase 1 slice. Its
+message and its entry say nothing about glazing. Not a decision -- a lost
+change -- so the two lines are back, word for word.
+
+It mattered less then than now. Zoo keys window modules on the tag
+(`kit.plan_kit`) and turns it into `glazing_kind` (`dna.resolve_module_plan`),
+and since Pixelcoat 0.40.0 every theme's `glass` must blend, so an untagged
+facade window shows an empty box through see-through glass.
+
+Nothing shipped changes: `gs_facade_rowhome` and `gs_facade_storefront` emit
+48 and 60 slots, every one a `wall`, because `presets._facade` seals the
+exterior. `_record_opening_slot` is the only emitter of a `window` slot, so the
+tag covers both the resolved-module and the generated path.
+
+- **`test_facade_glazing.py`** drives the emitter with bpy stubbed: a facade's
+  window carries `glazing="facade"`, its door does not, and the same shell with
+  `facade` off tags nothing. Against 0.127.0's builder the window test fails
+  and the other three pass.
+
 ## [0.128.0] - 2026-09-13  no floor over a floor, no gap beside a stair, no lamp in a vault
 
 Three findings from the walker's rain walk (cold run 9052).

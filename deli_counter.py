@@ -719,6 +719,17 @@ class _Builder:
         machine = h.get("interactive")
         if machine:
             slot["interactive"] = interactives.slot_interactive(machine)
+        # facade shells are hollow -- their windows glaze OPAQUE (nothing to see
+        # inside), so tag them for the art pass to skin with glass_facade rather
+        # than see-through glass. Zoo's plan_kit keys modules on this tag and
+        # Pixelcoat requires every `glass` kind to blend, so an untagged facade
+        # window shows an empty box through the pane.
+        #
+        # Added in 0.80.0 (501c9db) and lost eleven hours later when f54ebfe
+        # committed a working copy that predated it; nothing failed because no
+        # shipped facade had a window. test_facade_glazing.py now pins it.
+        if role == "window" and getattr(self.s, "facade", False):
+            slot["glazing"] = "facade"
         self.slots.append(slot)
 
     def _seg_box(self, vname, cname, center, size, axis, cu, clen, vcz, vh,
