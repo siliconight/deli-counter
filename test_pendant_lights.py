@@ -22,7 +22,8 @@ def _room(**kw):
 def test_a_basement_gets_bulbs_not_a_ceiling_row():
     rooms = [_room(id="cellar", story=-1, center=[0.0, 0.0, -3.7])]
     anchors = lights.derive_light_anchors(rooms, [], 3.7, cap_thick=_cap, wall_thick=0.3)
-    assert {a["type"] for a in anchors} == {"pendant"}
+    # v1.2: every room also carries its ambient box; the LIGHT is pendants
+    assert {a["type"] for a in anchors} == {"pendant", "room_ambient"}
     a = anchors[0]
     assert a["row"]["count"] == 2          # 10 x 5 = 50 m^2 -> two pools
     assert a["id"] == "cellar_bulbs"

@@ -1,5 +1,5 @@
 {
-  "light_manifest_version": "1.1.0",
+  "light_manifest_version": "1.2.0",
   "building_id": "gas_station_a01",
   "theme": "greybox",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
@@ -24,6 +24,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "sales_floor_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -5.0,
+        0.0,
+        1.95
+      ],
+      "rot_y": 0.0,
+      "room": "sales_floor",
+      "size": [
+        22.0,
+        22.0,
+        3.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "stockroom_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -42,6 +61,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "stockroom_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        11.0,
+        -4.5,
+        1.95
+      ],
+      "rot_y": 0.0,
+      "room": "stockroom",
+      "size": [
+        10.0,
+        13.0,
+        3.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "back_office_bulbs",
       "type": "pendant",
       "source": "derived",
@@ -58,6 +96,25 @@
       },
       "drop": 3.2,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "back_office_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        11.0,
+        6.5,
+        1.95
+      ],
+      "rot_y": 0.0,
+      "room": "back_office",
+      "size": [
+        10.0,
+        9.0,
+        3.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "ext_0_S_window_1",

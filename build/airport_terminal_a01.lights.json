@@ -1,5 +1,5 @@
 {
-  "light_manifest_version": "1.1.0",
+  "light_manifest_version": "1.2.0",
   "building_id": "airport_terminal_a01",
   "theme": "greybox",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
@@ -24,6 +24,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "checkin_hall_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -4.9,
+        2.6
+      ],
+      "rot_y": 0.0,
+      "room": "checkin_hall",
+      "size": [
+        56.0,
+        20.2,
+        5.2
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "customs_office_bulbs",
       "type": "pendant",
       "source": "derived",
@@ -42,6 +61,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "customs_office_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -21.84,
+        10.1,
+        2.6
+      ],
+      "rot_y": 0.0,
+      "room": "customs_office",
+      "size": [
+        12.32,
+        9.8,
+        5.2
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "baggage_band_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -58,6 +96,25 @@
       },
       "drop": 5.1,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "baggage_band_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        6.16,
+        10.1,
+        2.6
+      ],
+      "rot_y": 0.0,
+      "room": "baggage_band",
+      "size": [
+        43.68,
+        9.8,
+        5.2
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "ext_0_S_window_1",

@@ -4228,7 +4228,7 @@
       "slot_id": "floor_gaming_floor",
       "role": "floor",
       "size_mod": "full",
-      "style": 6,
+      "style": 7,
       "material": "carpet",
       "current_ref": "floor_greybox_01",
       "kit_axis": "theme",
@@ -4265,7 +4265,7 @@
       "slot_id": "ceiling_gaming_floor",
       "role": "ceiling",
       "size_mod": "full",
-      "style": 8,
+      "style": 9,
       "material": "ceiling_tile",
       "current_ref": "ceiling_greybox_01",
       "kit_axis": "theme",
@@ -4339,7 +4339,7 @@
       "slot_id": "ceiling_cage",
       "role": "ceiling",
       "size_mod": "full",
-      "style": 9,
+      "style": 10,
       "material": "plaster",
       "current_ref": "ceiling_greybox_01",
       "kit_axis": "theme",
@@ -4376,7 +4376,7 @@
       "slot_id": "floor_count_corridor",
       "role": "floor",
       "size_mod": "full",
-      "style": 7,
+      "style": 8,
       "material": "tile",
       "current_ref": "floor_greybox_01",
       "kit_axis": "theme",
@@ -4413,7 +4413,7 @@
       "slot_id": "ceiling_count_corridor",
       "role": "ceiling",
       "size_mod": "full",
-      "style": 8,
+      "style": 9,
       "material": "ceiling_tile",
       "current_ref": "ceiling_greybox_01",
       "kit_axis": "theme",
@@ -4892,8 +4892,8 @@
       "slot_id": "booth_r6c53e9dc_3",
       "role": "prop",
       "size_mod": "full",
-      "style": 5,
-      "material": "wood",
+      "style": 6,
+      "material": "leather",
       "species": "booth_seat",
       "stock": null,
       "variant": 3,
@@ -4931,8 +4931,8 @@
       "slot_id": "booth_r6c53e9dc_4",
       "role": "prop",
       "size_mod": "full",
-      "style": 5,
-      "material": "wood",
+      "style": 6,
+      "material": "leather",
       "species": "booth_seat",
       "stock": null,
       "variant": 0,
@@ -5048,8 +5048,8 @@
       "slot_id": "booth_r6c53e9dc_7",
       "role": "prop",
       "size_mod": "full",
-      "style": 5,
-      "material": "wood",
+      "style": 6,
+      "material": "leather",
       "species": "booth_seat",
       "stock": null,
       "variant": 2,
@@ -5087,8 +5087,8 @@
       "slot_id": "booth_r6c53e9dc_8",
       "role": "prop",
       "size_mod": "full",
-      "style": 5,
-      "material": "wood",
+      "style": 6,
+      "material": "leather",
       "species": "booth_seat",
       "stock": null,
       "variant": 3,
@@ -5162,7 +5162,46 @@
       }
     },
     {
-      "slot_id": "table_dining_r6c53e9dc_10",
+      "slot_id": "vending_r6c53e9dc_10",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 4,
+      "material": "metal",
+      "species": "vending_machine",
+      "stock": null,
+      "variant": 0,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          -5.2,
+          -14.46,
+          0.915
+        ],
+        "rot_y": 180.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.85,
+          0.75,
+          1.83
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "table_dining_r6c53e9dc_11",
       "role": "prop",
       "size_mod": "full",
       "style": 5,
@@ -5191,202 +5230,7 @@
       },
       "fit": {
         "dims": [
-          1.2,
-          0.8,
-          0.74
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "chair_set_r6c53e9dc_10_1",
-      "role": "prop",
-      "size_mod": "full",
-      "style": 5,
-      "material": "wood",
-      "species": "chair",
-      "stock": null,
-      "variant": 0,
-      "form": null,
-      "current_ref": "prop_greybox_01",
-      "kit_axis": "material",
-      "wall": null,
-      "story": null,
-      "facing": null,
-      "transform": {
-        "translation": [
-          -20.81,
-          1.3,
-          0.45
-        ],
-        "rot_y": 257.8,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          0.5,
-          0.5,
-          0.9
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "chair_set_r6c53e9dc_10_2",
-      "role": "prop",
-      "size_mod": "full",
-      "style": 5,
-      "material": "wood",
-      "species": "chair",
-      "stock": null,
-      "variant": 0,
-      "form": null,
-      "current_ref": "prop_greybox_01",
-      "kit_axis": "material",
-      "wall": null,
-      "story": null,
-      "facing": null,
-      "transform": {
-        "translation": [
-          -18.99,
-          1.38,
-          0.45
-        ],
-        "rot_y": 90.0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          0.5,
-          0.5,
-          0.9
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "chair_set_r6c53e9dc_10_3",
-      "role": "prop",
-      "size_mod": "full",
-      "style": 5,
-      "material": "wood",
-      "species": "chair",
-      "stock": null,
-      "variant": 0,
-      "form": null,
-      "current_ref": "prop_greybox_01",
-      "kit_axis": "material",
-      "wall": null,
-      "story": null,
-      "facing": null,
-      "transform": {
-        "translation": [
-          -19.73,
-          0.35,
-          0.45
-        ],
-        "rot_y": 180.0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          0.5,
-          0.5,
-          0.9
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "chair_set_r6c53e9dc_10_4",
-      "role": "prop",
-      "size_mod": "full",
-      "style": 5,
-      "material": "wood",
-      "species": "chair",
-      "stock": null,
-      "variant": 0,
-      "form": null,
-      "current_ref": "prop_greybox_01",
-      "kit_axis": "material",
-      "wall": null,
-      "story": null,
-      "facing": null,
-      "transform": {
-        "translation": [
-          -19.85,
-          2.45,
-          0.45
-        ],
-        "rot_y": 19.0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          0.5,
-          0.5,
-          0.9
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "table_dining_r6c53e9dc_11",
-      "role": "prop",
-      "size_mod": "full",
-      "style": 5,
-      "material": "wood",
-      "species": "table",
-      "stock": null,
-      "variant": 0,
-      "form": null,
-      "current_ref": "prop_greybox_01",
-      "kit_axis": "material",
-      "wall": null,
-      "story": null,
-      "facing": null,
-      "transform": {
-        "translation": [
-          0.84,
-          -1.46,
-          0.37
-        ],
-        "rot_y": 0.0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          0.9,
+          1.6,
           0.9,
           0.74
         ],
@@ -5412,11 +5256,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          0.73,
-          -2.36,
+          -20.93,
+          1.43,
           0.45
         ],
-        "rot_y": 163.2,
+        "rot_y": 270.0,
         "scale": [
           1.0,
           1.0,
@@ -5451,8 +5295,8 @@
       "facing": null,
       "transform": {
         "translation": [
-          -7.29,
-          -6.21,
+          0.84,
+          -1.46,
           0.37
         ],
         "rot_y": 0.0,
@@ -5464,9 +5308,48 @@
       },
       "fit": {
         "dims": [
-          1.2,
-          0.8,
+          1.6,
+          0.9,
           0.74
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "chair_set_r6c53e9dc_12_1",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 5,
+      "material": "wood",
+      "species": "chair",
+      "stock": null,
+      "variant": 0,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          0.84,
+          -0.39,
+          0.45
+        ],
+        "rot_y": 343.9,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.5,
+          0.5,
+          0.9
         ],
         "pivot": "center",
         "openings": [],
@@ -5490,8 +5373,8 @@
       "facing": null,
       "transform": {
         "translation": [
-          -8.26,
-          -4.12,
+          -7.29,
+          -6.21,
           0.37
         ],
         "rot_y": 90.0,
@@ -5506,6 +5389,84 @@
           1.2,
           0.8,
           0.74
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "chair_set_r6c53e9dc_13_1",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 5,
+      "material": "wood",
+      "species": "chair",
+      "stock": null,
+      "variant": 0,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          -8.48,
+          -6.2,
+          0.45
+        ],
+        "rot_y": 287.3,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.5,
+          0.5,
+          0.9
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "chair_set_r6c53e9dc_13_2",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 5,
+      "material": "wood",
+      "species": "chair",
+      "stock": null,
+      "variant": 0,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          -6.22,
+          -6.3,
+          0.45
+        ],
+        "rot_y": 90.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.5,
+          0.5,
+          0.9
         ],
         "pivot": "center",
         "openings": [],
@@ -5529,11 +5490,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          -8.26,
-          -3.07,
+          -7.26,
+          -5.16,
           0.45
         ],
-        "rot_y": 0.0,
+        "rot_y": 349.4,
         "scale": [
           1.0,
           1.0,
@@ -5591,162 +5552,6 @@
       }
     },
     {
-      "slot_id": "chair_set_r6c53e9dc_14_1",
-      "role": "prop",
-      "size_mod": "full",
-      "style": 5,
-      "material": "wood",
-      "species": "chair",
-      "stock": null,
-      "variant": 0,
-      "form": null,
-      "current_ref": "prop_greybox_01",
-      "kit_axis": "material",
-      "wall": null,
-      "story": null,
-      "facing": null,
-      "transform": {
-        "translation": [
-          13.43,
-          -10.95,
-          0.45
-        ],
-        "rot_y": 198.5,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          0.5,
-          0.5,
-          0.9
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "chair_set_r6c53e9dc_14_2",
-      "role": "prop",
-      "size_mod": "full",
-      "style": 5,
-      "material": "wood",
-      "species": "chair",
-      "stock": null,
-      "variant": 0,
-      "form": null,
-      "current_ref": "prop_greybox_01",
-      "kit_axis": "material",
-      "wall": null,
-      "story": null,
-      "facing": null,
-      "transform": {
-        "translation": [
-          13.18,
-          -9.01,
-          0.45
-        ],
-        "rot_y": 0.0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          0.5,
-          0.5,
-          0.9
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "chair_set_r6c53e9dc_14_3",
-      "role": "prop",
-      "size_mod": "full",
-      "style": 5,
-      "material": "wood",
-      "species": "chair",
-      "stock": null,
-      "variant": 0,
-      "form": null,
-      "current_ref": "prop_greybox_01",
-      "kit_axis": "material",
-      "wall": null,
-      "story": null,
-      "facing": null,
-      "transform": {
-        "translation": [
-          12.42,
-          -9.8,
-          0.45
-        ],
-        "rot_y": 270.0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          0.5,
-          0.5,
-          0.9
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "chair_set_r6c53e9dc_14_4",
-      "role": "prop",
-      "size_mod": "full",
-      "style": 5,
-      "material": "wood",
-      "species": "chair",
-      "stock": null,
-      "variant": 0,
-      "form": null,
-      "current_ref": "prop_greybox_01",
-      "kit_axis": "material",
-      "wall": null,
-      "story": null,
-      "facing": null,
-      "transform": {
-        "translation": [
-          14.39,
-          -9.99,
-          0.45
-        ],
-        "rot_y": 101.6,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          0.5,
-          0.5,
-          0.9
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
       "slot_id": "table_dining_r6c53e9dc_15",
       "role": "prop",
       "size_mod": "full",
@@ -5767,7 +5572,7 @@
           -1.48,
           0.37
         ],
-        "rot_y": 90.0,
+        "rot_y": 0.0,
         "scale": [
           1.0,
           1.0,
@@ -5776,9 +5581,48 @@
       },
       "fit": {
         "dims": [
-          1.2,
-          0.8,
+          0.9,
+          0.9,
           0.74
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "chair_set_r6c53e9dc_15_1",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 5,
+      "material": "wood",
+      "species": "chair",
+      "stock": null,
+      "variant": 0,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          12.15,
+          -2.72,
+          0.45
+        ],
+        "rot_y": 180.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.5,
+          0.5,
+          0.9
         ],
         "pivot": "center",
         "openings": [],
@@ -5806,7 +5650,7 @@
           -0.11,
           0.37
         ],
-        "rot_y": 0.0,
+        "rot_y": 90.0,
         "scale": [
           1.0,
           1.0,
@@ -5815,8 +5659,8 @@
       },
       "fit": {
         "dims": [
-          0.9,
-          0.9,
+          1.2,
+          0.8,
           0.74
         ],
         "pivot": "center",
@@ -6066,7 +5910,7 @@
       "material": "metal",
       "species": "vending_machine",
       "stock": null,
-      "variant": 0,
+      "variant": 2,
       "form": null,
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",

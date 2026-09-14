@@ -1,5 +1,5 @@
 {
-  "light_manifest_version": "1.1.0",
+  "light_manifest_version": "1.2.0",
   "building_id": "construction_site_a03",
   "theme": "greybox",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
@@ -22,6 +22,25 @@
       },
       "drop": 3.2,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "south_works_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -7.5,
+        1.65
+      ],
+      "rot_y": 0.0,
+      "room": "south_works",
+      "size": [
+        44.0,
+        15.0,
+        3.3
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "north_works_ceiling_0",
@@ -60,6 +79,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "north_works_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        7.5,
+        1.65
+      ],
+      "rot_y": 0.0,
+      "room": "north_works",
+      "size": [
+        44.0,
+        15.0,
+        3.3
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "upper_deck_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -76,6 +114,25 @@
       },
       "drop": 3.2,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "upper_deck_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -6.5,
+        5.25
+      ],
+      "rot_y": 0.0,
+      "room": "upper_deck",
+      "size": [
+        44.0,
+        17.0,
+        3.3
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "upper_west_ceiling",
@@ -96,6 +153,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "upper_west_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -6.0,
+        8.5,
+        5.25
+      ],
+      "rot_y": 0.0,
+      "room": "upper_west",
+      "size": [
+        32.0,
+        13.0,
+        3.3
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "plan_room_bulbs",
       "type": "pendant",
       "source": "derived",
@@ -112,6 +188,25 @@
       },
       "drop": 2.6,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "plan_room_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        16.0,
+        8.5,
+        5.25
+      ],
+      "rot_y": 0.0,
+      "room": "plan_room",
+      "size": [
+        12.0,
+        13.0,
+        3.3
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "ext_0_S_window_1",

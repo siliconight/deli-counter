@@ -38,6 +38,12 @@
   {
    "id": "wood",
    "acoustic": "Wood"
+  },
+  {
+   "id": "leather",
+   "acoustic": "Curtain",
+   "absorption": 0.6,
+   "damping": 0.5
   }
  ],
  "ext_walls": [
@@ -270,7 +276,8 @@
    "size_z": 1.83,
    "collision": "convex",
    "material": "metal",
-   "rot_z": 180.0
+   "rot_z": 180.0,
+   "variant": 1
   },
   {
    "name": "sofa_r50d6852f_4",
@@ -281,7 +288,7 @@
    "size_y": 0.85,
    "size_z": 0.85,
    "collision": "convex",
-   "material": "wood",
+   "material": "leather",
    "rot_z": 180.0,
    "form": "sofa"
   },
@@ -495,11 +502,11 @@
   },
   {
    "name": "furnace_r12f2bac5_1",
-   "x": -16.39,
-   "y": -3.98,
+   "x": -16.04,
+   "y": -11.39,
    "z": -1.875,
-   "size_x": 0.9,
-   "size_y": 1.0,
+   "size_x": 1.0,
+   "size_y": 0.9,
    "size_z": 3.05,
    "collision": "convex",
    "material": "metal",
@@ -521,11 +528,11 @@
   },
   {
    "name": "cabinet_file_r12f2bac5_3",
-   "x": -12.29,
-   "y": -11.59,
+   "x": -16.59,
+   "y": 1.01,
    "z": -2.75,
-   "size_x": 0.6,
-   "size_y": 0.5,
+   "size_x": 0.5,
+   "size_y": 0.6,
    "size_z": 1.3,
    "collision": "convex",
    "material": "wood",
@@ -545,14 +552,15 @@
   },
   {
    "name": "workbench_r12f2bac5_5",
-   "x": 0.87,
-   "y": 11.49,
+   "x": -16.49,
+   "y": -4.28,
    "z": -2.95,
-   "size_x": 1.6,
-   "size_y": 0.7,
+   "size_x": 0.7,
+   "size_y": 1.6,
    "size_z": 0.9,
    "collision": "convex",
-   "material": "wood"
+   "material": "wood",
+   "rot_z": 180.0
   },
   {
    "name": "cabinet_file_r12f2bac5_6",
@@ -567,31 +575,31 @@
   },
   {
    "name": "shelf_run_r12f2bac5_7",
-   "x": -16.54,
-   "y": 4.02,
-   "z": -2.45,
-   "size_x": 0.6,
-   "size_y": 2.6,
-   "size_z": 1.9,
+   "x": -8.56,
+   "y": -11.59,
+   "z": -2.5,
+   "size_x": 1.2,
+   "size_y": 0.5,
+   "size_z": 1.8,
    "collision": "convex",
    "material": "wood",
    "rot_z": 180.0
   },
   {
    "name": "workbench_r12f2bac5_8",
-   "x": -15.13,
-   "y": 11.49,
-   "z": -2.95,
-   "size_x": 1.6,
-   "size_y": 0.7,
-   "size_z": 0.9,
+   "x": 0.38,
+   "y": 11.44,
+   "z": -2.925,
+   "size_x": 2.4,
+   "size_y": 0.8,
+   "size_z": 0.95,
    "collision": "convex",
    "material": "wood"
   },
   {
    "name": "cartons_r12f2bac5_9",
    "x": -4.38,
-   "y": -3.76,
+   "y": -2.76,
    "z": -2.95,
    "size_x": 0.4,
    "size_y": 0.5,
@@ -601,27 +609,27 @@
    "variant": 3
   },
   {
-   "name": "dust_sheet_r12f2bac5_10",
+   "name": "barrel_drum_r12f2bac5_10",
    "x": -4.38,
-   "y": -2.38,
-   "z": -2.95,
-   "size_x": 0.8,
-   "size_y": 1.0,
-   "size_z": 0.9,
-   "collision": "convex",
-   "material": "wood",
-   "variant": 2
-  },
-  {
-   "name": "barrel_drum_r12f2bac5_11",
-   "x": -4.38,
-   "y": -0.82,
-   "z": -2.95,
-   "size_x": 0.6,
-   "size_y": 0.6,
-   "size_z": 0.9,
+   "y": -1.81,
+   "z": -2.96,
+   "size_x": 0.58,
+   "size_y": 0.58,
+   "size_z": 0.88,
    "collision": "convex",
    "material": "metal",
+   "rot_z": 180.0
+  },
+  {
+   "name": "cartons_r12f2bac5_11",
+   "x": -3.04,
+   "y": 3.86,
+   "z": -2.7,
+   "size_x": 1.2,
+   "size_y": 0.8,
+   "size_z": 1.4,
+   "collision": "convex",
+   "material": "wood",
    "rot_z": 180.0
   },
   {
@@ -638,46 +646,45 @@
   },
   {
    "name": "cabinet_locker_re3b7f37f_2",
-   "x": 4.56,
-   "y": 11.59,
+   "x": 6.49,
+   "y": -11.59,
    "z": -2.45,
    "size_x": 1.8,
    "size_y": 0.5,
    "size_z": 1.9,
    "collision": "convex",
-   "material": "metal"
+   "material": "metal",
+   "rot_z": 180.0
   },
   {
    "name": "safe_floor_re3b7f37f_3",
-   "x": 9.99,
-   "y": -11.49,
+   "x": 15.16,
+   "y": 11.49,
    "z": -2.8,
    "size_x": 0.8,
    "size_y": 0.7,
    "size_z": 1.2,
    "collision": "convex",
-   "material": "metal",
-   "rot_z": 180.0
+   "material": "metal"
   },
   {
    "name": "shelf_run_re3b7f37f_4",
-   "x": 13.27,
-   "y": -11.54,
+   "x": 9.67,
+   "y": 11.54,
    "z": -2.45,
    "size_x": 2.6,
    "size_y": 0.6,
    "size_z": 1.9,
    "collision": "convex",
-   "material": "wood",
-   "rot_z": 180.0
+   "material": "wood"
   },
   {
    "name": "cabinet_locker_re3b7f37f_5",
-   "x": 16.59,
-   "y": -3.03,
+   "x": 6.08,
+   "y": 11.59,
    "z": -2.45,
-   "size_x": 0.5,
-   "size_y": 0.9,
+   "size_x": 0.9,
+   "size_y": 0.5,
    "size_z": 1.9,
    "collision": "convex",
    "material": "metal"

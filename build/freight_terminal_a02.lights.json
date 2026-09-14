@@ -1,5 +1,5 @@
 {
-  "light_manifest_version": "1.1.0",
+  "light_manifest_version": "1.2.0",
   "building_id": "freight_terminal_a02",
   "theme": "greybox",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
@@ -24,6 +24,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "south_floor_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -8.0,
+        2.6
+      ],
+      "rot_y": 0.0,
+      "room": "south_floor",
+      "size": [
+        50.0,
+        14.0,
+        5.2
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "dock_floor_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -40,6 +59,25 @@
       },
       "drop": 5.1,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "dock_floor_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        7.0,
+        2.6
+      ],
+      "rot_y": 0.0,
+      "room": "dock_floor",
+      "size": [
+        50.0,
+        16.0,
+        5.2
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "mezz_south_ceiling",
@@ -60,6 +98,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "mezz_south_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -7.5,
+        8.1
+      ],
+      "rot_y": 0.0,
+      "room": "mezz_south",
+      "size": [
+        50.0,
+        15.0,
+        5.2
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "mezz_hall_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -78,6 +135,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "mezz_hall_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -7.0,
+        7.5,
+        8.1
+      ],
+      "rot_y": 0.0,
+      "room": "mezz_hall",
+      "size": [
+        36.0,
+        15.0,
+        5.2
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "gantry_control_bulbs",
       "type": "pendant",
       "source": "derived",
@@ -94,6 +170,25 @@
       },
       "drop": 4.5,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "gantry_control_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        18.0,
+        7.5,
+        8.1
+      ],
+      "rot_y": 0.0,
+      "room": "gantry_control",
+      "size": [
+        14.0,
+        15.0,
+        5.2
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "ext_1_S_window_1",

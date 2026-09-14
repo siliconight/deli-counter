@@ -1,5 +1,5 @@
 {
-  "light_manifest_version": "1.1.0",
+  "light_manifest_version": "1.2.0",
   "building_id": "strip_retail_a01",
   "theme": "greybox",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
@@ -24,6 +24,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "dining_room_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -4.0,
+        -3.0,
+        1.45
+      ],
+      "rot_y": 0.0,
+      "room": "dining_room",
+      "size": [
+        12,
+        8,
+        2.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "kitchen_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -40,6 +59,25 @@
       },
       "drop": 2.8,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "kitchen_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        6.0,
+        -3.0,
+        1.45
+      ],
+      "rot_y": 0.0,
+      "room": "kitchen",
+      "size": [
+        8,
+        8,
+        2.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "walkin_cooler_ceiling",
@@ -60,6 +98,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "walkin_cooler_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -7.5,
+        4.0,
+        1.45
+      ],
+      "rot_y": 0.0,
+      "room": "walkin_cooler",
+      "size": [
+        5,
+        6,
+        2.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "rear_hall_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -76,6 +133,25 @@
       },
       "drop": 2.8,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "rear_hall_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -0.5,
+        4.0,
+        1.45
+      ],
+      "rot_y": 0.0,
+      "room": "rear_hall",
+      "size": [
+        9,
+        6,
+        2.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "stair_room_ceiling",
@@ -96,6 +172,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "stair_room_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        7.0,
+        4.0,
+        1.45
+      ],
+      "rot_y": 0.0,
+      "room": "stair_room",
+      "size": [
+        6,
+        6,
+        2.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "social_club_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -112,6 +207,25 @@
       },
       "drop": 2.8,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "social_club_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -4.0,
+        -3.0,
+        4.65
+      ],
+      "rot_y": 0.0,
+      "room": "social_club",
+      "size": [
+        12,
+        8,
+        2.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "count_room_bulbs",
@@ -132,6 +246,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "count_room_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        6.0,
+        -3.0,
+        4.65
+      ],
+      "rot_y": 0.0,
+      "room": "count_room",
+      "size": [
+        8,
+        8,
+        2.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "upper_hall_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -148,6 +281,25 @@
       },
       "drop": 2.8,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "upper_hall_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        4.0,
+        4.65
+      ],
+      "rot_y": 0.0,
+      "room": "upper_hall",
+      "size": [
+        20,
+        6,
+        2.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "dough_cellar_bulbs",
@@ -168,6 +320,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "dough_cellar_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -5.0,
+        0.0,
+        -1.75
+      ],
+      "rot_y": 0.0,
+      "room": "dough_cellar",
+      "size": [
+        10,
+        14,
+        2.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "stash_room_bulbs",
       "type": "pendant",
       "source": "derived",
@@ -184,6 +355,25 @@
       },
       "drop": 2.2,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "stash_room_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        5.0,
+        0.0,
+        -1.75
+      ],
+      "rot_y": 0.0,
+      "room": "stash_room",
+      "size": [
+        10,
+        14,
+        2.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "ext_0_S_window_1",

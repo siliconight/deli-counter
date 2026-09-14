@@ -79,7 +79,7 @@ def test_authored_anchor_overrides_derived_by_id():
 def test_manifest_header():
     m = lights.build_light_manifest("gs_auto_shop", ROOMS, OPENINGS, 3.5, cap_thick=SLAB, wall_thick=WALL,
                                     theme="delco")
-    assert m["light_manifest_version"] == "1.1.0"
+    assert m["light_manifest_version"] == "1.2.0"
     assert m["building_id"] == "gs_auto_shop"
     assert m["rig_library"] == "lux"
     assert m["theme"] == "delco"
@@ -165,9 +165,9 @@ def test_no_windows_means_no_derived_sign():
 
 def test_manifest_version_bumped_additively():
     m = lights.build_light_manifest("bld", ROOMS, FACADE_OPENINGS, 3.5, cap_thick=SLAB, wall_thick=WALL)
-    assert m["light_manifest_version"] == "1.1.0"
+    assert m["light_manifest_version"] == "1.2.0"
     types = {x["type"] for x in m["anchors"]}
-    assert {"fluorescent", "window", "sign", "wall_pack"} <= types
+    assert {"fluorescent", "window", "sign", "wall_pack", "room_ambient"} <= types
 
 
 def test_a_ceiling_fixture_hangs_below_the_slab_it_is_under():

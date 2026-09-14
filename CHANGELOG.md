@@ -1,3 +1,206 @@
+## [0.132.0] - 2026-09-14  a strip club is furnished and lit as one
+
+The walker, with two frames of GTA IV's Triangle Club: "strip clubs should
+have a dingy lived in feel, dark with colored lights, couches and bars". The
+layout comparison is a one-storey windowless neighbourhood club with two bar
+areas whose pole stage stands inside the bar, stools round it, CRTs on
+brackets, nothing that reads as a refit. On 0.131.1 `strip_club_a01`'s
+`main_floor` was a SHOP FLOOR -- its id's token is `floor` -- and held
+shelving, a vending machine, a filing cabinet and cartons under five cool
+fluorescent lamps; the authored 8 x 4 x 0.8 `stage` and 6 x 0.9 `bar_run`
+routed to no species and shipped as grey boxes; `champagne_wing` was a wine
+cellar. Zoo 0.88.0 built the species and listed what Deli Counter had to
+write; Lux 0.37.0 named four anchor types; Pixelcoat 0.42.0 drew the
+surfaces. This is Deli Counter's part.
+
+**A `strip_club` room kind (`level_design`), read only inside a building
+whose id says `strip_club`.** The same tokens name a country club's lounge
+and a tavern's bar, which stay the `club` kind. `is_strip_club_room` is the
+one rule -- `club`, `lounge`, `vip`, `champagne`, `go`/`gogo`, `cabaret`,
+`bar`, `stage`, `dance`, and `main_floor` -- shared by `furnish` and the
+light manifest. In the library it claims seven rooms: `strip_club_a01`
+`main_floor` and `vip_wing`; `_a02` `main_floor`; `_a03` `main_floor`,
+`back_bar`, `vip_mezz`, `champagne_wing`. The cash offices, back rooms,
+cellar and count room keep their kinds.
+
+**The recipe.** Anchors follow the room's shape and every one is placed:
+a `bar_stage` (Zoo's `club_stage`, stock `bar`) in the middle of the room
+with 6-10 `bar_stool`s ringed round it facing in, or -- longer than 2.5 : 1
+-- a `round` stage and a `counter` with stock `bar` on a wall with stools
+along its front; a second bar past 300 m2 (the comparison club has two). The
+wall run is `booth_seat` sofas, the club's name in `neon_sign`, `crt_tv`s on
+brackets, a vending machine; the floor is `cocktail_table`s (form `cloth`,
+stock `bar`) with two or three `club_chair`s each, facing the table. Denser
+than a hall (one piece per 24 m2, to the hall cap): a club floor is small
+tables, not open space. Measured on the library: `a01 main_floor` 50 pieces
+of 9 species (19 tub chairs, 11 stools, 10 tables, 4 sofas, a sign, 2 TVs,
+the stage, a bar, a vending machine); the seven club rooms hold 25-50
+pieces of 8-9 species each and nothing of the shop floor.
+
+**A stage is authored to the ceiling, over an invisible platform collider.**
+Zoo runs the pole to the slot's top; at 0.8 m it builds a platform with no
+rail and no pole. A box to the slab in the middle of the main floor would be
+a wall to the nav bake and to a body, so the visual volume carries
+`collision: none` and `_volume` writes a `stage_deck_*` collider under it --
+`visual: false`, the footprint, the platform's height (0.8 m; 1.18 m for the
+bar stage's deck) -- which is what Zoo's own colliders (bands inscribed in
+the outline, the steps) agree with. `_COLLIDER_STEMS` teaches the idempotence
+mark and the refurnish migration the name.
+
+**Hung pieces hang in free air.** A sign's centre at 2.2 m, a bracket TV's at
+2.1 m (`_piece.lift`), no collision -- a body's head is 1.8 m and so is the
+nav bake's clearance -- against a wall clear of its openings like any wall
+piece, and taking no share of the floor: a couch may stand under one
+(`_seed_clear(above=)`, `_HUNG_MIN`). `neon_sign`'s variant IS the name (24
+of them), drawn from crc32 of the BUILDING's id so a club has one name in
+every room, and one sign a room -- the first frames had MOM THINKS I'M AT
+BINGO twice on one wall, 7 m apart; every other variant is still the piece
+name's crc32 % 4.
+
+**`prop_species` rows** for `club_stage` (`stage`, `pole_stage`, `runway`),
+`bar_stool` (`stool`, `barstool`) and `crt_tv` (`bar_tv`, `wall_tv`) ahead
+of the counter row -- whose `bar_` would take `bar_stool`, `bar_tv` and
+`stage_bar_r...` (the tag's `r` follows the underscore) -- and `club_chair`,
+`neon_sign` ahead of the chair row, `cocktail_table` ahead of the table row.
+Measured re-routes among authored volumes: the two `stage`s and nothing
+else; `center_field_tv_truck_cover` carries `tv` but neither keyword.
+
+**A sofa's material is its upholstery.** Zoo 0.88.0, found on the way:
+`booth_seat` takes the slot's material as the kind it is covered in, and
+every booth and sofa `furnish` wrote wore `wood`, so a sofa built from one
+carried no leather at all. Leather now, on every booth and sofa in the
+library (36 specs change by materials alone); a stool's slot material is
+`metal_bare` (it builds the column), a sign's backer and a TV's housing
+`metal_painted`. `_declare_material` puts each in the palette with an
+acoustic, as `_prop_material` always has.
+
+**The surfaces (`dress_club_rooms`, run by `furnish`).** A club room's floor
+is `carpet_club` unless it names its own; a partition with a club room on
+BOTH faces is `wallpaper_club` (`a01`'s main-floor/VIP wall, `a03`'s two
+storey spines); the exterior walls and the default are `paint_block`.
+`material_kind` maps the ids, and `velvet`, to themselves, and `SKIN_KINDS`
+carries Zoo's `velvet` plus the four club kinds Zoo is adding beside this
+release (`test_the_kinds_are_zoo_s_when_zoo_is_beside_this_repo` reports
+them as pending until they land, and fails on any other invention).
+**There is no per-room wall material, and the club shows why:** the exterior
+wall's inner face is its outer face, so a club room's outside walls are
+painted block from inside, and a partition between a club room and an office
+stays drywall on both faces. What one would need is written into
+`docs/GAMEPLAY_JSON_CONTRACT.md`: a second material on the slot for the
+module's back face, or an interior liner slot per room edge -- Zoo-side
+first either way.
+
+**Light: the club set instead of a fluorescent row (`lights`, manifest
+1.2.0).** For a club room: `club_wash` x 3-5 (`3 + area/200`) along the long
+axis stepping side to side across the short one, each its own palette
+colour from `crc32(room) % 7` in steps of two, each point through the same
+void-and-partition test a lamp gets; a `stage_light` per stage -- two spots
+1.2 m apart at the ceiling 1.5 m past the stage's edge on the room side,
+`target` the stage centre 0.5 m above its platform, `cycle_s` 4; a `neon`
+at the stage's rope light (over a bar stage's deck 0.5 m off the pole, past
+a round stage's lip at 0.75 m; `amber`) and one 0.15 m proud of each sign's
+face, in free air, `rot_y` the sign's facing, no `color` (Lux picks by id;
+the glass's colour is Zoo's per name); a coloured `room_ambient`; no
+fluorescent, no pendant. **Every room, of every kind, now carries a
+`room_ambient` box** -- `size` [x, y, z] its wall-centreline extent floor to
+ceiling plane, `pos` its centre, `color` null outside a club (the preset's
+own ambient, no tint; Lux 0.37.0 refuses null rather than painting an office
+violet, its default when the field is absent) -- after the room's row, so a
+room's first anchor is still its ceiling light. Lux's per-room ambient
+probes are in flight and asked for a room box; this is it.
+`docs/LIGHT_MANIFEST.md` carries the fields. The manifest is derived from
+the same volumes the slots are (`write_light_manifest` passes the spec's
+volumes and the club rooms), so a stage the furnishing pass moves takes its
+spots with it. `strip_club_a01.lights.json`: 9 washes, 2 stage lights, 5
+neons, 3 ambient boxes, 1 pendant (the cash office), 0 fluorescents.
+
+**A volume blocks furniture on its own storey only (`_seed_clear`,
+`_on_storey`).** Until now every volume in the building was in the way of
+every candidate whatever its storey: a ground floor's furniture blocked the
+floor above it in plan. Harmless while rooms were sparse; a club's main
+floor is dense enough that `strip_club_a03`'s `vip_mezz`, over it, could not
+stand its stage anywhere. Measured over the library before and after the
+filter alone: 98 specs differ, +284 volumes net, most of them rooms over a
+furnished ground floor gaining what they were always meant to hold.
+
+**Vending machines sell different things.** Zoo 0.87.0 rebuilt
+`vending_machine` with four variants and a brand on each; the `vending`
+piece had `variants=False` and `most=1`, so every machine of one size in a
+building sold the same thing. `variants=True` (the name's crc32 % 4) and up
+to three a room where a recipe places them -- lobbies, halls, shop floors,
+clubs.
+
+**Migrations.** `migrate_club_rooms.py` removes the authored `stage` and
+`bar_run` (named in `AUTHORED_REPLACED`, not matched), strips and refurnishes
+the three clubs, dresses their surfaces; `migrate_furnish_recipes.py` then
+refurnishes the library for the leather, the vending variants and the storey
+filter. Both idempotent; 119 specs change.
+
+**The material is in the name (`themed_tscn`, the mirror of Zoo 0.89.0's
+`kit.module_stem`).** A leather sofa and a wood one were two geometries
+under one filename and the later build overwrote the earlier. The stem is
+now `<type>[_<species>]_<theme>_<style>[_w][_d][_h][_f<form>][_s<stock>]
+[_n<variant>][_m<material>][_v<hash>][_o<hash>][_<state>]`: `_m<kind>` when
+the slot's material is a known kind that is not the species' own for the
+theme (the theme's style block, walking the family, else the genome
+default) -- on EVERY slot type, walls and vault doors included
+(`wall_rockay_03_w200_mdrywall`), so a 0.89.0 kit does not resolve without
+this. Only Zoo can read the genome that says what a species' own material
+is, so `module_stem` takes `material=`, `stem_material` names the kind a
+slot could carry (`material_kind.SKIN_KINDS`; a spec id like `brick_ext`
+is not one and gets no tag on either side), and `resolve_slot_choice`
+asks for the tagged name first and the plain one second for each of the
+dressing candidates -- exactly how the dressing resolves. An interactive
+slot's states carry the material its base resolved with, as Zoo tags
+every state alike. Against the 0.88.0 kit the frames were built from, the
+resolver still lands every module (188 themed, 0 fallback). Zoo's
+upholstered species keep their upholstery and put the slot material on the
+frame, so `leather` on a sofa is right; `cloth` (a cocktail table's) joins
+`SKIN_KINDS`. `test_themed_stem`: the tag's place in the name, the
+tagged-first order through every dressing candidate and the style-01
+degrade, a vault door's states carrying their base's tag, and -- through
+Zoo's own `plan_kit`, read only via `DC_ZOO_ROOT`, skipped against a Zoo
+older than 0.89.0 -- a wall in a foreign kind, a wall in the theme's own,
+a vault door, a club chair whose wood is its frame, a leather sofa
+(leather IS `booth_seat`'s own for delco_1997, so no tag, asked of Zoo
+rather than assumed), a canvas one (tagged), a wall naming a spec id; the
+240-combination mirror runs with and without a material.
+
+**Tests.** `test_club_rooms.py` (22): the kind is read only inside a strip
+club and claims exactly those seven library rooms; a club room is a stage, a
+bar, couches, a name in neon and small tables and nothing of the shop
+floor; the stage reaches the ceiling over its platform collider; a long
+room gets a round stage and wall bars; a large room a second bar; stools
+ring the bar a hand off its band facing it; a cocktail table's tub chairs
+face it; hung pieces hang in free air, clear the doors and hold no spread;
+one neon name per building; the only mid-floor shelter is the stage; the
+stair reservation, the 2.2 m spread, idempotence and determinism hold; the
+surfaces are set in a club and nowhere else; every booth in the library is
+leather; a vending machine has a brand and a room may take three; the club
+set and no fluorescent; washes vary and take the partition test; the stage
+light aims at the body over the platform; a neon spill stands proud of its
+sign; every room carries its box; the three clubs are furnished as clubs;
+the migration is idempotent. `test_furnish` gains the six club genomes'
+ranges (pinned to Zoo's files); `test_material_kind` reads room finishes
+and pins the kinds to Zoo's. Ten light tests that took a room's first or
+only anchor for its row now say `"row" in anchor`. Against 0.131.1: the new
+file fails at collection (no `is_strip_club_room`).
+
+Suite: SUITE_PLACEHOLDER. Hook: HOOK_PLACEHOLDER. Nav gate against
+0.131.1's log: NAV_PLACEHOLDER.
+
+**Seen.** FRAMES_PLACEHOLDER
+
+**Not done here.** The room reads grey-lit: Lux's darkness work (the
+preset's sun shadows, ambient share, fog) is in flight, and nothing bakes
+the club set into a walk yet (Level Factory's `run_lux_apply.gd` would call
+`bake_club`). Zoo 0.89.0 carries the four club kinds; the frames here were built with
+0.88.0, where a `carpet_club` floor builds in the species default.
+The removed fluorescent row leaves no troffer hardware to skip, but a club
+room's ceiling is bare until Zoo hangs something else. `velvet` is
+object-owned: a club chair's slot material is `wood` (its frame), the
+velvet colour is Zoo's.
+
 ## [0.131.1] - 2026-09-14  a manifest says which shell it describes
 
 Cold run 9053 was refused at export by `PRESENTATION_PLACEMENT_MISMATCH`:

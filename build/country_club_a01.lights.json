@@ -1,5 +1,5 @@
 {
-  "light_manifest_version": "1.1.0",
+  "light_manifest_version": "1.2.0",
   "building_id": "country_club_a01",
   "theme": "greybox",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
@@ -24,6 +24,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "grand_lounge_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -5.5,
+        1.75
+      ],
+      "rot_y": 0.0,
+      "room": "grand_lounge",
+      "size": [
+        40.0,
+        17.0,
+        3.5
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "dining_wing_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -40,6 +59,25 @@
       },
       "drop": 3.4,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "dining_wing_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        8.5,
+        1.75
+      ],
+      "rot_y": 0.0,
+      "room": "dining_wing",
+      "size": [
+        40.0,
+        11.0,
+        3.5
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "cellar_hall_bulbs",
@@ -60,6 +98,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "cellar_hall_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -10.0,
+        0.0,
+        -2.05
+      ],
+      "rot_y": 0.0,
+      "room": "cellar_hall",
+      "size": [
+        20.0,
+        28.0,
+        3.5
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "wine_cellar_bulbs",
       "type": "pendant",
       "source": "derived",
@@ -76,6 +133,25 @@
       },
       "drop": 2.8,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "wine_cellar_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        10.0,
+        0.0,
+        -2.05
+      ],
+      "rot_y": 0.0,
+      "room": "wine_cellar",
+      "size": [
+        20.0,
+        28.0,
+        3.5
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "ext_0_N_window_1",

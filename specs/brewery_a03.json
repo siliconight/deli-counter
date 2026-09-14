@@ -38,6 +38,12 @@
   {
    "id": "wood",
    "acoustic": "Wood"
+  },
+  {
+   "id": "leather",
+   "acoustic": "Curtain",
+   "absorption": 0.6,
+   "damping": 0.5
   }
  ],
  "ext_walls": [
@@ -325,7 +331,7 @@
    "size_y": 0.75,
    "size_z": 1.15,
    "collision": "convex",
-   "material": "wood",
+   "material": "leather",
    "rot_z": 180.0,
    "form": "booth",
    "variant": 2
@@ -339,7 +345,7 @@
    "size_y": 1.8,
    "size_z": 1.15,
    "collision": "convex",
-   "material": "wood",
+   "material": "leather",
    "rot_z": 180.0,
    "form": "booth"
   },
@@ -353,7 +359,8 @@
    "size_z": 1.9,
    "collision": "convex",
    "material": "metal",
-   "rot_z": 180.0
+   "rot_z": 180.0,
+   "variant": 2
   },
   {
    "name": "shelf_run_recea99f1_7",
@@ -376,7 +383,7 @@
    "size_y": 2.4,
    "size_z": 1.15,
    "collision": "convex",
-   "material": "wood",
+   "material": "leather",
    "form": "booth",
    "variant": 1
   },

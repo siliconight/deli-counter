@@ -1,5 +1,5 @@
 {
-  "light_manifest_version": "1.1.0",
+  "light_manifest_version": "1.2.0",
   "building_id": "supermarket_a02",
   "theme": "greybox",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
@@ -24,6 +24,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "sales_floor_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -3.5,
+        1.85
+      ],
+      "rot_y": 0.0,
+      "room": "sales_floor",
+      "size": [
+        44.0,
+        25.0,
+        3.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "stockroom_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -40,6 +59,25 @@
       },
       "drop": 3.6,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "stockroom_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        12.5,
+        1.85
+      ],
+      "rot_y": 0.0,
+      "room": "stockroom",
+      "size": [
+        44.0,
+        7.0,
+        3.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "mezz_floor_ceiling",
@@ -60,6 +98,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "mezz_floor_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -6.0,
+        5.85
+      ],
+      "rot_y": 0.0,
+      "room": "mezz_floor",
+      "size": [
+        44.0,
+        20.0,
+        3.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "mezz_hall_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -78,6 +135,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "mezz_hall_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -7.0,
+        10.0,
+        5.85
+      ],
+      "rot_y": 0.0,
+      "room": "mezz_hall",
+      "size": [
+        30.0,
+        12.0,
+        3.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "manager_suite_bulbs",
       "type": "pendant",
       "source": "derived",
@@ -94,6 +170,25 @@
       },
       "drop": 3.0,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "manager_suite_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        15.0,
+        10.0,
+        5.85
+      ],
+      "rot_y": 0.0,
+      "room": "manager_suite",
+      "size": [
+        14.0,
+        12.0,
+        3.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "ext_0_S_window_1",

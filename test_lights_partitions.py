@@ -29,8 +29,8 @@ def _lamps(anchors, room):
     """Every lamp point of a room's rows, expanded the way Zoo and Lux do."""
     pts = []
     for a in anchors:
-        if a.get("room") != room:
-            continue
+        if a.get("room") != room or "row" not in a:
+            continue                 # v1.2: the room's ambient box is no row
         n, sp = a["row"]["count"], a["row"]["spacing"]
         dx, dy = (1.0, 0.0) if abs(a["rot_y"]) < 45.0 else (0.0, 1.0)
         start = -(n - 1) * 0.5 * sp
@@ -72,11 +72,11 @@ def test_a_lamp_on_a_crossing_partition_is_nudged_off_it():
     assert 8.4 in xs or 7.6 in xs
     for x in xs:
         assert abs(abs(x) - 8.0) >= 0.4 - 1e-9
-    assert rep == {"rows_shifted": 0, "nudged": 2, "dropped": 0}
+    assert rep == {"rows_shifted": 0, "nudged": 2, "dropped": 0, "club_rooms": 0}
     # a nudged lamp is its own run, so the row is published as several anchors
-    ids = sorted(x["id"] for x in a if x.get("room") == "lobby")
+    ids = sorted(x["id"] for x in a if x.get("room") == "lobby" and "row" in x)
     assert ids == ["lobby_ceiling_%d" % i for i in range(5)]
-    assert all(x["row"]["count"] == 1 for x in a if x.get("room") == "lobby")
+    assert all(x["row"]["count"] == 1 for x in a if x.get("room") == "lobby" and "row" in x)
 
 
 def test_a_row_lying_along_a_partition_moves_to_the_larger_side():
@@ -90,7 +90,8 @@ def test_a_row_lying_along_a_partition_moves_to_the_larger_side():
     assert all(y == 7.5 for _, y in pts)
     assert rep["rows_shifted"] == 1 and rep["dropped"] == 0
     # bulbs, not troffers, on the objective room -- unchanged by the shift
-    assert all(x["type"] == "pendant" for x in a if x.get("room") == "roof_helipad")
+    assert all(x["type"] == "pendant" for x in a
+               if x.get("room") == "roof_helipad" and "row" in x)
 
 
 def test_a_lamp_with_nowhere_to_go_is_dropped_and_counted():

@@ -38,6 +38,12 @@
   {
    "id": "wood",
    "acoustic": "Wood"
+  },
+  {
+   "id": "leather",
+   "acoustic": "Curtain",
+   "absorption": 0.6,
+   "damping": 0.5
   }
  ],
  "ext_walls": [
@@ -347,7 +353,8 @@
    "size_z": 1.83,
    "collision": "convex",
    "material": "metal",
-   "rot_z": 180.0
+   "rot_z": 180.0,
+   "variant": 3
   },
   {
    "name": "payphone_rbeaaca49_6",
@@ -370,7 +377,7 @@
    "size_y": 1.6,
    "size_z": 0.85,
    "collision": "convex",
-   "material": "wood",
+   "material": "leather",
    "rot_z": 180.0,
    "form": "sofa",
    "variant": 1

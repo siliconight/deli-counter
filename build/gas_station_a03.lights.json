@@ -1,5 +1,5 @@
 {
-  "light_manifest_version": "1.1.0",
+  "light_manifest_version": "1.2.0",
   "building_id": "gas_station_a03",
   "theme": "greybox",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
@@ -24,6 +24,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "sales_floor_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -2.25,
+        1.65
+      ],
+      "rot_y": 0.0,
+      "room": "sales_floor",
+      "size": [
+        22,
+        11.5,
+        3.3
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "walkin_cooler_bulbs",
       "type": "pendant",
       "source": "derived",
@@ -40,6 +59,25 @@
       },
       "drop": 2.6,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "walkin_cooler_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        6.5,
+        5.75,
+        1.65
+      ],
+      "rot_y": 0.0,
+      "room": "walkin_cooler",
+      "size": [
+        9,
+        4.5,
+        3.3
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "stockroom_ceiling",
@@ -60,6 +98,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "stockroom_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -1.5,
+        5.75,
+        1.65
+      ],
+      "rot_y": 0.0,
+      "room": "stockroom",
+      "size": [
+        7,
+        4.5,
+        3.3
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "back_hall_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -76,6 +133,25 @@
       },
       "drop": 3.2,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "back_hall_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -8.0,
+        5.75,
+        1.65
+      ],
+      "rot_y": 0.0,
+      "room": "back_hall",
+      "size": [
+        6,
+        4.5,
+        3.3
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "ext_0_S_window_1",

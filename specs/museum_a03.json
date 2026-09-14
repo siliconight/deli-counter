@@ -38,6 +38,12 @@
   {
    "id": "wood",
    "acoustic": "Wood"
+  },
+  {
+   "id": "leather",
+   "acoustic": "Curtain",
+   "absorption": 0.6,
+   "damping": 0.5
   }
  ],
  "ext_walls": [
@@ -323,7 +329,8 @@
    "size_z": 1.83,
    "collision": "convex",
    "material": "metal",
-   "rot_z": 180.0
+   "rot_z": 180.0,
+   "variant": 1
   },
   {
    "name": "chair_waiting_r994333bd_5",
@@ -346,7 +353,7 @@
    "size_y": 1.6,
    "size_z": 0.85,
    "collision": "convex",
-   "material": "wood",
+   "material": "leather",
    "rot_z": 180.0,
    "form": "sofa",
    "variant": 3
@@ -364,29 +371,42 @@
    "rot_z": 180.0
   },
   {
-   "name": "chair_waiting_r994333bd_8",
-   "x": -6.56,
-   "y": 14.54,
-   "z": 0.45,
-   "size_x": 2.4,
-   "size_y": 0.6,
-   "size_z": 0.9,
+   "name": "vending_r994333bd_8",
+   "x": -6.67,
+   "y": 14.46,
+   "z": 0.915,
+   "size_x": 0.85,
+   "size_y": 0.75,
+   "size_z": 1.83,
    "collision": "convex",
-   "material": "wood"
+   "material": "metal",
+   "variant": 2
   },
   {
-   "name": "table_low_r994333bd_9",
+   "name": "chair_waiting_r994333bd_9",
+   "x": -19.54,
+   "y": 7.45,
+   "z": 0.45,
+   "size_x": 0.6,
+   "size_y": 1.8,
+   "size_z": 0.9,
+   "collision": "convex",
+   "material": "wood",
+   "rot_z": 180.0
+  },
+  {
+   "name": "table_low_r994333bd_10",
    "x": -15.99,
    "y": 3.58,
    "z": 0.225,
-   "size_x": 1.0,
-   "size_y": 0.6,
+   "size_x": 0.6,
+   "size_y": 1.0,
    "size_z": 0.45,
    "collision": "convex",
    "material": "wood"
   },
   {
-   "name": "litter_bin_r994333bd_10",
+   "name": "litter_bin_r994333bd_11",
    "x": -18.33,
    "y": -12.85,
    "z": 0.5,
@@ -394,11 +414,10 @@
    "size_y": 0.6,
    "size_z": 1.0,
    "collision": "convex",
-   "material": "metal",
-   "rot_z": 180.0
+   "material": "metal"
   },
   {
-   "name": "table_low_r994333bd_11",
+   "name": "table_low_r994333bd_12",
    "x": -0.62,
    "y": 6.61,
    "z": 0.225,
@@ -409,21 +428,9 @@
    "material": "wood"
   },
   {
-   "name": "stanchion_r994333bd_12",
-   "x": -15.6,
-   "y": -3.01,
-   "z": 0.5,
-   "size_x": 0.35,
-   "size_y": 0.35,
-   "size_z": 1.0,
-   "collision": "convex",
-   "material": "metal",
-   "rot_z": 180.0
-  },
-  {
    "name": "stanchion_r994333bd_13",
    "x": -15.6,
-   "y": -2.24,
+   "y": -3.25,
    "z": 0.5,
    "size_x": 0.35,
    "size_y": 0.35,
@@ -435,7 +442,18 @@
   {
    "name": "stanchion_r994333bd_14",
    "x": -15.6,
-   "y": -1.56,
+   "y": -2.44,
+   "z": 0.5,
+   "size_x": 0.35,
+   "size_y": 0.35,
+   "size_z": 1.0,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "stanchion_r994333bd_15",
+   "x": -15.6,
+   "y": -1.31,
    "z": 0.5,
    "size_x": 0.35,
    "size_y": 0.35,
@@ -445,18 +463,18 @@
    "rot_z": 180.0
   },
   {
-   "name": "table_low_r994333bd_15",
+   "name": "table_low_r994333bd_16",
    "x": -15.42,
    "y": -12.76,
    "z": 0.225,
-   "size_x": 1.2,
-   "size_y": 0.6,
+   "size_x": 0.6,
+   "size_y": 1.2,
    "size_z": 0.45,
    "collision": "convex",
    "material": "wood"
   },
   {
-   "name": "litter_bin_r994333bd_16",
+   "name": "litter_bin_r994333bd_17",
    "x": -14.5,
    "y": 0.48,
    "z": 0.5,
@@ -464,10 +482,11 @@
    "size_y": 0.6,
    "size_z": 1.0,
    "collision": "convex",
-   "material": "metal"
+   "material": "metal",
+   "rot_z": 180.0
   },
   {
-   "name": "table_low_r994333bd_17",
+   "name": "table_low_r994333bd_18",
    "x": -5.8,
    "y": 1.5,
    "z": 0.225,
@@ -478,38 +497,27 @@
    "material": "wood"
   },
   {
-   "name": "table_low_r994333bd_18",
+   "name": "table_low_r994333bd_19",
    "x": -0.8,
    "y": 10.05,
    "z": 0.225,
-   "size_x": 1.0,
+   "size_x": 1.2,
    "size_y": 0.6,
    "size_z": 0.45,
    "collision": "convex",
    "material": "wood"
   },
   {
-   "name": "litter_bin_r994333bd_19",
+   "name": "stanchion_r994333bd_20",
    "x": -17.22,
    "y": 6.58,
    "z": 0.5,
-   "size_x": 0.6,
-   "size_y": 0.6,
+   "size_x": 0.35,
+   "size_y": 0.35,
    "size_z": 1.0,
    "collision": "convex",
    "material": "metal",
    "rot_z": 180.0
-  },
-  {
-   "name": "table_low_r994333bd_20",
-   "x": -12.52,
-   "y": 3.2,
-   "z": 0.225,
-   "size_x": 0.6,
-   "size_y": 1.2,
-   "size_z": 0.45,
-   "collision": "convex",
-   "material": "wood"
   },
   {
    "name": "counter_service_r4db9971f_1",
@@ -566,7 +574,8 @@
    "size_y": 0.75,
    "size_z": 1.83,
    "collision": "convex",
-   "material": "metal"
+   "material": "metal",
+   "variant": 1
   },
   {
    "name": "table_dining_r4db9971f_6",
@@ -652,8 +661,8 @@
   },
   {
    "name": "dust_sheet_r7b0b5e86_1",
-   "x": 5.08,
-   "y": -11.45,
+   "x": 16.02,
+   "y": -3.85,
    "z": 5.425,
    "size_x": 2.0,
    "size_y": 0.9,
@@ -663,8 +672,8 @@
   },
   {
    "name": "cartons_r7b0b5e86_2",
-   "x": 7.14,
-   "y": -11.45,
+   "x": 18.07,
+   "y": -3.85,
    "z": 5.5,
    "size_x": 0.6,
    "size_y": 0.9,
@@ -676,8 +685,8 @@
   },
   {
    "name": "dust_sheet_r7b0b5e86_3",
-   "x": 4.53,
-   "y": -9.61,
+   "x": 15.47,
+   "y": -2.01,
    "z": 5.425,
    "size_x": 0.9,
    "size_y": 2.0,
@@ -687,8 +696,8 @@
   },
   {
    "name": "dust_sheet_r7b0b5e86_4",
-   "x": 6.62,
-   "y": -9.61,
+   "x": 17.55,
+   "y": -2.01,
    "z": 5.7,
    "size_x": 1.8,
    "size_y": 1.0,
@@ -700,7 +709,7 @@
   {
    "name": "cabinet_file_r7b0b5e86_5",
    "x": -19.59,
-   "y": -10.79,
+   "y": -2.96,
    "z": 5.7,
    "size_x": 0.5,
    "size_y": 0.9,
@@ -712,7 +721,7 @@
   {
    "name": "shelf_run_r7b0b5e86_6",
    "x": 19.59,
-   "y": -12.5,
+   "y": -11.74,
    "z": 5.9,
    "size_x": 0.5,
    "size_y": 1.2,
@@ -722,29 +731,31 @@
   },
   {
    "name": "chair_waiting_r7b0b5e86_7",
-   "x": 19.54,
-   "y": -4.51,
+   "x": 8.66,
+   "y": -14.54,
    "z": 5.45,
-   "size_x": 0.6,
-   "size_y": 1.8,
+   "size_x": 1.8,
+   "size_y": 0.6,
    "size_z": 0.9,
    "collision": "convex",
-   "material": "wood"
+   "material": "wood",
+   "rot_z": 180.0
   },
   {
    "name": "cabinet_file_r7b0b5e86_8",
-   "x": 19.54,
-   "y": -1.82,
+   "x": -19.54,
+   "y": -6.78,
    "z": 5.525,
    "size_x": 0.6,
    "size_y": 0.9,
    "size_z": 1.05,
    "collision": "convex",
-   "material": "wood"
+   "material": "wood",
+   "rot_z": 180.0
   },
   {
    "name": "shelf_run_r7b0b5e86_9",
-   "x": 6.59,
+   "x": -1.99,
    "y": -14.54,
    "z": 6.05,
    "size_x": 2.4,
@@ -756,31 +767,54 @@
   },
   {
    "name": "chair_waiting_r7b0b5e86_10",
-   "x": 0.42,
-   "y": -14.54,
+   "x": 19.54,
+   "y": -7.01,
    "z": 5.45,
+   "size_x": 0.6,
+   "size_y": 3.0,
+   "size_z": 0.9,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "cabinet_file_r7b0b5e86_11",
+   "x": -15.17,
+   "y": -14.59,
+   "z": 5.7,
+   "size_x": 0.9,
+   "size_y": 0.5,
+   "size_z": 1.4,
+   "collision": "convex",
+   "material": "wood",
+   "rot_z": 180.0
+  },
+  {
+   "name": "shelf_run_r7b0b5e86_12",
+   "x": 16.95,
+   "y": -14.54,
+   "z": 6.05,
    "size_x": 2.4,
    "size_y": 0.6,
+   "size_z": 2.1,
+   "collision": "convex",
+   "material": "wood",
+   "rot_z": 180.0
+  },
+  {
+   "name": "chair_waiting_r7b0b5e86_13",
+   "x": -19.54,
+   "y": -11.86,
+   "z": 5.45,
+   "size_x": 0.6,
+   "size_y": 1.8,
    "size_z": 0.9,
    "collision": "convex",
    "material": "wood",
    "rot_z": 180.0
   },
   {
-   "name": "cabinet_file_r7b0b5e86_11",
-   "x": -17.08,
-   "y": -14.54,
-   "z": 5.525,
-   "size_x": 0.9,
-   "size_y": 0.6,
-   "size_z": 1.05,
-   "collision": "convex",
-   "material": "wood",
-   "rot_z": 180.0
-  },
-  {
-   "name": "cabinet_file_r7b0b5e86_12",
-   "x": 15.55,
+   "name": "cabinet_file_r7b0b5e86_14",
+   "x": 4.62,
    "y": -14.59,
    "z": 5.65,
    "size_x": 0.6,
@@ -791,46 +825,21 @@
    "rot_z": 180.0
   },
   {
-   "name": "dust_sheet_r7b0b5e86_13",
-   "x": 0.83,
-   "y": -2.1,
-   "z": 5.45,
-   "size_x": 1.0,
-   "size_y": 0.8,
-   "size_z": 0.9,
-   "collision": "convex",
-   "material": "wood",
-   "variant": 2
-  },
-  {
-   "name": "dust_sheet_r7b0b5e86_14",
-   "x": 2.23,
-   "y": -2.1,
-   "z": 5.425,
-   "size_x": 0.9,
-   "size_y": 2.0,
-   "size_z": 0.85,
-   "collision": "convex",
-   "material": "wood",
-   "rot_z": 180.0,
-   "variant": 1
-  },
-  {
-   "name": "dust_sheet_r7b0b5e86_15",
-   "x": -5.83,
-   "y": -4.95,
-   "z": 5.425,
-   "size_x": 0.9,
-   "size_y": 2.0,
-   "size_z": 0.85,
+   "name": "cartons_r7b0b5e86_15",
+   "x": 5.8,
+   "y": -10.26,
+   "z": 5.3,
+   "size_x": 0.4,
+   "size_y": 0.6,
+   "size_z": 0.6,
    "collision": "convex",
    "material": "wood",
    "variant": 3
   },
   {
    "name": "dust_sheet_re6341b30_1",
-   "x": 11.28,
-   "y": 10.06,
+   "x": -0.81,
+   "y": 9.55,
    "z": 5.7,
    "size_x": 1.0,
    "size_y": 1.8,
@@ -840,8 +849,8 @@
   },
   {
    "name": "dust_sheet_re6341b30_2",
-   "x": 12.61,
-   "y": 10.06,
+   "x": 0.51,
+   "y": 9.55,
    "z": 5.45,
    "size_x": 1.0,
    "size_y": 0.8,
@@ -888,7 +897,7 @@
   },
   {
    "name": "chair_waiting_re6341b30_6",
-   "x": -12.43,
+   "x": 0.95,
    "y": 14.54,
    "z": 5.45,
    "size_x": 3.0,
@@ -899,33 +908,34 @@
   },
   {
    "name": "shelf_run_re6341b30_7",
-   "x": 19.59,
-   "y": 4.77,
+   "x": -15.21,
+   "y": 14.59,
    "z": 5.9,
-   "size_x": 0.5,
-   "size_y": 1.2,
+   "size_x": 1.2,
+   "size_y": 0.5,
    "size_z": 1.8,
    "collision": "convex",
    "material": "wood"
   },
   {
    "name": "cabinet_file_re6341b30_8",
-   "x": 1.52,
-   "y": 14.59,
+   "x": -19.59,
+   "y": 3.69,
    "z": 5.65,
-   "size_x": 0.6,
-   "size_y": 0.5,
+   "size_x": 0.5,
+   "size_y": 0.6,
    "size_z": 1.3,
    "collision": "convex",
-   "material": "wood"
+   "material": "wood",
+   "rot_z": 180.0
   },
   {
    "name": "chair_waiting_re6341b30_9",
-   "x": 11.66,
-   "y": 14.54,
+   "x": 19.54,
+   "y": 12.23,
    "z": 5.45,
-   "size_x": 3.0,
-   "size_y": 0.6,
+   "size_x": 0.6,
+   "size_y": 3.0,
    "size_z": 0.9,
    "collision": "convex",
    "material": "wood"
@@ -954,10 +964,10 @@
   },
   {
    "name": "chair_waiting_re6341b30_12",
-   "x": 4.55,
+   "x": -5.16,
    "y": 14.54,
    "z": 5.45,
-   "size_x": 2.4,
+   "size_x": 3.0,
    "size_y": 0.6,
    "size_z": 0.9,
    "collision": "convex",
@@ -965,7 +975,7 @@
   },
   {
    "name": "shelf_run_re6341b30_13",
-   "x": -3.62,
+   "x": -11.68,
    "y": 14.59,
    "z": 5.9,
    "size_x": 1.2,
@@ -976,27 +986,25 @@
   },
   {
    "name": "cabinet_file_re6341b30_14",
-   "x": -19.54,
-   "y": 9.27,
-   "z": 5.525,
-   "size_x": 0.6,
-   "size_y": 0.9,
-   "size_z": 1.05,
+   "x": 19.59,
+   "y": 4.43,
+   "z": 5.65,
+   "size_x": 0.5,
+   "size_y": 0.6,
+   "size_z": 1.3,
    "collision": "convex",
-   "material": "wood",
-   "rot_z": 180.0
+   "material": "wood"
   },
   {
    "name": "chair_waiting_re6341b30_15",
-   "x": -19.54,
-   "y": 3.71,
+   "x": 8.81,
+   "y": 14.54,
    "z": 5.45,
-   "size_x": 0.6,
-   "size_y": 2.4,
+   "size_x": 2.4,
+   "size_y": 0.6,
    "size_z": 0.9,
    "collision": "convex",
-   "material": "wood",
-   "rot_z": 180.0
+   "material": "wood"
   }
  ],
  "markers": [

@@ -38,6 +38,12 @@
   {
    "id": "wood",
    "acoustic": "Wood"
+  },
+  {
+   "id": "leather",
+   "acoustic": "Curtain",
+   "absorption": 0.6,
+   "damping": 0.5
   }
  ],
  "ext_walls": [
@@ -276,7 +282,7 @@
    "size_y": 1.6,
    "size_z": 0.85,
    "collision": "convex",
-   "material": "wood",
+   "material": "leather",
    "rot_z": 180.0,
    "form": "sofa",
    "variant": 3
@@ -348,7 +354,7 @@
    "size_y": 0.9,
    "size_z": 0.85,
    "collision": "convex",
-   "material": "wood",
+   "material": "leather",
    "rot_z": 180.0,
    "form": "sofa",
    "variant": 1
@@ -532,7 +538,8 @@
    "size_z": 1.83,
    "collision": "convex",
    "material": "metal",
-   "rot_z": 180.0
+   "rot_z": 180.0,
+   "variant": 1
   },
   {
    "name": "table_dining_r0da927b4_6",

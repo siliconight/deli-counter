@@ -2909,7 +2909,7 @@
       }
     },
     {
-      "node": "cartons_rde00192b_11_col",
+      "node": "chair_waiting_rde00192b_11_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -2918,7 +2918,7 @@
       }
     },
     {
-      "node": "cartons_rde00192b_12_col",
+      "node": "cabinet_file_rde00192b_12_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -2945,7 +2945,7 @@
       }
     },
     {
-      "node": "cabinet_file_rb1075279_3_col",
+      "node": "chair_waiting_rb1075279_3_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -2954,7 +2954,16 @@
       }
     },
     {
-      "node": "vending_rb1075279_4_col",
+      "node": "cabinet_file_rb1075279_4_col",
+      "material": {
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
+      }
+    },
+    {
+      "node": "vending_rb1075279_5_col",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -2963,7 +2972,7 @@
       }
     },
     {
-      "node": "table_dining_rb1075279_5_col",
+      "node": "table_dining_rb1075279_6_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -2972,48 +2981,12 @@
       }
     },
     {
-      "node": "chair_set_rb1075279_5_1_col",
-      "material": {
-        "id": "wood",
-        "acoustic": "Wood",
-        "absorption": null,
-        "damping": null
-      }
-    },
-    {
-      "node": "chair_set_rb1075279_5_2_col",
-      "material": {
-        "id": "wood",
-        "acoustic": "Wood",
-        "absorption": null,
-        "damping": null
-      }
-    },
-    {
-      "node": "litter_bin_rb1075279_6_col",
+      "node": "litter_bin_rb1075279_7_col",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
         "absorption": 0.5,
         "damping": 0.3
-      }
-    },
-    {
-      "node": "table_dining_rb1075279_7_col",
-      "material": {
-        "id": "wood",
-        "acoustic": "Wood",
-        "absorption": null,
-        "damping": null
-      }
-    },
-    {
-      "node": "chair_set_rb1075279_7_1_col",
-      "material": {
-        "id": "wood",
-        "acoustic": "Wood",
-        "absorption": null,
-        "damping": null
       }
     },
     {
@@ -3027,6 +3000,33 @@
     },
     {
       "node": "chair_set_rb1075279_8_1_col",
+      "material": {
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
+      }
+    },
+    {
+      "node": "chair_set_rb1075279_8_2_col",
+      "material": {
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
+      }
+    },
+    {
+      "node": "chair_set_rb1075279_8_3_col",
+      "material": {
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
+      }
+    },
+    {
+      "node": "chair_set_rb1075279_8_4_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -3098,15 +3098,6 @@
       }
     },
     {
-      "node": "chair_set_r8f1a320b_6_1_col",
-      "material": {
-        "id": "wood",
-        "acoustic": "Wood",
-        "absorption": null,
-        "damping": null
-      }
-    },
-    {
       "node": "cartons_r8f1a320b_7_col",
       "material": {
         "id": "wood",
@@ -3143,7 +3134,7 @@
       }
     },
     {
-      "node": "cabinet_tool_r64b7c9c5_2_col",
+      "node": "shelf_run_r64b7c9c5_2_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -3152,7 +3143,7 @@
       }
     },
     {
-      "node": "shelf_run_r64b7c9c5_3_col",
+      "node": "cabinet_tool_r64b7c9c5_3_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -3161,25 +3152,34 @@
       }
     },
     {
-      "node": "barrel_drum_r64b7c9c5_4_col",
+      "node": "shelf_run_r64b7c9c5_4_col",
       "material": {
-        "id": "metal",
-        "acoustic": "Metal",
-        "absorption": 0.5,
-        "damping": 0.3
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
-      "node": "barrel_drum_r64b7c9c5_5_col",
+      "node": "cabinet_tool_r64b7c9c5_5_col",
       "material": {
-        "id": "metal",
-        "acoustic": "Metal",
-        "absorption": 0.5,
-        "damping": 0.3
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
       "node": "barrel_drum_r64b7c9c5_6_col",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "barrel_drum_r64b7c9c5_7_col",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -3641,7 +3641,7 @@
         "type": "exit_passage",
         "room": "north_aisles",
         "via": [],
-        "destination": "north_dock",
+        "destination": "main_floor",
         "route_hops": 1
       },
       "egress": {
@@ -4419,20 +4419,20 @@
     "chair_waiting_rde00192b_8": "prop",
     "cabinet_file_rde00192b_9": "prop",
     "shelf_run_rde00192b_10": "prop",
-    "cartons_rde00192b_11": "prop",
-    "cartons_rde00192b_12": "prop",
+    "chair_waiting_rde00192b_11": "prop",
+    "cabinet_file_rde00192b_12": "prop",
     "counter_service_rb1075279_1": "prop",
     "chair_waiting_rb1075279_2": "prop",
-    "cabinet_file_rb1075279_3": "prop",
-    "vending_rb1075279_4": "prop",
-    "table_dining_rb1075279_5": "prop",
-    "chair_set_rb1075279_5_1": "prop",
-    "chair_set_rb1075279_5_2": "prop",
-    "litter_bin_rb1075279_6": "prop",
-    "table_dining_rb1075279_7": "prop",
-    "chair_set_rb1075279_7_1": "prop",
+    "chair_waiting_rb1075279_3": "prop",
+    "cabinet_file_rb1075279_4": "prop",
+    "vending_rb1075279_5": "prop",
+    "table_dining_rb1075279_6": "prop",
+    "litter_bin_rb1075279_7": "prop",
     "table_dining_rb1075279_8": "prop",
     "chair_set_rb1075279_8_1": "prop",
+    "chair_set_rb1075279_8_2": "prop",
+    "chair_set_rb1075279_8_3": "prop",
+    "chair_set_rb1075279_8_4": "prop",
     "desk_r8f1a320b_1": "prop",
     "chair_set_r8f1a320b_1_1": "prop",
     "shelf_run_r8f1a320b_2": "prop",
@@ -4440,16 +4440,16 @@
     "cabinet_file_r8f1a320b_4": "prop",
     "shelf_run_r8f1a320b_5": "prop",
     "desk_r8f1a320b_6": "prop",
-    "chair_set_r8f1a320b_6_1": "prop",
     "cartons_r8f1a320b_7": "prop",
     "cartons_r8f1a320b_8": "prop",
     "cartons_r8f1a320b_9": "prop",
     "workbench_r64b7c9c5_1": "prop",
-    "cabinet_tool_r64b7c9c5_2": "prop",
-    "shelf_run_r64b7c9c5_3": "prop",
-    "barrel_drum_r64b7c9c5_4": "prop",
-    "barrel_drum_r64b7c9c5_5": "prop",
+    "shelf_run_r64b7c9c5_2": "prop",
+    "cabinet_tool_r64b7c9c5_3": "prop",
+    "shelf_run_r64b7c9c5_4": "prop",
+    "cabinet_tool_r64b7c9c5_5": "prop",
     "barrel_drum_r64b7c9c5_6": "prop",
+    "barrel_drum_r64b7c9c5_7": "prop",
     "stair_guard_side_0": "prop",
     "stair_guard_rail_1": "prop",
     "stair_guard_side_2": "prop",

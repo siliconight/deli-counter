@@ -1,5 +1,5 @@
 {
-  "light_manifest_version": "1.1.0",
+  "light_manifest_version": "1.2.0",
   "building_id": "arena_a01",
   "theme": "greybox",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
@@ -24,6 +24,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "event_floor_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -5.85,
+        2.85
+      ],
+      "rot_y": 0.0,
+      "room": "event_floor",
+      "size": [
+        54.0,
+        24.3,
+        5.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "back_of_house_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -40,6 +59,25 @@
       },
       "drop": 5.6,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "back_of_house_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        12.15,
+        2.85
+      ],
+      "rot_y": 0.0,
+      "room": "back_of_house",
+      "size": [
+        54.0,
+        11.7,
+        5.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "under_hall_bulbs",
@@ -60,6 +98,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "under_hall_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -13.5,
+        0.0,
+        -3.15
+      ],
+      "rot_y": 0.0,
+      "room": "under_hall",
+      "size": [
+        27.0,
+        36.0,
+        5.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "vault_room_bulbs",
       "type": "pendant",
       "source": "derived",
@@ -76,6 +133,25 @@
       },
       "drop": 5.0,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "vault_room_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        13.5,
+        0.0,
+        -3.15
+      ],
+      "rot_y": 0.0,
+      "room": "vault_room",
+      "size": [
+        27.0,
+        36.0,
+        5.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "ext_0_S_window_1",

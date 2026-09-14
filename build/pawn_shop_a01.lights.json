@@ -1,5 +1,5 @@
 {
-  "light_manifest_version": "1.1.0",
+  "light_manifest_version": "1.2.0",
   "building_id": "pawn_shop_a01",
   "theme": "greybox",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
@@ -24,6 +24,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "shop_floor_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -2.5,
+        1.575
+      ],
+      "rot_y": 0.0,
+      "room": "shop_floor",
+      "size": [
+        16.0,
+        9.0,
+        3.15
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "safe_room_bulbs",
       "type": "pendant",
       "source": "derived",
@@ -40,6 +59,25 @@
       },
       "drop": 2.45,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "safe_room_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        4.5,
+        1.575
+      ],
+      "rot_y": 0.0,
+      "room": "safe_room",
+      "size": [
+        16.0,
+        5.0,
+        3.15
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "apartment_ceiling",
@@ -60,6 +98,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "apartment_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -3.5,
+        4.975
+      ],
+      "rot_y": 0.0,
+      "room": "apartment",
+      "size": [
+        16.0,
+        7.0,
+        3.15
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "upper_storage_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -76,6 +133,25 @@
       },
       "drop": 3.05,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "upper_storage_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        3.5,
+        4.975
+      ],
+      "rot_y": 0.0,
+      "room": "upper_storage",
+      "size": [
+        16.0,
+        7.0,
+        3.15
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "ext_0_S_window_1",

@@ -1,5 +1,5 @@
 {
-  "light_manifest_version": "1.1.0",
+  "light_manifest_version": "1.2.0",
   "building_id": "self_storage_a01",
   "theme": "greybox",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
@@ -22,6 +22,25 @@
       },
       "drop": 2.8,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "south_aisle_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -10.0,
+        1.45
+      ],
+      "rot_y": 0.0,
+      "room": "south_aisle",
+      "size": [
+        40.0,
+        8.0,
+        2.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "mid_aisle_ceiling_0",
@@ -60,6 +79,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "mid_aisle_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        0.0,
+        1.45
+      ],
+      "rot_y": 0.0,
+      "room": "mid_aisle",
+      "size": [
+        40.0,
+        12.0,
+        2.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "vault_unit_bulbs",
       "type": "pendant",
       "source": "derived",
@@ -78,6 +116,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "vault_unit_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -16.0,
+        10.0,
+        1.45
+      ],
+      "rot_y": 0.0,
+      "room": "vault_unit",
+      "size": [
+        8.0,
+        8.0,
+        2.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "north_aisle_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -94,6 +151,25 @@
       },
       "drop": 2.8,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "north_aisle_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        4.0,
+        10.0,
+        1.45
+      ],
+      "rot_y": 0.0,
+      "room": "north_aisle",
+      "size": [
+        32.0,
+        8.0,
+        2.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "ext_0_N_pack_1",

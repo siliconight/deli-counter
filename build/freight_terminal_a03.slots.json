@@ -7598,7 +7598,7 @@
       "slot_id": "floor_lanes",
       "role": "floor",
       "size_mod": "full",
-      "style": 6,
+      "style": 7,
       "material": "carpet",
       "current_ref": "floor_greybox_01",
       "kit_axis": "theme",
@@ -7642,7 +7642,7 @@
       "slot_id": "ceiling_lanes",
       "role": "ceiling",
       "size_mod": "full",
-      "style": 8,
+      "style": 9,
       "material": "ceiling_tile",
       "current_ref": "ceiling_greybox_01",
       "kit_axis": "theme",
@@ -7679,7 +7679,7 @@
       "slot_id": "floor_sort_hall",
       "role": "floor",
       "size_mod": "full",
-      "style": 7,
+      "style": 8,
       "material": "tile",
       "current_ref": "floor_greybox_01",
       "kit_axis": "theme",
@@ -7723,7 +7723,7 @@
       "slot_id": "ceiling_sort_hall",
       "role": "ceiling",
       "size_mod": "full",
-      "style": 8,
+      "style": 9,
       "material": "ceiling_tile",
       "current_ref": "ceiling_greybox_01",
       "kit_axis": "theme",
@@ -7760,7 +7760,7 @@
       "slot_id": "floor_bond_approach",
       "role": "floor",
       "size_mod": "full",
-      "style": 7,
+      "style": 8,
       "material": "tile",
       "current_ref": "floor_greybox_01",
       "kit_axis": "theme",
@@ -7797,7 +7797,7 @@
       "slot_id": "ceiling_bond_approach",
       "role": "ceiling",
       "size_mod": "full",
-      "style": 8,
+      "style": 9,
       "material": "ceiling_tile",
       "current_ref": "ceiling_greybox_01",
       "kit_axis": "theme",
@@ -7884,7 +7884,7 @@
       "slot_id": "ceiling_bond_vault",
       "role": "ceiling",
       "size_mod": "full",
-      "style": 9,
+      "style": 10,
       "material": "plaster",
       "current_ref": "ceiling_greybox_01",
       "kit_axis": "theme",
@@ -8003,7 +8003,7 @@
       "material": "metal",
       "species": "vending_machine",
       "stock": null,
-      "variant": 0,
+      "variant": 2,
       "form": null,
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -8155,8 +8155,8 @@
       "slot_id": "sofa_r8ab5a479_7",
       "role": "prop",
       "size_mod": "full",
-      "style": 5,
-      "material": "wood",
+      "style": 6,
+      "material": "leather",
       "species": "booth_seat",
       "stock": null,
       "variant": 1,
@@ -8230,7 +8230,46 @@
       }
     },
     {
-      "slot_id": "chair_waiting_r8ab5a479_9",
+      "slot_id": "vending_r8ab5a479_9",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 4,
+      "material": "metal",
+      "species": "vending_machine",
+      "stock": null,
+      "variant": 0,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          7.62,
+          -14.44,
+          0.95
+        ],
+        "rot_y": 180.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.0,
+          0.8,
+          1.9
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "chair_waiting_r8ab5a479_10",
       "role": "prop",
       "size_mod": "full",
       "style": 5,
@@ -8246,7 +8285,7 @@
       "facing": null,
       "transform": {
         "translation": [
-          7.49,
+          11.01,
           -14.54,
           0.45
         ],
@@ -8269,14 +8308,14 @@
       }
     },
     {
-      "slot_id": "sofa_r8ab5a479_10",
+      "slot_id": "sofa_r8ab5a479_11",
       "role": "prop",
       "size_mod": "full",
-      "style": 5,
-      "material": "wood",
+      "style": 6,
+      "material": "leather",
       "species": "booth_seat",
       "stock": null,
-      "variant": 2,
+      "variant": 0,
       "form": "sofa",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -8285,11 +8324,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          11.06,
-          -14.41,
+          23.41,
+          1.83,
           0.425
         ],
-        "rot_y": 180.0,
+        "rot_y": 90.0,
         "scale": [
           1.0,
           1.0,
@@ -8308,7 +8347,7 @@
       }
     },
     {
-      "slot_id": "table_low_r8ab5a479_11",
+      "slot_id": "table_low_r8ab5a479_12",
       "role": "prop",
       "size_mod": "full",
       "style": 5,
@@ -8337,7 +8376,7 @@
       },
       "fit": {
         "dims": [
-          1.2,
+          1.0,
           0.6,
           0.45
         ],
@@ -8347,7 +8386,7 @@
       }
     },
     {
-      "slot_id": "litter_bin_r8ab5a479_12",
+      "slot_id": "litter_bin_r8ab5a479_13",
       "role": "prop",
       "size_mod": "full",
       "style": 4,
@@ -8367,7 +8406,7 @@
           -5.44,
           0.425
         ],
-        "rot_y": 180.0,
+        "rot_y": 0.0,
         "scale": [
           1.0,
           1.0,
@@ -8386,7 +8425,7 @@
       }
     },
     {
-      "slot_id": "table_low_r8ab5a479_13",
+      "slot_id": "table_low_r8ab5a479_14",
       "role": "prop",
       "size_mod": "full",
       "style": 5,
@@ -8415,48 +8454,9 @@
       },
       "fit": {
         "dims": [
-          1.0,
+          1.2,
           0.6,
           0.45
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "stanchion_r8ab5a479_14",
-      "role": "prop",
-      "size_mod": "full",
-      "style": 4,
-      "material": "metal",
-      "species": "queue_stanchion",
-      "stock": null,
-      "variant": 0,
-      "form": null,
-      "current_ref": "prop_greybox_01",
-      "kit_axis": "material",
-      "wall": null,
-      "story": null,
-      "facing": null,
-      "transform": {
-        "translation": [
-          -21.61,
-          -3.3,
-          0.5
-        ],
-        "rot_y": 0.0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          0.35,
-          0.35,
-          1.0
         ],
         "pivot": "center",
         "openings": [],
@@ -8480,11 +8480,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          -21.61,
-          -2.28,
+          -21.79,
+          -3.31,
           0.5
         ],
-        "rot_y": 0.0,
+        "rot_y": 180.0,
         "scale": [
           1.0,
           1.0,
@@ -8519,11 +8519,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          -20.88,
-          -3.3,
+          -21.79,
+          -2.26,
           0.5
         ],
-        "rot_y": 180.0,
+        "rot_y": 0.0,
         "scale": [
           1.0,
           1.0,
@@ -8558,8 +8558,47 @@
       "facing": null,
       "transform": {
         "translation": [
-          -20.88,
-          -2.28,
+          -20.7,
+          -3.31,
+          0.5
+        ],
+        "rot_y": 180.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.35,
+          0.35,
+          1.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "stanchion_r8ab5a479_18",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 4,
+      "material": "metal",
+      "species": "queue_stanchion",
+      "stock": null,
+      "variant": 0,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          -20.7,
+          -2.44,
           0.5
         ],
         "rot_y": 0.0,
@@ -8581,7 +8620,7 @@
       }
     },
     {
-      "slot_id": "table_low_r8ab5a479_18",
+      "slot_id": "table_low_r8ab5a479_19",
       "role": "prop",
       "size_mod": "full",
       "style": 5,
@@ -8601,7 +8640,7 @@
           2.77,
           0.225
         ],
-        "rot_y": 0.0,
+        "rot_y": 90.0,
         "scale": [
           1.0,
           1.0,
@@ -8620,7 +8659,7 @@
       }
     },
     {
-      "slot_id": "litter_bin_r8ab5a479_19",
+      "slot_id": "litter_bin_r8ab5a479_20",
       "role": "prop",
       "size_mod": "full",
       "style": 4,
@@ -8638,9 +8677,9 @@
         "translation": [
           -5.81,
           -4.32,
-          0.5
+          0.425
         ],
-        "rot_y": 180.0,
+        "rot_y": 0.0,
         "scale": [
           1.0,
           1.0,
@@ -8649,9 +8688,9 @@
       },
       "fit": {
         "dims": [
-          0.6,
-          0.6,
-          1.0
+          0.5,
+          0.5,
+          0.85
         ],
         "pivot": "center",
         "openings": [],
@@ -8659,7 +8698,7 @@
       }
     },
     {
-      "slot_id": "table_low_r8ab5a479_20",
+      "slot_id": "table_low_r8ab5a479_21",
       "role": "prop",
       "size_mod": "full",
       "style": 5,
@@ -8679,7 +8718,7 @@
           -5.26,
           0.225
         ],
-        "rot_y": 0.0,
+        "rot_y": 90.0,
         "scale": [
           1.0,
           1.0,
@@ -8688,7 +8727,7 @@
       },
       "fit": {
         "dims": [
-          1.2,
+          1.0,
           0.6,
           0.45
         ],
@@ -8698,7 +8737,7 @@
       }
     },
     {
-      "slot_id": "table_low_r8ab5a479_21",
+      "slot_id": "table_low_r8ab5a479_22",
       "role": "prop",
       "size_mod": "full",
       "style": 5,
@@ -8737,7 +8776,7 @@
       }
     },
     {
-      "slot_id": "table_low_r8ab5a479_22",
+      "slot_id": "table_low_r8ab5a479_23",
       "role": "prop",
       "size_mod": "full",
       "style": 5,
@@ -8757,7 +8796,7 @@
           -5.76,
           0.225
         ],
-        "rot_y": 0.0,
+        "rot_y": 90.0,
         "scale": [
           1.0,
           1.0,
@@ -8766,7 +8805,7 @@
       },
       "fit": {
         "dims": [
-          1.0,
+          1.2,
           0.6,
           0.45
         ],
@@ -8776,7 +8815,7 @@
       }
     },
     {
-      "slot_id": "litter_bin_r8ab5a479_23",
+      "slot_id": "litter_bin_r8ab5a479_24",
       "role": "prop",
       "size_mod": "full",
       "style": 4,
@@ -8794,7 +8833,7 @@
         "translation": [
           20.45,
           -2.93,
-          0.425
+          0.5
         ],
         "rot_y": 180.0,
         "scale": [
@@ -8805,9 +8844,9 @@
       },
       "fit": {
         "dims": [
-          0.5,
-          0.5,
-          0.85
+          0.6,
+          0.6,
+          1.0
         ],
         "pivot": "center",
         "openings": [],
@@ -9251,7 +9290,7 @@
       "material": "metal",
       "species": "vending_machine",
       "stock": null,
-      "variant": 0,
+      "variant": 3,
       "form": null,
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -9260,7 +9299,7 @@
       "facing": null,
       "transform": {
         "translation": [
-          -8.33,
+          -16.42,
           -14.44,
           -4.05
         ],
@@ -9276,6 +9315,45 @@
           1.0,
           0.8,
           1.9
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "vending_r13a81451_2",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 4,
+      "material": "metal",
+      "species": "vending_machine",
+      "stock": null,
+      "variant": 1,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          -19.59,
+          -14.46,
+          -4.085
+        ],
+        "rot_y": 180.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.85,
+          0.75,
+          1.83
         ],
         "pivot": "center",
         "openings": [],
@@ -9299,11 +9377,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          17.01,
-          -14.39,
+          23.39,
+          -3.24,
           -4.5
         ],
-        "rot_y": 180.0,
+        "rot_y": 90.0,
         "scale": [
           1.0,
           1.0,
@@ -9339,7 +9417,7 @@
       "transform": {
         "translation": [
           23.39,
-          6.09,
+          -12.66,
           -4.5
         ],
         "rot_y": 90.0,
@@ -9416,11 +9494,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          20.94,
-          14.59,
+          23.59,
+          6.98,
           -4.05
         ],
-        "rot_y": 0.0,
+        "rot_y": 90.0,
         "scale": [
           1.0,
           1.0,
@@ -9455,7 +9533,7 @@
       "facing": null,
       "transform": {
         "translation": [
-          14.14,
+          5.39,
           -14.54,
           -3.95
         ],
@@ -9495,7 +9573,7 @@
       "transform": {
         "translation": [
           23.59,
-          2.72,
+          -0.14,
           -4.05
         ],
         "rot_y": 90.0,
@@ -9533,11 +9611,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          4.01,
-          -14.54,
-          -3.95
+          5.69,
+          14.54,
+          -4.05
         ],
-        "rot_y": 180.0,
+        "rot_y": 0.0,
         "scale": [
           1.0,
           1.0,
@@ -9546,9 +9624,9 @@
       },
       "fit": {
         "dims": [
-          2.4,
+          2.6,
           0.6,
-          2.1
+          1.9
         ],
         "pivot": "center",
         "openings": [],
@@ -9585,7 +9663,7 @@
       },
       "fit": {
         "dims": [
-          2.0,
+          1.6,
           0.9,
           0.76
         ],
@@ -9611,7 +9689,7 @@
       "facing": null,
       "transform": {
         "translation": [
-          7.48,
+          7.57,
           -3.58,
           -4.55
         ],
@@ -9650,11 +9728,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          7.47,
-          -1.46,
+          7.5,
+          -1.6,
           -4.55
         ],
-        "rot_y": 0.0,
+        "rot_y": 343.4,
         "scale": [
           1.0,
           1.0,
@@ -9689,11 +9767,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          17.93,
-          -0.92,
+          16.52,
+          0.19,
           -4.5
         ],
-        "rot_y": 180.0,
+        "rot_y": 270.0,
         "scale": [
           1.0,
           1.0,
@@ -9728,9 +9806,9 @@
       "facing": null,
       "transform": {
         "translation": [
-          17.93,
-          0.21,
-          -4.7
+          17.81,
+          0.19,
+          -4.5
         ],
         "rot_y": 0.0,
         "scale": [
@@ -9741,9 +9819,9 @@
       },
       "fit": {
         "dims": [
+          0.9,
           0.6,
-          0.4,
-          0.6
+          1.0
         ],
         "pivot": "center",
         "openings": [],
@@ -9767,11 +9845,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          17.93,
-          1.35,
-          -4.55
+          19.35,
+          0.19,
+          -4.5
         ],
-        "rot_y": 270.0,
+        "rot_y": 90.0,
         "scale": [
           1.0,
           1.0,
@@ -9780,9 +9858,9 @@
       },
       "fit": {
         "dims": [
-          0.5,
-          0.4,
-          0.9
+          0.9,
+          0.6,
+          1.0
         ],
         "pivot": "center",
         "openings": [],
@@ -9810,7 +9888,7 @@
           12.12,
           -4.62
         ],
-        "rot_y": 0.0,
+        "rot_y": 90.0,
         "scale": [
           1.0,
           1.0,
@@ -9819,48 +9897,9 @@
       },
       "fit": {
         "dims": [
-          2.0,
+          1.6,
           0.9,
           0.76
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "chair_set_rcb102c2f_12_1",
-      "role": "prop",
-      "size_mod": "full",
-      "style": 5,
-      "material": "wood",
-      "species": "chair",
-      "stock": null,
-      "variant": 0,
-      "form": null,
-      "current_ref": "prop_greybox_01",
-      "kit_axis": "material",
-      "wall": null,
-      "story": null,
-      "facing": null,
-      "transform": {
-        "translation": [
-          18.51,
-          11.22,
-          -4.55
-        ],
-        "rot_y": 167.9,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          0.5,
-          0.5,
-          0.9
         ],
         "pivot": "center",
         "openings": [],
@@ -9885,8 +9924,8 @@
       "transform": {
         "translation": [
           3.54,
-          -11.28,
-          -4.7
+          -11.09,
+          -4.5
         ],
         "rot_y": 180.0,
         "scale": [
@@ -9897,9 +9936,9 @@
       },
       "fit": {
         "dims": [
+          0.9,
           0.6,
-          0.4,
-          0.6
+          1.0
         ],
         "pivot": "center",
         "openings": [],
@@ -9924,10 +9963,10 @@
       "transform": {
         "translation": [
           3.54,
-          -10.0,
-          -4.5
+          -9.99,
+          -4.7
         ],
-        "rot_y": 180.0,
+        "rot_y": 0.0,
         "scale": [
           1.0,
           1.0,
@@ -9936,9 +9975,9 @@
       },
       "fit": {
         "dims": [
-          0.9,
           0.6,
-          1.0
+          0.4,
+          0.6
         ],
         "pivot": "center",
         "openings": [],
@@ -9975,48 +10014,9 @@
       },
       "fit": {
         "dims": [
-          2.0,
+          1.6,
           0.9,
           0.76
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "chair_set_rcb102c2f_15_1",
-      "role": "prop",
-      "size_mod": "full",
-      "style": 5,
-      "material": "wood",
-      "species": "chair",
-      "stock": null,
-      "variant": 0,
-      "form": null,
-      "current_ref": "prop_greybox_01",
-      "kit_axis": "material",
-      "wall": null,
-      "story": null,
-      "facing": null,
-      "transform": {
-        "translation": [
-          6.1,
-          3.75,
-          -4.55
-        ],
-        "rot_y": 340.8,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          0.5,
-          0.5,
-          0.9
         ],
         "pivot": "center",
         "openings": [],

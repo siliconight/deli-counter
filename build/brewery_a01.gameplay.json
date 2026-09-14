@@ -470,6 +470,12 @@
       "damping": null
     },
     {
+      "id": "leather",
+      "acoustic": "Curtain",
+      "absorption": 0.6,
+      "damping": 0.5
+    },
+    {
       "id": "carpet",
       "acoustic": "Curtain",
       "absorption": 0.85,
@@ -2604,10 +2610,10 @@
     {
       "node": "booth_recea99f1_4_col",
       "material": {
-        "id": "wood",
-        "acoustic": "Wood",
-        "absorption": null,
-        "damping": null
+        "id": "leather",
+        "acoustic": "Curtain",
+        "absorption": 0.6,
+        "damping": 0.5
       }
     },
     {
@@ -2622,10 +2628,10 @@
     {
       "node": "booth_recea99f1_6_col",
       "material": {
-        "id": "wood",
-        "acoustic": "Wood",
-        "absorption": null,
-        "damping": null
+        "id": "leather",
+        "acoustic": "Curtain",
+        "absorption": 0.6,
+        "damping": 0.5
       }
     },
     {
@@ -2640,10 +2646,10 @@
     {
       "node": "booth_recea99f1_8_col",
       "material": {
-        "id": "wood",
-        "acoustic": "Wood",
-        "absorption": null,
-        "damping": null
+        "id": "leather",
+        "acoustic": "Curtain",
+        "absorption": 0.6,
+        "damping": 0.5
       }
     },
     {
@@ -2872,12 +2878,12 @@
       }
     },
     {
-      "node": "shelf_run_rdcb68c03_7_col",
+      "node": "vending_rdcb68c03_7_col",
       "material": {
-        "id": "wood",
-        "acoustic": "Wood",
-        "absorption": null,
-        "damping": null
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
       }
     },
     {
@@ -2890,7 +2896,7 @@
       }
     },
     {
-      "node": "cartons_rdcb68c03_9_col",
+      "node": "shelf_run_rdcb68c03_9_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -2908,21 +2914,21 @@
       }
     },
     {
-      "node": "litter_bin_rdcb68c03_11_col",
-      "material": {
-        "id": "metal",
-        "acoustic": "Metal",
-        "absorption": 0.5,
-        "damping": 0.3
-      }
-    },
-    {
-      "node": "cartons_rdcb68c03_12_col",
+      "node": "cartons_rdcb68c03_11_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
         "absorption": null,
         "damping": null
+      }
+    },
+    {
+      "node": "litter_bin_rdcb68c03_12_col",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
       }
     },
     {
@@ -2935,16 +2941,7 @@
       }
     },
     {
-      "node": "litter_bin_rdcb68c03_14_col",
-      "material": {
-        "id": "metal",
-        "acoustic": "Metal",
-        "absorption": 0.5,
-        "damping": 0.3
-      }
-    },
-    {
-      "node": "cartons_rdcb68c03_15_col",
+      "node": "cartons_rdcb68c03_14_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -2953,7 +2950,7 @@
       }
     },
     {
-      "node": "litter_bin_rdcb68c03_16_col",
+      "node": "litter_bin_rdcb68c03_15_col",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -2962,12 +2959,21 @@
       }
     },
     {
-      "node": "litter_bin_rdcb68c03_17_col",
+      "node": "cartons_rdcb68c03_16_col",
       "material": {
-        "id": "metal",
-        "acoustic": "Metal",
-        "absorption": 0.5,
-        "damping": 0.3
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
+      }
+    },
+    {
+      "node": "cartons_rdcb68c03_17_col",
+      "material": {
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
@@ -3043,7 +3049,7 @@
       }
     },
     {
-      "node": "table_dining_r0a13aca4_7_col",
+      "node": "chair_waiting_r0a13aca4_7_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -3052,7 +3058,16 @@
       }
     },
     {
-      "node": "litter_bin_r0a13aca4_8_col",
+      "node": "table_dining_r0a13aca4_8_col",
+      "material": {
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
+      }
+    },
+    {
+      "node": "litter_bin_r0a13aca4_9_col",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -3061,7 +3076,7 @@
       }
     },
     {
-      "node": "table_dining_r0a13aca4_9_col",
+      "node": "table_dining_r0a13aca4_10_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -3070,57 +3085,12 @@
       }
     },
     {
-      "node": "chair_set_r0a13aca4_9_1_col",
-      "material": {
-        "id": "wood",
-        "acoustic": "Wood",
-        "absorption": null,
-        "damping": null
-      }
-    },
-    {
-      "node": "chair_set_r0a13aca4_9_2_col",
-      "material": {
-        "id": "wood",
-        "acoustic": "Wood",
-        "absorption": null,
-        "damping": null
-      }
-    },
-    {
-      "node": "litter_bin_r0a13aca4_10_col",
+      "node": "litter_bin_r0a13aca4_11_col",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
         "absorption": 0.5,
         "damping": 0.3
-      }
-    },
-    {
-      "node": "table_dining_r0a13aca4_11_col",
-      "material": {
-        "id": "wood",
-        "acoustic": "Wood",
-        "absorption": null,
-        "damping": null
-      }
-    },
-    {
-      "node": "chair_set_r0a13aca4_11_1_col",
-      "material": {
-        "id": "wood",
-        "acoustic": "Wood",
-        "absorption": null,
-        "damping": null
-      }
-    },
-    {
-      "node": "chair_set_r0a13aca4_11_3_col",
-      "material": {
-        "id": "wood",
-        "acoustic": "Wood",
-        "absorption": null,
-        "damping": null
       }
     },
     {
@@ -3169,7 +3139,7 @@
       }
     },
     {
-      "node": "dust_sheet_r1081d588_6_col",
+      "node": "chair_waiting_r1081d588_6_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -3178,7 +3148,7 @@
       }
     },
     {
-      "node": "cartons_r1081d588_7_col",
+      "node": "cabinet_file_r1081d588_7_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -3187,7 +3157,7 @@
       }
     },
     {
-      "node": "dust_sheet_r1081d588_8_col",
+      "node": "shelf_run_r1081d588_8_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -3196,7 +3166,7 @@
       }
     },
     {
-      "node": "dust_sheet_r1081d588_9_col",
+      "node": "cartons_r1081d588_9_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -4451,17 +4421,17 @@
     "shelf_run_rdcb68c03_4": "prop",
     "shelf_run_rdcb68c03_5": "prop",
     "cabinet_file_rdcb68c03_6": "prop",
-    "shelf_run_rdcb68c03_7": "prop",
+    "vending_rdcb68c03_7": "prop",
     "shelf_run_rdcb68c03_8": "prop",
-    "cartons_rdcb68c03_9": "prop",
+    "shelf_run_rdcb68c03_9": "prop",
     "cartons_rdcb68c03_10": "prop",
-    "litter_bin_rdcb68c03_11": "prop",
-    "cartons_rdcb68c03_12": "prop",
+    "cartons_rdcb68c03_11": "prop",
+    "litter_bin_rdcb68c03_12": "prop",
     "cartons_rdcb68c03_13": "prop",
-    "litter_bin_rdcb68c03_14": "prop",
-    "cartons_rdcb68c03_15": "prop",
-    "litter_bin_rdcb68c03_16": "prop",
-    "litter_bin_rdcb68c03_17": "prop",
+    "cartons_rdcb68c03_14": "prop",
+    "litter_bin_rdcb68c03_15": "prop",
+    "cartons_rdcb68c03_16": "prop",
+    "cartons_rdcb68c03_17": "prop",
     "litter_bin_r6ad66fa2_1": "prop",
     "cabinet_file_r6ad66fa2_2": "prop",
     "counter_service_r0a13aca4_1": "prop",
@@ -4470,24 +4440,20 @@
     "shelf_run_r0a13aca4_4": "prop",
     "vending_r0a13aca4_5": "prop",
     "chair_waiting_r0a13aca4_6": "prop",
-    "table_dining_r0a13aca4_7": "prop",
-    "litter_bin_r0a13aca4_8": "prop",
-    "table_dining_r0a13aca4_9": "prop",
-    "chair_set_r0a13aca4_9_1": "prop",
-    "chair_set_r0a13aca4_9_2": "prop",
-    "litter_bin_r0a13aca4_10": "prop",
-    "table_dining_r0a13aca4_11": "prop",
-    "chair_set_r0a13aca4_11_1": "prop",
-    "chair_set_r0a13aca4_11_3": "prop",
+    "chair_waiting_r0a13aca4_7": "prop",
+    "table_dining_r0a13aca4_8": "prop",
+    "litter_bin_r0a13aca4_9": "prop",
+    "table_dining_r0a13aca4_10": "prop",
+    "litter_bin_r0a13aca4_11": "prop",
     "cartons_r1081d588_1": "prop",
     "shelf_run_r1081d588_2": "prop",
     "chair_waiting_r1081d588_3": "prop",
     "cabinet_file_r1081d588_4": "prop",
     "shelf_run_r1081d588_5": "prop",
-    "dust_sheet_r1081d588_6": "prop",
-    "cartons_r1081d588_7": "prop",
-    "dust_sheet_r1081d588_8": "prop",
-    "dust_sheet_r1081d588_9": "prop",
+    "chair_waiting_r1081d588_6": "prop",
+    "cabinet_file_r1081d588_7": "prop",
+    "shelf_run_r1081d588_8": "prop",
+    "cartons_r1081d588_9": "prop",
     "cartons_r1081d588_10": "prop",
     "stair_guard_side_0": "prop",
     "stair_guard_rail_1": "prop",

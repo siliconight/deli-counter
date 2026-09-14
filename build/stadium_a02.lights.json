@@ -1,5 +1,5 @@
 {
-  "light_manifest_version": "1.1.0",
+  "light_manifest_version": "1.2.0",
   "building_id": "stadium_a02",
   "theme": "greybox",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
@@ -24,6 +24,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "concourse_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -5.55,
+        2.85
+      ],
+      "rot_y": 0.0,
+      "room": "concourse",
+      "size": [
+        58.0,
+        22.9,
+        5.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "cage_room_bulbs",
       "type": "pendant",
       "source": "derived",
@@ -42,6 +61,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "cage_room_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -22.62,
+        11.45,
+        2.85
+      ],
+      "rot_y": 0.0,
+      "room": "cage_room",
+      "size": [
+        12.76,
+        11.1,
+        5.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "ops_band_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -58,6 +96,25 @@
       },
       "drop": 5.6,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "ops_band_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        6.38,
+        11.45,
+        2.85
+      ],
+      "rot_y": 0.0,
+      "room": "ops_band",
+      "size": [
+        45.24,
+        11.1,
+        5.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "ext_0_S_window_1",

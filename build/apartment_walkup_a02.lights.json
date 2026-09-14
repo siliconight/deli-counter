@@ -1,5 +1,5 @@
 {
-  "light_manifest_version": "1.1.0",
+  "light_manifest_version": "1.2.0",
   "building_id": "apartment_walkup_a02",
   "theme": "greybox",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
@@ -24,6 +24,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "parlor_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -3.5,
+        1.45
+      ],
+      "rot_y": 0.0,
+      "room": "parlor",
+      "size": [
+        20.0,
+        9.0,
+        2.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "kitchen_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -40,6 +59,25 @@
       },
       "drop": 2.8,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "kitchen_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        4.5,
+        1.45
+      ],
+      "rot_y": 0.0,
+      "room": "kitchen",
+      "size": [
+        20.0,
+        7.0,
+        2.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "landing_ceiling",
@@ -60,6 +98,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "landing_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -4.0,
+        4.65
+      ],
+      "rot_y": 0.0,
+      "room": "landing",
+      "size": [
+        20.0,
+        8.0,
+        2.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "front_flat_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -78,6 +135,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "front_flat_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -4.0,
+        4.0,
+        4.65
+      ],
+      "rot_y": 0.0,
+      "room": "front_flat",
+      "size": [
+        12.0,
+        8.0,
+        2.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "safe_flat_bulbs",
       "type": "pendant",
       "source": "derived",
@@ -94,6 +170,25 @@
       },
       "drop": 2.2,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "safe_flat_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        6.0,
+        4.0,
+        4.65
+      ],
+      "rot_y": 0.0,
+      "room": "safe_flat",
+      "size": [
+        8.0,
+        8.0,
+        2.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "ext_0_S_window_1",

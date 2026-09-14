@@ -1,5 +1,5 @@
 {
-  "light_manifest_version": "1.1.0",
+  "light_manifest_version": "1.2.0",
   "building_id": "courthouse_a01",
   "theme": "greybox",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
@@ -24,6 +24,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "rotunda_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -6.0,
+        2.35
+      ],
+      "rot_y": 0.0,
+      "room": "rotunda",
+      "size": [
+        46.0,
+        22.0,
+        4.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "court_wing_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -40,6 +59,25 @@
       },
       "drop": 4.6,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "court_wing_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        11.0,
+        2.35
+      ],
+      "rot_y": 0.0,
+      "room": "court_wing",
+      "size": [
+        46.0,
+        12.0,
+        4.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "upper_court_ceiling",
@@ -60,6 +98,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "upper_court_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -8.5,
+        7.35
+      ],
+      "rot_y": 0.0,
+      "room": "upper_court",
+      "size": [
+        46.0,
+        17.0,
+        4.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "chambers_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -76,6 +133,25 @@
       },
       "drop": 4.6,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "chambers_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        8.5,
+        7.35
+      ],
+      "rot_y": 0.0,
+      "room": "chambers",
+      "size": [
+        46.0,
+        17.0,
+        4.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "evidence_hall_bulbs",
@@ -96,6 +172,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "evidence_hall_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -10.5,
+        0.0,
+        -2.65
+      ],
+      "rot_y": 0.0,
+      "room": "evidence_hall",
+      "size": [
+        25.0,
+        34.0,
+        4.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "evidence_vault_bulbs",
       "type": "pendant",
       "source": "derived",
@@ -112,6 +207,25 @@
       },
       "drop": 4.0,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "evidence_vault_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        12.5,
+        0.0,
+        -2.65
+      ],
+      "rot_y": 0.0,
+      "room": "evidence_vault",
+      "size": [
+        21.0,
+        34.0,
+        4.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "ext_0_S_window_1",

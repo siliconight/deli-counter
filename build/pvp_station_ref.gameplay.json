@@ -664,6 +664,12 @@
       "damping": null
     },
     {
+      "id": "leather",
+      "acoustic": "Curtain",
+      "absorption": 0.6,
+      "damping": 0.5
+    },
+    {
       "id": "carpet",
       "acoustic": "Curtain",
       "absorption": 0.85,
@@ -3338,10 +3344,10 @@
     {
       "node": "sofa_rcce455f7_3_col",
       "material": {
-        "id": "wood",
-        "acoustic": "Wood",
-        "absorption": null,
-        "damping": null
+        "id": "leather",
+        "acoustic": "Curtain",
+        "absorption": 0.6,
+        "damping": 0.5
       }
     },
     {
@@ -3480,6 +3486,15 @@
       }
     },
     {
+      "node": "dust_sheet_r960b6dc7_10_col",
+      "material": {
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
+      }
+    },
+    {
       "node": "counter_service_re00cedde_1_col",
       "material": {
         "id": "wood",
@@ -3606,12 +3621,12 @@
       }
     },
     {
-      "node": "pallets_r9f26610b_5_col",
+      "node": "barrel_drum_r9f26610b_5_col",
       "material": {
-        "id": "wood",
-        "acoustic": "Wood",
-        "absorption": null,
-        "damping": null
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
       }
     },
     {
@@ -3705,15 +3720,6 @@
       }
     },
     {
-      "node": "dust_sheet_r290d1b99_2_col",
-      "material": {
-        "id": "wood",
-        "acoustic": "Wood",
-        "absorption": null,
-        "damping": null
-      }
-    },
-    {
       "node": "safe_floor_r4f6fbfdc_1_col",
       "material": {
         "id": "metal",
@@ -3723,34 +3729,16 @@
       }
     },
     {
-      "node": "shelf_run_r4f6fbfdc_2_col",
+      "node": "safe_floor_r4f6fbfdc_2_col",
       "material": {
-        "id": "wood",
-        "acoustic": "Wood",
-        "absorption": null,
-        "damping": null
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
       }
     },
     {
-      "node": "table_count_r4f6fbfdc_3_col",
-      "material": {
-        "id": "wood",
-        "acoustic": "Wood",
-        "absorption": null,
-        "damping": null
-      }
-    },
-    {
-      "node": "chair_set_r4f6fbfdc_3_1_col",
-      "material": {
-        "id": "wood",
-        "acoustic": "Wood",
-        "absorption": null,
-        "damping": null
-      }
-    },
-    {
-      "node": "table_count_r4f6fbfdc_4_col",
+      "node": "shelf_run_r4f6fbfdc_3_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -5094,6 +5082,7 @@
     "cabinet_file_r960b6dc7_7": "prop",
     "cartons_r960b6dc7_8": "prop",
     "cartons_r960b6dc7_9": "prop",
+    "dust_sheet_r960b6dc7_10": "prop",
     "counter_service_re00cedde_1": "prop",
     "chair_waiting_re00cedde_2": "prop",
     "vending_re00cedde_3": "prop",
@@ -5108,7 +5097,7 @@
     "cabinet_tool_r9f26610b_2": "prop",
     "shelf_run_r9f26610b_3": "prop",
     "cabinet_tool_r9f26610b_4": "prop",
-    "pallets_r9f26610b_5": "prop",
+    "barrel_drum_r9f26610b_5": "prop",
     "barrel_drum_r9f26610b_6": "prop",
     "desk_rb815dbac_1": "prop",
     "chair_set_rb815dbac_1_1": "prop",
@@ -5119,12 +5108,9 @@
     "chair_set_rb815dbac_5_1": "prop",
     "cartons_rb815dbac_6": "prop",
     "dust_sheet_r290d1b99_1": "prop",
-    "dust_sheet_r290d1b99_2": "prop",
     "safe_floor_r4f6fbfdc_1": "prop",
-    "shelf_run_r4f6fbfdc_2": "prop",
-    "table_count_r4f6fbfdc_3": "prop",
-    "chair_set_r4f6fbfdc_3_1": "prop",
-    "table_count_r4f6fbfdc_4": "prop",
+    "safe_floor_r4f6fbfdc_2": "prop",
+    "shelf_run_r4f6fbfdc_3": "prop",
     "stair_guard_side_0": "prop",
     "stair_guard_rail_1": "prop",
     "stair_guard_side_2": "prop",

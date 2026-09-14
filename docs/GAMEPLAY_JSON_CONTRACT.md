@@ -69,6 +69,16 @@ source of truth for marker placement, because a styling/re-export pass may not
 preserve the Empty nodes. (See "Marker preservation" below.)
 
 **`rooms`** — `{ "id", "story", "bounds": [x0,y0,x1,y1], "role", "combat_range" }`.
+A room's finishes are the spec's, not this file's: `Room.floor_material` /
+`ceiling_material` (or `material` for both) name the floor and ceiling slot
+materials, else the role maps in `floors.py` decide. **There is no per-room
+WALL material.** A partition is one slot and one module with one material on
+both faces, and an exterior wall's inner face is its outer one; the strip
+clubs (kit 0.132.0) paper only the partitions that have a club room on both
+sides. A per-room wall finish would need either a second material on the
+slot for the module's back face (`material_back`, and a Zoo wall module built
+two-faced) or an interior liner slot per room edge (a plate role of its own
+that `floors.slab_slots` does not emit). Both are Zoo-side changes first.
 
 **`vertical_links`** — `{ "kind", "role", ... }` describing stairs / ladders /
 ramps / floor-holes / hatches connecting stories.

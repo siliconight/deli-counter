@@ -1,5 +1,5 @@
 {
-  "light_manifest_version": "1.1.0",
+  "light_manifest_version": "1.2.0",
   "building_id": "brewery_a03",
   "theme": "greybox",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
@@ -24,6 +24,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "taproom_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -7.0,
+        2.15
+      ],
+      "rot_y": 0.0,
+      "room": "taproom",
+      "size": [
+        40.0,
+        14.0,
+        4.3
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "cash_office_bulbs",
       "type": "pendant",
       "source": "derived",
@@ -40,6 +59,25 @@
       },
       "drop": 3.6,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "cash_office_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -14.0,
+        7.0,
+        2.15
+      ],
+      "rot_y": 0.0,
+      "room": "cash_office",
+      "size": [
+        12.0,
+        14.0,
+        4.3
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "brew_back_ceiling_0",
@@ -76,6 +114,25 @@
       },
       "drop": 4.2,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "brew_back_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        6.0,
+        7.0,
+        2.15
+      ],
+      "rot_y": 0.0,
+      "room": "brew_back",
+      "size": [
+        28.0,
+        14.0,
+        4.3
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "ext_0_N_window_1",

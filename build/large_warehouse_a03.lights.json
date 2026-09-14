@@ -1,5 +1,5 @@
 {
-  "light_manifest_version": "1.1.0",
+  "light_manifest_version": "1.2.0",
   "building_id": "large_warehouse_a03",
   "theme": "greybox",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
@@ -42,6 +42,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "main_floor_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -5.0,
+        2.35
+      ],
+      "rot_y": 0.0,
+      "room": "main_floor",
+      "size": [
+        56.0,
+        24.0,
+        4.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "north_stock_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -58,6 +77,25 @@
       },
       "drop": 4.6,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "north_stock_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        12.0,
+        2.35
+      ],
+      "rot_y": 0.0,
+      "room": "north_stock",
+      "size": [
+        56.0,
+        10.0,
+        4.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "mezz_offices_ceiling",
@@ -78,6 +116,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "mezz_offices_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -7.5,
+        7.35
+      ],
+      "rot_y": 0.0,
+      "room": "mezz_offices",
+      "size": [
+        56.0,
+        19.0,
+        4.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "mezz_stock_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -94,6 +151,25 @@
       },
       "drop": 4.6,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "mezz_stock_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        9.5,
+        7.35
+      ],
+      "rot_y": 0.0,
+      "room": "mezz_stock",
+      "size": [
+        56.0,
+        15.0,
+        4.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "archive_hall_bulbs",
@@ -114,6 +190,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "archive_hall_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -12.0,
+        0.0,
+        -2.65
+      ],
+      "rot_y": 0.0,
+      "room": "archive_hall",
+      "size": [
+        32.0,
+        34.0,
+        4.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "bonded_archive_bulbs",
       "type": "pendant",
       "source": "derived",
@@ -130,6 +225,25 @@
       },
       "drop": 4.0,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "bonded_archive_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        16.0,
+        0.0,
+        -2.65
+      ],
+      "rot_y": 0.0,
+      "room": "bonded_archive",
+      "size": [
+        24.0,
+        34.0,
+        4.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "ext_0_W_window_1",

@@ -1,5 +1,5 @@
 {
-  "light_manifest_version": "1.1.0",
+  "light_manifest_version": "1.2.0",
   "building_id": "stadium_a01",
   "theme": "greybox",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
@@ -24,6 +24,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "concourse_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -5.85,
+        2.6
+      ],
+      "rot_y": 0.0,
+      "room": "concourse",
+      "size": [
+        56.0,
+        24.3,
+        5.2
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "ops_band_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -40,6 +59,25 @@
       },
       "drop": 5.1,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "ops_band_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        12.15,
+        2.6
+      ],
+      "rot_y": 0.0,
+      "room": "ops_band",
+      "size": [
+        56.0,
+        11.7,
+        5.2
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "under_hall_bulbs",
@@ -60,6 +98,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "under_hall_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -14.0,
+        0.0,
+        -2.9
+      ],
+      "rot_y": 0.0,
+      "room": "under_hall",
+      "size": [
+        28.0,
+        36.0,
+        5.2
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "count_room_bulbs",
       "type": "pendant",
       "source": "derived",
@@ -76,6 +133,25 @@
       },
       "drop": 4.5,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "count_room_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        14.0,
+        0.0,
+        -2.9
+      ],
+      "rot_y": 0.0,
+      "room": "count_room",
+      "size": [
+        28.0,
+        36.0,
+        5.2
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "ext_0_S_window_1",

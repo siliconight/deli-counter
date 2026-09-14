@@ -1,5 +1,5 @@
 {
-  "light_manifest_version": "1.1.0",
+  "light_manifest_version": "1.2.0",
   "building_id": "courthouse_a03",
   "theme": "greybox",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
@@ -24,6 +24,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "public_hall_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -7.0,
+        2.35
+      ],
+      "rot_y": 0.0,
+      "room": "public_hall",
+      "size": [
+        44.0,
+        18.0,
+        4.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "main_courtroom_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -42,6 +61,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "main_courtroom_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -7.0,
+        9.0,
+        2.35
+      ],
+      "rot_y": 0.0,
+      "room": "main_courtroom",
+      "size": [
+        30.0,
+        14.0,
+        4.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "judges_chambers_bulbs",
       "type": "pendant",
       "source": "derived",
@@ -58,6 +96,25 @@
       },
       "drop": 4.0,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "judges_chambers_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        15.0,
+        9.0,
+        2.35
+      ],
+      "rot_y": 0.0,
+      "room": "judges_chambers",
+      "size": [
+        14.0,
+        14.0,
+        4.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "ext_0_S_window_1",

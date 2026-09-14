@@ -1,5 +1,5 @@
 {
-  "light_manifest_version": "1.1.0",
+  "light_manifest_version": "1.2.0",
   "building_id": "train_yard_a01",
   "theme": "greybox",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
@@ -24,6 +24,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "shed_floor_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -4.25,
+        2.35
+      ],
+      "rot_y": 0.0,
+      "room": "shed_floor",
+      "size": [
+        52.0,
+        17.5,
+        4.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "dispatch_office_bulbs",
       "type": "pendant",
       "source": "derived",
@@ -42,6 +61,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "dispatch_office_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -20.28,
+        8.75,
+        2.35
+      ],
+      "rot_y": 0.0,
+      "room": "dispatch_office",
+      "size": [
+        11.44,
+        8.5,
+        4.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "works_band_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -58,6 +96,25 @@
       },
       "drop": 4.6,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "works_band_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        5.72,
+        8.75,
+        2.35
+      ],
+      "rot_y": 0.0,
+      "room": "works_band",
+      "size": [
+        40.56,
+        8.5,
+        4.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "ext_0_S_window_1",

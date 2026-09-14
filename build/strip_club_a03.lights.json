@@ -1,81 +1,729 @@
 {
-  "light_manifest_version": "1.1.0",
+  "light_manifest_version": "1.2.0",
   "building_id": "strip_club_a03",
   "theme": "greybox",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
   "rig_library": "lux",
   "anchors": [
     {
-      "id": "main_floor_ceiling",
-      "type": "fluorescent",
+      "id": "main_floor_wash_1",
+      "type": "club_wash",
       "source": "derived",
       "pos": [
-        3.6,
-        -5.5,
+        -14.4,
+        -2.25,
         3.2
       ],
       "rot_y": 0.0,
       "room": "main_floor",
+      "color": "amber",
+      "radius": 4.333,
       "row": {
-        "count": 4,
-        "spacing": 7.2
+        "count": 1,
+        "spacing": 0.0
       },
       "drop": 3.2,
       "reacts_to_alarm": true
     },
     {
-      "id": "back_bar_ceiling",
-      "type": "fluorescent",
+      "id": "main_floor_wash_2",
+      "type": "club_wash",
+      "source": "derived",
+      "pos": [
+        -7.2,
+        -8.75,
+        3.2
+      ],
+      "rot_y": 0.0,
+      "room": "main_floor",
+      "color": "hot_pink",
+      "radius": 4.333,
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "main_floor_wash_3",
+      "type": "club_wash",
       "source": "derived",
       "pos": [
         0.0,
-        6.5,
+        -2.25,
+        3.2
+      ],
+      "rot_y": 0.0,
+      "room": "main_floor",
+      "color": "violet",
+      "radius": 4.333,
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "main_floor_wash_4",
+      "type": "club_wash",
+      "source": "derived",
+      "pos": [
+        7.2,
+        -8.75,
+        3.2
+      ],
+      "rot_y": 0.0,
+      "room": "main_floor",
+      "color": "cyan",
+      "radius": 4.333,
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "main_floor_wash_5",
+      "type": "club_wash",
+      "source": "derived",
+      "pos": [
+        14.4,
+        -2.25,
+        3.2
+      ],
+      "rot_y": 0.0,
+      "room": "main_floor",
+      "color": "magenta",
+      "radius": 4.333,
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "main_floor_stage",
+      "type": "stage_light",
+      "source": "derived",
+      "pos": [
+        4.0,
+        -5.5,
+        3.2
+      ],
+      "rot_y": 90.0,
+      "room": "main_floor",
+      "color": "amber",
+      "target": [
+        0.0,
+        -5.5,
+        1.3
+      ],
+      "radius": 1.5,
+      "row": {
+        "count": 2,
+        "spacing": 1.2
+      },
+      "cycle_s": 4.0,
+      "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "main_floor_stage_lip",
+      "type": "neon",
+      "source": "derived",
+      "pos": [
+        2.75,
+        -5.5,
+        0.75
+      ],
+      "rot_y": 90.0,
+      "room": "main_floor",
+      "color": "amber",
+      "size": [
+        5.0,
+        4.0
+      ],
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 0.75,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "main_floor_neon_1",
+      "type": "neon",
+      "source": "derived",
+      "pos": [
+        -15.3,
+        -11.59,
+        2.2
+      ],
+      "rot_y": 90.0,
+      "room": "main_floor",
+      "size": [
+        1.4,
+        0.6
+      ],
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 2.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "main_floor_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -5.5,
+        1.65
+      ],
+      "rot_y": 0.0,
+      "room": "main_floor",
+      "size": [
+        36.0,
+        13.0,
+        3.3
+      ],
+      "color": "amber",
+      "reacts_to_alarm": false
+    },
+    {
+      "id": "back_bar_wash_1",
+      "type": "club_wash",
+      "source": "derived",
+      "pos": [
+        -13.5,
+        9.25,
         3.2
       ],
       "rot_y": 0.0,
       "room": "back_bar",
+      "color": "violet",
+      "radius": 3.667,
       "row": {
-        "count": 5,
-        "spacing": 7.2
+        "count": 1,
+        "spacing": 0.0
       },
       "drop": 3.2,
       "reacts_to_alarm": true
     },
     {
-      "id": "vip_mezz_ceiling",
-      "type": "fluorescent",
+      "id": "back_bar_wash_2",
+      "type": "club_wash",
+      "source": "derived",
+      "pos": [
+        -4.5,
+        3.75,
+        3.2
+      ],
+      "rot_y": 0.0,
+      "room": "back_bar",
+      "color": "cyan",
+      "radius": 3.667,
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "back_bar_wash_3",
+      "type": "club_wash",
+      "source": "derived",
+      "pos": [
+        4.5,
+        9.25,
+        3.2
+      ],
+      "rot_y": 0.0,
+      "room": "back_bar",
+      "color": "magenta",
+      "radius": 3.667,
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "back_bar_wash_4",
+      "type": "club_wash",
+      "source": "derived",
+      "pos": [
+        13.5,
+        3.75,
+        3.2
+      ],
+      "rot_y": 0.0,
+      "room": "back_bar",
+      "color": "red",
+      "radius": 3.667,
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "back_bar_stage",
+      "type": "stage_light",
+      "source": "derived",
+      "pos": [
+        3.5,
+        6.5,
+        3.2
+      ],
+      "rot_y": 90.0,
+      "room": "back_bar",
+      "color": "violet",
+      "target": [
+        0.0,
+        6.5,
+        1.3
+      ],
+      "radius": 1.5,
+      "row": {
+        "count": 2,
+        "spacing": 1.2
+      },
+      "cycle_s": 4.0,
+      "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "back_bar_stage_lip",
+      "type": "neon",
+      "source": "derived",
+      "pos": [
+        2.25,
+        6.5,
+        0.75
+      ],
+      "rot_y": 90.0,
+      "room": "back_bar",
+      "color": "amber",
+      "size": [
+        4.0,
+        4.0
+      ],
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 0.75,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "back_bar_neon_1",
+      "type": "neon",
+      "source": "derived",
+      "pos": [
+        16.36,
+        11.59,
+        2.2
+      ],
+      "rot_y": 270.0,
+      "room": "back_bar",
+      "size": [
+        1.4,
+        0.6
+      ],
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 2.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "back_bar_ambient",
+      "type": "room_ambient",
       "source": "derived",
       "pos": [
         0.0,
-        -6.0,
+        6.5,
+        1.65
+      ],
+      "rot_y": 0.0,
+      "room": "back_bar",
+      "size": [
+        36.0,
+        11.0,
+        3.3
+      ],
+      "color": "violet",
+      "reacts_to_alarm": false
+    },
+    {
+      "id": "vip_mezz_wash_1",
+      "type": "club_wash",
+      "source": "derived",
+      "pos": [
+        -14.4,
+        -3.0,
         6.8
       ],
       "rot_y": 0.0,
       "room": "vip_mezz",
+      "color": "blue",
+      "radius": 4.0,
       "row": {
-        "count": 5,
-        "spacing": 7.2
+        "count": 1,
+        "spacing": 0.0
       },
       "drop": 3.2,
       "reacts_to_alarm": true
     },
     {
-      "id": "champagne_wing_ceiling",
-      "type": "fluorescent",
+      "id": "vip_mezz_wash_2",
+      "type": "club_wash",
       "source": "derived",
       "pos": [
+        -7.2,
+        -9.0,
+        6.8
+      ],
+      "rot_y": 0.0,
+      "room": "vip_mezz",
+      "color": "amber",
+      "radius": 4.0,
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "vip_mezz_wash_3",
+      "type": "club_wash",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -3.0,
+        6.8
+      ],
+      "rot_y": 0.0,
+      "room": "vip_mezz",
+      "color": "hot_pink",
+      "radius": 4.0,
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "vip_mezz_wash_4",
+      "type": "club_wash",
+      "source": "derived",
+      "pos": [
+        7.2,
+        -9.0,
+        6.8
+      ],
+      "rot_y": 0.0,
+      "room": "vip_mezz",
+      "color": "violet",
+      "radius": 4.0,
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "vip_mezz_wash_5",
+      "type": "club_wash",
+      "source": "derived",
+      "pos": [
+        14.4,
+        -3.0,
+        6.8
+      ],
+      "rot_y": 0.0,
+      "room": "vip_mezz",
+      "color": "cyan",
+      "radius": 4.0,
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "vip_mezz_stage",
+      "type": "stage_light",
+      "source": "derived",
+      "pos": [
+        3.5,
         -6.0,
-        6.0,
+        6.8
+      ],
+      "rot_y": 90.0,
+      "room": "vip_mezz",
+      "color": "blue",
+      "target": [
+        0.0,
+        -6.0,
+        4.9
+      ],
+      "radius": 1.5,
+      "row": {
+        "count": 2,
+        "spacing": 1.2
+      },
+      "cycle_s": 4.0,
+      "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "vip_mezz_stage_lip",
+      "type": "neon",
+      "source": "derived",
+      "pos": [
+        2.25,
+        -6.0,
+        4.35
+      ],
+      "rot_y": 90.0,
+      "room": "vip_mezz",
+      "color": "amber",
+      "size": [
+        4.0,
+        4.0
+      ],
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 0.75,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "vip_mezz_neon_1",
+      "type": "neon",
+      "source": "derived",
+      "pos": [
+        -17.59,
+        -9.45,
+        5.8
+      ],
+      "rot_y": 0.0,
+      "room": "vip_mezz",
+      "size": [
+        1.4,
+        0.6
+      ],
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 2.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "vip_mezz_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -6.0,
+        5.25
+      ],
+      "rot_y": 0.0,
+      "room": "vip_mezz",
+      "size": [
+        36.0,
+        12.0,
+        3.3
+      ],
+      "color": "blue",
+      "reacts_to_alarm": false
+    },
+    {
+      "id": "champagne_wing_wash_1",
+      "type": "club_wash",
+      "source": "derived",
+      "pos": [
+        -15.0,
+        9.0,
         6.8
       ],
       "rot_y": 0.0,
       "room": "champagne_wing",
+      "color": "red",
+      "radius": 4.0,
       "row": {
-        "count": 5,
-        "spacing": 4.8
+        "count": 1,
+        "spacing": 0.0
       },
       "drop": 3.2,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "champagne_wing_wash_2",
+      "type": "club_wash",
+      "source": "derived",
+      "pos": [
+        -9.0,
+        3.0,
+        6.8
+      ],
+      "rot_y": 0.0,
+      "room": "champagne_wing",
+      "color": "blue",
+      "radius": 4.0,
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "champagne_wing_wash_3",
+      "type": "club_wash",
+      "source": "derived",
+      "pos": [
+        -3.0,
+        9.0,
+        6.8
+      ],
+      "rot_y": 0.0,
+      "room": "champagne_wing",
+      "color": "amber",
+      "radius": 4.0,
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "champagne_wing_wash_4",
+      "type": "club_wash",
+      "source": "derived",
+      "pos": [
+        3.0,
+        3.0,
+        6.8
+      ],
+      "rot_y": 0.0,
+      "room": "champagne_wing",
+      "color": "hot_pink",
+      "radius": 4.0,
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "champagne_wing_stage",
+      "type": "stage_light",
+      "source": "derived",
+      "pos": [
+        -1.5,
+        6.0,
+        6.8
+      ],
+      "rot_y": 90.0,
+      "room": "champagne_wing",
+      "color": "red",
+      "target": [
+        -6.0,
+        6.0,
+        5.28
+      ],
+      "radius": 1.5,
+      "row": {
+        "count": 2,
+        "spacing": 1.2
+      },
+      "cycle_s": 4.0,
+      "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "champagne_wing_stage_lip",
+      "type": "neon",
+      "source": "derived",
+      "pos": [
+        -6.0,
+        6.5,
+        5.13
+      ],
+      "rot_y": 90.0,
+      "room": "champagne_wing",
+      "color": "amber",
+      "size": [
+        6.0,
+        3.6
+      ],
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 1.53,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "champagne_wing_neon_1",
+      "type": "neon",
+      "source": "derived",
+      "pos": [
+        -1.3,
+        11.59,
+        5.8
+      ],
+      "rot_y": 270.0,
+      "room": "champagne_wing",
+      "size": [
+        2.0,
+        0.7
+      ],
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 2.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "champagne_wing_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -6.0,
+        6.0,
+        5.25
+      ],
+      "rot_y": 0.0,
+      "room": "champagne_wing",
+      "size": [
+        24.0,
+        12.0,
+        3.3
+      ],
+      "color": "red",
+      "reacts_to_alarm": false
     },
     {
       "id": "mezz_office_bulbs",
@@ -94,6 +742,25 @@
       },
       "drop": 2.6,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "mezz_office_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        12.0,
+        6.0,
+        5.25
+      ],
+      "rot_y": 0.0,
+      "room": "mezz_office",
+      "size": [
+        12.0,
+        12.0,
+        3.3
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "ext_0_S_window_1",

@@ -1,5 +1,5 @@
 {
-  "light_manifest_version": "1.1.0",
+  "light_manifest_version": "1.2.0",
   "building_id": "parking_garage_a01",
   "theme": "greybox",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
@@ -24,6 +24,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "attendant_booth_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -14.0,
+        -11.0,
+        1.35
+      ],
+      "rot_y": 0.0,
+      "room": "attendant_booth",
+      "size": [
+        8.0,
+        6.0,
+        2.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "deck_0_south_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -40,6 +59,25 @@
       },
       "drop": 2.6,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "deck_0_south_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        4.0,
+        -11.0,
+        1.35
+      ],
+      "rot_y": 0.0,
+      "room": "deck_0_south",
+      "size": [
+        28.0,
+        6.0,
+        2.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "deck_0_main_ceiling",
@@ -60,6 +98,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "deck_0_main_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        3.0,
+        1.35
+      ],
+      "rot_y": 0.0,
+      "room": "deck_0_main",
+      "size": [
+        36.0,
+        22.0,
+        2.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "deck_1_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -76,6 +133,25 @@
       },
       "drop": 2.6,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "deck_1_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        0.0,
+        4.35
+      ],
+      "rot_y": 0.0,
+      "room": "deck_1",
+      "size": [
+        36.0,
+        28.0,
+        2.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "ext_1_N_window_1",

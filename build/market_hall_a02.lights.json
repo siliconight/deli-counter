@@ -1,5 +1,5 @@
 {
-  "light_manifest_version": "1.1.0",
+  "light_manifest_version": "1.2.0",
   "building_id": "market_hall_a02",
   "theme": "greybox",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
@@ -24,6 +24,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "stall_floor_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -4.9,
+        2.85
+      ],
+      "rot_y": 0.0,
+      "room": "stall_floor",
+      "size": [
+        44.0,
+        20.2,
+        5.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "loading_band_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -40,6 +59,25 @@
       },
       "drop": 5.6,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "loading_band_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        10.1,
+        2.85
+      ],
+      "rot_y": 0.0,
+      "room": "loading_band",
+      "size": [
+        44.0,
+        9.8,
+        5.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "under_hall_bulbs",
@@ -60,6 +98,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "under_hall_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -11.0,
+        0.0,
+        -3.15
+      ],
+      "rot_y": 0.0,
+      "room": "under_hall",
+      "size": [
+        22.0,
+        30.0,
+        5.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "cold_store_bulbs",
       "type": "pendant",
       "source": "derived",
@@ -76,6 +133,25 @@
       },
       "drop": 5.0,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "cold_store_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        11.0,
+        0.0,
+        -3.15
+      ],
+      "rot_y": 0.0,
+      "room": "cold_store",
+      "size": [
+        22.0,
+        30.0,
+        5.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "ext_0_S_window_1",

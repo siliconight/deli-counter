@@ -1,5 +1,5 @@
 {
-  "light_manifest_version": "1.1.0",
+  "light_manifest_version": "1.2.0",
   "building_id": "marina_a02",
   "theme": "greybox",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
@@ -24,6 +24,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "boat_hall_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -5.5,
+        1.95
+      ],
+      "rot_y": 0.0,
+      "room": "boat_hall",
+      "size": [
+        38.0,
+        15.0,
+        3.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "shop_wing_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -40,6 +59,25 @@
       },
       "drop": 3.8,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "shop_wing_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        7.5,
+        1.95
+      ],
+      "rot_y": 0.0,
+      "room": "shop_wing",
+      "size": [
+        38.0,
+        11.0,
+        3.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "upper_deck_ceiling",
@@ -60,6 +98,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "upper_deck_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -6.5,
+        6.15
+      ],
+      "rot_y": 0.0,
+      "room": "upper_deck",
+      "size": [
+        38.0,
+        13.0,
+        3.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "club_room_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -78,6 +135,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "club_room_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -7.0,
+        6.5,
+        6.15
+      ],
+      "rot_y": 0.0,
+      "room": "club_room",
+      "size": [
+        24.0,
+        13.0,
+        3.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "harbormaster_bulbs",
       "type": "pendant",
       "source": "derived",
@@ -94,6 +170,25 @@
       },
       "drop": 3.2,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "harbormaster_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        12.0,
+        6.5,
+        6.15
+      ],
+      "rot_y": 0.0,
+      "room": "harbormaster",
+      "size": [
+        14.0,
+        13.0,
+        3.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "ext_1_S_window_1",

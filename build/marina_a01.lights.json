@@ -1,5 +1,5 @@
 {
-  "light_manifest_version": "1.1.0",
+  "light_manifest_version": "1.2.0",
   "building_id": "marina_a01",
   "theme": "greybox",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
@@ -42,6 +42,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "loading_floor_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -5.5,
+        0.0,
+        2.35
+      ],
+      "rot_y": 0.0,
+      "room": "loading_floor",
+      "size": [
+        23,
+        26,
+        4.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "office_wing_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -58,6 +77,25 @@
       },
       "drop": 4.6,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "office_wing_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        11.5,
+        0.0,
+        2.35
+      ],
+      "rot_y": 0.0,
+      "room": "office_wing",
+      "size": [
+        11,
+        26,
+        4.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "basement_approach_bulbs",
@@ -78,6 +116,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "basement_approach_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -6.5,
+        -2.65
+      ],
+      "rot_y": 0.0,
+      "room": "basement_approach",
+      "size": [
+        32.0,
+        13.0,
+        4.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "basement_storage_bulbs",
       "type": "pendant",
       "source": "derived",
@@ -94,6 +151,25 @@
       },
       "drop": 4.0,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "basement_storage_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        6.5,
+        -2.65
+      ],
+      "rot_y": 0.0,
+      "room": "basement_storage",
+      "size": [
+        32.0,
+        13.0,
+        4.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "ext_0_E_window_1",

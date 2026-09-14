@@ -1,5 +1,5 @@
 {
-  "light_manifest_version": "1.1.0",
+  "light_manifest_version": "1.2.0",
   "building_id": "apartment_walkup_a01",
   "theme": "greybox",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
@@ -24,6 +24,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "front_hall_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -5.5,
+        -4.5,
+        1.45
+      ],
+      "rot_y": 0.0,
+      "room": "front_hall",
+      "size": [
+        11,
+        9,
+        2.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "kitchen_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -40,6 +59,25 @@
       },
       "drop": 2.8,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "kitchen_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        5.5,
+        -4.5,
+        1.45
+      ],
+      "rot_y": 0.0,
+      "room": "kitchen",
+      "size": [
+        11,
+        9,
+        2.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "garage_bay_ceiling",
@@ -60,6 +98,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "garage_bay_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        4.5,
+        1.45
+      ],
+      "rot_y": 0.0,
+      "room": "garage_bay",
+      "size": [
+        22,
+        9,
+        2.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "office_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -76,6 +133,25 @@
       },
       "drop": 2.8,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "office_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -4.25,
+        0.0,
+        4.65
+      ],
+      "rot_y": 0.0,
+      "room": "office",
+      "size": [
+        13.5,
+        18,
+        2.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "bedroom_ceiling",
@@ -96,6 +172,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "bedroom_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        6.75,
+        0.0,
+        4.65
+      ],
+      "rot_y": 0.0,
+      "room": "bedroom",
+      "size": [
+        8.5,
+        18,
+        2.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "basement_vault_bulbs",
       "type": "pendant",
       "source": "derived",
@@ -114,6 +209,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "basement_vault_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        6.5,
+        1.0,
+        -1.75
+      ],
+      "rot_y": 0.0,
+      "room": "basement_vault",
+      "size": [
+        9,
+        16,
+        2.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "basement_approach_bulbs",
       "type": "pendant",
       "source": "derived",
@@ -130,6 +244,25 @@
       },
       "drop": 2.2,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "basement_approach_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -4.5,
+        1.0,
+        -1.75
+      ],
+      "rot_y": 0.0,
+      "room": "basement_approach",
+      "size": [
+        13,
+        16,
+        2.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "ext_0_S_window_1",

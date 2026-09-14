@@ -2876,6 +2876,19 @@ def write_light_manifest(builder, path):
         builder.s.partitions, builder.s.wall_thick,
         pieces=getattr(builder, "_partition_pieces", None))
     _report = {}
+    # THE CLUB SET (0.132.0): a strip club's club rooms are lit by Lux
+    # 0.37.0's coloured types instead of a fluorescent row, placed off the
+    # stage and the neon signs the furnishing pass wrote -- so the manifest
+    # is derived from the same volumes the slots are. Which rooms are club
+    # rooms is `level_design`'s one rule (`is_strip_club_room`).
+    import level_design as _ld
+    _club = {r.id for r in builder.s.rooms
+             if _ld.is_strip_club_room({"id": r.id}, builder.s.name)}
+    _vols = [{"name": v.name, "x": v.x, "y": v.y, "z": v.z,
+              "size_x": v.size_x, "size_y": v.size_y, "size_z": v.size_z,
+              "rot_z": getattr(v, "rot_z", 0.0), "form": getattr(v, "form", None),
+              "visual": v.visual, "collision": v.collision}
+             for v in builder.s.volumes]
     data = _lights.build_light_manifest(
         builder.s.name,
         builder.gameplay.get("rooms", []),
@@ -2891,6 +2904,8 @@ def write_light_manifest(builder, path):
         ceiling_voids=_voids,
         partitions=_walls,
         report=_report,
+        volumes=_vols,
+        club_rooms=_club,
     )
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
@@ -2903,7 +2918,8 @@ def write_light_manifest(builder, path):
           f"{len(_walls)} partition piece(s): "
           f"{_report.get('nudged', 0)} lamp(s) nudged, "
           f"{_report.get('dropped', 0)} dropped, "
-          f"{_report.get('rows_shifted', 0)} row(s) moved off a wall)")
+          f"{_report.get('rows_shifted', 0)} row(s) moved off a wall; "
+          f"{_report.get('club_rooms', 0)} club room(s) lit as a club)")
     return data
 
 

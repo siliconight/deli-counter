@@ -1,5 +1,5 @@
 {
-  "light_manifest_version": "1.1.0",
+  "light_manifest_version": "1.2.0",
   "building_id": "casino_a03",
   "theme": "greybox",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
@@ -24,6 +24,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "gaming_floor_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -4.55,
+        1.95
+      ],
+      "rot_y": 0.0,
+      "room": "gaming_floor",
+      "size": [
+        42.0,
+        18.9,
+        3.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "pit_corridor_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -40,6 +59,25 @@
       },
       "drop": 3.8,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "pit_corridor_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        9.45,
+        1.95
+      ],
+      "rot_y": 0.0,
+      "room": "pit_corridor",
+      "size": [
+        42.0,
+        9.1,
+        3.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "upper_ring_ceiling",
@@ -60,6 +98,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "upper_ring_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -7.0,
+        6.15
+      ],
+      "rot_y": 0.0,
+      "room": "upper_ring",
+      "size": [
+        42.0,
+        14.0,
+        3.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "upper_west_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -78,6 +135,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "upper_west_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -6.825,
+        7.0,
+        6.15
+      ],
+      "rot_y": 0.0,
+      "room": "upper_west",
+      "size": [
+        28.35,
+        14.0,
+        3.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "high_roller_suite_bulbs",
       "type": "pendant",
       "source": "derived",
@@ -94,6 +170,25 @@
       },
       "drop": 3.2,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "high_roller_suite_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        14.175,
+        7.0,
+        6.15
+      ],
+      "rot_y": 0.0,
+      "room": "high_roller_suite",
+      "size": [
+        13.65,
+        14.0,
+        3.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "ext_0_S_window_1",

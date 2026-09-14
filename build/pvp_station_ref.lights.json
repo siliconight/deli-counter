@@ -1,5 +1,5 @@
 {
-  "light_manifest_version": "1.1.0",
+  "light_manifest_version": "1.2.0",
   "building_id": "pvp_station_ref",
   "theme": "greybox",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
@@ -22,6 +22,25 @@
       },
       "drop": 3.2,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "lobby_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -7.5,
+        1.65
+      ],
+      "rot_y": 0.0,
+      "room": "lobby",
+      "size": [
+        34.0,
+        11.0,
+        3.3
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "holding_cells_ceiling_0",
@@ -60,6 +79,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "holding_cells_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -11.5,
+        5.5,
+        1.65
+      ],
+      "rot_y": 0.0,
+      "room": "holding_cells",
+      "size": [
+        11.0,
+        15.0,
+        3.3
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "booking_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -76,6 +114,25 @@
       },
       "drop": 3.2,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "booking_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        1.0,
+        5.5,
+        1.65
+      ],
+      "rot_y": 0.0,
+      "room": "booking",
+      "size": [
+        14.0,
+        15.0,
+        3.3
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "garage_ceiling",
@@ -96,6 +153,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "garage_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        12.5,
+        5.5,
+        1.65
+      ],
+      "rot_y": 0.0,
+      "room": "garage",
+      "size": [
+        9.0,
+        15.0,
+        3.3
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "detective_offices_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -112,6 +188,25 @@
       },
       "drop": 3.2,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "detective_offices_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -6.5,
+        5.25
+      ],
+      "rot_y": 0.0,
+      "room": "detective_offices",
+      "size": [
+        34.0,
+        13.0,
+        3.3
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "interrogation_ceiling",
@@ -132,6 +227,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "interrogation_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -5.5,
+        6.5,
+        5.25
+      ],
+      "rot_y": 0.0,
+      "room": "interrogation",
+      "size": [
+        23.0,
+        13.0,
+        3.3
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "armory_bulbs",
       "type": "pendant",
       "source": "derived",
@@ -148,6 +262,25 @@
       },
       "drop": 2.6,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "armory_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        11.5,
+        6.5,
+        5.25
+      ],
+      "rot_y": 0.0,
+      "room": "armory",
+      "size": [
+        11.0,
+        13.0,
+        3.3
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "ext_0_S_window_1",

@@ -1,5 +1,5 @@
 {
-  "light_manifest_version": "1.1.0",
+  "light_manifest_version": "1.2.0",
   "building_id": "bank_tower_a03",
   "theme": "greybox",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
@@ -24,6 +24,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "banking_hall_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -4.25,
+        1.95
+      ],
+      "rot_y": 0.0,
+      "room": "banking_hall",
+      "size": [
+        40.0,
+        17.5,
+        3.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "teller_cage_bulbs",
       "type": "pendant",
       "source": "derived",
@@ -42,6 +61,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "teller_cage_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -15.6,
+        8.75,
+        1.95
+      ],
+      "rot_y": 0.0,
+      "room": "teller_cage",
+      "size": [
+        8.8,
+        8.5,
+        3.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "back_office_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -58,6 +96,25 @@
       },
       "drop": 3.8,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "back_office_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        4.4,
+        8.75,
+        1.95
+      ],
+      "rot_y": 0.0,
+      "room": "back_office",
+      "size": [
+        31.2,
+        8.5,
+        3.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "ext_0_S_window_1",

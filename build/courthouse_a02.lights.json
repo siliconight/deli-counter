@@ -1,5 +1,5 @@
 {
-  "light_manifest_version": "1.1.0",
+  "light_manifest_version": "1.2.0",
   "building_id": "courthouse_a02",
   "theme": "greybox",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
@@ -24,6 +24,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "lobby_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -6.0,
+        2.35
+      ],
+      "rot_y": 0.0,
+      "room": "lobby",
+      "size": [
+        42.0,
+        20.0,
+        4.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "courtrooms_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -40,6 +59,25 @@
       },
       "drop": 4.6,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "courtrooms_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        10.0,
+        2.35
+      ],
+      "rot_y": 0.0,
+      "room": "courtrooms",
+      "size": [
+        42.0,
+        12.0,
+        4.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "upper_hall_ceiling",
@@ -60,6 +98,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "upper_hall_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -8.0,
+        7.35
+      ],
+      "rot_y": 0.0,
+      "room": "upper_hall",
+      "size": [
+        42.0,
+        16.0,
+        4.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "clerk_wing_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -78,6 +135,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "clerk_wing_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -7.5,
+        8.0,
+        7.35
+      ],
+      "rot_y": 0.0,
+      "room": "clerk_wing",
+      "size": [
+        27.0,
+        16.0,
+        4.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "records_room_bulbs",
       "type": "pendant",
       "source": "derived",
@@ -94,6 +170,25 @@
       },
       "drop": 4.0,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "records_room_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        13.5,
+        8.0,
+        7.35
+      ],
+      "rot_y": 0.0,
+      "room": "records_room",
+      "size": [
+        15.0,
+        16.0,
+        4.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "ext_0_S_window_1",

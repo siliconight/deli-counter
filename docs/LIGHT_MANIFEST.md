@@ -10,7 +10,7 @@ change; derived lights need zero authoring.
 
 ```json
 {
-  "light_manifest_version": "1.1.0",
+  "light_manifest_version": "1.2.0",
   "building_id": "gs_auto_shop",
   "theme": "delco",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location",
@@ -24,13 +24,18 @@ change; derived lights need zero authoring.
 | Field | Required | Meaning |
 |---|---|---|
 | `id` | yes | Unique, human-readable (`<room-or-wall>_<what>`). |
-| `type` | yes | `fluorescent` \| `streetlight` \| `window` \| `sign` \| `wall_pack` \| `sun`. Named after the real fixture; maps 1:1 to a Lux rig — and 1:1 to a Zoo fixture species (`zoo --fixtures`), which bakes the visible hardware at the same anchors. |
+| `type` | yes | `fluorescent` \| `pendant` \| `streetlight` \| `window` \| `sign` \| `wall_pack` \| `sun`, and (v1.2) the club set `club_wash` \| `stage_light` \| `neon` \| `room_ambient`. Named after the real fixture; maps 1:1 to a Lux rig — and, for the hardware types, 1:1 to a Zoo fixture species (`zoo --fixtures`), which bakes the visible hardware at the same anchors. The club set bakes no hardware: the neon's glass and the stage's rope light are the prop's own (Zoo 0.88.0). |
 | `source` | yes | `derived` (auto) or `authored` (spec-placed). |
 | `pos` | yes | `[x, y, z]` — the fixture's actual location, at mount height. |
 | `rot_y` | yes | Degrees about up — row axis, or a window's inward facing. |
 | `room` | interior | The `gameplay.json` room id this light lights. |
 | `row` | rows | `{count, spacing}` for repeated fixtures. |
-| `size` | area lights | `[width, height]` for `window`/`sign` panels. |
+| `size` | area lights | `[width, height]` for `window`/`sign`/`neon` panels; `[x, y, z]` for `room_ambient` — the room's wall-centreline box, floor to ceiling plane, centred on `pos`. |
+| `drop` | interior | Metres from the anchor down to its room's floor (ceiling types, the club set). |
+| `color` | club set | A name from Lux's palette: `magenta` `hot_pink` `red` `violet` `blue` `cyan` `amber`. Lux REFUSES an unknown name (not built, warned), never substitutes. `null` on a `room_ambient` means "the preset's own ambient, no tint" — Lux 0.37.0 refuses that too, which is the right outcome for an office until its per-room ambient lands. Absent on a `neon` at a sign: Lux picks by anchor id. |
+| `target` | `stage_light` | `[x, y, z]` the spots are aimed at, same frame as `pos`. Required by Lux. |
+| `radius` | `club_wash`, `stage_light` | Floor pool radius (wash) or the lit radius at the target (spot), metres. |
+| `cycle_s` | `stage_light` | Seconds per colour as the spots step through the palette; 0 holds. |
 | `reacts_to_alarm` | yes | Whether Lux drives it on mission phase / alarm pulse. |
 
 ## What Deli Counter derives
@@ -55,6 +60,35 @@ change; derived lights need zero authoring.
   `pos` sits 0.15 m proud of the wall and 0.25 m above the door head — in
   free air under the wedge, so Lux's downward spot is never inside the
   hardware Zoo bakes. `reacts_to_alarm: true`.
+
+- **One `room_ambient` per room (v1.2)** — every room, every kind: `pos` the
+  room's centre at mid-height, `size` its wall-centreline box from the floor
+  to the ceiling plane (`[x, y, z]`, Deli Counter axes). Lux is moving to
+  per-room ambient probes; this is the box it asked for. `color` is a
+  palette name in a club room and `null` elsewhere. `reacts_to_alarm: false`.
+- **The club set instead of a ceiling row (v1.2)**, in a strip club's club
+  rooms (`level_design.is_strip_club_room`: a `strip_club` building's
+  `main_floor`, `*_bar`, `vip_*`, `champagne_*`, `lounge`, `cabaret`...):
+  - `club_wash` × 3–5 (`3 + area/200`, to 5), laid along the room's long
+    axis and stepping side to side across the short one, each its own
+    palette colour from `crc32(room) % 7` in steps of two; each point takes
+    the same void-and-partition test a fluorescent lamp does. `radius` is
+    the short side / 3, held to 1.5–6 m.
+  - `stage_light` per stage volume: two spots (`row` 2 × 1.2 m) at the
+    ceiling 1.5 m past the stage's edge on the room-centre side, `target`
+    the stage centre 0.5 m above its platform (0.8 m; a `bar_stage` deck
+    1.18 m), `cycle_s` 4.
+  - `neon` at the stage's rope light: over a bar stage's deck 0.5 m off the
+    pole and 0.35 m above the deck, or 0.25 m past a round stage's lip at
+    0.75 m; `amber`. And one `neon` proud of each `neon_sign` volume's FACE
+    by 0.15 m (in free air, never inside the cabinet), `rot_y` the sign's
+    facing, `size` the sign's; no `color` (Lux picks by id; the glass's own
+    colour is Zoo's, per name).
+  - the `room_ambient` above, coloured.
+  - no `fluorescent` and no `pendant`. The walker: "dark with colored
+    lights". What still keeps a club room from reading dark — the preset's
+    unshadowed sun, the environment's ambient share, depth fog — is
+    measured in Lux 0.37.0 and is the preset's to change.
 
 Emitters proud of the wall is the v1.1 contract with Zoo's fixture pass:
 `pos` is always the EMITTER; hardware hangs around it (sign cabinet behind

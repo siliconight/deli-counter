@@ -1,5 +1,5 @@
 {
-  "light_manifest_version": "1.1.0",
+  "light_manifest_version": "1.2.0",
   "building_id": "landmark_hall_a03",
   "theme": "greybox",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
@@ -24,6 +24,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "exhibit_hall_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -3.9,
+        2.35
+      ],
+      "rot_y": 0.0,
+      "room": "exhibit_hall",
+      "size": [
+        36.0,
+        16.2,
+        4.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "curator_band_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -40,6 +59,25 @@
       },
       "drop": 4.6,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "curator_band_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        8.1,
+        2.35
+      ],
+      "rot_y": 0.0,
+      "room": "curator_band",
+      "size": [
+        36.0,
+        7.8,
+        4.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "under_hall_bulbs",
@@ -60,6 +98,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "under_hall_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -9.0,
+        0.0,
+        -2.65
+      ],
+      "rot_y": 0.0,
+      "room": "under_hall",
+      "size": [
+        18.0,
+        24.0,
+        4.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "conservation_vault_bulbs",
       "type": "pendant",
       "source": "derived",
@@ -76,6 +133,25 @@
       },
       "drop": 4.0,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "conservation_vault_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        9.0,
+        0.0,
+        -2.65
+      ],
+      "rot_y": 0.0,
+      "room": "conservation_vault",
+      "size": [
+        18.0,
+        24.0,
+        4.7
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "ext_0_S_window_1",

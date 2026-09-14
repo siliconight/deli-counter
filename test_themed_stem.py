@@ -157,11 +157,15 @@ def test_the_stem_is_zoo_s_for_every_field_combination():
                 for variant in (None, 0, 1, 3):
                     cases.append(dict(species=species, form=form, stock=stock,
                                       variant=variant))
+    materials = ((None,) if not hasattr(kit, "material_tag")
+                 else (None, "leather"))          # 0.89.0: the `_m<kind>`
     for kw in cases:
         for state in (None, "open"):
-            args = ("prop", "delco_1997", 2, 160, state, 80, None, None, 75)
-            assert themed_tscn.module_stem(*args, **kw) == \
-                kit.module_stem(*args, **kw), kw
+            for material in materials:
+                args = ("prop", "delco_1997", 2, 160, state, 80, None, None, 75)
+                mk = dict(kw, material=material) if material else kw
+                assert themed_tscn.module_stem(*args, **mk) == \
+                    kit.module_stem(*args, **mk), mk
 
 
 def test_the_resolver_names_the_module_zoo_plans_for_a_dressed_slot(tmp_path):
@@ -220,3 +224,111 @@ def test_a_small_turn_survives_the_fit_and_a_wrong_quarter_does_not():
     # a 1.6 x 0.8 desk whose greybox runs the other way cannot keep a turn
     # that leaves it across its own footprint
     assert themed_tscn._fit_rotation(desk, [0.8, 0.75, 1.6], fallback=12.0) in (90, 270)
+
+
+# ---------------------------------------------------------------------------
+# 0.132.0 -- the material in the name (Zoo 0.89.0). A leather sofa and a wood
+# one were two geometries under one filename, and the later build overwrote
+# the earlier; `_m<kind>` is written when the slot's material is a known kind
+# that is not the species' own for the theme -- on every slot type.
+# ---------------------------------------------------------------------------
+
+def test_the_material_tag_sits_after_the_dressing_and_before_the_hashes():
+    f = themed_tscn.module_stem
+    assert f("prop", "delco_1997", 10, 200, None, 90, None, None, 85,
+             species="booth_seat", form="sofa", variant=1, material="leather") \
+        == "prop_booth_seat_delco_1997_10_w200_d90_h85_fsofa_n1_mleather"
+    assert f("wall", "rockay", 3, 200, None, material="drywall") \
+        == "wall_rockay_03_w200_mdrywall"
+    assert f("vault_door", "delco_1997", 1, 360, "open", 30, None, "abc123",
+             330, material="concrete") \
+        == "vault_door_delco_1997_01_w360_d30_h330_mconcrete_oabc123_open"
+    assert f("wall", "rockay", 3, 200, None, material=None) == "wall_rockay_03_w200"
+    # only a KIND is a candidate tag: a spec id is not
+    assert themed_tscn.stem_material({"material": "brick_ext"}) is None
+    assert themed_tscn.stem_material({"material": "drywall"}) == "drywall"
+    assert themed_tscn.stem_material({"material": None}) is None
+
+
+def test_the_tagged_name_is_asked_first_and_the_plain_one_second(tmp_path):
+    lib = str(tmp_path)
+    wall = dict(_slot("wall", [2.0, 0.3, 3.3], style=3), material="drywall")
+    assert themed_tscn.resolve_slot_ref(wall, "rockay", 3, lib)[0] is None
+    open(os.path.join(lib, "wall_rockay_03_w200.glb"), "w").close()
+    assert themed_tscn.resolve_slot_ref(wall, "rockay", 3, lib)[0] == "wall_rockay_03_w200"
+    open(os.path.join(lib, "wall_rockay_03_w200_mdrywall.glb"), "w").close()
+    assert themed_tscn.resolve_slot_ref(wall, "rockay", 3, lib)[0] \
+        == "wall_rockay_03_w200_mdrywall"
+    # a dressed volume: tagged-and-dressed, dressed, tagged-and-bare, bare,
+    # then the box -- and the style-01 degrade applies to each in turn
+    sofa = dict(_volume((2.0, 0.9, 0.85), "booth_seat", form="sofa", variant=1),
+                material="leather", style=10)
+    open(os.path.join(lib, "prop_delco_1997_10_w200_d90_h85.glb"), "w").close()
+    assert themed_tscn.resolve_slot_ref(sofa, "delco_1997", 10, lib)[0] \
+        == "prop_delco_1997_10_w200_d90_h85"
+    open(os.path.join(lib, "prop_booth_seat_delco_1997_10_w200_d90_h85_fsofa_n1.glb"), "w").close()
+    assert themed_tscn.resolve_slot_ref(sofa, "delco_1997", 10, lib)[0] \
+        == "prop_booth_seat_delco_1997_10_w200_d90_h85_fsofa_n1"
+    open(os.path.join(lib, "prop_booth_seat_delco_1997_10_w200_d90_h85_fsofa_n1_mleather.glb"), "w").close()
+    assert themed_tscn.resolve_slot_ref(sofa, "delco_1997", 10, lib)[0] \
+        == "prop_booth_seat_delco_1997_10_w200_d90_h85_fsofa_n1_mleather"
+    # an interactive slot's states carry the material its base resolved with
+    door = dict(_slot("vault_door", [3.6, 0.3, 3.3], openings=[
+        {"kind": "vault", "width": 1.3, "height": 2.1, "sill": 0.0}]),
+        material="concrete", interactive={
+            "states": ["locked", "open"], "default": "locked",
+            "state_geometry": {"locked": "vault_door", "open": "vault_door"}})
+    base, _ = themed_tscn.resolve_themed_stem(door, "delco_1997", 1, material="concrete")
+    open(os.path.join(lib, base + ".glb"), "w").close()
+    variants = themed_tscn.state_variant_stems(door, "delco_1997", 1, lib)
+    assert variants and all("_mconcrete_" in stem for _st, stem, _av in variants), variants
+    assert all(stem.endswith("_open") for _st, stem, _av in variants)
+
+
+def test_the_material_stem_matches_zoo_for_walls_a_vault_door_a_club_chair_and_a_sofa(tmp_path):
+    """Through Zoo's own `plan_kit`, read only (DC_ZOO_ROOT): a wall whose
+    material is not the theme's own, one whose material is, a vault door, a
+    club chair whose `wood` is its frame and the species' own (no tag), a
+    sofa in leather (the upholstery, and a tag), a wall naming a spec id
+    (no tag). Skips against a Zoo without the contract."""
+    kit = _zoo_kit()
+    if not hasattr(kit, "material_tag"):
+        pytest.skip("Zoo < 0.89.0: no material_tag")
+    theme = "delco_1997"
+    wall_own = kit.species_default_material("wall", theme)
+    wall_mat = "drywall" if wall_own != "drywall" else "plaster"
+    slots = [
+        dict(_slot("wall", [2.0, 0.3, 3.3], style=3), material=wall_mat),
+        dict(_slot("wall", [2.0, 0.3, 3.3], style=3), material=wall_own),
+        dict(_slot("vault_door", [3.6, 0.3, 3.3], openings=[
+            {"kind": "vault", "width": 1.3, "height": 2.1, "sill": 0.0}]),
+             material="concrete"),
+        dict(_volume((0.78, 0.75, 0.78), "club_chair"), material="wood"),
+        dict(_volume((2.0, 0.9, 0.85), "booth_seat", form="sofa", variant=1),
+             material="leather"),
+        dict(_slot("wall", [2.0, 0.3, 3.3], style=3), material="brick_ext"),
+        # an upholstery kind that is NOT the species' own: tagged
+        dict(_volume((2.0, 0.9, 0.85), "booth_seat", form="sofa", variant=1),
+             material="canvas"),
+    ]
+    for i, slot in enumerate(slots):
+        plan = kit.plan_kit({"slots": [slot]}, theme=theme, style=1)
+        stems = sorted({m["stem"] for m in plan["modules"]})
+        lib = tmp_path / str(i)
+        lib.mkdir()
+        for s in stems:
+            (lib / (s + ".glb")).write_bytes(b"")
+        got, _scaled, fell = themed_tscn.resolve_slot_ref(slot, theme, 1, str(lib))
+        assert got in stems and not fell, (slot.get("material"), stems, got)
+        base = [s for s in stems if not s.endswith(("_unlocked", "_open", "_breached"))]
+        assert got == base[0], (stems, got)
+    # what was tagged: the wall in a foreign kind, the canvas sofa; not the
+    # wall in the theme's own kind, the chair's own wood, or a spec id. The
+    # leather sofa is tagged only if leather is not booth_seat's own for
+    # the theme (delco_1997: it is, so no tag) -- asked of Zoo, not assumed.
+    tagged = [kit.material_tag(s["material"], s.get("species") or s["role"], theme)
+              for s in slots]
+    own_sofa = kit.species_default_material("booth_seat", theme)
+    assert tagged == [wall_mat, None, kit.material_tag("concrete", "vault_door", theme),
+                      None, None if own_sofa == "leather" else "leather", None,
+                      "canvas"], tagged

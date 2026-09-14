@@ -45,7 +45,7 @@ def furnished_by_this_pass(v, tags):
     if not m or m.group("tag") not in tags:
         return False
     stems = (set(level_design._PIECES) | set(level_design._LEGACY_STEMS)
-             | {"chair_set"})
+             | set(level_design._COLLIDER_STEMS) | {"chair_set"})
     return m.group("stem") in stems
 
 

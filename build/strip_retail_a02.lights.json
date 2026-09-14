@@ -1,5 +1,5 @@
 {
-  "light_manifest_version": "1.1.0",
+  "light_manifest_version": "1.2.0",
   "building_id": "strip_retail_a02",
   "theme": "greybox",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
@@ -24,6 +24,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "showroom_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -3.0,
+        1.55
+      ],
+      "rot_y": 0.0,
+      "room": "showroom",
+      "size": [
+        18.0,
+        8.0,
+        3.1
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "workshop_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -42,6 +61,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "workshop_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -3.0,
+        4.0,
+        1.55
+      ],
+      "rot_y": 0.0,
+      "room": "workshop",
+      "size": [
+        12.0,
+        6.0,
+        3.1
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "stone_vault_bulbs",
       "type": "pendant",
       "source": "derived",
@@ -58,6 +96,25 @@
       },
       "drop": 2.4,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "stone_vault_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        6.0,
+        4.0,
+        1.55
+      ],
+      "rot_y": 0.0,
+      "room": "stone_vault",
+      "size": [
+        6.0,
+        6.0,
+        3.1
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "ext_0_S_window_1",

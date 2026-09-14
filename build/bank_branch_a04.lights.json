@@ -1,5 +1,5 @@
 {
-  "light_manifest_version": "1.1.0",
+  "light_manifest_version": "1.2.0",
   "building_id": "bank_branch_a04",
   "theme": "greybox",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
@@ -22,6 +22,25 @@
       },
       "drop": 3.8,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "grand_lobby_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -6.0,
+        1.95
+      ],
+      "rot_y": 0.0,
+      "room": "grand_lobby",
+      "size": [
+        40.0,
+        18.0,
+        3.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "teller_line_ceiling_0",
@@ -60,6 +79,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "teller_line_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -7.0,
+        9.0,
+        1.95
+      ],
+      "rot_y": 0.0,
+      "room": "teller_line",
+      "size": [
+        26.0,
+        12.0,
+        3.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "security_office_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -76,6 +114,25 @@
       },
       "drop": 3.8,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "security_office_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        13.0,
+        9.0,
+        1.95
+      ],
+      "rot_y": 0.0,
+      "room": "security_office",
+      "size": [
+        14.0,
+        12.0,
+        3.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "mezzanine_ceiling",
@@ -96,6 +153,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "mezzanine_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -7.5,
+        6.15
+      ],
+      "rot_y": 0.0,
+      "room": "mezzanine",
+      "size": [
+        40.0,
+        15.0,
+        3.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "boardroom_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -112,6 +188,25 @@
       },
       "drop": 3.8,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "boardroom_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        7.5,
+        6.15
+      ],
+      "rot_y": 0.0,
+      "room": "boardroom",
+      "size": [
+        40.0,
+        15.0,
+        3.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "vault_antechamber_bulbs",
@@ -132,6 +227,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "vault_antechamber_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -6.5,
+        -2.25
+      ],
+      "rot_y": 0.0,
+      "room": "vault_antechamber",
+      "size": [
+        40.0,
+        17.0,
+        3.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "vault_room_bulbs",
       "type": "pendant",
       "source": "derived",
@@ -148,6 +262,25 @@
       },
       "drop": 3.2,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "vault_room_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        8.5,
+        -2.25
+      ],
+      "rot_y": 0.0,
+      "room": "vault_room",
+      "size": [
+        40.0,
+        13.0,
+        3.9
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "ext_0_S_window_1",

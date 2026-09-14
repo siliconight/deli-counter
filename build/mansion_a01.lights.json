@@ -1,5 +1,5 @@
 {
-  "light_manifest_version": "1.1.0",
+  "light_manifest_version": "1.2.0",
   "building_id": "mansion_a01",
   "theme": "greybox",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
@@ -24,6 +24,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "foyer_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -5.5,
+        1.75
+      ],
+      "rot_y": 0.0,
+      "room": "foyer",
+      "size": [
+        36.0,
+        15.0,
+        3.5
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "living_wing_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -40,6 +59,25 @@
       },
       "drop": 3.4,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "living_wing_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        7.5,
+        1.75
+      ],
+      "rot_y": 0.0,
+      "room": "living_wing",
+      "size": [
+        36.0,
+        11.0,
+        3.5
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "upper_hall_ceiling",
@@ -60,6 +98,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "upper_hall_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -6.5,
+        5.55
+      ],
+      "rot_y": 0.0,
+      "room": "upper_hall",
+      "size": [
+        36.0,
+        13.0,
+        3.5
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "bedroom_wing_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -76,6 +133,25 @@
       },
       "drop": 3.4,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "bedroom_wing_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        6.5,
+        5.55
+      ],
+      "rot_y": 0.0,
+      "room": "bedroom_wing",
+      "size": [
+        36.0,
+        13.0,
+        3.5
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "cellar_hall_bulbs",
@@ -96,6 +172,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "cellar_hall_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -10.0,
+        0.0,
+        -2.05
+      ],
+      "rot_y": 0.0,
+      "room": "cellar_hall",
+      "size": [
+        16.0,
+        26.0,
+        3.5
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "wine_vault_bulbs",
       "type": "pendant",
       "source": "derived",
@@ -112,6 +207,25 @@
       },
       "drop": 2.8,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "wine_vault_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        8.0,
+        0.0,
+        -2.05
+      ],
+      "rot_y": 0.0,
+      "room": "wine_vault",
+      "size": [
+        20.0,
+        26.0,
+        3.5
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "ext_0_S_window_1",

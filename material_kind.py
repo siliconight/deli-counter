@@ -28,16 +28,24 @@ asserts every value is in the list below AND that the list is complete for
 this library, so a kind invented here fails rather than resolving to nothing.
 """
 
-#: `zoo_keeper.core.skins.KNOWN_KINDS` as of Zoo 0.74.x. Kept here so the
-#: test can refuse a target this repo made up; update deliberately.
+#: `zoo_keeper.core.skins.KNOWN_KINDS` as of Zoo 0.88.0 (`velvet`), plus the
+#: four club kinds Pixelcoat 0.42.0 draws and Zoo is adding beside this
+#: release (`carpet_club`, `wallpaper_club`, `wood_stained`, `paint_block`).
+#: Kept here so the test can refuse a target this repo made up; update
+#: deliberately. `test_material_kind` pins it to Zoo's list when that repo is
+#: beside this one.
 SKIN_KINDS = (
     "laminate", "wood", "metal", "plastic", "leather", "rubber",
     "canvas", "carbon", "glass", "glass_facade", "paper",
     "concrete", "plaster", "brick", "stone", "tile", "drywall",
     "siding", "shingle",
     "ceiling_tile", "carpet", "dirt", "tar",
+    "velvet",
     "gravel", "vegetation", "foliage",
     "metal_painted", "metal_bare",
+    "carpet_club", "wallpaper_club", "wood_stained", "paint_block",
+    # a cocktail table's cloth (Zoo 0.89.0): object-owned like velvet
+    "cloth",
 )
 
 #: Every material id this spec library uses, and the kind it resolves to.
@@ -67,6 +75,19 @@ KIND_BY_MATERIAL = {
     # either -- a builder calls siding siding.
     "siding": "siding",
     "shingle": "shingle",
+    # what the furnishing pass puts on a prop (0.131.0-0.132.0): a sofa's
+    # upholstery, a stool's chrome column, a sign's painted backer
+    "leather": "leather",
+    "metal_bare": "metal_bare",
+    "metal_painted": "metal_painted",
+    # THE STRIP CLUB'S SURFACES (Pixelcoat 0.42.0, `level_design._CLUB_FINISHES`):
+    # a medallion carpet with worn paths, burgundy flocked paper, muddy brown
+    # paint over block. Named for what they are, so the id is the kind.
+    "carpet_club": "carpet_club",
+    "wallpaper_club": "wallpaper_club",
+    "wood_stained": "wood_stained",
+    "paint_block": "paint_block",
+    "velvet": "velvet",
     # masonry the builder named by where it sits rather than what it is
     "brick_ext": "brick",
     "stone_ext": "stone",

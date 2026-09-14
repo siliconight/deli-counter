@@ -1,5 +1,5 @@
 {
-  "light_manifest_version": "1.1.0",
+  "light_manifest_version": "1.2.0",
   "building_id": "bank_job",
   "theme": "greybox",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
@@ -24,6 +24,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "lobby_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -4.5,
+        1.65
+      ],
+      "rot_y": 0.0,
+      "room": "lobby",
+      "size": [
+        30.0,
+        13.0,
+        3.3
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "manager_office_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -40,6 +59,25 @@
       },
       "drop": 3.2,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "manager_office_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -7.5,
+        6.5,
+        1.65
+      ],
+      "rot_y": 0.0,
+      "room": "manager_office",
+      "size": [
+        15.0,
+        9.0,
+        3.3
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "security_room_ceiling",
@@ -60,6 +98,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "security_room_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        7.5,
+        6.5,
+        1.65
+      ],
+      "rot_y": 0.0,
+      "room": "security_room",
+      "size": [
+        15.0,
+        9.0,
+        3.3
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "vault_room_west_bulbs",
       "type": "pendant",
       "source": "derived",
@@ -76,6 +133,25 @@
       },
       "drop": 2.6,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "vault_room_west_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -7.5,
+        0.0,
+        -1.95
+      ],
+      "rot_y": 0.0,
+      "room": "vault_room_west",
+      "size": [
+        15.0,
+        22.0,
+        3.3
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "vault_room_east_bulbs",
@@ -96,6 +172,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "vault_room_east_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        7.5,
+        0.0,
+        -1.95
+      ],
+      "rot_y": 0.0,
+      "room": "vault_room_east",
+      "size": [
+        15.0,
+        22.0,
+        3.3
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "teller_staff_0_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -114,6 +209,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "teller_staff_0_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        0.0,
+        1.65
+      ],
+      "rot_y": 0.0,
+      "room": "teller_staff_0",
+      "size": [
+        12.0,
+        4.0,
+        3.3
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "vault_bulbs",
       "type": "pendant",
       "source": "derived",
@@ -130,6 +244,25 @@
       },
       "drop": 2.6,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "vault_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        11.0,
+        6.5,
+        -1.95
+      ],
+      "rot_y": 0.0,
+      "room": "vault",
+      "size": [
+        8.0,
+        9.0,
+        3.3
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "ext_0_S_window_1",

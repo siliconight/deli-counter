@@ -138,8 +138,8 @@ def module_stem(typ: str, theme: str, style: int,
                 depth_cm: int = None, voids_tag: str = None,
                 openings_tag: str = None, height_cm: int = None,
                 species: str = None, form: str = None, stock: str = None,
-                variant: int = None) -> str:
-    """``<type>[_<species>]_<theme>_<style:02d>[_w<cm>][_d<cm>][_h<cm>][_f<form>][_s<stock>][_n<variant>][_v<hash>][_o<hash>][_<state>]``.
+                variant: int = None, material: str = None) -> str:
+    """``<type>[_<species>]_<theme>_<style:02d>[_w<cm>][_d<cm>][_h<cm>][_f<form>][_s<stock>][_n<variant>][_m<material>][_v<hash>][_o<hash>][_<state>]``.
 
     THE MIRROR OF ``zoo_keeper.core.kit.module_stem``, and the two must change
     together. Neither side parses a stem; both CONSTRUCT it from the same slot,
@@ -184,6 +184,20 @@ def module_stem(typ: str, theme: str, style: int,
         base += f"_s{stock}"
     if variant:
         base += f"_n{int(variant)}"
+    # THE MATERIAL IN THE NAME (Zoo 0.89.0, `kit.material_tag`): the slot's
+    # material KIND when it changes the build -- a known kind that is not
+    # what the species would have used for the theme unasked. A leather
+    # sofa and a wood one were two geometries under one name, and the later
+    # build overwrote the earlier. On EVERY slot type, walls and vault doors
+    # included (`wall_rockay_03_w200_mdrywall`), after the dressing and
+    # before the void/opening hashes and the state, so an interactive
+    # slot's states each carry the same material. Only Zoo can read the
+    # genome that says what the species' own material is, so this side
+    # writes the tag when told to (`material=`) and `resolve_slot_ref` asks
+    # for the tagged name first and the plain one second -- exactly how it
+    # resolves the dressing.
+    if material:
+        base += f"_m{material}"
     if voids_tag:
         base += f"_v{voids_tag}"
     if openings_tag:
@@ -203,8 +217,24 @@ def _default_stem_state(slot: dict) -> str | None:
     return None
 
 
-def resolve_themed_stem(slot: dict, theme: str, style: int, state: str = None):
+def stem_material(slot: dict):
+    """The `_m<kind>` a slot COULD carry: its material when that is a skin
+    kind Zoo knows (`material_kind.SKIN_KINDS`, the mirror of
+    `skins.KNOWN_KINDS`), else None -- a spec id like `brick_ext` is not a
+    kind and Zoo's `material_tag` writes nothing for it. Whether the kind is
+    the species' own for the theme, and so adds nothing, only Zoo's genome
+    says: the resolver tries both."""
+    import material_kind
+    m = slot.get("material")
+    return str(m) if m and m in material_kind.SKIN_KINDS else None
+
+
+def resolve_themed_stem(slot: dict, theme: str, style: int, state: str = None,
+                        material: str = None):
     """Return (stem, is_scaled_unit) for a slot, or (None, False) if unroleable.
+
+    `material` is the `_m<kind>` to write (see `stem_material`); None writes
+    the plain name.
 
     The slot's OWN style (material-driven, skin_style.py) wins over the
     compose-level style, which acts as the fallback for slots that carry
@@ -250,7 +280,7 @@ def resolve_themed_stem(slot: dict, theme: str, style: int, state: str = None):
     stem = module_stem(typ, theme, eff_style, width_cm,
                        state if state else _default_stem_state(slot),
                        depth_cm, vtag, otag, height_cm, species=species,
-                       **dress)
+                       material=material, **dress)
     return stem, (not exact)
 
 
@@ -264,7 +294,17 @@ def resolve_slot_ref(slot, theme, style, library_dir):
     """THE resolution every consumer must share: the styled module if built,
     else the style-01 module of the same type/width (partial kits degrade to
     fewer skins, never to greybox), else None (true greybox fallback).
-    Returns (stem_or_None, is_scaled_unit, style_fell_back).
+    Returns (stem_or_None, is_scaled_unit, style_fell_back)."""
+    stem, scaled, fell, _material = resolve_slot_choice(slot, theme, style,
+                                                        library_dir)
+    return stem, scaled, fell
+
+
+def resolve_slot_choice(slot, theme, style, library_dir):
+    """`resolve_slot_ref` with the `_m<kind>` the chosen name carried (or
+    None): ``(stem_or_None, is_scaled_unit, style_fell_back, material)``.
+    An interactive slot's state variants must carry the material its base
+    resolved with, and only this knows which of the two names was built.
 
     The composer (write_themed_tscn), the base-strip (themed_slot_ids) and
     the placement gate MUST all resolve through here -- when they disagreed,
@@ -280,6 +320,14 @@ def resolve_slot_ref(slot, theme, style, library_dir):
     # Zoo keeps the fields all or nothing (`kit.honour_dressing`), and that is
     # what makes three enough -- a resolver that cannot read a genome can
     # still name every module the kit could have built for this slot.
+    #
+    # THE MATERIAL DOUBLES EACH CANDIDATE (Zoo 0.89.0): the `_m<kind>` name
+    # first, the plain one second, for every slot type -- a wall whose
+    # `drywall` is not the theme's own wall material was built `_mdrywall`,
+    # and one whose material is the theme's own was built plain. Zoo keeps
+    # the tag independent of the dressing, so with and without the tag
+    # for each of the three dressing candidates names every module the kit
+    # could have built for this slot.
     candidates = [slot]
     if slot.get("role") in VOLUME_ROLES:
         bare = dict(slot, **_UNDRESSED)
@@ -288,17 +336,21 @@ def resolve_slot_ref(slot, theme, style, library_dir):
             candidates.append(bare)
         if slot.get("species"):
             candidates.append(dict(bare, species=None))
-    for cand in candidates:
-        stem, scaled = resolve_themed_stem(cand, theme, style)
+    mat = stem_material(slot)
+    tries = [(cand, m) for cand in candidates
+             for m in ((mat, None) if mat else (None,))]
+    for cand, m in tries:
+        stem, scaled = resolve_themed_stem(cand, theme, style, material=m)
         if stem and _themed_available(library_dir, stem):
-            return stem, scaled, False
-    for cand in candidates:
-        stem, _scaled = resolve_themed_stem(cand, theme, style)
+            return stem, scaled, False, m
+    for cand, m in tries:
+        stem, _scaled = resolve_themed_stem(cand, theme, style, material=m)
         if stem and int(cand.get("style") or 1) != 1:
-            stem01, scaled01 = resolve_themed_stem(dict(cand, style=1), theme, 1)
+            stem01, scaled01 = resolve_themed_stem(dict(cand, style=1), theme, 1,
+                                                   material=m)
             if stem01 and _themed_available(library_dir, stem01):
-                return stem01, scaled01, True
-    return None, False, False
+                return stem01, scaled01, True, m
+    return None, False, False, None
 
 
 def state_variant_stems(slot, theme, style, library_dir):
@@ -328,8 +380,8 @@ def state_variant_stems(slot, theme, style, library_dir):
     typ = slot_typename(slot.get("role"), slot.get("size_mod"))
     default_species = geometry.get(default, typ)
 
-    base_stem, _scaled, base_fell = resolve_slot_ref(slot, theme, style,
-                                                     library_dir)
+    base_stem, _scaled, base_fell, base_mat = resolve_slot_choice(
+        slot, theme, style, library_dir)
     if not base_stem:
         return []
     eff_slot = dict(slot, style=1) if base_fell else slot
@@ -342,7 +394,10 @@ def state_variant_stems(slot, theme, style, library_dir):
         drawn = SPECIES_STATE_ART.get(default_species, ())
         if geometry.get(st, typ) == default_species and st not in drawn:
             continue  # identical art today; the kit deferred it too
-        stem, _ = resolve_themed_stem(eff_slot, theme, eff_style, state=st)
+        # the state carries the material its base resolved with: Zoo
+        # tags every state of a slot alike
+        stem, _ = resolve_themed_stem(eff_slot, theme, eff_style, state=st,
+                                      material=base_mat)
         if stem:
             out.append((st, stem, _themed_available(library_dir, stem)))
     return out

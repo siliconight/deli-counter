@@ -53,6 +53,12 @@ def _spec_material_ids():
                 for op in item.get("openings") or []:
                     if op.get("material"):
                         ids.add(op["material"])
+        # a room's own finishes reach the floor and ceiling slots (0.132.0:
+        # the strip clubs' `carpet_club`)
+        for r in spec.get("rooms") or []:
+            for k in ("material", "floor_material", "ceiling_material"):
+                if r.get(k):
+                    ids.add(r[k])
     return ids
 
 
@@ -71,6 +77,33 @@ def test_every_spec_material_has_a_kind():
     assert not missing, (
         "these spec materials have no skin kind; add them to "
         f"material_kind.KIND_BY_MATERIAL: {missing}")
+
+
+def test_the_kinds_are_zoo_s_when_zoo_is_beside_this_repo():
+    """`SKIN_KINDS` is a literal copy of `zoo_keeper.core.skins.KNOWN_KINDS`.
+    Every kind here must be one Zoo knows; the four club kinds Pixelcoat
+    0.42.0 draws are being added to Zoo beside this release, so until they
+    land there they are reported, not failed."""
+    import pytest
+    zoo = os.environ.get("DC_ZOO_ROOT") or os.path.join(
+        os.path.dirname(HERE), "zoo")
+    skins = os.path.join(zoo, "zoo_keeper", "core", "skins.py")
+    if not os.path.exists(skins):
+        pytest.skip("zoo repo not found at %s (set DC_ZOO_ROOT)" % zoo)
+    if zoo not in sys.path:
+        sys.path.insert(0, zoo)
+    from zoo_keeper.core import skins as zk
+    # Zoo 0.89.0's additions, pending until DC's neighbour is that version
+    pending = {"carpet_club", "wallpaper_club", "wood_stained", "paint_block",
+               "cloth"}
+    ours = set(material_kind.SKIN_KINDS)
+    missing_here = set(zk.KNOWN_KINDS) - ours
+    assert not missing_here, f"Zoo knows kinds this copy lacks: {sorted(missing_here)}"
+    invented = ours - set(zk.KNOWN_KINDS) - pending
+    assert not invented, f"kinds Zoo does not know: {sorted(invented)}"
+    still = pending - set(zk.KNOWN_KINDS)
+    if still:
+        print(f"club kinds not yet in Zoo's KNOWN_KINDS: {sorted(still)}")
 
 
 def test_the_masonry_the_library_tried_hardest_to_name_resolves():

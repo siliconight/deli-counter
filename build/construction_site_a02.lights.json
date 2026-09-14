@@ -1,5 +1,5 @@
 {
-  "light_manifest_version": "1.1.0",
+  "light_manifest_version": "1.2.0",
   "building_id": "construction_site_a02",
   "theme": "greybox",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
@@ -24,6 +24,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "ground_pour_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -5.0,
+        1.75
+      ],
+      "rot_y": 0.0,
+      "room": "ground_pour",
+      "size": [
+        38.0,
+        18.0,
+        3.5
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "laydown_yard_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -40,6 +59,25 @@
       },
       "drop": 3.4,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "laydown_yard_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        9.0,
+        1.75
+      ],
+      "rot_y": 0.0,
+      "room": "laydown_yard",
+      "size": [
+        38.0,
+        10.0,
+        3.5
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "foundation_w_bulbs",
@@ -60,6 +98,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "foundation_w_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -9.5,
+        0.0,
+        -2.05
+      ],
+      "rot_y": 0.0,
+      "room": "foundation_w",
+      "size": [
+        19.0,
+        28.0,
+        3.5
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "equipment_cage_bulbs",
       "type": "pendant",
       "source": "derived",
@@ -76,6 +133,25 @@
       },
       "drop": 2.8,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "equipment_cage_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        9.5,
+        0.0,
+        -2.05
+      ],
+      "rot_y": 0.0,
+      "room": "equipment_cage",
+      "size": [
+        19.0,
+        28.0,
+        3.5
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "ext_0_S_window_1",

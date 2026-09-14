@@ -9,7 +9,46 @@ Pure -- operates on the gameplay dicts, so it runs and tests outside Blender.
 See docs/LIGHT_MANIFEST.md for the schema.
 """
 
-LIGHT_MANIFEST_VERSION = "1.1.0"
+LIGHT_MANIFEST_VERSION = "1.2.0"
+
+#: THE CLUB SET (Lux 0.37.0): the anchor types a strip club room writes in
+#: place of its fluorescent row, and the palette names Lux accepts on their
+#: `color` -- an unknown name is REFUSED by the loader, never substituted,
+#: so this list is Lux's `CLUB_COLOR_ORDER` byte for byte. A room's colours
+#: start at crc32(room id) % 7 and step by two, so neighbouring washes differ
+#: in hue and two clubs are not lit alike; deterministic.
+CLUB_COLOURS = ("magenta", "hot_pink", "red", "violet", "blue", "cyan", "amber")
+#: Washes per club room: three, plus one per this much floor, to five. A
+#: wash pools on the floor under it (Lux: radius 1.25 x drop, 1.5-6 m), so
+#: a 476 m2 main floor gets five pools and dark between them, which is what
+#: "moody" means (the pendant rule's reasoning, above).
+_CLUB_WASH_BASE = 3
+_CLUB_WASH_PER_AREA = 200.0
+_CLUB_WASH_MAX = 5
+#: A stage light is two spots a stage-width apart at the ceiling, thrown at
+#: the dancer's body over the platform, stepping through the palette every
+#: this many seconds (Lux holds 75% of the period and crossfades the rest).
+_STAGE_SPOTS = 2
+_STAGE_SPOT_SPACING = 1.2
+_STAGE_CYCLE_S = 4.0
+_STAGE_TARGET_RISE = 0.5      # above the platform: a body, not the boards
+_STAGE_THROW_BACK = 1.5       # the spots stand this far past the stage edge
+_STAGE_SPOT_RADIUS = 1.5
+#: The platform heights Zoo builds (`club_forms`): 0.8 m for `round` and
+#: `runway`, the 1.18 m deck for `bar_stage`.
+_STAGE_PLATFORM = {"bar_stage": 1.18}
+_STAGE_PLATFORM_DEFAULT = 0.8
+#: A neon's spill source stands this far proud of the sign's FACE, in free
+#: air: Lux's omni sits AT the anchor and must never be inside the cabinet
+#: (roadmap 139's lesson, restated for the club in Lux 0.37.0).
+_NEON_OUT = 0.15
+#: The rope light's spill: over a bar stage's deck, off the pole; just past a
+#: round stage's lip at the rope's height.
+_ROPE_OVER_DECK = 0.35
+_ROPE_OFF_POLE = 0.5
+_ROPE_LIP_OUT = 0.25
+_ROPE_LIP_Z = 0.75
+_ROPE_COLOUR = "amber"
 
 # outward wall facing (from the wall-name suffix) -> rot_y that points the
 # window's area light INWARD, in degrees about up (rot_y 0 == +X).
@@ -195,6 +234,190 @@ _SIGN_RISE = 0.35       # sign centre above the door head
 _SIGN_PAD = 0.8         # sign width beyond the door width
 _SIGN_H = 0.6           # sign height
 _DOOR_KINDS = ("door", "garage")
+
+
+def _club_colour_start(room_id):
+    import zlib
+    return (zlib.crc32(str(room_id).encode("utf-8")) & 0xFFFFFFFF) % len(CLUB_COLOURS)
+
+
+def _club_colour(start, i):
+    return CLUB_COLOURS[(start + 2 * i) % len(CLUB_COLOURS)]
+
+
+def _front_bearing(v):
+    """The compass bearing (N 0, E 90) a hinted volume's module front points
+    at, by the rule the slot is recorded with: long side first, +90 when
+    that side is y (`prop_species.long_axis_first`), then `rot_z`; the
+    front is the module's -Y, so + 180. The same arithmetic as
+    `level_design._front_turn`, asked the other way round."""
+    turned = float(v.get("size_y", 0.0)) > float(v.get("size_x", 0.0)) + 1e-9
+    return ((90.0 if turned else 0.0) + float(v.get("rot_z", 0.0) or 0.0)
+            + 180.0) % 360.0
+
+
+def _bearing_to_rot_y(bearing):
+    """A compass bearing (clockwise from +Y) as this manifest's rot_y
+    (degrees about up, 0 == +X): the direction (sin b, cos b) has angle
+    atan2(cos b, sin b) = 90 - b from +X."""
+    return round((90.0 - float(bearing)) % 360.0, 3)
+
+
+def _volumes_in(volumes, r, story_height):
+    """The VISIBLE volumes standing in room `r` on its storey: centre inside
+    the bounds, bottom within the storey. Invisible colliders (a stage's
+    deck) are not fixtures and are skipped."""
+    x0, y0, x1, y1 = r["bounds"]
+    story = int(r.get("story", 0) or 0)
+    floor = story * story_height
+    out = []
+    for v in volumes or ():
+        if v.get("visual") is False:
+            continue
+        bottom = float(v.get("z", 0.0)) - float(v.get("size_z", 0.0)) / 2.0
+        if not (floor - 0.05 <= bottom < floor + story_height - 0.05):
+            continue
+        if x0 <= float(v.get("x", 1e9)) <= x1 and y0 <= float(v.get("y", 1e9)) <= y1:
+            out.append(v)
+    return out
+
+
+def _club_anchors(r, ceiling_z, floor_z, volumes, story_height, rects, walls,
+                  clear, rep):
+    """The club set for one room (Lux 0.37.0's four types), in place of its
+    ceiling row. `volumes` are the room's visible volumes."""
+    import math
+    rid = r.get("id", "room")
+    x0, y0, x1, y1 = r["bounds"]
+    w, d = x1 - x0, y1 - y0
+    cx, cy = (x0 + x1) / 2.0, (y0 + y1) / 2.0
+    along_x = w >= d
+    long_side, short_side = (w, d) if along_x else (d, w)
+    start = _club_colour_start(rid)
+    drop = round(ceiling_z - floor_z, 3)
+    out = []
+    # WASHES along the long axis, stepping side to side across the short
+    # one, each its own colour; each point through the same void and
+    # partition test a fluorescent lamp gets (`_row_runs`, one point).
+    n = min(_CLUB_WASH_MAX, _CLUB_WASH_BASE + int((w * d) // _CLUB_WASH_PER_AREA))
+    step = long_side / n
+    across = short_side / 4.0
+    for i in range(n):
+        u = -long_side / 2.0 + step * (i + 0.5)
+        s = across if i % 2 == 0 else -across
+        px, py = (cx + u, cy + s) if along_x else (cx + s, cy + u)
+        runs = _row_runs([px, py, ceiling_z], 0.0, 1, 0.0, rects,
+                         walls=walls, clear=clear, report=rep)
+        if not runs:
+            continue
+        pos, _n, _sp = runs[0]
+        out.append({
+            "id": "%s_wash_%d" % (rid, i + 1), "type": "club_wash",
+            "source": "derived", "pos": pos, "rot_y": 0.0, "room": rid,
+            "color": _club_colour(start, i),
+            "radius": round(min(6.0, max(1.5, short_side / 3.0)), 3),
+            "row": {"count": 1, "spacing": 0.0},
+            "drop": drop, "reacts_to_alarm": True,
+        })
+    # THE STAGE: spots thrown at the body over the platform, and the rope
+    # light's spill. One set per stage volume in the room.
+    stages = [v for v in volumes if "stage" in str(v.get("name", "")).lower()]
+    ropes = 0
+    for k, v in enumerate(stages):
+        sx, sy = float(v["x"]), float(v["y"])
+        vw, vd = float(v.get("size_x", 0.0)), float(v.get("size_y", 0.0))
+        form = str(v.get("form") or "")
+        platform = _STAGE_PLATFORM.get(form, _STAGE_PLATFORM_DEFAULT)
+        dx, dy = cx - sx, cy - sy
+        if math.hypot(dx, dy) < 0.5:
+            # a stage in the middle of its room: throw from along the
+            # room's long axis, the positive end
+            dx, dy = (1.0, 0.0) if along_x else (0.0, 1.0)
+        # the throw comes from the nearer axis, never a corner
+        if abs(dx) >= abs(dy):
+            ux, uy, half = (1.0 if dx > 0 else -1.0), 0.0, vw / 2.0
+        else:
+            ux, uy, half = 0.0, (1.0 if dy > 0 else -1.0), vd / 2.0
+        px = sx + ux * (half + _STAGE_THROW_BACK)
+        py = sy + uy * (half + _STAGE_THROW_BACK)
+        px = min(max(px, x0 + clear), x1 - clear)
+        py = min(max(py, y0 + clear), y1 - clear)
+        suffix = "" if len(stages) == 1 else "_%d" % (k + 1)
+        out.append({
+            "id": "%s_stage%s" % (rid, suffix), "type": "stage_light",
+            "source": "derived",
+            "pos": [round(px, 3), round(py, 3), ceiling_z],
+            # the row runs ACROSS the throw
+            "rot_y": 90.0 if ux else 0.0,
+            "room": rid, "color": _club_colour(start, 0),
+            "target": [round(sx, 3), round(sy, 3),
+                       round(floor_z + platform + _STAGE_TARGET_RISE, 3)],
+            "radius": _STAGE_SPOT_RADIUS,
+            "row": {"count": _STAGE_SPOTS, "spacing": _STAGE_SPOT_SPACING},
+            "cycle_s": _STAGE_CYCLE_S, "drop": drop, "reacts_to_alarm": True,
+        })
+        ropes += 1
+        if form == "bar_stage":
+            # over the deck, off the pole that stands at its centre, a
+            # hand above the rope that runs round the deck lip
+            rx = sx + (0.0 if vw >= vd else _ROPE_OFF_POLE)
+            ry = sy + (_ROPE_OFF_POLE if vw >= vd else 0.0)
+            rz = floor_z + platform + _ROPE_OVER_DECK
+        else:
+            rx, ry = sx + ux * (half + _ROPE_LIP_OUT), sy + uy * (half + _ROPE_LIP_OUT)
+            rz = floor_z + _ROPE_LIP_Z
+        out.append({
+            "id": "%s_stage_lip%s" % (rid, suffix), "type": "neon",
+            "source": "derived",
+            "pos": [round(rx, 3), round(ry, 3), round(rz, 3)],
+            "rot_y": 90.0 if ux else 0.0, "room": rid,
+            "color": _ROPE_COLOUR, "size": [round(max(vw, vd), 3), round(min(vw, vd), 3)],
+            "row": {"count": 1, "spacing": 0.0},
+            "drop": round(rz - floor_z, 3), "reacts_to_alarm": True,
+        })
+    # THE NAME IN NEON: a spill source proud of each sign's face. The
+    # glass's own colour is Zoo's, per name; Lux picks the spill's by the
+    # anchor id (`club_hash`), which is deliberate here -- no `color`.
+    signs = [v for v in volumes if "neon" in str(v.get("name", "")).lower()]
+    for k, v in enumerate(signs):
+        b = math.radians(_front_bearing(v))
+        fx, fy = math.sin(b), math.cos(b)
+        depth = min(float(v.get("size_x", 0.0)), float(v.get("size_y", 0.0)))
+        length = max(float(v.get("size_x", 0.0)), float(v.get("size_y", 0.0)))
+        out.append({
+            "id": "%s_neon_%d" % (rid, k + 1), "type": "neon",
+            "source": "derived",
+            "pos": [round(float(v["x"]) + fx * (depth / 2.0 + _NEON_OUT), 3),
+                    round(float(v["y"]) + fy * (depth / 2.0 + _NEON_OUT), 3),
+                    round(float(v.get("z", 0.0)), 3)],
+            "rot_y": _bearing_to_rot_y(_front_bearing(v)), "room": rid,
+            "size": [round(length, 3), round(float(v.get("size_z", 0.0)), 3)],
+            "row": {"count": 1, "spacing": 0.0},
+            "drop": round(float(v.get("z", 0.0)) - floor_z, 3),
+            "reacts_to_alarm": True,
+        })
+    return out
+
+
+def _room_ambient(r, floor_z, ceiling_z, colour):
+    """The room's box for Lux's per-room ambient probe: `size` is the
+    wall-centreline box (the bounds are centrelines) from the floor to the
+    ceiling PLANE, `pos` its centre. `color` is a palette name in a club
+    room and null elsewhere -- null means the preset's own ambient, not a
+    tint, and Lux 0.37.0 refuses it rather than painting an office violet
+    (its default when the field is absent)."""
+    x0, y0, x1, y1 = r["bounds"]
+    top = ceiling_z + _CEILING_GAP
+    return {
+        "id": "%s_ambient" % r.get("id", "room"), "type": "room_ambient",
+        "source": "derived",
+        "pos": [round((x0 + x1) / 2.0, 3), round((y0 + y1) / 2.0, 3),
+                round((floor_z + top) / 2.0, 3)],
+        "rot_y": 0.0, "room": r.get("id"),
+        "size": [round(x1 - x0, 3), round(y1 - y0, 3), round(top - floor_z, 3)],
+        "color": colour,
+        "reacts_to_alarm": False,
+    }
 
 
 def _row_for_bounds(bounds):
@@ -398,10 +621,15 @@ def _storefront_sign(openings, wall_thick):
 
 def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
                          wall_thick, ceiling_voids=None, partitions=None,
-                         report=None):
+                         report=None, volumes=None, club_rooms=None):
     """Derive default light anchors: one fluorescent ceiling row per interior
     room, one area light per window opening, a wall pack over every exterior
-    door, and one storefront sign.
+    door, and one storefront sign. Every room also carries a `room_ambient`
+    box (v1.2). A room named in `club_rooms` gets THE CLUB SET instead of a
+    ceiling row: `club_wash` pools, a `stage_light` and a `neon` at each
+    stage in it, a `neon` proud of each neon sign, a coloured `room_ambient`
+    -- Lux 0.37.0's types, from `volumes` (the spec's volumes as dicts) --
+    and no fluorescent. The walker: "dark with colored lights".
 
     `cap_thick` is the thickness of the slab capping a storey -- either a float,
     or a callable taking the storey index (top storeys can be capped by a roof
@@ -424,7 +652,9 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
     anchors = []
     rep = report if report is not None else {}
     rep.setdefault("rows_shifted", 0)
+    rep.setdefault("club_rooms", 0)
     clear = wall_clearance(wall_thick)
+    club_ids = set(club_rooms or ())
     for r in rooms or []:
         c = r.get("center")
         bounds = r.get("bounds")
@@ -435,6 +665,19 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
         # c[2] + story_height is the storey TOP -- the next floor's floor. The
         # ceiling is a slab lower.
         ceiling_z = round(c[2] + story_height - cap - _CEILING_GAP, 3)
+        holes = [v for v in (ceiling_voids or ())
+                 if int(v.get("story", story)) == story]
+        rects = [(v["x0"], v["y0"], v["x1"], v["y1"]) for v in holes]
+        walls = [w for w in (partitions or ()) if int(w["story"]) == story]
+        if r.get("id") in club_ids:
+            rep["club_rooms"] += 1
+            club = _club_anchors(r, ceiling_z, c[2],
+                                 _volumes_in(volumes, r, story_height),
+                                 story_height, rects, walls, clear, rep)
+            anchors += club
+            anchors.append(_room_ambient(
+                r, c[2], ceiling_z, _club_colour(_club_colour_start(r.get("id")), 0)))
+            continue
         rot, count, spacing = _row_for_bounds(bounds)
         # Below grade, or guarding the take: bare bulbs instead of the office
         # row. Same run machinery (a stairwell still splits the line around
@@ -452,10 +695,6 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
         # A row is laid across the whole room; a stairwell punched through the
         # ceiling is a hole in the middle of it. Split around the holes on this
         # storey -- see `_row_runs`.
-        holes = [v for v in (ceiling_voids or ())
-                 if int(v.get("story", story)) == story]
-        rects = [(v["x0"], v["y0"], v["x1"], v["y1"]) for v in holes]
-        walls = [w for w in (partitions or ()) if int(w["story"]) == story]
         # A partition ALONG the row (the hospital roof's y = 0 spine under a
         # row laid at y = 0) is not a crossing: the row moves to the larger
         # side of it before any point is judged.
@@ -496,6 +735,9 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
                 "drop": round(lamp_z - c[2], 3),
                 "reacts_to_alarm": True,
             })
+        # the room's box AFTER its row: a room's first anchor is its ceiling
+        # light, as every reader of this list has assumed since v1.0
+        anchors.append(_room_ambient(r, c[2], ceiling_z, None))
 
     win_n = {}
     for o in openings or []:
@@ -549,14 +791,17 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
 
 def build_light_manifest(building_id, rooms, openings, story_height,
                          *, cap_thick, wall_thick, authored=None, theme=None,
-                         ceiling_voids=None, partitions=None, report=None):
+                         ceiling_voids=None, partitions=None, report=None,
+                         volumes=None, club_rooms=None):
     """Full `<name>.lights.json` manifest. `authored` is an optional list of
     hand-placed anchors; an authored anchor replaces a derived one with the
-    same id (auto defaults + spec overrides, like props)."""
+    same id (auto defaults + spec overrides, like props). `volumes` and
+    `club_rooms` are `derive_light_anchors`'s."""
     anchors = derive_light_anchors(rooms, openings, story_height,
                                    cap_thick=cap_thick, wall_thick=wall_thick,
                                    ceiling_voids=ceiling_voids,
-                                   partitions=partitions, report=report)
+                                   partitions=partitions, report=report,
+                                   volumes=volumes, club_rooms=club_rooms)
     if authored:
         by_id = {a["id"]: a for a in anchors}
         for a in authored:

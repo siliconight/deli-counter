@@ -870,6 +870,12 @@
       "damping": null
     },
     {
+      "id": "leather",
+      "acoustic": "Curtain",
+      "absorption": 0.6,
+      "damping": 0.5
+    },
+    {
       "id": "carpet",
       "acoustic": "Curtain",
       "absorption": 0.85,
@@ -3337,10 +3343,10 @@
     {
       "node": "sofa_rcce455f7_4_col",
       "material": {
-        "id": "wood",
-        "acoustic": "Wood",
-        "absorption": null,
-        "damping": null
+        "id": "leather",
+        "acoustic": "Curtain",
+        "absorption": 0.6,
+        "damping": 0.5
       }
     },
     {
@@ -3524,7 +3530,16 @@
       }
     },
     {
-      "node": "shelf_run_r21075e64_5_col",
+      "node": "cabinet_locker_r21075e64_5_col",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "shelf_run_r21075e64_6_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -3533,7 +3548,7 @@
       }
     },
     {
-      "node": "table_count_r21075e64_6_col",
+      "node": "table_count_r21075e64_7_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -3542,16 +3557,7 @@
       }
     },
     {
-      "node": "chair_set_r21075e64_6_1_col",
-      "material": {
-        "id": "wood",
-        "acoustic": "Wood",
-        "absorption": null,
-        "damping": null
-      }
-    },
-    {
-      "node": "cartons_r21075e64_7_col",
+      "node": "chair_set_r21075e64_7_1_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -3578,7 +3584,7 @@
       }
     },
     {
-      "node": "table_count_r21075e64_10_col",
+      "node": "cartons_r21075e64_10_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -3650,6 +3656,33 @@
       }
     },
     {
+      "node": "cartons_rdc1e69ac_8_col",
+      "material": {
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
+      }
+    },
+    {
+      "node": "cartons_rdc1e69ac_9_col",
+      "material": {
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
+      }
+    },
+    {
+      "node": "table_count_rdc1e69ac_10_col",
+      "material": {
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
+      }
+    },
+    {
       "node": "cartons_r83237949_1_col",
       "material": {
         "id": "wood",
@@ -3695,7 +3728,7 @@
       }
     },
     {
-      "node": "cartons_rff304921_4_col",
+      "node": "table_count_rff304921_4_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -5241,13 +5274,13 @@
     "cabinet_locker_r21075e64_2": "prop",
     "shelf_run_r21075e64_3": "prop",
     "safe_floor_r21075e64_4": "prop",
-    "shelf_run_r21075e64_5": "prop",
-    "table_count_r21075e64_6": "prop",
-    "chair_set_r21075e64_6_1": "prop",
-    "cartons_r21075e64_7": "prop",
+    "cabinet_locker_r21075e64_5": "prop",
+    "shelf_run_r21075e64_6": "prop",
+    "table_count_r21075e64_7": "prop",
+    "chair_set_r21075e64_7_1": "prop",
     "cartons_r21075e64_8": "prop",
     "cartons_r21075e64_9": "prop",
-    "table_count_r21075e64_10": "prop",
+    "cartons_r21075e64_10": "prop",
     "safe_floor_rdc1e69ac_1": "prop",
     "shelf_run_rdc1e69ac_2": "prop",
     "cabinet_locker_rdc1e69ac_3": "prop",
@@ -5255,12 +5288,15 @@
     "shelf_run_rdc1e69ac_5": "prop",
     "cabinet_locker_rdc1e69ac_6": "prop",
     "table_count_rdc1e69ac_7": "prop",
+    "cartons_rdc1e69ac_8": "prop",
+    "cartons_rdc1e69ac_9": "prop",
+    "table_count_rdc1e69ac_10": "prop",
     "cartons_r83237949_1": "prop",
     "cartons_r83237949_2": "prop",
     "safe_floor_rff304921_1": "prop",
     "safe_floor_rff304921_2": "prop",
     "cabinet_locker_rff304921_3": "prop",
-    "cartons_rff304921_4": "prop",
+    "table_count_rff304921_4": "prop",
     "stair_guard_side_0": "prop",
     "stair_guard_rail_1": "prop",
     "stair_guard_side_2": "prop",

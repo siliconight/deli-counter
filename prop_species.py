@@ -68,6 +68,18 @@ PROP_SPECIES = (
     # and any still at counter height fall to `counter` by Zoo's alternate
     # rule, said in the kit index.
     (("teller",), "teller_line"),
+    # THE CLUB SPECIES (Zoo 0.88.0), each ahead of the row that would claim
+    # its names and no higher. `bar_` in the counter row takes `bar_stool`,
+    # `bar_tv` and `stage_bar_r...` (the tag's `r` follows `bar_`), so the
+    # stage, the stool and the TV stand ahead of it; `stool` is also in the
+    # chair row and `cocktail`/`club_chair` in the table and chair rows,
+    # which come later anyway. Measured re-routes among authored volumes:
+    # `stage` x2 (`strip_club_a01`, `_a03`, both the club stage, box before)
+    # and nothing else -- `center_field_tv_truck_cover` carries `tv` but
+    # neither `bar_tv` nor `wall_tv`.
+    (("club_stage", "stage", "pole_stage", "runway"), "club_stage"),
+    (("bar_stool", "barstool", "stool"), "bar_stool"),
+    (("bar_tv", "wall_tv"), "crt_tv"),
     (("counter", "reception", "station", "island", "cage", "bar_",
       "workbench", "tool_bench"), "counter"),
     (("desk", "cubicle"), "desk"),
@@ -81,8 +93,11 @@ PROP_SPECIES = (
     (("dust_sheet", "sheeted", "draped", "covered_"), "dust_sheet"),
     (("booth", "banquette", "sofa", "couch", "settee", "loveseat"),
      "booth_seat"),
+    (("club_chair", "tub_chair", "lounge_chair"), "club_chair"),
+    (("neon", "club_sign"), "neon_sign"),
     (("chair", "seat", "bench", "waiting"), "chair"),
     (("pool", "billiard"), "pool_table"),
+    (("cocktail", "club_table", "highboy"), "cocktail_table"),
     (("table",), "table"),
     (("safe",), "drop_safe"),
     # Species Zoo builds that no name reached (the survey's list). Keywords

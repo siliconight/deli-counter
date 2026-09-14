@@ -1,5 +1,5 @@
 {
-  "light_manifest_version": "1.1.0",
+  "light_manifest_version": "1.2.0",
   "building_id": "rail_station_a01",
   "theme": "greybox",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
@@ -24,6 +24,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "fare_hall_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -4.0,
+        2.15
+      ],
+      "rot_y": 0.0,
+      "room": "fare_hall",
+      "size": [
+        44.0,
+        16.0,
+        4.3
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "money_room_bulbs",
       "type": "pendant",
       "source": "derived",
@@ -40,6 +59,25 @@
       },
       "drop": 3.6,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "money_room_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        -16.0,
+        8.0,
+        2.15
+      ],
+      "rot_y": 0.0,
+      "room": "money_room",
+      "size": [
+        12.0,
+        8.0,
+        4.3
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "service_hall_ceiling",
@@ -60,6 +98,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "service_hall_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        6.0,
+        8.0,
+        2.15
+      ],
+      "rot_y": 0.0,
+      "room": "service_hall",
+      "size": [
+        32.0,
+        8.0,
+        4.3
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "platform_south_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -78,6 +135,25 @@
       "reacts_to_alarm": true
     },
     {
+      "id": "platform_south_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -7.0,
+        6.75
+      ],
+      "rot_y": 0.0,
+      "room": "platform_south",
+      "size": [
+        44.0,
+        10.0,
+        4.3
+      ],
+      "color": null,
+      "reacts_to_alarm": false
+    },
+    {
       "id": "platform_north_ceiling",
       "type": "fluorescent",
       "source": "derived",
@@ -94,6 +170,25 @@
       },
       "drop": 4.2,
       "reacts_to_alarm": true
+    },
+    {
+      "id": "platform_north_ambient",
+      "type": "room_ambient",
+      "source": "derived",
+      "pos": [
+        0.0,
+        5.0,
+        6.75
+      ],
+      "rot_y": 0.0,
+      "room": "platform_north",
+      "size": [
+        44.0,
+        14.0,
+        4.3
+      ],
+      "color": null,
+      "reacts_to_alarm": false
     },
     {
       "id": "ext_0_S_window_1",
