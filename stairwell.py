@@ -1312,13 +1312,25 @@ def _exterior_rooms(spec, story):
 
 
 def _bfs_path(adj, start, dests):
-    """Shortest path (list of room ids, start..dest) to any dest, or None."""
+    """Shortest path (list of room ids, start..dest) to any dest, or None.
+
+    TIES BREAK BY ROOM ID, NOT BY HASH. `_same_story_edges` hands this sets
+    of room ids and a set of str iterates in PYTHONHASHSEED order, which
+    Python draws fresh per process -- so two equally short routes to two
+    exterior doors were chosen by the interpreter's coin. Measured on
+    0.131.1's specs with seeds 0-3: deli_a01's discharge read `deli_counter`
+    or `stockroom_loading`, mansion_a03's second stair `grand_foyer` or
+    `study`, warehouse_a02 `north_dock` or `main_floor`; the library rebuild
+    of 0.131.1 flipped all three against the worktree build of the same code
+    (roadmap 155). Neighbours are visited in sorted order, so among equal
+    paths the alphabetically first room at each hop wins -- a rule, not a
+    good rule, but the same one every build."""
     if start in dests:
         return [start]
     prev, seen, queue = {}, {start}, [start]
     while queue:
         n = queue.pop(0)
-        for m in adj.get(n, ()):
+        for m in sorted(adj.get(n, ())):
             if m in seen:
                 continue
             seen.add(m)

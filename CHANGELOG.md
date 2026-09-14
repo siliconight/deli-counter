@@ -1,3 +1,27 @@
+## [0.132.1] - 2026-09-14  a stair's discharge route is the same in every build
+
+0.131.1's library rebuild, and 0.132.0's after it, each flipped the
+`destination` of one discharge route in three or four specs against the
+worktree build of the same code and specs: deli_a01 `deli_counter` <->
+`stockroom_loading`, mansion_a03's second stair `grand_foyer` <-> `study`,
+warehouse_a02 `north_dock` <-> `main_floor`, then `security_room` <-> `lobby`
+and `south_machine` <-> `east_floor` on the next rebuild (roadmap 155).
+
+**The interpreter's coin.** `stairwell._bfs_path` visited `adj.get(n, ())`,
+and `_same_story_edges` hands it sets of room-id strings. A set of str
+iterates in PYTHONHASHSEED order, which Python draws fresh per process, so two
+equally short routes to two exterior doors were chosen by whichever the hash
+put first. Reproduced with `PYTHONHASHSEED` 0-3 on 0.131.1's specs: all three
+specs above change destination between seeds; with the fix, none.
+
+**Ties break by room id.** Neighbours are visited sorted, so among equal paths
+the alphabetically first room at each hop wins -- a rule, not a good rule, but
+the same one every build. A shorter route still wins over the alphabetical
+one (`test_route_determinism.py`, 2 tests; the first fails on 0.132.0).
+
+The library is rebuilt on this; the routes above settle on their sorted
+answer and no other build output changes.
+
 ## [0.132.0] - 2026-09-14  a strip club is furnished and lit as one
 
 The walker, with two frames of GTA IV's Triangle Club: "strip clubs should
