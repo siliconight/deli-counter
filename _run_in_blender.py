@@ -160,6 +160,15 @@ def _expected_block(builder):
         return None
 
 
+def _sha16(path):
+    import hashlib
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1 << 20), b""):
+            h.update(chunk)
+    return h.hexdigest()[:16]
+
+
 def _write_manifest(spec_path, written, expected=None):
     """Write a .manifest.json next to outputs: traces a model back to the
     exact spec content + kit version that produced it."""
@@ -180,6 +189,14 @@ def _write_manifest(spec_path, written, expected=None):
         "spec_sha256_16": spec_hash,
         "built_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
         "outputs": [os.path.basename(p) for p in written],
+        # WHICH BYTES THIS MANIFEST DESCRIBES. `build/*.glb` is gitignored and
+        # the manifest beside it is tracked, so a checkout moves the manifest
+        # (and the slots) to a new build while the old GLB stays on disk --
+        # cold run 9053 composed 0.131.0's slots over 0.129.0's shells and the
+        # placement gate refused the export. `build_freshness.content_stale`
+        # compares this against the file on disk.
+        "outputs_sha256_16": {os.path.basename(p): _sha16(p)
+                              for p in written if os.path.isfile(p)},
     }
     if expected is not None:
         manifest["expected"] = expected

@@ -1,3 +1,42 @@
+## [0.131.1] - 2026-09-14  a manifest says which shell it describes
+
+Cold run 9053 was refused at export by `PRESENTATION_PLACEMENT_MISMATCH`:
+`chair_waiting_rbeaaca49_4` placed 1.8 m on a 2.4 m greybox node. Not this
+release's furniture. `build/*.glb` is gitignored and the manifest, slots and
+gameplay beside it are tracked. 0.130.0 and 0.131.0 were built and gated in
+worktrees and fast-forwarded into the checkout the run reads, which moved every
+tracked file to the new build and left the 2026-09-13 22:16 (0.129.0) shells on
+disk: `build/bank_tower_a03.slots.json` names `chair_waiting_rbeaaca49_3` and
+`_4`, `build/bank_tower_a03.glb` draws `_1`, `_4`, `_10` and `_13` at 0.129.0's
+sizes. `python build_freshness.py`, run after the failure, said "130 of 132
+shell(s) are OLDER than spec_types.py" -- nothing ran it before the run, and
+Level Factory's consumer-side copy of the rule had been reading nothing since
+0.116.0 (Level Factory 0.86.1).
+
+**`_run_in_blender._write_manifest` records `outputs_sha256_16`**, the hash of
+every file the build wrote, in the tracked manifest.
+
+**`build_freshness.content_stale`** names a shell (one with a gameplay.json)
+whose manifest describes other bytes: the spec it names no longer hashes to
+`spec_sha256_16` -- compared raw and with CRLF folded to LF, because autocrlf
+rewrites endings without changing content (`gas_station_a02`: 743 CRLF on disk,
+its manifest hashed the LF bytes) -- or the GLB no longer hashes to
+`outputs_sha256_16`. The first covers a migration that rewrote a spec and was
+never rebuilt, which the code-mtime rule cannot see because a spec is not a
+geometry source. `main` reports both and exits 1 on either. Manifests written
+before this release carry no GLB hash and are not judged on it; the library is
+rebuilt here, so every manifest now does.
+
+Measured on the checkout before the rebuild: spec fingerprints agree for 131 of
+134 manifests; the other three are `gas_station_a02` (endings only, fresh under
+the folded hash) and `fuel_stop_heist2`/`3`, orphan manifests from 2026-06-29
+with no shell, which no gate reads.
+
+`test_build_content.py` (6): a shell matching its manifest is fresh; the 9053
+case, a GLB from another build; a spec edited after the build; endings alone
+are not a change; an older manifest is not judged on the hash; a shell no gate
+reads is ignored. 6 fail on 0.131.0.
+
 ## [0.131.0] - 2026-09-14  a room is furnished as what it is
 
 The walker, cold run 9052, in `country_club_a01`'s basement: "need a lot more

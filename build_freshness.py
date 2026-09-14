@@ -100,6 +100,64 @@ def stale_shells(here=HERE, sources=GEOMETRY_SOURCES):
     return sorted(out, key=lambda r: r[1])
 
 
+def _sha16(path, normalise_eol=False):
+    import hashlib
+    with open(path, "rb") as f:
+        data = f.read()
+    if normalise_eol:
+        data = data.replace(b"\r\n", b"\n")
+    return hashlib.sha256(data).hexdigest()[:16]
+
+
+def content_stale(here=HERE):
+    """[(shell_path, reason)] for shells whose manifest describes other bytes.
+
+    THE FINGERPRINT THE DOCSTRING ABOVE ASKED FOR, and the gap mtime cannot
+    see. `build/*.glb` is gitignored; the manifest, slots and gameplay beside
+    it are tracked. A checkout or a merge therefore moves the tracked half to
+    a new build and leaves the old shell on disk. Cold run 9053, 2026-09-14:
+    0.131.0's `bank_tower_a03.slots.json` named `chair_waiting_rbeaaca49_4`
+    1.8 x 0.6 m while the 0.129.0 shell still on disk drew a node of that
+    name 0.6 x 2.4, and the placement gate refused the export. Nothing about
+    that is visible to the code-mtime rule unless somebody runs it.
+
+    Two questions per shell with a gameplay.json beside it:
+      * the spec its manifest names no longer hashes to `spec_sha256_16`
+        (compared raw and with CRLF folded to LF: git's autocrlf rewrites
+        endings without changing content -- `gas_station_a02` measured so);
+      * the GLB no longer hashes to `outputs_sha256_16` (manifests written
+        before 0.131.1 carry no such field and are not judged on it).
+    """
+    import json
+    out = []
+    for glb in sorted(glob.glob(os.path.join(here, "build", "*.glb"))):
+        base = os.path.splitext(glb)[0]
+        if not os.path.exists(base + ".gameplay.json"):
+            continue
+        mpath = base + ".manifest.json"
+        if not os.path.exists(mpath):
+            out.append((glb, "no manifest"))
+            continue
+        try:
+            with open(mpath, encoding="utf-8") as f:
+                man = json.load(f)
+        except (OSError, ValueError) as ex:
+            out.append((glb, "unreadable manifest (%s)" % ex))
+            continue
+        spec = os.path.join(here, "specs", str(man.get("spec", "")))
+        want = man.get("spec_sha256_16")
+        if want and os.path.isfile(spec) and want not in (
+                _sha16(spec), _sha16(spec, normalise_eol=True)):
+            out.append((glb, "spec %s changed since this shell was built"
+                        % os.path.basename(spec)))
+            continue
+        recorded = (man.get("outputs_sha256_16") or {}).get(os.path.basename(glb))
+        if recorded and recorded != _sha16(glb):
+            out.append((glb, "the GLB on disk is not the build its manifest "
+                             "records"))
+    return out
+
+
 def _age(seconds):
     d = seconds / 86400.0
     if d >= 1:
@@ -121,10 +179,21 @@ def main(argv=None):
         return 0
     stale = stale_shells()
     built = len(glob.glob(os.path.join(HERE, "build", "*.glb")))
-    if not stale:
+    content = content_stale()
+    if content:
+        print("build-freshness: %d of %d shell(s) do not match their manifest"
+              % (len(content), built))
+        for glb, why in (content if args.list else content[:5]):
+            print("    %-34s %s" % (os.path.basename(glb), why))
+        if not args.list and len(content) > 5:
+            print("    ... (--list names all)")
+    if not stale and not content:
         print("build-freshness: %d shell(s) newer than %s -- up to date"
               % (built, who))
         return 0
+    if not stale:
+        print("  Rebuild:  python build.py --all")
+        return 0 if args.warn_only else 1
 
     worst = stale[0]
     print("build-freshness: %d of %d shell(s) are OLDER than %s"
