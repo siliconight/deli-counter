@@ -104,6 +104,12 @@ def graph(spec):
             kind = op.get("kind", "door")
             if kind == "window" and not op.get("vaultable", True):
                 continue
+            # A WALL OF DEPOSIT BOXES IS A WALL. It collides in both of its
+            # states (`interactives`), so it joins no two rooms -- counted as a
+            # passage, a vault with one door and two deposit walls read as a
+            # room with three ways out and L1 could never say otherwise.
+            if kind == "safe_deposit":
+                continue
             x, y = _opening_xy(spec, part, op, False)
             eps = 0.4
             pairs = []
@@ -934,6 +940,9 @@ def lint_spec(spec, name):
     fails += door_split_findings(spec)      # L18 door split (FAIL since 0.101.2)
     fails += stair_bounds_findings(spec)    # L19 stair outside the footprint
     fails += stair_wall_findings(spec, warns)  # L21 stair hole cuts a wall / door
+    lf22, lw22 = __import__("vault_room").findings(spec)
+    fails += lf22                           # L22 vault door slot / leaf swing
+    warns += lw22
     fails += [f"L20 {c}: {m}"                # L20 unbuildable setback
               for c, m in __import__("setbacks").findings(_LintSpec(spec))]
     fails += reachability_findings(spec)    # L12 sealed/unreachable rooms (all modes)

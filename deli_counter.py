@@ -58,6 +58,7 @@ from rarity import resolve_rarity
 import interactives
 import roofs
 import floors
+import vault_room
 
 
 # ============================================================================
@@ -506,9 +507,35 @@ class _Builder:
         u = self.snap(op.pos * run_len)
         H = self.s.story_height
         v = -H / 2.0 + r["sill"] + r["height"] / 2.0 + self.s.floor_thick / 2.0
-        return dict(u=u, v=v, w=r["width"], h=r["height"], kind=op.kind,
-                    sill=r["sill"],
+        hole = dict(u=u, v=v, w=r["width"], h=r["height"], kind=op.kind,
+                    sill=r["sill"], face=getattr(op, "face", None),
                     interactive=self._machine_for(op, wall_name, story))
+        if op.kind == "vault":
+            # A VAULT SLOT IS AS WIDE AS THE DOOR, NOT ITS APERTURE. Zoo's round
+            # door circumscribes the aperture and adds a frame, hinge barrels
+            # and a riveted surround, and its module replaces the whole slot:
+            # at the aperture's 1.4 m it built a porthole scaled to x0.36
+            # (Zoo 0.83.0). `w` stays the aperture -- the passage, what the
+            # gameplay record and the slot's `fit.openings` describe -- and
+            # `slot_w` is what the wall run carves and the slot records.
+            hole["slot_w"] = vault_room.slot_width(r["width"], r["height"],
+                                                   r["sill"])
+        return hole
+
+    def _opening_rot(self, wall_name, axis, face):
+        """The slot bearing for an opening: the wall's (`_slot_orient`), or the
+        opening's own `face` when it has one. A partition has two faces and
+        `_slot_orient` can only give it 0 or 90; a vault door's leaf and a
+        deposit wall's boxes are on one side, so they say which."""
+        _facing, rot, _story = self._slot_orient(wall_name, axis)
+        if face in vault_room.BEARING:
+            want = vault_room.FACES_FOR_AXIS["X" if axis == 0 else "Y"]
+            if face in want:
+                return vault_room.BEARING[face]
+            print(f"[deli_counter] WARNING: {wall_name}: an opening faces "
+                  f"{face} on a wall that faces {' or '.join(want)}; "
+                  f"keeping the wall's bearing")
+        return rot
 
     def _wall_collision(self, name, center, size, axis, holes):
         """Emit convex collision for a wall pierced by any number of openings.
@@ -683,7 +710,8 @@ class _Builder:
                              material=None):
         """One slot for the WHOLE opening (the swap unit), carrying aperture
         dims so a themed doorway/window prefab can replace its frame 1:1."""
-        facing, rot_y, story = self._slot_orient(vb, axis)
+        facing, _wall_rot, story = self._slot_orient(vb, axis)
+        rot_y = self._opening_rot(vb, axis, h.get("face"))
         kind = h["kind"]
         mat = material or self.s.default_material
         style = skin_style.style_for(material, self._mat_style,
@@ -706,8 +734,10 @@ class _Builder:
             "transform": {"translation": [round(oc[0], 4), round(oc[1], 4),
                                           round(oc[2], 4)],
                           "rot_y": rot_y, "scale": [1.0, 1.0, 1.0]},
-            "fit": {"dims": [round(w, 4), round(wall_thick, 4),
-                             round(size[2], 4)],
+            # `dims[0]` is the MODULE's width -- a vault door's slot, not its
+            # aperture; `openings` keeps the aperture, which Zoo keys the stem on
+            "fit": {"dims": [round(h.get("slot_w") or w, 4),
+                             round(wall_thick, 4), round(size[2], 4)],
                     "pivot": "center",
                     "openings": [{"kind": kind, "width": round(w, 4),
                                   "height": round(hh, 4), "sill": round(sill, 4)}],
@@ -863,11 +893,12 @@ class _Builder:
         role = {"door": "doorway", "garage": "doorway", "window": "window",
                 "breach": "breach", "vault": "vault_door",
                 "teller": "teller_line", "safe_deposit": "safe_deposit_boxes"}.get(kind, "doorway")
+        slot_w = h.get("slot_w") or w
         # RESOLVER FORK: a themed opening module replaces the whole frame at once.
-        resolved = self._resolve_module(role, width=w)
+        resolved = self._resolve_module(role, width=slot_w)
         if resolved:
             path, kit, stem = resolved
-            _, rot_y, _ = self._slot_orient(vb, axis)
+            rot_y = self._opening_rot(vb, axis, h.get("face"))
             if axis == 0:
                 oc = (center[0] + u, center[1], center[2])
             else:
@@ -882,6 +913,21 @@ class _Builder:
         self._record_opening_slot(vb, center, size, axis, h,
                                   material=material)
         self._cover(role, "generated")
+
+        if kind == "vault":
+            # closed by default (locked): ONE armoured block fills the whole
+            # slot, floor to wall top and as wide as the door, so the greybox
+            # reads shut, blocks, and measures what Zoo's module measures --
+            # `themed_tscn._fit_rotation` and the placement check compare the
+            # module's footprint with the greybox slot's, and a lintel over a
+            # 1.3 m panel inside a 3.6 m slot is not that footprint. Zoo's
+            # locked collision is the slot box too; its open and breached
+            # states unseal it.
+            self._seg_box(f"{vb}_VAULTDOOR", f"{cb}_VAULTDOOR", center,
+                          size, axis, u, slot_w, cz, H,
+                          role="vault_door", material=material,
+                          record_slot=False)
+            return
 
         lintel_h = wall_top - open_top
         if lintel_h > 0.05:
@@ -904,14 +950,6 @@ class _Builder:
             self._seg_box(f"{vb}_BREACHPANEL", f"{cb}_BREACHPANEL", center,
                           size, axis, u, w, (open_bottom + open_top) / 2.0, hh,
                           role="breach", material=material, record_slot=False)
-        elif kind == "vault":
-            # closed by default (locked) -> a solid armored panel fills the
-            # portal, so the greybox reads shut and blocks. Zoo's vault_door
-            # module swaps in; its open/breached states unseal it.
-            self._seg_box(f"{vb}_VAULTDOOR", f"{cb}_VAULTDOOR", center,
-                          size, axis, u, w, (open_bottom + open_top) / 2.0, hh,
-                          role="vault_door", material=material,
-                          record_slot=False)
         elif kind == "teller":
             # a solid barrier (counter + bulletproof glass) fills the span; the
             # shell stays sealed. Zoo's teller_line module swaps in.
@@ -958,11 +996,13 @@ class _Builder:
         cursor = -full / 2.0 + inset
         k = 0
         for j, h in enumerate(carve):
-            left = h["u"] - h["w"] / 2.0
+            # the SLOT's width: a vault door's is wider than its aperture
+            half = (h.get("slot_w") or h["w"]) / 2.0
+            left = h["u"] - half
             k = self._wall_span(vbase, cbase, center, size, axis,
                                 cursor, left, k, material)
             self._opening_piece(vbase, cbase, center, size, axis, h, j, material)
-            cursor = max(cursor, h["u"] + h["w"] / 2.0)
+            cursor = max(cursor, h["u"] + half)
         k = self._wall_span(vbase, cbase, center, size, axis,
                             cursor, full / 2.0 - inset, k, material)
         if corners:
@@ -1368,7 +1408,6 @@ class _Builder:
         INTERACTIVES entry (the replicable state machine) per interactive
         opening -- see interactives.py + docs/INTERACTIVES.md."""
         H = self.s.story_height
-        _facing, wall_rot, _st = self._slot_orient(wall_name, axis)
         # slot_ref must match the modular pass's slot id: _emit_wall_run walks
         # openings sorted by their run-position u, naming each {wall}_open{k}.
         # Reproduce that order here so a gameplay entry points at its slot.
@@ -1439,11 +1478,13 @@ class _Builder:
             machine = self._machine_for(op, wall_name, story)
             if machine:
                 slot_ref = f"{wall_name}_open{slot_index[j]}"
+                op_rot = self._opening_rot(wall_name, axis,
+                                           getattr(op, "face", None))
                 self.gameplay["interactives"].append(
                     interactives.gameplay_interactive(
                         machine, slot_ref,
                         {"translation": [round(wx, 3), round(wy, 3),
-                                         round(cz, 3)], "rot_y": wall_rot},
+                                         round(cz, 3)], "rot_y": op_rot},
                         building=self.s.name))
 
     def _tag_rarity_anchor(self, obj):

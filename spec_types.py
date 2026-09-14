@@ -92,6 +92,10 @@ class Opening:
     # a custom machine merged over the inferred one.
     breakable: Optional[bool] = None       # a window that can be broken/shot out
     interactive: Any = None                # None | False | dict override
+    # The compass side the fixture's FRONT faces: a vault door's leaf swings
+    # out on it, a deposit wall's boxes open on it. A partition has two faces
+    # and its slot bearing alone cannot say which. None: the wall's bearing.
+    face: Optional[Literal["N", "S", "E", "W"]] = None
 
     def resolved(self):
         d = dict(width=self.width, height=self.height, sill=self.sill)
@@ -100,7 +104,10 @@ class Opening:
             "window": dict(width=1.6, height=1.4, sill=1.0),
             "garage": dict(width=3.5, height=3.0, sill=0.0),
             "breach": dict(width=1.5, height=2.2, sill=0.0),
-            "vault":  dict(width=1.4, height=2.3, sill=0.15),
+            # Zoo's round vault door (`vault_room.APERTURE`): 1.3 x 2.1 on
+            # the floor. 1.4 x 2.3 at sill 0.15 put a step above
+            # `unassisted_step_max_m` (0.1025) in the doorway.
+            "vault":  dict(width=1.3, height=2.1, sill=0.0),
             "teller": dict(width=2.0, height=3.0, sill=0.0),
             "safe_deposit": dict(width=2.0, height=2.4, sill=0.0),
         }[self.kind]

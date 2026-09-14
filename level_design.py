@@ -515,6 +515,15 @@ def _seed_clear(spec, room, px, py, placed, half=0.0):
             ox, oy = (p["pos"], u) if p["axis"] == "Y" else (u, p["pos"])
             if math.hypot(ox - px, oy - py) < 1.5 + half:
                 return False
+    # A VAULT DOOR'S LEAF SWINGS 2.6 m OUT. The 1.5 m radius above is a
+    # door's approach; a round vault door's open and breached leaf occupies a
+    # rectangle in front of its face (`vault_room.swing_rect`), and a piece
+    # standing there is a leaf that cannot open -- layout_lint L22 fails it.
+    import vault_room
+    for x0, y0, x1, y1 in vault_room.keepout_rects(spec, story):
+        if (px + half > x0 - 0.3 and px - half < x1 + 0.3
+                and py + half > y0 - 0.3 and py - half < y1 + 0.3):
+            return False
     for (qx, qy) in placed:
         if math.hypot(qx - px, qy - py) < 2.2:
             return False
@@ -1059,6 +1068,11 @@ def enrich(spec):
         # so cover and furniture clear its walls and its locked doors.
         "tellers_enclosed": sum(r["enclosed"]
                                 for r in enclose_teller_lines(spec)),
+        # A VAULT IS A ROOM, walled and doored before anything is placed, for
+        # the same reason: cover and furniture clear its walls, its deposit
+        # boxes and the swing of its door (`vault_room.enclose_vaults`).
+        "vaults_enclosed": sum(r["enclosed"] for r in
+                               __import__("vault_room").enclose_vaults(spec)),
         "cover_seeded": seed_cover(spec),
         "furnished": furnish(spec),
         "cover_added": cover_from_volumes(spec),

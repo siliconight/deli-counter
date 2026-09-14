@@ -164,8 +164,20 @@ def bank(name: str = "bank_preset",
     ]
     # vault objective: in the basement if present, else in the security room
     if basement:
-        rooms.append({"id": "vault_room", "story": -1,
-                      "bounds": [-half_x, -half_y, half_x, half_y],
+        # TWO ROOMS, ONE EACH SIDE OF THE WALL BETWEEN THEM. This was one
+        # `vault_room` over the whole basement with the partition below cutting
+        # it in half, which layout_lint failed three times (L11 the wall borders
+        # no two rooms, L10 its door and its breach each join the room to
+        # itself), and which left the vault box no room of its own to be
+        # walled into (`vault_room.enclose_vaults` builds the vault in a corner
+        # of the room it stands in). `bank_job`, built from this preset, was
+        # already split this way.
+        rooms.append({"id": "vault_room_west", "story": -1,
+                      "bounds": [-half_x, -half_y, 0.0, half_y],
+                      "role": "fortifiable", "fortifiable": True,
+                      "combat_range": "close"})
+        rooms.append({"id": "vault_room_east", "story": -1,
+                      "bounds": [0.0, -half_y, half_x, half_y],
                       "role": "objective_room", "objective": True,
                       "fortifiable": True, "combat_range": "close"})
         # basement partition giving the vault a second access (soft wall)
@@ -175,7 +187,7 @@ def bank(name: str = "bank_preset",
                                    {"kind": "breach", "pos": 0.3,
                                     "breach_class": "reinforced", "material": "concrete"}]})
         vault_xyz = (half_x - 5, -half_y + 5, -1.8)
-        obj_room = "vault_room"
+        obj_room = "vault_room_east"
     else:
         vault_xyz = (half_x - 5, half_y - 4, 0.5)
         obj_room = "security_room"

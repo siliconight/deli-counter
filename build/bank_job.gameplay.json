@@ -316,6 +316,25 @@
         0.0,
         0.0
       ]
+    },
+    {
+      "id": "vault",
+      "story": -1,
+      "bounds": [
+        7.0,
+        2.0,
+        15.0,
+        11.0
+      ],
+      "role": "objective_room",
+      "combat_range": null,
+      "fortifiable": true,
+      "objective": true,
+      "center": [
+        11.0,
+        6.5,
+        -3.6
+      ]
     }
   ],
   "vertical_links": [],
@@ -676,6 +695,57 @@
       "vaultable": false,
       "reinforceable": false,
       "building": "bank_job"
+    },
+    {
+      "wall": "int_-1_5",
+      "kind": "breach",
+      "story": -1,
+      "x": 7.0,
+      "y": 6.5,
+      "z": -2.5,
+      "width": 1.5,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": "vault_breach_0",
+      "breach_class": "reinforceable",
+      "material": "concrete",
+      "vaultable": false,
+      "reinforceable": true,
+      "building": "bank_job"
+    },
+    {
+      "wall": "int_-1_5",
+      "kind": "safe_deposit",
+      "story": -1,
+      "x": 7.0,
+      "y": 4.0,
+      "z": -2.4,
+      "width": 2.0,
+      "height": 2.4,
+      "sill": 0.0,
+      "tag": "deposit_boxes_0",
+      "breach_class": null,
+      "material": "metal",
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "bank_job"
+    },
+    {
+      "wall": "int_-1_6",
+      "kind": "vault",
+      "story": -1,
+      "x": 11.0,
+      "y": 2.0,
+      "z": -2.55,
+      "width": 1.3,
+      "height": 2.1,
+      "sill": 0.0,
+      "tag": "vault_door_0",
+      "breach_class": null,
+      "material": "metal",
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "bank_job"
     }
   ],
   "objectives": [
@@ -683,9 +753,9 @@
       "name": "OBJECTIVE_CRACK_VAULT",
       "id": "crack_vault",
       "kind": "drill",
-      "x": 10.0,
-      "y": -6.0,
-      "z": -1.8,
+      "x": 11.0,
+      "y": 1.25,
+      "z": -3.1,
       "room": "vault_room_east",
       "required": true,
       "duration": 90,
@@ -709,12 +779,12 @@
       "name": "LOOT_VAULT_CASH",
       "id": "vault_cash",
       "kind": "cash",
-      "x": 10.0,
-      "y": -6.0,
-      "z": -1.8,
+      "x": 11.0,
+      "y": 6.5,
+      "z": -3.1,
       "value": 500000,
       "bags": 4,
-      "room": "vault_room_east",
+      "room": "vault",
       "meta": null
     },
     {
@@ -3022,6 +3092,123 @@
       }
     },
     {
+      "node": "int_col_-1_5_seg0",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "int_col_-1_5_open0_lintel",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "int_col_-1_5_open0_SAFEDEPOSIT",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "int_col_-1_5_seg1",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "int_col_-1_5_open1_lintel",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "int_col_-1_5_open1_BREACHPANEL",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "int_col_-1_5_seg2",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "int_col_-1_5_seg3",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "int_col_-1_6_seg0",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "int_col_-1_6_seg1",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "int_col_-1_6_open0_VAULTDOOR",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "int_col_-1_6_seg2",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "int_col_-1_6_seg3",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
       "node": "VAULTLEDGE_0-convcolonly",
       "material": {
         "id": "wood",
@@ -3037,15 +3224,6 @@
         "acoustic": "Wood",
         "absorption": null,
         "damping": null
-      }
-    },
-    {
-      "node": "VAULT_col",
-      "material": {
-        "id": "metal",
-        "acoustic": "Metal",
-        "absorption": 0.5,
-        "damping": 0.3
       }
     },
     {
@@ -3436,30 +3614,12 @@
       }
     },
     {
-      "node": "safe_floor_rdc1e69ac_3_col",
-      "material": {
-        "id": "metal",
-        "acoustic": "Metal",
-        "absorption": 0.5,
-        "damping": 0.3
-      }
-    },
-    {
       "node": "shelf_run_rdc1e69ac_4_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
         "absorption": null,
         "damping": null
-      }
-    },
-    {
-      "node": "cabinet_locker_rdc1e69ac_5_col",
-      "material": {
-        "id": "metal",
-        "acoustic": "Metal",
-        "absorption": 0.5,
-        "damping": 0.3
       }
     },
     {
@@ -3505,6 +3665,15 @@
         "acoustic": "Wood",
         "absorption": null,
         "damping": null
+      }
+    },
+    {
+      "node": "cabinet_locker_rff304921_2_col",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
       }
     },
     {
@@ -3598,12 +3767,12 @@
       }
     },
     {
-      "node": "stair_guard_rail_10_col",
+      "node": "stair_guard_side_10_col",
       "material": {
-        "id": "wood",
-        "acoustic": "Wood",
-        "absorption": null,
-        "damping": null
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
       }
     },
     {
@@ -3616,7 +3785,25 @@
       }
     },
     {
-      "node": "stair_guard_rail_12_col",
+      "node": "stair_guard_side_12_col",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "stair_guard_rail_13_col",
+      "material": {
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
+      }
+    },
+    {
+      "node": "stair_guard_rail_14_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -4004,6 +4191,121 @@
       "source": "authored",
       "reversible": true,
       "building": "bank_job"
+    },
+    {
+      "id": "bank_job:if:371d09c1",
+      "kind": "breach_wall",
+      "slot_ref": "int_-1_5_open1",
+      "transform": {
+        "translation": [
+          7.0,
+          6.5,
+          -2.5
+        ],
+        "rot_y": 90
+      },
+      "states": [
+        "intact",
+        "breached"
+      ],
+      "default": "intact",
+      "transitions": [
+        {
+          "event": "breach",
+          "from": "intact",
+          "to": "breached"
+        }
+      ],
+      "source": "inferred",
+      "reversible": false,
+      "material": "concrete",
+      "breach_class": "reinforceable",
+      "building": "bank_job"
+    },
+    {
+      "id": "bank_job:if:15597360",
+      "kind": "safe_deposit_boxes",
+      "slot_ref": "int_-1_5_open0",
+      "transform": {
+        "translation": [
+          7.0,
+          4.0,
+          -2.4
+        ],
+        "rot_y": 90
+      },
+      "states": [
+        "intact",
+        "drilled"
+      ],
+      "default": "intact",
+      "transitions": [
+        {
+          "event": "drill",
+          "from": "intact",
+          "to": "drilled"
+        }
+      ],
+      "source": "inferred",
+      "reversible": false,
+      "material": "metal",
+      "building": "bank_job"
+    },
+    {
+      "id": "bank_job:if:b46d2a4f",
+      "kind": "vault_door",
+      "slot_ref": "int_-1_6_open0",
+      "transform": {
+        "translation": [
+          11.0,
+          2.0,
+          -2.55
+        ],
+        "rot_y": 180
+      },
+      "states": [
+        "locked",
+        "unlocked",
+        "open",
+        "breached"
+      ],
+      "default": "locked",
+      "transitions": [
+        {
+          "event": "unlock",
+          "from": "locked",
+          "to": "unlocked"
+        },
+        {
+          "event": "lock",
+          "from": "unlocked",
+          "to": "locked"
+        },
+        {
+          "event": "open",
+          "from": "unlocked",
+          "to": "open"
+        },
+        {
+          "event": "close",
+          "from": "open",
+          "to": "unlocked"
+        },
+        {
+          "event": "breach",
+          "from": "locked",
+          "to": "breached"
+        },
+        {
+          "event": "breach",
+          "from": "unlocked",
+          "to": "breached"
+        }
+      ],
+      "source": "inferred",
+      "reversible": false,
+      "material": "metal",
+      "building": "bank_job"
     }
   ],
   "stair_systems": [
@@ -4310,6 +4612,26 @@
           "discharge_door": false
         },
         {
+          "floor": -1,
+          "kind": "breach",
+          "wall": "int_-1_5",
+          "pos": 0.0,
+          "interactive": "bank_job:if:371d09c1",
+          "default_state": "intact",
+          "connects_from": "vault",
+          "discharge_door": false
+        },
+        {
+          "floor": -1,
+          "kind": "vault",
+          "wall": "int_-1_6",
+          "pos": 0.0,
+          "interactive": "bank_job:if:b46d2a4f",
+          "default_state": "locked",
+          "connects_from": "vault",
+          "discharge_door": false
+        },
+        {
           "floor": 0,
           "kind": "door",
           "wall": "int_0_0",
@@ -4336,7 +4658,7 @@
           "pos": 0.0,
           "interactive": "bank_job:if:7369e98f",
           "default_state": "locked",
-          "connects_from": "lobby",
+          "connects_from": "teller_staff_0",
           "discharge_door": false
         },
         {
@@ -4346,7 +4668,7 @@
           "pos": 0.0,
           "interactive": "bank_job:if:963e6343",
           "default_state": "locked",
-          "connects_from": "lobby",
+          "connects_from": "teller_staff_0",
           "discharge_door": false
         },
         {
@@ -4787,6 +5109,19 @@
     "int_0_4_seg0": "wall",
     "int_0_4_open0_lintel": "doorway",
     "int_0_4_seg1": "wall",
+    "int_-1_5_seg0": "wall",
+    "int_-1_5_open0_lintel": "safe_deposit_boxes",
+    "int_-1_5_open0_SAFEDEPOSIT": "safe_deposit_boxes",
+    "int_-1_5_seg1": "wall",
+    "int_-1_5_open1_lintel": "breach",
+    "int_-1_5_open1_BREACHPANEL": "breach",
+    "int_-1_5_seg2": "wall",
+    "int_-1_5_seg3": "wall",
+    "int_-1_6_seg0": "wall",
+    "int_-1_6_seg1": "wall",
+    "int_-1_6_open0_VAULTDOOR": "vault_door",
+    "int_-1_6_seg2": "wall",
+    "int_-1_6_seg3": "wall",
     "stair0_-1_0": "stair",
     "stair0_-1_1": "stair",
     "stair0_-1_2": "stair",
@@ -4846,7 +5181,6 @@
     "stair1_discharge_-1": "stair",
     "VAULTLEDGE_0": "floor",
     "teller_counter": "prop",
-    "VAULT": "prop",
     "roof_unit": "prop",
     "desk_manager_office_0": "prop",
     "cabinet_manager_office_1": "prop",
@@ -4890,14 +5224,13 @@
     "safe_floor_r21075e64_9": "prop",
     "shelf_run_rdc1e69ac_1": "prop",
     "cabinet_locker_rdc1e69ac_2": "prop",
-    "safe_floor_rdc1e69ac_3": "prop",
     "shelf_run_rdc1e69ac_4": "prop",
-    "cabinet_locker_rdc1e69ac_5": "prop",
     "safe_floor_rdc1e69ac_6": "prop",
     "cabinet_locker_rdc1e69ac_8": "prop",
     "safe_floor_rdc1e69ac_9": "prop",
     "desk_r83237949_1": "prop",
     "chair_r83237949_2": "prop",
+    "cabinet_locker_rff304921_2": "prop",
     "stair_guard_side_0": "prop",
     "stair_guard_rail_1": "prop",
     "stair_guard_side_2": "prop",
@@ -4908,9 +5241,11 @@
     "stair_guard_side_7": "prop",
     "stair_guard_rail_8": "prop",
     "stair_guard_rail_9": "prop",
-    "stair_guard_rail_10": "prop",
+    "stair_guard_side_10": "prop",
     "stair_guard_rail_11": "prop",
-    "stair_guard_rail_12": "prop",
+    "stair_guard_side_12": "prop",
+    "stair_guard_rail_13": "prop",
+    "stair_guard_rail_14": "prop",
     "parapet_N_t0_0": "wall",
     "parapet_N_t0_1": "wall",
     "parapet_N_t0_2": "wall",

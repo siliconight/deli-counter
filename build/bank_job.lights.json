@@ -83,13 +83,13 @@
       "source": "derived",
       "pos": [
         7.5,
-        4.4,
+        0.0,
         -1.0
       ],
       "rot_y": 90.0,
       "room": "vault_room_east",
       "row": {
-        "count": 3,
+        "count": 5,
         "spacing": 4.4
       },
       "drop": 2.6,
@@ -111,6 +111,24 @@
         "spacing": 4.0
       },
       "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "vault_bulbs",
+      "type": "pendant",
+      "source": "derived",
+      "pos": [
+        11.0,
+        6.5,
+        -1.0
+      ],
+      "rot_y": 90.0,
+      "room": "vault",
+      "row": {
+        "count": 2,
+        "spacing": 4.5
+      },
+      "drop": 2.6,
       "reacts_to_alarm": true
     },
     {

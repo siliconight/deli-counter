@@ -18,9 +18,14 @@ replicable state machines (into `gameplay.json`'s `interactives` and each slot's
 - a `breach` opening → a `breach_wall` (`intact` / `breached`)
 - a `vault` opening → a `vault_door` (`locked` / `unlocked` / `open` / `breached`;
   closed by default, so the greybox reads shut). Author it as
-  `{ "kind": "vault", "pos": ..., "tag": "main_vault" }` (default 1.4 x 2.3 m,
-  raised threshold lip). Zoo builds the closed armored door and reuses
-  doorway/breach for its open/breached states.
+  `{ "kind": "vault", "pos": ..., "face": "N", "tag": "main_vault" }` (default
+  1.3 x 2.1 m on the floor). Zoo builds a round vault door in every state; its
+  slot is as wide as the door, not the aperture (3.6 m for the default), and
+  `face` is the side its leaf swings out on -- keep that floor clear
+  (`layout_lint` L22). Rather than authoring one, stand a `VAULT` volume in a
+  room: `vault_room.enclose_vaults` (run by `enrich`, and by
+  `migrate_vault_rooms.py` for the library) walls it into a vault room with the
+  door facing the room and deposit-box walls inside.
 - a `teller` opening → a `teller_window` (`intact` / `shattered`), and a
   `safe_deposit` opening → a `safe_deposit_boxes` wall (`intact` / `drilled`).
   Both are solid barriers (they read shut, like a window), sized floor-to-

@@ -41,7 +41,8 @@ from tscn_export import _godot_transform, _ref_path
 # Roles whose modules span the full story height (they cover the slab edge)
 # and therefore carry a top cap in the story plane. See the sink note in
 # write_themed_tscn.
-_SLAB_CAP_SINK_ROLES = {"wall", "doorway", "window", "breach"}
+_SLAB_CAP_SINK_ROLES = {"wall", "doorway", "window", "breach",
+                        "vault_door", "safe_deposit_boxes"}
 SLAB_CAP_SINK = 0.004   # metres; > z-fight gate tolerance, < perception
 
 
@@ -68,6 +69,15 @@ CORNER_ROLES = ("wallCorner",)
 #: Roles whose geometry is a hole in a standing slab, cut to the slot's own
 #: ``fit.openings``. Mirror of ``zoo_keeper.core.kit.OPENING_ROLES``.
 OPENING_ROLES = ("doorway", "window", "breach", "vault_door")
+
+#: The non-default states a species draws ITSELF. Mirror of each Zoo genome's
+#: ``state_art`` (``zoo_keeper.core.kit.state_art_for``), which every species
+#: but the vault door leaves empty. A state mapped to its default's species is
+#: identical art and gets no variant -- unless the species is listed here, in
+#: which case Zoo builds that state and the composer must place it.
+#: ``test_vault_room`` pins it to Zoo's genome when the zoo repo is beside
+#: this one.
+SPECIES_STATE_ART = {"vault_door": ("unlocked", "open", "breached")}
 
 
 def opening_tag(openings) -> str | None:
@@ -277,7 +287,8 @@ def state_variant_stems(slot, theme, style, library_dir):
     for st in states:
         if st == default:
             continue
-        if geometry.get(st, typ) == default_species:
+        drawn = SPECIES_STATE_ART.get(default_species, ())
+        if geometry.get(st, typ) == default_species and st not in drawn:
             continue  # identical art today; the kit deferred it too
         stem, _ = resolve_themed_stem(eff_slot, theme, eff_style, state=st)
         if stem:
@@ -513,9 +524,15 @@ def write_themed_tscn(slots, building_id, out_path, *, theme, style=1,
         # this is invisible; themed-on-grey it z-fights (flickering stripes
         # along wall lines on the floor above). Sink these modules by a few
         # millimetres: imperceptible to the eye, decisive for the depth
-        # buffer. Free-standing fixture roles (vault_door, teller_line, ...)
-        # never reach the story plane and stay untouched, as does the roof
-        # (an exact slab swap).
+        # buffer. The roof stays untouched (an exact slab swap), and so do
+        # fixture roles that stop short of the wall's full height.
+        #
+        # `vault_door` and `safe_deposit_boxes` were on that side of the line
+        # until 0.130.0 made their slots the wall's full height (a round
+        # vault door fills a 3.6 x 3.3 m slot). Composed onto the rebuilt
+        # `bank_branch_a02` unsunk, the door and both deposit walls put 14
+        # same-facing pairs on the room floor and ceiling skins, bottom on
+        # bottom and top on top, which is the case this sink exists for.
         if tr and sl.get("role") in _SLAB_CAP_SINK_ROLES:
             tr = [tr[0], tr[1], tr[2] - SLAB_CAP_SINK]
         if gb_per is not None:

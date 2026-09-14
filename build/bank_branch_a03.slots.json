@@ -6,9 +6,11 @@
   "module_size": 2.0,
   "space": "spec/Blender Z-up raw coords; rot_y = degrees about up",
   "coverage": {
-    "breach/generated": 3,
+    "breach/generated": 4,
     "doorway/generated": 12,
-    "wall/generated": 218,
+    "safe_deposit_boxes/generated": 2,
+    "vault_door/generated": 1,
+    "wall/generated": 227,
     "window/generated": 6
   },
   "slots": [
@@ -7096,10 +7098,10 @@
     {
       "slot_id": "int_-1_2_seg0",
       "role": "wall",
-      "size_mod": "full",
+      "size_mod": "end",
       "style": 1,
       "material": "concrete",
-      "current_ref": "wall_greybox_01",
+      "current_ref": "wallEnd_greybox_01",
       "kit_axis": "theme",
       "wall": "int_-1_2",
       "story": -1,
@@ -7107,10 +7109,45 @@
       "transform": {
         "translation": [
           0.0,
-          -10.0,
+          -10.75,
           -1.95
         ],
         "rot_y": 90,
+        "scale": [
+          0.5,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.5,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_-1_2_open0",
+      "role": "safe_deposit_boxes",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "safe_deposit_boxes_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_-1_2",
+      "story": -1,
+      "facing": "Y",
+      "transform": {
+        "translation": [
+          0.0,
+          -9.5,
+          -1.95
+        ],
+        "rot_y": 270,
         "scale": [
           1.0,
           1.0,
@@ -7124,47 +7161,32 @@
           3.3
         ],
         "pivot": "center",
-        "openings": [],
+        "openings": [
+          {
+            "kind": "safe_deposit",
+            "width": 2.0,
+            "height": 2.4,
+            "sill": 0.0
+          }
+        ],
         "collision": "convex"
+      },
+      "interactive": {
+        "id": "bank_branch_a03:if:bf9d5eeb",
+        "kind": "safe_deposit_boxes",
+        "states": [
+          "intact",
+          "drilled"
+        ],
+        "default": "intact",
+        "collision_per_state": {
+          "intact": true,
+          "drilled": true
+        }
       }
     },
     {
       "slot_id": "int_-1_2_seg1",
-      "role": "wall",
-      "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "int_-1_2",
-      "story": -1,
-      "facing": "Y",
-      "transform": {
-        "translation": [
-          0.0,
-          -8.0,
-          -1.95
-        ],
-        "rot_y": 90,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          3.3
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "int_-1_2_seg2",
       "role": "wall",
       "size_mod": "end",
       "style": 1,
@@ -7177,19 +7199,19 @@
       "transform": {
         "translation": [
           0.0,
-          -6.0625,
+          -8.125,
           -1.95
         ],
         "rot_y": 90,
         "scale": [
-          1.875,
+          0.75,
           0.3,
           3.3
         ]
       },
       "fit": {
         "dims": [
-          1.875,
+          0.75,
           0.3,
           3.3
         ],
@@ -7199,12 +7221,12 @@
       }
     },
     {
-      "slot_id": "int_-1_2_open0",
-      "role": "doorway",
+      "slot_id": "int_-1_2_open1",
+      "role": "breach",
       "size_mod": "full",
       "style": 1,
       "material": "concrete",
-      "current_ref": "doorway_greybox_01",
+      "current_ref": "breach_greybox_01",
       "kit_axis": "theme",
       "wall": "int_-1_2",
       "story": -1,
@@ -7212,7 +7234,7 @@
       "transform": {
         "translation": [
           0.0,
-          -4.5,
+          -7.0,
           -1.95
         ],
         "rot_y": 90,
@@ -7224,15 +7246,15 @@
       },
       "fit": {
         "dims": [
-          1.25,
+          1.5,
           0.3,
           3.3
         ],
         "pivot": "center",
         "openings": [
           {
-            "kind": "door",
-            "width": 1.25,
+            "kind": "breach",
+            "width": 1.5,
             "height": 2.2,
             "sill": 0.0
           }
@@ -7240,17 +7262,56 @@
         "collision": "convex"
       },
       "interactive": {
-        "id": "bank_branch_a03:if:317f019e",
-        "kind": "door",
+        "id": "bank_branch_a03:if:6c9402fe",
+        "kind": "breach_wall",
         "states": [
-          "closed",
-          "open"
+          "intact",
+          "breached"
         ],
-        "default": "closed",
+        "default": "intact",
+        "state_geometry": {
+          "intact": "wall",
+          "breached": "breach"
+        },
         "collision_per_state": {
-          "closed": true,
-          "open": false
+          "intact": true,
+          "breached": false
         }
+      }
+    },
+    {
+      "slot_id": "int_-1_2_seg2",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_-1_2",
+      "story": -1,
+      "facing": "Y",
+      "transform": {
+        "translation": [
+          0.0,
+          -5.25,
+          -1.95
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
       }
     },
     {
@@ -7267,7 +7328,7 @@
       "transform": {
         "translation": [
           0.0,
-          -2.875,
+          -3.25,
           -1.95
         ],
         "rot_y": 90,
@@ -7302,7 +7363,7 @@
       "transform": {
         "translation": [
           0.0,
-          -0.875,
+          -1.25,
           -1.95
         ],
         "rot_y": 90,
@@ -7326,10 +7387,10 @@
     {
       "slot_id": "int_-1_2_seg5",
       "role": "wall",
-      "size_mod": "full",
+      "size_mod": "end",
       "style": 1,
       "material": "concrete",
-      "current_ref": "wall_greybox_01",
+      "current_ref": "wallEnd_greybox_01",
       "kit_axis": "theme",
       "wall": "int_-1_2",
       "story": -1,
@@ -7337,7 +7398,42 @@
       "transform": {
         "translation": [
           0.0,
-          1.125,
+          -0.1875,
+          -1.95
+        ],
+        "rot_y": 90,
+        "scale": [
+          0.125,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.125,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_-1_2_open2",
+      "role": "doorway",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "doorway_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_-1_2",
+      "story": -1,
+      "facing": "Y",
+      "transform": {
+        "translation": [
+          0.0,
+          0.5,
           -1.95
         ],
         "rot_y": 90,
@@ -7349,13 +7445,33 @@
       },
       "fit": {
         "dims": [
-          2.0,
+          1.25,
           0.3,
           3.3
         ],
         "pivot": "center",
-        "openings": [],
+        "openings": [
+          {
+            "kind": "door",
+            "width": 1.25,
+            "height": 2.2,
+            "sill": 0.0
+          }
+        ],
         "collision": "convex"
+      },
+      "interactive": {
+        "id": "bank_branch_a03:if:63fe0d2a",
+        "kind": "door",
+        "states": [
+          "closed",
+          "open"
+        ],
+        "default": "closed",
+        "collision_per_state": {
+          "closed": true,
+          "open": false
+        }
       }
     },
     {
@@ -7372,7 +7488,7 @@
       "transform": {
         "translation": [
           0.0,
-          3.125,
+          2.125,
           -1.95
         ],
         "rot_y": 90,
@@ -7396,6 +7512,41 @@
     {
       "slot_id": "int_-1_2_seg7",
       "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_-1_2",
+      "story": -1,
+      "facing": "Y",
+      "transform": {
+        "translation": [
+          0.0,
+          4.125,
+          -1.95
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_-1_2_seg8",
+      "role": "wall",
       "size_mod": "end",
       "style": 1,
       "material": "concrete",
@@ -7407,19 +7558,19 @@
       "transform": {
         "translation": [
           0.0,
-          4.9375,
+          5.4375,
           -1.95
         ],
         "rot_y": 90,
         "scale": [
-          1.625,
+          0.625,
           0.3,
           3.3
         ]
       },
       "fit": {
         "dims": [
-          1.625,
+          0.625,
           0.3,
           3.3
         ],
@@ -7429,7 +7580,7 @@
       }
     },
     {
-      "slot_id": "int_-1_2_open1",
+      "slot_id": "int_-1_2_open3",
       "role": "breach",
       "size_mod": "full",
       "style": 1,
@@ -7488,7 +7639,7 @@
       }
     },
     {
-      "slot_id": "int_-1_2_seg8",
+      "slot_id": "int_-1_2_seg9",
       "role": "wall",
       "size_mod": "full",
       "style": 1,
@@ -7523,7 +7674,7 @@
       }
     },
     {
-      "slot_id": "int_-1_2_seg9",
+      "slot_id": "int_-1_2_seg10",
       "role": "wall",
       "size_mod": "end",
       "style": 1,
@@ -8736,6 +8887,406 @@
       }
     },
     {
+      "slot_id": "int_-1_7_seg0",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_-1_7",
+      "story": -1,
+      "facing": "Y",
+      "transform": {
+        "translation": [
+          -8.0,
+          -10.0,
+          -1.95
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_-1_7_seg1",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_-1_7",
+      "story": -1,
+      "facing": "Y",
+      "transform": {
+        "translation": [
+          -8.0,
+          -8.5,
+          -1.95
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.0,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_-1_7_open0",
+      "role": "safe_deposit_boxes",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "safe_deposit_boxes_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_-1_7",
+      "story": -1,
+      "facing": "Y",
+      "transform": {
+        "translation": [
+          -8.0,
+          -7.0,
+          -1.95
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [
+          {
+            "kind": "safe_deposit",
+            "width": 2.0,
+            "height": 2.4,
+            "sill": 0.0
+          }
+        ],
+        "collision": "convex"
+      },
+      "interactive": {
+        "id": "bank_branch_a03:if:ad5cebc4",
+        "kind": "safe_deposit_boxes",
+        "states": [
+          "intact",
+          "drilled"
+        ],
+        "default": "intact",
+        "collision_per_state": {
+          "intact": true,
+          "drilled": true
+        }
+      }
+    },
+    {
+      "slot_id": "int_-1_7_seg2",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_-1_7",
+      "story": -1,
+      "facing": "Y",
+      "transform": {
+        "translation": [
+          -8.0,
+          -5.0,
+          -1.95
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_-1_7_seg3",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_-1_7",
+      "story": -1,
+      "facing": "Y",
+      "transform": {
+        "translation": [
+          -8.0,
+          -3.5,
+          -1.95
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.0,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_-1_8_seg0",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_-1_8",
+      "story": -1,
+      "facing": "X",
+      "transform": {
+        "translation": [
+          -7.0,
+          -3.0,
+          -1.95
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_-1_8_seg1",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_-1_8",
+      "story": -1,
+      "facing": "X",
+      "transform": {
+        "translation": [
+          -5.9,
+          -3.0,
+          -1.95
+        ],
+        "rot_y": 0,
+        "scale": [
+          0.2,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.2,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_-1_8_open0",
+      "role": "vault_door",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "vault_door_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_-1_8",
+      "story": -1,
+      "facing": "X",
+      "transform": {
+        "translation": [
+          -4.0,
+          -3.0,
+          -1.95
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          3.6,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [
+          {
+            "kind": "vault",
+            "width": 1.3,
+            "height": 2.1,
+            "sill": 0.0
+          }
+        ],
+        "collision": "convex"
+      },
+      "interactive": {
+        "id": "bank_branch_a03:if:328c2407",
+        "kind": "vault_door",
+        "states": [
+          "locked",
+          "unlocked",
+          "open",
+          "breached"
+        ],
+        "default": "locked",
+        "state_geometry": {
+          "locked": "vault_door",
+          "unlocked": "vault_door",
+          "open": "vault_door",
+          "breached": "vault_door"
+        },
+        "collision_per_state": {
+          "locked": true,
+          "unlocked": true,
+          "open": false,
+          "breached": false
+        }
+      }
+    },
+    {
+      "slot_id": "int_-1_8_seg2",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_-1_8",
+      "story": -1,
+      "facing": "X",
+      "transform": {
+        "translation": [
+          -1.2,
+          -3.0,
+          -1.95
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_-1_8_seg3",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_-1_8",
+      "story": -1,
+      "facing": "X",
+      "transform": {
+        "translation": [
+          -0.1,
+          -3.0,
+          -1.95
+        ],
+        "rot_y": 0,
+        "scale": [
+          0.2,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.2,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
       "slot_id": "roof_footprint",
       "role": "roof",
       "size_mod": "full",
@@ -9316,7 +9867,14 @@
         "pivot": "center",
         "openings": [],
         "collision": "none",
-        "voids": []
+        "voids": [
+          {
+            "x0": -0.5,
+            "y0": -11.0,
+            "x1": 7.5,
+            "y1": -3.0
+          }
+        ]
       }
     },
     {
@@ -9359,6 +9917,12 @@
             "y0": 3.35,
             "x1": -3.1,
             "y1": 9.15
+          },
+          {
+            "x0": -0.5,
+            "y0": -11.0,
+            "x1": 7.5,
+            "y1": -3.0
           }
         ]
       }
@@ -9519,6 +10083,80 @@
       }
     },
     {
+      "slot_id": "floor_vault",
+      "role": "floor",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "floor_greybox_01",
+      "kit_axis": "theme",
+      "wall": null,
+      "story": -1,
+      "facing": "up",
+      "room": "vault",
+      "transform": {
+        "translation": [
+          -4.0,
+          -7.0,
+          -3.59
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          8.0,
+          8.0,
+          0.02
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "none",
+        "voids": []
+      }
+    },
+    {
+      "slot_id": "ceiling_vault",
+      "role": "ceiling",
+      "size_mod": "full",
+      "style": 9,
+      "material": "plaster",
+      "current_ref": "ceiling_greybox_01",
+      "kit_axis": "theme",
+      "wall": null,
+      "story": -1,
+      "facing": "down",
+      "room": "vault",
+      "transform": {
+        "translation": [
+          -4.0,
+          -7.0,
+          -0.31
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          8.0,
+          8.0,
+          0.02
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "none",
+        "voids": []
+      }
+    },
+    {
       "slot_id": "teller_counter",
       "role": "prop",
       "size_mod": "full",
@@ -9548,42 +10186,6 @@
           12.0,
           0.8,
           2.4
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "VAULT",
-      "role": "prop",
-      "size_mod": "full",
-      "style": 4,
-      "material": "metal",
-      "species": null,
-      "current_ref": "prop_greybox_01",
-      "kit_axis": "material",
-      "wall": null,
-      "story": null,
-      "facing": null,
-      "transform": {
-        "translation": [
-          -5.0,
-          -6.0,
-          -1.8
-        ],
-        "rot_y": 0.0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          5.0,
-          5.0,
-          3.0
         ],
         "pivot": "center",
         "openings": [],
@@ -11283,42 +11885,6 @@
       }
     },
     {
-      "slot_id": "shelf_run_r3a1da818_1",
-      "role": "prop",
-      "size_mod": "full",
-      "style": 5,
-      "material": "wood",
-      "species": "shelving",
-      "current_ref": "prop_greybox_01",
-      "kit_axis": "material",
-      "wall": null,
-      "story": null,
-      "facing": null,
-      "transform": {
-        "translation": [
-          -8.03,
-          -10.59,
-          -2.65
-        ],
-        "rot_y": 180.0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.2,
-          0.5,
-          1.9
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
       "slot_id": "safe_floor_r3a1da818_3",
       "role": "prop",
       "size_mod": "full",
@@ -11672,6 +12238,78 @@
           1.6,
           0.8,
           0.75
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "shelf_run_rff304921_1",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 5,
+      "material": "wood",
+      "species": "shelving",
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          -6.39,
+          -10.59,
+          -2.65
+        ],
+        "rot_y": 180.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.2,
+          0.5,
+          1.9
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "safe_floor_rff304921_3",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 4,
+      "material": "metal",
+      "species": "drop_safe",
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          -3.08,
+          -8.57,
+          -3.1
+        ],
+        "rot_y": 0.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.9,
+          0.9,
+          1.0
         ],
         "pivot": "center",
         "openings": [],

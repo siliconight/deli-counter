@@ -83,17 +83,20 @@ _DEFAULTS = {
     },
     "vault_door": {
         # a heist hero portal. The closed states (locked/unlocked) are a solid
-        # armored door; open is a passage; breached is blown. state_geometry
-        # maps each state to the Zoo module that backs it: the closed door has
-        # its own species, open reuses `doorway`, breached reuses `breach`
-        # (so a vault door is a doorway/breach at its other states, same as a
-        # breachable wall is a wall's breached state). unlocked == locked art
-        # today, so Zoo defers it to the base until the art pass adds a handle.
+        # armoured door; open is a passage with the leaf swung out; breached is
+        # blown off its hinges. EVERY STATE IS `vault_door`: Zoo 0.83.0 draws
+        # all four itself (its genome's `state_art` lists unlocked, open and
+        # breached) -- the wheel turned and bars drawn, the leaf swung 100
+        # degrees, the leaf over-swung and leaning. Until this mapped them,
+        # open reused `doorway` and breached `breach`, and Zoo honoured that
+        # and reported it as `[zoo] STATE GEOMETRY`: a round vault door that
+        # turned into a rectangular doorway when opened. The leaf's swing is
+        # floor in front of the door that must stay clear (`vault_room`, L22).
         "kind": "vault_door",
         "states": ["locked", "unlocked", "open", "breached"],
         "default": "locked",
         "state_geometry": {"locked": "vault_door", "unlocked": "vault_door",
-                           "open": "doorway", "breached": "breach"},
+                           "open": "vault_door", "breached": "vault_door"},
         "transitions": [
             {"event": "unlock", "from": "locked", "to": "unlocked"},
             {"event": "lock", "from": "unlocked", "to": "locked"},

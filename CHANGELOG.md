@@ -1,3 +1,138 @@
+## [0.130.0] - 2026-09-14  a bank vault is a room behind a round door
+
+The walker, walk 9052, in `bank_branch_a02`'s basement: "the bank vault should
+absolutely be a hero piece". What stood there was a 5 x 5 x 3 m `VAULT` box, a
+`prop` slot with no species. Zoo 0.83.0 builds a round vault door for an
+opening slot of role `vault_door`, in all four states of the machine. Nothing
+here could use it: no shipped building had a modular vault opening, the slot
+Deli Counter would have written was the aperture's width, and the machine sent
+two of the four states to other species.
+
+**The slot is as wide as the door (`vault_room.slot_width`).** Zoo's module
+replaces the whole slot, and a round door circumscribing its aperture needs a
+frame, hinge barrels and a surround outside the circle: Zoo's `required_size`
+is 3.5837 m for 1.3 x 2.1, rounded up here to 3.6. At the aperture's width Zoo
+built a porthole at x0.36. `_opening_to_hole` gives a vault hole `slot_w`; the
+wall run carves it, `fit.dims[0]` records it, and `fit.openings` keeps the
+aperture, which Zoo keys the stem on (`vault_door_<theme>_<style>_w360_o<tag>`).
+On the rebuilt a02 the composer's stems equal Zoo 0.84.0's `plan_kit`. The
+locked greybox is ONE block filling the slot, floor to wall top, so the
+composer's footprint fit and the placement gate measure what Zoo builds
+(294/294 placed). The retyped formulas are pinned to
+`zoo_keeper.core.vault_forms` by `test_vault_room` whenever Zoo is beside this
+repo (`$DC_ZOO_ROOT`).
+
+**The default is Zoo's aperture: 1.3 x 2.1 on the floor.** 1.4 x 2.3 at a
+0.15 sill put a step above `unassisted_step_max_m` (0.1025) in the doorway.
+
+**An opening says which way it faces (`Opening.face`, schema too).** A
+partition slot only ever got bearing 0 or 90, and a vault door's leaf swings
+out on one side. `_opening_rot` turns the slot, and the gameplay interactive's
+transform, to the face. The bearing is the Godot composer's
+(`tscn_export.godot_basis`: local +y is world (sin t, cos t)), test-pinned and
+seen in the engine: from the face, the hinges hang on the viewer's left, as Zoo
+documents. NOT FIXED, found on the way: `Builder._instance_module`, the
+Blender-side resolver, turns by Rz(+t), the mirror image at 90 and 270. It runs
+only with a module library at build time, and no symmetric door showed it.
+
+**Every state is `vault_door`.** Open mapped to `doorway` and breached to
+`breach`, which Zoo honoured and reported as `STATE GEOMETRY`: a round door
+that went rectangular when opened. `themed_tscn.SPECIES_STATE_ART` mirrors the
+genome's `state_art`, so the composer places the unlocked, open and breached
+siblings (hidden) instead of deferring them as identical art.
+
+**The leaf's swing is kept clear (`vault_room.swing_rect`, `layout_lint` L22,
+FAIL).** The leaf is swept from 0 to 122 degrees in 1-degree steps with its
+bolts drawn, plus the breached lean -- not only Zoo's two rest poses, because
+mid-swing the free edge stands further out than at rest. On a 3.6 x 0.3 x 3.3
+slot: 2.65 m in front of the face and 1.20 m past the hinge-side edge, where
+Zoo's rest boxes say 2.61 and 1.12. L22 fails a solid volume, a stair's
+reserved rectangle, a ladder or a partition in it; a slot running past its
+wall or over another opening; a wall too low for the door; and a face the wall
+cannot have. A faceless vault door in a modular spec warns. `_seed_clear`
+keeps cover and furniture out of every swing.
+
+**A vault volume becomes a vault room (`vault_room.enclose_vaults`).** Run by
+`enrich` straight after the teller enclosure, and by `migrate_vault_rooms.py`
+for the library. For a box named `vault` at least 2 m tall and 3 m a side, in
+the innermost room holding it, each corner of that room is tried nearest the
+box first: a room past the box by 0.5 m (sides clamped from slot plus margins
+to 9 m, on the grid), the host's two walls at the corner and two new
+partitions, the door centred in the new wall with the most room in front of
+it and facing that room, a reinforceable breach on a partition side into
+another room, and deposit-box walls on every other partition side. A corner is
+refused, with the reason, when a stair's reserved rectangle, a ladder, an
+authored solid or another wall stands in the room, its walls or the swing;
+when the swing and a body's approach do not fit in front of the door; or when
+a doorway on the host's wall inside the room cannot be slid clear of the room
+and the swing. Generated furniture on a new wall or in the swing is evicted
+and named. Objectives naming the vault go to the door's face, loot into the
+vault.
+
+THE SECOND WAY IN WAS NOT IN THE FIRST DRAFT, and `validate` refused it: an
+objective room with one door is one access path (`TACTICAL-ERROR`), the
+one-approach siege this bank's basement already answers with a breach.
+
+The library, as the migration reported it:
+- `bank_branch_a02`: an 8 x 8 m vault at (-8, -11)..(0, -3), door facing N.
+  The basement door at y -4.5, inside it, slides to 0.5. `crack_vault` and
+  `vault_cash` stood at (10, -6) in `vault_east` while the box stood at
+  (-5, -6) in `vault_west`; they now follow the vault. One shelf run evicted.
+- `bank_branch_a03`: the same room, door and slide; one shelf run evicted, two
+  pieces furnished into the vault.
+- `bank_job`: 8 x 9 m at (7, 2)..(15, 11), door facing S -- the corners beside
+  the box were the service stair's. A locker and a floor safe evicted.
+- `specs/bank.json` is left: it has no rooms, so the box has no host room, and
+  it is not modular, so its authored vault opening gets no module. It needs a
+  room grammar, a `face` on that opening and `modular: true`.
+- The `bank` preset: its basement was one `vault_room` cut in half by the
+  partition below it, which failed L11 once and L10 twice. It is now
+  `vault_room_west` / `vault_room_east`, as `bank_job` already was, with the
+  vault walled in at (0, -11)..(9, -3): 3 lint failures -> 0.
+
+Gates, 0.129.0 -> 0.130.0, both built and gated in one worktree:
+- `bank_branch_a02`: lint 0 FAIL / 5 WARN -> 0 / 5; stairwell 0 ERR / 8 WARN
+  -> 0 / 7 (the objective and loot no longer stand in `a02_stair_e`'s
+  reserved volume); nav gate stairs ok -> ok, navigable yes -> yes, 629 -> 613
+  polys.
+- `bank_branch_a03`: lint 0 / 8 -> 0 / 8 (one L9 count 5 -> 6); stairwell
+  0 / 9 -> 0 / 9; navigable yes -> yes, 806 -> 808 polys.
+- `bank_job`: lint 0 / 0 -> 0 / 0; stairwell 0 / 6 -> 0 / 5 (the box no longer
+  invades `bank_job_stair_1`, whose open sides now measure 1.75 m, 0.85 with
+  the box beside them); stairs ok -> ok, 699 -> 692 polys, unjudged both.
+- `bank`: unchanged. Library lint: 132 specs, 0 FAIL and 549 WARN both.
+- A marker at each door's face reaches spawn and one inside each locked vault
+  does not (a02, bank_job, the preset).
+- Composed a02, z-fight gate: 110 -> 117 pairs. All 9 new ones are the class
+  the gate already reports for the teller staff room -- a nested room's skin
+  against the outer skin's union box, whose plate does carry the void -- and
+  props standing on that floor.
+
+**The composer sinks the vault door and deposit walls** like every other
+wall-height module (`_SLAB_CAP_SINK_ROLES`). They stopped short of the storey
+line until their slots became the wall's full height; unsunk, the rebuilt a02
+composed with 14 more same-facing pairs on the room skins.
+
+**`tactical._room_at` takes a nested room over its container**, the rule
+`layout_lint._room_at` and `floors.nested_room_voids` already use. It took the
+first room in spec order, so both sides of the vault's door read as the
+basement room. NOT the smallest room: that first draft moved an exterior door
+on an edge two rooms share, and `test_stair_gameplay` refused it. Measured over
+the library with both lookups: only the two vault banks' findings move. A
+`safe_deposit` opening joins no rooms in either graph; it collides in both of
+its states.
+
+Wall thickness stays `wall_thick` (0.3). Zoo builds and validates the door at
+0.3 and 0.6, the frames at 0.3 read as a vault door, and per-partition
+thickness reaches every consumer of `wall_thick`: 63 references in 12 modules,
+partition bounds, stair voids and the lints among them.
+
+`test_vault_room.py` (25): slot width, default, the Zoo pins (required size,
+leaf boxes, state art), swing, bearing against `godot_basis`, the builder's
+slot, face rotation, composer variants and sink, L22, seeding, the generator on
+the preset, idempotence, door sliding, refusals, the library banks, the breach
+and the tactical lookup. Three of them fail against 0.129.0's composer.
+
 ## [0.129.0] - 2026-09-13  a piece against a wall stands off its face
 
 The walker, cold run 9052, of a row of waiting chairs: "z fighting on the

@@ -32,14 +32,37 @@ def _rooms_by_id(spec):
 
 
 def _room_at(spec, story, x, y):
-    """Return the room id whose bounds contain (x,y) on this story, or None."""
+    """Return the id of the room holding (x,y) on this story, or None: the
+    first room in spec order whose bounds contain it -- unless a room NESTED
+    inside that one also contains it, in which case the innermost.
+
+    It returned the first, full stop, and `layout_lint._room_at` has always
+    returned the innermost ("room-in-room cages"). Found by the vault room
+    (0.130.0): both sides of the vault's door resolved to the basement room the
+    vault stands in, so the door joined a room to itself and the vault's only
+    edge was the stair column's blanket overlap with the lobby above.
+
+    NESTED, NOT SMALLEST. The first draft took the smallest containing room
+    and `test_stair_gameplay` refused it: two rooms that only TOUCH along an
+    edge both contain a point on it, and the smallest-wins rule moved an
+    exterior door on that edge from one to the other and merged two stairs'
+    discharge routes. Spec order still decides a tie between neighbours."""
+    best = None
     for r in spec.rooms:
         if r.story != story:
             continue
         minx, miny, maxx, maxy = r.bounds
-        if minx <= x <= maxx and miny <= y <= maxy:
-            return r.id
-    return None
+        if not (minx <= x <= maxx and miny <= y <= maxy):
+            continue
+        if best is None:
+            best = r
+            continue
+        bx0, by0, bx1, by1 = best.bounds
+        nested = (bx0 <= minx and by0 <= miny and maxx <= bx1 and maxy <= by1
+                  and (maxx - minx) * (maxy - miny) < (bx1 - bx0) * (by1 - by0))
+        if nested:
+            best = r
+    return best.id if best is not None else None
 
 
 def build_graph(spec):
@@ -62,6 +85,10 @@ def build_graph(spec):
         # partition midpoint — a long wall can border different rooms along
         # its length, and each doorway connects whatever rooms flank it.
         for op in p.openings:
+            # a wall of deposit boxes collides in both of its states: a wall,
+            # not a way between rooms (layout_lint's graph says the same)
+            if op.kind == "safe_deposit":
+                continue
             along = lo + (op.pos + 0.5) * length
             if p.axis == "Y":      # wall runs along Y at x=pos; opening along Y
                 a = _room_at(spec, p.story, p.pos - eps, along)

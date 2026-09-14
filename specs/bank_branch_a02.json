@@ -239,7 +239,7 @@
    "openings": [
     {
      "kind": "door",
-     "pos": -0.2,
+     "pos": 0.022727,
      "width": 1.25
     },
     {
@@ -247,6 +247,23 @@
      "pos": 0.3,
      "breach_class": "reinforced",
      "material": "concrete"
+    },
+    {
+     "kind": "breach",
+     "pos": -0.318182,
+     "width": 1.5,
+     "breach_class": "reinforceable",
+     "reinforceable": true,
+     "material": "concrete",
+     "tag": "vault_breach_0"
+    },
+    {
+     "kind": "safe_deposit",
+     "pos": -0.431818,
+     "width": 2.0,
+     "face": "W",
+     "tag": "deposit_boxes_0",
+     "material": "metal"
     }
    ]
   },
@@ -355,6 +372,44 @@
     }
    ],
    "material": "drywall"
+  },
+  {
+   "story": -1,
+   "axis": "Y",
+   "pos": -8.0,
+   "start": -11.0,
+   "end": -3.0,
+   "openings": [
+    {
+     "kind": "safe_deposit",
+     "pos": 0.0,
+     "width": 2.0,
+     "face": "E",
+     "tag": "deposit_boxes_0",
+     "material": "metal"
+    }
+   ],
+   "material": "concrete"
+  },
+  {
+   "story": -1,
+   "axis": "X",
+   "pos": -3.0,
+   "start": -8.0,
+   "end": 0.0,
+   "openings": [
+    {
+     "kind": "vault",
+     "pos": 0.0,
+     "width": 1.3,
+     "height": 2.1,
+     "sill": 0.0,
+     "face": "N",
+     "tag": "vault_door_0",
+     "material": "metal"
+    }
+   ],
+   "material": "concrete"
   }
  ],
  "stairs": [
@@ -460,6 +515,19 @@
    "role": "staff_only",
    "fortifiable": true,
    "combat_range": "close"
+  },
+  {
+   "id": "vault",
+   "story": -1,
+   "bounds": [
+    -8.0,
+    -11.0,
+    0.0,
+    -3.0
+   ],
+   "role": "objective_room",
+   "objective": true,
+   "fortifiable": true
   }
  ],
  "volumes": [
@@ -473,17 +541,6 @@
    "size_z": 2.4,
    "collision": "convex",
    "material": "wood"
-  },
-  {
-   "name": "VAULT",
-   "x": -5.0,
-   "y": -6.0,
-   "z": -1.8,
-   "size_x": 5.0,
-   "size_y": 5.0,
-   "size_z": 3.0,
-   "collision": "convex",
-   "material": "metal"
   },
   {
    "name": "roof_unit",
@@ -884,18 +941,6 @@
    "material": "metal"
   },
   {
-   "name": "shelf_run_r3a1da818_4",
-   "x": -8.47,
-   "y": -10.59,
-   "z": -2.65,
-   "size_x": 2.2,
-   "size_y": 0.5,
-   "size_z": 1.9,
-   "collision": "convex",
-   "material": "wood",
-   "rot_z": 180.0
-  },
-  {
    "name": "cabinet_locker_r3a1da818_5",
    "x": -2.85,
    "y": -10.59,
@@ -1133,10 +1178,10 @@
   {
    "id": "crack_vault",
    "kind": "drill",
-   "x": 10.0,
-   "y": -6.0,
-   "z": -1.8,
-   "room": "vault_east",
+   "x": -4.0,
+   "y": -2.25,
+   "z": -3.1,
+   "room": "vault_west",
    "required": true,
    "duration": 90
   },
@@ -1154,12 +1199,12 @@
   {
    "id": "vault_cash",
    "kind": "cash",
-   "x": 10.0,
-   "y": -6.0,
-   "z": -1.8,
+   "x": -4.0,
+   "y": -7.0,
+   "z": -3.1,
    "value": 500000,
    "bags": 4,
-   "room": "vault_east"
+   "room": "vault"
   },
   {
    "id": "teller_cash",

@@ -69,10 +69,12 @@ def test_vault_is_inferred_as_a_vault_door():
     assert m["kind"] == "vault_door"
     assert m["states"] == ["locked", "unlocked", "open", "breached"]
     assert m["default"] == "locked"          # closed by default
-    # the closed door is its own art; open/breached reuse doorway/breach
+    # Zoo 0.83.0 draws every state of the round door itself (its genome's
+    # `state_art`); 0.129.0 still sent open to `doorway` and breached to
+    # `breach`, so the door turned rectangular when it opened
     assert m["state_geometry"] == {
         "locked": "vault_door", "unlocked": "vault_door",
-        "open": "doorway", "breached": "breach"}
+        "open": "vault_door", "breached": "vault_door"}
 
 
 def test_vault_can_be_breached_from_either_closed_state():
@@ -89,8 +91,8 @@ def test_vault_slot_view_carries_the_state_geometry_for_zoo():
     m = I.derive_interactive("gs_bank", "ext_0_N", 0, "vault", 0.0)
     sv = I.slot_interactive(m)
     assert sv["kind"] == "vault_door"
-    assert sv["state_geometry"]["open"] == "doorway"
-    assert sv["state_geometry"]["breached"] == "breach"
+    assert sv["state_geometry"]["open"] == "vault_door"
+    assert sv["state_geometry"]["breached"] == "vault_door"
     # closed states block, open/breached don't (advisory)
     assert sv["collision_per_state"] == {
         "locked": True, "unlocked": True, "open": False, "breached": False}
