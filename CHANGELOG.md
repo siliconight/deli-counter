@@ -1,3 +1,22 @@
+## [0.129.0] - 2026-09-13  a piece against a wall stands off its face
+
+The walker, cold run 9052, of a row of waiting chairs: "z fighting on the
+[chairs] on the steel". Measured by Zoo (0.81.0's investigation): the chair
+backs lay on the wall's inner face, same-facing, 0.00 mm apart -- 3.09 m2
+across the lobby's three rows. `_wall_slots` placed a piece's back a flat
+0.12 m from the room bound, which lies on the wall's CENTRELINE: half a 0.24 m
+wall. Every wall is built at `wall_thick` (0.3), so every wall-slotted piece
+-- chairs, filing cabinets, service counters, shelving -- stood 0.03 m inside
+its wall. It is now `wall_thick / 2 + _WALL_PIECE_AIR` (0.01 m), and
+`test_furnish` pins it against a wall of any thickness (it fails on 0.128.1).
+
+The library was refurnished from the pre-furniture snapshot through the same
+scripted sequence as 0.126.0 (stair re-seat, the two hand fixes, teller
+enclosure, prop materials, furnish): 0 lint failures, 0 stairwell errors, 0
+volumes in a stair guard, 38 volumes in a reserved rectangle as before. Zoo
+0.81.0 separately insets a chair's back 6 mm into its own module, so both
+sides now clear.
+
 ## [0.128.1] - 2026-09-13  a facade shell's windows are opaque again
 
 0.80.0 (501c9db) made `_record_opening_slot` tag a `window` slot on a `facade`

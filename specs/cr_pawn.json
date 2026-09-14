@@ -216,7 +216,7 @@
  ],
  "stairs": [
   {
-   "x": 4.0,
+   "x": 2.5,
    "y": 5.5,
    "from_story": 0,
    "to_story": 1,
@@ -224,7 +224,7 @@
    "run": 4.8,
    "style": "switchback",
    "cut_slabs": true,
-   "facing": "W",
+   "facing": "E",
    "id": "cr_pawn_stair_0",
    "meta": {
     "generated_by": "presets"
@@ -330,7 +330,7 @@
   },
   {
    "name": "workbench_r79538c7c_1",
-   "x": 7.48,
+   "x": 7.46,
    "y": -3.45,
    "z": 0.45,
    "size_x": 0.8,
@@ -342,7 +342,7 @@
   {
    "name": "shelf_run_r79538c7c_2",
    "x": 0.46,
-   "y": -6.58,
+   "y": -6.57,
    "z": 0.95,
    "size_x": 2.4,
    "size_y": 0.6,
@@ -353,7 +353,7 @@
   },
   {
    "name": "cabinet_tool_r79538c7c_3",
-   "x": 7.63,
+   "x": 7.62,
    "y": -0.45,
    "z": 0.9,
    "size_x": 0.5,
@@ -364,7 +364,7 @@
   },
   {
    "name": "workbench_r79538c7c_4",
-   "x": -7.48,
+   "x": -7.46,
    "y": 0.18,
    "z": 0.45,
    "size_x": 0.8,
@@ -478,14 +478,15 @@
   },
   {
    "name": "cabinet_supply_rde4c5b55_2",
-   "x": 7.63,
-   "y": 4.56,
+   "x": -7.62,
+   "y": 3.04,
    "z": 4.3,
    "size_x": 0.5,
    "size_y": 1.0,
    "size_z": 1.8,
    "collision": "convex",
-   "material": "wood"
+   "material": "wood",
+   "rot_z": 180.0
   },
   {
    "name": "table_work_rde4c5b55_3",
@@ -501,7 +502,7 @@
   {
    "name": "cabinet_supply_rde4c5b55_5",
    "x": -6.12,
-   "y": 6.63,
+   "y": 6.62,
    "z": 4.3,
    "size_x": 1.0,
    "size_y": 0.5,

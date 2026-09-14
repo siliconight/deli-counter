@@ -320,3 +320,23 @@ def test_wall_pieces_face_into_the_room():
         assert fx * (cx - v["x"]) + fy * (cy - v["y"]) > 0, (v["name"], front)
         checked += 1
     assert checked, "no wall seating placed"
+
+
+def test_a_wall_piece_stands_off_the_wall_face_not_inside_it():
+    """Cold run 9052: waiting-chair backs coplanar with the wall's inner face,
+    because the offset from a room bound (the wall's centreline) was a flat
+    0.12 m against a 0.30 m wall. Every wall slot now clears the face."""
+    import random
+    import level_design as LD
+    spec = {"footprint_x": 20.0, "footprint_y": 14.0, "wall_thick": 0.3,
+            "partitions": [], "ext_walls": [], "stairs": [], "volumes": [],
+            "markers": [], "ladders": []}
+    room = {"id": "r", "story": 0, "bounds": [-10.0, -7.0, 0.0, 7.0]}
+    slots = LD._wall_slots(spec, room, 2.0, 0.5, random.Random(1))
+    assert slots
+    face = spec["wall_thick"] / 2.0
+    x0, y0, x1, y1 = room["bounds"]
+    for (px, py, sx, sy, _rot) in slots:
+        gaps = (px - sx / 2.0 - x0, x1 - (px + sx / 2.0),
+                py - sy / 2.0 - y0, y1 - (py + sy / 2.0))
+        assert min(gaps) >= face + 0.005 - 1e-9, (px, py, sx, sy, gaps)

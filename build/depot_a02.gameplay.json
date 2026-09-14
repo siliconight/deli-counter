@@ -280,7 +280,24 @@
       "building": "depot_a02"
     },
     {
-      "wall": "int_0_0p1",
+      "wall": "int_0_0",
+      "kind": "door",
+      "story": 0,
+      "x": -12.6,
+      "y": 4.0,
+      "z": 1.1,
+      "width": 1.4,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": null,
+      "breach_class": null,
+      "material": null,
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "depot_a02"
+    },
+    {
+      "wall": "int_0_0",
       "kind": "door",
       "story": 0,
       "x": 12.6,
@@ -1724,7 +1741,7 @@
       }
     },
     {
-      "node": "int_col_0_0p1_seg0",
+      "node": "int_col_0_0_open0_lintel",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -1733,7 +1750,7 @@
       }
     },
     {
-      "node": "int_col_0_0p1_seg1",
+      "node": "int_col_0_0_seg4",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -1742,7 +1759,7 @@
       }
     },
     {
-      "node": "int_col_0_0p1_seg2",
+      "node": "int_col_0_0_seg5",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -1751,7 +1768,7 @@
       }
     },
     {
-      "node": "int_col_0_0p1_seg3",
+      "node": "int_col_0_0_seg6",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -1760,7 +1777,7 @@
       }
     },
     {
-      "node": "int_col_0_0p1_seg4",
+      "node": "int_col_0_0_seg7",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -1769,7 +1786,7 @@
       }
     },
     {
-      "node": "int_col_0_0p1_seg5",
+      "node": "int_col_0_0_seg8",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -1778,7 +1795,7 @@
       }
     },
     {
-      "node": "int_col_0_0p1_seg6",
+      "node": "int_col_0_0_seg9",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -1787,7 +1804,7 @@
       }
     },
     {
-      "node": "int_col_0_0p1_seg7",
+      "node": "int_col_0_0_seg10",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -1796,7 +1813,7 @@
       }
     },
     {
-      "node": "int_col_0_0p1_seg8",
+      "node": "int_col_0_0_seg11",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -1805,7 +1822,7 @@
       }
     },
     {
-      "node": "int_col_0_0p1_seg9",
+      "node": "int_col_0_0_seg12",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -1814,7 +1831,7 @@
       }
     },
     {
-      "node": "int_col_0_0p1_seg10",
+      "node": "int_col_0_0_seg13",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -1823,7 +1840,7 @@
       }
     },
     {
-      "node": "int_col_0_0p1_seg11",
+      "node": "int_col_0_0_seg14",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -1832,7 +1849,7 @@
       }
     },
     {
-      "node": "int_col_0_0p1_open0_lintel",
+      "node": "int_col_0_0_seg15",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -1841,7 +1858,7 @@
       }
     },
     {
-      "node": "int_col_0_0p1_seg12",
+      "node": "int_col_0_0_open1_lintel",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -1850,7 +1867,7 @@
       }
     },
     {
-      "node": "int_col_0_0p1_seg13",
+      "node": "int_col_0_0_seg16",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -1859,7 +1876,7 @@
       }
     },
     {
-      "node": "int_col_0_0p1_seg14",
+      "node": "int_col_0_0_seg17",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -1868,7 +1885,16 @@
       }
     },
     {
-      "node": "int_col_0_0p1_seg15",
+      "node": "int_col_0_0_seg18",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "int_col_0_0_seg19",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -2138,15 +2164,6 @@
       }
     },
     {
-      "node": "chair_waiting_rbe45d62e_10_col",
-      "material": {
-        "id": "wood",
-        "acoustic": "Wood",
-        "absorption": null,
-        "damping": null
-      }
-    },
-    {
       "node": "table_low_rbe45d62e_11_col",
       "material": {
         "id": "wood",
@@ -2210,6 +2227,15 @@
       }
     },
     {
+      "node": "chair_waiting_rbe45d62e_16_col",
+      "material": {
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
+      }
+    },
+    {
       "node": "table_low_rbe45d62e_17_col",
       "material": {
         "id": "wood",
@@ -2255,15 +2281,6 @@
       }
     },
     {
-      "node": "chair_set_r3d03d21b_2_1_col",
-      "material": {
-        "id": "wood",
-        "acoustic": "Wood",
-        "absorption": null,
-        "damping": null
-      }
-    },
-    {
       "node": "chair_set_r3d03d21b_2_2_col",
       "material": {
         "id": "wood",
@@ -2292,15 +2309,6 @@
     },
     {
       "node": "table_low_r3d03d21b_5_col",
-      "material": {
-        "id": "wood",
-        "acoustic": "Wood",
-        "absorption": null,
-        "damping": null
-      }
-    },
-    {
-      "node": "chair_set_r3d03d21b_5_1_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -2436,6 +2444,15 @@
     },
     {
       "node": "chair_set_r55335a56_5_2_col",
+      "material": {
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
+      }
+    },
+    {
+      "node": "counter_service_r55335a56_6_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -2732,15 +2749,6 @@
       }
     },
     {
-      "node": "chair_set_r0499d2c6_13_1_col",
-      "material": {
-        "id": "wood",
-        "acoustic": "Wood",
-        "absorption": null,
-        "damping": null
-      }
-    },
-    {
       "node": "chair_set_r0499d2c6_13_2_col",
       "material": {
         "id": "wood",
@@ -2971,9 +2979,42 @@
       "building": "depot_a02"
     },
     {
-      "id": "depot_a02:if:2df76e8f",
+      "id": "depot_a02:if:8f0db94c",
       "kind": "door",
-      "slot_ref": "int_0_0p1_open0",
+      "slot_ref": "int_0_0_open0",
+      "transform": {
+        "translation": [
+          -12.6,
+          4.0,
+          1.1
+        ],
+        "rot_y": 0
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "building": "depot_a02"
+    },
+    {
+      "id": "depot_a02:if:dedc90b6",
+      "kind": "door",
+      "slot_ref": "int_0_0_open1",
       "transform": {
         "translation": [
           12.6,
@@ -3073,7 +3114,7 @@
       "stack_id": null,
       "role": "service",
       "shape": "switchback",
-      "facing": "N",
+      "facing": "W",
       "exterior": false,
       "channels": 1,
       "roof_access": false,
@@ -3085,20 +3126,20 @@
       ],
       "footprint_polygon": [
         [
-          -13.5,
-          -2.7
+          -18.7,
+          6.5
         ],
         [
-          -11.9,
-          -2.7
+          -12.3,
+          6.5
         ],
         [
-          -11.9,
-          3.7
+          -12.3,
+          8.1
         ],
         [
-          -13.5,
-          3.7
+          -18.7,
+          8.1
         ]
       ],
       "clear_width_m": 1.6,
@@ -3110,16 +3151,16 @@
         },
         {
           "floor": 0,
-          "room": "floor",
-          "room_role": "public_entry"
+          "room": "north_hall",
+          "room_role": "connector"
         }
       ],
       "discharge": {
         "floor": 0,
         "type": "direct_exterior",
-        "room": "floor",
+        "room": "north_hall",
         "via": [],
-        "destination": "floor",
+        "destination": "north_hall",
         "route_hops": 0
       },
       "egress": {
@@ -3130,50 +3171,50 @@
           "end": "lower",
           "story": -1,
           "rect": [
-            -13.5,
-            -3.9000000000000004,
-            -11.9,
-            -2.7
+            -12.3,
+            6.5,
+            -11.1,
+            8.1
           ],
           "point": [
-            -12.7,
-            -3.3000000000000003,
+            -11.7,
+            7.3,
             -5.0
           ],
           "dir": [
-            0,
-            -1
+            1,
+            0
           ]
         },
         {
           "end": "upper",
           "story": 0,
           "rect": [
-            -13.5,
-            4.5,
-            -11.9,
-            5.7
+            -20.7,
+            6.5,
+            -19.5,
+            8.1
           ],
           "point": [
-            -12.7,
-            5.1,
+            -20.1,
+            7.3,
             0.0
           ],
           "dir": [
-            0,
-            1
+            -1,
+            0
           ]
         }
       ],
       "nav_endpoints": {
         "lower": [
-          -12.7,
-          -3.3000000000000003,
+          -11.7,
+          7.3,
           -5.0
         ],
         "upper": [
-          -12.7,
-          5.1,
+          -20.1,
+          7.3,
           0.0
         ]
       },
@@ -3202,30 +3243,40 @@
         {
           "floor": 0,
           "kind": "door",
-          "wall": "int_0_0p1",
-          "pos": 0.24153846153846154,
-          "interactive": "depot_a02:if:2df76e8f",
+          "wall": "int_0_0",
+          "pos": -0.3,
+          "interactive": "depot_a02:if:8f0db94c",
           "default_state": "closed",
-          "connects_from": "north_hall",
+          "connects_from": "floor",
           "discharge_door": false
         },
         {
           "floor": 0,
-          "kind": "garage",
-          "wall": "ext_0_W",
-          "pos": 0.0,
-          "interactive": "depot_a02:if:11160c11",
+          "kind": "door",
+          "wall": "int_0_0",
+          "pos": 0.3,
+          "interactive": "depot_a02:if:dedc90b6",
+          "default_state": "closed",
+          "connects_from": "floor",
+          "discharge_door": false
+        },
+        {
+          "floor": 0,
+          "kind": "door",
+          "wall": "ext_0_N",
+          "pos": 0.25,
+          "interactive": "depot_a02:if:f4726caf",
           "default_state": "closed",
           "connects_from": "exterior",
           "discharge_door": true
         },
         {
           "floor": 0,
-          "kind": "door",
-          "wall": "ext_0_S",
-          "pos": -0.2,
-          "interactive": "depot_a02:if:1d102b08",
-          "default_state": "closed",
+          "kind": "breach",
+          "wall": "ext_0_N",
+          "pos": -0.3,
+          "interactive": "depot_a02:if:95eda478",
+          "default_state": "intact",
           "connects_from": "exterior",
           "discharge_door": true
         }
@@ -3379,9 +3430,19 @@
         {
           "floor": 0,
           "kind": "door",
-          "wall": "int_0_0p1",
-          "pos": 0.24153846153846154,
-          "interactive": "depot_a02:if:2df76e8f",
+          "wall": "int_0_0",
+          "pos": -0.3,
+          "interactive": "depot_a02:if:8f0db94c",
+          "default_state": "closed",
+          "connects_from": "north_hall",
+          "discharge_door": false
+        },
+        {
+          "floor": 0,
+          "kind": "door",
+          "wall": "int_0_0",
+          "pos": 0.3,
+          "interactive": "depot_a02:if:dedc90b6",
           "default_state": "closed",
           "connects_from": "north_hall",
           "discharge_door": false
@@ -3438,7 +3499,7 @@
       {
         "id": "dp02_stair_n",
         "role": "service",
-        "facing": "N",
+        "facing": "W",
         "traversable": true,
         "physical_findings": [],
         "compliant": true
@@ -3919,23 +3980,24 @@
     "int_0_0_seg1": "wall",
     "int_0_0_seg2": "wall",
     "int_0_0_seg3": "wall",
-    "int_0_0p1_seg0": "wall",
-    "int_0_0p1_seg1": "wall",
-    "int_0_0p1_seg2": "wall",
-    "int_0_0p1_seg3": "wall",
-    "int_0_0p1_seg4": "wall",
-    "int_0_0p1_seg5": "wall",
-    "int_0_0p1_seg6": "wall",
-    "int_0_0p1_seg7": "wall",
-    "int_0_0p1_seg8": "wall",
-    "int_0_0p1_seg9": "wall",
-    "int_0_0p1_seg10": "wall",
-    "int_0_0p1_seg11": "wall",
-    "int_0_0p1_open0_lintel": "doorway",
-    "int_0_0p1_seg12": "wall",
-    "int_0_0p1_seg13": "wall",
-    "int_0_0p1_seg14": "wall",
-    "int_0_0p1_seg15": "wall",
+    "int_0_0_open0_lintel": "doorway",
+    "int_0_0_seg4": "wall",
+    "int_0_0_seg5": "wall",
+    "int_0_0_seg6": "wall",
+    "int_0_0_seg7": "wall",
+    "int_0_0_seg8": "wall",
+    "int_0_0_seg9": "wall",
+    "int_0_0_seg10": "wall",
+    "int_0_0_seg11": "wall",
+    "int_0_0_seg12": "wall",
+    "int_0_0_seg13": "wall",
+    "int_0_0_seg14": "wall",
+    "int_0_0_seg15": "wall",
+    "int_0_0_open1_lintel": "doorway",
+    "int_0_0_seg16": "wall",
+    "int_0_0_seg17": "wall",
+    "int_0_0_seg18": "wall",
+    "int_0_0_seg19": "wall",
     "int_-1_1_seg0": "wall",
     "int_-1_1_seg1": "wall",
     "int_-1_1_open0_lintel": "breach",
@@ -4036,7 +4098,6 @@
     "table_low_rbe45d62e_8": "prop",
     "chair_set_rbe45d62e_8_2": "prop",
     "counter_service_rbe45d62e_9": "prop",
-    "chair_waiting_rbe45d62e_10": "prop",
     "table_low_rbe45d62e_11": "prop",
     "chair_set_rbe45d62e_11_1": "prop",
     "chair_set_rbe45d62e_11_2": "prop",
@@ -4044,17 +4105,16 @@
     "chair_set_rbe45d62e_14_1": "prop",
     "chair_set_rbe45d62e_14_2": "prop",
     "counter_service_rbe45d62e_15": "prop",
+    "chair_waiting_rbe45d62e_16": "prop",
     "table_low_rbe45d62e_17": "prop",
     "chair_set_rbe45d62e_17_1": "prop",
     "chair_set_rbe45d62e_17_2": "prop",
     "chair_waiting_r3d03d21b_1": "prop",
     "table_low_r3d03d21b_2": "prop",
-    "chair_set_r3d03d21b_2_1": "prop",
     "chair_set_r3d03d21b_2_2": "prop",
     "counter_service_r3d03d21b_3": "prop",
     "chair_waiting_r3d03d21b_4": "prop",
     "table_low_r3d03d21b_5": "prop",
-    "chair_set_r3d03d21b_5_1": "prop",
     "chair_set_r3d03d21b_5_2": "prop",
     "counter_service_r3d03d21b_6": "prop",
     "chair_waiting_r3d03d21b_7": "prop",
@@ -4070,6 +4130,7 @@
     "table_low_r55335a56_5": "prop",
     "chair_set_r55335a56_5_1": "prop",
     "chair_set_r55335a56_5_2": "prop",
+    "counter_service_r55335a56_6": "prop",
     "table_low_r55335a56_8": "prop",
     "chair_set_r55335a56_8_1": "prop",
     "chair_set_r55335a56_8_2": "prop",
@@ -4102,7 +4163,6 @@
     "chair_set_r0499d2c6_11_2": "prop",
     "chair_r0499d2c6_12": "prop",
     "table_low_r0499d2c6_13": "prop",
-    "chair_set_r0499d2c6_13_1": "prop",
     "chair_set_r0499d2c6_13_2": "prop",
     "stair_guard_side_0": "prop",
     "stair_guard_rail_1": "prop",

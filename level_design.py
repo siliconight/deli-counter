@@ -801,6 +801,10 @@ def _clear_of_openings(openings, wall, centre, half_len):
     return True
 
 
+#: Air between a wall-slotted piece's back and the wall's face.
+_WALL_PIECE_AIR = 0.01
+
+
 def _wall_slots(spec, room, w, d, rng):
     """Candidate ``(x, y, sx, sy, rot_z)`` flush against the room's walls, the
     piece's long axis lying ALONG the wall. A shelf run standing across a
@@ -823,6 +827,14 @@ def _wall_slots(spec, room, w, d, rng):
     openings = _ext_openings(spec, room.get("story", 0))
     out = []
     long_side, short_side = max(w, d), min(w, d)
+    # A PIECE'S BACK STANDS OFF THE WALL'S FACE, not its centreline. A room's
+    # bound lies on the wall's centreline, and this was a flat 0.12 m -- half
+    # a 0.24 m wall -- while every wall is built at `wall_thick` (0.3), so
+    # every wall-slotted piece stood 0.03 m inside its wall. Measured by Zoo
+    # on cold run 9052's lobby: waiting-chair backs coplanar with the wall's
+    # inner face, 0.00 mm apart, 3.09 m2 of flicker ("z fighting on the
+    # [chairs] on the steel", the walker).
+    back = float(spec.get("wall_thick") or 0.3) / 2.0 + _WALL_PIECE_AIR
 
     def _wall_of(value, half, lo_name, hi_name):
         """The exterior wall a room edge lies on, or None when interior."""
@@ -844,7 +856,7 @@ def _wall_slots(spec, room, w, d, rng):
                 continue
             # against the S wall (inset +1) the front must face N; against
             # the N wall, S. Long axis along x, so no long-axis turn is added.
-            out.append((px, wy + inset * (short_side / 2.0 + 0.12),
+            out.append((px, wy + inset * (short_side / 2.0 + back),
                         long_side, short_side, 180.0 if inset > 0 else 0.0))
     # E and W walls: the long axis runs in y
     for wx, inset in ((x0, +1), (x1, -1)):
@@ -861,7 +873,7 @@ def _wall_slots(spec, room, w, d, rng):
             # against the W wall the front must face E; against the E wall,
             # W. `long_axis_first` already turns this piece 90, so the front
             # sits at 90 + rot_z + 180: 180 here gives E, 0 gives W.
-            out.append((wx + inset * (short_side / 2.0 + 0.12), py,
+            out.append((wx + inset * (short_side / 2.0 + back), py,
                         short_side, long_side, 180.0 if inset > 0 else 0.0))
     rng.shuffle(out)
     return out

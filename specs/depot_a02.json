@@ -195,13 +195,13 @@
  ],
  "stairs": [
   {
-   "x": -13.5,
-   "y": 0.5,
+   "x": -15.5,
+   "y": 6.5,
    "from_story": -1,
    "to_story": 0,
    "style": "switchback",
    "cut_slabs": true,
-   "facing": "N",
+   "facing": "W",
    "id": "dp02_stair_n",
    "role": "service",
    "run": 6.4
@@ -253,7 +253,7 @@
   {
    "name": "chair_waiting_rbe45d62e_1",
    "x": -19.41,
-   "y": -11.58,
+   "y": -11.54,
    "z": 0.45,
    "size_x": 2.4,
    "size_y": 0.6,
@@ -299,7 +299,7 @@
   },
   {
    "name": "counter_service_rbe45d62e_3",
-   "x": 20.48,
+   "x": 20.44,
    "y": -10.06,
    "z": 0.525,
    "size_x": 0.8,
@@ -311,7 +311,7 @@
   {
    "name": "chair_waiting_rbe45d62e_4",
    "x": 8.69,
-   "y": -11.58,
+   "y": -11.54,
    "z": 0.45,
    "size_x": 2.4,
    "size_y": 0.6,
@@ -357,7 +357,7 @@
   },
   {
    "name": "counter_service_rbe45d62e_6",
-   "x": 20.48,
+   "x": 20.44,
    "y": -4.02,
    "z": 0.525,
    "size_x": 0.8,
@@ -369,7 +369,7 @@
   {
    "name": "chair_waiting_rbe45d62e_7",
    "x": -14.89,
-   "y": -11.58,
+   "y": -11.54,
    "z": 0.45,
    "size_x": 2.4,
    "size_y": 0.6,
@@ -403,7 +403,7 @@
   },
   {
    "name": "counter_service_rbe45d62e_9",
-   "x": 20.48,
+   "x": 20.44,
    "y": 2.49,
    "z": 0.525,
    "size_x": 0.8,
@@ -411,18 +411,6 @@
    "size_z": 1.05,
    "collision": "convex",
    "material": "wood"
-  },
-  {
-   "name": "chair_waiting_rbe45d62e_10",
-   "x": 17.97,
-   "y": -11.58,
-   "z": 0.45,
-   "size_x": 2.4,
-   "size_y": 0.6,
-   "size_z": 0.9,
-   "collision": "convex",
-   "material": "wood",
-   "rot_z": 180.0
   },
   {
    "name": "table_low_rbe45d62e_11",
@@ -496,12 +484,24 @@
   },
   {
    "name": "counter_service_rbe45d62e_15",
-   "x": -20.48,
+   "x": -20.44,
    "y": -4.13,
    "z": 0.525,
    "size_x": 0.8,
    "size_y": 2.2,
    "size_z": 1.05,
+   "collision": "convex",
+   "material": "wood",
+   "rot_z": 180.0
+  },
+  {
+   "name": "chair_waiting_rbe45d62e_16",
+   "x": 17.5,
+   "y": -11.54,
+   "z": 0.45,
+   "size_x": 2.4,
+   "size_y": 0.6,
+   "size_z": 0.9,
    "collision": "convex",
    "material": "wood",
    "rot_z": 180.0
@@ -543,75 +543,17 @@
   },
   {
    "name": "chair_waiting_r3d03d21b_1",
-   "x": -20.58,
-   "y": 9.67,
+   "x": 15.49,
+   "y": 11.54,
    "z": 0.45,
-   "size_x": 0.6,
-   "size_y": 2.4,
+   "size_x": 2.4,
+   "size_y": 0.6,
    "size_z": 0.9,
    "collision": "convex",
-   "material": "wood",
-   "rot_z": 180.0
+   "material": "wood"
   },
   {
    "name": "table_low_r3d03d21b_2",
-   "x": -13.79,
-   "y": 8.82,
-   "z": 0.225,
-   "size_x": 1.0,
-   "size_y": 0.6,
-   "size_z": 0.45,
-   "collision": "convex",
-   "material": "wood"
-  },
-  {
-   "material": "wood",
-   "name": "chair_set_r3d03d21b_2_1",
-   "x": -13.79,
-   "y": 8.07,
-   "z": 0.45,
-   "size_x": 0.5,
-   "size_y": 0.5,
-   "size_z": 0.9,
-   "collision": "convex",
-   "rot_z": 180.0
-  },
-  {
-   "material": "wood",
-   "name": "chair_set_r3d03d21b_2_2",
-   "x": -13.79,
-   "y": 9.57,
-   "z": 0.45,
-   "size_x": 0.5,
-   "size_y": 0.5,
-   "size_z": 0.9,
-   "collision": "convex",
-   "rot_z": 0.0
-  },
-  {
-   "name": "counter_service_r3d03d21b_3",
-   "x": -7.64,
-   "y": 11.48,
-   "z": 0.525,
-   "size_x": 2.2,
-   "size_y": 0.8,
-   "size_z": 1.05,
-   "collision": "convex",
-   "material": "wood"
-  },
-  {
-   "name": "chair_waiting_r3d03d21b_4",
-   "x": 20.58,
-   "y": 6.27,
-   "z": 0.45,
-   "size_x": 0.6,
-   "size_y": 2.4,
-   "size_z": 0.9,
-   "collision": "convex",
-   "material": "wood"
-  },
-  {
-   "name": "table_low_r3d03d21b_5",
    "x": -10.87,
    "y": 9.12,
    "z": 0.225,
@@ -623,19 +565,7 @@
   },
   {
    "material": "wood",
-   "name": "chair_set_r3d03d21b_5_1",
-   "x": -10.87,
-   "y": 8.37,
-   "z": 0.45,
-   "size_x": 0.5,
-   "size_y": 0.5,
-   "size_z": 0.9,
-   "collision": "convex",
-   "rot_z": 180.0
-  },
-  {
-   "material": "wood",
-   "name": "chair_set_r3d03d21b_5_2",
+   "name": "chair_set_r3d03d21b_2_2",
    "x": -10.87,
    "y": 9.87,
    "z": 0.45,
@@ -646,9 +576,9 @@
    "rot_z": 0.0
   },
   {
-   "name": "counter_service_r3d03d21b_6",
-   "x": 15.7,
-   "y": 11.48,
+   "name": "counter_service_r3d03d21b_3",
+   "x": -7.64,
+   "y": 11.44,
    "z": 0.525,
    "size_x": 2.2,
    "size_y": 0.8,
@@ -657,9 +587,55 @@
    "material": "wood"
   },
   {
+   "name": "chair_waiting_r3d03d21b_4",
+   "x": 20.54,
+   "y": 6.27,
+   "z": 0.45,
+   "size_x": 0.6,
+   "size_y": 2.4,
+   "size_z": 0.9,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "table_low_r3d03d21b_5",
+   "x": 17.18,
+   "y": 5.04,
+   "z": 0.225,
+   "size_x": 1.0,
+   "size_y": 0.6,
+   "size_z": 0.45,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "material": "wood",
+   "name": "chair_set_r3d03d21b_5_2",
+   "x": 17.18,
+   "y": 5.79,
+   "z": 0.45,
+   "size_x": 0.5,
+   "size_y": 0.5,
+   "size_z": 0.9,
+   "collision": "convex",
+   "rot_z": 0.0
+  },
+  {
+   "name": "counter_service_r3d03d21b_6",
+   "x": -20.44,
+   "y": 10.04,
+   "z": 0.525,
+   "size_x": 0.8,
+   "size_y": 2.2,
+   "size_z": 1.05,
+   "collision": "convex",
+   "material": "wood",
+   "rot_z": 180.0
+  },
+  {
    "name": "chair_waiting_r3d03d21b_7",
    "x": 4.42,
-   "y": 11.58,
+   "y": 11.54,
    "z": 0.45,
    "size_x": 2.4,
    "size_y": 0.6,
@@ -669,8 +645,8 @@
   },
   {
    "name": "table_low_r3d03d21b_8",
-   "x": -18.29,
-   "y": 8.82,
+   "x": -2.75,
+   "y": 6.9,
    "z": 0.225,
    "size_x": 1.0,
    "size_y": 0.6,
@@ -681,8 +657,8 @@
   {
    "material": "wood",
    "name": "chair_set_r3d03d21b_8_1",
-   "x": -18.29,
-   "y": 8.07,
+   "x": -2.75,
+   "y": 6.15,
    "z": 0.45,
    "size_x": 0.5,
    "size_y": 0.5,
@@ -693,8 +669,8 @@
   {
    "material": "wood",
    "name": "chair_set_r3d03d21b_8_2",
-   "x": -18.29,
-   "y": 9.57,
+   "x": -2.75,
+   "y": 7.65,
    "z": 0.45,
    "size_x": 0.5,
    "size_y": 0.5,
@@ -704,7 +680,7 @@
   },
   {
    "name": "counter_service_r3d03d21b_9",
-   "x": 20.48,
+   "x": 20.44,
    "y": 9.92,
    "z": 0.525,
    "size_x": 0.8,
@@ -716,7 +692,7 @@
   {
    "name": "chair_waiting_r55335a56_1",
    "x": -7.33,
-   "y": -11.58,
+   "y": -11.54,
    "z": -4.55,
    "size_x": 2.4,
    "size_y": 0.6,
@@ -751,7 +727,7 @@
   {
    "name": "counter_service_r55335a56_3",
    "x": -1.78,
-   "y": 11.48,
+   "y": 11.44,
    "z": -4.475,
    "size_x": 2.2,
    "size_y": 0.8,
@@ -761,7 +737,7 @@
   },
   {
    "name": "chair_waiting_r55335a56_4",
-   "x": -20.58,
+   "x": -20.54,
    "y": 3.08,
    "z": -4.55,
    "size_x": 0.6,
@@ -807,6 +783,17 @@
    "rot_z": 0.0
   },
   {
+   "name": "counter_service_r55335a56_6",
+   "x": -14.44,
+   "y": 11.44,
+   "z": -4.475,
+   "size_x": 2.2,
+   "size_y": 0.8,
+   "size_z": 1.05,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
    "name": "table_low_r55335a56_8",
    "x": -8.38,
    "y": -1.14,
@@ -844,7 +831,7 @@
   {
    "name": "counter_service_r55335a56_9",
    "x": -3.53,
-   "y": -11.48,
+   "y": -11.44,
    "z": -4.475,
    "size_x": 2.2,
    "size_y": 0.8,
@@ -855,7 +842,7 @@
   },
   {
    "name": "chair_waiting_r55335a56_10",
-   "x": -20.58,
+   "x": -20.54,
    "y": -0.28,
    "z": -4.55,
    "size_x": 0.6,
@@ -1109,8 +1096,8 @@
   },
   {
    "name": "chair_r0499d2c6_10",
-   "x": 18.88,
-   "y": 0.3,
+   "x": 14.96,
+   "y": -1.51,
    "z": -4.55,
    "size_x": 0.55,
    "size_y": 0.55,
@@ -1120,8 +1107,8 @@
   },
   {
    "name": "table_low_r0499d2c6_11",
-   "x": 14.96,
-   "y": -1.51,
+   "x": 13.16,
+   "y": -6.89,
    "z": -4.75,
    "size_x": 1.2,
    "size_y": 0.8,
@@ -1132,8 +1119,8 @@
   {
    "material": "wood",
    "name": "chair_set_r0499d2c6_11_1",
-   "x": 14.96,
-   "y": -2.36,
+   "x": 13.16,
+   "y": -7.74,
    "z": -4.55,
    "size_x": 0.5,
    "size_y": 0.5,
@@ -1144,8 +1131,8 @@
   {
    "material": "wood",
    "name": "chair_set_r0499d2c6_11_2",
-   "x": 14.96,
-   "y": -0.66,
+   "x": 13.16,
+   "y": -6.04,
    "z": -4.55,
    "size_x": 0.5,
    "size_y": 0.5,
@@ -1155,8 +1142,8 @@
   },
   {
    "name": "chair_r0499d2c6_12",
-   "x": 13.16,
-   "y": -6.89,
+   "x": 9.4,
+   "y": 6.54,
    "z": -4.55,
    "size_x": 0.55,
    "size_y": 0.55,
@@ -1166,8 +1153,8 @@
   },
   {
    "name": "table_low_r0499d2c6_13",
-   "x": 9.4,
-   "y": 6.54,
+   "x": 9.24,
+   "y": 9.35,
    "z": -4.75,
    "size_x": 1.2,
    "size_y": 0.8,
@@ -1177,21 +1164,9 @@
   },
   {
    "material": "wood",
-   "name": "chair_set_r0499d2c6_13_1",
-   "x": 9.4,
-   "y": 5.69,
-   "z": -4.55,
-   "size_x": 0.5,
-   "size_y": 0.5,
-   "size_z": 0.9,
-   "collision": "convex",
-   "rot_z": 180.0
-  },
-  {
-   "material": "wood",
    "name": "chair_set_r0499d2c6_13_2",
-   "x": 9.4,
-   "y": 7.39,
+   "x": 9.24,
+   "y": 10.2,
    "z": -4.55,
    "size_x": 0.5,
    "size_y": 0.5,
