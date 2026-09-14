@@ -855,6 +855,30 @@
           "rot_z": {
             "type": "number",
             "description": "Degrees about up added to the prop slot's rotation; a species module's front is its local -Y."
+          },
+          "stock": {
+            "enum": [
+              "none",
+              "office",
+              "bar",
+              "kitchen",
+              "vault",
+              "storage",
+              null
+            ],
+            "description": "What stands on the piece's top, built into its module by Zoo (desk, table, counter, filing_cabinet)."
+          },
+          "variant": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Which of the species' module_variants seeds the module; 0 is the base module."
+          },
+          "form": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "A species' named form (furnace: furnace/water_heater; booth_seat: booth/sofa)."
           }
         }
       }

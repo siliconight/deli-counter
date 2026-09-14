@@ -1,3 +1,211 @@
+## [0.131.0] - 2026-09-14  a room is furnished as what it is
+
+The walker, cold run 9052, in `country_club_a01`'s basement: "need a lot more
+species for this room, its just a bunch of chairs and tables with nothing on
+it, boring". The room is `wine_cellar`, 560 m2, and it held 27 pieces of 2
+species: chair 20, table 7. `furnish` matched "role id" by SUBSTRING against
+six keyword rows, and `objective_room wine_cellar` matched none, so it took
+`_FURNITURE_DEFAULT` -- a low table and a chair round robin. Re-measured over
+the library before changing it: 272 of 694 rooms took that row, the figure the
+survey gave (docs/proposals/INTERIOR_FURNISHING.md). Zoo 0.84.0 built what was
+missing on its side -- five interior species and stock on the tops -- and
+listed what Deli Counter had to add. This is that list.
+
+**A room is read as a KIND, on whole tokens (`level_design._room_kind`).** The
+id's tokens first, in table order, so `wine_cellar` is a wine cellar before it
+is a basement and `cellar_hall` a basement before it is a hall; then below
+grade a basement; then the role's own tokens, except the level grammar's roles
+(`connector`, `objective_room`, `open_floor`...), which say nothing about what
+is in a room. BEYOND THE PROPOSAL'S TABLE: `hall` and `shop_floor` kinds. The
+first draft put "hall" and "floor" in the lobby row and the library came back
+with 130 payphones and 145 ATMs, one in nearly every `upper_hall` and
+`sales_floor`; halls now get seating and tables, shop floors shelving and stock.
+
+**Each kind is a recipe (`_RECIPES`, `_PIECES`)**: one or two anchors, about
+half the target as a wall run, the rest floor sets and clusters of 2-4 small
+pieces packed 0.3-0.8 m apart, in turn from a seeded start. The target is still
+`_furnish_target` less what the room holds. Three sizes of a piece per
+building (`_palette`), at most four of one piece and size in a room, 0-4
+chairs a table, some pulled out and half of them turned 10-20 degrees. A
+fallback room gets a wall run and one cluster of cartons and dust sheets, not
+a table and chairs. A corridor gets at most two wall pieces.
+
+**Zoo's dressing, carried end to end.** `Volume.stock`, `.variant`, `.form`
+(schema too) reach every prop slot as `stock` / `variant` / `form`, None / 0 /
+None when unset. Desks carry `office`, bar counters `bar`, kitchen counters
+`kitchen`, count tables `vault`, supply cabinets `storage`; the furnace and
+water heater, booth and sofa carry their `form`; `variant` is crc32 of the
+piece's name % 4, written ONLY where the species has variants to give --
+Zoo's `honour_dressing` drops all three fields when one cannot be honoured,
+so a variant on a chair would have cost a water heater its form.
+`test_zoo_honours_every_dressing_furnish_writes` asks Zoo's own function.
+`themed_tscn.module_stem` gains `form=`, `stock=`, `variant=` with Zoo's exact
+suffixes and tests; `resolve_themed_stem` puts them on the SPECIES stem only
+(clearing "auto" and "none" as `plan_kit` does); `resolve_slot_ref` tries the
+dressed species, the bare species, then the box. The mirror is pinned against
+`zoo_keeper.core.kit.module_stem` over 240 field combinations, with and
+without a state, and, through
+the whole chain, against `plan_kit` on ten one-slot manifests (a desk with
+office stock, a water heater, a dropped variant on a chair, stock on a carton
+stack, a pool table too long for its genome) whenever Zoo is beside this repo.
+
+**`prop_species` rows** for `carton_stack`, `dust_sheet`, `pool_table`,
+`booth_seat` and `furnace`, each IMMEDIATELY ahead of the row that would
+claim its names -- and no higher. The first draft put `booth` at the top and
+it took `booth_desk` (four parking-garage desks and a broadcast desk) from
+`desk`; listing every authored name each new keyword re-routes caught it.
+Measured re-routes among authored volumes: `box_stack` x2 and `boiler` x3
+(box before), `booth_seating_*` x4 (chair), `*sofa*` x6 (box). Also routed now,
+because the recipes place them and Zoo builds them: `pallet` -> `pallet_stack`
+(11 authored volumes; the 4.5 x 2.5 loading stacks stay boxes by Zoo's range),
+`barrel`/`drum`, `litter_bin`, `grill`, `stanchion`, `payphone` (2 authored,
+below the genome's width). `bin` is not a keyword: `cabinet` contains it.
+`_prop_material`: furnace, heater, grill, vending, atm, payphone, stanchion,
+litter bin and drum are metal.
+
+**A piece with a front faces the room.** Safes, cabinets, shelving, counters,
+furnaces, water heaters, vending machines and seating stand against a wall
+facing in (`_front_turn`); a desk faces its sitter into the room. Two defects
+under the old rule: a floor safe was written with no rotation -- in
+`bank_branch_a02`'s basement one stood beside the new vault door with its
+blank back to the approach -- and `_wall_slots`' rotation assumed every piece
+is recorded long side first, which a SQUARE piece is not, so a 1.2 x 1.2 water
+tank on an east or west wall faced along it. `_front_turn` asks the question
+the emitter asks. To-the-ceiling pieces (furnace, water heater) stop
+`_CEILING_AIR` short of the ceiling slab, never coplanar with it.
+
+**A room does not furnish the room inside it (`_nested_rects`).** Found in the
+library, not guessed: 0.130.0 walls a vault room inside `a02`'s `vault_west`,
+and the first refurnish stood a count table and its chair inside the vault.
+0.130.0's own library had two of `vault_west`'s lockers in there.
+
+**Kept, every one**: nothing mid-floor at shelter height (cluster pieces stop
+at 1.5 m), idempotence by name mark (0.122.0-0.130.0 stems still recognised),
+the crc32 room tag, exterior-opening clearance, stair reserved rectangles,
+the vault swing zone, `_WALL_PIECE_AIR`, the chair compass convention.
+
+**A small turn survives the composer (`themed_tscn._fit_rotation`).** It tried
+only the four cardinals, so a chair turned 15 degrees came out square. The
+slot's nearest cardinal is tried first and, when the fit keeps that quarter,
+the slot's own angle is returned. The placement gate's 0.25 m tolerance holds
+a 0.5 m chair at 20 degrees (0.64 m).
+
+**A host's stock is not its height (`portable_building.verify_placement`).**
+Zoo's `Stock_*` nodes are left out of the module extent, as Zoo leaves them
+out of its own bounds. With them in, the first stocked kits read three office
+desks authored 0.75 m at 1.12-1.13 m and two bar counters 1.08 m at 1.335 m:
+five height advisories on modules built exactly to their slots, now 0.
+
+**Generated furniture gives way to a stair re-seat (`stair_pitch.clear_walls`).**
+`presets.make` re-seats stairs after `enrich` (and, stairs-first, after
+`core_first`), judging every seat against furniture placed round the old
+ones. With these recipes the `bank` stairs-first preset left
+`core_4_basement_service` cutting the basement partition -- an L21 failure
+0.130.0 did not have -- after a 10.8 s search (0.4 s before). A generated piece
+no longer refuses a seat; it is evicted from the seat that is kept. Default
+presets: every stair seat identical to 0.130.0's, all 18. Stairs-first: 9
+presets seat differently from 0.130.0 (furniture differs before
+`core_first`), L21 0 -> 0 on all but `compound`, which had 8 before and has 8.
+
+### The library (`migrate_furnish_recipes.py`)
+
+Strips every volume `furnish` wrote -- a known stem and the tag of a room in
+that spec -- and furnishes again; authored volumes and `seed_cover` pieces are
+untouched. NOT 0.129.0's replay from the pre-furniture snapshot, and measured
+before choosing: stripping and running 0.130.0's own `furnish` gives back 122
+of the 126 room-bearing specs volume for volume; the other four are the three
+vault banks (enclosed after they were furnished) and `twin_a01` (0.129.0's
+refurnish had missed it). 126 specs: -8823 furnished volumes, +6978.
+
+Per room kind over the 693 rooms of 9 m2 or more, both columns bucketed by
+0.131.0's kinds and routing, counting every volume standing in the room:
+
+    kind         rooms   pieces/room    species/room   stocked   species in kind
+    fallback       106   20.0 -> 12.7   2.08 -> 4.47     0 ->  0    10 -> 19
+    office          93   11.7 -> 12.1   3.18 -> 4.70     0 -> 253    9 -> 17
+    vault           74   11.1 -> 10.9   2.55 -> 4.92     0 -> 161    7 -> 11
+    storage         64   11.0 ->  9.5   2.81 -> 3.48     0 ->  75    8 -> 10
+    shop_floor      62   18.6 -> 14.1   2.98 -> 5.77     0 ->  0     7 -> 15
+    hall            55   15.1 -> 15.3   2.58 -> 5.85     0 ->  0     7 -> 15
+    lobby           53   21.5 -> 15.1   3.30 -> 8.15     0 ->  0     9 -> 17
+    garage          35   13.6 -> 14.2   3.06 -> 5.49     0 ->  4     7 -> 11
+    corridor        35   12.9 ->  3.1   1.97 -> 1.89     0 ->  0     5 ->  9
+    kitchen         29   10.1 ->  6.2   1.83 -> 3.52     0 ->  27    4 ->  9
+    club            24   20.2 -> 22.9   2.71 -> 6.12     0 ->  17    8 -> 12
+    basement        20   19.7 -> 14.2   2.55 -> 6.80     0 ->  0     3 ->  8
+    apartment       18   15.2 -> 11.6   2.44 -> 5.00     0 ->  0     5 ->  8
+    mechanical      18    7.0 ->  7.2   2.17 -> 4.11     0 ->  0     6 ->  9
+    wine_cellar      4   16.8 -> 19.0   2.75 -> 5.00     0 ->  0     5 ->  7
+    locker           3    3.0 ->  3.0   3.00 -> 2.00     0 ->  0     4 ->  2
+    ALL            693   15.0 -> 12.2   2.65 -> 4.97     0 -> 537   16 -> 24
+
+The drop in pieces is chairs: 5,817 -> 1,381, the table-and-chair round robin
+gone. `country_club_a01` `wine_cellar`: 27 pieces of 2 species -> 20 of 5
+(shelving 7, chair 6, table 3, water barrel 3, dust sheet 1). `bank_branch_a02`
+basement: `vault_west` 8 pieces of 3 species -> 14 of 6, `vault_east` 8 of 3 ->
+12 of 6, the vault room 2 trespassing lockers -> 5 of its own; 7 stocked.
+Every fronted piece faces its room in the four library specs the test reads
+(both vault banks, `bank_job`, `country_club_a01`). Locker rooms lost a species (3 rooms, 9 pieces).
+
+Gates, 0.130.0 -> 0.131.0, each tree built and gated whole on one machine:
+
+- Layout lint, 132 specs: 0 FAIL both; WARN 549 -> 336, all of it L9
+  (identical cover boxes, 472 -> 259: the 0.5 x 0.5 chairs).
+- Generated volumes in a stair's reserved rectangle 0 -> 0; generated pieces
+  at shelter height mid-floor 0 -> 0; stair regression 52 variants, 0 failures.
+- Nav gate, 130 shells: yes 107 / NO 14 / UNJUDGED 9, identical shell for
+  shell and marker for marker when both builds are judged by the same gate.
+- Composed with Zoo 0.85.0 and the cold-9052 skins, z-fight gate: `a02` 117 ->
+  130, `country_club_a01` 150 -> 135. Every pair added or removed (52/39,
+  69/84) is a generated piece's bottom on its room's floor skin, the class the
+  gate already reports. Kits: 0 dressing fallbacks, 0 species fallbacks, 0
+  missing modules.
+
+### The nav gate snapped a marker onto its own desk
+
+The first library build took `office` from navigable to NO: `objective_EXEC`,
+snap 1.1 m. REFUTED FIRST: that furniture had closed the objective's
+approach. Single-piece rebuilds each baked by the gate looked like it -- the
+suite desk removed passed; moved 0.2 or 0.4 m further off failed; shrunk to a
+0.55 m box failed; moved across the suite passed -- and a 3.0 m
+furniture-free ring round every objective went into `furnish`. The next build
+failed the same marker with the desk 3.1 m away. A probe copy of
+`nav_gate.gd` printing the snap settled it: the marker snapped to a
+two-polygon island 1.050001 m above it, the exec desk's top, while the
+nearest point on the spawn's island, the floor, was 1.092016 m. 0.130.0's
+build passed by 1.2 mm (floor 1.048846). The ring came out.
+
+`nav_gate.gd` no longer snaps a MARKER to a surface more than one slab and a
+climb above it (`MARKER_MAX_ABOVE`, 0.3 + `AGENT_MAX_CLIMB`; 216 of 293 checked
+library markers stand at their storey's level). Stair endpoints snap as
+before. On 0.130.0's own build every verdict is unchanged and five shells each
+gain one reachable marker that had snapped onto the top of the solid it
+stands in: `objective_REGISTER` in its register counter in `cr_deli`,
+`night_deli`, `corner_deli_heist_01` and `fuel_stop_heist` (snap 0.45-0.5 m
+-> 1.06-1.14 m), and `patrol_point_ROUTE_CASH_ROOM` in
+`cbp_town_finale_midbalanced_schemafixed`'s counting tables. With the old gate
+0.131.0's `office` still reads NO.
+
+### Tests
+
+`test_furnish.py` (+13), `test_themed_stem.py` (+5), `test_prop_species.py`
+(+3), `test_stair_core.py` (+1). Against 0.130.0's code and library, 20 of
+them fail: the kind reader, the wine cellar, fronts (0.130.0's floor safes),
+stock and variant, Zoo honouring the dressing, the size cap and palette,
+clusters, seats and turns, the ceiling, the migration, the nested room, the
+four stem and resolver tests, the fit rotation, the new routing, slot fields,
+and the stair give-way (0.130.0 left two chairs in a core's reserved
+rectangle). Five 0.123.0-0.124.0 tests are restated with why: an office's
+desks bring chairs, so density counts hosts; a dining room, not a lobby,
+seats a table; chairs may be 0-4 and turned. Suite: 780 passed.
+
+Not done, and said: Zoo's `vending_machine` builds 0.795 m deep for a 0.75 m
+slot and fails its own `fit_depth` (seen in the `country_club_a01` kit; Zoo's
+defect, not changed here). Wine racks are shelving until Zoo has a wine rack;
+reach-in coolers, dartboards, hand trucks and water coolers are not placed.
+`SCHEMA_VERSION` is not bumped, as no schema addition since 0.103.0 has been.
+The frames were looked at; the walker has not seen them.
+
 ## [0.130.0] - 2026-09-14  a bank vault is a room behind a round door
 
 The walker, walk 9052, in `bank_branch_a02`'s basement: "the bank vault should

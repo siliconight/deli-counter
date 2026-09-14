@@ -172,3 +172,17 @@ if __name__ == "__main__":
         if name.startswith("test_"):
             _run(fn)
     print("all stair_core tests passed")
+
+
+def test_generated_furniture_gives_way_to_a_stair_reseat():
+    """0.131.0: the second `_finish_stairs` pass judged every seat against
+    furniture placed round the old seats, and with the new furnishing
+    recipes the `bank` stairs-first preset left `core_4_basement_service`
+    cutting the basement partition (L21) after a 10.8 s search. Generated
+    pieces now give way and are evicted from the seat that is kept."""
+    import layout_lint
+    spec = presets.make("bank", name="t_cf_give_way", stairs_first=True)
+    assert layout_lint.stair_wall_findings(spec) == []
+    import stair_pitch
+    assert not [f for f in stair_pitch._rect_intrusions(spec)
+                if "_r" in f.split(" ")[1]], stair_pitch._rect_intrusions(spec)

@@ -2334,6 +2334,12 @@ class _Builder:
                                                   self.s.default_material),
                     "material": v.material or self.s.default_material,
                     "species": species,
+                    # DRESSING (Zoo 0.84.0): always written, None / 0 /
+                    # None when unset, so a slot says it has none rather
+                    # than leaving a reader to guess from an absent key.
+                    "stock": getattr(v, "stock", None),
+                    "variant": int(getattr(v, "variant", 0) or 0),
+                    "form": getattr(v, "form", None),
                     "current_ref": "prop_greybox_01", "kit_axis": "material",
                     "wall": None, "story": None, "facing": None,
                     "transform": {"translation": [round(c[0], 4),

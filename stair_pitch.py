@@ -159,7 +159,7 @@ def make_walkable(spec):
     return out
 
 
-def _rect_intrusions(spec):
+def _rect_intrusions(spec, generated_ok=()):
     """``{"INTRUDES <volume> <stair> <storey>"}`` -- every solid volume standing
     in a stair's reserved rectangle on the storey it climbs through or the
     storey whose slab it opens. Measured on the first run of `clear_walls`:
@@ -180,6 +180,8 @@ def _rect_intrusions(spec):
             a0, b0, a1, b1 = stairwell.flight_rect(st, k)
             for v in s.volumes:
                 if v.collision == "none" or v.name.startswith("stair_guard_"):
+                    continue
+                if v.name in generated_ok:
                     continue
                 base = v.z - v.size_z / 2.0
                 if not (k * H - 0.01 <= base < (k + 2) * H - 0.01):
@@ -208,10 +210,25 @@ def clear_walls(spec):
     (`layout_lint` L21). A stair already refused by the contract or L19 for
     another reason is still moved if L21 names it, but only to a seat that
     passes all three -- and that adds no lint failure naming anything else.
-    Returns ``{"reseated": {id: seat}, "unresolved": [...]}``."""
+    Returns ``{"reseated": {id: seat}, "unresolved": [...]}``, plus
+    ``"evicted": [names]`` when a kept seat displaced generated furniture."""
     import layout_lint
+    import vault_room
     _contract, ok, mine = _checks(spec)
     out = {"reseated": {}, "unresolved": []}
+    # GENERATED FURNITURE GIVES WAY TO A STAIR (0.131.0). `presets.make`
+    # runs this pass again after `enrich` has furnished the rooms, and with
+    # `stairs_first` after `stair_core.core_first` has moved the cores, so
+    # every seat the search tries is judged against furniture that was placed
+    # around the OLD seats. 0.131.0's recipes put different furniture on the
+    # floor, and the `bank` stairs-first preset came out with its basement
+    # service stair unseated -- one L21 failure where 0.130.0 had none, after
+    # a 10.8 s search (0.4 s before). A piece `furnish` or `seed_cover` wrote
+    # (`vault_room.is_generated`) no longer refuses a seat; it is evicted
+    # from the seat that is kept, as `vault_room.enclose_vaults` evicts it
+    # from a new vault room. An authored volume still refuses the seat.
+    generated = {str(v.get("name")) for v in spec.get("volumes") or []
+                 if vault_room.is_generated(v, spec)}
     for st in spec.get("stairs") or []:
         sid = st.get("id")
         if sid is None or st.get("exterior"):
@@ -219,7 +236,7 @@ def clear_walls(spec):
         if not mine(layout_lint.stair_wall_findings(spec), sid):
             continue
         before = (set(layout_lint.gate(spec)[0]) | _stair_errors(spec)
-                  | _rect_intrusions(spec))
+                  | _rect_intrusions(spec, generated))
 
         def no_new_failures():
             # Nothing may get worse: no new lint failure and no new stairwell
@@ -230,13 +247,18 @@ def clear_walls(spec):
             # "findings that do not mention this stair" let it through: any
             # finding that was not there before refuses the seat.
             now = (set(layout_lint.gate(spec)[0]) | _stair_errors(spec)
-                   | _rect_intrusions(spec))
+                   | _rect_intrusions(spec, generated))
             return not (now - before)
 
         found = (_reseat(spec, st, ok, also=no_new_failures)
                  or _reseat_wide(spec, st, ok, also=no_new_failures))
         if found:
             out["reseated"][sid] = found
+            gone = {f.split(" ")[1] for f in _rect_intrusions(spec)} & generated
+            if gone:
+                spec["volumes"] = [v for v in spec["volumes"]
+                                   if str(v.get("name")) not in gone]
+                out.setdefault("evicted", []).extend(sorted(gone))
         else:
             out["unresolved"].append(sid)
     return out

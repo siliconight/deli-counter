@@ -60,6 +60,12 @@ PLATE_ROLES = ("floor", "ceiling", "roof")
 #: Mirror of ``zoo_keeper.core.kit.VOLUME_ROLES``.
 VOLUME_ROLES = ("prop",)
 
+#: A volume slot's dressing fields. Mirror of
+#: ``zoo_keeper.core.kit.DRESSING_FIELDS`` (Zoo 0.84.0); `_UNDRESSED` is the
+#: slot with all three cleared, the second name `resolve_slot_ref` tries.
+DRESSING_FIELDS = ("form", "stock", "variant")
+_UNDRESSED = {"form": None, "stock": None, "variant": 0}
+
 #: The corner: its width and depth are the wall thickness and its height the
 #: storey, so width alone names fourteen solids in this library (950 posts
 #: across 17 (thickness, height) pairs, 2026-09-11). Keyed on all three.
@@ -131,8 +137,9 @@ def module_stem(typ: str, theme: str, style: int,
                 width_cm: int = None, state: str = None,
                 depth_cm: int = None, voids_tag: str = None,
                 openings_tag: str = None, height_cm: int = None,
-                species: str = None) -> str:
-    """``<type>[_<species>]_<theme>_<style:02d>[_w<cm>][_d<cm>][_h<cm>][_v<hash>][_o<hash>][_<state>]``.
+                species: str = None, form: str = None, stock: str = None,
+                variant: int = None) -> str:
+    """``<type>[_<species>]_<theme>_<style:02d>[_w<cm>][_d<cm>][_h<cm>][_f<form>][_s<stock>][_n<variant>][_v<hash>][_o<hash>][_<state>]``.
 
     THE MIRROR OF ``zoo_keeper.core.kit.module_stem``, and the two must change
     together. Neither side parses a stem; both CONSTRUCT it from the same slot,
@@ -145,6 +152,15 @@ def module_stem(typ: str, theme: str, style: int,
     and the shorter room was handed a slab eight metres too deep. A PROP varies
     on all three, and inherited the wall's argument by mistake: `cr_gas` put a
     0.9x10.0x1.8 counter and a 0.9x0.9x1.0 cube on one `prop_delco_04_w90`.
+
+    ``form``, ``stock`` and ``variant`` are a VOLUME's dressing (Zoo 0.84.0,
+    ``kit.DRESSING_FIELDS``): what stands on a desk, which seed a carton stack
+    is, whether a `furnace` slot is the furnace or the water heater. A desk
+    with office stock and a bare desk of one size are different geometry, so
+    they cannot share a name -- and `stock` "none", `form` "auto" and
+    `variant` 0 add nothing, so every name built before them is unchanged.
+    The composer cannot read a genome to learn whether Zoo honoured them;
+    `resolve_slot_ref` asks for the dressed name and then the plain one.
     """
     # A VOLUME'S SPECIES IS IN THE NAME (roadmap 44): `prop_desk_...` is a
     # desk built to the slot, `prop_...` the box. Two different geometries
@@ -158,6 +174,16 @@ def module_stem(typ: str, theme: str, style: int,
         base += f"_d{int(round(depth_cm))}"
     if height_cm is not None:
         base += f"_h{int(round(height_cm))}"
+    # The same tests as kit.module_stem, spelled the same way. `form` is
+    # tested for truth only, there as here: "auto" is cleared by the CALLER
+    # (`plan_kit` through `honour_dressing`; `resolve_themed_stem` below), so
+    # module_stem(form="auto") is `_fauto` on both sides and they still agree.
+    if form:
+        base += f"_f{form}"
+    if stock and stock != "none":
+        base += f"_s{stock}"
+    if variant:
+        base += f"_n{int(variant)}"
     if voids_tag:
         base += f"_v{voids_tag}"
     if openings_tag:
@@ -207,9 +233,24 @@ def resolve_themed_stem(slot: dict, theme: str, style: int, state: str = None):
     # the species fits the slot; `species=None` on the slot, or a slot from
     # an older manifest, resolves the plain box exactly as before.
     species = slot.get("species") if typ in VOLUME_ROLES else None
+    # A volume's dressing fields ride in its name only on the SPECIES stem:
+    # Zoo honours them for the species it builds (`kit.honour_dressing`) and
+    # never for the plain box, which has no top to stock and one variant.
+    dress = {}
+    if typ in VOLUME_ROLES and exact and species:
+        form = slot.get("form")
+        stock = slot.get("stock")
+        try:
+            variant = int(slot.get("variant") or 0)
+        except (TypeError, ValueError):
+            variant = 0
+        dress = {"form": None if form in (None, "", "auto") else str(form),
+                 "stock": None if stock in (None, "", "none") else str(stock),
+                 "variant": variant or None}
     stem = module_stem(typ, theme, eff_style, width_cm,
                        state if state else _default_stem_state(slot),
-                       depth_cm, vtag, otag, height_cm, species=species)
+                       depth_cm, vtag, otag, height_cm, species=species,
+                       **dress)
     return stem, (not exact)
 
 
@@ -233,9 +274,20 @@ def resolve_slot_ref(slot, theme, style, library_dir):
     # second (roadmap 44): Zoo builds the box when the species does not fit
     # the slot, and the composer must land on whichever one exists rather
     # than on greybox. The style-01 degrade applies to each in turn.
+    #
+    # A DRESSED volume (Zoo 0.84.0) asks for three names, not two: the species
+    # with every dressing field it wrote, the species with none, then the box.
+    # Zoo keeps the fields all or nothing (`kit.honour_dressing`), and that is
+    # what makes three enough -- a resolver that cannot read a genome can
+    # still name every module the kit could have built for this slot.
     candidates = [slot]
-    if slot.get("species") and slot.get("role") in VOLUME_ROLES:
-        candidates.append(dict(slot, species=None))
+    if slot.get("role") in VOLUME_ROLES:
+        bare = dict(slot, **_UNDRESSED)
+        if any(slot.get(f) not in (None, "", "none", "auto", 0)
+               for f in DRESSING_FIELDS):
+            candidates.append(bare)
+        if slot.get("species"):
+            candidates.append(dict(bare, species=None))
     for cand in candidates:
         stem, scaled = resolve_themed_stem(cand, theme, style)
         if stem and _themed_available(library_dir, stem):
@@ -417,15 +469,25 @@ def _fit_rotation(module_ext, gb_ext, fallback=0, scale=None):
     # -- tied at 0 and 180 and always came out at 0, so no rotation written
     # upstream could ever turn one round (the walker, cold run 9046: chairs
     # should face the table).
-    fb = int(round(float(fallback or 0))) % 360
-    order = ([fb] if fb in (0, 90, 180, 270) else []) + \
-        [r for r in (0, 90, 180, 270) if r != fb]
+    #
+    # A TURN OFF THE CARDINALS IS KEPT (0.131.0): a chair pulled out from its
+    # table 10-20 degrees. It used to be tried nowhere -- the order began at
+    # the slot's rotation only when that was a cardinal -- so every such turn
+    # came out square. The fit still decides the QUARTER: the slot's nearest
+    # cardinal is tried first, and when it wins (it ties or beats the rest),
+    # the slot's own angle is returned instead of the cardinal. A module
+    # whose footprint says the quarter is wrong still gets the fitted one.
+    raw = float(fallback or 0) % 360.0
+    fb = int(round(raw / 90.0)) * 90 % 360
+    order = [fb] + [r for r in (0, 90, 180, 270) if r != fb]
     for rot in order:
         b = godot_basis(rot, scale or [1.0, 1.0, 1.0])
         pl = placed_extent(b, module_ext)
         err = abs(pl[0] - gb_ext[0]) + abs(pl[2] - gb_ext[2])
         if err < best_err - 1e-9:
             best_err, best = err, rot
+    if best == fb and abs(raw - fb) > 1e-6 and abs(raw - fb - 360.0) > 1e-6:
+        return round(raw, 4)
     return best
 
 

@@ -99,3 +99,88 @@ def test_style_01_degrade_still_applies_to_each_in_turn(tmp_path):
     open(os.path.join(lib, "prop_desk_delco_01_w160_d80_h75.glb"), "w").close()
     stem, _, fell = themed_tscn.resolve_slot_ref(slot, "delco", 1, lib)
     assert stem == "prop_desk_delco_01_w160_d80_h75" and fell
+
+
+# ---------------------------------------------------------------------------
+# 0.131.0 -- the interior species (Zoo 0.84.0) and the slot's dressing fields
+# ---------------------------------------------------------------------------
+
+import importlib  # noqa: E402
+import sys        # noqa: E402
+import types      # noqa: E402
+
+import pytest     # noqa: E402
+
+
+def test_the_interior_species_claim_their_names_ahead_of_the_rows_that_would():
+    f = prop_species.species_for_name
+    assert f("box_stack") == "carton_stack"               # not the box row's `stack`
+    assert f("cartons_r1234abcd_2") == "carton_stack"     # not the box row's `cart`
+    assert f("bankers_boxes") == "carton_stack"
+    assert f("dust_sheet_r1234abcd_3") == "dust_sheet"    # not chair or table
+    assert f("draped_table") == "dust_sheet"
+    assert f("pool_table_r1234abcd_1") == "pool_table"    # not table
+    assert f("booth_seating_a") == "booth_seat"           # not the chair row's `seat`
+    assert f("apartment_sofa_cover") == "booth_seat"
+    assert f("water_heater_r1234abcd_2") == "furnace"
+    assert f("boiler_tank") == "furnace"                  # not `tank`
+    assert f("loading_pallet_stack") == "pallet_stack"    # not the box row
+    assert f("barrel_wine_r1234abcd_4") == "water_barrel"
+    assert f("litter_bin_r1234abcd_5") == "litter_bin"
+    assert f("grill_r1234abcd_1") == "flat_top_grill"
+    assert f("stanchion_r1234abcd_7") == "queue_stanchion"
+    assert f("payphone") == "payphone"
+
+
+def test_the_new_rows_steal_nothing_they_should_not():
+    """A row placed higher than it needs to be takes names from the rows it
+    jumps: `booth` at the top of the table took `booth_desk` from `desk`."""
+    f = prop_species.species_for_name
+    assert f("booth_desk") == "desk"
+    assert f("broadcast_booth_desk") == "desk"
+    assert f("cabinet_supply_r1234abcd_2") == "filing_cabinet"   # `bin` is not a keyword
+    assert f("tool_bench") == "counter"
+    assert f("crate_stack_security_room") is None
+    assert f("VAULT") is None
+
+
+@pytest.fixture
+def dc(monkeypatch):
+    """deli_counter against stub bpy/bmesh, as test_facade_glazing does."""
+    for name in ("bpy", "bmesh"):
+        try:
+            importlib.import_module(name)
+        except ImportError:
+            monkeypatch.setitem(sys.modules, name, types.ModuleType(name))
+    monkeypatch.delitem(sys.modules, "deli_counter", raising=False)
+    mod = importlib.import_module("deli_counter")
+    yield mod
+    sys.modules.pop("deli_counter", None)
+
+
+def test_every_prop_slot_carries_the_dressing_fields(dc):
+    """Zoo 0.84.0's list, item 1: `stock`, `variant`, `form` on every prop
+    slot, None / 0 / None when unset -- a slot that says it has none."""
+    import skin_style
+    from spec_loader import spec_from_dict
+    d = {"name": "dress", "footprint_x": 20, "footprint_y": 20, "volumes": [
+        {"name": "desk_r1234abcd_1", "x": 0, "y": 0, "z": 0.375, "size_x": 1.6,
+         "size_y": 0.8, "size_z": 0.75, "stock": "office", "variant": 2},
+        {"name": "water_heater_r1234abcd_2", "x": 4, "y": 0, "z": 1.2,
+         "size_x": 0.6, "size_y": 0.6, "size_z": 2.4, "form": "water_heater"},
+        {"name": "crate_stack", "x": -4, "y": 0, "z": 0.5, "size_x": 1.0,
+         "size_y": 1.0, "size_z": 1.0}]}
+    spec = spec_from_dict(d)
+    b = dc._Builder(spec)
+    b.slots = []
+    b._mat_style = skin_style.material_styles([m.id for m in spec.materials])
+    b._box = lambda *a, **k: None
+    b._col_box = lambda *a, **k: None
+    b._record_surface = lambda *a, **k: None
+    b._volumes()
+    got = {s["slot_id"]: (s["stock"], s["variant"], s["form"]) for s in b.slots}
+    assert got == {"desk_r1234abcd_1": ("office", 2, None),
+                   "water_heater_r1234abcd_2": (None, 0, "water_heater"),
+                   "crate_stack": (None, 0, None)}
+    stem, _ = themed_tscn.resolve_themed_stem(b.slots[0], "delco_1997", 1)
+    assert stem.endswith("_w160_d80_h75_soffice_n2"), stem

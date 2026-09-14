@@ -27,13 +27,34 @@ name things no species exists for (pumps, carts, planters, kiosks).
 
 Keywords are matched against the lowercased name in table order, first hit
 wins, so ``teller_counter`` is a teller line before it is a counter. Names
-that are boxes by nature (``crate``, ``col_``, ``pallet``) are listed with
+that are boxes by nature (``crate``, ``col_``; ``pallet`` until 0.131.0) are listed with
 ``None`` so a later keyword cannot claim them.
 """
 
 #: (keywords, species). Order matters.
 PROP_SPECIES = (
-    (("crate", "pallet", "col_", "pillar", "column", "stack", "pump_island",
+    # INTERIOR SPECIES (Zoo 0.84.0), each placed IMMEDIATELY AHEAD of the
+    # row that would claim its names first, as that release's entry lists
+    # them -- and no further up, because a row moved higher than it needs to
+    # be steals names from the rows it jumps. `booth` at the top of this
+    # table took `booth_desk` (four parking-garage and one broadcast desk)
+    # from `desk`; caught by listing every authored name each new keyword
+    # re-routes before the rows were placed. Here: `box_stack` holds `stack`
+    # and `cartons` holds `cart`, both in the box row; `dust_sheet` and
+    # `booth_seat` go before the chair row (whose `seat` takes
+    # `booth_seat`), `pool_table` before `table`, `furnace` before `tank`.
+    # What they re-route among the library's authored (not furnished)
+    # volumes, measured: `box_stack` x2 (box), `boiler` x3 (box),
+    # `booth_seating_*` x4 (chair), `*sofa*` x6 (box).
+    (("carton", "banker", "file_box", "box_stack"), "carton_stack"),
+    # A PALLET IS NO LONGER A BOX BY NATURE: Zoo has built `pallet_stack`
+    # since before this row, and `pallet` sat in the box row below, so the
+    # interior furnishing survey found it "routes to a plain box". Ahead of
+    # that row because `pallet_stack` holds `stack`. It re-routes 11 authored
+    # volumes; the 4.5 x 2.5 loading stacks are past the genome's 1.8 x 1.5
+    # and Zoo still builds them as the box, saying so.
+    (("pallet",), "pallet_stack"),
+    (("crate", "col_", "pillar", "column", "stack", "pump_island",
       "cart", "planter", "canopy", "kiosk", "vault"), None),
     # MINTED 2026-09-12 by zoo/tools/new_species.py (roadmap 150): the
     # first species the library asked for by name (42 `pump` placements,
@@ -55,10 +76,25 @@ PROP_SPECIES = (
     (("vending",), "vending_machine"),
     (("atm",), "atm"),
     (("hvac", "roof_unit"), "hvac_unit"),
+    (("furnace", "boiler", "water_heater", "heater"), "furnace"),
     (("tank",), "water_tank"),
+    (("dust_sheet", "sheeted", "draped", "covered_"), "dust_sheet"),
+    (("booth", "banquette", "sofa", "couch", "settee", "loveseat"),
+     "booth_seat"),
     (("chair", "seat", "bench", "waiting"), "chair"),
+    (("pool", "billiard"), "pool_table"),
     (("table",), "table"),
     (("safe",), "drop_safe"),
+    # Species Zoo builds that no name reached (the survey's list). Keywords
+    # are whole words a furnishing name carries; `bin` alone is not one,
+    # because `cabinet` contains it. `payphone` re-routes the two authored
+    # `payphone` volumes, 0.5 m wide and below the genome's 0.525, so Zoo
+    # still builds those as the box.
+    (("barrel", "drum"), "water_barrel"),
+    (("litter_bin", "trash_can"), "litter_bin"),
+    (("grill", "griddle"), "flat_top_grill"),
+    (("stanchion",), "queue_stanchion"),
+    (("payphone",), "payphone"),
 )
 
 

@@ -341,6 +341,16 @@ class Volume:
     # front is its local -Y, so 180 turns a chair round. The greybox box is
     # axis-aligned and unaffected; only the themed module turns.
     rot_z: float = 0.0
+    # DRESSING (Zoo 0.84.0 `kit.DRESSING_FIELDS`), carried to the prop slot
+    # and into both sides' module stem. `stock` is what stands on a top
+    # (none/office/bar/kitchen/vault/storage), `variant` which of the
+    # species' `module_variants` seeds it, `form` a species' named form
+    # (`furnace` / `water_heater`, `booth` / `sofa`). Zoo honours all three
+    # or none, so a field the species cannot take costs a fallback line in
+    # the kit index and the plain module, never a crash.
+    stock: Optional[str] = None
+    variant: int = 0
+    form: Optional[str] = None
 
 
 @dataclass

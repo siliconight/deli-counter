@@ -643,56 +643,294 @@ def seed_cover(spec):
     return added
 
 
-#: Room role/id keywords -> the FURNITURE placed there, as
-#: ``(name, w, d, h, where)``. `where` is "wall" for anything that stands
-#: against one and "floor" for anything that does not.
+#: FURNITURE: what a room gets, as a RECIPE per room KIND (0.131.0).
+#:
+#: WHAT THIS REPLACED, kept because each part of it was a finding. Until
+#: 0.130.0 this was `_FURNITURE`, six rows of room keywords matched by
+#: SUBSTRING against "role id", each naming three or four pieces placed round
+#: robin (`pieces[k % len(pieces)]`) at one size each, and a
+#: `_FURNITURE_DEFAULT` of a low table and a chair for everything else. The
+#: walker, in `country_club_a01`'s 560 m2 `wine_cellar` on cold run 9052:
+#: "need a lot more species for this room, its just a bunch of chairs and
+#: tables with nothing on it, boring". Measured then: that room matched no
+#: keyword and got 27 pieces of 2 species; 272 of 691 library rooms took the
+#: default row; "hall" sent `cellar_hall` to lobby counters and "service"
+#: sent `food_service` to workbenches; one size per species meant one mesh,
+#: repeated (six furniture GLBs for 97 pieces in that building); and nothing
+#: ever stood on a top (docs/proposals/INTERIOR_FURNISHING.md).
 #:
 #: NOTHING MID-FLOOR REACHES SHELTER HEIGHT, which is the invariant and not
-#: the one first written here. The first draft said every floor piece sits
+#: the one first written here. The 0.122.0 draft said every floor piece sits
 #: below `_COVER_MIN_Z` (0.60) and `test_furnish` refuted it on its first
 #: run: a desk is 0.75 and a floor safe is 1.00. A desk IS low cover, here
-#: and in a real office, and furnishing rooms with nothing but chairs to
-#: avoid saying so would be the tail wagging the dog. What `seed_cover`'s
-#: over-cover thesis protects is SHELTER -- somewhere a body can fight
-#: from, at `cover_break_height` -- and this pass never creates one:
-#: anything that tall goes flush against a wall, where it is a bookcase
-#: rather than a redoubt.
+#: and in a real office. What `seed_cover`'s over-cover thesis protects is
+#: SHELTER -- somewhere a body can fight from, at `cover_break_height` --
+#: and this pass never creates one: anything that tall goes against a wall.
 #:
 #: Names are chosen so `prop_species.species_for_name` routes every one of
-#: them to a species Zoo builds. A furniture volume that comes out a grey
-#: box is the defect this pass exists to reduce.
-_FURNITURE = (
-    (("office", "manager", "exec", "admin", "suite", "detective", "staff"),
-     (("desk", 1.6, 0.8, 0.75, "floor"),
-      ("chair", 0.55, 0.55, 0.9, "floor"),
-      ("cabinet_file", 0.9, 0.5, 1.4, "wall"),
-      ("shelf_run", 2.0, 0.4, 1.9, "wall"))),
-    (("storage", "stock", "back", "parts", "ware", "supply"),
-     (("shelf_run", 2.6, 0.6, 1.9, "wall"),
-      ("cabinet_supply", 1.0, 0.5, 1.8, "wall"),
-      ("table_work", 1.6, 0.8, 0.55, "floor"))),
-    (("bay", "garage", "loading", "dock", "shop", "service"),
-     (("workbench", 2.0, 0.8, 0.9, "wall"),
-      ("shelf_run", 2.4, 0.6, 1.9, "wall"),
-      ("cabinet_tool", 0.9, 0.5, 1.8, "wall"))),
-    (("vault", "loot", "safe_room", "armory", "evidence"),
-     (("shelf_run", 2.2, 0.5, 1.9, "wall"),
-      ("cabinet_locker", 1.2, 0.5, 1.9, "wall"),
-      ("safe_floor", 0.9, 0.9, 1.0, "floor"))),
-    (("utility", "plant", "mech", "boiler", "server"),
-     (("tank_water", 1.2, 1.2, 1.8, "wall"),
-      ("cabinet_panel", 0.9, 0.5, 1.8, "wall"),
-      ("shelf_run", 2.0, 0.5, 1.9, "wall"))),
-    (("lobby", "public", "hall", "concourse", "booking", "ward", "waiting",
-      "entry", "floor", "retail", "shop_floor"),
-     (("chair_waiting", 2.4, 0.6, 0.9, "wall"),
-      ("table_low", 1.0, 0.6, 0.45, "floor"),
-      ("counter_service", 2.2, 0.8, 1.05, "wall"))),
+#: them to a species Zoo builds, at a size inside that species' genome
+#: range. A furniture volume that comes out a grey box is the defect this
+#: pass exists to reduce.
+#:
+#: A piece: ``name`` (what routes it), ``sizes`` as (long, short, height)
+#: with height None for "to the ceiling", ``where`` wall / floor / cluster,
+#: ``front`` when the species has a face a body uses (it must face the
+#: room), ``stock`` / ``form`` / ``variants`` for Zoo's dressing fields,
+#: ``seats`` for the chairs a host brings, ``most`` per room.
+def _piece(name, sizes, where, front=False, stock=None, variants=False,
+           form=None, seats=None, most=None):
+    return {"name": name, "sizes": tuple(sizes), "where": where,
+            "front": front, "stock": stock, "variants": variants,
+            "form": form, "seats": seats, "most": most}
+
+
+_PIECES = {p["name"]: p for p in (
+    # --- against a wall, front to the room ---
+    _piece("shelf_run", ((2.6, 0.6, 1.9), (2.0, 0.5, 1.9), (1.2, 0.5, 1.8),
+                         (2.4, 0.6, 2.1)), "wall", front=True),
+    _piece("rack_wine", ((1.8, 0.4, 1.9), (1.2, 0.4, 1.9), (2.4, 0.45, 2.0)),
+           "wall", front=True),
+    _piece("cabinet_file", ((0.9, 0.5, 1.4), (0.6, 0.5, 1.3),
+                            (0.9, 0.6, 1.05)), "wall", front=True),
+    _piece("cabinet_supply", ((1.0, 0.5, 1.8), (0.9, 0.6, 1.4),
+                              (1.2, 0.5, 1.05)), "wall", front=True,
+           stock="storage", variants=True),
+    _piece("cabinet_locker", ((1.2, 0.5, 1.9), (0.9, 0.5, 1.9),
+                              (1.8, 0.5, 1.9)), "wall", front=True),
+    _piece("cabinet_tool", ((0.9, 0.5, 1.8), (0.7, 0.5, 1.0),
+                            (1.2, 0.6, 1.8)), "wall", front=True),
+    _piece("cabinet_panel", ((0.9, 0.5, 1.8), (0.6, 0.5, 1.2)), "wall",
+           front=True),
+    _piece("workbench", ((2.0, 0.8, 0.9), (1.6, 0.7, 0.9), (2.4, 0.8, 0.95)),
+           "wall", front=True),
+    _piece("counter_service", ((2.2, 0.8, 1.05), (1.6, 0.7, 1.0),
+                               (3.0, 0.8, 1.05)), "wall", front=True, most=2),
+    _piece("counter_bar", ((3.0, 0.8, 1.08), (4.0, 0.8, 1.08),
+                           (2.4, 0.7, 1.05)), "wall", front=True, stock="bar",
+           variants=True, seats=("counter", 2, 3), most=1),
+    _piece("counter_kitchen", ((2.2, 0.7, 0.92), (1.6, 0.7, 0.92),
+                               (3.0, 0.7, 0.92)), "wall", front=True,
+           stock="kitchen", variants=True),
+    _piece("grill", ((1.2, 0.9, 1.05), (1.6, 0.9, 1.05)), "wall", front=True,
+           most=1),
+    # A FLOOR SAFE HAS A DOOR, and until 0.131.0 it was a floor piece written
+    # with no rotation: in bank_branch_a02's basement one stood beside the new
+    # vault door showing its blank back to the approach.
+    _piece("safe_floor", ((0.9, 0.9, 1.0), (0.6, 0.6, 0.8), (0.8, 0.7, 1.2)),
+           "wall", front=True, most=2),
+    _piece("tank_water", ((1.2, 1.2, 1.8), (1.4, 1.4, 2.2)), "wall", most=1),
+    # Zoo's furnace and water heater stand on a pad the slot's footprint and
+    # run the flue to the slot's top, "so the volume should be authored to
+    # the ceiling" (Zoo 0.84.0): height None is the storey's clear height.
+    _piece("furnace", ((1.0, 0.9, None), (1.2, 1.2, None)), "wall",
+           front=True, form="furnace", most=1),
+    _piece("water_heater", ((0.6, 0.6, None), (0.5, 0.5, None)), "wall",
+           front=True, form="water_heater", most=1),
+    _piece("vending", ((0.85, 0.75, 1.83), (1.0, 0.8, 1.9)), "wall",
+           front=True, most=1),
+    _piece("atm", ((0.6, 0.55, 1.45),), "wall", front=True, most=1),
+    _piece("payphone", ((0.75, 0.5, 2.3),), "wall", front=True, most=1),
+    _piece("chair_waiting", ((2.4, 0.6, 0.9), (1.8, 0.6, 0.9),
+                             (3.0, 0.6, 0.9)), "wall", front=True),
+    _piece("booth", ((1.8, 0.75, 1.15), (2.4, 0.75, 1.15)), "wall",
+           front=True, form="booth", variants=True),
+    _piece("sofa", ((2.0, 0.9, 0.85), (1.6, 0.85, 0.85)), "wall", front=True,
+           form="sofa", variants=True, most=2),
+    # --- on the floor ---
+    _piece("desk", ((1.6, 0.8, 0.75), (1.4, 0.7, 0.75), (1.8, 0.9, 0.76)),
+           "floor", front=True, stock="office", variants=True,
+           seats=("desk", 1, 1)),
+    _piece("table_low", ((1.0, 0.6, 0.45), (1.2, 0.6, 0.45)), "floor"),
+    _piece("table_dining", ((1.2, 0.8, 0.74), (0.9, 0.9, 0.74),
+                            (1.6, 0.9, 0.74)), "floor", seats=("table", 0, 4)),
+    _piece("table_tasting", ((1.2, 0.8, 0.9), (1.0, 1.0, 0.9)), "floor",
+           seats=("table", 2, 2)),
+    _piece("table_work", ((1.6, 0.8, 0.9), (1.2, 0.7, 0.9)), "floor"),
+    _piece("table_count", ((1.6, 0.9, 0.76), (2.0, 0.9, 0.76)), "floor",
+           stock="vault", variants=True, seats=("table", 0, 2)),
+    _piece("pool_table", ((2.0, 1.14, 0.79), (2.4, 1.3, 0.8)), "floor",
+           variants=True, most=2),
+    # --- in clusters of 2-4, packed 0.3-0.8 m apart ---
+    _piece("cartons", ((0.9, 0.6, 1.0), (1.2, 0.8, 1.4), (0.6, 0.4, 0.6),
+                       (1.6, 1.2, 1.2), (0.5, 0.4, 0.9)), "cluster",
+           variants=True),
+    _piece("dust_sheet", ((2.0, 0.9, 0.85), (1.0, 0.8, 0.9), (0.8, 0.8, 1.0),
+                          (1.8, 1.0, 1.4)), "cluster", variants=True),
+    _piece("barrel_wine", ((0.6, 0.6, 0.9), (0.58, 0.58, 0.88),
+                           (0.8, 0.8, 1.2)), "cluster"),
+    _piece("barrel_drum", ((0.58, 0.58, 0.88), (0.6, 0.6, 0.9)), "cluster"),
+    _piece("pallets", ((1.2, 1.0, 0.95), (1.2, 1.0, 1.4), (1.0, 1.0, 0.7)),
+           "cluster"),
+    _piece("litter_bin", ((0.6, 0.6, 1.0), (0.5, 0.5, 0.85)), "cluster"),
+    _piece("stanchion", ((0.35, 0.35, 1.0),), "cluster"),
+)}
+
+#: The chairs a host brings: a table's go round it, a desk's sits at its
+#: front, a bar's stand along the room side. They are `chair_set_*` so they
+#: route to `chair` and the idempotence mark knows them.
+_SEAT = (0.5, 0.5)
+
+#: Room KINDS, matched on WHOLE TOKENS of the room id, in this order: the
+#: first kind any token of the id names wins, so `wine_cellar` is a wine
+#: cellar before it is a basement and `cellar_hall` a basement before it is a
+#: lobby. Tokens, not substrings -- "hall" inside `cellar_hall` sent it to
+#: lobby counters and "service" inside `food_service` to workbenches. The
+#: id's tokens come first because the id is what the author wrote about
+#: this room; the role is what the grammar needed from it.
+_ROOM_KINDS = (
+    ("corridor", ("corridor", "approach", "landing", "stair", "stairwell",
+                  "stairs", "catwalk", "vomitory", "gantry", "bridge",
+                  "hallway", "passage")),
+    ("wine_cellar", ("wine", "barrel", "champagne", "cask")),
+    ("vault", ("vault", "count", "counting", "cage", "safe", "evidence",
+               "strong", "deposit", "lockup", "armory", "money", "cash",
+               "bond", "bonded", "loot")),
+    ("kitchen", ("kitchen", "deli", "prep", "cooler", "walkin", "dough",
+                 "food", "galley")),
+    ("locker", ("locker", "lockers")),
+    ("mechanical", ("utility", "server", "boiler", "mech", "plant",
+                    "machine", "maintenance", "equipment", "comms")),
+    ("office", ("office", "offices", "manager", "exec", "executive", "suite",
+                "security", "control", "detective", "admin", "boardroom",
+                "study", "clerk", "dispatch", "ops", "curator", "bullpen",
+                "harbormaster", "judges", "chambers", "booth", "booths",
+                "attendant", "press", "broadcast")),
+    ("storage", ("storage", "stock", "stockroom", "store", "parts", "supply",
+                 "archive", "records", "stash", "baggage", "parcel",
+                 "receiving", "shed", "gear", "sort", "backstock")),
+    ("garage", ("garage", "bay", "dock", "loading", "workshop", "works",
+                "laydown")),
+    ("club", ("lounge", "club", "bar", "dining", "taproom", "parlor",
+              "gaming", "social", "vip", "skybox", "tavern", "pub", "game",
+              "trophy")),
+    ("apartment", ("apartment", "bedroom", "living", "flat", "home")),
+    ("basement", ("basement", "cellar", "under", "lower")),
+    ("lobby", ("lobby", "waiting", "reception", "concourse", "foyer",
+               "atrium", "entry", "checkin", "booking", "public", "rotunda",
+               "banking", "fare")),
+    # BEYOND THE PROPOSAL'S TABLE, and why. Its lobby row names lobby,
+    # waiting, reception and concourse; the first draft here added "hall"
+    # and "floor" to it, and the library came back with 130 payphones and
+    # 145 ATMs, one in nearly every `upper_hall` and `sales_floor`. A hall
+    # is somewhere people sit; a shop floor is shelving and stock.
+    ("shop_floor", ("floor", "sales", "retail", "showroom", "market",
+                    "aisle", "aisles", "stall", "customer", "shop")),
+    ("hall", ("hall", "gallery", "galleries", "exhibit", "chapel",
+              "assembly", "courtroom", "courtrooms", "viewing", "artifact")),
 )
-#: Anything whose role matches nothing above. A room with a table and two
-#: chairs reads as a room; a room with nothing reads as a corridor.
-_FURNITURE_DEFAULT = (("table_low", 1.2, 0.8, 0.5, "floor"),
-                      ("chair", 0.55, 0.55, 0.9, "floor"))
+#: A room whose id names no kind is read by its ROLE: the role's own tokens
+#: through the same table (`public_entry` is a lobby, `loot_room` a vault),
+#: except the level grammar's roles, which say what the level needs from a
+#: room and nothing about what is in it -- `open_floor` is not a shop.
+_ROLE_KINDS = {"staff_only": "locker", "connector": None,
+               "objective_room": None, "fortifiable": None, "open_floor": None,
+               "staging": None, "route_node": None, "finale": None}
+
+#: What each kind is made of (the proposal's table). `anchors` are placed
+#: first, one or two of them; about half the target is the `wall` run; the
+#: rest alternates `floor` sets and `clusters` of ``(pool, least, most)``.
+_RECIPES = {
+    "basement": {"anchors": ("furnace", "water_heater"),
+                 "wall": ("shelf_run", "cabinet_file", "workbench"),
+                 "floor": (),
+                 "clusters": ((("cartons", "pallets", "barrel_drum",
+                                "dust_sheet"), 2, 4),)},
+    "wine_cellar": {"anchors": ("rack_wine",),
+                    "wall": ("rack_wine", "rack_wine", "shelf_run"),
+                    "floor": ("table_tasting",),
+                    "clusters": ((("barrel_wine",), 2, 4),
+                                 (("cartons", "dust_sheet"), 2, 3))},
+    "storage": {"anchors": ("shelf_run",),
+                "wall": ("shelf_run", "cabinet_supply", "cabinet_file"),
+                "floor": (),
+                "clusters": ((("cartons", "pallets"), 2, 4),)},
+    "mechanical": {"anchors": ("water_heater", "furnace", "tank_water"),
+                   "wall": ("cabinet_panel", "shelf_run"),
+                   "floor": (),
+                   "clusters": ((("barrel_drum", "cartons", "litter_bin"),
+                                 2, 3),)},
+    "club": {"anchors": ("counter_bar", "pool_table"),
+             "wall": ("booth", "shelf_run", "booth", "vending"),
+             "floor": ("table_dining",),
+             "clusters": ()},
+    "office": {"anchors": ("desk",),
+               "wall": ("cabinet_file", "shelf_run", "cabinet_file"),
+               "floor": ("desk",),
+               "clusters": ((("cartons",), 2, 3),)},
+    "kitchen": {"anchors": ("grill",),
+                "wall": ("counter_kitchen", "shelf_run", "counter_kitchen"),
+                "floor": ("table_work",),
+                "clusters": ((("cartons", "litter_bin"), 2, 3),)},
+    "locker": {"anchors": ("cabinet_locker",),
+               "wall": ("cabinet_locker", "chair_waiting"),
+               "floor": (),
+               "clusters": ((("cartons",), 2, 3),)},
+    "vault": {"anchors": ("safe_floor",),
+              "wall": ("shelf_run", "cabinet_locker", "safe_floor"),
+              "floor": ("table_count",),
+              "clusters": ((("cartons",), 2, 3),)},
+    "lobby": {"anchors": ("counter_service",),
+              "wall": ("chair_waiting", "chair_waiting", "sofa", "atm",
+                       "vending", "payphone"),
+              "floor": ("table_low",),
+              "clusters": ((("stanchion",), 3, 4), (("litter_bin",), 1, 1))},
+    "hall": {"anchors": ("counter_service",),
+             "wall": ("chair_waiting", "shelf_run", "chair_waiting",
+                      "cabinet_file", "vending"),
+             "floor": ("table_dining",),
+             "clusters": ((("litter_bin",), 1, 1),)},
+    "shop_floor": {"anchors": ("counter_service",),
+                   "wall": ("shelf_run", "shelf_run", "cabinet_file",
+                            "vending"),
+                   "floor": (),
+                   "clusters": ((("cartons",), 2, 3), (("litter_bin",), 1, 1))},
+    "garage": {"anchors": ("workbench",),
+               "wall": ("shelf_run", "cabinet_tool"),
+               "floor": (),
+               "clusters": ((("barrel_drum", "pallets"), 2, 4),)},
+    "apartment": {"anchors": ("sofa",),
+                  "wall": ("shelf_run", "cabinet_file"),
+                  "floor": ("table_dining",),
+                  "clusters": ((("cartons",), 2, 3),)},
+    # A corridor is for walking through: at most two pieces, on its walls.
+    "corridor": {"anchors": (), "wall": ("litter_bin", "cabinet_file",
+                                         "vending"),
+                 "floor": (), "clusters": (), "cap": 2},
+    # Anything else: a wall run and ONE cluster. Not a table and chairs --
+    # that default is what the walker called boring.
+    "fallback": {"anchors": (), "wall": ("shelf_run", "cabinet_file",
+                                         "chair_waiting"),
+                 "floor": (),
+                 "clusters": ((("cartons", "dust_sheet"), 2, 4),),
+                 "one_cluster": True},
+}
+#: Below grade, a room that is not a basement, vault or corridor by name
+#: still gets a basement's clutter among its clusters.
+_BASEMENT_CLUSTER = (("cartons", "dust_sheet"), 2, 3)
+
+#: At most this many of one (piece, size) in a room: past it a room reads as
+#: one mesh repeated, which is the other half of "boring".
+_SAME_PIECE_MAX = 4
+#: Sizes per piece per BUILDING, drawn from the piece's list by the spec's
+#: seed: a building has a few desk sizes, not one and not all of them.
+_PALETTE = 3
+#: Gap between members of a cluster, edge to edge (the proposal's 0.3-0.8 m).
+#: Below the 0.8 m a 0.4 m-radius body needs, so a cluster is one obstacle to
+#: the navmesh, and is cleared from everything else as one.
+_CLUSTER_GAP = (0.3, 0.8)
+#: A cluster's longest side; past it a cluster is a wall across the room.
+_CLUSTER_MAX_SPAN = 3.6
+#: A cluster member's height ceiling: every cluster stands mid-floor.
+_CLUSTER_MAX_H = 1.5
+#: A chair's small turn off square when it is turned at all (degrees).
+_SEAT_TURN = (10.0, 20.0)
+
+#: Names 0.122.0-0.130.0 wrote, so a room those versions furnished is still
+#: recognised as furnished (the idempotence mark) and is not furnished again.
+_LEGACY_STEMS = ("chair", "cabinet_file", "shelf_run", "cabinet_supply",
+                 "table_work", "workbench", "cabinet_tool", "cabinet_locker",
+                 "safe_floor", "tank_water", "cabinet_panel", "chair_waiting",
+                 "table_low", "counter_service", "desk")
 _FURNISH_MIN_AREA = 9.0    # below this a room is a cupboard
 #: A chair is a SEAT AND A BACK, 0.9 m to the top of the back. 0.45 m -- the
 #: seat alone -- was the first value here, and it is below Zoo's `chair`
@@ -717,7 +955,9 @@ def _room_tag(room):
 #: walk into it (the walker, cold run 9048).
 _PROP_MATERIALS = (
     (("safe", "tank", "locker", "panel", "hvac", "vault", "roof_ac", "ac_unit",
-      "condenser", "generator", "dumpster"), "metal"),
+      "condenser", "generator", "dumpster", "furnace", "heater", "grill",
+      "vending", "atm", "payphone", "stanchion", "litter_bin", "drum"),
+     "metal"),
 )
 _PROP_MATERIAL_DEFAULT = "wood"
 _PROP_ACOUSTIC = {"wood": ("Wood", 0.35, 0.3), "metal": ("Metal", 0.2, 0.15)}
@@ -741,12 +981,23 @@ def _prop_material(spec, name):
     return mat
 
 
-def _furniture_for(room):
-    key = ((room.get("role") or "") + " " + str(room.get("id", ""))).lower()
-    for words, pieces in _FURNITURE:
-        if any(w in key for w in words):
-            return pieces
-    return _FURNITURE_DEFAULT
+def _room_kind(room):
+    """The furnishing KIND of a room: its id's whole tokens first, then below
+    grade a basement, then its role, then ``fallback``."""
+    tokens = set(str(room.get("id", "")).lower().replace("-", "_").split("_"))
+    for kind, words in _ROOM_KINDS:
+        if tokens.intersection(words):
+            return kind
+    if int(room.get("story", 0) or 0) < 0:
+        return "basement"
+    role = str(room.get("role") or "").lower()
+    if role in _ROLE_KINDS:
+        return _ROLE_KINDS[role] or "fallback"
+    tokens = set(role.replace("-", "_").split("_"))
+    for kind, words in _ROOM_KINDS:
+        if tokens.intersection(words):
+            return kind
+    return "fallback"
 
 
 def _room_volume_count(spec, room):
@@ -814,7 +1065,7 @@ def _clear_of_openings(openings, wall, centre, half_len):
 _WALL_PIECE_AIR = 0.01
 
 
-def _wall_slots(spec, room, w, d, rng):
+def _wall_slots(spec, room, w, d, rng, with_front=False):
     """Candidate ``(x, y, sx, sy, rot_z)`` flush against the room's walls, the
     piece's long axis lying ALONG the wall. A shelf run standing across a
     wall rather than along it is how a 2.6 m unit ends up sticking into the
@@ -829,6 +1080,11 @@ def _wall_slots(spec, room, w, d, rng):
     which cold run 9044's brewery frame showed. Exterior walls are back,
     clear of each opening by `_ext_openings`, and only a storey with a
     setback -- whose extent is not the footprint -- keeps the exclusion.
+
+    ``with_front`` appends the compass bearing the piece's front must face
+    (away from its wall), so the caller can turn a piece the emitter will
+    not turn -- `_front_turn` -- rather than trust `rot_z`, which is right
+    only for a piece longer than it is deep.
     """
     x0, y0, x1, y1 = room["bounds"]
     hx = float(spec.get("footprint_x", 0.0)) / 2.0
@@ -866,7 +1122,8 @@ def _wall_slots(spec, room, w, d, rng):
             # against the S wall (inset +1) the front must face N; against
             # the N wall, S. Long axis along x, so no long-axis turn is added.
             out.append((px, wy + inset * (short_side / 2.0 + back),
-                        long_side, short_side, 180.0 if inset > 0 else 0.0))
+                        long_side, short_side, 180.0 if inset > 0 else 0.0,
+                        0.0 if inset > 0 else 180.0))
     # E and W walls: the long axis runs in y
     for wx, inset in ((x0, +1), (x1, -1)):
         ext = _wall_of(wx, hx, "W", "E")
@@ -883,9 +1140,10 @@ def _wall_slots(spec, room, w, d, rng):
             # W. `long_axis_first` already turns this piece 90, so the front
             # sits at 90 + rot_z + 180: 180 here gives E, 0 gives W.
             out.append((wx + inset * (short_side / 2.0 + back), py,
-                        short_side, long_side, 180.0 if inset > 0 else 0.0))
+                        short_side, long_side, 180.0 if inset > 0 else 0.0,
+                        90.0 if inset > 0 else 270.0))
     rng.shuffle(out)
-    return out
+    return out if with_front else [o[:5] for o in out]
 
 
 def _furnish_target(area):
@@ -901,30 +1159,172 @@ def _furnish_target(area):
     return min(office, hall, _FURNISH_HALL_MAX)
 
 
+#: Air left between a to-the-ceiling piece's top and the ceiling plane, so
+#: the two are not coplanar (a furnace's flue runs to the slot's top).
+_CEILING_AIR = 0.05
+#: Zoo's `furnace` genome tops out at 4.0 m; a taller storey gets a 4.0 m slot.
+_TO_CEILING_MAX = 4.0
+
+
+def _clear_height(spec):
+    """A storey's floor-to-ceiling height less `_CEILING_AIR`: the storey
+    height less the thicker of the floor and roof slabs, the slab a piece
+    could stand under."""
+    cap = max(float(spec.get("floor_thick") or 0.3),
+              float(spec.get("roof_thick") or 0.0))
+    return _story_height(spec) - cap - _CEILING_AIR
+
+
+def _front_turn(name, sx, sy, front):
+    """The `rot_z` that points a piece's front -- its module's local -Y -- at
+    compass bearing `front`, given how the slot will be RECORDED.
+
+    `deli_counter` records a hinted volume long side first and adds 90 when
+    that side is y (`prop_species.long_axis_first`), and a slot's rotation
+    turns the module's +Y onto its bearing, so the front points at
+    ``long_turn + rot_z + 180``. A SQUARE piece is never turned, and
+    `_wall_slots`'s own rotation assumes it was: until 0.131.0 a 1.2 x 1.2
+    water tank on an east or west wall faced along the wall, not into the
+    room. This asks the same question the emitter asks instead.
+    """
+    import prop_species
+    turned = (prop_species.species_for_name(name) is not None
+              and sy > sx + 1e-9)
+    return round((front + 180.0 - (90.0 if turned else 0.0)) % 360.0, 4)
+
+
+def _nested_rects(spec, room):
+    """Bounds of the rooms on `room`'s storey that stand inside it: smaller
+    and overlapping, the rule `floors.nested_room_voids` and
+    `layout_lint._room_at` use -- the innermost room owns its floor.
+
+    FOUND IN THE LIBRARY, NOT GUESSED: 0.130.0 walls a vault room inside
+    `bank_branch_a02`'s `vault_west`, and the first refurnish here stood one
+    of `vault_west`'s count tables and its chair inside the vault, among the
+    vault room's own furniture. `_seed_clear` keeps a piece a metre off the
+    vault's partitions but has no notion that the floor beyond them is
+    another room's."""
+    b = room["bounds"]
+    area = (b[2] - b[0]) * (b[3] - b[1])
+    story = int(room.get("story", 0) or 0)
+    out = []
+    for other in spec.get("rooms", []) or []:
+        if other is room or int(other.get("story", 0) or 0) != story:
+            continue
+        ob = other.get("bounds")
+        if not ob or (ob[2] - ob[0]) * (ob[3] - ob[1]) >= area:
+            continue
+        if ob[2] > b[0] and ob[0] < b[2] and ob[3] > b[1] and ob[1] < b[3]:
+            out.append(tuple(ob))
+    return out
+
+
+def _over_rects(rects, px, py, hx, hy):
+    """Does a box centred (px, py), half extents (hx, hy), overlap any rect?"""
+    return any(px + hx > r[0] and px - hx < r[2] and py + hy > r[1]
+               and py - hy < r[3] for r in rects)
+
+
+def _palette(spec, key):
+    """This building's sizes of one piece: `_PALETTE` of the piece's sizes,
+    drawn by the spec's seed, in the piece's own order."""
+    import random
+    sizes = list(_PIECES[key]["sizes"])
+    if len(sizes) <= _PALETTE:
+        return sizes
+    rng = random.Random(f"{spec.get('seed', 0)}:{key}:palette")
+    keep = sorted(rng.sample(range(len(sizes)), _PALETTE))
+    return [sizes[i] for i in keep]
+
+
+def _furnish_plan(recipe, clusters, want, rng):
+    """``[("host", key) | ("cluster", pool, n)]`` for one room: one or two
+    anchors, about half the target as a wall run, the rest floor sets and
+    clusters in turn. A `one_cluster` recipe is a wall run and one cluster."""
+    items = []
+    anchors = list(recipe["anchors"])
+    n_anchor = min(len(anchors), want, 1 if want < 6 else 2)
+    if n_anchor:
+        chosen = [anchors[0]]
+        if n_anchor > 1:
+            chosen.append(rng.choice(anchors[1:]))
+        items += [("host", a) for a in chosen]
+    rest = want - n_anchor
+    wall = list(recipe["wall"])
+    rng.shuffle(wall)
+    floor = list(recipe["floor"])
+    if recipe.get("one_cluster") and clusters and rest > 0:
+        pool, lo, hi = clusters[0]
+        k = min(rest, rng.randint(lo, hi))
+        items.append(("cluster", pool, k))
+        rest -= k
+        items += [("host", wall[i % len(wall)]) for i in range(rest)] if wall else []
+        return items
+    n_wall = min(rest, int(round(want / 2.0))) if wall else 0
+    items += [("host", wall[i % len(wall)]) for i in range(n_wall)]
+    rest -= n_wall
+    turn = 0
+    # Clusters in TURN, from a seeded start: drawn at random, a wine cellar
+    # with five pieces to spare took barrels three times and never its
+    # cartons and dust sheets.
+    ci = rng.randrange(len(clusters)) if clusters else 0
+    while rest > 0:
+        if floor and (not clusters or turn % 2 == 0):
+            items.append(("host", rng.choice(floor)))
+            rest -= 1
+        elif clusters:
+            pool, lo, hi = clusters[ci % len(clusters)]
+            ci += 1
+            k = max(1, min(rest, rng.randint(lo, hi)))
+            items.append(("cluster", pool, k))
+            rest -= k
+        elif wall:
+            items.append(("host", rng.choice(wall)))
+            rest -= 1
+        else:
+            break
+        turn += 1
+    return items
+
+
 def furnish(spec):
     """Put FURNITURE in the rooms -- a different question from cover.
 
     `seed_cover` asks whether a room can be fought in and deliberately keeps
-    its count low; this asks whether a room looks lived in, and the two do
-    not trade against each other because nothing placed mid-floor here
-    reaches SHELTER height and everything that tall goes flush against a
-    wall. (An earlier line here said mid-floor pieces stay below
-    `_COVER_MIN_Z`; `test_furnish` refuted it -- a desk is 0.75 m.)
+    its count low; this asks whether a room looks like what it is, and the
+    two do not trade against each other because nothing placed mid-floor here
+    reaches SHELTER height and everything that tall goes against a wall.
+    (An earlier line here said mid-floor pieces stay below `_COVER_MIN_Z`;
+    `test_furnish` refuted it -- a desk is 0.75 m.)
 
-    Deterministic (spec seed + room id), additive and idempotent: existing
-    volumes count toward the target, so a second run adds nothing. Returns
-    the number of volumes created.
+    Each room is read as a KIND (`_room_kind`) and furnished by that kind's
+    RECIPE (`_RECIPES`): anchors first, about half the target along the
+    walls, then floor sets (a table and its chairs, a desk and its chair)
+    and clusters of 2-4 small pieces packed 0.3-0.8 m apart. The count is
+    still `_furnish_target` less what the room already holds. Pieces come in
+    a small per-building size palette, no more than `_SAME_PIECE_MAX` of one
+    (piece, size) per room, and carry Zoo's dressing: `stock` on desks, bar
+    and kitchen counters, count tables and supply cabinets, a `form` for the
+    furnace, water heater, booth and sofa, and a `variant` from a crc32 of
+    the piece's name on every species with `module_variants`.
+
+    Deterministic (spec seed + room id), additive and idempotent: a room this
+    pass (or 0.122.0-0.130.0) has furnished is recognised by name and
+    skipped. Returns the number of volumes created.
     """
+    import collections
     import random
+    import zlib
     base_seed = spec.get("seed", 0)
     sh = _story_height(spec)
+    clear_h = _clear_height(spec)
+    stems = set(_PIECES) | set(_LEGACY_STEMS) | {"chair_set"}
     added = 0
     for room in spec.get("rooms", []):
         x0, y0, x1, y1 = room["bounds"]
         area = max(0.0, x1 - x0) * max(0.0, y1 - y0)
         if area < _FURNISH_MIN_AREA:
             continue
-        pieces = _furniture_for(room)
         # IDEMPOTENT BY MARK, NOT BY COUNT. Counting the room's volumes is
         # not enough: a first pass that ran out of clear floor leaves the
         # count short, and a second pass then finds the spots the first
@@ -932,7 +1332,7 @@ def furnish(spec):
         # _is_idempotent` caught exactly that -- five extra pieces in a
         # hospital on a re-enrich. A room this pass has already touched is
         # recognisable from its volume NAMES and is skipped outright.
-        stems = {p[0] for p in pieces} | {"chair_set"}
+        #
         # THE ROOM IS NAMED BY A HASH, NOT BY ITS ID. `prop_species` matches
         # keywords anywhere in a volume's name, in table order, so a room id
         # that contains one hijacks every piece in it: in a room called
@@ -951,13 +1351,26 @@ def furnish(spec):
                any(v["name"].startswith(s + "_") for s in stems)
                for v in spec.get("volumes", [])):
             continue
+        kind = _room_kind(room)
+        recipe = _RECIPES[kind]
         have = _room_volume_count(spec, room)
         want = max(0, _furnish_target(area) - have)
+        if recipe.get("cap") is not None:
+            want = min(want, recipe["cap"])
         if want <= 0:
             continue
         rng = random.Random(f"{base_seed}:{room['id']}:furnish")
         story = room.get("story", 0)
+        clusters = list(recipe["clusters"])
+        if story < 0 and kind not in ("basement", "vault", "corridor",
+                                      "wine_cellar"):
+            clusters.append(_BASEMENT_CLUSTER)
+        rcx, rcy = (x0 + x1) / 2.0, (y0 + y1) / 2.0
+        inner = _nested_rects(spec, room)
         placed = []
+        per_size = collections.Counter()
+        per_name = collections.Counter()
+        seq = [0]
         floor_cands = []
         # the candidate grid scales with the room: a fixed 5 x 5 capped every
         # hall at 25 floor positions before clearance removed any of them
@@ -969,84 +1382,274 @@ def furnish(spec):
                 py = y0 + 1.0 + (j + rng.random() * 0.6) * (y1 - y0 - 2.0) / gy
                 floor_cands.append((px, py))
         rng.shuffle(floor_cands)
-        for k in range(want):
-            name, pw, pd, ph, where = pieces[k % len(pieces)]
-            half = max(pw, pd) / 2.0
-            spots = (_wall_slots(spec, room, pw, pd, rng) if where == "wall"
-                     else [(px, py, pw, pd, 0.0) for px, py in floor_cands])
-            for (px, py, sx, sy, face_room) in spots:
-                if not _seed_clear(spec, room, px, py, placed, half=half):
+
+        def _volume(key, px, py, sx, sy, h, rot):
+            p = _PIECES[key]
+            seq[0] += 1
+            name = f"{key}_{rtag}_{seq[0]}"
+            vol = {
+                "name": name,
+                "x": round(px, 2), "y": round(py, 2),
+                "z": round(story * sh + h / 2.0, 3),
+                "size_x": round(sx, 3), "size_y": round(sy, 3),
+                "size_z": round(h, 3),
+                "collision": "convex",
+                "material": _prop_material(spec, key),
+            }
+            if rot:
+                vol["rot_z"] = rot
+            if p["stock"]:
+                vol["stock"] = p["stock"]
+            if p["form"]:
+                vol["form"] = p["form"]
+            # THE VARIANT IS THE NAME'S crc32, as Zoo 0.84.0 asks, and only
+            # on a species that has variants to give: Zoo drops ALL THREE
+            # fields when one cannot be honoured, so a variant on a chair
+            # would not only be ignored, it would cost a furnace its form.
+            if p["variants"]:
+                n = (zlib.crc32(name.encode("utf-8")) & 0xFFFFFFFF) % 4
+                if n:
+                    vol["variant"] = n
+            return vol
+
+        def _seats(host, centre, how, lo, hi):
+            """A host's chairs, each through the same clearance as every
+            other piece minus the host and its own set, facing the host.
+            `centre` is the host's UNROUNDED centre, the one in `placed`:
+            the first draft read the rounded `x`/`y` back off the volume,
+            never matched its own entry in `placed`, and the 2.2 m spread
+            refused every chair in the library."""
+            n = rng.randint(lo, hi)
+            if n <= 0:
+                return 0
+            px, py = centre
+            sx, sy = host["size_x"], host["size_y"]
+            spots = []
+            if how == "desk" or how == "counter":
+                f = math.radians(host["_front"])
+                ux, uy = round(math.sin(f)), round(math.cos(f))
+                depth = sy if uy else sx
+                length = sx if uy else sy
+                out = depth / 2.0 + _SEAT[1] / 2.0 + (
+                    rng.uniform(0.05, 0.3) if how == "desk" else 0.2)
+                if how == "desk":
+                    spots.append((px + ux * out, py + uy * out))
+                else:
+                    step = length / n
+                    for i in range(n):
+                        t = -length / 2.0 + step * (i + 0.5)
+                        spots.append((px + ux * out + (t if uy else 0.0),
+                                      py + uy * out + (t if ux else 0.0)))
+            else:
+                along_x = sx >= sy
+                long_sides = [(0, -1), (0, 1)] if along_x else [(-1, 0), (1, 0)]
+                ends = [(-1, 0), (1, 0)] if along_x else [(0, -1), (0, 1)]
+                rng.shuffle(long_sides)
+                rng.shuffle(ends)
+                for ex, ey in (long_sides + ends)[:n]:
+                    # SOME ARE PULLED OUT: a chair left where somebody got up
+                    gap = 0.2 + (rng.uniform(0.1, 0.35) if rng.random() < 0.4
+                                 else 0.0)
+                    side = sx if ey else sy
+                    lat = rng.uniform(-1.0, 1.0) * max(0.0, min(0.15,
+                                                                (side - 0.5) / 2))
+                    spots.append((px + ex * (sx / 2 + 0.25 + gap) + (lat if ey else 0.0),
+                                  py + ey * (sy / 2 + 0.25 + gap) + (lat if ex else 0.0)))
+            n_set = 0
+            siblings = []
+            for j, (cx, cy) in enumerate(spots):
+                if not (x0 + 0.4 < cx < x1 - 0.4 and y0 + 0.4 < cy < y1 - 0.4):
                     continue
-                vol = {
-                    "name": f"{name}_{rtag}_{k + 1}",
-                    "x": round(px, 2), "y": round(py, 2),
-                    "z": round(story * sh + ph / 2.0, 3),
-                    "size_x": round(sx, 3), "size_y": round(sy, 3),
-                    "size_z": round(ph, 3),
+                if _over_rects(inner, cx, cy, 0.25, 0.25):
+                    continue
+                # THE CHAIR PASSES THE SAME CLEARANCE AS EVERY OTHER PIECE,
+                # minus its own host and its own set, which it must stand
+                # beside. The first 0.123.0 draft skipped the check and put a
+                # chair on `credit_union_a02`'s upper stair landing.
+                view = dict(spec, volumes=[v for v in spec["volumes"]
+                                           if v is not host and
+                                           not any(v is s for s in siblings)])
+                # `placed` enforces a 2.2 m SPREAD between pieces, which is
+                # right for hosts and wrong for a host's own chairs.
+                others = [q for q in placed if q != (px, py)]
+                if not _seed_clear(view, room, cx, cy, others, half=0.25):
+                    continue
+                # FACING THE HOST. Slot rotation is a COMPASS bearing --
+                # `Builder._slot_orient` puts N at 0, E at 90, S at 180, W at
+                # 270 -- turning a module's local +Y onto that bearing. A
+                # chair's seated front is its local -Y (its back panel is at
+                # +Y), so the front points at bearing + 180, and aiming it at
+                # the host from a chair offset (dx, dy) gives atan2(dx, dy).
+                # The first 0.124.0 draft used atan2(-dx, dy): right for the
+                # chairs north and south of a table, backwards for the ones
+                # east and west, caught by re-reading the wall convention
+                # before a rebuild rather than after.
+                if how == "table":
+                    face = math.degrees(math.atan2(cx - px, cy - py))
+                else:
+                    face = host["_front"]
+                rot = float(int(round(face / 90.0)) * 90 % 360)
+                # ...and SOME ARE TURNED a little off square. The composer
+                # keeps a turn inside its quarter (`themed_tscn._fit_rotation`).
+                if rng.random() < 0.5:
+                    rot = round((rot + rng.choice((-1.0, 1.0)) *
+                                 rng.uniform(*_SEAT_TURN)) % 360.0, 1)
+                chair = {
+                    "material": _prop_material(spec, "chair"),
+                    "name": f"chair_set_{rtag}_{host['_seq']}_{j + 1}",
+                    "x": round(cx, 2), "y": round(cy, 2),
+                    "z": round(story * sh + _CHAIR_H / 2.0, 3),
+                    "size_x": _SEAT[0], "size_y": _SEAT[1],
+                    "size_z": _CHAIR_H,
                     "collision": "convex",
-                    "material": _prop_material(spec, name),
+                    "rot_z": rot,
                 }
-                # a wall piece's front faces into the room, not the wall
-                # ("Chairs shouldnt face walls like this where humans couldnt
-                # sit in them", the walker, cold run 9048)
-                if face_room:
-                    vol["rot_z"] = face_room
-                spec.setdefault("volumes", []).append(vol)
-                placed.append((px, py))
-                added += 1
-                # A TABLE BRINGS ITS CHAIRS. Scattered tables read as crates;
-                # a table with a chair either side reads as a place people
-                # sit. Up to two, on the long sides, only where they clear.
-                # They belong to the table and do not count toward `want`.
-                if where == "floor" and name.startswith("table") and \
-                        name != "table_work":
-                    table = spec["volumes"][-1]
-                    along_x = sx >= sy
-                    for j, sgn in enumerate((-1, 1)):
-                        cx = px if along_x else px + sgn * (sx / 2 + 0.45)
-                        cy = py + sgn * (sy / 2 + 0.45) if along_x else py
-                        if not (x0 + 0.4 < cx < x1 - 0.4 and
-                                y0 + 0.4 < cy < y1 - 0.4):
-                            continue
-                        # THE CHAIR PASSES THE SAME CLEARANCE AS EVERY OTHER
-                        # PIECE, minus its own table, which it must stand
-                        # beside. The first draft skipped the check and put a
-                        # chair on `credit_union_a02`'s upper stair landing.
-                        view = dict(spec, volumes=[v for v in spec["volumes"]
-                                                   if v is not table])
-                        # `placed` enforces a 2.2 m SPREAD between pieces,
-                        # which is right for tables and wrong for a table's
-                        # own chairs, 0.75 m from it -- so the set is checked
-                        # against every other placed piece, not its own.
-                        others = [q for q in placed if q != (px, py)]
-                        if not _seed_clear(view, room, cx, cy, others,
-                                           half=0.25):
-                            continue
-                        # FACING THE TABLE. Slot rotation is a COMPASS
-                        # bearing -- `Builder._slot_orient` puts N at 0, E at
-                        # 90, S at 180, W at 270 -- turning a module's local
-                        # +Y onto that bearing. A chair's seated front is its
-                        # local -Y (its back panel is at +Y), so the front
-                        # points at bearing + 180, and aiming it at the table
-                        # from a chair offset (dx, dy) gives atan2(dx, dy).
-                        # The first draft used atan2(-dx, dy): right for the
-                        # chairs north and south of a table, backwards for
-                        # the ones east and west, caught by re-reading the
-                        # wall convention before a rebuild rather than after.
-                        face = math.degrees(math.atan2(cx - px, cy - py))
-                        spec["volumes"].append({
-                            "material": _prop_material(spec, "chair"),
-                            "name": f"chair_set_{rtag}_{k + 1}_{j + 1}",
-                            "x": round(cx, 2), "y": round(cy, 2),
-                            "z": round(story * sh + _CHAIR_H / 2.0, 3),
-                            "size_x": 0.5, "size_y": 0.5, "size_z": _CHAIR_H,
-                            "collision": "convex",
-                            "rot_z": float(int(round(face / 90.0)) * 90 % 360),
-                        })
-                        added += 1
-                break
-            # A piece that fits nowhere is simply not placed. A room with no
-            # wall long enough for a shelf run is a fact about the room.
+                spec["volumes"].append(chair)
+                siblings.append(chair)
+                n_set += 1
+            return n_set
+
+        def _host(key):
+            """Place one piece that stands alone. True when it stood."""
+            nonlocal added
+            p = _PIECES[key]
+            if p["most"] is not None and per_name[key] >= p["most"]:
+                return False
+            sizes = [s for s in _palette(spec, key)
+                     if per_size[(key, s)] < _SAME_PIECE_MAX]
+            rng.shuffle(sizes)
+            for size in sizes:
+                w, d, h = size
+                if h is None:
+                    h = min(clear_h, _TO_CEILING_MAX)
+                if h > clear_h:
+                    continue
+                half = max(w, d) / 2.0
+                if p["where"] == "wall":
+                    spots = [(qx, qy, sx, sy, front) for qx, qy, sx, sy, _r, front
+                             in _wall_slots(spec, room, w, d, rng, with_front=True)]
+                else:
+                    spots = []
+                    for qx, qy in floor_cands:
+                        if p["front"]:
+                            # A floor piece with a front faces AWAY from the
+                            # room's middle, so whoever uses it -- a desk's
+                            # sitter -- faces the room.
+                            dx, dy = qx - rcx, qy - rcy
+                            front = ((90.0 if dx > 0 else 270.0)
+                                     if abs(dx) > abs(dy) else
+                                     (0.0 if dy > 0 else 180.0))
+                            sx, sy = (w, d) if front in (0.0, 180.0) else (d, w)
+                        else:
+                            front = None
+                            sx, sy = (w, d) if rng.random() < 0.5 else (d, w)
+                        spots.append((qx, qy, sx, sy, front))
+                for qx, qy, sx, sy, front in spots:
+                    if _over_rects(inner, qx, qy, half, half):
+                        continue
+                    if not _seed_clear(spec, room, qx, qy, placed, half=half):
+                        continue
+                    rot = (_front_turn(key, sx, sy, front)
+                           if front is not None else 0.0)
+                    vol = _volume(key, qx, qy, sx, sy, h, rot)
+                    spec.setdefault("volumes", []).append(vol)
+                    placed.append((qx, qy))
+                    per_size[(key, size)] += 1
+                    per_name[key] += 1
+                    added += 1
+                    if p["seats"]:
+                        how, lo, hi = p["seats"]
+                        vol["_front"] = front if front is not None else 0.0
+                        vol["_seq"] = seq[0]
+                        added += _seats(vol, (qx, qy), how, lo, hi)
+                        del vol["_front"], vol["_seq"]
+                    return True
+            return False
+
+        def _cluster(pool, n):
+            """Place 2-4 small pieces as one group. Returns pieces placed."""
+            nonlocal added
+            members = []
+            planned = collections.Counter()
+            for _ in range(n):
+                key = rng.choice(pool)
+                sizes = [s for s in _palette(spec, key)
+                         if s[2] is not None and s[2] <= _CLUSTER_MAX_H
+                         and per_size[(key, s)] + planned[(key, s)] < _SAME_PIECE_MAX]
+                if not sizes:
+                    continue
+                size = rng.choice(sizes)
+                planned[(key, size)] += 1
+                w, d, _h = size
+                members.append((key, size) + ((w, d) if rng.random() < 0.5
+                                               else (d, w)))
+            while members:
+                # a row, or two rows when there are four
+                rows = ([members[:2], members[2:]] if len(members) == 4
+                        else [members])
+                lay, y = [], 0.0
+                bw = 0.0
+                for row in rows:
+                    depth = max(m[3] for m in row)
+                    x = 0.0
+                    for i, m in enumerate(row):
+                        if i:
+                            x += rng.uniform(*_CLUSTER_GAP)
+                        lay.append((m, x + m[2] / 2.0, y + depth / 2.0))
+                        x += m[2]
+                    bw = max(bw, x)
+                    y += depth + rng.uniform(*_CLUSTER_GAP)
+                bd = max(m_y + m[3] / 2.0 for m, _mx, m_y in lay)
+                if max(bw, bd) <= _CLUSTER_MAX_SPAN or len(members) == 1:
+                    break
+                members.pop()
+            if not members:
+                return 0
+            lay = [(m, mx - bw / 2.0, my - bd / 2.0) for m, mx, my in lay]
+            if rng.random() < 0.5:           # the whole group turned 90
+                lay = [((m[0], m[1], m[3], m[2]), my, mx) for m, mx, my in lay]
+                bw, bd = bd, bw
+            half = max(bw, bd) / 2.0
+            for cx, cy in floor_cands:
+                # the group stands a body's width off the room's bounds, as a
+                # piece on a candidate does, so no wall and group make a slot
+                if not (x0 + 1.0 <= cx - bw / 2.0 and cx + bw / 2.0 <= x1 - 1.0
+                        and y0 + 1.0 <= cy - bd / 2.0 and cy + bd / 2.0 <= y1 - 1.0):
+                    continue
+                if _over_rects(inner, cx, cy, bw / 2.0, bd / 2.0):
+                    continue
+                if not _seed_clear(spec, room, cx, cy, placed, half=half):
+                    continue
+                for (key, size, sx, sy), mx, my in lay:
+                    rot = 180.0 if rng.random() < 0.5 else 0.0
+                    vol = _volume(key, cx + mx, cy + my, sx, sy, size[2], rot)
+                    spec.setdefault("volumes", []).append(vol)
+                    per_size[(key, size)] += 1
+                    per_name[key] += 1
+                    added += 1
+                placed.append((cx, cy))
+                return len(lay)
+            return 0
+
+        short = 0
+        for item in _furnish_plan(recipe, clusters, want, rng):
+            if item[0] == "host":
+                short += 0 if _host(item[1]) else 1
+            else:
+                short += item[2] - _cluster(item[1], item[2])
+        # A PIECE THAT FITS NOWHERE LEAVES ITS SHARE TO THE FLOOR. Wall runs
+        # stand only where `_seed_clear` lets them, a metre off any
+        # partition, so a room walled in by partitions places none of its
+        # run; that share goes to its floor sets and clusters, once each,
+        # rather than leaving the room emptier than its recipe says.
+        tries = 0
+        while short > 0 and tries < 4 and (recipe["floor"] or clusters):
+            tries += 1
+            if recipe["floor"] and (not clusters or tries % 2):
+                short -= 1 if _host(rng.choice(recipe["floor"])) else 0
+            else:
+                pool, lo, hi = rng.choice(clusters)
+                short -= _cluster(pool, max(1, min(short, hi)))
     return added
 
 

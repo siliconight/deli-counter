@@ -389,6 +389,11 @@ def _glb_visual_bboxes(glb_path):
     return out
 
 
+#: Zoo's surface-stock nodes (`bpylayer/prim_mesh.build_stock`): dressing on a
+#: host's top, not part of the host's envelope.
+STOCK_NODE_PREFIX = "Stock_"
+
+
 def _overall_extent(bboxes):
     if not bboxes:
         return None
@@ -459,7 +464,16 @@ def verify_placement(greybox_glb, slots, module_dir, theme, style, tol=0.25):
         if ge is None:
             continue
         if stem not in cache:
-            cache[stem] = _overall_extent(_glb_visual_bboxes(mp))
+            # A HOST'S STOCK IS NOT ITS SIZE (Zoo 0.84.0): the monitor on a
+            # desk and the bottles on a bar are `Stock_*` nodes, built inside
+            # the top's footprint and left out of the module's own bounds by
+            # Zoo. Measured with them in, on 0.131.0's first stocked kits:
+            # three office desks 0.75 m authored read 1.12-1.13 m and two bar
+            # counters 1.08 m read 1.335 m, five height advisories for
+            # modules built exactly to their slots.
+            cache[stem] = _overall_extent(
+                {k: v for k, v in _glb_visual_bboxes(mp).items()
+                 if not k.startswith(STOCK_NODE_PREFIX)})
         me = cache[stem]
         if me is None:
             continue

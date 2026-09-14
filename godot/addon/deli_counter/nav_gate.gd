@@ -88,6 +88,42 @@ var CELL_SIZE := _envf("DC_NAV_CELL", 0.10)
 var CELL_HEIGHT := _envf("DC_NAV_CELL_H", 0.15)
 var SNAP_MAX := _envf("DC_QA_SNAP", 2.0)
 
+# A MARKER DOES NOT STAND ON TOP OF ITS OWN FURNITURE. A gameplay marker is
+# authored at its storey's level (216 of 293 checked library markers at +0.0,
+# 32 at +0.3, the rest higher), and the floor surface is at most one slab
+# above that: the library's thickest `floor_thick` is 0.3, plus a climb. A
+# navmesh polygon higher above the marker than that is a surface nobody
+# standing at the marker is on -- the top of the desk the objective sits on,
+# which bakes as a two-polygon island.
+#
+# MEASURED, office.glb, Deli Counter 0.131.0's first library build, with a
+# probe copy of this script printing the snap: `objective_EXEC` (12.0, 7.2,
+# -8.0) snapped to poly 226, island 6, centroid y 8.25 -- the exec desk's top
+# -- at 1.050001 m, while the nearest point on the spawn's island, the floor
+# beside the desk, was 1.092016 m away. 0.130.0's build of the same shell
+# passed by 1.2 mm (floor 1.048846 against the same 1.05 top), so the verdict
+# was a tie decided by how polygon simplification drew the floor, which any
+# piece of furniture anywhere in the room moves. Markers only: a stair's
+# endpoints are snapped as before.
+#
+# REFUTED FIRST, kept here: that the furniture had closed the objective's
+# approach. Single-piece rebuilds of the shell, each baked by this gate,
+# looked like it -- the desk removed passed, the desk 0.2 or 0.4 m further
+# off still failed, a 0.55 m box in its place failed, the desk moved to the
+# far side of the suite passed -- and a 3.0 m furniture-free ring round every
+# objective went into Deli Counter's furnish on that evidence. The next build
+# failed the same marker with a desk 3.1 m off. The probe above is what
+# settled it; the ring came out again.
+#
+# Over the library, on 0.130.0's own build: every verdict is unchanged, and
+# five shells each gain one reachable marker that had snapped onto the top of
+# the solid it stands in: `objective_REGISTER` in its register counter in
+# cr_deli, night_deli, corner_deli_heist_01 and fuel_stop_heist (snap 0.45 or
+# 0.5 -> 1.06 or 1.14, the floor), and `patrol_point_ROUTE_CASH_ROOM` in the
+# cash counting tables in cbp_town_finale_midbalanced_schemafixed (1.85 ->
+# 1.91).
+var MARKER_MAX_ABOVE := 0.3 + AGENT_MAX_CLIMB
+
 var _exit_code := 0
 
 
@@ -320,9 +356,10 @@ func _poly_graph(nm: NavigationMesh) -> Array:
 	return adj
 
 
-func _snap(nm: NavigationMesh, p: Vector3) -> Dictionary:
+func _snap(nm: NavigationMesh, p: Vector3, max_above: float = INF) -> Dictionary:
 	## nearest polygon by TRUE closest point on its surface (fan-triangulated);
-	## centroid distance false-flags points standing on large merged polygons
+	## centroid distance false-flags points standing on large merged polygons.
+	## `max_above` skips surfaces standing higher than that above `p`.
 	var verts := nm.get_vertices()
 	var best := -1
 	var best_d := INF
@@ -335,6 +372,8 @@ func _snap(nm: NavigationMesh, p: Vector3) -> Dictionary:
 			var b: Vector3 = verts[poly[k]]
 			var c: Vector3 = verts[poly[k + 1]]
 			var q := _closest_on_tri(p, a, b, c)
+			if q.y - p.y > max_above:
+				continue
 			var d := p.distance_to(q)
 			if d < best_d:
 				best_d = d
@@ -414,7 +453,7 @@ func _check_markers(gp: Variant, nm: NavigationMesh, graph: Array) -> Dictionary
 			continue
 		checked += 1
 		var p := _to_godot([m.get("x", 0.0), m.get("y", 0.0), m.get("z", 0.0)])
-		var hit := _snap(nm, p)
+		var hit := _snap(nm, p, MARKER_MAX_ABOVE)
 		var mname := "%s_%s" % [t, str(m.get("id", "?"))]
 		# Written as a plain if rather than a typed one-liner: `hit["dist"]`
 		# is a Variant, and this gate has already lost an evening to GDScript
