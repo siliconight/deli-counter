@@ -642,6 +642,12 @@ GUARD_HEIGHT = 1.07
 GUARD_THICK = 0.1
 #: An existing wall this close to a guard's line already does the guard's job.
 _GUARD_COVER_TOL = 0.25
+#: The reserved rectangle's lateral margin beside a flight (`flight_rect`'s
+#: `clear / 2`), which a `side` guard fills.
+SIDE_MARGIN = 0.4
+#: Air left between a flight's tread ends and its side wall, so the two never
+#: share a plane.
+SIDE_GAP = 0.005
 
 
 def stair_guards(spec):
@@ -735,14 +741,38 @@ def stair_guards(spec):
             else:
                 side_span = (t_lo, t_hi - open_)
                 rail_span = (t_lo + open_, t_hi)
-            for pos in (l_lo - T / 2.0, l_hi + T / 2.0):
+            # A SIDE WALL FILLS THE MARGIN, FLUSH TO THE FLIGHT. It stood at
+            # the rectangle's edge, and the rectangle is the flight plus
+            # `clear / 2` either side, so a 0.4 m slot ran between every flight
+            # and its wall (the walker, cold run 9052: "should we just fill in
+            # these gaps?"). It now spans from the flight's edge (+ SIDE_GAP,
+            # so the tread ends and the wall never share a plane) to the
+            # rectangle's edge. Rails stay OUTSIDE the rectangle, on the slab.
+            #
+            # RETRACTED, measured by the nav gate on the 0.128.0 candidate:
+            # "the navmesh loses nothing, the flight's edge already bordered a
+            # drop". `twin_a01`'s 0.9 m flights, walled flush on both sides,
+            # baked as disjoint islands (both stairs no_path) while all 129
+            # other shells passed, the four 1.2 m flights among them. So a
+            # flight narrower than one corridor width
+            # (`agent_contract.min_corridor_width`, 2 x bake radius + 0.3) keeps
+            # the thin guard at the rectangle's edge and its slot.
+            narrow = st.width < agent_contract.min_corridor_width() - 1e-9
+            fill = SIDE_MARGIN - SIDE_GAP
+            for side, rect_edge in ((-1, l_lo), (+1, l_hi)):
+                pos_rail = rect_edge + side * T / 2.0
+                pos_side = (pos_rail if narrow
+                            else rect_edge - side * fill / 2.0)
                 if solid and side_span[1] - side_span[0] > T:
-                    raw.append({"stair": sid, "story": s, "kind": "side",
-                                "axis": travel, "pos": pos,
-                                "lo": side_span[0], "hi": side_span[1]})
+                    piece = {"stair": sid, "story": s, "kind": "side",
+                             "axis": travel, "pos": pos_side,
+                             "lo": side_span[0], "hi": side_span[1]}
+                    if not narrow:
+                        piece["thick"] = fill
+                    raw.append(piece)
                 if rail_span[1] - rail_span[0] > T:
                     raw.append({"stair": sid, "story": s + 1, "kind": "rail",
-                                "axis": travel, "pos": pos,
+                                "axis": travel, "pos": pos_rail,
                                 "lo": rail_span[0], "hi": rail_span[1]})
             if st.style != "scissor":
                 entry = (t_lo - T / 2.0) if arrive_hi else (t_hi + T / 2.0)

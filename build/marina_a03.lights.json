@@ -6,19 +6,37 @@
   "rig_library": "lux",
   "anchors": [
     {
-      "id": "sales_floor_ceiling",
+      "id": "sales_floor_ceiling_0",
       "type": "fluorescent",
       "source": "derived",
       "pos": [
-        0.0,
+        -7.2,
         -5.0,
         3.6
       ],
       "rot_y": 0.0,
       "room": "sales_floor",
       "row": {
-        "count": 5,
+        "count": 3,
         "spacing": 7.2
+      },
+      "drop": 3.6,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "sales_floor_ceiling_1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        14.4,
+        -5.0,
+        3.6
+      ],
+      "rot_y": 0.0,
+      "room": "sales_floor",
+      "row": {
+        "count": 1,
+        "spacing": 0.0
       },
       "drop": 3.6,
       "reacts_to_alarm": true

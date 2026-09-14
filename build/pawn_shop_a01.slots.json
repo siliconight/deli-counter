@@ -4824,7 +4824,7 @@
       "transform": {
         "translation": [
           2.225,
-          -4.25,
+          -6.5025,
           1.575
         ],
         "rot_y": 0.0,
@@ -4837,7 +4837,7 @@
       "fit": {
         "dims": [
           3.45,
-          0.1,
+          0.395,
           3.15
         ],
         "pivot": "center",
@@ -4846,7 +4846,43 @@
       }
     },
     {
-      "slot_id": "stair_guard_rail_1",
+      "slot_id": "stair_guard_side_1",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "species": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          2.225,
+          -4.4975,
+          1.575
+        ],
+        "rot_y": 0.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          3.45,
+          0.395,
+          3.15
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "stair_guard_rail_2",
       "role": "prop",
       "size_mod": "full",
       "style": 4,
@@ -4882,7 +4918,7 @@
       }
     },
     {
-      "slot_id": "stair_guard_rail_2",
+      "slot_id": "stair_guard_rail_3",
       "role": "prop",
       "size_mod": "full",
       "style": 4,

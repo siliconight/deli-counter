@@ -408,13 +408,22 @@ def slab_slots(spec, top, skin=SKIN_THICK):
         cx, cy = (b[0] + b[2]) / 2.0, (b[1] + b[3]) / 2.0
         sx, sy = b[2] - b[0], b[3] - b[1]
 
+        # A ROOM INSIDE THIS ROOM HAS ITS OWN SKINS, so this room's skins
+        # leave a void where it stands. Without it the two floors (and the
+        # two ceilings) share a plane over the inner room and z-fight: the
+        # walker, cold run 9052, behind the teller line -- "2 surfaces
+        # clashing with each other flickering". 0.126.0's staff room is the
+        # inner room there; `gs_corner_station`'s restroom inside its
+        # stockroom had the same fight before that.
+        nested = nested_room_voids(spec, r, cx, cy, sx, sy)
+
         fmat = _material(r, "floor", FLOOR_BY_ROLE, default)
         out.append(_slot(
             "floor_%s" % r.id, FLOOR_SLOT_ROLE, FLOOR_GREYBOX_REF, s,
             cx, cy, s * spec.story_height + skin / 2.0, sx, sy, "up",
             room=r.id, style=skin_style.style_for(fmat, mapping, default),
             material=fmat,
-            voids=room_voids(spec, r, s, cx, cy, sx, sy)))
+            voids=room_voids(spec, r, s, cx, cy, sx, sy) + nested))
 
         cmat = _material(r, "ceiling", CEILING_BY_ROLE, default)
         under = (s + 1) * spec.story_height - cap_thick(spec, s, top)
@@ -423,5 +432,36 @@ def slab_slots(spec, top, skin=SKIN_THICK):
             cx, cy, under - skin / 2.0, sx, sy, "down",
             room=r.id, style=skin_style.style_for(cmat, mapping, default),
             material=cmat,
-            voids=room_voids(spec, r, s + 1, cx, cy, sx, sy)))
+            voids=room_voids(spec, r, s + 1, cx, cy, sx, sy) + nested))
+    return out
+
+
+def nested_room_voids(spec, room, cx, cy, sx, sy):
+    """Other rooms on this room's storey that stand INSIDE it, as voids in
+    this room's skin (centred coords, the shape `room_voids` returns).
+
+    Inside means smaller and overlapping: the innermost room owns the floor it
+    stands on, the same rule `layout_lint._room_at` uses to decide which room
+    a point is in. Measured when written: 4 nested pairs in 132 library specs
+    (three teller staff rooms, one restroom), none partial."""
+    b = room.bounds
+    area = (b[2] - b[0]) * (b[3] - b[1])
+    s = int(getattr(room, "story", 0))
+    hx, hy = sx / 2.0, sy / 2.0
+    out = []
+    for other in getattr(spec, "rooms", []) or []:
+        if other is room or int(getattr(other, "story", 0)) != s:
+            continue
+        ob = other.bounds
+        if (ob[2] - ob[0]) * (ob[3] - ob[1]) >= area:
+            continue
+        x0, y0 = max(ob[0], b[0]) - cx, max(ob[1], b[1]) - cy
+        x1, y1 = min(ob[2], b[2]) - cx, min(ob[3], b[3]) - cy
+        if x1 - x0 <= 1e-6 or y1 - y0 <= 1e-6:
+            continue
+        if (x0 <= -hx + 1e-6 and y0 <= -hy + 1e-6 and x1 >= hx - 1e-6
+                and y1 >= hy - 1e-6):
+            continue
+        out.append({"x0": round(x0, 4), "y0": round(y0, 4),
+                    "x1": round(x1, 4), "y1": round(y1, 4)})
     return out

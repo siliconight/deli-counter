@@ -24,19 +24,37 @@
       "reacts_to_alarm": true
     },
     {
-      "id": "mid_aisle_ceiling",
+      "id": "mid_aisle_ceiling_0",
       "type": "fluorescent",
       "source": "derived",
       "pos": [
-        0.0,
+        -16.0,
         0.0,
         2.8
       ],
       "rot_y": 0.0,
       "room": "mid_aisle",
       "row": {
-        "count": 5,
-        "spacing": 8.0
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 2.8,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "mid_aisle_ceiling_1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        16.0,
+        0.0,
+        2.8
+      ],
+      "rot_y": 0.0,
+      "room": "mid_aisle",
+      "row": {
+        "count": 1,
+        "spacing": 0.0
       },
       "drop": 2.8,
       "reacts_to_alarm": true

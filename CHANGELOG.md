@@ -1,3 +1,37 @@
+## [0.128.0] - 2026-09-13  no floor over a floor, no gap beside a stair, no lamp in a vault
+
+Three findings from the walker's rain walk (cold run 9052).
+
+**"2 surfaces clashing with each other flickering" behind the teller line.**
+0.126.0's staff room gets its own floor and ceiling skins, and the lobby's
+skins ran straight over it: `floor_teller_staff_0` and `floor_lobby` both at
+z 0.01, `ceiling_*` both at 3.29, overlapping across 12 x 4 m. My regression.
+`floors.nested_room_voids`: a room's skins leave a void wherever a smaller room
+on its storey stands inside it -- the innermost room owns its floor, the rule
+`layout_lint._room_at` already uses. Measured: 4 nested pairs in 132 library
+specs, the three staff rooms and `gs_corner_station`'s restroom inside its
+stockroom, which had the same fight before.
+
+**"should we just fill in these gaps?"** A `side` stair guard stood at the
+reserved rectangle's edge, and the rectangle is the flight plus 0.4 m either
+side, so a 0.4 m slot ran between every flight and its wall. The side guard now
+fills that margin, from 5 mm off the tread ends to the rectangle's edge.
+Rails stay outside the rectangle, on the slab. RETRACTED before commit: "the
+navmesh gives up nothing, the flight's edge already bordered a drop". The nav
+gate refused the first candidate -- `twin_a01`'s 0.9 m flights, walled flush,
+baked as disjoint islands while all 129 other shells passed, the four 1.2 m
+flights among them. A flight narrower than one corridor width
+(`agent_contract.min_corridor_width`, 1.1 m) keeps the thin guard and its
+slot: 4 of 148 flights (widths 0.9 and 1.0).
+
+**"we have a light inside of a vault?"** A basement pendant row in
+`bank_branch_a02` hung two bulbs inside or within 0.3 m of the 3 m VAULT box,
+whose top reaches the ceiling. `tall_solid_voids`: any solid volume whose top
+comes within 1.0 m of its storey's ceiling is a keep-out rect for the lamp rows
+(0.35 m clearance), so a row splits around it as it does around a stairwell.
+After: 0 of 37 lamp points in or near the vault. The full-storey stair guards
+are the same case.
+
 ## [0.127.0] - 2026-09-13  a one-storey switchback cuts one run, not two
 
 Found by cold run 9050's frames of the fix for the walker's "13" frame, before

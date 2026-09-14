@@ -3164,7 +3164,16 @@
       }
     },
     {
-      "node": "stair_guard_rail_6_col",
+      "node": "stair_guard_side_6_col",
+      "material": {
+        "id": "brick_ext",
+        "acoustic": "Concrete",
+        "absorption": 0.72,
+        "damping": 0.62
+      }
+    },
+    {
+      "node": "stair_guard_rail_7_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -3173,7 +3182,7 @@
       }
     },
     {
-      "node": "stair_guard_rail_7_col",
+      "node": "stair_guard_rail_8_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -4834,8 +4843,9 @@
     "stair_guard_rail_3": "prop",
     "stair_guard_rail_4": "prop",
     "stair_guard_side_5": "prop",
-    "stair_guard_rail_6": "prop",
+    "stair_guard_side_6": "prop",
     "stair_guard_rail_7": "prop",
+    "stair_guard_rail_8": "prop",
     "parapet_N_t0_0": "wall",
     "parapet_N_t0_1": "wall",
     "parapet_N_t0_2": "wall",

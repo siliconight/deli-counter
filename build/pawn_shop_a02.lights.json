@@ -24,18 +24,36 @@
       "reacts_to_alarm": true
     },
     {
-      "id": "back_room_ceiling",
+      "id": "back_room_ceiling_0",
       "type": "fluorescent",
       "source": "derived",
       "pos": [
-        0.0,
+        -6.75,
         4.5,
         2.8
       ],
       "rot_y": 0.0,
       "room": "back_room",
       "row": {
-        "count": 4,
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 2.8,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "back_room_ceiling_1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        4.5,
+        4.5,
+        2.8
+      ],
+      "rot_y": 0.0,
+      "room": "back_room",
+      "row": {
+        "count": 2,
         "spacing": 4.5
       },
       "drop": 2.8,

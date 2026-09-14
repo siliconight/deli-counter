@@ -1647,10 +1647,11 @@ class _Builder:
                 h = stairwell.GUARD_HEIGHT
                 mat = "wood" if "wood" in have else None
             along, mid = g["hi"] - g["lo"], (g["lo"] + g["hi"]) / 2.0
+            th = g.get("thick", T)
             if g["axis"] == "Y":
-                x, y, sx, sy = g["pos"], mid, T, along
+                x, y, sx, sy = g["pos"], mid, th, along
             else:
-                x, y, sx, sy = mid, g["pos"], along, T
+                x, y, sx, sy = mid, g["pos"], along, th
             self.s.volumes.append(Volume(
                 name=f"stair_guard_{g['kind']}_{k}", x=round(x, 4),
                 y=round(y, 4), z=round(z0 + h / 2.0, 4), size_x=round(sx, 4),
@@ -2801,6 +2802,14 @@ def write_light_manifest(builder, path):
     # in this file is a second thing to get wrong, and a light splitting
     # around a different hole than the skin cuts is worse than neither.
     _voids = floors.ceiling_voids(builder.s)
+    # A LAMP DOES NOT HANG IN A SOLID. A volume that stands within
+    # `_LAMP_SOLID_REACH` of its storey's ceiling is a void to the lamp rows,
+    # inflated by `_LAMP_SOLID_CLEAR`, so a row splits around it the way it
+    # splits around a stairwell. The walker, cold run 9052: "we have a light
+    # inside of a vault?" -- a basement pendant hung through the face of
+    # `bank_branch_a02`'s 3 m VAULT box, whose top stands at the ceiling. The
+    # stair guards' full-storey side walls are the same case.
+    _voids = list(_voids) + tall_solid_voids(builder)
     # The partitions the rows must not hang in (roadmap 143), as the pieces
     # that were BUILT -- `_partition_pieces` is what the envelope and the
     # stairwell voids left of each authored span -- at the wall thickness
@@ -2838,6 +2847,35 @@ def write_light_manifest(builder, path):
           f"{_report.get('dropped', 0)} dropped, "
           f"{_report.get('rows_shifted', 0)} row(s) moved off a wall)")
     return data
+
+
+#: A solid whose top comes this close to its storey's ceiling blocks a lamp.
+_LAMP_SOLID_REACH = 1.0
+#: Air kept between a lamp and the side of such a solid.
+_LAMP_SOLID_CLEAR = 0.35
+
+
+def tall_solid_voids(builder):
+    """``[{story, x0, y0, x1, y1}]`` -- solid volumes that reach the ceiling
+    band of their storey, as keep-out rects for ceiling lamps."""
+    H = builder.s.story_height
+    _base, top = builder._story_range()
+    out = []
+    for v in builder.s.volumes:
+        if getattr(v, "collision", "convex") == "none":
+            continue
+        base = v.z - v.size_z / 2.0
+        story = int(math.floor((base + 0.01) / H))
+        ceiling = (story + 1) * H - builder._cap_thick(story, top)
+        if v.z + v.size_z / 2.0 < ceiling - _LAMP_SOLID_REACH:
+            continue
+        c = _LAMP_SOLID_CLEAR
+        out.append({"story": story,
+                    "x0": round(v.x - v.size_x / 2.0 - c, 4),
+                    "y0": round(v.y - v.size_y / 2.0 - c, 4),
+                    "x1": round(v.x + v.size_x / 2.0 + c, 4),
+                    "y1": round(v.y + v.size_y / 2.0 + c, 4)})
+    return out
 
 
 def write_gameplay_json(builder, path):

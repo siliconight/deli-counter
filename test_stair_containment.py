@@ -148,13 +148,20 @@ def test_a_solid_stair_is_guarded_on_both_sides_and_at_the_pit_end():
     kinds = sorted((p["kind"], p["story"], p["axis"]) for p in g)
     assert kinds == [("rail", 1, "X"), ("rail", 1, "Y"), ("rail", 1, "Y"),
                      ("side", 0, "Y"), ("side", 0, "Y")], kinds
-    # every piece stands outside the reserved rectangle
+    # rails stand outside the reserved rectangle, on the slab; a side wall
+    # fills the rectangle's margin flush to the flight, never the flight
     x0, y0, x1, y1 = S.flight_rect(st, 0)
+    fx0, _fy0, fx1, _fy1 = S.footprint_rect(st)
     for p in g:
-        if p["axis"] == "Y":
-            assert p["pos"] <= x0 or p["pos"] >= x1, p
+        lo_v, hi_v = (x0, x1) if p["axis"] == "Y" else (y0, y1)
+        if p["kind"] == "rail":
+            assert p["pos"] <= lo_v or p["pos"] >= hi_v, p
         else:
-            assert p["pos"] <= y0 or p["pos"] >= y1, p
+            half = p["thick"] / 2.0
+            inner = p["pos"] + half if p["pos"] < st.x else p["pos"] - half
+            outer = p["pos"] - half if p["pos"] < st.x else p["pos"] + half
+            assert fx0 - 1e-9 >= inner or inner >= fx1 + 1e-9, p   # clear of the flight
+            assert abs(outer - (lo_v if p["pos"] < st.x else hi_v)) < 1e-9, p
     out = S.containment_findings(sp, st, "a")
     assert {c for c, _ in out} <= {"STAIR_LATERAL_OPEN"}, out
     import re

@@ -42,19 +42,37 @@
       "reacts_to_alarm": true
     },
     {
-      "id": "material_bay_ceiling",
+      "id": "material_bay_ceiling_0",
       "type": "fluorescent",
       "source": "derived",
       "pos": [
-        5.0,
+        -1.4,
         10.5,
         3.2
       ],
       "rot_y": 0.0,
       "room": "material_bay",
       "row": {
-        "count": 5,
+        "count": 3,
         "spacing": 6.4
+      },
+      "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "material_bay_ceiling_1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        17.8,
+        10.5,
+        3.2
+      ],
+      "rot_y": 0.0,
+      "room": "material_bay",
+      "row": {
+        "count": 1,
+        "spacing": 0.0
       },
       "drop": 3.2,
       "reacts_to_alarm": true
