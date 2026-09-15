@@ -599,8 +599,23 @@ def seed_cover(spec):
     import random
     base_seed = spec.get("seed", 0)
     added = 0
+    building = club_building_id(spec)
     for room in spec.get("rooms", []):
         if not room.get("combat_range"):
+            continue
+        # A STRIP CLUB'S CLUB ROOMS ARE THE CLUB RECIPE'S. This pass keys
+        # its pieces on the room's words, and on the `strip_club` preset
+        # that put a kiosk, two planters and a counter island on the
+        # main floor, shelf runs and pallets in the back bar (`back` is
+        # a storage word), crate stacks in the VIP lounge -- and the
+        # recipe, counting them as furniture already there, stopped its
+        # wall run before the neon sign. What the recipe places is what
+        # the room fights from: the vending machine when the wall run
+        # draws it (1.83-1.9 m, solid), else the stage -- whose visual
+        # volume reaches the ceiling and collides with nothing, and whose
+        # deck is 1.18 m: both shelter instruments count it, and a
+        # standing body sees over it. Stated here, not settled here.
+        if is_strip_club_room(room, building):
             continue
         x0, y0, x1, y1 = room["bounds"]
         area = max(0.0, x1 - x0) * max(0.0, y1 - y0)
@@ -951,6 +966,21 @@ def _strip_club_building(building):
     return _STRIP_CLUB_ID in str(building or "").lower()
 
 
+def club_building_id(spec):
+    """The id a building's KIND is read from: its name and, on a
+    generated spec, the recipe that made it (`preset`). A dict spec or a
+    loaded `LevelSpec`. Level Factory names its levels
+    `lf_<mission>_<seed>`, so a `strip_club` recipe it built for
+    `club_block_001` is `lf_club_block_001_7`, and read by name alone it
+    is a shop floor with a vending machine (0.131.0's defect, one layer
+    up). The recipe's name says what the name does not."""
+    if isinstance(spec, dict):
+        parts = (spec.get("name"), spec.get("preset"))
+    else:
+        parts = (getattr(spec, "name", None), getattr(spec, "preset", None))
+    return " ".join(str(p) for p in parts if p)
+
+
 def is_strip_club_room(room, building):
     """Is `room` (a dict with `id`) a club room of a strip club building?
     The one rule, shared by `furnish` and the light manifest."""
@@ -1183,7 +1213,7 @@ def dress_club_rooms(spec):
     partition with a club room on BOTH faces is `wallpaper_club`; the
     exterior walls and the default are `paint_block`. Returns the count of
     fields set. Nothing outside a `strip_club` building is touched."""
-    name = spec.get("name")
+    name = club_building_id(spec)
     if not _strip_club_building(name):
         return 0
     club = [r for r in spec.get("rooms") or [] if is_strip_club_room(r, name)]
@@ -1589,7 +1619,7 @@ def furnish(spec):
     clear_h = _clear_height(spec)
     stems = set(_PIECES) | set(_LEGACY_STEMS) | set(_COLLIDER_STEMS) | {"chair_set"}
     added = 0
-    building = spec.get("name")
+    building = club_building_id(spec)
     dress_club_rooms(spec)
     for room in spec.get("rooms", []):
         x0, y0, x1, y1 = room["bounds"]

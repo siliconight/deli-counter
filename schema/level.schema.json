@@ -162,6 +162,13 @@
       ],
       "description": "Optional building rarity tier. When set, the build stamps the tier + its canonical colour onto gameplay.json and every breachable door/breach anchor for the networked-door reveal. null/omitted = no rarity."
     },
+    "preset": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "The recipe a generated spec came from (a presets.REGISTRY key), or null on an authored one. The building's kind is read off this together with its name (level_design.club_building_id), so a level somebody else named is still furnished and lit as what it is."
+    },
     "building_id": {
       "type": [
         "string",

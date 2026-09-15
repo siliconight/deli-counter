@@ -562,6 +562,13 @@ class LevelSpec:
     # stairwell.py adds STAIR_LOW_ARCHETYPE_FIT intel for classified stairs
     # sitting outside the profile's candidate zones.
     archetype: Optional[str] = None
+    # THE RECIPE THAT MADE A GENERATED SPEC (`presets.REGISTRY` key), or
+    # None on an authored one. What a building IS is read off its id
+    # (`level_design.club_building_id`: a strip club is furnished and
+    # lit as one only inside a building that says `strip_club`), and a
+    # generated level's NAME is the caller's -- Level Factory names
+    # its levels `lf_<mission>_<seed>` -- so the recipe says it here.
+    preset: Optional[str] = None
     # ladder building profile (ladder_place.py profile id). Optional; gates
     # what ladder roles/placements ladder.py tolerates (e.g. a profile that
     # forbids exterior roof ladders warns when one is authored anyway).

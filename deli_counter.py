@@ -2883,7 +2883,8 @@ def write_light_manifest(builder, path):
     # rooms is `level_design`'s one rule (`is_strip_club_room`).
     import level_design as _ld
     _club = {r.id for r in builder.s.rooms
-             if _ld.is_strip_club_room({"id": r.id}, builder.s.name)}
+             if _ld.is_strip_club_room({"id": r.id},
+                                       _ld.club_building_id(builder.s))}
     _vols = [{"name": v.name, "x": v.x, "y": v.y, "z": v.z,
               "size_x": v.size_x, "size_y": v.size_y, "size_z": v.size_z,
               "rot_z": getattr(v, "rot_z", 0.0), "form": getattr(v, "form", None),

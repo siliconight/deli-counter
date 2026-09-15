@@ -2253,6 +2253,179 @@ def pawn_shop(name: str = "pawn_shop_preset", mode: str = "heist",
     return spec
 
 
+def strip_club(name: str = "strip_club_preset", mode: str = "heist",
+               floors: int = 1, basement: bool = False,
+               scale_ref: bool = False) -> dict:
+    """A neighbourhood strip club, the walker's layout comparison: ONE
+    storey, WINDOWLESS, painted block outside; a
+    main floor with a bar stage and a second bar, a back bar with its own
+    stage, a VIP lounge behind, and behind those the staff band -- dressing
+    room, the cash office holding the safe (the objective), a stockroom on
+    the rear service door, a kitchen. Two ways in for the crew (the front
+    door, the rear service door) and a soft wall on the rear for a breach.
+
+    The club rooms are furnished and lit as a club by 0.132.0's recipe: the
+    kind is read off the building's id (`level_design.is_strip_club_room`),
+    and this spec carries `preset: "strip_club"` so that holds when the
+    level is named by somebody else -- Level Factory names its levels
+    `lf_<mission>_<seed>`, which says nothing about what they are.
+
+    `floors` and `basement` are accepted so the CLI stays uniform and
+    ignored: this club is one storey over slab (the library's
+    `strip_club_a01`..`a03` are too), and a stair to a count room is a
+    different building."""
+    del floors, basement
+    sh = 3.6
+    fx, fy = 34.0, 24.0             # the library's band (a01: 34 x 24)
+    hx, hy = fx / 2, fy / 2
+    spec = {
+        "$schema": "../schema/level.schema.json",
+        "name": name, "mode": mode, "preset": "strip_club",
+        "seed": 1997, "grid": 0.5,
+        "footprint_x": fx, "footprint_y": fy, "story_height": sh,
+        "n_stories": 1, "has_basement": False, "wall_thick": 0.3,
+        "floor_thick": 0.3, "collision": "convex", "auto_exterior": True,
+        "scale_ref": bool(scale_ref),
+        # painted block, the club's outside (`level_design._CLUB_FINISHES`)
+        "default_material": "paint_block",
+        "materials": [
+            {"id": "paint_block", "acoustic": "Concrete", "absorption": 0.65, "damping": 0.55},
+            {"id": "concrete", "acoustic": "Concrete", "absorption": 0.7, "damping": 0.6},
+            {"id": "drywall", "acoustic": "Drywall", "absorption": 0.42, "damping": 0.38},
+            {"id": "metal", "acoustic": "Metal", "absorption": 0.3, "damping": 0.2},
+            {"id": "wood", "acoustic": "Wood", "absorption": 0.35, "damping": 0.3},
+        ],
+    }
+    # --- exterior: no windows anywhere. A front door on the street face, the
+    # service door at the back into the stockroom, a soft wall into the
+    # kitchen beside it. Positions are fractions of the wall's run.
+    spec["ext_walls"] = [
+        {"wall": "S", "story": 0, "material": "paint_block", "openings": [
+            {"kind": "door", "pos": -0.15, "width": 1.6, "tag": "front_door"}]},
+        {"wall": "N", "story": 0, "material": "paint_block", "openings": [
+            {"kind": "door", "pos": 9.0 / fx, "width": 1.25, "tag": "service_door"},
+            {"kind": "breach", "pos": 14.5 / fx, "width": 1.4, "breach_class": "soft_wall",
+             "material": "drywall", "tag": "kitchen_breach"}]},
+        {"wall": "E", "story": 0, "material": "paint_block", "openings": []},
+        {"wall": "W", "story": 0, "material": "paint_block", "openings": []},
+    ]
+    # --- plan. South band (y -12..2, 14 m deep): main_floor west of x=5,
+    # back_bar east of it. North band (y 2..12, 10 m deep): vip_lounge,
+    # dressing_room, cash_office, stockroom, kitchen, west to east. Every
+    # partition ends clear of every doorway it meets (layout_lint L18: half
+    # the aperture plus 0.3 m), and every door joins two rooms (L10).
+    band = 2.0
+    cuts = (-5.0, 0.0, 6.0, 12.0)   # the staff band's cross walls
+    run_n = hy - band                # 10 m: a Y wall's run in the north band
+
+    def _along(x, lo, hi):
+        """An opening's `pos` for a wall running lo..hi, placed at x."""
+        return round((x - (lo + hi) / 2.0) / (hi - lo), 4)
+
+    parts = [
+        # the long wall between the club floor and the back of house
+        {"story": 0, "axis": "X", "pos": band, "start": -hx, "end": hx, "material": "drywall",
+         "openings": [
+             {"kind": "door", "pos": _along(-11.0, -hx, hx), "width": 1.4, "tag": "vip_door"},
+             {"kind": "door", "pos": _along(-2.5, -hx, hx), "width": 1.25, "tag": "stage_door"},
+             {"kind": "door", "pos": _along(2.5, -hx, hx), "width": 1.25, "reinforceable": True,
+              "tag": "office_door"},
+             {"kind": "door", "pos": _along(9.0, -hx, hx), "width": 1.25, "tag": "stock_door"},
+             {"kind": "door", "pos": _along(14.5, -hx, hx), "width": 1.25, "tag": "kitchen_door"}]},
+        # main floor | back bar: two wide openings, a bar's worth of wall between
+        {"story": 0, "axis": "Y", "pos": 5.0, "start": -hy, "end": band, "material": "drywall",
+         "openings": [
+             {"kind": "door", "pos": _along(-8.0, -hy, band), "width": 1.8, "tag": "back_bar_south"},
+             {"kind": "door", "pos": _along(-1.0, -hy, band), "width": 1.8, "tag": "back_bar_north"}]},
+        # the staff band's cross walls
+        {"story": 0, "axis": "Y", "pos": cuts[0], "start": band, "end": hy, "material": "drywall",
+         "openings": [{"kind": "door", "pos": 0.0, "width": 1.25, "tag": "dressing_door"}]},
+        {"story": 0, "axis": "Y", "pos": cuts[1], "start": band, "end": hy, "material": "concrete",
+         "openings": []},
+        {"story": 0, "axis": "Y", "pos": cuts[2], "start": band, "end": hy, "material": "concrete",
+         "openings": [{"kind": "door", "pos": 0.0, "width": 1.25, "reinforceable": True,
+                       "tag": "office_back_door"}]},
+        {"story": 0, "axis": "Y", "pos": cuts[3], "start": band, "end": hy, "material": "drywall",
+         "openings": []},
+    ]
+    del run_n
+    spec["partitions"] = parts
+    spec["stairs"] = []
+    spec["ladders"] = []
+    spec["vertical_links"] = []
+    # nothing authored on the floor: the club recipe places the stages, the
+    # bars, the booths, the sign and the TVs; the vault recipe the safe.
+    spec["volumes"] = []
+    rooms = [
+        {"id": "main_floor", "story": 0, "bounds": [-hx, -hy, 5.0, band],
+         "role": "public_entry", "combat_range": "medium"},
+        {"id": "back_bar", "story": 0, "bounds": [5.0, -hy, hx, band],
+         "role": "connector", "combat_range": "close"},
+        {"id": "vip_lounge", "story": 0, "bounds": [-hx, band, cuts[0], hy],
+         "role": "connector", "combat_range": "close"},
+        {"id": "dressing_room", "story": 0, "bounds": [cuts[0], band, cuts[1], hy],
+         "role": "staff_only", "combat_range": "close"},
+        {"id": "cash_office", "story": 0, "bounds": [cuts[1], band, cuts[2], hy],
+         "role": "objective_room", "objective": True, "fortifiable": True,
+         "combat_range": "close"},
+        {"id": "stockroom", "story": 0, "bounds": [cuts[2], band, cuts[3], hy],
+         "role": "connector", "combat_range": "close"},
+        {"id": "kitchen", "story": 0, "bounds": [cuts[3], band, hx, hy],
+         "role": "connector", "combat_range": "close"},
+    ]
+    spec["rooms"] = rooms
+    safe = (3.0, 8.5, 0.2)          # in the cash office, off its doors
+    door_in = (-5.1, -10.5)         # just inside the front door
+    markers = [
+        {"type": "camera_socket", "id": "01", "x": -14.0, "y": -10.0, "z": 3.0,
+         "room": "main_floor", "rot_z": 45},
+        {"type": "camera_socket", "id": "02", "x": 3.0, "y": 11.0, "z": 3.0,
+         "room": "cash_office", "rot_z": -90},
+    ]
+    if mode == "heist":
+        spec["objectives"] = [
+            {"id": "crack_safe", "kind": "drill", "x": safe[0], "y": safe[1], "z": safe[2],
+             "room": "cash_office", "required": True, "duration": 30.0},
+            {"id": "grab_till", "kind": "grab", "x": 11.0, "y": -5.0, "z": 0.9,
+             "room": "back_bar", "required": False, "duration": 6.0},
+        ]
+        spec["loot"] = [
+            {"id": "office_safe", "kind": "cash", "x": safe[0], "y": safe[1], "z": safe[2],
+             "value": 12000, "bags": 2, "room": "cash_office"},
+            {"id": "bar_till", "kind": "cash", "x": 11.0, "y": -5.0, "z": 0.9,
+             "value": 1500, "bags": 1, "room": "back_bar"},
+        ]
+        spec["zones"] = [
+            {"id": "front_extract", "kind": "extraction", "story": 0,
+             "bounds": [-12.0, -hy, 2.0, -8.0]},
+            {"id": "stock_secure", "kind": "secure", "story": 0,
+             "bounds": [cuts[2], band, cuts[3], hy]},
+        ]
+        markers += [
+            {"type": "crew_spawn", "id": "A", "x": door_in[0], "y": door_in[1], "z": 0.0,
+             "rot_z": 90, "room": "main_floor", "meta": {"phase": "stealth"}},
+            {"type": "objective", "id": "SAFE", "x": safe[0], "y": safe[1], "z": safe[2],
+             "room": "cash_office"},
+            {"type": "extraction", "id": "FRONT", "x": door_in[0] + 2.0, "y": door_in[1],
+             "z": 0.0, "room": "main_floor"},
+        ]
+    else:
+        markers += [
+            {"type": "attacker_spawn", "id": "A", "x": door_in[0], "y": door_in[1], "z": 0.0,
+             "rot_z": 90, "room": "main_floor"},
+            {"type": "attacker_spawn", "id": "B", "x": 9.0, "y": 10.5, "z": 0.0,
+             "rot_z": 270, "room": "stockroom"},
+            {"type": "defender_spawn", "id": "D", "x": safe[0], "y": safe[1], "z": 0.0,
+             "rot_z": 270, "room": "cash_office"},
+            {"type": "objective", "id": "SAFE", "x": safe[0], "y": safe[1], "z": safe[2],
+             "room": "cash_office", "meta": {"kind": "secure"}},
+        ]
+    spec["markers"] = markers
+    # a flat roof with a lip; the roof is unreached and unfurnished
+    spec["parapets"] = [{"story": 1, "height": 0.9, "thick": 0.3}]
+    return spec
+
+
 # ---------------------------------------------------------------------------
 # FACADE shells -- non-enterable filler buildings: exterior + roof + collision
 # + theme ONLY (no interior, no gameplay). They emit no tactical data and are
@@ -2546,6 +2719,7 @@ REGISTRY = {
     "parking_garage": parking_garage,
     "auto_shop": auto_shop,
     "pawn_shop": pawn_shop,
+    "strip_club": strip_club,
     "facade_rowhome": facade_rowhome,
     "facade_storefront": facade_storefront,
     "facade_industrial": facade_industrial,

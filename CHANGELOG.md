@@ -1,3 +1,67 @@
+## [0.133.0] - 2026-09-15  a strip club can be generated, and stays a club when somebody else names it
+
+Cold run 9055 was refused at graybox: "brief archetype 'strip_club' matches
+no DC preset". A mission's own building is generated from a preset
+(`presets.make`) and the lot anchors on the library family of the same name;
+the family existed (`strip_club_a01`..`a03`) and the recipe did not. The
+walker's brief is a neighbourhood club -- one storey, windowless, two bar
+areas with poles, dingy, CRTs on brackets -- so the answer is a recipe, not
+an alias to a wrong-but-plausible building.
+
+**`presets.strip_club`.** 34 x 24 m, one storey over slab, no windows
+anywhere: a front door on the street face, a service door and a soft wall on
+the rear. South band: `main_floor` (public_entry, 308 m2) and `back_bar`
+(168 m2). North band behind the long wall: `vip_lounge`, `dressing_room`
+(staff_only), `cash_office` (objective_room, two reinforceable doors, the
+safe), `stockroom`, `kitchen`. Nothing authored on the floor -- 0.132.0's
+recipe places the stages, bars, booths, signs and TVs, the vault recipe the
+safe. Heist (drill the safe, the bar till, front extraction) and assault
+modes. `floors` and `basement` are accepted and ignored, as `corner_deli`
+does. Lint 0 FAIL 0 WARN, tactical 0 errors; 0 FAIL and 0 errors at seeds 0-49.
+
+**The club is read off the recipe as well as the name.** 0.132.0 claims club
+rooms only inside a building whose id says `strip_club`, and Level Factory
+names the level it generates `lf_<mission>_<seed>` -- so its club would have
+been a shop floor with a vending machine, 0.131.0's defect one layer up. A
+generated spec now carries `preset` (schema, `LevelSpec.preset`), and
+`level_design.club_building_id` reads name and preset together for
+`furnish`, `dress_club_rooms`, `seed_cover` and the light manifest. No
+library spec carries `preset`: the library rebuilt on this is unchanged
+except `built_utc`.
+
+**A club room's cover is the club's.** `seed_cover` runs first and keys its
+pieces on the room's words: on the first build it put a kiosk, two planters
+and a counter island on the main floor, shelf runs and pallets in the back
+bar (`back` is a storage word), crate stacks in the VIP lounge -- and the
+recipe, counting them as furniture already there, stopped its wall run
+before the neon sign. It now leaves strip club rooms to the recipe. Every
+room still has shelter at seeds 0-49. REFUTED on the way, kept: making the
+vending machine a club anchor so the room carries its own shelter piece
+broke `test_hung_pieces_hang_in_free_air_over_the_furniture` and the club
+migration's idempotence (the library's refurnish changes), and was reverted.
+
+**Measured through `new_level.py --preset strip_club --name
+lf_club_block_001_7 --mode heist --seed 7`** -- the adapter's own arguments,
+which set `modular: true`; a dump of `presets.make` is not that building
+(heist builds monolithic, 79 prop slots and no surfaces). 208 slots (107
+wall, 74 prop, 11 doorway, 7 floor, 7 ceiling, 1 breach, 1 roof); nav gate
+595 polys, 2/2 interior markers reachable, navigable; 30 light anchors, 3
+club rooms lit as a club (club_wash 10, stage_light 3, neon 4, room_ambient
+7). Zoo 0.89.0 kit 68 modules built, 1 failed (below); composed 208 themed, 0 greybox fallbacks,
+placement 193/193, closure portable.
+
+**Not fixed here, measured.** The wall run is shuffled and cut to each
+room's budget, so over seeds 0-49 `main_floor` has no neon sign at 5,
+`vip_lounge` at 38, and the building none at all at 3 -- the 0.132.0 recipe,
+whose change re-furnishes the library clubs. The compose z-fight gate FAILs
+this club (70 pairs, 68 of them a prop's base on a floor skin at 0.00-0.02 m)
+as it did `strip_club_a01` on 0.132.0 (82) and cold run 9054's bank (77):
+every standing prop against every floor skin, not the club. Zoo 0.89.0's
+`flat_top_grill` builds 0.935 m deep in a 0.900 m slot (kit `fail`), and the
+composer bundles it anyway.
+
+`test_preset_strip_club.py` (10; every one fails on 0.132.1).
+
 ## [0.132.1] - 2026-09-14  a stair's discharge route is the same in every build
 
 0.131.1's library rebuild, and 0.132.0's after it, each flipped the
