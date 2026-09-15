@@ -1,3 +1,63 @@
+## [0.135.0] - 2026-09-15  a TV that is on throws its light
+
+The walker, after walking cold run 9057's strip club: the CRTs should "have
+a light/glow from the screen as if they are on", showing a football or
+baseball game. Zoo 0.90.0 paints the game on the bracket set's glass and
+makes it emissive. A lit material lights nothing round it in GL
+Compatibility, so the cold spill on the housing, the bracket and the wall
+is a light, and a light is this kit's to place.
+
+**A `neon` in front of every TV that is on** (`lights._tv_screen_anchors`),
+in any room -- a club room after its club set, any other room after its
+ceiling light, the room's box still last. A TV is a visible volume that
+`prop_species` routes to `crt_tv` with `form` `bracket`; a `stand` set is
+off and gets none. `id` `<volume>_screen`; `pos` `_TV_SCREEN_OUT` 0.25 m in
+front of the slot's front face along its facing (`_front_bearing`, the sign
+spill's arithmetic), in free air, at the screen's height (`_TV_SCREEN_RISE`
++0.036 m, measured off Zoo's plan: +0.0366 at 0.6 x 0.55 x 0.5, +0.0351 at
+0.7 x 0.6 x 0.55); `rot_y` the facing; `color` `cyan` or `blue` by
+`crc32(id) % 2`; `size` the lit face, `tv_screen_size`, which mirrors Zoo's
+`crt_forms.screen_size` because this kit cannot import Zoo -- including
+Zoo's design height for the tip, `_TV_TIP_GROWTH` 1.059, measured the same
+at both sizes. REFUTED FIRST, kept: the mirror without that factor gave
+0.373 x 0.280 m at the 0.6 m set against Zoo's fitted 0.3953 x 0.2965, 6 %
+short; with it 0.395 x 0.297 and 0.445 x 0.334 against 0.4450 x 0.3337.
+Lux's `neon` range (0.5 x the longer side + 1.0 m) is then 1.20 and 1.22 m:
+a pool round the set. The build's report and print carry `tv_screens`.
+
+**The library.** Rebuilt: the three clubs' manifests are the only content
+change (`strip_club_a01` 23 -> 26 anchors, `a02` 18 -> 20, `a03` 41 -> 48;
+12 screens), every other file line endings and `built_utc`. Hook: all
+checks passed; nav gate 14 unnavigable shells before and after, none new.
+
+**Measured in a scratch copy of `_runs/walk_9057_rain`** (the walker's is
+untouched; its 1,385 files hashed before and after): `strip_club_a01`'s
+manifest merged with Lot's own `_place_point` at b0's placement -- proved
+by 0.133.0's manifest reproducing all 23 of the site's b0 anchors exactly
+-- and re-baked through the walk's `LuxLightLoader.bake_club`: 20 club
+rigs from 33 anchors where the run baked 17 from 30, the same 13 refused
+(the null room_ambient colours the run itself refused). The three screen
+rigs stand at Godot (-52.27, 2.136, 5.99), (-40.965, 2.136, -25.41) and
+(-63.035, 2.136, -14.05), in front of their sets. At 2 m the housings take
+the cold cast (cyan, cyan, blue). The package's `max_renderable_lights` is
+its light count and moved 94 -> 97 in the copy; Level Factory derives it.
+
+`test_club_rooms.py`: 4 new -- the spill stands in free air in front of
+each set, cold, the screen's size, 1.0-1.5 m of Lux range, deterministic;
+the size is Zoo's to a percent; a TV outside a club spills and a stand set
+does not, in the room's anchor order; the library clubs light every TV --
+all four failing on 0.134.0, with the updated neon count in
+`test_a_club_room_is_lit_by_the_club_set_and_no_fluorescent_row`, and
+`test_lights_partitions.py`'s exact report dict, which gains `tv_screens`:
+6 fail on 0.134.0's `lights.py` and library.
+
+**Not done.** The `wall_tv` piece still writes no `variant`: on Zoo 0.89.0,
+which this hook reads, a variant on `crt_tv` drops the `bracket` form with
+it and builds a stand set (measured). Once Zoo 0.90.0 is on main, `wall_tv`
+can take `variants=True` and two TVs of one size in a room show two games;
+today `strip_club_a01`'s three show two, both football. The spill puts a
+specular highlight on the glass it stands in front of; nothing measures it.
+
 ## [0.134.0] - 2026-09-15  the back of a flight is filled flush with its side walls
 
 The walker, cold run 9057, in `bank_branch_a02`'s basement (debug overlay

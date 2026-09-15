@@ -412,7 +412,9 @@ def test_a_club_room_is_lit_by_the_club_set_and_no_fluorescent_row():
     assert 3 <= club["club_wash"] <= 5
     assert club["stage_light"] == 1
     signs = sum(1 for v in s["volumes"] if v["name"].startswith("neon_sign_"))
-    assert club["neon"] == signs + 1            # each sign, and the stage's rope light
+    tvs = sum(1 for v in s["volumes"] if v["name"].startswith("wall_tv_"))
+    # each sign, the stage's rope light, and each TV's screen (0.135.0)
+    assert club["neon"] == signs + 1 + tvs
     assert club["room_ambient"] == 1
     # the office keeps its pendants (an objective room) and gains its box
     assert by_room["cash_office"]["pendant"] >= 1
@@ -477,7 +479,8 @@ def test_a_neon_spill_stands_proud_of_its_sign_in_free_air():
     level_design.furnish(s)
     m, _ = _lit(s)
     signs = [v for v in s["volumes"] if v["name"].startswith("neon_sign_")]
-    neons = [a for a in m["anchors"] if a["type"] == "neon" and not a["id"].endswith("_stage_lip")]
+    neons = [a for a in m["anchors"] if a["type"] == "neon"
+             and not a["id"].endswith(("_stage_lip", "_screen"))]
     assert len(signs) == len(neons) >= 1
     x0, y0, x1, y1 = s["rooms"][0]["bounds"]
     cx, cy = (x0 + x1) / 2.0, (y0 + y1) / 2.0
@@ -495,6 +498,79 @@ def test_a_neon_spill_stands_proud_of_its_sign_in_free_air():
         # rot_y is the sign's facing in this manifest's frame (0 == +X)
         r = math.radians(a["rot_y"])
         assert math.cos(r) * (cx - v["x"]) + math.sin(r) * (cy - v["y"]) > 0
+
+
+def _lux_neon_range(a):
+    """Lux 0.38.1's `neon` range: 0.5 x the longer side + 1.0 m, held to
+    1.0-2.5 (`lux_light_loader.gd`, the `neon` branch of `_club_rig`)."""
+    return min(2.5, max(1.0, 0.5 * max(a["size"]) + 1.0))
+
+
+def test_a_tv_that_is_on_spills_its_screen_in_free_air():
+    """Zoo 0.90.0 lights the bracket TV's screen; its spill is a `neon`
+    `_TV_SCREEN_OUT` in front of the slot, cold, the screen's size."""
+    s = _club(30.0, 14.0)
+    level_design.furnish(s)
+    tvs = [v for v in s["volumes"] if v["name"].startswith("wall_tv_")]
+    assert tvs and all(v.get("form") == "bracket" for v in tvs)
+    m, rep = _lit(s)
+    screens = {a["id"]: a for a in m["anchors"] if a["id"].endswith("_screen")}
+    assert rep["tv_screens"] == len(tvs) == len(screens)
+    x0, y0, x1, y1 = s["rooms"][0]["bounds"]
+    cx, cy = (x0 + x1) / 2.0, (y0 + y1) / 2.0
+    for v in tvs:
+        a = screens[v["name"] + "_screen"]
+        assert a["type"] == "neon" and a["room"] == "main_floor"
+        depth, width = min(v["size_x"], v["size_y"]), max(v["size_x"], v["size_y"])
+        dist = math.hypot(a["pos"][0] - v["x"], a["pos"][1] - v["y"])
+        assert abs(dist - (depth / 2.0 + 0.25)) < 1e-3, (v["name"], dist)
+        # in free air in front of the set, on the room side of it
+        assert not (abs(a["pos"][0] - v["x"]) < v["size_x"] / 2.0
+                    and abs(a["pos"][1] - v["y"]) < v["size_y"] / 2.0)
+        assert math.hypot(a["pos"][0] - cx, a["pos"][1] - cy) < math.hypot(v["x"] - cx, v["y"] - cy)
+        assert a["pos"][2] == round(v["z"] + 0.036, 3) and a["drop"] == round(v["z"] + 0.036, 3)
+        r = math.radians(a["rot_y"])
+        assert math.cos(r) * (a["pos"][0] - v["x"]) + math.sin(r) * (a["pos"][1] - v["y"]) > 0
+        assert a["color"] in ("cyan", "blue") and a["color"] in lights.CLUB_COLOURS
+        assert a["size"] == lights.tv_screen_size(width, v["size_z"])
+        assert 1.0 <= _lux_neon_range(a) <= 1.5, a
+    n, _ = _lit(copy.deepcopy(s))
+    assert [a for a in n["anchors"] if a["id"].endswith("_screen")] == list(screens.values())
+
+
+def test_the_screen_size_is_zoos():
+    """Zoo 0.90.0's fitted screen, measured off `crt_forms.plan_bracket` at
+    the two sizes the recipe places (width x height of the lit face)."""
+    for (w, h), zoo in (((0.6, 0.5), (0.3953, 0.2965)), ((0.7, 0.55), (0.4450, 0.3337))):
+        got = lights.tv_screen_size(w, h)
+        assert abs(got[0] - zoo[0]) <= 0.01 * zoo[0] and abs(got[1] - zoo[1]) <= 0.01 * zoo[1], (got, zoo)
+
+
+def test_a_tv_outside_a_club_spills_and_a_set_that_is_off_does_not():
+    t = _club(20.0, 12.0, name="office_probe", rid="bullpen")
+    t["volumes"] = [
+        {"name": "wall_tv_r00000001_1", "x": 0.0, "y": 5.7, "z": 2.1, "size_x": 0.6,
+         "size_y": 0.55, "size_z": 0.5, "rot_z": 0.0, "form": "bracket", "collision": "none"},
+        {"name": "bar_tv_r00000001_2", "x": 3.0, "y": 0.0, "z": 0.3, "size_x": 0.55,
+         "size_y": 0.5, "size_z": 0.42, "rot_z": 0.0, "collision": "none"}]
+    n, rep = _lit(t)
+    assert rep["club_rooms"] == 0 and rep["tv_screens"] == 1
+    types = collections.Counter(a["type"] for a in n["anchors"])
+    assert types == {"fluorescent": 1, "neon": 1, "room_ambient": 1}, types
+    ids = [a["id"] for a in n["anchors"]]
+    # the room's ceiling light first and its box last, as every reader assumes
+    assert ids == ["bullpen_ceiling", "wall_tv_r00000001_1_screen", "bullpen_ambient"], ids
+
+
+def test_the_library_clubs_light_every_tv():
+    for name in ("strip_club_a01", "strip_club_a02", "strip_club_a03"):
+        spec = _library(name)
+        with open(os.path.join(HERE, "build", name + ".lights.json"), encoding="utf-8") as f:
+            m = json.load(f)
+        tvs = sorted(v["name"] for v in spec["volumes"]
+                     if prop_species.species_for_name(v["name"]) == "crt_tv" and v.get("form") == "bracket")
+        got = sorted(a["id"][:-len("_screen")] for a in m["anchors"] if a["id"].endswith("_screen"))
+        assert tvs and got == tvs, (name, tvs, got)
 
 
 def test_every_room_carries_its_box_for_the_ambient_probe():

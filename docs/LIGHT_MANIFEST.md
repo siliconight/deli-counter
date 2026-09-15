@@ -32,7 +32,7 @@ change; derived lights need zero authoring.
 | `row` | rows | `{count, spacing}` for repeated fixtures. |
 | `size` | area lights | `[width, height]` for `window`/`sign`/`neon` panels; `[x, y, z]` for `room_ambient` — the room's wall-centreline box, floor to ceiling plane, centred on `pos`. |
 | `drop` | interior | Metres from the anchor down to its room's floor (ceiling types, the club set). |
-| `color` | club set | A name from Lux's palette: `magenta` `hot_pink` `red` `violet` `blue` `cyan` `amber`. Lux REFUSES an unknown name (not built, warned), never substitutes. `null` on a `room_ambient` means "the preset's own ambient, no tint" — Lux 0.37.0 refuses that too, which is the right outcome for an office until its per-room ambient lands. Absent on a `neon` at a sign: Lux picks by anchor id. |
+| `color` | club set | A name from Lux's palette: `magenta` `hot_pink` `red` `violet` `blue` `cyan` `amber`. Lux REFUSES an unknown name (not built, warned), never substitutes. `null` on a `room_ambient` means "the preset's own ambient, no tint" — Lux 0.37.0 refuses that too, which is the right outcome for an office until its per-room ambient lands. Absent on a `neon` at a sign: Lux picks by anchor id; `cyan` or `blue` on a TV's screen. |
 | `target` | `stage_light` | `[x, y, z]` the spots are aimed at, same frame as `pos`. Required by Lux. |
 | `radius` | `club_wash`, `stage_light` | Floor pool radius (wash) or the lit radius at the target (spot), metres. |
 | `cycle_s` | `stage_light` | Seconds per colour as the spots step through the palette; 0 holds. |
@@ -89,6 +89,20 @@ change; derived lights need zero authoring.
     lights". What still keeps a club room from reading dark — the preset's
     unshadowed sun, the environment's ambient share, depth fog — is
     measured in Lux 0.37.0 and is the preset's to change.
+
+- **A `neon` in front of every TV that is on (DC 0.135.0, Zoo 0.90.0)** —
+  in any room, club or not: every visible volume that routes to Zoo's
+  `crt_tv` (`wall_tv`, `bar_tv`) with `form` `bracket`, the set Zoo lights
+  with a ballgame. `id` `<volume name>_screen`; `pos` 0.25 m in front of the
+  slot's front face along its facing, in free air, at the screen's height
+  (the volume's centre + 0.036 m, measured off Zoo's plan); `rot_y` the
+  facing; `size` the lit 4:3 face (`lights.tv_screen_size`, Zoo's
+  `crt_forms.screen_size` mirrored: 0.395 × 0.297 m at the club's 0.6 m set,
+  0.445 × 0.334 at 0.7 m), so Lux's neon range is 1.20–1.22 m; `color`
+  `cyan` or `blue` by `crc32(id) % 2`; `drop` from the anchor to the floor.
+  A `stand` set is off and gets none. In a club room it follows the club
+  set; elsewhere it follows the room's ceiling light — the room's box stays
+  its last anchor.
 
 Emitters proud of the wall is the v1.1 contract with Zoo's fixture pass:
 `pos` is always the EMITTER; hardware hangs around it (sign cabinet behind

@@ -49,6 +49,29 @@ _ROPE_OFF_POLE = 0.5
 _ROPE_LIP_OUT = 0.25
 _ROPE_LIP_Z = 0.75
 _ROPE_COLOUR = "amber"
+#: A TV THAT IS ON (Zoo 0.90.0). The walker, after cold run 9057's club: the
+#: CRTs should "have a light/glow from the screen as if they are on". Zoo
+#: paints the picture and makes the glass emissive; a lit material lights
+#: nothing round it in GL Compatibility, so the spill on the wall, the
+#: bracket and the stools below is a `neon` anchor per set -- Lux's small
+#: omni, range 0.5 x the longer `size` + 1.0 m (1.0-2.5), which at a 0.4 m
+#: screen is 1.2 m: a pool round the set, not a room light. It stands this
+#: far in front of the SLOT's front face, in free air (the set is tipped 8
+#: degrees, so its screen's top edge is the slot's front plane).
+_TV_SCREEN_OUT = 0.25
+#: A tube's cold light; one of the two by crc32 of the anchor id.
+_TV_COLOURS = ("cyan", "blue")
+#: Only the set Zoo lights: `crt_tv`'s `bracket` form. A `stand` set is off.
+_TV_SPECIES = "crt_tv"
+_TV_LIT_FORM = "bracket"
+#: The screen's centre above the slot's centre, MEASURED off Zoo 0.90.0's
+#: `crt_forms.plan_bracket` at the two sizes the club recipe places:
+#: +0.0366 m at 0.6 x 0.55 x 0.5 and +0.0351 at 0.7 x 0.6 x 0.55.
+_TV_SCREEN_RISE = 0.036
+#: Zoo draws the set at a design height this much taller than the slot's
+#: front before the tip, so the tipped bounds fit: 0.4236 m of front for a
+#: 0.4 m one at 0.5 m, 0.4767 for 0.45 at 0.55 (the same 1.059 both).
+_TV_TIP_GROWTH = 1.059
 
 # outward wall facing (from the wall-name suffix) -> rot_y that points the
 # window's area light INWARD, in degrees about up (rot_y 0 == +X).
@@ -399,6 +422,56 @@ def _club_anchors(r, ceiling_z, floor_z, volumes, story_height, rects, walls,
     return out
 
 
+def tv_screen_size(width, height):
+    """``[w, h]`` of the lit 4:3 face Zoo puts on a bracket set of slot
+    ``width`` x ``height``: Zoo 0.90.0's `crt_forms.screen_size` over the
+    front its bracket leaves (the shelf's drop, 0.2 x height held to 0.06-
+    0.10 m, below it) -- mirrored, because Deli Counter cannot import Zoo;
+    `test_club_rooms` pins the two sizes this recipe places against Zoo's
+    own numbers, to a percent."""
+    tv_h = (float(height) - max(0.06, min(0.10, 0.2 * float(height)))) * _TV_TIP_GROWTH
+    sh = min(0.70 * tv_h, 0.525 * float(width))
+    return [round(sh * 4.0 / 3.0, 3), round(sh, 3)]
+
+
+def _tv_screen_anchors(r, floor_z, volumes):
+    """A `neon` spill anchor in front of every lit TV in room ``r``:
+    ``<tv id>_screen``, `_TV_SCREEN_OUT` proud of the slot's front face on
+    its facing, at the screen's height, `size` the screen. ``volumes``
+    are the room's visible volumes. Deterministic."""
+    import math
+    import zlib
+    import prop_species
+    rid = r.get("id", "room")
+    out = []
+    for v in volumes:
+        name = str(v.get("name", ""))
+        if prop_species.species_for_name(name) != _TV_SPECIES:
+            continue
+        if str(v.get("form") or "") != _TV_LIT_FORM:
+            continue
+        bearing = _front_bearing(v)
+        b = math.radians(bearing)
+        fx, fy = math.sin(b), math.cos(b)
+        sx, sy = float(v.get("size_x", 0.0)), float(v.get("size_y", 0.0))
+        width, depth = max(sx, sy), min(sx, sy)
+        out_d = depth / 2.0 + _TV_SCREEN_OUT
+        aid = "%s_screen" % name
+        z = float(v.get("z", 0.0)) + _TV_SCREEN_RISE
+        out.append({
+            "id": aid, "type": "neon", "source": "derived",
+            "pos": [round(float(v["x"]) + fx * out_d, 3),
+                    round(float(v["y"]) + fy * out_d, 3), round(z, 3)],
+            "rot_y": _bearing_to_rot_y(bearing), "room": rid,
+            "color": _TV_COLOURS[(zlib.crc32(aid.encode("utf-8")) & 0xFFFFFFFF)
+                                 % len(_TV_COLOURS)],
+            "size": tv_screen_size(width, float(v.get("size_z", 0.0))),
+            "row": {"count": 1, "spacing": 0.0},
+            "drop": round(z - floor_z, 3), "reacts_to_alarm": True,
+        })
+    return out
+
+
 def _room_ambient(r, floor_z, ceiling_z, colour):
     """The room's box for Lux's per-room ambient probe: `size` is the
     wall-centreline box (the bounds are centrelines) from the floor to the
@@ -629,7 +702,9 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
     ceiling row: `club_wash` pools, a `stage_light` and a `neon` at each
     stage in it, a `neon` proud of each neon sign, a coloured `room_ambient`
     -- Lux 0.37.0's types, from `volumes` (the spec's volumes as dicts) --
-    and no fluorescent. The walker: "dark with colored lights".
+    and no fluorescent. The walker: "dark with colored lights". In ANY room,
+    a `neon` in front of each TV Zoo lights (`_tv_screen_anchors`), after
+    the room's lights and before its box.
 
     `cap_thick` is the thickness of the slab capping a storey -- either a float,
     or a callable taking the storey index (top storeys can be capped by a roof
@@ -647,12 +722,14 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
     that has none gets rows laid across the room as before, and must say so.
     With them, a row steps off every partition it would cross and moves off
     any it would lie along (`_row_runs`, `_colinear_shift`). `report`, a
-    dict, receives the counts: nudged, dropped, rows_shifted.
+    dict, receives the counts: nudged, dropped, rows_shifted, club_rooms,
+    tv_screens.
     """
     anchors = []
     rep = report if report is not None else {}
     rep.setdefault("rows_shifted", 0)
     rep.setdefault("club_rooms", 0)
+    rep.setdefault("tv_screens", 0)
     clear = wall_clearance(wall_thick)
     club_ids = set(club_rooms or ())
     for r in rooms or []:
@@ -669,12 +746,15 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
                  if int(v.get("story", story)) == story]
         rects = [(v["x0"], v["y0"], v["x1"], v["y1"]) for v in holes]
         walls = [w for w in (partitions or ()) if int(w["story"]) == story]
+        in_room = _volumes_in(volumes, r, story_height)
+        screens = _tv_screen_anchors(r, c[2], in_room)
+        rep["tv_screens"] += len(screens)
         if r.get("id") in club_ids:
             rep["club_rooms"] += 1
-            club = _club_anchors(r, ceiling_z, c[2],
-                                 _volumes_in(volumes, r, story_height),
+            club = _club_anchors(r, ceiling_z, c[2], in_room,
                                  story_height, rects, walls, clear, rep)
             anchors += club
+            anchors += screens
             anchors.append(_room_ambient(
                 r, c[2], ceiling_z, _club_colour(_club_colour_start(r.get("id")), 0)))
             continue
@@ -737,6 +817,7 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
             })
         # the room's box AFTER its row: a room's first anchor is its ceiling
         # light, as every reader of this list has assumed since v1.0
+        anchors += screens
         anchors.append(_room_ambient(r, c[2], ceiling_z, None))
 
     win_n = {}

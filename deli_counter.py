@@ -2921,7 +2921,8 @@ def write_light_manifest(builder, path):
           f"{_report.get('nudged', 0)} lamp(s) nudged, "
           f"{_report.get('dropped', 0)} dropped, "
           f"{_report.get('rows_shifted', 0)} row(s) moved off a wall; "
-          f"{_report.get('club_rooms', 0)} club room(s) lit as a club)")
+          f"{_report.get('club_rooms', 0)} club room(s) lit as a club; "
+          f"{_report.get('tv_screens', 0)} TV screen(s) spilling)")
     return data
 
 
