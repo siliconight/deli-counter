@@ -630,3 +630,29 @@ def test_the_club_migration_is_idempotent():
     once = copy.deepcopy(d)
     mig.migrate(once)
     assert json.dumps(once, sort_keys=True) == json.dumps(d, sort_keys=True)
+
+
+def test_a_wall_tv_carries_a_variant_zoo_honours_with_its_bracket():
+    """0.135.1: Zoo 0.90.0 draws a ballgame from the variant and honours form
+    `bracket` with variants 0..3; 0.135.0 wrote none, so every set in a
+    building showed one game. The variant is the name's crc32 % 4, omitted
+    at 0, like every other variant piece; the library's TVs carry it
+    (`migrate_tv_variants.py`)."""
+    s = _club(30.0, 14.0)
+    level_design.furnish(s)
+    tvs = [v for v in s["volumes"] if v["name"].startswith("wall_tv_")]
+    assert tvs
+    for v in tvs:
+        n = (zlib.crc32(v["name"].encode("utf-8")) & 0xFFFFFFFF) % 4
+        assert v.get("variant") == (n or None), v
+    for name in ("strip_club_a01", "strip_club_a02", "strip_club_a03"):
+        with open(os.path.join(HERE, "specs", name + ".json"), encoding="utf-8") as f:
+            lib = [v for v in json.load(f)["volumes"] if v["name"].startswith("wall_tv_")]
+        for v in lib:
+            n = (zlib.crc32(v["name"].encode("utf-8")) & 0xFFFFFFFF) % 4
+            assert v.get("variant") == (n or None), (name, v["name"])
+    import test_furnish
+    kit = test_furnish._zoo_core()
+    for v in tvs:
+        kept, dropped = kit.honour_dressing(dict(v), "crt_tv")
+        assert not dropped and kept["form"] == "bracket", (v["name"], dropped)

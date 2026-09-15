@@ -17,6 +17,17 @@ from spec_types import LevelSpec, Opening, Partition, Stairwell
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 
+def _library_specs():
+    """The library's specs, not Level Factory's output beside them.
+
+    `specs/lf_*.json` are levels Level Factory generates into this folder
+    (gitignored). A checkout that has hosted a cold run holds hundreds: the
+    exact census below read 291 flights instead of 130 in the factory
+    checkout, and passed in the worktree it was written in, which had none."""
+    return [p for p in sorted(glob.glob(os.path.join(HERE, "specs", "*.json")))
+            if not os.path.basename(p).startswith("lf_")]
+
+
 def _run(fn):
     fn()
     print(f"[ok] {fn.__name__}")
@@ -119,7 +130,7 @@ _CLOSED_OTHERWISE = {("credit_union_a02", "cu02_stair_0", 0)}
 def test_no_slot_remains_behind_any_one_run_solid_flight_in_the_library():
     open_ = []
     n = 0
-    for path in sorted(glob.glob(os.path.join(HERE, "specs", "*.json"))):
+    for path in _library_specs():
         name = os.path.basename(path)[:-5]
         sp = spec_loader.load_spec(path)
         guards = S.stair_guards(sp)
@@ -154,7 +165,7 @@ def test_a_back_never_shares_space_with_the_flight_or_its_walls():
     place with a coplanar face, and a back through a side wall would have
     three. Inside the reserved rectangle, outside the treads, and under the
     discharge plate (step_h below the cap it stops at)."""
-    for path in sorted(glob.glob(os.path.join(HERE, "specs", "*.json"))):
+    for path in _library_specs():
         sp = spec_loader.load_spec(path)
         guards = S.stair_guards(sp)
         H = sp.story_height

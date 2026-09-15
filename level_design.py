@@ -870,8 +870,14 @@ _PIECES = {p["name"]: p for p in (
     _piece("neon_sign", ((1.6, 0.1, 0.7), (1.4, 0.1, 0.6), (2.0, 0.1, 0.7)),
            "wall", front=True, variants=24, most=1, lift=2.2,
            collision="none"),
+    # A VARIANT IS A BALLGAME (0.135.1). Zoo 0.90.0 draws the screen from the
+    # variant -- 0 and 1 are always one football and one baseball game -- and
+    # honours form `bracket` with variants 0..3. Zoo 0.89.0 dropped the form
+    # when a variant was asked (measured: a stand set was built), so 0.135.0
+    # wrote none and a01's three sets showed one game, all football.
     _piece("wall_tv", ((0.6, 0.55, 0.5), (0.7, 0.6, 0.55)), "wall",
-           front=True, form="bracket", most=3, lift=2.1, collision="none"),
+           front=True, form="bracket", most=3, lift=2.1, collision="none",
+           variants=True),
     _piece("table_cocktail", ((0.75, 0.75, 0.74), (0.8, 0.8, 0.76),
                               (0.7, 0.7, 0.72)), "floor", form="cloth",
            stock="bar", variants=True, seats=("club", 2, 3)),
