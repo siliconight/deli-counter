@@ -1,3 +1,85 @@
+## [0.134.0] - 2026-09-15  the back of a flight is filled flush with its side walls
+
+The walker, cold run 9057, in `bank_branch_a02`'s basement (debug overlay
+"under stair_guard_side_7"): "for these stairs that we will this in so the
+back is flush with it's self". Measured in the 0.133.0 glb, building frame,
+metres: the east stair's side walls run x 7.85..11.6 (outer faces y -7.2 and
+-4.8), the flight's solid treads stop at x 8.65, and between the walls'
+inner faces (y -6.805..-5.195) stood a slot 1.61 m wide, 0.8 m deep and
+3.3 m tall (z -3.6..-0.3), open to the room. Its depth is `flight_rect`'s
+walk-off `clear`, which the side walls' span takes on the storey below as
+well as on the storey the flight arrives at.
+
+**`stair_guards` emits a `back`.** On the storey a flight climbs through,
+behind the top of a ONE-RUN flight (straight, or a single-storey switchback)
+that the builder fills solid, where side walls stand: from the rectangle's
+arrival edge to the top tread less `SIDE_GAP`, between the side walls' inner
+faces (edge to edge for a narrow flight's thin guards), floor to slab
+underside. The builder bakes it like a side wall (`stair_guard_back_<k>`,
+building wall material). Backs are appended after every side and rail, so
+every existing piece keeps its index and its name; across the 132 specs the
+side and rail pieces are identical to 0.133.0's, value for value and in
+order. 129 backs in 85 specs.
+
+**Not under a slab.** The slot was assumed to be roofed by the storey
+above's slab. The glb says otherwise: the stair's own hole (all of
+`flight_rect`) is over it, and the builder's discharge plate (z -0.2..0.0)
+closes the hole. The back stops at the slab underside like the walls beside
+it, 0.1 m under the plate -- every flight in the library has step_h below
+the cap it stands under, and a test holds that.
+
+**Fill, not trim.** Cutting the side walls back to the treads would end the
+slot too; it is not what was asked for and it moves geometry that has passed
+the nav gate. A fill spanning the walls' OUTER faces would put two boxes in
+one place with three coplanar faces (`zfight_gate`), so it spans the inner
+faces and meets the walls face to face.
+
+**Scope, measured** (172 solid-underside flights with side walls, 97 specs).
+130 are one-run; 129 get a back. `credit_union_a02`'s ground-floor partition
+at y 3.0 stands across its slot's mouth, so the covered-by-walls cut drops the
+back and what remains is sealed. The other 42 are multi-storey switchbacks,
+whose rectangle holds two runs: in `cr_deli`'s glb nothing stands between the
+basement floor and z 0.0 at x -14.3 from y 5.8 to 11 -- the second run is an
+open channel under the next leg, and its "slot" is that channel's mouth, not a
+dead end. Above leg 0 a straight flight's slot stands on the discharge plate
+of the flight below (its way off), and a scissor's walls stop short of both
+ends, so neither gets a back.
+
+**The cuts.** A back gets every cut a side gets (walls, other stairs, solid
+volumes), measured across its depth rather than on a line (`band`). The
+line-crossing doorway rule does not apply to it -- it cut 0.305 m off
+`strip_retail_a01` `sr01_stair_up`'s back, which stands 0.7 m clear of
+`dining_rear`'s wall behind the side wall that door faces -- and a back asks
+the exact question instead: no door's approach zone (`DOOR_APPROACH_M` over
+the aperture, walls of both axes, partitions and exterior) unless a side of
+the same flight stands between; no authored, ramp or ladder hole under or
+over it, and no other stair's landing (0 of each in the library). A vault's
+swing needs no rule: L22 already refuses one reaching `flight_rect`, which
+contains every back.
+
+**How the gates read it.** `_barrier_intervals` counts only the kinds
+`containment_findings` asks for (`side`, `rail`); a back is neither, and the
+bank's findings are identical with the backs removed (tested). L19 and L21
+read `flight_rect`, L22 `flight_rect` too; `wall_voids` already keeps
+partitions out of it; headroom and Rule 10 skip `stair*` volumes;
+`stair_pitch` and `level_design` skip `stair_guard_` names. A back sits
+inside `flight_rect` and outside `footprint_rect` (tested), so none of them
+changes answer.
+
+**Rebuilt library.** `slots.json` and `gameplay.json` gain the back pieces;
+one `lights.json` changes: `bank_branch_a03` `vault_east_bulbs` moves from
+y 0.0 to 2.2 with 5 -> 4 lamps, because a back is a tall solid and a lamp row
+does not hang in one (`tall_solid_voids`: 12 -> 15 voids; a HEAD build of the
+same spec reports 12 and the old row). Composed `bank_branch_a02` with Zoo
+0.89.0: 82 modules, 0 greybox fallbacks, placement 308/308; the z-fight gate
+reads 136 pairs against 132 on the same pipeline from the 0.133.0 build, and
+the 4 new ones are both backs against the vault rooms' floor and ceiling
+skins -- the class every side wall in that basement already has (14 pairs
+before), not fixed here.
+
+`test_stair_back.py` (11; 8 fail on 0.133.0, the other 3 are the scope
+negatives). `test_stair_containment.py`'s guard inventory gains the back.
+
 ## [0.133.0] - 2026-09-15  a strip club can be generated, and stays a club when somebody else names it
 
 Cold run 9055 was refused at graybox: "brief archetype 'strip_club' matches

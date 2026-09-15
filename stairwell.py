@@ -678,6 +678,13 @@ def stair_guards(spec):
       high: along both long edges, and across the ENTRY end, which from the
       floor above is the back of a pit. The arrival end stays open; it is the
       way off the stair. A scissor arrives at both ends and gets no end rail.
+    * ``back`` -- on the storey a ``side`` stands on, behind the top of a
+      one-run flight the builder fills solid: the slot between the side
+      walls, from the flight's top end to the rectangle's arrival edge, floor
+      to slab underside, so walls and fill read as one face (cold run 9057).
+      It carries ``thick`` (its depth along the flight) and runs ACROSS the
+      flight, ``axis`` being the lateral axis. It is never a barrier to the
+      containment review, which asks about a flight's sides and mouths.
 
     Each piece stands `GUARD_THICK / 2` outside the rectangle's edge. Pieces
     are dropped where a built wall (a partition piece surviving `wall_voids`,
@@ -699,7 +706,7 @@ def stair_guards(spec):
     # the walk-off margin past a flight (`flight_rect`'s `clear`) plus one
     # doorway's width: enough to step onto a landing from beside it
     landing_open = 0.8 + agent_contract.min_door_width()
-    raw = []
+    raw, backs = [], []
     for i, st in enumerate(getattr(spec, "stairs", ()) or ()):
         if (getattr(st, "exterior", False) or st.style not in
                 ("straight", "switchback", "scissor")
@@ -779,13 +786,91 @@ def stair_guards(spec):
                 raw.append({"stair": sid, "story": s + 1, "kind": "rail",
                             "axis": lateral, "pos": entry,
                             "lo": l_lo - T, "hi": l_hi + T})
+            # THE BACK OF THE FLIGHT IS FILLED, FLUSH WITH ITS SIDE WALLS.
+            # The walker, cold run 9057, in `bank_branch_a02`'s basement: "for
+            # these stairs that we will this in so the back is flush with
+            # it's self". Measured in the 0.133.0 glb (building frame, m): the
+            # east stair's side walls run x 7.85..11.6, the flight's solid
+            # treads stop at x 8.65, so a slot 1.61 m wide (y -6.805..-5.195,
+            # between the walls' inner faces), 0.8 m deep and 3.3 m tall
+            # (z -3.6 to the -0.3 the walls stop at) stood open to the room.
+            # Its depth is `flight_rect`'s walk-off `clear`, which `side_span`
+            # takes on the storey below as well as on the one it serves.
+            #
+            # NOT UNDER A SLAB. The brief assumed the storey above's slab
+            # roofed the slot; the glb says otherwise: the stair's own hole
+            # (`slab_openings`, the whole of `flight_rect`) is over it, and
+            # the builder's `discharge` plate (z -0.2..0.0) closes that hole.
+            # So the fill stands under the flight's own arrival floor, which a
+            # body walks ON, and stops at the slab underside like the walls
+            # beside it -- 0.1 m below the plate, never in it (every flight in
+            # the library has step_h < the cap it stands under; measured).
+            #
+            # FILL, NOT TRIM. Cutting the side walls back to the treads would
+            # also end the slot, but it is not what was asked for, and it
+            # moves geometry that has passed a nav gate for three releases. A
+            # fill only adds solid inside a dead end. It spans the walls' INNER
+            # faces, not their outer ones: across the outer faces it would put
+            # two boxes in one place with coplanar tops, bottoms and room-side
+            # faces, which is exactly what `zfight_gate` refuses. Walls and
+            # fill meet face to face, so the room sees one flush face.
+            #
+            # SCOPE, MEASURED ACROSS THE LIBRARY (172 solid-underside flights
+            # with side walls, 97 specs):
+            # * one run in the rectangle only -- a straight flight or a
+            #   single-storey switchback. A multi-storey switchback's
+            #   rectangle holds two runs, and on its storey the second run is
+            #   an open channel under the next leg (`cr_deli`, glb: nothing
+            #   between the basement floor and z 0.0 at x -14.3 from y 5.8 to
+            #   11), so its "slot" is the mouth of a passage, not a dead end.
+            # * the leg the builder fills solid (`flight_solid_under`). Above
+            #   leg 0 a straight flight's arrival end stands on the discharge
+            #   plate of the flight below, which is that flight's way off.
+            # * never a scissor: it arrives at both ends and its side walls
+            #   stop `landing_open` short of each, so no slot forms.
+            # * narrow flights too: the fill is behind the top tread, under
+            #   the plate, where no walker goes. Their thin guards stand at
+            #   the rectangle's edge, so the fill spans edge to edge.
+            one_run = st.style == "straight" or single_run(st)
+            if (one_run and flight_solid_under(spec, st, s)
+                    and any(q["kind"] == "side" and q["stair"] == sid
+                            and q["story"] == s for q in raw)):
+                t_a, t_b = ((t_top + SIDE_GAP, t_hi) if arrive_hi
+                            else (t_lo, t_top - SIDE_GAP))
+                inner = 0.0 if narrow else fill
+                backs.append({"stair": sid, "story": s, "kind": "back",
+                              "axis": lateral, "pos": (t_a + t_b) / 2.0,
+                              "thick": t_b - t_a,
+                              "lo": l_lo + inner, "hi": l_hi - inner})
+    # AFTER every side and rail, so each of those keeps its index -- and so
+    # its builder name (`stair_guard_side_7` is what the walker's overlay read)
+    raw += backs
+
+    def band(p):
+        """Half-depth a piece reaches across its line BEYOND a thin guard's.
+        A `back` is as deep as the slot it fills, so a wall, doorway, volume
+        or stair anywhere in that depth meets it; `side` and `rail` keep the
+        line test they shipped with, byte for byte."""
+        return (p["thick"] - T) / 2.0 if p["kind"] == "back" else 0.0
+
+    def piece_rect(p, lo=None, hi=None):
+        lo = p["lo"] if lo is None else lo
+        hi = p["hi"] if hi is None else hi
+        h = p.get("thick", T) / 2.0
+        if p["axis"] == "Y":
+            return (p["pos"] - h, lo, p["pos"] + h, hi)
+        return (lo, p["pos"] - h, hi, p["pos"] + h)
+
+    def along(p, r):
+        """A plan rect's extent on the piece's running axis."""
+        return (r[1], r[3]) if p["axis"] == "Y" else (r[0], r[2])
 
     def covered_by_walls(p):
         """Intervals of the piece's line a built wall already holds."""
         out = []
         for part in getattr(spec, "partitions", ()) or ():
             if part.story != p["story"] or part.axis != p["axis"] \
-                    or abs(part.pos - p["pos"]) > _GUARD_COVER_TOL:
+                    or abs(part.pos - p["pos"]) > _GUARD_COVER_TOL + band(p):
                 continue
             ext = _sb.storey_extent(spec, part.story)
             out += partition_bounds.partition_spans(
@@ -794,7 +879,7 @@ def stair_guards(spec):
                 voids.get(part.story, ()), min_span=wt, extent=ext)
         ex0, ey0, ex1, ey1 = _sb.storey_extent(spec, p["story"])
         faces = (ex0, ex1) if p["axis"] == "Y" else (ey0, ey1)
-        if any(abs(f - p["pos"]) <= wt / 2.0 + T + _GUARD_COVER_TOL
+        if any(abs(f - p["pos"]) <= wt / 2.0 + T + _GUARD_COVER_TOL + band(p)
                for f in faces):
             out.append((p["lo"], p["hi"]))
         return out
@@ -817,9 +902,10 @@ def stair_guards(spec):
                                                       True):
                     continue
                 a0, b0, a1, b1 = flight_rect(other, k)
-                if p["axis"] == "Y" and a0 - T < p["pos"] < a1 + T:
+                b = band(p)
+                if p["axis"] == "Y" and a0 - T - b < p["pos"] < a1 + T + b:
                     out.append((b0 - T, b1 + T))
-                elif p["axis"] == "X" and b0 - T < p["pos"] < b1 + T:
+                elif p["axis"] == "X" and b0 - T - b < p["pos"] < b1 + T + b:
                     out.append((a0 - T, a1 + T))
         return out
 
@@ -827,7 +913,16 @@ def stair_guards(spec):
         """Intervals of the line a doorway needs: a guard crossing a
         perpendicular wall inside that wall's door aperture would stand in
         the doorway (`credit_union_a02`). The guard stops a body's approach
-        depth either side of the wall."""
+        depth either side of the wall.
+
+        NOT FOR A `back`: this test assumes the piece CROSSES the wall, which
+        a thin guard along a flight does and a back behind one need not.
+        Measured on `strip_retail_a01` `sr01_stair_up`: it cut 0.305 m off a
+        back that stands 0.7 m clear of `dining_rear`'s wall, behind the side
+        wall that door already faces. A back asks the exact approach-zone
+        question instead (`back_only`), on walls of both axes."""
+        if p["kind"] == "back":
+            return []
         import layout_lint as _ll
         out = []
         hx, hy = spec.footprint_x / 2.0, spec.footprint_y / 2.0
@@ -841,7 +936,7 @@ def stair_guards(spec):
                          "footprint_y": spec.footprint_y}
             for along, w, _label in _ll._host_openings(spec_dims, host,
                                                         False):
-                if abs(along - p["pos"]) < w / 2.0 + T:
+                if abs(along - p["pos"]) < w / 2.0 + T + band(p):
                     r = _ll.DOOR_APPROACH_M
                     out.append((part.pos - r, part.pos + r))
         return out
@@ -854,7 +949,8 @@ def stair_guards(spec):
         two boxes in one place. The volume is the barrier there."""
         out = []
         z_lo = p["story"] * H
-        z_hi = z_lo + (H if p["kind"] == "side" else GUARD_HEIGHT)
+        z_hi = z_lo + (H if p["kind"] in ("side", "back") else GUARD_HEIGHT)
+        b = band(p)
         for v in getattr(spec, "volumes", ()) or ():
             if getattr(v, "collision", "convex") == "none" \
                     or v.name.startswith("stair_guard_"):
@@ -864,14 +960,133 @@ def stair_guards(spec):
                 continue
             vx0, vx1 = v.x - v.size_x / 2.0, v.x + v.size_x / 2.0
             vy0, vy1 = v.y - v.size_y / 2.0, v.y + v.size_y / 2.0
-            if p["axis"] == "Y" and vx0 - T / 2 < p["pos"] < vx1 + T / 2:
+            if p["axis"] == "Y" and vx0 - T / 2 - b < p["pos"] < vx1 + T / 2 + b:
                 out.append((vy0 - T, vy1 + T))
-            elif p["axis"] == "X" and vy0 - T / 2 < p["pos"] < vy1 + T / 2:
+            elif p["axis"] == "X" and vy0 - T / 2 - b < p["pos"] < vy1 + T / 2 + b:
                 out.append((vx0 - T, vx1 + T))
         return out
 
-    pieces = []
-    for p in raw:
+    def back_only(p, sides):
+        """What a `back` must also stay out of, and a thin guard never met.
+
+        * AN OPENING under it or over it. The floor under the slot must be
+          floor, and the only hole over it may be the flight's own, which the
+          discharge plate closes. Authored slab holes, ramp cuts and ladder
+          through-holes on either slab, and any other stair's landing.
+        * A DOOR'S APPROACH, from a wall on either axis -- a thin side guard
+          only ever crossed perpendicular walls (`doorways`), but a wall
+          across the slot's mouth faces straight into it. The approach is
+          `layout_lint.DOOR_APPROACH_M` either side of the wall over the
+          aperture. Where a `side` of the same flight stands between the door
+          and the back, over the whole overlap, the door already faces that
+          wall and the back takes nothing from it (`strip_retail_a01`
+          `sr01_stair_up`: its `dining_rear` door at y 1.0 faces the side
+          wall at y 1.3..1.695 and reaches the back's corner only through
+          it). A vault's swing needs no rule here: L22 already refuses one
+          that reaches `flight_rect`, which contains every back.
+        """
+        if p["kind"] != "back":
+            return []
+        import layout_lint as _ll
+        import ladder_geom as _lg
+        own = next((o for j, o in enumerate(getattr(spec, "stairs", ()) or ())
+                    if stair_ident(o, j) == p["stair"]), None)
+        s = p["story"]
+        pr = piece_rect(p)
+        out = []
+
+        def hit(r):
+            return (min(r[2], pr[2]) - max(r[0], pr[0]) > 1e-6
+                    and min(r[3], pr[3]) - max(r[1], pr[1]) > 1e-6)
+
+        holes = []
+        opens = slab_openings(spec)
+        own_hole = flight_rect(own, s) if own is not None else None
+        for k in (s, s + 1):
+            for r in opens.get(k, ()):
+                if k == s + 1 and own_hole is not None and all(
+                        abs(a - c) < 1e-9 for a, c in zip(r, own_hole)):
+                    continue            # the flight's own, under its plate
+                holes.append(r)
+        for rp in getattr(spec, "ramps", ()) or ():
+            if getattr(rp, "cut_slabs", True) and rp.to_story in (s, s + 1) \
+                    and rp.to_story > rp.from_story:
+                cx, cy, sx, sy = ramp_hole(rp)
+                holes.append((cx - sx / 2, cy - sy / 2, cx + sx / 2, cy + sy / 2))
+            if min(rp.from_story, rp.to_story) <= s < max(rp.from_story,
+                                                         rp.to_story):
+                holes.append(ramp_footprint_rect(rp))
+        for ld in getattr(spec, "ladders", ()) or ():
+            if min(ld.from_story, ld.to_story) <= s <= max(ld.from_story,
+                                                          ld.to_story):
+                holes.append(_lg.hole_rect(ld.x, ld.y, ld.width, ld.facing))
+        for j, other in enumerate(getattr(spec, "stairs", ()) or ()):
+            if stair_ident(other, j) == p["stair"]:
+                continue
+            served = floors_served(spec, other)
+            for ep in stair_endpoints(other):
+                on = (min(served) if ep["end"] == "lower" else max(served)) \
+                    if served else None
+                if on == s:
+                    holes.append(ep["rect"])
+        for r in holes:
+            if hit(r):
+                a, c = along(p, r)
+                out.append((a - T, c + T))
+
+        r_app = _ll.DOOR_APPROACH_M
+        hx, hy = spec.footprint_x / 2.0, spec.footprint_y / 2.0
+        spec_dims = {"footprint_x": spec.footprint_x,
+                     "footprint_y": spec.footprint_y}
+        hosts = []
+        for part in getattr(spec, "partitions", ()) or ():
+            if part.story == s:
+                hosts.append((part.axis, part.pos, {
+                    "axis": part.axis, "start": part.start, "end": part.end,
+                    "openings": [{"kind": o.kind, "pos": o.pos,
+                                  "width": o.width} for o in part.openings]},
+                    False))
+        for w in getattr(spec, "ext_walls", ()) or ():
+            if getattr(w, "story", 0) != s or w.wall not in ("N", "S", "E", "W"):
+                continue
+            hosts.append(("X" if w.wall in ("N", "S") else "Y",
+                          {"N": hy, "S": -hy, "E": hx, "W": -hx}[w.wall],
+                          {"wall": w.wall, "openings": [
+                              {"kind": o.kind, "pos": o.pos, "width": o.width}
+                              for o in w.openings]}, True))
+        for ax, line, host, is_ext in hosts:
+            for c, w, _label in _ll._host_openings(spec_dims, host, is_ext):
+                zone = ((c - w / 2, line - r_app, c + w / 2, line + r_app)
+                        if ax == "X" else
+                        (line - r_app, c - w / 2, line + r_app, c + w / 2))
+                if not hit(zone):
+                    continue
+                ov = (max(zone[0], pr[0]), max(zone[1], pr[1]),
+                      min(zone[2], pr[2]), min(zone[3], pr[3]))
+                # shadowed: a side guard spans the overlap along the wall and
+                # stands between the wall line and the overlap across it
+                k = 0 if ax == "X" else 1          # along the wall
+                n = 1 - k                          # across the wall
+                near = ov[n] if ov[n] >= line else ov[n + 2]
+                shadow = any(
+                    g[k] <= ov[k] + 1e-6 and g[k + 2] >= ov[k + 2] - 1e-6
+                    and min(line, near) - 1e-6 <= g[n]
+                    and g[n + 2] <= max(line, near) + 1e-6
+                    for g in sides)
+                if shadow:
+                    continue
+                a, c2 = along(p, ov)
+                out.append((a - T, c2 + T))
+        return out
+
+    # Backs are cut AFTER the sides, because a door shadowed by a side is
+    # shadowed by the side that is actually BUILT. Output keeps `raw`'s order
+    # so every existing piece keeps its index, and so its builder name.
+    built = {}
+    order = ([k for k, p in enumerate(raw) if p["kind"] != "back"]
+             + [k for k, p in enumerate(raw) if p["kind"] == "back"])
+    for k in order:
+        p = raw[k]
         cuts = (covered_by_walls(p) + other_stairs(p) + doorways(p)
                 + solid_volumes(p))
         if p["kind"] == "rail":
@@ -879,9 +1094,14 @@ def stair_guards(spec):
                      if q["kind"] == "side" and q["stair"] == p["stair"]
                      and q["story"] == p["story"] and q["axis"] == p["axis"]
                      and abs(q["pos"] - p["pos"]) < 1e-6]
-        for a, b in partition_bounds.subtract(p["lo"], p["hi"], cuts, T):
-            pieces.append(dict(p, lo=a, hi=b))
-    return pieces
+        if p["kind"] == "back":
+            cuts += back_only(p, [
+                piece_rect(g) for j, q in enumerate(raw)
+                if q["kind"] == "side" and q["stair"] == p["stair"]
+                and q["story"] == p["story"] for g in built.get(j, ())])
+        built[k] = [dict(p, lo=a, hi=b) for a, b in
+                    partition_bounds.subtract(p["lo"], p["hi"], cuts, T)]
+    return [q for k in range(len(raw)) for q in built[k]]
 
 
 def slab_openings(spec):
@@ -1574,6 +1794,25 @@ def stair_underside(spec, st):
             raise ValueError(f"{source}={value!r}: expected one of {STAIR_UNDERSIDES}")
         return v
     return STAIR_UNDERSIDE_DEFAULT
+
+
+def flight_solid_under(spec, st, s):
+    """Does the builder fill the flight climbing through storey `s` solid to
+    that storey's floor? THE rule `Builder._stairs` builds and `stair_guards`
+    fills behind, so the two cannot drift.
+
+    Straight legs stack in ONE run and a switchback's legs alternate between
+    TWO, so only the first leg of each run stands on a storey floor; filling a
+    higher one would put mass in the headroom of the flight beneath it.
+    Scissor channels share a shaft and stay open. And the per-stair toggle
+    (`stair_underside`) opens any of them.
+    """
+    if st.style not in ("straight", "switchback"):
+        return False
+    leg = s - min(st.from_story, st.to_story)
+    by_style = ((st.style == "straight" and leg == 0) or
+                (st.style == "switchback" and leg < 2))
+    return by_style and stair_underside(spec, st) == "solid"
 
 
 def derive(spec, pieces=None):

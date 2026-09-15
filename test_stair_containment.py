@@ -146,13 +146,17 @@ def test_a_solid_stair_is_guarded_on_both_sides_and_at_the_pit_end():
     sp = _shell(st)
     g = S.stair_guards(sp)
     kinds = sorted((p["kind"], p["story"], p["axis"]) for p in g)
-    assert kinds == [("rail", 1, "X"), ("rail", 1, "Y"), ("rail", 1, "Y"),
-                     ("side", 0, "Y"), ("side", 0, "Y")], kinds
+    # ...and since 0.134.0 a `back` fills the slot behind the top of the
+    # flight (test_stair_back.py), which is not the review's business here
+    assert kinds == [("back", 0, "X"), ("rail", 1, "X"), ("rail", 1, "Y"),
+                     ("rail", 1, "Y"), ("side", 0, "Y"), ("side", 0, "Y")], kinds
     # rails stand outside the reserved rectangle, on the slab; a side wall
     # fills the rectangle's margin flush to the flight, never the flight
     x0, y0, x1, y1 = S.flight_rect(st, 0)
     fx0, _fy0, fx1, _fy1 = S.footprint_rect(st)
     for p in g:
+        if p["kind"] == "back":
+            continue
         lo_v, hi_v = (x0, x1) if p["axis"] == "Y" else (y0, y1)
         if p["kind"] == "rail":
             assert p["pos"] <= lo_v or p["pos"] >= hi_v, p

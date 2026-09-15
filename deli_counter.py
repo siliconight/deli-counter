@@ -1692,7 +1692,9 @@ class _Builder:
         T = stairwell.GUARD_THICK
         for k, g in enumerate(stairwell.stair_guards(self.s)):
             z0 = g["story"] * H
-            if g["kind"] == "side":
+            # a `back` fills the slot behind a flight, flush with the side
+            # walls either side of it: same height, same wall material
+            if g["kind"] in ("side", "back"):
                 h = H - self._cap_thick(g["story"], top)
                 mat = None
             else:
@@ -1751,8 +1753,6 @@ class _Builder:
                 # leg of each run stands on the storey floor; filling a
                 # higher one would put mass in the headroom of the flight
                 # beneath it. Scissor channels share a shaft and stay open.
-                solid_under = ((st.style == "straight" and leg == 0) or
-                               (st.style == "switchback" and leg < 2))
                 # ...unless the plan walks under it. Measured on `deli_a03`:
                 # its basement stair's slab hole leaves 0.4 m beside the
                 # upper flight, the only route to the upstairs objective ran
@@ -1760,8 +1760,9 @@ class _Builder:
                 # objective unreachable (with the fill disabled, reachable).
                 # THE TOGGLE: per stair, per building, per build, default
                 # solid -- one resolver, also what gameplay.json reports.
-                solid_under = (solid_under and
-                               stairwell.stair_underside(self.s, st) == "solid")
+                # Both halves live in `stairwell.flight_solid_under`, which
+                # `stair_guards` also reads to fill the back of the flight.
+                solid_under = stairwell.flight_solid_under(self.s, st, s)
                 # A leg that ends in a landing does not need a top tread: the
                 # landing tops out at the same z + H, spans both runs, and sits
                 # at the turn. Two plates for one surface is what made the top
