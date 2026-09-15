@@ -38,7 +38,10 @@ def test_boxes_by_nature_and_unknown_things_get_no_hint():
 def test_every_species_in_the_table_is_a_real_zoo_species_name():
     """The table names Zoo genomes; a typo here is a silent box."""
     here = os.path.dirname(os.path.abspath(__file__))
-    genomes = os.path.join(here, "..", "zoo", "zoo_keeper", "genome", "species")
+    # DC_ZOO_ROOT first, as `test_furnish` reads it: a worktree's `../zoo` is
+    # whatever happens to sit beside it (0.136.0 read an unrelated copy)
+    root = os.environ.get("DC_ZOO_ROOT") or os.path.join(here, "..", "zoo")
+    genomes = os.path.join(root, "zoo_keeper", "genome", "species")
     if not os.path.isdir(genomes):
         return
     known = {f[:-5] for f in os.listdir(genomes) if f.endswith(".json")}

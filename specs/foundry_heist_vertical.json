@@ -57,6 +57,12 @@
    "acoustic": "Curtain",
    "absorption": 0.6,
    "damping": 0.5
+  },
+  {
+   "id": "metal_painted",
+   "acoustic": "Metal",
+   "absorption": 0.25,
+   "damping": 0.2
   }
  ],
  "ext_walls": [
@@ -2493,6 +2499,31 @@
    "size_z": 1.3,
    "collision": "convex",
    "material": "wood"
+  },
+  {
+   "name": "cigarettes_r5c6c5ba4_12",
+   "x": -13.91,
+   "y": 14.62,
+   "z": -2.65,
+   "size_x": 0.88,
+   "size_y": 0.45,
+   "size_z": 1.5,
+   "collision": "convex",
+   "material": "metal_painted",
+   "variant": 1
+  },
+  {
+   "name": "cigarettes_rcce455f7_11",
+   "x": -18.28,
+   "y": -14.62,
+   "z": 0.75,
+   "size_x": 0.88,
+   "size_y": 0.45,
+   "size_z": 1.5,
+   "collision": "convex",
+   "material": "metal_painted",
+   "rot_z": 180.0,
+   "variant": 1
   }
  ],
  "parapets": [

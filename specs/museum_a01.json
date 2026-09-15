@@ -38,6 +38,12 @@
   {
    "id": "wood",
    "acoustic": "Wood"
+  },
+  {
+   "id": "metal_painted",
+   "acoustic": "Metal",
+   "absorption": 0.25,
+   "damping": 0.2
   }
  ],
  "ext_walls": [
@@ -1524,6 +1530,41 @@
    "size_z": 0.85,
    "collision": "convex",
    "material": "metal"
+  },
+  {
+   "name": "cigarettes_rab15154c_26",
+   "x": -23.6,
+   "y": -4.74,
+   "z": 0.775,
+   "size_x": 0.48,
+   "size_y": 0.9,
+   "size_z": 1.55,
+   "collision": "convex",
+   "material": "metal_painted",
+   "rot_z": 180.0,
+   "variant": 3
+  },
+  {
+   "name": "cigarettes_rec3cc64b_15",
+   "x": -4.71,
+   "y": 17.6,
+   "z": 0.775,
+   "size_x": 0.9,
+   "size_y": 0.48,
+   "size_z": 1.55,
+   "collision": "convex",
+   "material": "metal_painted"
+  },
+  {
+   "name": "cigarettes_r3cf79185_11",
+   "x": 23.61,
+   "y": 9.84,
+   "z": 6.15,
+   "size_x": 0.45,
+   "size_y": 0.88,
+   "size_z": 1.5,
+   "collision": "convex",
+   "material": "metal_painted"
   }
  ],
  "markers": [

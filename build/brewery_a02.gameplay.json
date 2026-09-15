@@ -352,6 +352,12 @@
       "damping": null
     },
     {
+      "id": "metal_painted",
+      "acoustic": "Metal",
+      "absorption": 0.25,
+      "damping": 0.2
+    },
+    {
       "id": "carpet",
       "acoustic": "Curtain",
       "absorption": 0.85,
@@ -2808,6 +2814,15 @@
       }
     },
     {
+      "node": "cigarettes_r35c85a63_18_col",
+      "material": {
+        "id": "metal_painted",
+        "acoustic": "Metal",
+        "absorption": 0.25,
+        "damping": 0.2
+      }
+    },
+    {
       "node": "stair_guard_side_0_col",
       "material": {
         "id": "metal",
@@ -4070,6 +4085,7 @@
     "chair_set_r12d84fa6_15_1": "prop",
     "cartons_r12d84fa6_16": "prop",
     "cartons_r12d84fa6_17": "prop",
+    "cigarettes_r35c85a63_18": "prop",
     "stair_guard_side_0": "prop",
     "stair_guard_rail_1": "prop",
     "stair_guard_side_2": "prop",

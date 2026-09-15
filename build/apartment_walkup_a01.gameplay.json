@@ -511,6 +511,12 @@
       "damping": 0.5
     },
     {
+      "id": "metal_painted",
+      "acoustic": "Metal",
+      "absorption": 0.25,
+      "damping": 0.2
+    },
+    {
       "id": "concrete",
       "acoustic": "Concrete",
       "absorption": 0.7,
@@ -2736,6 +2742,15 @@
       }
     },
     {
+      "node": "cigarettes_r235f1253_7_col",
+      "material": {
+        "id": "metal_painted",
+        "acoustic": "Metal",
+        "absorption": 0.25,
+        "damping": 0.2
+      }
+    },
+    {
       "node": "stair_guard_side_0_col",
       "material": {
         "id": "brick_ext",
@@ -4051,6 +4066,7 @@
     "cartons_r365b5162_9": "prop",
     "vending_r1075959c_1": "prop",
     "vending_r1075959c_2": "prop",
+    "cigarettes_r235f1253_7": "prop",
     "stair_guard_side_0": "prop",
     "stair_guard_rail_1": "prop",
     "stair_guard_side_2": "prop",

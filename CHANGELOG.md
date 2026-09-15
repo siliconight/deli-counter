@@ -1,3 +1,124 @@
+## [0.136.0] - 2026-09-15  a strip club has a dartboard, and the bar a cigarette machine
+
+The walker: "we also need dart boards in the strip clubs. The kind where you
+use chalk to keep your score", and "we need retro cigarettes' machines in
+the strip club. (Maybe we'll put em in other buildings too, it was the 1990s
+where smoking in public was still legal in PA)". Zoo 0.91.0 builds both;
+this places them.
+
+**Two pieces** (`level_design._PIECES`), each routed by `prop_species` ahead
+of the counter and cabinet rows (re-routes among authored volumes: none;
+no bare "board" or "machine" keyword, which would take `scoreboard_*` and
+the vending machine):
+
+  * `dartboard` -> Zoo `dartboard`, 1.1 x 0.36 x 0.9 or 1.2 x 0.38 x 0.92,
+    the cabinet's OPEN footprint. Zoo puts the bull at the slot's centre
+    height, so `lift` 1.73 is the regulation bull height above the floor.
+    `collision` "none": Zoo's module carries the cabinet box's collider and
+    none for the doors, and a greybox box to the doors' reach would stop a
+    body in mid-air. `wood_stained`, Zoo's own kind, so the stem has no
+    `_m`. `variants=True`, `most=1`, `most_big=(300, 2)`.
+  * `cigarettes` -> Zoo `cigarette_machine`, 0.88 x 0.45 x 1.5 or 0.9 x 0.48
+    x 1.55, against a wall, front to the room, `metal_painted`,
+    `variants=True`, `most=1`. NAMED `cigarettes`, not `cigarette_machine`:
+    "machine" is in `_COVER_NAME_HINTS`, and `cover_from_volumes` would
+    have marked every one as cover, which the vending machine is not.
+
+**Fixtures, placed last** (`place_fixtures`, which `furnish` now ends with).
+A recipe's `fixtures` -- `strip_club`: dartboard and cigarettes; `club`
+(bars, lounges, taprooms, pubs, VIP rooms), `lobby` and `hall`: cigarettes,
+the three other kinds whose recipes already place a vending machine
+(`shop_floor` and `corridor` also do, and take none) -- go into a room after
+the whole room loop: this building's size palette, `_wall_slots` drawn six
+times (`_FIXTURE_ROUNDS`), the nested rooms, `_seed_clear` (hung, for the
+board), a random stream of their own, reading nothing but the spec. So they
+move nothing a room was furnished with, and a room a previous release
+furnished gets the same answer as a fresh one.
+
+**The throwing lane** (`dart_lane`, `dart_lane_blockers`): from the wall out
+through the slot, the oche's 2.37 m and a standing body (two body radii,
+0.7 m, `agent_contract.json`), as wide as the slot plus a body radius each
+side -- measured from the slot's front, so at least the oche and a body from
+the board's face. It must lie inside the room's walls; no volume on the
+storey may stand in it except one hung over a body's head (`_HUNG_MIN`); no
+partition may cross it; it keeps 1.5 m from an opening's centre (a door's
+approach, `_seed_clear`'s radius), 0.3 m from a stair's reservation, 1.6 m
+from a ladder, clear of a vault door's swing and 1.2 m from an objective or
+loot marker; and two lanes stand a body apart. A cigarette machine is never
+placed in a lane.
+
+**THE PREMISE, REFUTED AND KEPT.** The request, and 0.135.1's entry before
+it, said re-furnishing the library does not reproduce it
+(`migrate_club_rooms.py --check` a01 -87/+85, a02 -76/+75, a03 -149/+145;
+`migrate_furnish_recipes.py --check` -7,435/+7,428). Those are counts: the
+volumes removed, and `furnish`'s return value, which does not count the
+`stage_deck` collider it writes under each club stage (a01 2, a02 1, a03 4:
+7 in the library, the whole difference). Measured on 0.135.1 before this was written: strip
+and refurnish all 126 room-bearing specs and compare the JSON with sorted
+keys -- 126 identical. The library is a fixed point of `furnish`, and a
+fixture in a recipe's wall run would have broken that (the run is shuffled
+and cycled; one more entry moves every piece after it), which is why the
+fixtures are a pass of their own.
+
+**`migrate_club_fixtures.py`** is that pass over `specs/` and nothing else,
+skipping `specs/lf_*.json`. Measured after it was written: for 126 of 126
+specs, strip-and-refurnish with this release and the migration write the
+same JSON. The library gained 11 dartboards -- every one of the 7 strip-club
+rooms, two in each of the five past 300 m2 but `a03`'s main floor (of the
+159 spots its second board drew, 105 failed `_seed_clear` and the rest had a
+lane that met a volume (52), the room's edge (4), a door (3), the first
+board's lane (2) or a stair (2); one spot can meet several) --
+and 121 cigarette machines: 7 of 7 strip-club rooms, 18 of 21 `club`, 48 of
+53 `lobby`, 48 of 55 `hall`, the rest with no clear wall spot. REFUTED
+FIRST, kept: one draw of `_wall_slots` left `strip_club_a03`'s main floor
+without a board (of 26 spots in one draw, seeded for the measurement, 13 passed `_seed_clear`, and every lane met a
+volume (16), a stair's reservation (8), a door (4) or the room's edge (2));
+and before the lane-to-lane rule `a01`'s main floor put two boards at right
+angles in one corner with overlapping lanes. 85 specs change, insertions
+only.
+
+`test_club_fixtures.py`, 10 tests, every one failing on 0.135.1: the pieces
+route; Zoo's bull is the slot's centre at both sizes (read from Zoo);
+a club room hangs a board at 1.73 m with its lane clear, rebuilt in the test
+from the room and the volume rather than from `dart_lane`; the lane keeps
+off two doors, a stair and the other board; no board outside a strip club's
+club rooms, with a strip-club control; a machine in a strip club, a bar, a
+lobby and a hall and not in an office, stockroom, kitchen or shop floor;
+the fixture pass moves nothing; the library's 11 boards and their lanes;
+the library carries the pass and is still a fixed point of `furnish` (126
+specs); the `strip_club` preset hangs a board at four seeds.
+`test_club_rooms.py` and `test_preset_strip_club.py` add the two species to
+the club's set; `test_furnish._ZOO_RANGES` adds their genome ranges.
+`test_prop_species.py::test_every_species_in_the_table_is_a_real_zoo_species_name`
+read Zoo from `../zoo` whatever `DC_ZOO_ROOT` said; in a worktree that is
+whatever sits beside it, and it read an unrelated copy. It reads
+`DC_ZOO_ROOT` first now, as `test_furnish` does.
+
+**The library, rebuilt.** Beyond manifests: lights manifests unchanged; each
+`gameplay.json` gains the new nodes and palette materials (+1,429, the two
+deletions trailing commas); `slots.json` gains the fixture slots (11 boards,
+and every one of the 121 machines has its slot). 591 slots in 69 buildings
+change `style` number and nothing else -- 236 floors, 300 ceilings, 55 `wood`
+props: kinds a spec's palette does not list take their style AFTER the
+palette (`skin_style`'s rule), and declaring `metal_painted` or
+`wood_stained` in the palette moves them one on. Their Zoo stems are renamed,
+not rebuilt differently. Hook: `check.py` all checks passed with
+`DC_ZOO_ROOT` pointed at the Zoo 0.91.0 checkout the tests read; nav gate 14
+unnavigable shells before and after, none new.
+
+**Frames**, in a scratch copy of `_runs/walk_9057_rain` (the run's 1,385 files
+hash as they did before): `strip_club_a01` kit-built with Zoo 0.91.0 and the
+delco_1997 library (67 modules, 0 failed), composed with this checkout (193
+themed modules, 0 greybox fallbacks, placement 186/186), imported, and shot
+with `tools/look_shots.py`: each of the three boards at 1.5 m and 4 m, and
+both machines at 1.5 m. The three board nodes stand at y 1.73 in the
+building frame with Zoo's `ATT_bull` at local height 0, one `-colonly`
+collider each. The compose's z-fight gate reads 84 pairs where the same
+building composed for 0.135.0 read 82: the two new are the two machines'
+bounding boxes on their rooms' floor skins at plane 0.0, the class 80 of the
+82 already were (club chairs, stools, tables, sofas, the stage, the vending
+machines); no pair names a board.
+
 ## [0.135.1] - 2026-09-15  every TV in a club is not the same game
 
 0.135.0 lit the bracket TVs and wrote no `variant` on `wall_tv`, because Zoo

@@ -80,6 +80,15 @@ PROP_SPECIES = (
     (("club_stage", "stage", "pole_stage", "runway"), "club_stage"),
     (("bar_stool", "barstool", "stool"), "bar_stool"),
     (("bar_tv", "wall_tv"), "crt_tv"),
+    # THE CLUB'S GAME AND ITS VICE (Zoo 0.91.0): the chalk-score dartboard
+    # cabinet and the pull-knob cigarette machine, ahead of the counter row
+    # and the cabinet row (`dart_cabinet`). No keyword is a bare "board" or
+    # "machine": `scoreboard_*` (5 authored volumes in
+    # `cbp_town_finale_midbalanced_schemafixed`) would be
+    # taken by the one, and the vending machine is not a cigarette machine.
+    # Measured re-routes among authored volumes: none.
+    (("dartboard", "dart_board", "dart_cabinet"), "dartboard"),
+    (("cigarette",), "cigarette_machine"),
     (("counter", "reception", "station", "island", "cage", "bar_",
       "workbench", "tool_bench"), "counter"),
     (("desk", "cubicle"), "desk"),

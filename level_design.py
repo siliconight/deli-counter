@@ -737,13 +737,17 @@ def seed_cover(spec):
 #: of the invisible collider written under a visual-only tall piece -- a
 #: stage is authored to the ceiling so Zoo runs the pole up, and a body
 #: meets its 0.8 m platform, not a box to the slab (see `_volume`).
+#:
+#: 0.136.0: ``lane`` marks a piece that needs a clear THROWING LANE in front of
+#: it (`dart_lane`); ``most_big`` is ``(area, most)``, a larger room's allowance.
 def _piece(name, sizes, where, front=False, stock=None, variants=False,
            form=None, seats=None, most=None, lift=None, collision="convex",
-           deck=None):
+           deck=None, lane=False, most_big=None):
     return {"name": name, "sizes": tuple(sizes), "where": where,
             "front": front, "stock": stock, "variants": variants,
             "form": form, "seats": seats, "most": most, "lift": lift,
-            "collision": collision, "deck": deck}
+            "collision": collision, "deck": deck, "lane": lane,
+            "most_big": most_big}
 
 
 _PIECES = {p["name"]: p for p in (
@@ -881,6 +885,28 @@ _PIECES = {p["name"]: p for p in (
     _piece("table_cocktail", ((0.75, 0.75, 0.74), (0.8, 0.8, 0.76),
                               (0.7, 0.7, 0.72)), "floor", form="cloth",
            stock="bar", variants=True, seats=("club", 2, 3)),
+    # THE DARTBOARD (Zoo 0.91.0). The walker: "dart boards in the strip
+    # clubs. The kind where you use chalk to keep your score". Zoo's
+    # `dartboard` is a wall cabinet whose slot is the OPEN footprint -- the
+    # doors swung out -- and whose BULL IS THE SLOT'S CENTRE HEIGHT, so
+    # `lift` is the regulation bull height, 1.73 m above the floor. Zoo
+    # builds the cabinet box's collider and nothing for the doors, so the
+    # volume carries none of its own (a box to the doors' reach would stop
+    # a body in mid-air). A piece with a `lane` is placed last, where the
+    # oche distance and a standing body are clear in front of it
+    # (`place_fixtures`). One a room; a floor past 300 m2 may take two.
+    _piece("dartboard", ((1.1, 0.36, 0.9), (1.2, 0.38, 0.92)), "wall",
+           front=True, variants=True, most=1, most_big=(300.0, 2),
+           lift=1.73, collision="none", lane=True),
+    # THE CIGARETTE MACHINE (Zoo 0.91.0). The walker: "retro cigarettes'
+    # machines in the strip club. (Maybe we'll put em in other buildings
+    # too, it was the 1990s where smoking in public was still legal in
+    # PA)". A floor-standing pull-knob machine against a wall, front to the
+    # room. NAMED `cigarettes`, not `cigarette_machine`: "machine" is one of
+    # `_COVER_NAME_HINTS`, and `cover_from_volumes` would mark every one as
+    # cover, which the vending machine beside it is not.
+    _piece("cigarettes", ((0.88, 0.45, 1.5), (0.9, 0.48, 1.55)), "wall",
+           front=True, variants=True, most=1),
     # the seats a club host brings: never placed on their own
     _piece("club_chair", ((0.78, 0.75, 0.78),), "seat", variants=True),
     _piece("bar_stool", ((0.42, 0.42, 0.76),), "seat", variants=True),
@@ -1021,7 +1047,7 @@ _RECIPES = {
     "club": {"anchors": ("counter_bar", "pool_table"),
              "wall": ("booth", "shelf_run", "booth", "vending"),
              "floor": ("table_dining",),
-             "clusters": ()},
+             "clusters": (), "fixtures": ("cigarettes",)},
     # THE STRIP CLUB. Anchors are chosen by the room's shape
     # (`_club_anchors`), all of them placed: a bar stage as the centrepiece
     # with stools round it, or in a long room a round stage and a bar
@@ -1033,7 +1059,9 @@ _RECIPES = {
                    "wall": ("sofa_club", "neon_sign", "wall_tv", "sofa_club",
                             "wall_tv", "sofa_club", "vending"),
                    "floor": ("table_cocktail",),
-                   "clusters": (), "per_area": 24.0, "all_anchors": True},
+                   "clusters": (), "per_area": 24.0, "all_anchors": True,
+                   # placed after the room is furnished (`place_fixtures`)
+                   "fixtures": ("dartboard", "cigarettes")},
     "office": {"anchors": ("desk",),
                "wall": ("cabinet_file", "shelf_run", "cabinet_file"),
                "floor": ("desk",),
@@ -1054,12 +1082,14 @@ _RECIPES = {
               "wall": ("chair_waiting", "chair_waiting", "sofa", "atm",
                        "vending", "payphone"),
               "floor": ("table_low",),
-              "clusters": ((("stanchion",), 3, 4), (("litter_bin",), 1, 1))},
+              "clusters": ((("stanchion",), 3, 4), (("litter_bin",), 1, 1)),
+              "fixtures": ("cigarettes",)},
     "hall": {"anchors": ("counter_service",),
              "wall": ("chair_waiting", "shelf_run", "chair_waiting",
                       "cabinet_file", "vending"),
              "floor": ("table_dining",),
-             "clusters": ((("litter_bin",), 1, 1),)},
+             "clusters": ((("litter_bin",), 1, 1),),
+             "fixtures": ("cigarettes",)},
     "shop_floor": {"anchors": ("counter_service",),
                    "wall": ("shelf_run", "shelf_run", "cabinet_file",
                             "vending"),
@@ -1164,13 +1194,16 @@ _PROP_MATERIALS = (
      "metal"),
     (("booth", "sofa", "couch"), "leather"),
     (("stool",), "metal_bare"),
-    (("neon", "tv"), "metal_painted"),
+    (("neon", "tv", "cigarette"), "metal_painted"),
+    # the species' own kind, so Zoo's stem carries no `_m` (0.136.0)
+    (("dartboard",), "wood_stained"),
 )
 _PROP_MATERIAL_DEFAULT = "wood"
 _PROP_ACOUSTIC = {"wood": ("Wood", 0.35, 0.3), "metal": ("Metal", 0.2, 0.15),
                   "leather": ("Curtain", 0.6, 0.5),
                   "metal_bare": ("Metal", 0.2, 0.15),
-                  "metal_painted": ("Metal", 0.25, 0.2)}
+                  "metal_painted": ("Metal", 0.25, 0.2),
+                  "wood_stained": ("Wood", 0.35, 0.3)}
 
 #: The surfaces a strip club room wears (Pixelcoat 0.42.0's club grammars):
 #: a medallion carpet with worn paths on the floor, burgundy flocked paper on
@@ -1592,6 +1625,310 @@ def _furnish_plan(recipe, clusters, want, rng):
     return items
 
 
+def _make_volume(spec, key, name, px, py, sx, sy, h, rot, story, sh, building):
+    """A placed piece's volume: position, size, collision, material and
+    Zoo's dressing fields. `furnish` and `place_fixtures` both build here."""
+    import zlib
+    p = _PIECES[key]
+    vol = {
+        "name": name,
+        "x": round(px, 2), "y": round(py, 2),
+        "z": round(story * sh + (p["lift"] if p["lift"] is not None
+                                 else h / 2.0), 3),
+        "size_x": round(sx, 3), "size_y": round(sy, 3),
+        "size_z": round(h, 3),
+        "collision": p["collision"],
+        "material": _prop_material(spec, key),
+    }
+    if rot:
+        vol["rot_z"] = rot
+    if p["stock"]:
+        vol["stock"] = p["stock"]
+    if p["form"]:
+        vol["form"] = p["form"]
+    # THE VARIANT IS THE NAME'S crc32, as Zoo 0.84.0 asks, and only
+    # on a species that has variants to give: Zoo drops ALL THREE
+    # fields when one cannot be honoured, so a variant on a chair
+    # would not only be ignored, it would cost a furnace its form.
+    # A species with its own count (`neon_sign`, 24 names) draws
+    # from that count, and from the BUILDING's id rather than the
+    # name's: a club has one name over its door and in its rooms.
+    if p["variants"]:
+        mod = int(p["variants"]) if int(p["variants"]) > 1 else 4
+        key_text = (str(building or "") if mod > 4 else name)
+        n = (zlib.crc32(key_text.encode("utf-8")) & 0xFFFFFFFF) % mod
+        if n:
+            vol["variant"] = n
+    return vol
+
+
+# ---------------------------------------------------------------------------
+# FIXTURES -- the dartboard and the cigarette machine (0.136.0)
+# ---------------------------------------------------------------------------
+#
+# WHY A SECOND PASS, AND WHY IT IS SAFE TO RUN ON THE LIBRARY. A fixture
+# written into a recipe's wall run would re-deal every room of its kind: the
+# run is shuffled and cycled, so one more entry moves every piece after it.
+# Placed after the room is furnished, from the spec's own volumes and a
+# random stream of its own, it moves nothing -- and because it reads only
+# the spec, a room furnished in this call and a room a previous release
+# furnished get the same answer. `furnish` ends with this pass;
+# `migrate_club_fixtures.py` is this pass alone over `specs/`.
+#
+# THE PREMISE THIS REPLACES, REFUTED AND KEPT. The request said re-furnishing
+# the library with today's code does not reproduce today's specs, citing
+# `migrate_club_rooms.py --check` a01 -87/+85, a02 -76/+75, a03 -149/+145.
+# Those are counts, not a diff: volumes removed, and `furnish`'s own return
+# value, which does not count the `stage_deck` colliders it writes (one per
+# club stage). Measured on 0.135.1 before any of this was written: strip and
+# refurnish all 126 room-bearing specs and compare the JSON (sort_keys) --
+# 126 identical, 0 different. The library IS a fixed point of `furnish`, and
+# this pass keeps it one.
+
+#: The oche: the throwing line, 2.37 m from the face of the board (the
+#: regulation soft-tip and steel-tip distance in American bars).
+_OCHE = 2.37
+
+
+def _body_radius():
+    """The player's body radius from `agent_contract.json` (not the nav
+    bake's, which carries a safety margin)."""
+    try:
+        from agent_contract import contract
+        return float(contract()["characters"]["player"]["radius_m"])
+    except Exception:
+        return 0.35
+
+
+def _front_of(vol):
+    """The compass bearing a placed wall piece faces, inverted from
+    `_front_turn`: a piece deeper than it is wide was turned 90 by the
+    emitter."""
+    sx, sy = float(vol["size_x"]), float(vol["size_y"])
+    return round((float(vol.get("rot_z", 0.0)) + 180.0 + (90.0 if sy > sx + 1e-9 else 0.0)) % 360.0, 4)
+
+
+def dart_lane(vol):
+    """``(x0, y0, x1, y1)``: the floor a dartboard needs clear in front of it.
+
+    From the slot's BACK (the wall) out through the slot's depth, the oche
+    distance and a standing body's depth (two body radii), as wide as the
+    slot plus a body radius either side. Measured from the slot's front, not
+    the board's face: the board is inside the cabinet, so the lane is at
+    least the oche and a body from the board, never less."""
+    sx, sy = float(vol["size_x"]), float(vol["size_y"])
+    front = math.radians(_front_of(vol))
+    fx, fy = round(math.sin(front)), round(math.cos(front))
+    along, depth = max(sx, sy), min(sx, sy)
+    r = _body_radius()
+    length = depth + _OCHE + 2.0 * r
+    half = along / 2.0 + r
+    bx, by = float(vol["x"]) - fx * depth / 2.0, float(vol["y"]) - fy * depth / 2.0
+    ex, ey = bx + fx * length, by + fy * length
+    if fx:
+        return (min(bx, ex), by - half, max(bx, ex), by + half)
+    return (bx - half, min(by, ey), bx + half, max(by, ey))
+
+
+def _rect_hits(a, b):
+    return a[0] < b[2] and a[2] > b[0] and a[1] < b[3] and a[3] > b[1]
+
+
+def _rect_point_dist(rect, x, y):
+    dx = max(rect[0] - x, 0.0, x - rect[2])
+    dy = max(rect[1] - y, 0.0, y - rect[3])
+    return math.hypot(dx, dy)
+
+
+def dart_lane_blockers(spec, room, lane, skip=()):
+    """What stands in a throwing lane, as strings; empty when it is clear.
+
+    The lane must lie inside the room (its walls' inner faces); no volume on
+    the storey may stand in it (except one hung in free air over a body's
+    head, `_HUNG_MIN`, and the names in ``skip``); no partition may cross it;
+    it may not come within a door's approach (1.5 m of an opening's centre,
+    `_seed_clear`'s radius), a stair's reservation (0.3 m round it, the same),
+    a ladder (1.6 m), a vault door's swing or an objective or loot marker
+    (1.2 m)."""
+    out = []
+    story = room.get("story", 0)
+    sh = _story_height(spec)
+    floor = story * sh
+    wt = float(spec.get("wall_thick") or 0.3) / 2.0
+    x0, y0, x1, y1 = room["bounds"]
+    if lane[0] < x0 + wt - 1e-6 or lane[1] < y0 + wt - 1e-6 or \
+            lane[2] > x1 - wt + 1e-6 or lane[3] > y1 - wt + 1e-6:
+        out.append("room")
+    for v in spec.get("volumes", []):
+        if v.get("name") in skip:
+            continue
+        vz, vh = float(v.get("z", 0.0)), float(v.get("size_z", 0.0))
+        if not _on_storey(vz, vh, floor, sh):
+            continue
+        if v.get("collision") == "none" and vz - vh / 2.0 - floor >= _HUNG_MIN:
+            continue
+        hx, hy = float(v.get("size_x", 1.0)) / 2.0, float(v.get("size_y", 1.0)) / 2.0
+        if abs(float(v.get("rot_z", 0.0))) % 90.0 > 1e-6:
+            hx = hy = math.hypot(hx, hy)
+        if _rect_hits(lane, (v["x"] - hx, v["y"] - hy, v["x"] + hx, v["y"] + hy)):
+            out.append("volume:" + str(v.get("name")))
+    for p in spec.get("partitions", []):
+        if p.get("story", 0) != story:
+            continue
+        lo, hi = sorted((float(p["start"]), float(p["end"])))
+        pos = float(p["pos"])
+        seg = (pos - 0.01, lo, pos + 0.01, hi) if p["axis"] == "Y" else (lo, pos - 0.01, hi, pos + 0.01)
+        if _rect_hits(lane, seg):
+            out.append("partition")
+        run = abs(float(p["end"]) - float(p["start"]))
+        for op in p.get("openings", []):
+            u = float(p["start"]) + (float(op.get("pos", 0.0)) + 0.5) * run
+            ox, oy = (pos, u) if p["axis"] == "Y" else (u, pos)
+            if _rect_point_dist(lane, ox, oy) < 1.5:
+                out.append("door")
+    hxf = spec.get("footprint_x", 20) / 2
+    hyf = spec.get("footprint_y", 20) / 2
+    for w in spec.get("ext_walls", []):
+        if w.get("story", 0) != story:
+            continue
+        run = spec.get("footprint_x", 20) if w["wall"] in ("N", "S") else spec.get("footprint_y", 20)
+        for op in w.get("openings", []):
+            u = op.get("pos", 0.0) * run
+            ox, oy = {"N": (u, hyf), "S": (u, -hyf), "E": (hxf, u), "W": (-hxf, u)}[w["wall"]]
+            if _rect_point_dist(lane, ox, oy) < 1.5:
+                out.append("door")
+    for r in _stair_reserved_rects(spec):
+        if _rect_hits(lane, (r[0] - 0.3, r[1] - 0.3, r[2] + 0.3, r[3] + 0.3)):
+            out.append("stair")
+    for lad in spec.get("ladders", []):
+        if _rect_point_dist(lane, lad["x"], lad["y"]) < 1.6:
+            out.append("ladder")
+    for m in spec.get("markers", []):
+        if m.get("type") in ("objective", "loot") and \
+                _rect_point_dist(lane, m.get("x", 1e9), m.get("y", 1e9)) < 1.2:
+            out.append("marker")
+    import vault_room
+    for k in vault_room.keepout_rects(spec, story):
+        if _rect_hits(lane, (k[0] - 0.3, k[1] - 0.3, k[2] + 0.3, k[3] + 0.3)):
+            out.append("vault")
+    return out
+
+
+_FIXTURE_NAME = None
+
+
+def _room_names(spec, rtag):
+    """(stem, seq) of every generated volume carrying a room's tag."""
+    import re
+    global _FIXTURE_NAME
+    if _FIXTURE_NAME is None:
+        _FIXTURE_NAME = re.compile(r"^(?P<stem>[a-z_]+?)_(?P<tag>r[0-9a-f]{8})_(?P<seq>\d+)(_\d+)?$")
+    out = []
+    for v in spec.get("volumes", []):
+        m = _FIXTURE_NAME.match(str(v.get("name", "")))
+        if m and m.group("tag") == rtag:
+            out.append((m.group("stem"), int(m.group("seq")), v))
+    return out
+
+
+def fixture_limit(key, area):
+    p = _PIECES[key]
+    limit = p["most"] or 1
+    if p["most_big"] and area >= p["most_big"][0]:
+        limit = p["most_big"][1]
+    return limit
+
+
+#: How many draws of `_wall_slots` a fixture takes before a room goes
+#: without one. MEASURED on the library: at 1 (a wall run's single draw)
+#: `strip_club_a03`'s main floor had no dartboard -- of 26 spots, 13 passed
+#: `_seed_clear` and every lane met a volume (16), a stair's reservation (8),
+#: a door's approach (4) or the room's edge (2).
+_FIXTURE_ROUNDS = 6
+
+
+def _place_fixture(spec, room, key, k, building):
+    """One fixture into one room, or None: the recipe's wall placement --
+    this building's size palette, `_wall_slots`, the nested rooms, the
+    clearance `_seed_clear` asks of every piece (hung, for a piece with a
+    `lift`) -- and a lane kept clear, from a random stream of its own."""
+    import random
+    p = _PIECES[key]
+    story = room.get("story", 0)
+    sh = _story_height(spec)
+    clear_h = _clear_height(spec)
+    rtag = _room_tag(room)
+    names = _room_names(spec, rtag)
+    seq = 1 + max((s for _stem, s, _v in names), default=0)
+    lanes = [dart_lane(v) for stem, _s, v in names if stem in _PIECES and _PIECES[stem]["lane"]]
+    inner = _nested_rects(spec, room)
+    rng = random.Random(f"{spec.get('seed', 0)}:{room['id']}:fixture:{key}:{k}")
+    sizes = list(_palette(spec, key))
+    rng.shuffle(sizes)
+    # `_wall_slots` draws four spots a wall; a fixture is one piece with a
+    # stricter test than a wall run's, so it draws `_FIXTURE_ROUNDS` times
+    # that many before a room goes without
+    rounds = [(size, spot) for _r in range(_FIXTURE_ROUNDS) for size in sizes
+              for spot in _wall_slots(spec, room, size[0], size[1], rng, with_front=True)]
+    for (w, d, h), (qx, qy, sx, sy, _rot, front) in rounds:
+        if h is None:
+            h = min(clear_h, _TO_CEILING_MAX)
+        if h > clear_h:
+            continue
+        half = max(w, d) / 2.0
+        hung = p["lift"] is not None
+        above = (p["lift"] - h / 2.0) if hung else None
+        if _over_rects(inner, qx, qy, half, half):
+            continue
+        if not _seed_clear(spec, room, qx, qy, [], half=half, above=above):
+            continue
+        rot = _front_turn(key, sx, sy, front)
+        probe = {"x": round(qx, 2), "y": round(qy, 2), "size_x": sx, "size_y": sy, "rot_z": rot}
+        if p["lane"]:
+            lane = dart_lane(probe)
+            if dart_lane_blockers(spec, room, lane):
+                continue
+            # two lanes stand a body apart: a thrower at one board is not
+            # standing in the next board's lane (a01's main floor put two
+            # at right angles in one corner, their lanes overlapping)
+            gap = 2.0 * _body_radius()
+            if any(_rect_hits(lane, (q[0] - gap, q[1] - gap, q[2] + gap, q[3] + gap))
+                   for q in lanes):
+                continue
+        elif _over_rects(lanes, qx, qy, sx / 2.0, sy / 2.0):
+            continue
+        vol = _make_volume(spec, key, f"{key}_{rtag}_{seq}", qx, qy, sx, sy, h, rot,
+                           story, sh, building)
+        spec.setdefault("volumes", []).append(vol)
+        return vol
+    return None
+
+
+def place_fixtures(spec):
+    """Every room's FIXTURES (a recipe's ``fixtures``), where a room has none
+    yet: one of each, two of a piece whose ``most_big`` area the room
+    reaches. Idempotent and deterministic; reads nothing but the spec.
+    Returns the number of volumes placed."""
+    building = club_building_id(spec)
+    added = 0
+    for room in spec.get("rooms", []) or []:
+        x0, y0, x1, y1 = room["bounds"]
+        area = max(0.0, x1 - x0) * max(0.0, y1 - y0)
+        if area < _FURNISH_MIN_AREA:
+            continue
+        fixtures = _RECIPES[_room_kind(room, building)].get("fixtures") or ()
+        rtag = _room_tag(room)
+        for key in fixtures:
+            for k in range(fixture_limit(key, area)):
+                have = sum(1 for stem, _s, _v in _room_names(spec, rtag) if stem == key)
+                if have > k:
+                    continue
+                if _place_fixture(spec, room, key, k, building) is None:
+                    break
+                added += 1
+    return added
+
+
 def furnish(spec):
     """Put FURNITURE in the rooms -- a different question from cover.
 
@@ -1697,37 +2034,8 @@ def furnish(spec):
             if seq_no is None:
                 seq[0] += 1
                 seq_no = seq[0]
-            name = f"{key}_{rtag}_{seq_no}"
-            vol = {
-                "name": name,
-                "x": round(px, 2), "y": round(py, 2),
-                "z": round(story * sh + (p["lift"] if p["lift"] is not None
-                                         else h / 2.0), 3),
-                "size_x": round(sx, 3), "size_y": round(sy, 3),
-                "size_z": round(h, 3),
-                "collision": p["collision"],
-                "material": _prop_material(spec, key),
-            }
-            if rot:
-                vol["rot_z"] = rot
-            if p["stock"]:
-                vol["stock"] = p["stock"]
-            if p["form"]:
-                vol["form"] = p["form"]
-            # THE VARIANT IS THE NAME'S crc32, as Zoo 0.84.0 asks, and only
-            # on a species that has variants to give: Zoo drops ALL THREE
-            # fields when one cannot be honoured, so a variant on a chair
-            # would not only be ignored, it would cost a furnace its form.
-            # A species with its own count (`neon_sign`, 24 names) draws
-            # from that count, and from the BUILDING's id rather than the
-            # name's: a club has one name over its door and in its rooms.
-            if p["variants"]:
-                mod = int(p["variants"]) if int(p["variants"]) > 1 else 4
-                key_text = (str(building or "") if mod > 4 else name)
-                n = (zlib.crc32(key_text.encode("utf-8")) & 0xFFFFFFFF) % mod
-                if n:
-                    vol["variant"] = n
-            return vol
+            return _make_volume(spec, key, f"{key}_{rtag}_{seq_no}", px, py,
+                                sx, sy, h, rot, story, sh, building)
 
         def _deck(key, vol):
             """The invisible collider under a visual-only tall piece (a
@@ -2045,7 +2353,10 @@ def furnish(spec):
             else:
                 pool, lo, hi = rng.choice(clusters)
                 short -= _cluster(pool, max(1, min(short, hi)))
-    return added
+    # FIXTURES LAST, over every room, from the spec alone (0.136.0): a room
+    # furnished in this call and a room furnished by an earlier release get
+    # the same pass, so `migrate_club_fixtures.py` is this line.
+    return added + place_fixtures(spec)
 
 
 def enrich(spec):

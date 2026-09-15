@@ -41,6 +41,12 @@
   {
    "id": "wood",
    "acoustic": "Wood"
+  },
+  {
+   "id": "metal_painted",
+   "acoustic": "Metal",
+   "absorption": 0.25,
+   "damping": 0.2
   }
  ],
  "ext_walls": [
@@ -1192,6 +1198,18 @@
    "size_z": 0.9,
    "collision": "convex",
    "material": "wood"
+  },
+  {
+   "name": "cigarettes_rcb6e771b_11",
+   "x": 19.57,
+   "y": -12.67,
+   "z": 0.775,
+   "size_x": 0.48,
+   "size_y": 0.9,
+   "size_z": 1.55,
+   "collision": "convex",
+   "material": "metal_painted",
+   "variant": 1
   }
  ],
  "rooms": [

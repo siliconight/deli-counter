@@ -5567,7 +5567,7 @@
       "slot_id": "floor_waiting_room",
       "role": "floor",
       "size_mod": "full",
-      "style": 7,
+      "style": 8,
       "material": "carpet",
       "current_ref": "floor_greybox_01",
       "kit_axis": "theme",
@@ -5604,7 +5604,7 @@
       "slot_id": "ceiling_waiting_room",
       "role": "ceiling",
       "size_mod": "full",
-      "style": 9,
+      "style": 10,
       "material": "ceiling_tile",
       "current_ref": "ceiling_greybox_01",
       "kit_axis": "theme",
@@ -5641,7 +5641,7 @@
       "slot_id": "floor_exam_wing",
       "role": "floor",
       "size_mod": "full",
-      "style": 8,
+      "style": 9,
       "material": "tile",
       "current_ref": "floor_greybox_01",
       "kit_axis": "theme",
@@ -5678,7 +5678,7 @@
       "slot_id": "ceiling_exam_wing",
       "role": "ceiling",
       "size_mod": "full",
-      "style": 9,
+      "style": 10,
       "material": "ceiling_tile",
       "current_ref": "ceiling_greybox_01",
       "kit_axis": "theme",
@@ -5722,7 +5722,7 @@
       "slot_id": "floor_upper_hall",
       "role": "floor",
       "size_mod": "full",
-      "style": 8,
+      "style": 9,
       "material": "tile",
       "current_ref": "floor_greybox_01",
       "kit_axis": "theme",
@@ -5759,7 +5759,7 @@
       "slot_id": "ceiling_upper_hall",
       "role": "ceiling",
       "size_mod": "full",
-      "style": 9,
+      "style": 10,
       "material": "ceiling_tile",
       "current_ref": "ceiling_greybox_01",
       "kit_axis": "theme",
@@ -5927,7 +5927,7 @@
       "slot_id": "ceiling_records_vault",
       "role": "ceiling",
       "size_mod": "full",
-      "style": 10,
+      "style": 11,
       "material": "plaster",
       "current_ref": "ceiling_greybox_01",
       "kit_axis": "theme",
@@ -7943,6 +7943,84 @@
           1.2,
           0.8,
           1.4
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "cigarettes_rd2a43fd8_11",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 7,
+      "material": "metal_painted",
+      "species": "cigarette_machine",
+      "stock": null,
+      "variant": 1,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          -11.3,
+          -9.62,
+          0.75
+        ],
+        "rot_y": 180.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.88,
+          0.45,
+          1.5
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "cigarettes_rb0f5945e_11",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 7,
+      "material": "metal_painted",
+      "species": "cigarette_machine",
+      "stock": null,
+      "variant": 2,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          -2.53,
+          -9.6,
+          4.175
+        ],
+        "rot_y": 180.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.9,
+          0.48,
+          1.55
         ],
         "pivot": "center",
         "openings": [],

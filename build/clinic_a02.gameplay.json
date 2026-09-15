@@ -476,6 +476,12 @@
       "damping": 0.5
     },
     {
+      "id": "metal_painted",
+      "acoustic": "Metal",
+      "absorption": 0.25,
+      "damping": 0.2
+    },
+    {
       "id": "carpet",
       "acoustic": "Curtain",
       "absorption": 0.85,
@@ -2410,6 +2416,24 @@
       }
     },
     {
+      "node": "cigarettes_rd2a43fd8_11_col",
+      "material": {
+        "id": "metal_painted",
+        "acoustic": "Metal",
+        "absorption": 0.25,
+        "damping": 0.2
+      }
+    },
+    {
+      "node": "cigarettes_rb0f5945e_11_col",
+      "material": {
+        "id": "metal_painted",
+        "acoustic": "Metal",
+        "absorption": 0.25,
+        "damping": 0.2
+      }
+    },
+    {
       "node": "stair_guard_side_0_col",
       "material": {
         "id": "concrete",
@@ -3466,6 +3490,8 @@
     "table_count_r1f49b02b_4": "prop",
     "chair_set_r1f49b02b_4_1": "prop",
     "cartons_r1f49b02b_5": "prop",
+    "cigarettes_rd2a43fd8_11": "prop",
+    "cigarettes_rb0f5945e_11": "prop",
     "stair_guard_side_0": "prop",
     "stair_guard_rail_1": "prop",
     "stair_guard_side_2": "prop",

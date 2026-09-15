@@ -25,7 +25,9 @@ import prop_species   # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 CLUB_SPECIES = {"club_stage", "bar_stool", "counter", "booth_seat", "neon_sign",
-                "crt_tv", "cocktail_table", "club_chair", "vending_machine"}
+                "crt_tv", "cocktail_table", "club_chair", "vending_machine",
+                # the fixtures (0.136.0, `test_club_fixtures.py`)
+                "dartboard", "cigarette_machine"}
 _GEN = re.compile(r"^(?P<stem>[a-z_]+?)_(?P<tag>r[0-9a-f]{8})_\d+(_\d+)?$")
 
 

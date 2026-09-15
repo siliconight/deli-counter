@@ -432,6 +432,12 @@
       "damping": null
     },
     {
+      "id": "metal_painted",
+      "acoustic": "Metal",
+      "absorption": 0.25,
+      "damping": 0.2
+    },
+    {
       "id": "carpet",
       "acoustic": "Curtain",
       "absorption": 0.85,
@@ -2085,6 +2091,15 @@
         "absorption": null,
         "damping": null
       }
+    },
+    {
+      "node": "cigarettes_r3d03d21b_11_col",
+      "material": {
+        "id": "metal_painted",
+        "acoustic": "Metal",
+        "absorption": 0.25,
+        "damping": 0.2
+      }
     }
   ],
   "interactives": [
@@ -2978,6 +2993,7 @@
     "cartons_rd2b46806_6": "prop",
     "cartons_rd2b46806_7": "prop",
     "table_count_rd2b46806_8": "prop",
+    "cigarettes_r3d03d21b_11": "prop",
     "parapet_N_t0_0": "wall",
     "parapet_N_t0_1": "wall",
     "parapet_N_t0_2": "wall",
