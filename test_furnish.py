@@ -283,6 +283,17 @@ _ZOO_RANGES = {
     "pennant_row": ((1.0, 14.0), (0.06, 0.12), (0.22, 0.5)),
     "folding_table": ((1.2, 3.0), (0.6, 0.9), (0.7, 0.8)),
     "folding_chair": ((0.4, 0.5), (0.44, 0.56), (0.78, 0.92)),
+    # the card shop's flat art (Zoo 0.98.0). The two HANGING ones top out at
+    # 0.60 m, which is not a taste: Zoo derives it from this repo's own
+    # contract -- shortest storey 3.0, less a 0.3 slab, less `_CEILING_AIR`
+    # twice, less `clearances.min_headroom_m` -- and says in the genome that
+    # it is a cap rather than a guarantee, because Zoo cannot see the slab.
+    # `test_nothing_hangs_where_a_body_would_walk_into_it` is the half of
+    # that Deli Counter owns.
+    "poster": ((0.4, 1.4), (0.02, 0.08), (0.5, 1.8)),
+    "hanging_banner": ((0.8, 3.0), (0.03, 0.1), (0.4, 1.6)),
+    "ceiling_hanger": ((0.4, 1.6), (0.03, 0.3), (0.25, 0.6)),
+    "aisle_sign": ((0.5, 1.8), (0.03, 0.12), (0.25, 0.6)),
 }
 ZOO = os.environ.get("DC_ZOO_ROOT") or os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "zoo")

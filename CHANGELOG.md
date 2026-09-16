@@ -1,3 +1,239 @@
+## [0.141.0] - 2026-09-16  the card shop hangs its art, and two checks that could not fire
+
+Zoo 0.98.0 shipped the flat art -- `poster`, `hanging_banner`,
+`ceiling_hanger`, `aisle_sign`, and a textured path through
+`_surface_stock` so a playmat is printed rather than coloured. This is Deli
+Counter placing all four, which finishes properties 3, 4 and 5 of the
+card-shop references and leaves this repo with none of the five open.
+
+ZOO'S SIDE OF THE CONTRACT IS ONE SENTENCE AND IT WAS ALREADY BUILT: **the
+top of the slot box is the ceiling plane.** Their entry records checking
+three candidates for what a thing hangs from -- the ceiling grid's own
+geometry (there is none; a drop ceiling is one solid panel with a Pixelcoat
+skin on its underside), a light anchor (`core/fixtures.py`'s `mount: "hang"`
+exists, but its input is a lights manifest and a painted dragon on one makes
+Lux spawn a Light3D at it), and the prop slot. The third is this file's
+`under`, which `pennant_row` has hung from since 0.95.0. So two of the four
+species needed one `_piece(..., under=_CEILING_AIR)` row and nothing else,
+exactly as Zoo predicted.
+
+The other two did not, and the difference is the entry.
+
+### THE TWO HALVES OF THE DENSITY WORK WANTED THE SAME BAND
+
+0.140.0 read reference property 1 -- "product goes to the ceiling, not to
+waist height" -- and filled the wall to 2.70. Zoo 0.98.0 read property 4 --
+"the wall above the shelving is where the posters live", naming the same
+bare 1.2 m band -- and built the posters for it. A wall cannot have both,
+and neither release could see the other coming.
+
+IT IS SETTLED WITHOUT A NEW RULE, which is the good outcome and was not the
+obvious one. `_UNDER_PENNANTS` hangs the art at 2.70 and DOWNWARD, so a
+2.70 m gondola is simply in its way and `_seed_clear` sends it elsewhere --
+over the showcase counters, where the bare band runs 0.95 to 2.70, and along
+the free walls. MEASURED on `card_shop_a01`: 4 posters and 2 banners on the
+selling floor, 4 and 2 in the play area, and **0 of those 12 overlap a
+gondola in plan** -- the nearest any of them gets to one is 1.82 m. Fewer
+full-height gondolas than the cap allows is the room having somewhere to
+put its art.
+
+AND THE ART'S OWN HEIGHT IS DERIVED FROM THE STRIP, not written down.
+`_PENNANT_STRIP_H` is declared once and read twice -- by `pennant_row`'s
+sizes and by `_UNDER_PENNANTS` -- because a strip and the thing hung under
+it are exactly the pair that drifts when the storey height moves.
+
+### `wall_band`, AND TWO WRONG SCOPES MEASURED BEFORE THE RIGHT ONE
+
+`hung_band_bottom` is what a floor-standing wall unit must stop under. It
+was written in 0.140.0 when `pennant_row` was the only hung piece in the
+room, so its scope was never tested. Declaring three more broke it twice:
+
+    scope                       product ceiling   why it is wrong
+    every hung piece            2.70 -> 2.40      a `ceiling_hanger` over
+                                                  the MIDDLE OF THE FLOOR
+                                                  shortening every gondola
+                                                  in the library by 0.30 m
+                                                  to clear something nowhere
+                                                  near it
+    where == "wall"             2.70 -> 1.45      a `poster` is hung on a
+                                                  wall but it is a DISCRETE
+                                                  piece competing for wall
+                                                  space, not a strip along
+                                                  the top; nothing should
+                                                  stop below one
+    wall_band (opt-in)          2.70              only the strip that claims
+                                                  the whole wall top
+
+Both wrong answers were silent: the geometry did not move, nothing failed,
+and the room simply came back shorter. `pennant_row` is the only piece that
+sets the flag and a test says so, because a second one appearing by accident
+is how this returns.
+
+### A ZERO THAT WAS A DEFECT, NOT A RESULT
+
+`hanging_banner` placed **nowhere**. The tempting reading is that the wall is
+full -- the room does have four gondolas' worth of product on it now -- and
+that reading is wrong, which is why the count was attributed instead of
+accepted. A probe over all 31 candidates named the blocker in each:
+
+    22  pennant_row (alone or with others)
+     9  a gondola, an island, a hanger, a CRT, a vending machine
+
+**The strip the reference hangs the banner UNDER was refusing it.** A
+pennant is 2.75-3.05 and a banner 2.00-2.70; they do not share a centimetre
+of height. `_seed_clear` knew a hung piece's BOTTOM (`above`, so that
+volumes below it are not in its way) and never its TOP, so everything above
+it was in its way forever. `below` is the other half of that sentence and
+the reference's own arrangement -- "banners and pennant strips run above the
+shelving" -- is what it makes possible.
+
+THE BLAST RADIUS WAS MEASURED BEFORE IT SHIPPED, because 0.139.0's entry
+says loosening `_seed_clear` "moves every furnished room in the library and
+wants its own release and its own frames". It does not, and the reason is
+narrow: the term only frees a pair whose vertical extents do not overlap AT
+ALL, and the only hung-above-hung pairs in the shipped library are this
+room's. `migrate_furnish_recipes.py` over all 127 specs: **one changes**,
+`card_shop_a01`. A `ceiling_hanger` at 2.45-3.05 still blocks a 2.00-2.70
+banner, because those two really do intersect.
+
+### THE HEADROOM IS DELI COUNTER'S TO ENFORCE, WHICH ZOO ASKED FOR IN WRITING
+
+Both hanging genomes cap height at 0.60 m and derive it from THIS repo's
+contract: shortest storey 3.0, less a 0.3 m slab, less `_CEILING_AIR` twice,
+less `clearances.min_headroom_m` (2.0). Every term but the last is Deli
+Counter's, and the slab is the one Zoo cannot see -- its genome note says so
+outright: "a thicker slab makes it smaller ... the placement is Deli
+Counter's."
+
+So the cap is not trusted. `hung_headroom_ok` measures the bottom the piece
+will actually be built at, at the storey it is actually in. MEASURED at a
+3.0 m storey with a 0.5 m floor slab, which is in range for this library:
+clear height 2.45, and the 0.50 m and 0.60 m hangers -- both legal by the
+genome -- put their bottoms at 1.90 and 1.80 and are REFUSED. A test asks
+for that refusal, because a headroom gate that cannot fail proves nothing.
+
+### A FIXTURE IS NOT ALWAYS ON A WALL
+
+`_place_fixture` called `_wall_slots` whatever the piece said, so a hanger
+over the middle of the floor could not exist -- the third pass in this file
+to assume its own placement. It asks the piece now, as `_host` does, and
+`_hung_floor_slots` is the floor half: no aisle and no spread, deliberately,
+because a piece above a body's head takes no share of the floor and owes
+nothing to the corridor width. What it must clear is what reaches UP to it,
+which is `_seed_clear`'s job and was already right.
+
+AND IT CARRIED THE THIRD COPY OF THE HEIGHT LINE. `min(clear_h,
+_TO_CEILING_MAX)` sat here as well as in `_host` and in
+`test_every_piece_is_a_size_its_species_builds` -- three spellings of one
+rule, of which 0.140.0 fixed two. No fixture has a `None` height today,
+which is exactly what let this one sit unnoticed while the other two were
+found. It asks `to_ceiling_height` now.
+
+### THE ORDER OF THE FIXTURES IS A PRIORITY, AND IT WAS MEASURED
+
+Each fixture is placed against what is already standing, so the list is a
+ranking rather than a list. Two orders over the same seed:
+
+    poster before banner    9 posters, 1 banner    21 pieces of art
+    banner before poster    8 posters, 4 banners   23 pieces of art
+
+With `poster` first the banner drew ONE across the whole building and the
+selling floor got none -- five posters had already taken the wall it needed.
+The bigger, rarer piece draws first; one poster is what that cost. The
+pennants stay ahead of both, because the rest of the art hangs under them.
+
+### THE ARITHMETIC, AND THE ART IS NOT WHAT THREATENS THE BUDGET
+
+Zoo's entry says it and this checks it independently at Deli Counter's own
+palette corners -- every one of the four reproduces Zoo's published
+per-species figure exactly (poster 78 framed, banner 62, hanger 52, sign 88):
+
+    worst case the caps allow, one selling room
+      the solids (0.140.0)                 22,304
+      poster x6                               468
+      hanging_banner x2                       124
+      ceiling_hanger x4                       208
+      aisle_sign x3                           264
+                                          -------
+                                           23,368   97.4 % of 24,000
+
+    card_shop_a01 as shipped         0.140.0   0.141.0
+      sales floor                     14,938    15,590
+      play area                        3,888     4,348
+
+**THE ART IS 4.6 % OF THE ROOM AND DISPLACED NOTHING.** Every solid figure
+above is unchanged to the triangle -- same gondolas, same islands, same
+pennants, same cases -- so the flat art is purely additive. The shipped
+posters cost 14 triangles each rather than the 78 the worst case assumes,
+because the forms that actually got placed are `bare` and `tilted` and only
+`framed` carries the mat ring.
+
+WHAT IS NOW TIGHT, said rather than left to be discovered: 97.4 % of the
+room budget. The next thing added to a card shop displaces something, and
+that is a real change from 0.140.0's 92.9 %.
+
+AND THE TRIANGLES ARE NOT THE COST HERE. Zoo measured a saturated room at
+2.392 MiB of decoded art for 18 images, which is what is actually spent on
+every client and is Pixelcoat's and Zoo's to hold down -- one atlas per
+module, and an atlas named by a digest of its own pixels so identical art is
+one image. Deli Counter's caps do not move that number; they move how many
+distinct modules ask for one.
+
+### What the frames show
+
+The same sight line as 0.140.0's pair -- spec (0.3, -8.4) at 1.6 m, 95
+degrees, same rig -- and the count is of the band the earlier frames left
+empty:
+
+    hung art in frame     0  ->  7   (4 ceiling hangers, 3 aisle signs)
+    standing solids       10 -> 10   unchanged, which is the point
+
+The upper third of the frame was bare grey in both the before and the
+0.140.0 after. It is not now. The frames are still greybox with a neutral
+rig, so they show where the art hangs and how big it is, not what is painted
+on it -- and nobody has walked this build.
+
+### The gates
+
+  * nav gate, `card_shop_a01`: **5 of 5 interior markers reachable, stairs
+    traverse, navigable yes** -- unchanged. Nothing this release places has
+    collision at all.
+  * `layout_lint --all`: **133 specs, 0 FAIL, 341 WARN, 101 specs with
+    findings** -- the same numbers as 0.139.0 and 0.140.0.
+  * `migrate_furnish_recipes.py`: one spec changes. The `_seed_clear` change
+    is the one that could have moved the library and did not.
+  * `build.py --all`: **133 shells, 0 errors**, and of the 442 tracked build
+    artefacts it rewrote, `card_shop_a01.manifest.json` is the ONLY one with
+    a content change -- every `.gameplay.json`, `.slots.json` and
+    `.lights.json` in the library byte-identical. `build_freshness` clean.
+  * unit suite: 945 passed, 2 skipped.
+  * `test_card_shop.py` gains SEVEN tests, six of which fail on 0.140.0.
+    The seventh is `test_the_play_tables_still_ask_for_the_printed_mat`,
+    which passes there too and is said rather than counted: `stock="cards"`
+    was already written, and the test exists so that dropping it is a
+    failure rather than a quiet return of the gap Zoo 0.95.0 recorded.
+
+### Also
+
+`prop_species` routes the four species, and what that re-routes among the
+library's AUTHORED volumes was measured before the rows were written against
+Zoo's full keyword lists: **nothing**. Three of Zoo's keywords are
+deliberately not taken, on `gondola`'s precedent -- `mobile` would claim a
+mobile home the day one is authored, and bare `banner` and `sign` would
+reach `scoreboard`, `sign_post` and `sign_box`, which are already names
+here. A keyword whose match would be wrong is worse than one that never
+fires, because it fires silently.
+
+THE PLAYMAT NEEDED NOTHING, and that is worth a line rather than silence.
+Zoo 0.95.0 recorded "NOT TEXTURED, and that is a limit rather than a choice"
+as the single most visible gap in the play area; 0.98.0 closed it inside
+`_surface_stock`, and Deli Counter's side was one word it was already
+writing -- `folding_table`'s `stock="cards"`. A test now asserts that word,
+so dropping it is a failure rather than a quiet return of the gap.
+
+`KIT_VERSION` does not move, for 0.140.0's reason: the builder's geometry is
+unchanged and what moved is what `furnish` writes.
+
 ## [0.140.0] - 2026-09-16  the card shop fills its height and its floor, and the cap was not a budget
 
 The walker walked cold run 9061's `card_shop_a01` and photographed the sales

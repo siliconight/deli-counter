@@ -131,6 +131,32 @@ PROP_SPECIES = (
     (("pennant",), "pennant_row"),
     (("folding_table",), "folding_table"),
     (("folding_chair",), "folding_chair"),
+    # THE FLAT ART (Zoo 0.98.0), the other half of the card shop's density.
+    # Four species whose whole cost is texture -- a saturated room is 948
+    # triangles of art and 2.392 MiB of decoded images.
+    #
+    # WHAT THIS RE-ROUTES, MEASURED over every spec in `specs/` before the
+    # rows were written, against Zoo's full keyword lists for all four:
+    # **nothing**. No authored volume in the library carries `poster`,
+    # `banner`, `hanger`, `aisle_sign` or any of their spellings, so these
+    # rows claim only what `level_design`'s own fixtures write.
+    #
+    # THREE OF ZOO'S KEYWORDS ARE DELIBERATELY NOT HERE, on `gondola`'s
+    # precedent one block up. `mobile` would claim a mobile home or a mobile
+    # crane the day either is authored, and a hanging painted board is not
+    # either; `banner` and `sign` are left in their compound forms for the
+    # same reason -- `scoreboard`, `sign_post` and `sign_box` are already
+    # names in this library and a bare keyword is how one of them gets
+    # quietly rebuilt as a poster. A keyword whose match would be wrong is
+    # worse than one that never fires, because it fires silently.
+    (("poster", "wall_poster", "set_poster", "art_print", "framed_print",
+      "picture_frame"), "poster"),
+    (("hanging_banner", "cloth_banner", "print_banner", "wall_banner",
+      "banner_sign"), "hanging_banner"),
+    (("ceiling_hanger", "ceiling_sign", "drop_sign", "hanging_model"),
+     "ceiling_hanger"),
+    (("aisle_sign", "section_sign", "hanging_sign", "aisle_header",
+      "overhead_sign"), "aisle_sign"),
     # A CUBICLE BANK IS NOT A DESK (Zoo 0.93.0). It had to stand ahead of the
     # desk row, which held `cubicle` and took all ten of them: the desk genome
     # reaches 12 m wide and 6 m deep, so an 8.0 x 6.0 x 1.2 m cubicle farm

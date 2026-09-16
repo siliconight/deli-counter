@@ -495,6 +495,65 @@ def opening_head(spec, story):
     return head
 
 
+def hung_headroom_ok(spec, piece, h):
+    """Does a piece hung over the FLOOR leave a body room to walk under it?
+
+    `clearances.min_headroom_m` (2.0), asked of the bottom the piece will
+    actually be built at, at the storey it is actually standing in. True for
+    anything that is not hung.
+
+    WHY DELI COUNTER ASKS THIS AND DOES NOT TRUST THE GENOME. Zoo 0.98.0
+    caps `ceiling_hanger` and `aisle_sign` at 0.60 m and derives that number
+    from this contract -- shortest storey 3.0, less a 0.3 slab, less
+    `_CEILING_AIR` twice, less 2.0. Every term but the last is Deli
+    Counter's, and the slab is the one Zoo cannot see: its own genome note
+    says "a thicker slab makes it smaller ... the placement is Deli
+    Counter's". A 0.5 m floor slab at a 3.0 m storey leaves 0.40, and a
+    0.60 m hanger under it is a sign a body walks into. So the cap is a
+    genome's guess and this is the measurement.
+    """
+    lift = _piece_lift(spec, piece, h)
+    if lift is None:
+        return True
+    import agent_contract
+    return lift - float(h) / 2.0 >= agent_contract.min_headroom() - 1e-9
+
+
+def _hung_floor_slots(spec, room, w, d, rng):
+    """Candidate ``(x, y, sx, sy, front)`` for a piece hung over the OPEN
+    FLOOR -- a ceiling hanger, a sign over an aisle.
+
+    NO AISLE AND NO SPREAD, deliberately, and that is the difference from
+    `_island_slots`. A hung piece is above a body's head (`hung_headroom_ok`
+    is what says so), so it takes no share of the floor and owes nothing to
+    the corridor width; what it must clear is everything that reaches UP to
+    it, which is `_seed_clear`'s `above` and is asked by the caller.
+
+    THE TUPLE IS `_wall_slots`'s, with_front -- ``(x, y, sx, sy, rot,
+    front)`` -- so the caller reads one shape and does not branch on a
+    length. `front` is None: a hanger is painted on both sides from one tile
+    and a sign is read from either end of its aisle, so neither has a face
+    the room has to see.
+    """
+    x0, y0, x1, y1 = room["bounds"]
+    long_x = (x1 - x0) >= (y1 - y0)
+    sx, sy = (w, d) if long_x else (d, w)
+    lo_x, hi_x = x0 + 1.0 + sx / 2.0, x1 - 1.0 - sx / 2.0
+    lo_y, hi_y = y0 + 1.0 + sy / 2.0, y1 - 1.0 - sy / 2.0
+    if lo_x > hi_x or lo_y > hi_y:
+        return []
+    gx = max(3, min(10, int((hi_x - lo_x) // 2.0) + 1))
+    gy = max(3, min(10, int((hi_y - lo_y) // 2.0) + 1))
+    out = []
+    for i in range(gx):
+        for j in range(gy):
+            px = lo_x + (hi_x - lo_x) * (i / max(1, gx - 1) if gx > 1 else 0.5)
+            py = lo_y + (hi_y - lo_y) * (j / max(1, gy - 1) if gy > 1 else 0.5)
+            out.append((px, py, sx, sy, 0.0, None))
+    rng.shuffle(out)
+    return out
+
+
 def _over_openings(spec, story, piece, h):
     """`hangs_over_openings` asked of a PIECE and a built height, for the
     two callers that must know before the volume exists (`_wall_slots`
@@ -531,7 +590,7 @@ def hangs_over_openings(spec, story, above):
 
 
 def _seed_clear(spec, room, px, py, placed, half=0.0, above=None,
-                over_openings=False):
+                below=None, over_openings=False):
     """Candidate point clear of walls, openings, verticals, props, markers.
     `half` is the worst-case half-extent of the piece that will stand here:
     clearances are measured from the piece's EDGE, not its center -- a 2.6 m
@@ -542,7 +601,24 @@ def _seed_clear(spec, room, px, py, placed, half=0.0, above=None,
     floor: volumes whose top is below it are not in its way. When it is
     None the piece stands on the floor and hung collision-free volumes
     (`_HUNG_MIN`) are not in its way. Everything else -- walls, openings,
-    stairs, ladders, markers, the spread -- is asked as before."""
+    stairs, ladders, markers, the spread -- is asked as before.
+
+    `below` is the piece's own TOP, and it is the other half of that
+    sentence (0.141.0). Without it a hung piece was cleared of everything
+    BELOW it and of nothing ABOVE it, so a strip along the top of a wall
+    blocked the whole band under itself. FOUND BY ATTRIBUTING A ZERO rather
+    than by reading: `hanging_banner` placed NOWHERE on `card_shop_a01`, and
+    a probe over all 31 candidates named the blocker in each --
+    **`pennant_row` in 22 of them**, the very strip the reference hangs the
+    banner under ("banners and pennant strips run above the shelving"). A
+    pennant is 2.75-3.05 and a banner 2.00-2.70; they do not share a
+    centimetre of height and one was refusing the other.
+
+    IT IS NARROWER THAN IT LOOKS, and that was measured before it shipped:
+    it only frees a pair whose vertical extents do not overlap AT ALL, and
+    the only hung-above-hung pairs in the library are this room's. A
+    `ceiling_hanger` at 2.45-3.05 still blocks a 2.00-2.70 banner, because
+    those two really do intersect."""
     story = room.get("story", 0)
     sh = _story_height(spec)
     floor = story * sh
@@ -579,6 +655,10 @@ def _seed_clear(spec, room, px, py, placed, half=0.0, above=None,
             continue
         if above is not None:
             if vz + vh / 2.0 - floor <= above:
+                continue
+            # ...and the converse: a volume that starts above this piece's
+            # own top shares no height with it. See the docstring.
+            if below is not None and vz - vh / 2.0 - floor >= below:
                 continue
         elif v.get("collision") == "none" and vz - vh / 2.0 - floor >= _HUNG_MIN:
             continue
@@ -864,37 +944,85 @@ PACK_WALL_CEILING = 3.2
 #: and `most` is where it is spent.
 _CARD_SHOP_ROOM_TRIS = 24000
 
+#: The pennant strip's own height, declared ONCE because two pieces read it:
+#: `pennant_row`'s sizes, and `_UNDER_PENNANTS` below, which is where the
+#: flat art hangs. Spelling 0.30 in both places is how a strip and the thing
+#: hung under it drift apart at the next storey height.
+_PENNANT_STRIP_H = 0.3
+
+#: How far the top of a WALL-HUNG piece of flat art sits below the ceiling
+#: PLANE: under the pennant strip, with `_CEILING_AIR` above and below it.
+#:
+#: DERIVED FROM THE STRIP, NOT CHOSEN, and the reference is why. Property 4
+#: of the card-shop references is "the wall above the shelving is where the
+#: posters live ... mounted high and slightly tilted", and property 3 puts
+#: "banners and pennant strips ... above the shelving". Both are in the same
+#: band and the pennants got there first, so the art hangs immediately under
+#: them: at a 3.4 m storey the strip is 2.75-3.05 and a poster's top is 2.70.
+#:
+#: AND THIS IS WHERE THE TWO HALVES OF THE DENSITY WORK COLLIDE, which is
+#: worth saying in the file rather than only in the release note. 0.140.0
+#: filled the wall with product to 2.70 because the reference says product
+#: goes to the ceiling; Zoo 0.98.0's posters were specified against the SAME
+#: bare band. A wall cannot have both. `_seed_clear` is what arbitrates,
+#: with no new rule: the art hangs at 2.70 and DOWN, so a 2.70 m gondola is
+#: in its way and it goes to a wall that has none -- over the showcase
+#: counters, where the bare band runs 0.95 to 2.70, and along the free
+#: walls. Fewer full-height gondolas than the cap allows is the room having
+#: somewhere to put its art, not the cap failing.
+_UNDER_PENNANTS = round(_CEILING_AIR + _PENNANT_STRIP_H + _CEILING_AIR, 4)
+
 
 def _piece(name, sizes, where, front=False, stock=None, variants=False,
            form=None, seats=None, most=None, lift=None, collision="convex",
            deck=None, lane=False, most_big=None, under=None,
            reserved_by=None, off_glass=False, backed_by=None,
-           ceiling=None, under_hung=False, twin=False):
+           ceiling=None, under_hung=False, twin=False, wall_band=False):
     return {"name": name, "sizes": tuple(sizes), "where": where,
             "front": front, "stock": stock, "variants": variants,
             "form": form, "seats": seats, "most": most, "lift": lift,
             "collision": collision, "deck": deck, "lane": lane,
             "most_big": most_big, "under": under, "reserved_by": reserved_by,
             "off_glass": off_glass, "backed_by": backed_by,
-            "ceiling": ceiling, "under_hung": under_hung, "twin": twin}
+            "ceiling": ceiling, "under_hung": under_hung, "twin": twin,
+            "wall_band": wall_band}
 
 
 def hung_band_bottom(spec):
-    """The bottom of the LOWEST piece this pass hangs under the ceiling, in
-    metres above its storey's floor -- the band the fixtures own.
+    """The bottom of the lowest piece this pass hangs under the ceiling
+    AGAINST A WALL, in metres above its storey's floor -- the band a wall's
+    own fixtures own.
 
     Asked by `to_ceiling_height` below, so that a piece authored "to the
     ceiling" stops under the strip rather than through it. Derived from the
     pieces themselves (`under`, via `_piece_lift`) and not written down: a
     pennant row's batten is `_CEILING_AIR` under the slab and the strip is
-    0.30 deep, so at a 3.4 m storey the band starts at 2.75, and a taller
-    hung piece moves it down without anything else being edited.
+    `_PENNANT_STRIP_H` deep, so at a 3.4 m storey the band starts at 2.75,
+    and a taller hung piece moves it down without anything else being edited.
 
-    `_clear_height` when nothing hangs, which is "no band".
+    `wall_band` IS THE SCOPE AND IT TOOK TWO TRIES, both of them measured on
+    `card_shop_a01` while Zoo 0.98.0's flat art was wired in. The question
+    this answers is narrow: "how tall may a unit standing against a wall be
+    before it runs into the strip that runs along the top of EVERY wall".
+    Only a piece that claims the whole wall top is an answer to it.
+
+      * UNSCOPED (every hung piece) the product ceiling fell **2.70 ->
+        2.40** the moment `ceiling_hanger` was declared -- a dragon over the
+        middle of the floor shortening every gondola in the library by
+        0.30 m to clear something nowhere near them.
+      * SCOPED TO `where == "wall"` it fell **2.70 -> 1.45**, which is worse
+        and for the opposite reason: a `poster` is hung on a wall but it is
+        a DISCRETE piece competing for wall space, not a strip along the
+        top. Nothing should stop below a poster, because the poster goes
+        where the product is not -- `_seed_clear` arbitrates that, at
+        placement, with no new rule.
+
+    So the flag is opt-in and `pennant_row` is the only piece that sets it.
+    `_clear_height` when nothing claims a band, which is "no band".
     """
     low = None
     for p in _PIECES.values():
-        if p["under"] is None:
+        if p["under"] is None or not p["wall_band"]:
             continue
         for size in p["sizes"]:
             h = size[2]
@@ -1329,9 +1457,70 @@ _PIECES = {p["name"]: p for p in (
     # 3,568 is 15 % of the budget that does exist. What the two extra rows
     # buy is the other two walls carrying colour at the one height nothing
     # else in the room reaches.
-    _piece("pennant_row", ((6.0, 0.08, 0.3), (4.0, 0.08, 0.3),
-                           (8.0, 0.08, 0.3)), "wall", front=True,
-           variants=True, most=4, under=_CEILING_AIR, collision="none"),
+    _piece("pennant_row", ((6.0, 0.08, _PENNANT_STRIP_H),
+                           (4.0, 0.08, _PENNANT_STRIP_H),
+                           (8.0, 0.08, _PENNANT_STRIP_H)), "wall", front=True,
+           variants=True, most=4, under=_CEILING_AIR, collision="none",
+           wall_band=True),
+    # --- THE FLAT ART (Zoo 0.98.0). Properties 3 and 4 of the card-shop
+    # references: things hang, and the wall above the shelving is where the
+    # posters live. Zoo's half is four species whose whole cost is texture
+    # -- a saturated room is 948 triangles of flat art, 8.9 % of the 10,664
+    # Zoo measured and 4 % of one `cubicle_bank`. Geometry is free here; see
+    # that entry for the 2.392 MiB of decoded art, which is the figure that
+    # is actually spent on every client.
+    #
+    # ALL FOUR ARE FIXTURES, not a wall run, for the reason the pennants
+    # are: a run is shuffled and cut to about half the room's target, so an
+    # entry in it is a lottery ticket. A room whose subject is the art on
+    # its walls cannot draw for it.
+    #
+    # THE POSTER, hung under the pennant strip (`_UNDER_PENNANTS`) rather
+    # than at a number. Zoo's genome runs 0.40-1.40 wide and 0.50-1.80 tall;
+    # the tall end is not offered here because the band between the strip
+    # and a showcase counter's top is 1.75 m at a 3.4 m storey and a poster
+    # has to clear what stands under it. `variants` is 3, which is Zoo's
+    # `module_variants` and not this file's usual 4 -- the `folding_table`
+    # lesson from 0.139.0, where a bare `True` asked for a variant the
+    # species does not have and would have dropped its art with it.
+    _piece("poster", ((0.6, 0.04, 0.9), (0.9, 0.05, 1.2), (0.5, 0.03, 0.7)),
+           "wall", front=True, variants=3, most=4, most_big=(150.0, 6),
+           under=_UNDER_PENNANTS, collision="none"),
+    # THE BANNER, the same band and the same reason: "a printed banner
+    # behind the play area", and "banners and pennant strips run above the
+    # shelving". Wider and shorter than a poster, which is what a cloth on a
+    # rod is.
+    _piece("hanging_banner", ((1.8, 0.05, 0.7), (2.4, 0.06, 0.9),
+                              (1.2, 0.04, 0.6)), "wall", front=True,
+           variants=True, most=2, under=_UNDER_PENNANTS, collision="none"),
+    # THE CEILING HANGER AND THE AISLE SIGN -- "a painted dragon and a
+    # kraken hang from the drop ceiling", "a hand-lettered STRATEGY sign
+    # hangs over an aisle". These hang over the FLOOR, not against a wall,
+    # which is why `where` is `floor`: a dragon flat against a wall is a
+    # poster with a chain on it.
+    #
+    # `under=_CEILING_AIR` IS THE WHOLE CONTRACT WITH ZOO, and Zoo's genome
+    # notes say so in as many words: there is no T-bar geometry in a drop
+    # ceiling to hang from (it is one solid panel with a Pixelcoat skin on
+    # its underside), the light pipeline's `mount: "hang"` would make Lux
+    # spawn a Light3D at a painted board, and the mechanism that does exist
+    # is this one -- the TOP OF THE SLOT BOX IS THE CEILING PLANE.
+    #
+    # THE HEADROOM IS DELI COUNTER'S TO ENFORCE AND NOT ZOO'S TO PROMISE.
+    # Both genomes cap height at 0.60, derived as the shortest storey (3.0)
+    # less the slab (0.3) less `_CEILING_AIR` twice less
+    # `clearances.min_headroom_m` (2.0). That derivation assumes a 0.3 m
+    # slab, and Zoo cannot see the slab -- its own note says "a thicker slab
+    # makes it smaller ... the placement is Deli Counter's". So the cap is
+    # not trusted here: `hung_headroom_ok` measures the built bottom against
+    # the contract at the storey the piece is actually standing in, and a
+    # room that cannot give a body 2.0 m under a hanger goes without one.
+    _piece("ceiling_hanger", ((0.8, 0.06, 0.5), (1.2, 0.08, 0.6),
+                              (0.6, 0.05, 0.4)), "floor", variants=True,
+           most=2, most_big=(150.0, 4), under=_CEILING_AIR, collision="none"),
+    _piece("aisle_sign", ((1.1, 0.05, 0.4), (1.4, 0.06, 0.5),
+                          (0.8, 0.04, 0.35)), "floor", variants=True,
+           most=2, most_big=(150.0, 3), under=_CEILING_AIR, collision="none"),
     # THE PLAY AREA: banquet tables with two or three folding chairs each.
     # `cards` is `_surface_stock`'s seventh flavour (Zoo 0.95.0) -- a
     # playmat, card piles, deck boxes and dice, planned once per SIDE of
@@ -1586,8 +1775,27 @@ _RECIPES = {
                   "floor": ("pack_wall_island",),
                   "clusters": ((("cartons",), 2, 3),),
                   "per_area": 20.0, "all_anchors": True,
-                  # placed after the room is furnished (`place_fixtures`)
-                  "fixtures": ("pennant_row",)},
+                  # placed after the room is furnished (`place_fixtures`).
+                  #
+                  # THE ORDER IS LOAD-BEARING AND IT WAS MEASURED, NOT
+                  # REASONED. Each fixture is placed against what is already
+                  # standing, so the list is a priority. The pennants go
+                  # first because the rest of the flat art hangs UNDER them
+                  # (`_UNDER_PENNANTS`) -- reverse that and a poster takes
+                  # the strip's wall and the strip goes without. Then the
+                  # BANNER, which is the biggest piece of art and the
+                  # rarest: with `poster` ahead of it the banner drew ONE
+                  # across the whole building and the sales floor got none,
+                  # because five posters had already taken the wall it
+                  # needed. Measured over the same seed, both orders:
+                  #
+                  #     poster first   9 posters, 1 banner   21 art pieces
+                  #     banner first   8 posters, 4 banners  23 art pieces
+                  #
+                  # -- so the bigger piece draws first, both rooms reach the
+                  # banner cap, and one poster is what it cost.
+                  "fixtures": ("pennant_row", "hanging_banner", "poster",
+                               "ceiling_hanger", "aisle_sign")},
     "office": {"anchors": ("desk",),
                "wall": ("cabinet_file", "shelf_run", "cabinet_file"),
                "floor": ("desk",),
@@ -2732,27 +2940,53 @@ def _place_fixture(spec, room, key, k, building):
     # `_wall_slots` draws four spots a wall; a fixture is one piece with a
     # stricter test than a wall run's, so it draws `_FIXTURE_ROUNDS` times
     # that many before a room goes without
-    rounds = [(size, spot) for _r in range(_FIXTURE_ROUNDS) for size in sizes
-              for spot in _wall_slots(
-                  spec, room, size[0], size[1], rng, with_front=True,
-                  over_openings=_over_openings(spec, story, p, size[2]),
-                  off_glass=p["off_glass"], back_off=piece_back_off(p))]
+    # A FIXTURE IS NOT ALWAYS ON A WALL (0.141.0). Zoo 0.98.0's
+    # `ceiling_hanger` and `aisle_sign` hang over the middle of the floor,
+    # so this pass asks the PIECE where it goes, as `_host` does, instead of
+    # assuming `_wall_slots`. `_hung_floor_slots` carries no `front`, which
+    # is why the rotation below is guarded.
+    if p["where"] == "floor":
+        rounds = [(size, spot) for _r in range(_FIXTURE_ROUNDS)
+                  for size in sizes
+                  for spot in _hung_floor_slots(spec, room, size[0], size[1],
+                                                rng)]
+    else:
+        rounds = [(size, spot) for _r in range(_FIXTURE_ROUNDS) for size in sizes
+                  for spot in _wall_slots(
+                      spec, room, size[0], size[1], rng, with_front=True,
+                      over_openings=_over_openings(spec, story, p, size[2]),
+                      off_glass=p["off_glass"], back_off=piece_back_off(p))]
     for (w, d, h), (qx, qy, sx, sy, _rot, front) in rounds:
         if h is None:
-            h = min(clear_h, _TO_CEILING_MAX)
+            # THE WRITER'S OWN FUNCTION, not a third spelling of it. This
+            # carried `min(clear_h, _TO_CEILING_MAX)` -- the same line
+            # `_host` carried and the same line `test_every_piece_is_a_size
+            # _their_species_builds` carried, three copies of one rule. No
+            # fixture has a `None` height today, which is exactly what let
+            # it sit here unnoticed while the other two were fixed.
+            h = to_ceiling_height(spec, p, clear_h)
         if h > clear_h:
             continue
         half = max(w, d) / 2.0
         lift = _piece_lift(spec, p, h)
         hung = lift is not None
         above = (lift - h / 2.0) if hung else None
+        below = (lift + h / 2.0) if hung else None
+        # A PIECE HUNG OVER THE FLOOR IS SOMETHING A BODY WALKS UNDER. The
+        # genome's height cap is Zoo's guess at this repo's slab; this is
+        # the measurement at the storey the piece is actually in.
+        if p["where"] == "floor" and not hung_headroom_ok(spec, p, h):
+            continue
         if _over_rects(inner, qx, qy, half, half):
             continue
         if not _seed_clear(spec, room, qx, qy, [], half=half, above=above,
+                           below=below,
                            over_openings=hangs_over_openings(spec, story,
                                                              above)):
             continue
-        rot = _front_turn(key, sx, sy, front)
+        # a piece with no face the room must see (`_hung_floor_slots`) is
+        # not turned: `_front_turn` of None is a TypeError, not a 0
+        rot = 0.0 if front is None else _front_turn(key, sx, sy, front)
         probe = {"x": round(qx, 2), "y": round(qy, 2), "size_x": sx, "size_y": sy, "rot_z": rot}
         if p["lane"]:
             lane = dart_lane(probe)
@@ -3951,6 +4185,7 @@ def furnish(spec):
                 lift = _piece_lift(spec, p, h)
                 hung = lift is not None
                 above = (lift - h / 2.0) if hung else None
+                below = (lift + h / 2.0) if hung else None
                 over = hangs_over_openings(spec, story, above)
                 for qx, qy, sx, sy, front in spots:
                     # AN ISLAND'S HALF-EXTENT IS ITS OWN FOOTPRINT, not the
@@ -3974,7 +4209,8 @@ def furnish(spec):
                     # the pieces standing under it
                     if not _seed_clear(spec, room, qx, qy,
                                        [] if hung else placed, half=half,
-                                       above=above, over_openings=over):
+                                       above=above, below=below,
+                                       over_openings=over):
                         continue
                     if p["where"] == "island":
                         n = _island(key, _volume, spec, qx, qy, w, d, h,

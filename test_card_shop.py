@@ -356,6 +356,14 @@ _WORST_TRIS = {
     "wall_tv": 404,
     "folding_table": 384,        # with the `cards` stock
     "folding_chair": 192,
+    # THE FLAT ART (Zoo 0.98.0), measured the same way at THIS file's
+    # palette corners. Every one of the four reproduces the per-species
+    # figure Zoo's own 0.98.0 entry publishes, which is why the table can
+    # be believed: poster 78 (framed), banner 62, hanger 52, sign 88.
+    "poster": 78,
+    "hanging_banner": 62,
+    "ceiling_hanger": 52,
+    "aisle_sign": 88,
 }
 
 
@@ -378,20 +386,37 @@ def test_the_room_budget_is_zoo_s_only_real_one_and_the_caps_fit_under_it():
     down), so this multiplies them out.
     """
     P = level_design._PIECES
-    worst = (
+
+    def cap(key):
+        """A piece's ceiling in ONE room: its `most_big` allowance where it
+        has one, since a selling floor is 220 m2 and reaches every one."""
+        p = P[key]
+        return p["most_big"][1] if p["most_big"] else p["most"]
+
+    solid = (
         2 * _WORST_TRIS["display_case"] +         # both counters
         2 * _WORST_TRIS["display_case_end"] +     # both returns
-        P["pack_wall"]["most"] * _WORST_TRIS["pack_wall"] +
-        P["pennant_row"]["most"] * _WORST_TRIS["pennant_row"] +
+        cap("pack_wall") * _WORST_TRIS["pack_wall"] +
+        cap("pennant_row") * _WORST_TRIS["pennant_row"] +
         2 * _WORST_TRIS["wall_tv"] +              # one CRT a counter
-        P["pack_wall_island"]["most"] * 2 * _WORST_TRIS["pack_wall_island"]
+        cap("pack_wall_island") * 2 * _WORST_TRIS["pack_wall_island"]
     )
-    assert worst == 22304, worst
+    # THE FLAT ART IS THE CHEAP HALF AND THE ARITHMETIC SAYS SO (0.141.0).
+    # Zoo 0.98.0: "geometry is not where flat art costs anything and the
+    # caps on these four genomes are not what will hold the room back."
+    art = sum(cap(k) * _WORST_TRIS[k] for k in
+              ("poster", "hanging_banner", "ceiling_hanger", "aisle_sign"))
+    assert solid == 22304, solid
+    assert art == 1064, art
+    worst = solid + art
+    assert worst == 23368, worst
     assert worst <= level_design._CARD_SHOP_ROOM_TRIS
     # ...and the cap is load-bearing: one more island is over it, which is
     # why `most` is 2 and not 3.
     assert worst + 2 * _WORST_TRIS["pack_wall_island"] > \
         level_design._CARD_SHOP_ROOM_TRIS
+    # the art is 4.6 % of the room and would not be what broke it
+    assert art < solid * 0.06
 
 
 def test_the_measured_module_costs_are_still_zoo_s():
@@ -633,6 +658,144 @@ def test_a_derived_height_is_never_rounded_up():
         pw = level_design.counter_pack_wall_height(spec)
         crt_h = level_design._PIECES["wall_tv"]["sizes"][0][2]
         assert pw + level_design._CRT_OVER_PACK + crt_h <= clear + 1e-9, storey
+
+
+# --- the flat art (0.141.0, Zoo 0.98.0) -----------------------------------
+#
+# Properties 3 and 4 of the references: things hang, and the wall above the
+# shelving is where the posters live. Zoo ships four species whose whole
+# cost is texture; Deli Counter's side is where they go and what a body can
+# walk under.
+
+_ART = ("poster", "hanging_banner", "ceiling_hanger", "aisle_sign")
+
+
+def test_the_room_carries_every_flat_art_species(shop):
+    """All four, not three. A species wired into the recipe and placed
+    nowhere is the `pennant_row` defect of 0.139.0 -- an entry that could
+    not fire -- and the only way to catch it is to count."""
+    b = level_design.club_building_id(shop)
+    got = {}
+    for room in shop["rooms"]:
+        if not level_design.is_card_shop_room(room, b):
+            continue
+        for stem, _seq, v in level_design._room_names(
+                shop, level_design._room_tag(room)):
+            if stem in _ART:
+                got.setdefault(stem, []).append(v)
+    assert set(got) == set(_ART), sorted(got)
+    for stem in _ART:
+        assert prop_species.species_for_name(got[stem][0]["name"]) == stem
+
+
+def test_the_wall_art_hangs_under_the_pennant_strip(shop):
+    """`_UNDER_PENNANTS`, derived from the strip's own height rather than
+    written down. Both references put the art and the strip in one band and
+    the strip is there first, so the art's top is the strip's bottom less
+    `_CEILING_AIR`."""
+    clear = level_design._clear_height(shop)
+    band = level_design.hung_band_bottom(shop)
+    top = clear - level_design._UNDER_PENNANTS
+    assert abs(top - (band - level_design._CEILING_AIR)) < 1e-9
+    for v in shop["volumes"]:
+        if v["name"].split("_r")[0] not in ("poster", "hanging_banner"):
+            continue
+        assert abs((v["z"] + v["size_z"] / 2.0) - top) < 1e-6, v["name"]
+        # ...and it is clear of the strip rather than through it
+        assert v["z"] + v["size_z"] / 2.0 <= band - 1e-9, v["name"]
+
+
+def test_a_poster_never_shortens_a_gondola(shop):
+    """THE TWO HALVES OF THE DENSITY WORK WANT THE SAME BAND, and this is
+    the rule that settles it.
+
+    `hung_band_bottom` is what a floor-standing wall unit must stop under,
+    and it is scoped by `wall_band` -- a flag only `pennant_row` sets.
+    Measured while wiring this: unscoped it read every hung piece and the
+    product ceiling fell 2.70 -> 2.40 on a `ceiling_hanger` over the middle
+    of the floor; scoped to `where == "wall"` it fell to 1.45 on a poster.
+    A poster does not shorten anything -- it goes where the product is not,
+    which `_seed_clear` decides at placement.
+    """
+    banders = {n for n, p in level_design._PIECES.items() if p["wall_band"]}
+    assert banders == {"pennant_row"}, banders
+    assert level_design.to_ceiling_height(
+        shop, level_design._PIECES["pack_wall"],
+        level_design._clear_height(shop)) == 2.7
+
+
+def test_a_hung_piece_is_cleared_of_what_shares_its_height_and_no_more(shop):
+    """`below`, the other half of `above`, FOUND BY ATTRIBUTING A ZERO.
+
+    `hanging_banner` placed nowhere at all: a probe over all 31 candidates
+    named the blocker in each and `pennant_row` was in 22 of them -- the
+    strip the reference hangs the banner under. A pennant is 2.75-3.05 and
+    a banner 2.00-2.70 and they share no height.
+    """
+    import inspect
+    assert "below" in inspect.signature(level_design._seed_clear).parameters
+    room = _room(shop, "sales_floor")
+    # a candidate under the strip is clear of the strip...
+    strip = next(v for v in shop["volumes"]
+                 if v["name"].startswith("pennant_row_"))
+    x, y = strip["x"], strip["y"]
+    assert level_design._seed_clear(
+        shop, room, x, y, [], half=0.9,
+        above=2.0, below=2.7, over_openings=False) is not None
+    # ...and the same point WITHOUT the top term is refused by it
+    assert not level_design._seed_clear(
+        shop, room, x, y, [], half=0.9, above=2.0, over_openings=False)
+
+
+def test_nothing_hangs_where_a_body_would_walk_into_it(shop):
+    """THE HEADROOM IS DELI COUNTER'S, NOT THE GENOME'S. Zoo caps the two
+    hanging species at 0.60 m and derives it from this contract assuming a
+    0.3 m slab -- and says in its own genome note that it cannot see the
+    slab. So the cap is a guess and this is the measurement."""
+    head = agent_contract.min_headroom()
+    for v in shop["volumes"]:
+        if v["name"].split("_r")[0] not in ("ceiling_hanger", "aisle_sign"):
+            continue
+        assert v["z"] - v["size_z"] / 2.0 >= head - 1e-9, v["name"]
+    # and the gate BITES where the genome's assumption fails: a thicker slab
+    # at the shortest storey leaves less than the genome's 0.60
+    thick = dict(shop, story_height=3.0, floor_thick=0.5)
+    refused = [h for (_w, _d, h)
+               in level_design._PIECES["ceiling_hanger"]["sizes"]
+               if not level_design.hung_headroom_ok(
+                   thick, level_design._PIECES["ceiling_hanger"], h)]
+    assert refused, "the headroom gate cannot fail, so it proves nothing"
+
+
+def test_a_hung_fixture_is_not_assumed_to_be_on_a_wall(shop):
+    """`_place_fixture` used `_wall_slots` whatever the piece said, so a
+    hanger over the middle of the floor could not exist. It asks the piece
+    now, as `_host` does."""
+    floor_art = {n for n in _ART if level_design._PIECES[n]["where"] == "floor"}
+    assert floor_art == {"ceiling_hanger", "aisle_sign"}, floor_art
+    room = _room(shop, "sales_floor")
+    x0, y0, x1, y1 = room["bounds"]
+    for v in shop["volumes"]:
+        if v["name"].split("_r")[0] not in floor_art:
+            continue
+        if not (x0 <= v["x"] <= x1 and y0 <= v["y"] <= y1):
+            continue
+        edge = min(v["x"] - x0, x1 - v["x"], v["y"] - y0, y1 - v["y"])
+        assert edge >= 1.0 - 1e-6, (v["name"], edge)
+
+
+def test_the_play_tables_still_ask_for_the_printed_mat(shop):
+    """Zoo 0.98.0 gave `_surface_stock` a textured path, so the `cards`
+    flavour paints a playmat instead of colouring one. Deli Counter's side
+    of that is one word it was already writing -- asserted so that dropping
+    it is a failure rather than a quiet loss of the single most visible gap
+    the references named."""
+    assert level_design._PIECES["folding_table"]["stock"] == "cards"
+    tables = [v for v in shop["volumes"]
+              if v["name"].startswith("folding_table_")]
+    assert tables
+    for v in tables:
+        assert v.get("stock") == "cards", v["name"]
 
 
 def test_every_card_shop_slot_is_a_size_its_species_builds(shop):
