@@ -256,12 +256,13 @@ nobody has walked this build; the walker has not seen these frames.
     still a fixed point of `furnish` and this release moved nothing else.
   * AND THE REST OF THE LIBRARY IS PROVABLY UNTOUCHED, which is the claim
     that makes the three above worth anything. `build.py --all` was run on
-    this checkout and 133 of 135 tracked manifests came back differing in
-    `built_utc` ALONE -- every `.gameplay.json`, `.slots.json` and
-    `.lights.json` in the library byte-identical, `card_shop_a01` the only
-    one whose spec hash and `.glb` hash moved. So the 132 timestamp-only
-    manifests are not in this commit, and no other shell's nav result can
-    have moved because no other shell moved.
+    this checkout, rewriting 133 of the 135 tracked manifests (two are
+    orphans of specs that no longer exist), and **132 of the 133 came back
+    differing in `built_utc` ALONE** -- every `.gameplay.json`,
+    `.slots.json` and `.lights.json` in the library byte-identical,
+    `card_shop_a01` the only one whose spec hash and `.glb` hash moved. So
+    the 132 timestamp-only manifests are not in this commit, and no other
+    shell's nav result can have moved because no other shell moved.
 
 ### ALSO, AND IT WAS THE SUITE THAT FOUND IT
 
