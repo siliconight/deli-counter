@@ -1,3 +1,40 @@
+## [0.141.1] - 2026-09-16  the banner asked for timber and nothing said so
+
+A material fix on 0.141.0, found by checking the four flat-art materials
+against the four genomes rather than by looking at a frame.
+
+`_PROP_MATERIAL_DEFAULT` is `wood`, and none of the four new pieces had a
+row in `_PROP_MATERIALS`, so all four asked for timber. For `aisle_sign`
+that is right by accident -- `wood` is its genome's own default. For
+`hanging_banner` it is not even legal: its options are cloth, canvas,
+plastic and paper, with no wood in them, so Zoo would have fallen back to
+its default and built a cloth banner while the slot said timber. NOTHING
+WOULD HAVE REPORTED IT.
+
+That is the defect `_PROP_MATERIALS`' own card-shop note warns about, one
+release earlier and on the species next to it: "the pennants would have come
+out as timber and nothing would have said so." Writing the warning down did
+not stop it being repeated.
+
+Each piece asks for its species' OWN default now, so the stem carries no
+`_m` and the theme's pack resolves it: `poster` metal_bare, `hanging_banner`
+cloth, `ceiling_hanger` paper, `aisle_sign` wood. `aisle_sign` is listed
+although the fallback already gave it -- a row that says what it means is
+worth more than a coincidence that happens to be right.
+
+AND THE MAP HAD A HOLE THE VOCABULARY DID NOT. `paper` was already in
+`material_kind.SKIN_KINDS` and had no row in `KIND_BY_MATERIAL`, which is
+exactly the shape Zoo 0.95.0's second half is about -- a kind that reaches
+no mesh and says nothing. It said something this time:
+`test_every_material_this_pass_writes_resolves_to_a_kind` failed the moment
+a piece asked for it, because that test asks `unmapped()` of every id the
+pass writes rather than of a list someone maintains.
+
+`test_every_flat_art_material_is_one_its_species_offers` reads the genomes
+themselves and is what stops this recurring on the next species. Gates
+unchanged: nav gate 5 of 5 and navigable yes, `layout_lint --all` 133 specs
+0 FAIL 341 WARN, build freshness clean.
+
 ## [0.141.0] - 2026-09-16  the card shop hangs its art, and two checks that could not fire
 
 Zoo 0.98.0 shipped the flat art -- `poster`, `hanging_banner`,

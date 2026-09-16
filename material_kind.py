@@ -110,6 +110,14 @@ KIND_BY_MATERIAL = {
     # species' kind so Zoo's stem carries no `_m`
     "cloth": "cloth",
     "plastic": "plastic",
+    # a ceiling hanger's painted board (Zoo 0.98.0), on the same terms: its
+    # species' own default, so the stem carries no `_m`. `paper` was already
+    # in `SKIN_KINDS` and had no row HERE, which is the exact shape of the
+    # defect Zoo 0.95.0's second half is about -- a kind that reaches no mesh
+    # and says nothing. It said something this time, because
+    # `test_every_material_this_pass_writes_resolves_to_a_kind` asks
+    # `unmapped()` of every id the pass writes.
+    "paper": "paper",
     # masonry the builder named by where it sits rather than what it is
     "brick_ext": "brick",
     "stone_ext": "stone",

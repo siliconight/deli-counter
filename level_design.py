@@ -2032,6 +2032,25 @@ _PROP_MATERIALS = (
     (("pack_wall",), "slatwall"),
     (("pennant",), "cloth"),
     (("folding_table", "folding_chair"), "plastic"),
+    # THE FLAT ART (Zoo 0.98.0), and the paragraph above is why these rows
+    # exist rather than being left to the default. `_PROP_MATERIAL_DEFAULT`
+    # is `wood`, and `hanging_banner`'s genome does not offer wood at all --
+    # its options are cloth, canvas, plastic, paper. So without this row a
+    # printed cloth banner asked for timber, Zoo fell back to its own
+    # default, and NOTHING SAID SO: "the pennants would have come out as
+    # timber and nothing would have said so", one release later and on the
+    # species next to it. CAUGHT by checking the four written materials
+    # against the four genomes' `materials.options`, not by a frame.
+    #
+    # Each asks for its species' OWN default, so the stem carries no `_m`
+    # and the theme's pack resolves it -- the dartboard's rule. `aisle_sign`
+    # is listed although `wood` IS its genome default and IS what the
+    # fallback would have given, because a row that says what it means is
+    # worth more than a coincidence that happens to be right.
+    (("poster",), "metal_bare"),
+    (("hanging_banner",), "cloth"),
+    (("ceiling_hanger",), "paper"),
+    (("aisle_sign",), "wood"),
 )
 _PROP_MATERIAL_DEFAULT = "wood"
 _PROP_ACOUSTIC = {"wood": ("Wood", 0.35, 0.3), "metal": ("Metal", 0.2, 0.15),
@@ -2050,7 +2069,12 @@ _PROP_ACOUSTIC = {"wood": ("Wood", 0.35, 0.3), "metal": ("Metal", 0.2, 0.15),
                   # and not metal. The enum has no Plastic, so Wood is the
                   # nearest of the eight and is said out loud rather than
                   # implied.
-                  "plastic": ("Wood", 0.25, 0.2)}
+                  "plastic": ("Wood", 0.25, 0.2),
+                  # a painted board on a chain: card stock or thin hardboard,
+                  # lighter and limper than `plastic`. The enum has no Paper
+                  # either, so Wood again, and it is said out loud rather
+                  # than implied -- as the plastic row above says of itself.
+                  "paper": ("Wood", 0.22, 0.18)}
 
 #: The surfaces a strip club room wears (Pixelcoat 0.42.0's club grammars):
 #: a medallion carpet with worn paths on the floor, burgundy flocked paper on

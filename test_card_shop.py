@@ -784,6 +784,32 @@ def test_a_hung_fixture_is_not_assumed_to_be_on_a_wall(shop):
         assert edge >= 1.0 - 1e-6, (v["name"], edge)
 
 
+def test_every_flat_art_material_is_one_its_species_offers():
+    """A MATERIAL A SPECIES DOES NOT OFFER IS A SILENT SUBSTITUTION, which
+    is the defect `_PROP_MATERIALS`' own card-shop note warns about one
+    release earlier: "the pennants would have come out as timber and nothing
+    would have said so".
+
+    `_PROP_MATERIAL_DEFAULT` is `wood` and `hanging_banner`'s genome offers
+    cloth, canvas, plastic and paper -- no wood. Left to the default it
+    asked for timber, Zoo fell back, and no gate anywhere would have
+    noticed. Checked against the genomes rather than against a copy of them.
+    """
+    from test_furnish import ZOO
+    gdir = os.path.join(ZOO, "zoo_keeper", "genome", "species")
+    if not os.path.isdir(gdir):
+        pytest.skip("zoo repo not found at %s (set DC_ZOO_ROOT)" % ZOO)
+    bad = []
+    for key in _ART:
+        path = os.path.join(gdir, key + ".json")
+        with open(path, encoding="utf-8") as fh:
+            mats = json.load(fh)["materials"]
+        want = level_design._prop_material({}, key)
+        if want not in mats["options"]:
+            bad.append((key, want, mats["options"]))
+    assert not bad, bad
+
+
 def test_the_play_tables_still_ask_for_the_printed_mat(shop):
     """Zoo 0.98.0 gave `_surface_stock` a textured path, so the `cards`
     flavour paints a playmat instead of colouring one. Deli Counter's side

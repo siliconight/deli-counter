@@ -106,6 +106,18 @@
    "acoustic": "Curtain",
    "absorption": 0.7,
    "damping": 0.6
+  },
+  {
+   "id": "metal_bare",
+   "acoustic": "Metal",
+   "absorption": 0.2,
+   "damping": 0.15
+  },
+  {
+   "id": "paper",
+   "acoustic": "Wood",
+   "absorption": 0.22,
+   "damping": 0.18
   }
  ],
  "ext_walls": [
@@ -956,7 +968,7 @@
    "size_y": 1.8,
    "size_z": 0.7,
    "collision": "none",
-   "material": "wood",
+   "material": "cloth",
    "rot_z": 180.0
   },
   {
@@ -968,7 +980,7 @@
    "size_y": 0.04,
    "size_z": 0.6,
    "collision": "none",
-   "material": "wood",
+   "material": "cloth",
    "rot_z": 180.0,
    "variant": 2
   },
@@ -981,7 +993,7 @@
    "size_y": 0.6,
    "size_z": 0.9,
    "collision": "none",
-   "material": "wood",
+   "material": "metal_bare",
    "rot_z": 180.0,
    "variant": 1
   },
@@ -994,7 +1006,7 @@
    "size_y": 0.5,
    "size_z": 0.7,
    "collision": "none",
-   "material": "wood",
+   "material": "metal_bare",
    "variant": 2
   },
   {
@@ -1006,7 +1018,7 @@
    "size_y": 0.5,
    "size_z": 0.7,
    "collision": "none",
-   "material": "wood",
+   "material": "metal_bare",
    "variant": 1
   },
   {
@@ -1018,7 +1030,7 @@
    "size_y": 0.6,
    "size_z": 0.9,
    "collision": "none",
-   "material": "wood",
+   "material": "metal_bare",
    "rot_z": 180.0,
    "variant": 2
   },
@@ -1031,7 +1043,7 @@
    "size_y": 0.05,
    "size_z": 0.4,
    "collision": "none",
-   "material": "wood",
+   "material": "paper",
    "variant": 1
   },
   {
@@ -1043,7 +1055,7 @@
    "size_y": 0.05,
    "size_z": 0.4,
    "collision": "none",
-   "material": "wood",
+   "material": "paper",
    "variant": 3
   },
   {
@@ -1055,7 +1067,7 @@
    "size_y": 0.08,
    "size_z": 0.6,
    "collision": "none",
-   "material": "wood",
+   "material": "paper",
    "variant": 1
   },
   {
@@ -1067,7 +1079,7 @@
    "size_y": 0.08,
    "size_z": 0.6,
    "collision": "none",
-   "material": "wood",
+   "material": "paper",
    "variant": 3
   },
   {
@@ -1152,7 +1164,7 @@
    "size_y": 1.2,
    "size_z": 0.6,
    "collision": "none",
-   "material": "wood",
+   "material": "cloth",
    "variant": 3
   },
   {
@@ -1164,7 +1176,7 @@
    "size_y": 1.2,
    "size_z": 0.6,
    "collision": "none",
-   "material": "wood",
+   "material": "cloth",
    "variant": 1
   },
   {
@@ -1176,7 +1188,7 @@
    "size_y": 0.03,
    "size_z": 0.7,
    "collision": "none",
-   "material": "wood",
+   "material": "metal_bare",
    "variant": 2
   },
   {
@@ -1188,7 +1200,7 @@
    "size_y": 0.04,
    "size_z": 0.9,
    "collision": "none",
-   "material": "wood",
+   "material": "metal_bare",
    "variant": 1
   },
   {
@@ -1200,7 +1212,7 @@
    "size_y": 0.03,
    "size_z": 0.7,
    "collision": "none",
-   "material": "wood",
+   "material": "metal_bare",
    "variant": 2
   },
   {
@@ -1212,7 +1224,7 @@
    "size_y": 0.04,
    "size_z": 0.9,
    "collision": "none",
-   "material": "wood",
+   "material": "metal_bare",
    "variant": 1
   },
   {
@@ -1224,7 +1236,7 @@
    "size_y": 0.05,
    "size_z": 0.4,
    "collision": "none",
-   "material": "wood",
+   "material": "paper",
    "variant": 3
   },
   {
@@ -1236,7 +1248,7 @@
    "size_y": 0.06,
    "size_z": 0.5,
    "collision": "none",
-   "material": "wood",
+   "material": "paper",
    "variant": 1
   },
   {
