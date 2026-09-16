@@ -46,6 +46,14 @@ SKIN_KINDS = (
     "carpet_club", "wallpaper_club", "wood_stained", "paint_block",
     # a cocktail table's cloth (Zoo 0.89.0): object-owned like velvet
     "cloth",
+    # THE CARD SHOP'S TWO SURFACES (Zoo 0.95.0, Pixelcoat 0.44.0). Both are
+    # a printed 4 ft sheet and both are separate kinds so they resolve their
+    # own pack: `wood_panel` is the reference's lower-wall panelling at a
+    # 8 in score pitch, `slatwall` the 3 in grooved melamine the blister
+    # hooks hang from. Absent from this tuple, a slot asking for either is
+    # an unmapped id -- and Zoo 0.95.0's whole second half is about a kind
+    # that reached no mesh and said nothing.
+    "wood_panel", "slatwall",
 )
 
 #: Every material id this spec library uses, and the kind it resolves to.
@@ -88,6 +96,20 @@ KIND_BY_MATERIAL = {
     "wood_stained": "wood_stained",
     "paint_block": "paint_block",
     "velvet": "velvet",
+    # THE CARD SHOP'S SURFACES (Pixelcoat 0.44.0, `level_design`'s
+    # `_CARD_SHOP_FINISHES` and the card-shop rows of `_PROP_MATERIALS`).
+    # Named for what they are, so the id is the kind -- the same rule the
+    # club's four follow. `carpet_tournament` is NOT here and must not be:
+    # a pack directory is `<kind>_<theme>`, so the play area's carpet is
+    # kind `carpet` and the `card_shop` THEME is what makes it the
+    # tournament loop. Inventing a `carpet_tournament` kind would have
+    # given it a pack no other theme could answer.
+    "wood_panel": "wood_panel",
+    "slatwall": "slatwall",
+    # a felt pennant and a moulded folding chair, asking for their own
+    # species' kind so Zoo's stem carries no `_m`
+    "cloth": "cloth",
+    "plastic": "plastic",
     # masonry the builder named by where it sits rather than what it is
     "brick_ext": "brick",
     "stone_ext": "stone",

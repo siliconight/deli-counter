@@ -467,7 +467,71 @@ def _on_storey(vz, vh, floor, sh):
     return vz + vh / 2.0 > floor + 0.05 and vz - vh / 2.0 < floor + sh - 0.05
 
 
-def _seed_clear(spec, room, px, py, placed, half=0.0, above=None):
+def opening_head(spec, story):
+    """The highest HEAD -- sill plus height -- of any opening on `story`,
+    exterior and partition alike, in metres off that storey's floor.
+
+    From the spec's own openings through `spec_types.Opening.resolved`, so
+    the per-kind defaults are read from the one place that declares them
+    (door 2.2, breach 2.2, window 1.0 + 1.4, garage 3.0, teller 3.0,
+    safe_deposit 2.4, vault 2.1) rather than spelled again here. A storey
+    with no openings answers 0.0.
+    """
+    import spec_types
+    head = 0.0
+    for group in ("ext_walls", "partitions"):
+        for w in spec.get(group) or []:
+            if int(w.get("story", 0) or 0) != int(story or 0):
+                continue
+            for op in w.get("openings") or []:
+                try:
+                    r = spec_types.Opening(
+                        kind=op.get("kind", "door"),
+                        width=op.get("width"), height=op.get("height"),
+                        sill=op.get("sill")).resolved()
+                except KeyError:          # a kind this build does not know
+                    continue
+                head = max(head, float(r["sill"]) + float(r["height"]))
+    return head
+
+
+def _over_openings(spec, story, piece, h):
+    """`hangs_over_openings` asked of a PIECE and a built height, for the
+    two callers that must know before the volume exists (`_wall_slots`
+    needs it to decide whether a slot may span a window)."""
+    lift = _piece_lift(spec, piece, h)
+    return hangs_over_openings(spec, story,
+                               None if lift is None else lift - h / 2.0)
+
+
+def hangs_over_openings(spec, story, above):
+    """Is a piece whose BOTTOM is `above` metres off the floor hung clear of
+    every doorway and window on this storey?
+
+    WHAT THIS BUYS, AND WHY IT IS NOT A LOOSENING. Three of `_seed_clear`'s
+    rules -- a metre off any partition, 1.5 m plus the piece from an
+    exterior opening, the same from a partition's -- exist because a body
+    walks through doors and along walls, and a solid standing in that
+    approach is a solid it walks into. A strip hung ABOVE every opening
+    head is not in anybody's approach: the reference's pennant row runs
+    along the top of the wall, straight over the door, which is where a
+    pennant row goes.
+
+    MEASURED INERT ON EVERYTHING THAT SHIPPED. The bottom of every hung
+    piece this pass writes today is 1.85 m (`neon_sign` 2.2 - 0.7/2 and
+    `wall_tv` 2.1 - 0.5/2) or 1.28 m (`dartboard` 1.73 - 0.9/2), and each
+    of those lifts is a fixed number, not a function of the storey. A plain
+    door's head is 2.2 m. So no piece written before 0.139.0 can be exempt
+    at any storey height, and `test_the_over_opening_exemption_reaches_no
+    _older_piece` is what says so rather than this paragraph.
+    """
+    if above is None:
+        return False
+    return above >= opening_head(spec, story) - 1e-9
+
+
+def _seed_clear(spec, room, px, py, placed, half=0.0, above=None,
+                over_openings=False):
     """Candidate point clear of walls, openings, verticals, props, markers.
     `half` is the worst-case half-extent of the piece that will stand here:
     clearances are measured from the piece's EDGE, not its center -- a 2.6 m
@@ -482,7 +546,17 @@ def _seed_clear(spec, room, px, py, placed, half=0.0, above=None):
     story = room.get("story", 0)
     sh = _story_height(spec)
     floor = story * sh
+    # THE THREE RULES A PIECE HUNG OVER EVERY OPENING DOES NOT ANSWER
+    # TO (`over_openings`, from `hangs_over_openings`): a metre off a
+    # partition, and the 1.5 m approach to an exterior or a partition
+    # opening. All three are about a body walking through a door or
+    # along a wall, and a strip above every head is in nobody's path --
+    # the reference's pennant row runs straight over the door. The
+    # stair, ladder, vault-leaf, volume and spread rules are NOT exempt:
+    # a stair's headroom and a tall volume reach up to it.
     for p in spec.get("partitions", []):
+        if over_openings:
+            break
         if p.get("story", 0) != story:
             continue
         if p["axis"] == "Y":
@@ -531,6 +605,8 @@ def _seed_clear(spec, room, px, py, placed, half=0.0, above=None):
     hx = spec.get("footprint_x", 20) / 2
     hy = spec.get("footprint_y", 20) / 2
     for w in spec.get("ext_walls", []):
+        if over_openings:
+            break
         if w.get("story", 0) != story:
             continue
         run = spec.get("footprint_x", 20) if w["wall"] in ("N", "S") else spec.get("footprint_y", 20)
@@ -542,6 +618,8 @@ def _seed_clear(spec, room, px, py, placed, half=0.0, above=None):
             if math.hypot(ox - px, oy - py) < 1.5 + half:
                 return False
     for p in spec.get("partitions", []):
+        if over_openings:
+            break
         if p.get("story", 0) != story:
             continue
         run = abs(p["end"] - p["start"])
@@ -740,14 +818,77 @@ def seed_cover(spec):
 #:
 #: 0.136.0: ``lane`` marks a piece that needs a clear THROWING LANE in front of
 #: it (`dart_lane`); ``most_big`` is ``(area, most)``, a larger room's allowance.
+#: Air left between a to-the-ceiling piece's top and the ceiling plane, so
+#: the two are not coplanar (a furnace's flue runs to the slot's top). It is
+#: also what a piece hung UNDER the ceiling leaves above itself, so it is
+#: declared here, above `_PIECES`, which reads it at import.
+_CEILING_AIR = 0.05
+
+
 def _piece(name, sizes, where, front=False, stock=None, variants=False,
            form=None, seats=None, most=None, lift=None, collision="convex",
-           deck=None, lane=False, most_big=None):
+           deck=None, lane=False, most_big=None, under=None,
+           reserved_by=None, off_glass=False, backed_by=None):
     return {"name": name, "sizes": tuple(sizes), "where": where,
             "front": front, "stock": stock, "variants": variants,
             "form": form, "seats": seats, "most": most, "lift": lift,
             "collision": collision, "deck": deck, "lane": lane,
-            "most_big": most_big}
+            "most_big": most_big, "under": under, "reserved_by": reserved_by,
+            "off_glass": off_glass, "backed_by": backed_by}
+
+
+def piece_back_off(piece):
+    """How far a wall piece's BACK stands off the wall FACE, or 0.
+
+    A piece that gets a unit standing behind it (`backed_by`) is placed at
+    its FINAL depth straight away -- the backing unit's depth plus the
+    staff aisle -- instead of flush against the wall for a later pass to
+    shove forward. `_WALL_PIECE_AIR` is inside this number rather than on
+    top of it, so the back lands on exactly what `_staff_side_plan` asks
+    for and its "already stands off its wall" branch does not fire on a
+    1 cm overshoot.
+
+    WHY, MEASURED. `card_shop_counters` moved the counter after the room
+    was furnished, so the strip it moved into had been open floor for the
+    whole of `seed_cover` and `furnish`: on `card_shop_a01` BOTH counters
+    were then refused, one by `kiosk_sales_floor_shelter` (a shelter piece
+    placed before any furniture) and one by `folding_chair_..._4_3` (a play
+    chair placed after the counter). The pass reported both correctly and
+    the shop came back with no pack wall, no CRT and no shopkeeper. Placed
+    at its final depth, the counter's own `_seed_clear` keepout covers the
+    staff band for every piece that comes after it, and the pieces that
+    came before it are what keep it off that wall.
+    """
+    key = piece["backed_by"]
+    if not key:
+        return 0.0
+    depth = {"pack_wall": PACK_WALL_DEPTH, "back_bar": BACK_BAR_DEPTH}[key]
+    return round(depth + staff_aisle_width() - _WALL_PIECE_AIR, 4)
+
+
+def _piece_lift(spec, p, h):
+    """The height of a hung piece's CENTRE above its storey's floor, or None
+    for a piece that stands on it.
+
+    `lift` is a fixed height -- a dartboard's bull is 1.73 m whatever the
+    storey is. `under` is the gap between the piece's TOP and the ceiling
+    PLANE, which is the only way to say "along the top of the wall": a
+    pennant row batten is screwed under the ceiling, so its height is the
+    storey's and not a number. A fixed 2.95 would have been right at the
+    card shop's 3.4 m storey and 0.6 m inside the slab at the strip club's
+    3.6 m one.
+
+    ONE FUNCTION, THREE CALLERS -- `_host`, `_place_fixture` and
+    `_make_volume` each need this number, and `_host` needs it before the
+    volume exists (it is what `_seed_clear`'s `above` is measured from).
+    The first draft computed it twice and the two spellings drifted by
+    `_CEILING_AIR`.
+    """
+    if p["lift"] is not None:
+        return float(p["lift"])
+    if p["under"] is None:
+        return None
+    return _clear_height(spec) - float(p["under"]) - h / 2.0
 
 
 _PIECES = {p["name"]: p for p in (
@@ -930,6 +1071,115 @@ _PIECES = {p["name"]: p for p in (
     # the seats a club host brings: never placed on their own
     _piece("club_chair", ((0.78, 0.75, 0.78),), "seat", variants=True),
     _piece("bar_stool", ((0.42, 0.42, 0.76),), "seat", variants=True),
+    # --- THE 1990s TRADING CARD SHOP (Zoo 0.95.0). The walker, 2026-09-15,
+    # with nine photographs written up in
+    # `docs/SET_DRESSING_REFERENCES.md`: a small sports-card shop, wood
+    # panelling on the lower walls, a row of felt pennants along the top of
+    # them, tall shelving of wax boxes faced out, and a glass-top showcase
+    # counter in front with a register and a CRT behind it. Names route to
+    # Zoo's `display_case`, `pack_wall`, `pennant_row`, `folding_table` and
+    # `folding_chair` (`prop_species`); every size sits inside its genome's
+    # range, read from `zoo/zoo_keeper/genomes/`, not from a brief. ---
+    #
+    # THE SHOWCASE COUNTER, and its DEPTH is the load-bearing number. Zoo
+    # builds the case `params.case_depth` (0.60) deep whatever the slot is,
+    # and `display_case_forms.pick_form` reads the slot's own depth: `auto`
+    # takes the L when `d >= 2 * case_depth + 0.10`. So a 0.6 m slot is a
+    # flat case and a deep one is an L whose inner corner Zoo leaves OPEN --
+    # "which is where the staff stand and where Deli Counter's own aisle
+    # runs", its collision comment says. `card_shop_counters` below is what
+    # deepens the slot, and only where a perpendicular wall closes one end.
+    # `off_glass` BECAUSE OF WHAT STANDS BEHIND IT, not because of the case:
+    # `card_shop_counters` puts a 2.2 m pack wall flush against whatever
+    # wall the case took, and on `card_shop_a01`'s first build one of the
+    # two counters landed on the STOREFRONT -- a slatwall gondola across a
+    # 4.0 m shop window, from the inside. A glass front is the one wall a
+    # shop does not board up.
+    _piece("display_case", ((2.4, 0.6, 1.0), (3.6, 0.6, 1.05),
+                            (1.8, 0.6, 0.95)), "wall", front=True,
+           variants=True, most=2, off_glass=True, backed_by="pack_wall"),
+    # THE COUNTER'S RETURN END -- the short case that closes one end of the
+    # staff aisle where a perpendicular wall already does, so the counter
+    # reads as the reference's L and the other end is the way in. `pair`,
+    # for the reason `back_bar`'s is: it belongs to a counter and
+    # `card_shop_counters` is the only thing that stands one.
+    #
+    # WHY THIS IS A SECOND CASE AND NOT ZOO'S OWN `L` FORM, which would be
+    # one module with one L-shaped glass top. Zoo takes the L from the
+    # slot's DEPTH (`display_case_forms.pick_form`: `d >= 2 * case_depth +
+    # 0.10`), so asking for it means authoring a slot 1.85 m deep whose
+    # back 1.25 m is the aisle -- and Deli Counter writes ONE CONVEX BOX
+    # over a hinted volume's whole slot unless the species is in
+    # `prop_species.SPECIES_OWNS_COLLISION`. That box is the aisle, sealed:
+    # the same defect `cubicle_bank` recorded in Zoo 0.93.0, and it would
+    # be invisible to the nav gate, which grades the GREYBOX shells where
+    # that box is the only collider there is. Putting `display_case` in
+    # that set instead would take the collider off every showcase in the
+    # library -- twelve authored ones, six of which build as the species --
+    # to buy a corner. What the expensive version buys is one continuous
+    # glass top rather than two cases meeting; it is worth reopening the
+    # day a hinted volume can declare a collider that is not its slot.
+    _piece("display_case_end", ((1.25, 0.6, 1.0),), "pair", front=True,
+           variants=True),
+    # THE PACK WALL: a gondola run of booster displays under a coloured
+    # header a bay. Zoo's `bay_max` is 1.2, so a 3.6 m slot is three bays
+    # each carrying a different game -- one wide slot reads as a run, which
+    # is what the reference's aisle is. Placed BOTH by a wall run and by
+    # `card_shop_counters` (behind the counter), so `where` is `wall` and
+    # not the `pair` a back bar gets.
+    # `most` IS THE ROOM'S TOTAL, AND `reserved_by` IS WHAT MAKES IT ONE.
+    # `card_shop_counters` stands one pack wall per showcase counter, after
+    # the wall run has already spent the cap -- so a two-counter selling
+    # floor drew FOUR. MEASURED by planning them through Zoo at the
+    # palette's widest (3.6 m, 2,112 a module): four pack walls put the
+    # worst-case selling room at 14,048 triangles, 132 % of the 10,664 Zoo
+    # measured for a whole card shop room. Reserving one per counter holds
+    # the same room at 9,824.
+    #
+    # WHAT THE CAP COST: a two-counter floor now gets its product behind
+    # the counters and none along the free walls -- six bays of boosters
+    # where four runs would have been twelve. The reference's "one long
+    # aisle of it" is the thing given up, and it comes back the moment
+    # there is runtime telemetry to price a wider budget against.
+    _piece("pack_wall", ((2.4, 0.5, 2.2), (1.2, 0.5, 2.2),
+                         (3.6, 0.5, 2.4)), "wall", front=True, variants=True,
+           most=2, reserved_by="display_case"),
+    # THE PENNANTS, along the TOP of the wall -- `under`, not `lift`: the
+    # batten is screwed under the ceiling, so its height is the storey's.
+    # No collision: 2.9 m up at a 3.4 m storey, and Zoo's genome declares
+    # `collision: false` for the same reason ("a body cannot reach a
+    # pennant and a collider up there is a shape the navmesh bake carries
+    # for nothing").
+    #
+    # `most` IS A BUDGET, NOT A TASTE. A pennant row costs what its budget
+    # says however long it is -- `pennant_forms.max_pennants` is
+    # `(budget - 12) // 20` = 44, so a 4 m strip and a 14 m strip both draw
+    # ~892 triangles and length buys only spacing. Four rows are a third of
+    # Zoo's measured room (3,568 of 10,664); at two they are 1,784 and the
+    # room clears its own arithmetic with the play area in it. What the
+    # third and fourth row would have bought is one more wall carrying
+    # colour; see the release note.
+    _piece("pennant_row", ((6.0, 0.08, 0.3), (4.0, 0.08, 0.3),
+                           (8.0, 0.08, 0.3)), "wall", front=True,
+           variants=True, most=2, under=_CEILING_AIR, collision="none"),
+    # THE PLAY AREA: banquet tables with two or three folding chairs each.
+    # `cards` is `_surface_stock`'s seventh flavour (Zoo 0.95.0) -- a
+    # playmat, card piles, deck boxes and dice, planned once per SIDE of
+    # the top so two players' worth face each other.
+    #
+    # VARIANTS IS 2 AND NOT `True` ON BOTH FOLDING PIECES, and the number
+    # is Zoo's `module_variants`, not a taste. `_make_volume` reads a bare
+    # `True` as FOUR (`int(True)` is 1, which is not `> 1`), and Zoo's rule
+    # is all-or-nothing: a variant outside 0..1 drops the `cards` stock
+    # with it, so a play table asked for variant 2 would have come back
+    # bare and nothing would have said why. Caught by
+    # `test_zoo_honours_every_dressing_furnish_writes`, which is only run
+    # when the Zoo repo is reachable -- see `DC_ZOO_ROOT` in that file.
+    _piece("folding_table", ((1.8, 0.76, 0.74), (2.4, 0.76, 0.74),
+                             (1.2, 0.7, 0.74)), "floor", stock="cards",
+           variants=2, seats=("folding", 2, 3)),
+    # the seats a play table brings: never placed on their own
+    _piece("folding_chair", ((0.46, 0.5, 0.85),), "seat", variants=2),
 )}
 
 #: The invisible colliders `_volume` writes under a visual-only piece. Not
@@ -943,7 +1193,8 @@ _COLLIDER_STEMS = ("stage_deck",)
 #: `club_chair`s (a cocktail table) or `bar_stool`s (a bar), whose sizes are
 #: their pieces'.
 _SEAT = (0.5, 0.5)
-_SEAT_PIECES = {"stool": "bar_stool", "club": "club_chair"}
+_SEAT_PIECES = {"stool": "bar_stool", "club": "club_chair",
+                "folding": "folding_chair"}
 
 #: Room KINDS, matched on WHOLE TOKENS of the room id, in this order: the
 #: first kind any token of the id names wins, so `wine_cellar` is a wine
@@ -1041,6 +1292,46 @@ def is_strip_club_room(room, building):
     tokens = set(str(room.get("id", "")).lower().replace("-", "_").split("_"))
     return bool(tokens & _STRIP_CLUB_TOKENS) or {"main", "floor"} <= tokens
 
+
+#: THE TRADING CARD SHOP, read on the same terms as the club above and only
+#: inside a building whose id says `card_shop`: `sales_floor` and
+#: `play_area` name a shop floor and nothing at all anywhere else, and this
+#: kind must not claim either in a supermarket. The SELLING rooms only --
+#: the stockroom keeps `storage` (which is what the reference's back room
+#: is) and an apartment above keeps `apartment`, exactly as the club's cash
+#: office keeps `vault`.
+#:
+#: `play` and `tournament` are in the set so the play area is a card-shop
+#: room; which ANCHOR it gets is `_card_shop_anchors`, not this.
+_CARD_SHOP_TOKENS = frozenset(("sales", "showroom", "play", "tournament",
+                               "card", "cards", "counter", "gaming"))
+_CARD_SHOP_ID = "card_shop"
+#: The tokens inside a card shop that name the PLAY AREA rather than the
+#: selling floor: a room whose id carries one anchors on tables, not on the
+#: showcase counter.
+_CARD_PLAY_TOKENS = frozenset(("play", "tournament", "gaming"))
+
+
+def _card_shop_building(building):
+    return _CARD_SHOP_ID in str(building or "").lower()
+
+
+def is_card_shop_room(room, building):
+    """Is `room` a selling/playing room of a card shop building? The one
+    rule, as `is_strip_club_room` is the club's."""
+    if not _card_shop_building(building):
+        return False
+    tokens = set(str(room.get("id", "")).lower().replace("-", "_").split("_"))
+    return bool(tokens & _CARD_SHOP_TOKENS) or {"main", "floor"} <= tokens
+
+
+def is_card_play_room(room, building):
+    """Is `room` the card shop's PLAY AREA?"""
+    if not is_card_shop_room(room, building):
+        return False
+    tokens = set(str(room.get("id", "")).lower().replace("-", "_").split("_"))
+    return bool(tokens & _CARD_PLAY_TOKENS)
+
 #: What each kind is made of (the proposal's table). `anchors` are placed
 #: first, one or two of them; about half the target is the `wall` run; the
 #: rest alternates `floor` sets and `clusters` of ``(pool, least, most)``.
@@ -1082,6 +1373,50 @@ _RECIPES = {
                    "clusters": (), "per_area": 24.0, "all_anchors": True,
                    # placed after the room is furnished (`place_fixtures`)
                    "fixtures": ("dartboard", "cigarettes")},
+    # THE TRADING CARD SHOP (Zoo 0.95.0, Pixelcoat 0.44.0). Anchors are
+    # chosen by the room (`_card_shop_anchors`): the showcase counter on a
+    # selling floor, a play table in the play area. The wall run is pack
+    # walls, a row of pennants along the top and the odd shelf run --
+    # "clutter everywhere, no two shelves the same" -- and the floor is
+    # banquet tables with two or three folding chairs each.
+    #
+    # WHY `pack_wall` APPEARS TWICE AND WHY THE PENNANTS ARE A FIXTURE.
+    # The run is SHUFFLED and then CUT to about half the room's target, so
+    # an entry in it is a lottery ticket, not a promise: MEASURED on
+    # `card_shop_a01`, the sales floor drew three of the six and the
+    # pennants were not among them -- a room whose reference is "a row of
+    # felt pennants along the top of the walls" came back with none, and
+    # every spot the probe tried was CLEAR. A fixture is placed after the
+    # room is furnished, one per `fixture_limit` (the piece's own `most`),
+    # with `_FIXTURE_ROUNDS` draws each: the dartboard's machinery, for
+    # the same reason it was built. The ceiling on both pieces is still
+    # `most` (2), which is where the triangle budget is held -- and see the
+    # note on `pennant_row` in `_PIECES`: a strip costs its budget however
+    # long it is, so the cap is a count and not a length.
+    #
+    # DENSER THAN A HALL AND SPARSER THAN A CLUB: 20 m2 a piece against the
+    # club's 24 and an office's 16. A shop floor is product on the walls
+    # with floor left to walk it, and the play area is the one room here
+    # whose furniture stands mid-floor.
+    "card_shop": {"anchors": ("display_case",),
+                  "wall": ("pack_wall", "shelf_run", "pack_wall", "vending"),
+                  # NO FLOOR RUN, AND IT IS THE TRIANGLE BUDGET THAT DECIDED
+                  # IT. `folding_table` sat here and a selling floor drew two
+                  # of them with six chairs -- MEASURED, planned through Zoo
+                  # at the palette's worst: 1,632 triangles that put the
+                  # worst-case selling room at 12,264, 115 % of the 10,664
+                  # Zoo measured for a whole card-shop room. Without them it
+                  # is 10,632. The play area still gets three, because there
+                  # they are ANCHORS (`_card_shop_anchors`) and not a run.
+                  # What the cap cost: nothing the reference asks for -- its
+                  # tables are in the tournament area, not scattered across
+                  # the shop floor -- which is the rare case where the cheap
+                  # version is also the truer one.
+                  "floor": (),
+                  "clusters": ((("cartons",), 2, 3),),
+                  "per_area": 20.0, "all_anchors": True,
+                  # placed after the room is furnished (`place_fixtures`)
+                  "fixtures": ("pennant_row",)},
     "office": {"anchors": ("desk",),
                "wall": ("cabinet_file", "shelf_run", "cabinet_file"),
                "floor": ("desk",),
@@ -1154,6 +1489,62 @@ def _club_anchors(room):
         out.append("counter_club")
     return tuple(out)
 
+
+#: A card-shop selling floor this big gets a SECOND showcase counter, the
+#: reference's L or U of cases. The club's second-bar threshold is 300 m2
+#: and a shop is a smaller room than a club floor: derived instead from
+#: what a second counter NEEDS, which is a second wall run long enough to
+#: hold it clear of the first -- the widest counter in the palette (3.6 m)
+#: plus `_seed_clear`'s own 2.2 m spread at each end, squared: 8.0 x 8.0.
+_CARD_SECOND_COUNTER_AREA = 64.0
+#: Most play tables in one room. Zoo's own measured card-shop room is three
+#: tables and eight chairs (0.95.0), and the triangle arithmetic in this
+#: file's `_PIECES` note is written against that mix.
+_CARD_PLAY_TABLES_MAX = 3
+
+
+def card_play_table_floor():
+    """The floor one play table and the two players at it need, in square
+    metres: the widest table in the palette by its depth plus, on each
+    side, a folding chair's depth and the body standing behind it.
+
+    2.4 x (0.76 + 2 x (0.50 + 2 x 0.35)) = 7.58 m2 at today's pieces and
+    `agent_contract.json`'s 0.35 m body. Derived rather than chosen,
+    because a pinned number is wrong the moment the chair or the body
+    moves -- the `WP_RADIUS` lesson, one room along.
+    """
+    tw, td = _PIECES["folding_table"]["sizes"][1][0:2]
+    _cw, cd, _ch = _PIECES["folding_chair"]["sizes"][0]
+    return round(tw * (td + 2.0 * (cd + 2.0 * _body_radius())), 4)
+
+
+def _card_shop_anchors(room, building):
+    """The card shop's anchors for one room, all of them placed.
+
+    The PLAY AREA anchors on play tables -- one per
+    `card_play_table_floor`, to `_CARD_PLAY_TABLES_MAX`; a selling floor
+    anchors on the showcase counter, and a second one past
+    `_CARD_SECOND_COUNTER_AREA`. Keyed on the room's ID and not its shape,
+    because unlike the club's stages -- where the question really is "does
+    a bar stage fit in the middle of this" -- which room people play in is
+    something the author said, and `_room_kind` already reads ids.
+
+    The count is a CEILING, not a promise: `_seed_clear`'s 2.2 m spread is
+    what actually stops the third table, and a room that cannot stand it
+    comes back with two. The reference's "small tournament area has
+    several tables in rows" is three.
+    """
+    x0, y0, x1, y1 = room["bounds"]
+    area = max(0.0, x1 - x0) * max(0.0, y1 - y0)
+    if is_card_play_room(room, building):
+        n = max(1, min(_CARD_PLAY_TABLES_MAX,
+                       int(area // card_play_table_floor())))
+        return ("folding_table",) * n
+    out = ["display_case"]
+    if area >= _CARD_SECOND_COUNTER_AREA:
+        out.append("display_case")
+    return tuple(out)
+
 #: At most this many of one (piece, size) in a room: past it a room reads as
 #: one mesh repeated, which is the other half of "boring".
 _SAME_PIECE_MAX = 4
@@ -1222,13 +1613,49 @@ _PROP_MATERIALS = (
     # `prop_species.PROP_SPECIES`, not in this table, and it is handled
     # there.
     (("back_bar",), "wood_stained"),
+    # THE CARD SHOP (Pixelcoat 0.44.0). Two of these change the BUILD and
+    # two of them do not, and the difference is the point:
+    #
+    #   * `display_case` and `pack_wall` ask for kinds that are NOT their
+    #     species' default (`laminate` and `metal_painted`), so Zoo tags
+    #     the stem -- `_mwood_panel`, `_mslatwall` -- and builds a different
+    #     module. That is the walker's reference: a dark wood-veneer case
+    #     and white slatwall behind the blisters.
+    #   * `pennant_row` and the two folding pieces ask for their species'
+    #     OWN kind (`cloth`, `plastic`), for the reason the dartboard row
+    #     above gives: the stem then carries no `_m` and the theme's own
+    #     pack resolves it. Writing nothing here would have made them
+    #     `wood`, which is a kind the theme HAS -- so the pennants would
+    #     have come out as timber and nothing would have said so.
+    #
+    # Placed last because no keyword here is claimed by any row above:
+    # checked key by key against every tuple in this table (`case`,
+    # `pack_wall`, `pennant`, `folding_table`, `folding_chair` appear in
+    # none of them), and `_prop_material` is called with the PIECE KEY, not
+    # a volume name, so there is no tag or sequence number to collide.
+    (("display_case",), "wood_panel"),
+    (("pack_wall",), "slatwall"),
+    (("pennant",), "cloth"),
+    (("folding_table", "folding_chair"), "plastic"),
 )
 _PROP_MATERIAL_DEFAULT = "wood"
 _PROP_ACOUSTIC = {"wood": ("Wood", 0.35, 0.3), "metal": ("Metal", 0.2, 0.15),
                   "leather": ("Curtain", 0.6, 0.5),
                   "metal_bare": ("Metal", 0.2, 0.15),
                   "metal_painted": ("Metal", 0.25, 0.2),
-                  "wood_stained": ("Wood", 0.35, 0.3)}
+                  "wood_stained": ("Wood", 0.35, 0.3),
+                  # printed hardboard and melamine-faced board are both a
+                  # thin sheet on a frame: Wood, and stiffer than the bare
+                  # timber above (a lacquered face reflects more)
+                  "wood_panel": ("Wood", 0.3, 0.26),
+                  "slatwall": ("Wood", 0.28, 0.24),
+                  # felt, on the same terms as leather's Curtain
+                  "cloth": ("Curtain", 0.7, 0.6),
+                  # a moulded seat pan and a folding table top: hard, thin,
+                  # and not metal. The enum has no Plastic, so Wood is the
+                  # nearest of the eight and is said out loud rather than
+                  # implied.
+                  "plastic": ("Wood", 0.25, 0.2)}
 
 #: The surfaces a strip club room wears (Pixelcoat 0.42.0's club grammars):
 #: a medallion carpet with worn paths on the floor, burgundy flocked paper on
@@ -1334,12 +1761,18 @@ def dress_club_rooms(spec):
 
 
 def _room_kind(room, building=None):
-    """The furnishing KIND of a room: a strip club's club rooms first
-    (`is_strip_club_room`, which needs the building's id), then its id's
-    whole tokens, then below grade a basement, then its role, then
-    ``fallback``."""
+    """The furnishing KIND of a room: a strip club's club rooms and a card
+    shop's selling rooms first (`is_strip_club_room` / `is_card_shop_room`,
+    which need the building's id), then its id's whole tokens, then below
+    grade a basement, then its role, then ``fallback``.
+
+    The two building rules cannot both fire -- one asks for `strip_club` in
+    the building's id and the other for `card_shop` -- so their order here
+    is arbitrary and is not a precedence."""
     if is_strip_club_room(room, building):
         return "strip_club"
+    if is_card_shop_room(room, building):
+        return "card_shop"
     tokens = set(str(room.get("id", "")).lower().replace("-", "_").split("_"))
     for kind, words in _ROOM_KINDS:
         if tokens.intersection(words):
@@ -1421,7 +1854,27 @@ def _clear_of_openings(openings, wall, centre, half_len):
 _WALL_PIECE_AIR = 0.01
 
 
-def _wall_slots(spec, room, w, d, rng, with_front=False):
+def _glazed_walls(spec, story):
+    """The compass letters of this storey's exterior walls whose MATERIAL
+    is a glazing kind (`material_kind`: `glass`, `glass_facade`). Read from
+    the spec's own materials, so a shop front declared `storefront_glass`
+    and a club front declared `club_glass` both answer, and a brick wall
+    with a window in it does not -- a window is an opening, and
+    `_clear_of_openings` is what keeps a piece off one of those."""
+    import material_kind
+    out = set()
+    for w in spec.get("ext_walls") or []:
+        if int(w.get("story", 0) or 0) != int(story or 0):
+            continue
+        kind = material_kind.kind_for(w.get("material")
+                                      or spec.get("default_material"))
+        if kind in ("glass", "glass_facade"):
+            out.add(w.get("wall"))
+    return out
+
+
+def _wall_slots(spec, room, w, d, rng, with_front=False,
+                over_openings=False, off_glass=False, back_off=0.0):
     """Candidate ``(x, y, sx, sy, rot_z)`` flush against the room's walls, the
     piece's long axis lying ALONG the wall. A shelf run standing across a
     wall rather than along it is how a 2.6 m unit ends up sticking into the
@@ -1446,6 +1899,7 @@ def _wall_slots(spec, room, w, d, rng, with_front=False):
     hx = float(spec.get("footprint_x", 0.0)) / 2.0
     hy = float(spec.get("footprint_y", 0.0)) / 2.0
     openings = _ext_openings(spec, room.get("story", 0))
+    glazed = _glazed_walls(spec, room.get("story", 0)) if off_glass else set()
     out = []
     long_side, short_side = max(w, d), min(w, d)
     # A PIECE'S BACK STANDS OFF THE WALL'S FACE, not its centreline. A room's
@@ -1455,7 +1909,8 @@ def _wall_slots(spec, room, w, d, rng, with_front=False):
     # on cold run 9052's lobby: waiting-chair backs coplanar with the wall's
     # inner face, 0.00 mm apart, 3.09 m2 of flicker ("z fighting on the
     # [chairs] on the steel", the walker).
-    back = float(spec.get("wall_thick") or 0.3) / 2.0 + _WALL_PIECE_AIR
+    back = (float(spec.get("wall_thick") or 0.3) / 2.0 + _WALL_PIECE_AIR
+            + float(back_off or 0.0))
 
     def _wall_of(value, half, lo_name, hi_name):
         """The exterior wall a room edge lies on, or None when interior."""
@@ -1466,14 +1921,15 @@ def _wall_slots(spec, room, w, d, rng, with_front=False):
     # N and S walls: the long axis runs in x
     for wy, inset in ((y0, +1), (y1, -1)):
         ext = _wall_of(wy, hy, "S", "N")
-        if ext and openings is None:
+        if ext and (openings is None or ext in glazed):
             continue
         span = (x1 - x0) - long_side - 0.6
         if span <= 0:
             continue
         for _ in range(4):
             px = x0 + 0.3 + long_side / 2.0 + rng.random() * span
-            if ext and not _clear_of_openings(openings, ext, px, long_side / 2.0):
+            if not over_openings and ext and not _clear_of_openings(
+                    openings, ext, px, long_side / 2.0):
                 continue
             # against the S wall (inset +1) the front must face N; against
             # the N wall, S. Long axis along x, so no long-axis turn is added.
@@ -1483,14 +1939,15 @@ def _wall_slots(spec, room, w, d, rng, with_front=False):
     # E and W walls: the long axis runs in y
     for wx, inset in ((x0, +1), (x1, -1)):
         ext = _wall_of(wx, hx, "W", "E")
-        if ext and openings is None:
+        if ext and (openings is None or ext in glazed):
             continue
         span = (y1 - y0) - long_side - 0.6
         if span <= 0:
             continue
         for _ in range(4):
             py = y0 + 0.3 + long_side / 2.0 + rng.random() * span
-            if ext and not _clear_of_openings(openings, ext, py, long_side / 2.0):
+            if not over_openings and ext and not _clear_of_openings(
+                    openings, ext, py, long_side / 2.0):
                 continue
             # against the W wall the front must face E; against the E wall,
             # W. `long_axis_first` already turns this piece 90, so the front
@@ -1518,9 +1975,6 @@ def _furnish_target(area, per_area=None):
     return min(office, hall, _FURNISH_HALL_MAX)
 
 
-#: Air left between a to-the-ceiling piece's top and the ceiling plane, so
-#: the two are not coplanar (a furnace's flue runs to the slot's top).
-_CEILING_AIR = 0.05
 #: Zoo's `furnace` genome tops out at 4.0 m; a taller storey gets a 4.0 m slot.
 _TO_CEILING_MAX = 4.0
 
@@ -1650,16 +2104,25 @@ def _furnish_plan(recipe, clusters, want, rng):
     return items
 
 
-def _make_volume(spec, key, name, px, py, sx, sy, h, rot, story, sh, building):
+def _make_volume(spec, key, name, px, py, sx, sy, h, rot, story, sh, building,
+                 lift=None):
     """A placed piece's volume: position, size, collision, material and
-    Zoo's dressing fields. `furnish` and `place_fixtures` both build here."""
+    Zoo's dressing fields. `furnish` and `place_fixtures` both build here.
+
+    `lift` OVERRIDES the piece's own hang height, for the one caller that
+    knows something the piece cannot: `card_shop_counters` hangs its CRT
+    clear of the top of the pack wall it stands behind, and how tall that
+    pack wall is depends on the storey. Left None, the piece decides
+    (`_piece_lift`), which is every other placement.
+    """
     import zlib
     p = _PIECES[key]
+    if lift is None:
+        lift = _piece_lift(spec, p, h)
     vol = {
         "name": name,
         "x": round(px, 2), "y": round(py, 2),
-        "z": round(story * sh + (p["lift"] if p["lift"] is not None
-                                 else h / 2.0), 3),
+        "z": round(story * sh + (h / 2.0 if lift is None else lift), 3),
         "size_x": round(sx, 3), "size_y": round(sy, 3),
         "size_z": round(h, 3),
         "collision": p["collision"],
@@ -1678,13 +2141,32 @@ def _make_volume(spec, key, name, px, py, sx, sy, h, rot, story, sh, building):
     # A species with its own count (`neon_sign`, 24 names) draws
     # from that count, and from the BUILDING's id rather than the
     # name's: a club has one name over its door and in its rooms.
-    if p["variants"]:
-        mod = int(p["variants"]) if int(p["variants"]) > 1 else 4
+    mod = variant_count(p)
+    if mod:
         key_text = (str(building or "") if mod > 4 else name)
         n = (zlib.crc32(key_text.encode("utf-8")) & 0xFFFFFFFF) % mod
         if n:
             vol["variant"] = n
     return vol
+
+
+def variant_count(piece):
+    """How many variants this pass will write for a piece: 0 for one with
+    none, the piece's own count when it names one, else 4.
+
+    PUBLIC, AND THE REASON IS A TEST THAT WAS ASKING THE WRONG QUESTION.
+    `test_zoo_honours_every_dressing_furnish_writes` checked variants
+    `range(4 if p["variants"] else 1)` -- a 4 hardcoded beside the 4 here.
+    That is right for the eleven pieces whose count is 4 and wrong at both
+    ends: `neon_sign` writes 24 and the test only ever saw 0..3, and the
+    card shop's two folding pieces write 2, so the test asked Zoo to honour
+    a variant this pass cannot produce and refused a correct piece. One
+    function, asked by the writer and by the checker.
+    """
+    if not piece["variants"]:
+        return 0
+    n = int(piece["variants"])
+    return n if n > 1 else 4
 
 
 # ---------------------------------------------------------------------------
@@ -1894,18 +2376,24 @@ def _place_fixture(spec, room, key, k, building):
     # stricter test than a wall run's, so it draws `_FIXTURE_ROUNDS` times
     # that many before a room goes without
     rounds = [(size, spot) for _r in range(_FIXTURE_ROUNDS) for size in sizes
-              for spot in _wall_slots(spec, room, size[0], size[1], rng, with_front=True)]
+              for spot in _wall_slots(
+                  spec, room, size[0], size[1], rng, with_front=True,
+                  over_openings=_over_openings(spec, story, p, size[2]),
+                  off_glass=p["off_glass"], back_off=piece_back_off(p))]
     for (w, d, h), (qx, qy, sx, sy, _rot, front) in rounds:
         if h is None:
             h = min(clear_h, _TO_CEILING_MAX)
         if h > clear_h:
             continue
         half = max(w, d) / 2.0
-        hung = p["lift"] is not None
-        above = (p["lift"] - h / 2.0) if hung else None
+        lift = _piece_lift(spec, p, h)
+        hung = lift is not None
+        above = (lift - h / 2.0) if hung else None
         if _over_rects(inner, qx, qy, half, half):
             continue
-        if not _seed_clear(spec, room, qx, qy, [], half=half, above=above):
+        if not _seed_clear(spec, room, qx, qy, [], half=half, above=above,
+                           over_openings=hangs_over_openings(spec, story,
+                                                             above)):
             continue
         rot = _front_turn(key, sx, sy, front)
         probe = {"x": round(qx, 2), "y": round(qy, 2), "size_x": sx, "size_y": sy, "rot_z": rot}
@@ -2004,19 +2492,48 @@ BACK_BAR_W = (1.6, 6.0)
 #: How much of the aisle's length the bartender marker stands in from the
 #: mouth: a body's radius and a little, so the marker is not in the
 #: doorway it is reached through.
-_BARTENDER_IN = 0.8
+_STAFF_MARKER_IN = 0.8
 #: A counter end with less than the aisle's own width plus the counter's
 #: depth between it and the room's side wall makes the bar an L: there is
 #: no walking round that end, so the return leg closes it and the other
 #: end is the flap.
 
 
-def bar_aisle_width():
-    """The clear aisle behind a club bar: the greater of the corridor and
-    the door minimums (see the section note). One number, asked once."""
+def staff_aisle_width():
+    """The clear aisle on the STAFF side of a counter: the greater of the
+    corridor and the door minimums from `agent_contract.json`. One number,
+    asked once, by everything that has one.
+
+    The derivation is the section note above, and it is not about bars. An
+    aisle behind a counter is two things at once and the contract answers
+    both: a body WALKS ITS LENGTH, so it is at least
+    `clearances.min_corridor_width_m` (1.10 -- 2 x the bake radius plus a
+    0.30 body margin; narrower bakes as an island, as twin_a01's 0.9 m
+    flights did), and it is ENTERED AT ITS END through the gap between the
+    counter's end and the backing unit's, which is a doorway and so at
+    least `clearances.min_door_width_m` (1.25). One aisle cannot be two
+    widths, so it is the greater: 1.25 m, and the mouth is the aisle's own
+    cross-section.
+
+    THREE COUNTERS NOW SHARE IT and none of them chose a number: the club's
+    bartender side (0.137.0), the card shop's showcase counter (0.139.0),
+    and the bank teller line's staff room, which asks the same contract for
+    its door width and adds a leaf margin because its ends are real doors
+    (`_STAFF_DOOR_WIDTH`, `_LEAF_MARGIN`). Renamed from `bar_aisle_width`
+    when the second caller arrived; the old name is kept below because a
+    name that says `bar` is wrong at a card counter, and a name that says
+    `staff` is right at both.
+    """
     import agent_contract
     return round(max(agent_contract.min_corridor_width(),
                      agent_contract.min_door_width()), 4)
+
+
+#: The club's spelling of `staff_aisle_width`, kept so nothing outside this
+#: module has to change. Not deprecated -- a reader at the bar is asking
+#: about the bar -- and it is an alias rather than a second body, because
+#: two spellings of one number is the defect this whole file keeps finding.
+bar_aisle_width = staff_aisle_width
 
 
 def _axis_of(bearing):
@@ -2093,6 +2610,164 @@ def _club_bar_counters(spec, building):
     return out
 
 
+def _staff_side_plan(spec, room, v, seq, back_depth, aisle, seat_stem=None):
+    """The geometry of a staff side behind one wall counter, or a refusal.
+
+    ``(plan, why)`` -- exactly one of the two is None. `plan` carries the
+    coordinate frame, the rectangles and the verdicts every caller of this
+    shape needs; `why` is a sentence naming the measurement that refused it.
+
+    EXTRACTED FROM `back_bar_club_counters` (0.137.0) WHEN THE SECOND
+    CALLER ARRIVED, and deliberately not copied: the card shop's showcase
+    counter is the same question -- can a body work behind this thing and
+    get in at one end -- with a different unit behind it. Everything that
+    differs between the two is an argument here (`back_depth`, `aisle`,
+    `seat_stem`); everything that is the contract's answer is shared. The
+    club's numbers are unchanged, and `test_club_rooms` /
+    `migrate_club_rooms.py --check` are what say so.
+
+    THE FRAME, restated because it has already cost one draft: `t` measures
+    from the INNER FACE of the wall behind the counter, along the counter's
+    front bearing, into the room. `along` is the other axis. A first draft
+    did this in x and y with a sign per branch and had two spellings of the
+    aisle in it before the line that used it.
+    """
+    sh = _story_height(spec)
+    rtag = _room_tag(room)
+    front = _front_of(v)
+    d = _axis_of(front)
+    if d is None:
+        return None, ("the counter is set at %g deg, not square to a wall"
+                      % front)
+    fx, fy = d
+    story = room.get("story", 0)
+    x0, y0, x1, y1 = room["bounds"]
+    wt = float(spec.get("wall_thick") or 0.3) / 2.0
+    if fy:
+        dirn = fy
+        wall = (y0 + wt) if dirn > 0 else (y1 - wt)
+        back_t = abs(float(v["y"]) - float(v["size_y"]) / 2.0 * dirn - wall)
+        run, thick = float(v["size_x"]), float(v["size_y"])
+        along = float(v["x"])
+        a_lo, a_hi = x0 + wt, x1 - wt
+        extent = (y1 - y0) - 2 * wt
+    else:
+        dirn = fx
+        wall = (x0 + wt) if dirn > 0 else (x1 - wt)
+        back_t = abs(float(v["x"]) - float(v["size_x"]) / 2.0 * dirn - wall)
+        run, thick = float(v["size_y"]), float(v["size_x"])
+        along = float(v["y"])
+        a_lo, a_hi = y0 + wt, y1 - wt
+        extent = (x1 - x0) - 2 * wt
+
+    def _rect(t0, t1, u0, u1):
+        """A rectangle from `t0` to `t1` off the wall, spanning `u0` to
+        `u1` along it, in the spec's own x/y."""
+        p0, p1 = wall + dirn * t0, wall + dirn * t1
+        lo, hi = min(p0, p1), max(p0, p1)
+        uu0, uu1 = min(u0, u1), max(u0, u1)
+        return (uu0, lo, uu1, hi) if fy else (lo, uu0, hi, uu1)
+
+    need = back_depth + aisle
+    shift = round(need - back_t, 4)
+    if shift < -1e-6:
+        return None, ("the counter already stands %.2f m off its wall"
+                      % back_t)
+    lane = extent - (need + thick)
+    if lane < _CUSTOMER_LANE:
+        return None, ("moving the counter %.2f m leaves %.2f m of customer "
+                      "floor in front of it" % (shift, lane))
+    mine = {v["name"]}
+    if seat_stem:
+        mine |= {sv["name"] for n, s, sv in _room_names(spec, rtag)
+                 if n == seat_stem and s == seq}
+    u0, u1 = along - run / 2.0, along + run / 2.0
+    back_rect = _rect(0.0, back_depth, u0, u1)
+    aisle_rect = _rect(back_depth, need, u0, u1)
+    counter_rect = _rect(need, need + thick, u0, u1)
+    blockers = (_rect_clear(spec, room, back_rect, mine)
+                + _rect_clear(spec, room, aisle_rect, mine)
+                + _rect_clear(spec, room, counter_rect, mine))
+    if blockers:
+        return None, ("the staff side is not clear: "
+                      + ", ".join(sorted(set(blockers))[:3]))
+    # THE MOUTHS, one at each end of the aisle: the aisle's own
+    # cross-section carried a door's width past the counter's end. The
+    # `reach` is how much floor there is between that end and the room's
+    # side wall, which is what decides whether a body can get in at all.
+    mouths = {}
+    for side in ("a", "b"):
+        end, s = (u0, -1.0) if side == "a" else (u1, 1.0)
+        m = _rect(back_depth, need, end, end + s * aisle)
+        reach = abs((a_lo if side == "a" else a_hi) - end)
+        mouths[side] = (m, reach, _rect_clear(spec, room, m, mine))
+    open_ends = [s for s in ("a", "b")
+                 if not mouths[s][2] and mouths[s][1] >= aisle - 1e-6]
+    if not open_ends:
+        return None, ("neither end of the aisle opens %.2f m clear "
+                      "(a: %.2f m %s; b: %.2f m %s)"
+                      % (aisle, mouths["a"][1],
+                         ",".join(sorted(set(mouths["a"][2]))) or "clear",
+                         mouths["b"][1],
+                         ",".join(sorted(set(mouths["b"][2]))) or "clear"))
+    return {"front": front, "fx": fx, "fy": fy, "dirn": dirn, "wall": wall,
+            "story": story, "floor": story * sh, "run": run, "thick": thick,
+            "along": along, "u0": u0, "u1": u1, "need": need, "shift": shift,
+            "rect": _rect, "mine": mine, "mouths": mouths,
+            "open_ends": open_ends, "back_rect": back_rect,
+            "rtag": rtag}, None
+
+
+def _shift_counter(plan, v):
+    """Move a counter off its wall by the plan's `shift`, on the plan's own
+    axis. Returns the volume."""
+    if plan["fy"]:
+        v["y"] = round(float(v["y"]) + plan["fy"] * plan["shift"], 2)
+    else:
+        v["x"] = round(float(v["x"]) + plan["fx"] * plan["shift"], 2)
+    return v
+
+
+#: The `patrol_point` roles the staff-side passes write, and therefore the
+#: id prefixes `migrate_furnish_recipes` must strip before a refurnish.
+#: A TUPLE AND NOT A REGEX SPELLED IN THE MIGRATION, because that regex was
+#: `^bartender_(r[0-9a-f]{8})_\\d+$` -- a list of one that fell behind the
+#: moment a second pass wrote a second role. MEASURED on `card_shop_a01`
+#: before this existed: a strip-and-refurnish kept both `shopkeeper`
+#: markers, the pass wrote them again off the stripped counters, and the
+#: spec came back with four patrol points for two aisles. The club never
+#: showed it because no club spec goes through this migration.
+STAFF_MARKER_ROLES = ("bartender", "shopkeeper", "playfloor")
+
+
+def _staff_marker(spec, room, plan, seq, role, aisle, back_depth):
+    """A `patrol_point` in the aisle, a step in from its open end, so the
+    nav gate ANSWERS whether the staff side is a place a body can be rather
+    than anybody assuming it.
+
+    IDEMPOTENT ON ITS OWN, and not only because the migration strips these:
+    a marker whose id is already in the spec is not written again. The
+    pass's other idempotence mark is the backing volume, so a caller that
+    removed the volume and kept the marker -- which is exactly what a
+    migration with a stale regex does -- would otherwise double it.
+    """
+    mid = "%s_%s_%d" % (role, plan["rtag"], seq)
+    if any(m.get("id") == mid and m.get("type") == "patrol_point"
+           for m in spec.get("markers") or []):
+        return
+    end, s = ((plan["u0"], 1.0) if plan["open_ends"][0] == "a"
+              else (plan["u1"], -1.0))
+    mu = end + s * _STAFF_MARKER_IN
+    mt = (back_depth + plan["need"]) / 2.0
+    px, py = ((mu, plan["wall"] + plan["dirn"] * mt) if plan["fy"]
+              else (plan["wall"] + plan["dirn"] * mt, mu))
+    spec.setdefault("markers", []).append({
+        "type": "patrol_point", "id": mid,
+        "x": round(px, 3), "y": round(py, 3), "z": round(plan["floor"], 3),
+        "rot_z": round(plan["front"], 3), "room": room["id"],
+        "meta": {"role": role, "aisle_m": round(aisle, 3)}})
+
+
 def back_bar_club_counters(spec):
     """Stand a BACK BAR against the wall behind every club bar counter,
     with a bartender's aisle between, and prove the staff side is a place a
@@ -2118,7 +2793,7 @@ def back_bar_club_counters(spec):
     ``[report]``, one row per bar counter.
     """
     building = club_building_id(spec)
-    aisle = bar_aisle_width()
+    aisle = staff_aisle_width()
     sh = _story_height(spec)
     clear_h = _clear_height(spec)
     report = []
@@ -2132,112 +2807,32 @@ def back_bar_club_counters(spec):
             entry["built"] = True
             entry["why"] = "already"
             continue
-        front = _front_of(v)
-        d = _axis_of(front)
-        if d is None:
-            entry["why"] = ("the counter is set at %g deg, not square to a "
-                            "wall" % front)
-            continue
-        fx, fy = d
-        story = room.get("story", 0)
-        floor = story * sh
-        x0, y0, x1, y1 = room["bounds"]
-        wt = float(spec.get("wall_thick") or 0.3) / 2.0
-        # ONE COORDINATE, so the arithmetic is written once: `t` measures
-        # from the INNER FACE of the wall behind the counter, along the
-        # counter's front bearing, into the room. `along` is the other axis.
-        # A first draft did this in x and y with a sign per branch and had
-        # two spellings of the aisle in it before the line that used it.
-        if fy:
-            dirn = fy
-            wall = (y0 + wt) if dirn > 0 else (y1 - wt)
-            back_t = abs(float(v["y"]) - float(v["size_y"]) / 2.0 * dirn - wall)
-            run, thick = float(v["size_x"]), float(v["size_y"])
-            along = float(v["x"])
-            a_lo, a_hi = x0 + wt, x1 - wt
-            extent = (y1 - y0) - 2 * wt
-        else:
-            dirn = fx
-            wall = (x0 + wt) if dirn > 0 else (x1 - wt)
-            back_t = abs(float(v["x"]) - float(v["size_x"]) / 2.0 * dirn - wall)
-            run, thick = float(v["size_y"]), float(v["size_x"])
-            along = float(v["y"])
-            a_lo, a_hi = y0 + wt, y1 - wt
-            extent = (x1 - x0) - 2 * wt
-
-        def _rect(t0, t1, u0, u1):
-            """A rectangle from `t0` to `t1` off the wall, spanning `u0` to
-            `u1` along it, in the spec's own x/y."""
-            p0, p1 = wall + dirn * t0, wall + dirn * t1
-            lo, hi = min(p0, p1), max(p0, p1)
-            uu0, uu1 = min(u0, u1), max(u0, u1)
-            return (uu0, lo, uu1, hi) if fy else (lo, uu0, hi, uu1)
-
-        need = BACK_BAR_DEPTH + aisle
-        shift = round(need - back_t, 4)
-        if shift < -1e-6:
-            entry["why"] = ("the counter already stands %.2f m off its wall"
-                            % back_t)
-            continue
-        lane = extent - (need + thick)
-        if lane < _CUSTOMER_LANE:
-            entry["why"] = ("moving the counter %.2f m leaves %.2f m of "
-                            "customer floor in front of it" % (shift, lane))
-            continue
-        mine = {v["name"]} | {sv["name"] for n, s, sv in _room_names(spec, rtag)
-                              if n == "bar_stool" and s == seq}
-        u0, u1 = along - run / 2.0, along + run / 2.0
-        bar_rect = _rect(0.0, BACK_BAR_DEPTH, u0, u1)
-        aisle_rect = _rect(BACK_BAR_DEPTH, need, u0, u1)
-        counter_rect = _rect(need, need + thick, u0, u1)
-        blockers = (_rect_clear(spec, room, bar_rect, mine)
-                    + _rect_clear(spec, room, aisle_rect, mine)
-                    + _rect_clear(spec, room, counter_rect, mine))
-        if blockers:
-            entry["why"] = "the staff side is not clear: " + ", ".join(
-                sorted(set(blockers))[:3])
-            continue
-        # THE MOUTHS, one at each end of the aisle: the aisle's own
-        # cross-section carried a door's width past the counter's end. The
-        # `reach` is how much floor there is between that end and the
-        # room's side wall, which is what decides whether a body can get in
-        # at all.
-        mouths = {}
-        for side in ("a", "b"):
-            end, s = (u0, -1.0) if side == "a" else (u1, 1.0)
-            m = _rect(BACK_BAR_DEPTH, need, end, end + s * aisle)
-            reach = abs((a_lo if side == "a" else a_hi) - end)
-            mouths[side] = (m, reach, _rect_clear(spec, room, m, mine))
-        open_ends = [s for s in ("a", "b")
-                     if not mouths[s][2] and mouths[s][1] >= aisle - 1e-6]
-        if not open_ends:
-            entry["why"] = ("neither end of the aisle opens %.2f m clear "
-                            "(a: %.2f m %s; b: %.2f m %s)"
-                            % (aisle, mouths["a"][1],
-                               ",".join(sorted(set(mouths["a"][2]))) or "clear",
-                               mouths["b"][1],
-                               ",".join(sorted(set(mouths["b"][2]))) or "clear"))
+        plan, why = _staff_side_plan(spec, room, v, seq, BACK_BAR_DEPTH,
+                                     aisle, seat_stem="bar_stool")
+        if plan is None:
+            entry["why"] = why
             continue
 
         # --- from here the bar is built -----------------------------------
+        front, story = plan["front"], plan["story"]
+        run, thick = plan["run"], plan["thick"]
+        u0, u1, need = plan["u0"], plan["u1"], plan["need"]
+        mouths, open_ends = plan["mouths"], plan["open_ends"]
+        mine, _rect = plan["mine"], plan["rect"]
         entry["aisle_m"] = round(aisle, 3)
         entry["flap_m"] = round(aisle, 3)
-        entry["shift_m"] = round(shift, 3)
-        if fy:
-            v["y"] = round(float(v["y"]) + fy * shift, 2)
-        else:
-            v["x"] = round(float(v["x"]) + fx * shift, 2)
+        entry["shift_m"] = round(plan["shift"], 3)
+        _shift_counter(plan, v)
         for name, s, sv in _room_names(spec, rtag):
             if name == "bar_stool" and s == seq:
-                if fy:
-                    sv["y"] = round(float(sv["y"]) + fy * shift, 2)
-                else:
-                    sv["x"] = round(float(sv["x"]) + fx * shift, 2)
+                _shift_counter(plan, sv)
         bw = max(BACK_BAR_W[0], min(BACK_BAR_W[1], run))
         bh = min(BACK_BAR_H, clear_h)
+        bar_rect = plan["back_rect"]
         cx = (bar_rect[0] + bar_rect[2]) / 2.0
         cy = (bar_rect[1] + bar_rect[3]) / 2.0
-        sx, sy = (bw, BACK_BAR_DEPTH) if fy else (BACK_BAR_DEPTH, bw)
+        sx, sy = ((bw, BACK_BAR_DEPTH) if plan["fy"]
+                  else (BACK_BAR_DEPTH, bw))
         bar = _make_volume(spec, "back_bar", "back_bar_%s_%d" % (rtag, seq),
                            cx, cy, sx, sy, bh,
                            _front_turn("back_bar", sx, sy, front), story, sh,
@@ -2254,9 +2849,10 @@ def back_bar_club_counters(spec):
             end, s = (u0, -1.0) if side == "a" else (u1, 1.0)
             leg_u = end + s * thick / 2.0
             leg_t = (BACK_BAR_DEPTH + need) / 2.0
-            lcx, lcy = (leg_u, wall + dirn * leg_t) if fy \
-                else (wall + dirn * leg_t, leg_u)
-            lsx, lsy = (thick, aisle) if fy else (aisle, thick)
+            lcx, lcy = ((leg_u, plan["wall"] + plan["dirn"] * leg_t)
+                        if plan["fy"]
+                        else (plan["wall"] + plan["dirn"] * leg_t, leg_u))
+            lsx, lsy = (thick, aisle) if plan["fy"] else (aisle, thick)
             leg = _make_volume(spec, "counter_end",
                                "counter_end_%s_%d" % (rtag, seq),
                                lcx, lcy, lsx, lsy, float(v["size_z"]),
@@ -2267,20 +2863,363 @@ def back_bar_club_counters(spec):
                                mine | {bar["name"]}):
                 spec["volumes"].append(leg)
                 entry["l_shaped"] = True
-        # THE BARTENDER, so the nav gate ANSWERS whether the staff side is
-        # a place a body can be rather than anybody assuming it: a marker
-        # in the aisle, a step in from the open end.
-        end, s = (u0, 1.0) if open_ends[0] == "a" else (u1, -1.0)
-        mu = end + s * _BARTENDER_IN
-        mt = (BACK_BAR_DEPTH + need) / 2.0
-        px, py = (mu, wall + dirn * mt) if fy else (wall + dirn * mt, mu)
-        spec.setdefault("markers", []).append({
-            "type": "patrol_point", "id": "bartender_%s_%d" % (rtag, seq),
-            "x": round(px, 3), "y": round(py, 3), "z": round(floor, 3),
-            "rot_z": round(front, 3), "room": room["id"],
-            "meta": {"role": "bartender", "aisle_m": round(aisle, 3)}})
+        _staff_marker(spec, room, plan, seq, "bartender", aisle,
+                      BACK_BAR_DEPTH)
         entry["built"] = True
     return report
+
+
+# ---------------------------------------------------------------------------
+# THE CARD SHOP'S COUNTER -- a pack wall behind every showcase (0.139.0)
+# ---------------------------------------------------------------------------
+#
+# The walker's 1990s reference, `docs/SET_DRESSING_REFERENCES.md`: "Tall
+# white wire/wood shelving to the ceiling, every shelf crowded with wax
+# boxes and packs, faces out. A glass-top showcase counter in front with a
+# chrome frame, stacks of white card storage boxes and toploaders on top, a
+# small CRT on a shelf behind."
+#
+# That is the club's bar one shop along -- a customer side, a counter, a
+# working aisle, a unit against the wall -- so it is the club's pass with
+# different units, and `_staff_side_plan` is the half they share. THE AISLE
+# IS NOT A NEW NUMBER: `staff_aisle_width` derives it from
+# `agent_contract.json` for both, 1.25 m, and the reason is written there.
+#
+# WHAT THE SHOPKEEPER MARKER IS FOR, restated because it is the only thing
+# in this pass that is not geometry: the nav gate walks to `patrol_point`
+# markers, so the question "can a body get behind this counter" is ANSWERED
+# by a gate rather than assumed by whoever wrote the arithmetic. A card
+# shop's aisle is closed at one end by the return case and at the other by
+# nothing, and if that ever stops being true the gate says so.
+
+#: Zoo's `pack_wall` genome: the depth a gondola shelf is, the height this
+#: pass builds one to, and the width range a module can be built at. Read
+#: from `zoo/zoo_keeper/genome/species/pack_wall.json` (0.35-0.60,
+#: 0.8-8.0), not from a brief.
+PACK_WALL_DEPTH = 0.5
+PACK_WALL_H = 2.2
+PACK_WALL_W = (0.8, 8.0)
+#: Air between the top of the pack wall and the bottom of the CRT hung over
+#: it, so the two are not coplanar -- `_CEILING_AIR`'s reason, one surface
+#: down.
+_CRT_OVER_PACK = _CEILING_AIR
+
+
+def _card_shop_cases(spec, building):
+    """``[(room, showcase volume, seq)]`` -- every showcase counter in a
+    card shop, in a stable order."""
+    out = []
+    if not _card_shop_building(building):
+        return out
+    for room in spec.get("rooms", []) or []:
+        if not is_card_shop_room(room, building):
+            continue
+        rtag = _room_tag(room)
+        for stem, seq, v in sorted(_room_names(spec, rtag),
+                                   key=lambda t: (t[0], t[1])):
+            if stem == "display_case":
+                out.append((room, v, seq))
+    return out
+
+
+def card_shop_counters(spec):
+    """Stand a PACK WALL against the wall behind every showcase counter in
+    a card shop, with the shopkeeper's aisle between, and prove the staff
+    side is a place a body can be.
+
+    Per counter, in one pass and in this order:
+
+      * the counter moves into the room by the pack wall's depth plus the
+        aisle (`staff_aisle_width`);
+      * a `pack_wall` volume goes flush against the wall, as long as the
+        counter (inside Zoo's genome range) and `PACK_WALL_H` tall, or
+        shorter where the storey is;
+      * a CRT hangs on the wall clear above it, where the storey leaves
+        room -- the reference's "small CRT on a shelf behind";
+      * where the counter's end is against a perpendicular wall, a return
+        case closes that end and the counter is an L;
+      * a `patrol_point` marker stands in the aisle;
+      * the whole thing is skipped, and the report says why, when the room
+        cannot hold it.
+
+    Idempotent (a counter that already has its `pack_wall_<tag>_<seq>` is
+    left alone), deterministic, and reads nothing but the spec. Returns
+    ``[report]``, one row per showcase counter.
+    """
+    building = club_building_id(spec)
+    aisle = staff_aisle_width()
+    sh = _story_height(spec)
+    clear_h = _clear_height(spec)
+    report = []
+    for room, v, seq in _card_shop_cases(spec, building):
+        rtag = _room_tag(room)
+        entry = {"room": room["id"], "counter": v["name"], "built": False,
+                 "why": "", "aisle_m": None, "flap_m": None,
+                 "l_shaped": False, "crt": False}
+        report.append(entry)
+        if any(n == "pack_wall" and s == seq
+               for n, s, _v in _room_names(spec, rtag)):
+            entry["built"] = True
+            entry["why"] = "already"
+            continue
+        plan, why = _staff_side_plan(spec, room, v, seq, PACK_WALL_DEPTH,
+                                     aisle)
+        if plan is None:
+            entry["why"] = why
+            continue
+
+        # --- from here the counter is built -------------------------------
+        front, story = plan["front"], plan["story"]
+        run, thick = plan["run"], plan["thick"]
+        u0, u1, need = plan["u0"], plan["u1"], plan["need"]
+        mouths, open_ends = plan["mouths"], plan["open_ends"]
+        mine = plan["mine"]
+        entry["aisle_m"] = round(aisle, 3)
+        entry["flap_m"] = round(aisle, 3)
+        entry["shift_m"] = round(plan["shift"], 3)
+        _shift_counter(plan, v)
+        pw_rect = plan["back_rect"]
+        pw_w = max(PACK_WALL_W[0], min(PACK_WALL_W[1], run))
+        pw_h = min(PACK_WALL_H, clear_h)
+        cx = (pw_rect[0] + pw_rect[2]) / 2.0
+        cy = (pw_rect[1] + pw_rect[3]) / 2.0
+        sx, sy = ((pw_w, PACK_WALL_DEPTH) if plan["fy"]
+                  else (PACK_WALL_DEPTH, pw_w))
+        wall_unit = _make_volume(spec, "pack_wall",
+                                 "pack_wall_%s_%d" % (rtag, seq),
+                                 cx, cy, sx, sy, pw_h,
+                                 _front_turn("pack_wall", sx, sy, front),
+                                 story, sh, building)
+        spec.setdefault("volumes", []).append(wall_unit)
+        # THE CRT, over the pack wall rather than on it: a bracket set at
+        # the piece's own 2.1 m lift would stand INSIDE a 2.2 m pack wall,
+        # which is why `_make_volume` takes a `lift`. Skipped, and said in
+        # the report, where the storey has no room above the shelving --
+        # a shop under a low ceiling has the CRT on the counter and this
+        # pass does not model that.
+        crt_w, crt_d, crt_h = _PIECES["wall_tv"]["sizes"][0]
+        crt_lift = pw_h + _CRT_OVER_PACK + crt_h / 2.0
+        if crt_lift + crt_h / 2.0 <= clear_h:
+            csx, csy = ((crt_w, crt_d) if plan["fy"] else (crt_d, crt_w))
+            crt = _make_volume(spec, "wall_tv", "wall_tv_%s_%d" % (rtag, seq),
+                               cx, cy, csx, csy, crt_h,
+                               _front_turn("wall_tv", csx, csy, front),
+                               story, sh, building, lift=crt_lift)
+            spec["volumes"].append(crt)
+            entry["crt"] = True
+            entry["crt_lift_m"] = round(crt_lift, 3)
+        # THE L, on the club's rule: an end with no floor to walk round it
+        # is closed by a return case, and the other end is the way in.
+        closed = [s for s in ("a", "b")
+                  if s not in open_ends and mouths[s][1] <= aisle + thick]
+        if closed:
+            side = closed[0]
+            end, s = (u0, -1.0) if side == "a" else (u1, 1.0)
+            leg_u = end + s * thick / 2.0
+            leg_t = (PACK_WALL_DEPTH + need) / 2.0
+            lcx, lcy = ((leg_u, plan["wall"] + plan["dirn"] * leg_t)
+                        if plan["fy"]
+                        else (plan["wall"] + plan["dirn"] * leg_t, leg_u))
+            lsx, lsy = (thick, aisle) if plan["fy"] else (aisle, thick)
+            leg = _make_volume(spec, "display_case_end",
+                               "display_case_end_%s_%d" % (rtag, seq),
+                               lcx, lcy, lsx, lsy, float(v["size_z"]),
+                               _front_turn("display_case_end", lsx, lsy,
+                                           (front + (90.0 if s > 0 else 270.0)) % 360.0),
+                               story, sh, building)
+            if not _rect_clear(spec, room, _rect_of(leg),
+                               mine | {wall_unit["name"]}):
+                spec["volumes"].append(leg)
+                entry["l_shaped"] = True
+        _staff_marker(spec, room, plan, seq, "shopkeeper", aisle,
+                      PACK_WALL_DEPTH)
+        entry["built"] = True
+    report += card_shop_play_markers(spec)
+    return report
+
+
+def card_shop_play_markers(spec):
+    """A `patrol_point` in the FAR CORNER of every play area, so the nav
+    gate answers whether a body can get past the tables.
+
+    WHY THIS EXISTS AND WHY IT IS A MARKER. The play area is the one room
+    in this building whose furniture stands mid-floor, which is the shape
+    that strands a walker -- and the nav gate only judges the points it is
+    given (`nav_gate.SCOPE_TYPES`: objective, extraction, loot,
+    patrol_point, rescue). A play area with no marker in it is a room the
+    gate says nothing about, which reads in the report exactly like a room
+    it passed. The bartender marker was added to the club for the same
+    reason a release earlier.
+
+    The point is DERIVED, not chosen: the room's four inner corners, inset
+    by a body and `_seed_clear`'s own edge, ranked by distance from the
+    nearest way in, first one that a body fits in. A room where none of
+    the four is clear gets no marker and the report says so, because a
+    marker shoved into a table would fail the gate for the wrong reason.
+
+    Idempotent and deterministic. Returns ``[report]``, one row per play
+    room.
+    """
+    building = club_building_id(spec)
+    out = []
+    if not _card_shop_building(building):
+        return out
+    sh = _story_height(spec)
+    r_body = _body_radius()
+    for room in spec.get("rooms", []) or []:
+        if not is_card_play_room(room, building):
+            continue
+        rtag = _room_tag(room)
+        entry = {"room": room["id"], "counter": None, "built": False,
+                 "why": "", "aisle_m": None, "flap_m": None,
+                 "l_shaped": False, "play_point": True}
+        out.append(entry)
+        mid = "playfloor_%s_1" % rtag
+        if any(m.get("id") == mid for m in spec.get("markers") or []):
+            entry["built"] = True
+            entry["why"] = "already"
+            continue
+        x0, y0, x1, y1 = room["bounds"]
+        story = int(room.get("story", 0) or 0)
+        inset = 1.0 + r_body
+        ways = []
+        for w in spec.get("ext_walls", []) or []:
+            if int(w.get("story", 0) or 0) != story:
+                continue
+            run = (float(spec.get("footprint_x", 0.0))
+                   if w.get("wall") in ("N", "S")
+                   else float(spec.get("footprint_y", 0.0)))
+            hx = float(spec.get("footprint_x", 0.0)) / 2.0
+            hy = float(spec.get("footprint_y", 0.0)) / 2.0
+            for op in w.get("openings") or []:
+                u = float(op.get("pos", 0.0)) * run
+                ways.append({"N": (u, hy), "S": (u, -hy),
+                             "E": (hx, u), "W": (-hx, u)}[w["wall"]])
+        for p in spec.get("partitions", []) or []:
+            if int(p.get("story", 0) or 0) != story:
+                continue
+            span = abs(float(p["end"]) - float(p["start"]))
+            for op in p.get("openings") or []:
+                u = float(p["start"]) + (float(op.get("pos", 0.0)) + 0.5) * span
+                ways.append((float(p["pos"]), u) if p["axis"] == "Y"
+                            else (u, float(p["pos"])))
+        # A GRID, NOT THE FOUR CORNERS. The corners were the first draft and
+        # all four were refused on `card_shop_a01`: the play area is 7 x 11
+        # and `_seed_clear` holds a piece 0.9 m plus a body off every
+        # volume, so a room furnished to its target has furniture within
+        # that of each corner. The grid is the room inset by a body and
+        # `_seed_clear`'s own 1.0 m edge, stepped at a body's DIAMETER --
+        # the coarsest step that cannot skip over a gap a body fits
+        # through. No rng: the order is the sort, and the sort is distance
+        # from the nearest way in.
+        step = max(2.0 * r_body, 0.1)
+        grid = []
+        nx = max(1, int((x1 - x0 - 2 * inset) / step) + 1)
+        ny = max(1, int((y1 - y0 - 2 * inset) / step) + 1)
+        for i in range(nx):
+            for j in range(ny):
+                grid.append((round(x0 + inset + i * step, 4),
+                             round(y0 + inset + j * step, 4)))
+        if ways:
+            grid.sort(key=lambda c: (-round(min(math.hypot(c[0] - w[0],
+                                                           c[1] - w[1])
+                                                for w in ways), 4),
+                                     c[0], c[1]))
+        for cx, cy in grid:
+            if not _seed_clear(spec, room, cx, cy, [], half=r_body):
+                continue
+            spec.setdefault("markers", []).append({
+                "type": "patrol_point", "id": mid,
+                "x": round(cx, 3), "y": round(cy, 3),
+                "z": round(story * sh, 3), "rot_z": 0.0,
+                "room": room["id"],
+                "meta": {"role": "playfloor"}})
+            entry["built"] = True
+            break
+        if not entry["built"]:
+            entry["why"] = ("no inner corner of the play area is clear of "
+                            "its own furniture")
+    return out
+
+
+#: The surfaces a card shop room wears (Pixelcoat 0.44.0's three grammars,
+#: through the `card_shop` theme). Declared in the palette the way a prop's
+#: material is, with an acoustic.
+#:
+#: THE PLAY AREA'S CARPET IS `carpet` AND NOT `carpet_tournament`, and the
+#: difference is the whole wiring. Zoo 0.95.0: "a pack directory is
+#: `<kind>_<theme>`, so it is `carpet` under a `tournament` theme" -- the
+#: `card_shop` theme maps kind `carpet` to `carpet_tournament` and kind
+#: `tile` to `vct_floor_beige`. The club needed `carpet_club` to BE a kind
+#: because nothing themed it; this one is themed, so inventing a
+#: `carpet_tournament` kind would have given it a pack no other theme could
+#: answer and left every other theme's card shop grey.
+#:
+#: THE PANELLING IS THE WHOLE PARTITION, NOT A WAINSCOT, and the reference
+#: says "wood-panel lower walls". Deli Counter has no band on a wall: a
+#: partition is one slot with one material on both faces (the club's note
+#: above says the same thing about its wallpaper), so a shop that asks for
+#: panelling gets it floor to ceiling. What the expensive version buys is
+#: a 1.2 m dado with drywall over it, which needs a second slot per wall
+#: run and a rail module; it is not built and it is not pretended.
+_CARD_SHOP_FINISHES = {"carpet": ("Curtain", 0.8, 0.7),
+                       "tile": ("Concrete", 0.2, 0.15),
+                       "wood_panel": ("Wood", 0.3, 0.26)}
+
+
+def dress_card_shop_rooms(spec):
+    """The card shop's surfaces (`_CARD_SHOP_FINISHES`), in place,
+    idempotent: the play area's floor is `carpet`, every other selling
+    room's is `tile`, and a partition with a card-shop room on EITHER face
+    is `wood_panel`. Returns the count of fields set. Nothing outside a
+    `card_shop` building is touched.
+
+    EITHER FACE, where the club's wallpaper asks for BOTH. A club's flock
+    is on the walls between club rooms and its outside walls stay painted
+    block; a shop's panelling is on the walls the customer sees, and the
+    wall between the sales floor and the stockroom is one of them. Since a
+    partition is one slot with one material on both faces, the stockroom
+    gets panelling it would not have had -- which is the cheaper of the two
+    wrong answers, and is said here rather than discovered in a frame.
+    """
+    name = club_building_id(spec)
+    if not _card_shop_building(name):
+        return 0
+    shop = [r for r in spec.get("rooms") or [] if is_card_shop_room(r, name)]
+    if not shop:
+        return 0
+    n = 0
+    for r in shop:
+        if r.get("floor_material") or r.get("material"):
+            continue
+        mat = "carpet" if is_card_play_room(r, name) else "tile"
+        r["floor_material"] = _declare_material(spec, mat,
+                                                _CARD_SHOP_FINISHES[mat])
+        n += 1
+    ids = {r["id"] for r in shop}
+    for p in spec.get("partitions") or []:
+        if p.get("material") == "wood_panel":
+            continue
+        lo, hi = sorted((float(p["start"]), float(p["end"])))
+        story = int(p.get("story", 0) or 0)
+        pos = float(p["pos"])
+        touches = False
+        for r in spec.get("rooms") or []:
+            if r["id"] not in ids or int(r.get("story", 0) or 0) != story:
+                continue
+            x0, y0, x1, y1 = r["bounds"]
+            a0, a1, b0, b1 = ((x0, x1, y0, y1) if p["axis"] == "X"
+                              else (y0, y1, x0, x1))
+            if min(a1, hi) - max(a0, lo) <= 0.5:
+                continue
+            if abs(b1 - pos) < 0.05 or abs(b0 - pos) < 0.05:
+                touches = True
+                break
+        if touches:
+            p["material"] = _declare_material(
+                spec, "wood_panel", _CARD_SHOP_FINISHES["wood_panel"])
+            n += 1
+    return n
 
 
 #: A customer needs somewhere to stand in front of a bar: a stool's depth
@@ -2324,6 +3263,7 @@ def furnish(spec):
     added = 0
     building = club_building_id(spec)
     dress_club_rooms(spec)
+    dress_card_shop_rooms(spec)
     for room in spec.get("rooms", []):
         x0, y0, x1, y1 = room["bounds"]
         area = max(0.0, x1 - x0) * max(0.0, y1 - y0)
@@ -2359,6 +3299,8 @@ def furnish(spec):
         recipe = _RECIPES[kind]
         if kind == "strip_club":
             recipe = dict(recipe, anchors=_club_anchors(room))
+        elif kind == "card_shop":
+            recipe = dict(recipe, anchors=_card_shop_anchors(room, building))
         have = _room_volume_count(spec, room)
         want = max(0, _furnish_target(area, recipe.get("per_area")) - have)
         if recipe.get("cap") is not None:
@@ -2516,7 +3458,10 @@ def furnish(spec):
                 # chairs north and south of a table, backwards for the ones
                 # east and west, caught by re-reading the wall convention
                 # before a rebuild rather than after.
-                if how in ("table", "club") or ring:
+                # `folding` joins the two that sit ROUND their host: a play
+                # table has no front, so `host["_front"]` is None there and
+                # the `else` branch below is a TypeError, not a wrong angle.
+                if how in ("table", "club", "folding") or ring:
                     face = math.degrees(math.atan2(cx - px, cy - py))
                 else:
                     face = host["_front"]
@@ -2554,7 +3499,14 @@ def furnish(spec):
             """Place one piece that stands alone. True when it stood."""
             nonlocal added
             p = _PIECES[key]
-            if p["most"] is not None and per_name[key] >= p["most"]:
+            # A piece a LATER pass also places keeps that pass's share of
+            # its own `most` (`reserved_by`): one per host already standing
+            # in this room. Anchors go first, so the count is settled by the
+            # time the wall run asks.
+            limit = p["most"]
+            if limit is not None and p["reserved_by"]:
+                limit -= per_name[p["reserved_by"]]
+            if limit is not None and per_name[key] >= limit:
                 return False
             sizes = [s for s in _palette(spec, key)
                      if per_size[(key, s)] < _SAME_PIECE_MAX]
@@ -2569,8 +3521,14 @@ def furnish(spec):
                 if p["where"] in ("seat", "pair"):
                     return False
                 if p["where"] == "wall":
-                    spots = [(qx, qy, sx, sy, front) for qx, qy, sx, sy, _r, front
-                             in _wall_slots(spec, room, w, d, rng, with_front=True)]
+                    spots = [(qx, qy, sx, sy, front)
+                             for qx, qy, sx, sy, _r, front
+                             in _wall_slots(spec, room, w, d, rng,
+                                            with_front=True,
+                                            over_openings=_over_openings(
+                                                spec, story, p, h),
+                                            off_glass=p["off_glass"],
+                                            back_off=piece_back_off(p))]
                 elif p["where"] == "centre":
                     # the room's middle first, then the grid from the middle
                     # out; the long side along the room's long axis
@@ -2595,8 +3553,10 @@ def furnish(spec):
                             front = None
                             sx, sy = (w, d) if rng.random() < 0.5 else (d, w)
                         spots.append((qx, qy, sx, sy, front))
-                hung = p["lift"] is not None
-                above = (p["lift"] - h / 2.0) if hung else None
+                lift = _piece_lift(spec, p, h)
+                hung = lift is not None
+                above = (lift - h / 2.0) if hung else None
+                over = hangs_over_openings(spec, story, above)
                 for qx, qy, sx, sy, front in spots:
                     if _over_rects(inner, qx, qy, half, half):
                         continue
@@ -2605,7 +3565,7 @@ def furnish(spec):
                     # the pieces standing under it
                     if not _seed_clear(spec, room, qx, qy,
                                        [] if hung else placed, half=half,
-                                       above=above):
+                                       above=above, over_openings=over):
                         continue
                     rot = (_front_turn(key, sx, sy, front)
                            if front is not None else 0.0)
@@ -2719,6 +3679,13 @@ def furnish(spec):
     # this call furnished and a room an earlier release furnished get the
     # same answer.
     added += sum(1 for r in back_bar_club_counters(spec)
+                 if r["built"] and r["why"] != "already")
+    # ...and the card shop's, on the same terms and for the same reason:
+    # this pass MOVES a showcase counter, so it runs before the fixtures
+    # that measure against where the furniture actually stands. A building
+    # is a club or a shop or neither, so at most one of these two does
+    # anything.
+    added += sum(1 for r in card_shop_counters(spec)
                  if r["built"] and r["why"] != "already")
     # FIXTURES LAST, over every room, from the spec alone (0.136.0): a room
     # furnished in this call and a room furnished by an earlier release get

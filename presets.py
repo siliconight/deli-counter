@@ -2426,6 +2426,248 @@ def strip_club(name: str = "strip_club_preset", mode: str = "heist",
     return spec
 
 
+def card_shop(name: str = "card_shop_preset", mode: str = "heist",
+              floors: int = 2, basement: bool = False,
+              scale_ref: bool = False) -> dict:
+    """A 1990s Delco trading-card shop: a GLASS STOREFRONT on the street, a
+    sales floor with the showcase counter and the pack walls, a play area
+    of folding tables beside it, a stockroom and a cash office behind, and
+    an apartment over the shop.
+
+    The walker, 2026-09-15, with nine photographs written up in
+    `docs/SET_DRESSING_REFERENCES.md` ("The walker's trading card shop
+    references"): a small sports-card shop, cheap drop ceiling, wood-panel
+    lower walls, felt pennants along the top of them, tall shelving of wax
+    boxes faced out, and a glass-top showcase counter in front with a
+    register and a small CRT behind it.
+
+    The shop rooms are furnished and lit as a card shop by 0.139.0's
+    recipe: the kind is read off the building's id
+    (`level_design.is_card_shop_room`), and this spec carries
+    `preset: "card_shop"` so that holds when the level is named by somebody
+    else -- Level Factory names its levels `lf_<mission>_<seed>`, which says
+    nothing about what they are. The stockroom and the cash office keep
+    `storage` and `vault`, which is what they are.
+
+    `floors` IS READ, unlike the club's and the pawn shop's. One storey is
+    the strip-mall unit and two is the shop with a flat over it; the
+    reference covers both, the upper storey is the pawn shop's pattern (a
+    front flat and a back store), and a parameter this signature accepts
+    and ignores is somebody's unfinished thought. `basement` is accepted so
+    the CLI stays uniform and ignored: a card shop's back of house is
+    behind the shop, not under it."""
+    del basement
+    upper = int(floors or 2) > 1
+    sh = 3.4
+    fx, fy = 20.0, 18.0
+    hx, hy = fx / 2, fy / 2
+    band = 2.0                      # shop front | back of house
+    mid_x = 0.0                     # stockroom | play area
+    run = round(sh * 1.4, 1)        # 4.8 m -> 35.3 deg, inside floor_max_angle
+    spec = {
+        "$schema": "../schema/level.schema.json",
+        "name": name, "mode": mode, "preset": "card_shop",
+        "seed": 1997, "grid": 0.5,
+        "footprint_x": fx, "footprint_y": fy, "story_height": sh,
+        "n_stories": 2 if upper else 1, "has_basement": False,
+        "wall_thick": 0.25, "floor_thick": 0.25,
+        "collision": "convex", "auto_exterior": True,
+        "scale_ref": bool(scale_ref),
+        "default_material": "brick_ext",
+        "materials": [
+            {"id": "brick_ext", "acoustic": "Concrete", "absorption": 0.6, "damping": 0.5},
+            {"id": "storefront_glass", "acoustic": "Glass", "absorption": 0.1, "damping": 0.05},
+            {"id": "glass", "acoustic": "Glass", "absorption": 0.1, "damping": 0.05},
+            {"id": "drywall", "acoustic": "Drywall", "absorption": 0.42, "damping": 0.38},
+            {"id": "concrete", "acoustic": "Concrete", "absorption": 0.7, "damping": 0.6},
+            {"id": "metal", "acoustic": "Metal", "absorption": 0.2, "damping": 0.15},
+            {"id": "wood", "acoustic": "Wood", "absorption": 0.35, "damping": 0.3},
+        ],
+    }
+
+    def _along(x, lo, hi):
+        """An opening's `pos` for a wall running lo..hi, placed at x."""
+        return round((x - (lo + hi) / 2.0) / (hi - lo), 4)
+
+    # --- exterior. THE STREET FACE IS GLASS AND THE EAST WALL IS BLANK, and
+    # both are load-bearing on how the shop furnishes rather than styling.
+    # `_wall_slots` only ever offers EXTERIOR walls -- `_seed_clear` holds
+    # every piece a metre off any partition, so an interior wall is never a
+    # candidate in any room in this library -- and `display_case` is
+    # `off_glass`, because the pack wall that follows it would board up the
+    # shop window from the inside. So a selling floor's usable wall is what
+    # the exterior gives it that is neither glazed nor full of openings: the
+    # blank east party wall and the west wall above its one window. Two 11 m
+    # runs, two counters, which is the reference's shop.
+    spec["ext_walls"] = [
+        {"wall": "S", "story": 0, "material": "storefront_glass", "openings": [
+            {"kind": "door", "pos": _along(-3.0, -hx, hx), "width": 1.6,
+             "tag": "front_door"},
+            {"kind": "window", "pos": _along(-7.0, -hx, hx), "width": 4.0,
+             "sill": 0.6, "vaultable": True, "material": "glass"},
+            {"kind": "window", "pos": _along(4.0, -hx, hx), "width": 6.0,
+             "sill": 0.6, "vaultable": True, "material": "glass"}]},
+        {"wall": "N", "story": 0, "material": "brick_ext", "openings": [
+            {"kind": "door", "pos": _along(-6.0, -hx, hx), "width": 1.25,
+             "tag": "rear_door"},
+            {"kind": "breach", "pos": _along(5.0, -hx, hx), "width": 1.2,
+             "breach_class": "soft_wall", "material": "drywall",
+             "tag": "play_breach"}]},
+        {"wall": "W", "story": 0, "material": "brick_ext", "openings": [
+            {"kind": "window", "pos": _along(-7.5, -hy, hy), "width": 1.4,
+             "sill": 1.2, "vaultable": True, "material": "glass"}]},
+        {"wall": "E", "story": 0, "material": "brick_ext", "openings": []},
+    ]
+    if upper:
+        spec["ext_walls"] += [
+            {"wall": "S", "story": 1, "material": "brick_ext", "openings": [
+                {"kind": "window", "pos": _along(-5.0, -hx, hx), "width": 1.4,
+                 "sill": 1.0, "vaultable": True, "material": "glass"},
+                {"kind": "window", "pos": _along(5.0, -hx, hx), "width": 1.4,
+                 "sill": 1.0, "vaultable": True, "material": "glass"}]},
+            {"wall": "N", "story": 1, "material": "brick_ext", "openings": [
+                {"kind": "breach", "pos": 0.0, "width": 1.2,
+                 "breach_class": "soft_wall", "material": "drywall"}]},
+            {"wall": "W", "story": 1, "material": "brick_ext", "openings": [
+                {"kind": "window", "pos": 0.0, "width": 1.4, "sill": 1.0,
+                 "vaultable": True, "material": "glass"}]},
+            {"wall": "E", "story": 1, "material": "brick_ext", "openings": [
+                {"kind": "window", "pos": 0.0, "width": 1.4, "sill": 1.0,
+                 "vaultable": True, "material": "glass"}]},
+        ]
+
+    # --- plan. SOUTH BAND (y -9..2, 11 m deep) is the whole sales floor,
+    # wall to wall: the counters run down its two side walls and the
+    # customer floor is between them. NORTH BAND (y 2..9, 7 m deep): the
+    # stockroom on the rear door, west; the play area behind a wide opening
+    # off the shop, east.
+    #
+    # THE PLAY AREA HAS TWO WAYS IN AND NO MORE, AND THAT IS THE ARITHMETIC
+    # RATHER THAN A PREFERENCE. `_seed_clear` holds a piece 1.5 m plus its
+    # own half-extent off every doorway, so a 2.4 m play table is kept 2.7 m
+    # from each one -- MEASURED on the first draft of this plan, where the
+    # play room was 6 x 7 with three doors and a breach and NOT ONE TABLE
+    # stood: the four approaches covered the room. It is 10 x 7 with one
+    # wide opening and one breach, at opposite ends, and the wall it shares
+    # with the stockroom is solid.
+    #
+    # Every partition ends clear of every doorway it meets (layout_lint L18:
+    # half the aperture plus 0.3 m), and every door joins two rooms (L10).
+    parts = [
+        {"story": 0, "axis": "X", "pos": band, "start": -hx, "end": hx,
+         "material": "drywall", "openings": [
+             {"kind": "door", "pos": _along(-6.0, -hx, hx), "width": 1.25,
+              "reinforceable": True, "tag": "stock_door"},
+             {"kind": "door", "pos": _along(5.0, -hx, hx), "width": 1.8,
+              "tag": "play_door"}]},
+        {"story": 0, "axis": "Y", "pos": mid_x, "start": band, "end": hy,
+         "material": "concrete", "openings": []},
+    ]
+    if upper:
+        parts.append(
+            {"story": 1, "axis": "X", "pos": band, "start": -hx, "end": hx,
+             "material": "drywall", "openings": [
+                 {"kind": "door", "pos": _along(-6.0, -hx, hx), "width": 1.25},
+                 {"kind": "door", "pos": _along(5.0, -hx, hx), "width": 1.25}]})
+    spec["partitions"] = parts
+
+    # The stair lies along the stockroom's LONG axis: a switchback's flight
+    # and its two landings need about 8.6 m of run axis, and the back band
+    # is 7 m deep -- the pawn shop's note, one building along.
+    # `_finish_stairs` orients it so entry and exit both open onto clear
+    # floor.
+    spec["stairs"] = ([{"x": -4.5, "y": 5.5, "from_story": 0, "to_story": 1,
+                        "width": 1.1, "run": run, "style": "switchback",
+                        "cut_slabs": True}] if upper else [])
+    spec["ladders"] = []
+    spec["vertical_links"] = ([{"kind": "stair", "from_story": 0,
+                                "to_story": 1, "role": "main_route"}]
+                              if upper else [])
+    # THE ONLY AUTHORED SOLID: the shop's floor safe, because it is the
+    # objective and an objective has to be somewhere a spec can point at.
+    # Everything else on this floor is the card-shop recipe's -- the
+    # showcase counters, the pack walls, the pennants, the play tables and
+    # the CRT behind the counter.
+    safe = (-8.6, 7.6, 0.2)
+    spec["volumes"] = [
+        {"name": "safe_stockroom", "x": safe[0], "y": safe[1], "z": 0.5,
+         "size_x": 0.9, "size_y": 0.9, "size_z": 1.0, "collision": "convex",
+         "material": "metal"},
+    ]
+    rooms = [
+        {"id": "sales_floor", "story": 0, "bounds": [-hx, -hy, hx, band],
+         "role": "public_entry", "combat_range": "long"},
+        {"id": "stockroom", "story": 0, "bounds": [-hx, band, mid_x, hy],
+         "role": "objective_room", "objective": True, "fortifiable": True,
+         "combat_range": "medium"},
+        {"id": "play_area", "story": 0, "bounds": [mid_x, band, hx, hy],
+         "role": "connector", "combat_range": "medium"},
+    ]
+    if upper:
+        rooms += [
+            {"id": "apartment", "story": 1, "bounds": [-hx, -hy, hx, band],
+             "role": "connector", "combat_range": "long"},
+            {"id": "upper_storage", "story": 1, "bounds": [-hx, band, hx, hy],
+             "role": "fortifiable", "fortifiable": True,
+             "combat_range": "medium"},
+        ]
+    spec["rooms"] = rooms
+    door_in = (-3.0, -7.5)          # just inside the front door
+    markers = [
+        {"type": "camera_socket", "id": "01", "x": -8.0, "y": -7.0, "z": 2.9,
+         "room": "sales_floor", "rot_z": 45},
+        {"type": "camera_socket", "id": "02", "x": -8.5, "y": 8.0, "z": 2.9,
+         "room": "stockroom", "rot_z": 180},
+    ]
+    if mode == "heist":
+        spec["objectives"] = [
+            {"id": "crack_safe", "kind": "drill", "x": safe[0], "y": safe[1],
+             "z": safe[2], "room": "stockroom", "required": True,
+             "duration": 25.0},
+            {"id": "grab_singles", "kind": "grab", "x": 1.5, "y": 7.5,
+             "z": 0.9, "room": "play_area", "required": False,
+             "duration": 6.0},
+        ]
+        spec["loot"] = [
+            {"id": "shop_safe", "kind": "cash", "x": safe[0], "y": safe[1],
+             "z": safe[2], "value": 9000, "bags": 2, "room": "stockroom"},
+            {"id": "graded_singles", "kind": "valuables", "x": 1.5, "y": 7.5,
+             "z": 0.9, "value": 4000, "bags": 1, "room": "play_area"},
+        ]
+        spec["zones"] = [
+            {"id": "front_extract", "kind": "extraction", "story": 0,
+             "bounds": [-hx, -hy, hx, -6.0]},
+            {"id": "stock_secure", "kind": "secure", "story": 0,
+             "bounds": [-hx, band, mid_x, hy]},
+        ]
+        markers += [
+            {"type": "crew_spawn", "id": "A", "x": door_in[0], "y": door_in[1],
+             "z": 0.0, "rot_z": 0, "room": "sales_floor",
+             "meta": {"phase": "stealth"}},
+            {"type": "objective", "id": "SAFE", "x": safe[0], "y": safe[1],
+             "z": safe[2], "room": "stockroom"},
+            {"type": "extraction", "id": "FRONT", "x": door_in[0] - 2.0,
+             "y": door_in[1], "z": 0.0, "room": "sales_floor"},
+        ]
+    else:
+        markers += [
+            {"type": "attacker_spawn", "id": "A", "x": door_in[0],
+             "y": door_in[1], "z": 0.0, "rot_z": 0, "room": "sales_floor"},
+            {"type": "attacker_spawn", "id": "B", "x": 5.0, "y": 8.0,
+             "z": 0.0, "rot_z": 180, "room": "play_area"},
+            {"type": "defender_spawn", "id": "D", "x": -5.0, "y": 7.5,
+             "z": 0.0, "rot_z": 180, "room": "stockroom"},
+            {"type": "objective", "id": "SAFE", "x": safe[0], "y": safe[1],
+             "z": safe[2], "room": "stockroom",
+             "meta": {"kind": "secure"}},
+        ]
+    spec["markers"] = markers
+    # a flat roof with a lip; the roof is unreached and unfurnished
+    spec["parapets"] = [{"story": 2 if upper else 1, "height": 0.9,
+                         "thick": 0.3}]
+    return spec
+
+
 # ---------------------------------------------------------------------------
 # FACADE shells -- non-enterable filler buildings: exterior + roof + collision
 # + theme ONLY (no interior, no gameplay). They emit no tactical data and are
@@ -2720,6 +2962,7 @@ REGISTRY = {
     "auto_shop": auto_shop,
     "pawn_shop": pawn_shop,
     "strip_club": strip_club,
+    "card_shop": card_shop,
     "facade_rowhome": facade_rowhome,
     "facade_storefront": facade_storefront,
     "facade_industrial": facade_industrial,

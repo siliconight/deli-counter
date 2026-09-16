@@ -61,6 +61,10 @@ DEFAULT_ARCHETYPE = {
     "parking_garage": "parking_structure",
     "auto_shop": "warehouse_mezzanine",
     "pawn_shop": "urban_storefront_narrow",
+    # A card shop is a shop unit with a flat over it -- the pawn shop's
+    # shape one door along, and the same stair: a run in the back of house
+    # against a wall, not a core.
+    "card_shop": "urban_storefront_narrow",
     "warehouse": "warehouse_mezzanine",
 }
 

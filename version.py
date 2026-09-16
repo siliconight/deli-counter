@@ -43,7 +43,13 @@ KIT_NAME = "Deli Counter"
 # condition stated above. Measured on `office_stepped`: one new solid,
 # `stair_guard_back_10` at x 0.000..1.605, y 2.094..3.150, z 0.000..3.300,
 # and four `cubicles_*_col` boxes gone.
-KIT_VERSION = "0.104.0"
+# 0.105.0: `prop_species` routes `display_case`, so the six authored
+# 2.4 x 0.9 x 1.0 showcases in `cr_pawn`, `night_pawn` and `pawn_shop_a01`
+# are emitted as the species and turned long-side-first -- their
+# `slots.json` differs on a rebuild, which is the bump condition stated
+# above. The greybox `.glb` is unchanged for every existing spec (the
+# library is still a fixed point of `furnish`); the art pass is not.
+KIT_VERSION = "0.105.0"
 
 # Schema version is separate: bump when level.schema.json changes shape.
 SCHEMA_VERSION = "1.21.1"

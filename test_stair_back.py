@@ -167,7 +167,7 @@ def test_no_slot_remains_behind_any_one_run_solid_flight_in_the_library():
                 # may trim a guard's T padding off one end
                 if filled < 0.98 * area:
                     open_.append((name, sid, s))
-    assert n == 130, n
+    assert n == 131, n
     assert set(open_) == _CLOSED_OTHERWISE, sorted(open_)
 
 

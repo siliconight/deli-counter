@@ -55,7 +55,14 @@ def furnished_by_this_pass(v, tags):
 #: with the room's tag like everything else this pass writes, and it has to
 #: be stripped with the volumes or a refurnish leaves one behind and is no
 #: longer a fixed point.
-_GENERATED_MARKER = re.compile(r"^bartender_(?P<tag>r[0-9a-f]{8})_\d+$")
+#: The patrol points the furnishing pass writes, DERIVED from the roles
+#: `level_design` actually writes rather than spelled here. The first
+#: spelling was `^bartender_...` -- correct for the one pass that existed
+#: and silently wrong for the card shop's `shopkeeper`, which this
+#: migration then left behind for the refurnish to write a second time.
+_GENERATED_MARKER = re.compile(
+    r"^(?:%s)_(?P<tag>r[0-9a-f]{8})_\d+$"
+    % "|".join(re.escape(r) for r in level_design.STAFF_MARKER_ROLES))
 
 
 def marker_written_by_this_pass(m, tags):
@@ -71,11 +78,32 @@ def migrate(d):
     removed = len(vols) - len(keep)
     d["volumes"] = keep
     marks = d.get("markers") or []
+    # WHERE the staff patrol points stood, not just that they did. Stripping
+    # them and letting `furnish` append the new ones moved each from the
+    # middle of the list to the end, so a spec that had just been generated
+    # was NOT a fixed point of this migration -- the JSON differed by marker
+    # ORDER alone. MEASURED on a fresh `strip_club` spec, 2026-09-16:
+    # `bartender_r1d196568_2` at index 5 came back at index 29. The shipped
+    # `strip_club_a01..a03` hid it, because 0.137.0's own migration had
+    # already appended their bartenders at the end, so the test was passing
+    # on where those three files happened to be rather than on a property of
+    # the code. Each re-written marker goes back to the index it held.
+    was_at = [(i, m.get("id")) for i, m in enumerate(marks)
+              if marker_written_by_this_pass(m, tags)]
     kept_marks = [m for m in marks if not marker_written_by_this_pass(m, tags)]
     removed += len(marks) - len(kept_marks)
     if marks:
         d["markers"] = kept_marks
     added = level_design.furnish(d) if d.get("rooms") else 0
+    if was_at:
+        after = d.get("markers") or []
+        ids = {mid for _i, mid in was_at}
+        back = {m.get("id"): m for m in after if m.get("id") in ids}
+        out = [m for m in after if m.get("id") not in back]
+        for i, mid in was_at:
+            if mid in back:
+                out.insert(min(i, len(out)), back[mid])
+        d["markers"] = out
     return removed, added
 
 

@@ -99,6 +99,38 @@ PROP_SPECIES = (
     # `back_bar` today, and the club room CALLED `back_bar` in
     # `strip_club_a03` is a room, not a volume.
     (("back_bar", "backbar", "bar_back"), "back_bar"),
+    # THE CARD SHOP (Zoo 0.95.0). Five species, and the block stands here
+    # for two of them: `folding_table` carries `table` and `folding_chair`
+    # carries `chair`, so below those two rows neither keyword could ever
+    # fire -- the same defect `cubicle` had above. The other three are
+    # claimed by nothing at any height and sit here only to keep the five
+    # together.
+    #
+    # WHAT THIS RE-ROUTES, MEASURED over the 336 specs in `specs/`, by name
+    # and then by whether Zoo's genome can build the size:
+    #
+    #   `display_case`  12 volumes, all routed to a plain box today.
+    #                   SIX of them (2.4 x 0.9 x 1.0) fall inside the
+    #                   genome and become real glass showcase counters; the
+    #                   other six do not -- five at 2.4 x 1.2 x 1.4 and one
+    #                   at 8.0 x 2.0 x 2.2 are over the 1.25 m height cap
+    #                   (and the last over the 6.0 m width), so Zoo builds
+    #                   the box and says so. A hint, not a decision.
+    #   `pack_wall`, `showcase`, `pennant`, `folding_table`,
+    #   `folding_chair`                                   0 volumes each.
+    #
+    # `gondola` IS DELIBERATELY NOT A KEYWORD HERE, though Zoo's genome
+    # lists it. The eight `gondola_*` volumes in this library are
+    # supermarket aisles 1.0-1.2 m deep; `pack_wall`'s genome depth is
+    # 0.35-0.60, so every one of them would route to the species by name
+    # and fall straight back to the box on depth. A keyword whose every
+    # match cannot be built is noise in eight reports, not a routing.
+    # Measured: 1.0x5.0x1.6 (2), 1.0x6.0x1.6 (4), 1.2x8.0x1.6 (2).
+    (("display_case", "showcase"), "display_case"),
+    (("pack_wall",), "pack_wall"),
+    (("pennant",), "pennant_row"),
+    (("folding_table",), "folding_table"),
+    (("folding_chair",), "folding_chair"),
     # A CUBICLE BANK IS NOT A DESK (Zoo 0.93.0). It had to stand ahead of the
     # desk row, which held `cubicle` and took all ten of them: the desk genome
     # reaches 12 m wide and 6 m deep, so an 8.0 x 6.0 x 1.2 m cubicle farm

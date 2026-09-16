@@ -239,6 +239,12 @@ _ZOO_RANGES = {
     "cigarette_machine": ((0.78, 1.02), (0.4, 0.58), (1.3, 1.75)),
     # the club's bar (Zoo 0.92.0)
     "back_bar": ((1.6, 6.0), (0.35, 0.75), (1.8, 3.0)),
+    # the card shop (Zoo 0.95.0)
+    "display_case": ((0.9, 6.0), (0.45, 3.0), (0.85, 1.25)),
+    "pack_wall": ((0.8, 8.0), (0.35, 0.6), (1.6, 3.2)),
+    "pennant_row": ((1.0, 14.0), (0.06, 0.12), (0.22, 0.5)),
+    "folding_table": ((1.2, 3.0), (0.6, 0.9), (0.7, 0.8)),
+    "folding_chair": ((0.4, 0.5), (0.44, 0.56), (0.78, 0.92)),
 }
 ZOO = os.environ.get("DC_ZOO_ROOT") or os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "zoo")
@@ -578,7 +584,12 @@ def test_zoo_honours_every_dressing_furnish_writes():
         if not (p["stock"] or p["form"] or p["variants"]):
             continue
         sp = prop_species.species_for_name(name + "_r00000000_1")
-        for n in range(4 if p["variants"] else 1):
+        # `level_design.variant_count` and not a 4 spelled here: eleven
+        # pieces write four variants, `neon_sign` writes 24 and the card
+        # shop's two folding pieces write 2. A hardcoded 4 under-tested the
+        # first by twenty and refused the last for a variant this pass
+        # cannot produce.
+        for n in range(max(1, level_design.variant_count(p))):
             slot = {"stock": p["stock"], "form": p["form"], "variant": n}
             _dress, why = kit.honour_dressing(slot, sp)
             if why:

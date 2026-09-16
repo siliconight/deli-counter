@@ -1,3 +1,328 @@
+## [0.139.0] - 2026-09-16  a 1990s card shop, and four rules that could not fire
+
+The walker, 2026-09-15, with nine photographs of trading-card shops, written
+up in `docs/SET_DRESSING_REFERENCES.md` ("The walker's trading card shop
+references"). Zoo 0.95.0 built the five species and Pixelcoat 0.44.0 the three
+surfaces; the Deli Counter line of that spec is one sentence -- "a `card_shop`
+preset ... and a `card_shop` room kind with the recipe above; the name added
+to Level Factory's preset list" -- and this is it. Level Factory 0.91.0 is the
+other half of the last clause.
+
+THIS DOES NOT REDUCE INTERVENTIONS-PER-LEVEL BY ITSELF. It is one more
+building type the generator can produce unattended, which is breadth, not a
+lower intervention count; nobody has measured that number yet (roadmap 17).
+What might move it is the second half of this entry: four rules that had no
+way to fire and one cap that was not holding anything, all of them found by
+pointing the existing machinery at a room whose subject is the product on its
+walls.
+
+### The preset
+
+`card_shop`, 20 x 18 m, 3.4 m storeys, one or two of them. A glass storefront
+on the street face; the whole south band (11 m deep) is the sales floor, wall
+to wall, with the showcase counters down its two side walls; behind it the
+stockroom on the rear door and the play area behind a wide opening. A flat
+over the shop when `floors` is 2.
+
+`floors` IS READ. The pawn shop and the club both accept it and `del` it; a
+parameter a signature takes and ignores is somebody's unfinished thought, and
+this repo has a rule about those. One storey is the strip-mall unit and two is
+the shop with a flat above, which is the pawn shop's upper pattern one door
+along. The stair's pitch is `atan(3.4 / 4.8)` = 35.3 deg, inside
+`floor_max_angle`; 20 of 38 shipped buildings are not, and that is the tension
+CLAUDE.md names.
+
+THE PLAY AREA HAS TWO WAYS IN AND NO MORE, AND THAT IS ARITHMETIC RATHER THAN
+A PREFERENCE. `_seed_clear` holds a piece 1.5 m plus its own half-extent off
+every doorway, so a 2.4 m play table is kept 2.7 m from each one. MEASURED on
+the first draft of this plan, where the play room was 6 x 7 with three doors
+and a breach: NOT ONE TABLE stood, because the four approaches covered the
+room. It is 10 x 7 now with one wide opening and one breach at opposite ends,
+and the wall it shares with the stockroom is solid.
+
+### The room kind
+
+`card_shop`, read off the building's id exactly as the strip club's is
+(`is_card_shop_room`), so it survives Level Factory naming the level
+`lf_<mission>_<seed>`; the spec carries `preset: "card_shop"` for the same
+reason the club's does. The selling rooms only: the stockroom keeps `storage`
+and the flat keeps `apartment`, as the club's cash office keeps `vault`.
+
+    anchors   the showcase counter, and a second past 64 m2 -- or, in the
+              play area, up to three play tables, one per
+              `card_play_table_floor` (7.58 m2: the widest table by its
+              depth plus a chair and a body on each side, derived from the
+              pieces and `agent_contract.json`, not chosen)
+    wall      pack walls, a shelf run, a vending machine
+    fixtures  the pennant rows, placed after the room is furnished
+    floor     nothing -- see the triangle arithmetic below
+    clusters  cartons
+
+Five species from Zoo 0.95.0, every size inside the genome read from
+`zoo/zoo_keeper/genome/species/`: `display_case` (2.4/3.6/1.8 m at 0.6 deep),
+`display_case_end`, `pack_wall` (1.2/2.4/3.6 at 0.5), `pennant_row`
+(4/6/8 m), `folding_table` with the `cards` stock, `folding_chair`. The
+surfaces are the theme's own kinds: `wood_panel` on the case and the shop's
+partitions, `slatwall` on the pack walls, `carpet` on the play floor and
+`tile` on the sales floor -- and the play area's carpet is `carpet`, NOT
+`carpet_tournament`, because a pack directory is `<kind>_<theme>` and the
+`card_shop` theme is what makes it the tournament loop. Inventing a
+`carpet_tournament` kind would have given it a pack no other theme could
+answer.
+
+### The staff aisle, which is not a new number
+
+`bar_aisle_width` is `staff_aisle_width` now and the club's name is an alias
+of it, not a second body. The derivation is unchanged and it was never about
+bars: an aisle behind a counter is a corridor a body walks the length of, so
+at least `clearances.min_corridor_width_m` (1.10), and it is entered at its
+END through the gap between the counter's end and the backing unit's, which is
+a doorway, so at least `clearances.min_door_width_m` (1.25). One aisle cannot
+be two widths. **1.25 m**, measured in the built shell, on both counters.
+
+`back_bar_club_counters`'s geometry is extracted into `_staff_side_plan` and
+the card shop's pass calls the same function with a pack wall instead of a
+back bar. The club's numbers are unchanged and `test_club_rooms`,
+`test_club_fixtures` and the library fixed-point check are what say so, not
+this paragraph.
+
+A `patrol_point` stands in each aisle, so the nav gate ANSWERS whether a body
+can get behind the counter rather than anybody assuming it -- and a second one
+stands in the far corner of the play area, because the play area is the one
+room here whose furniture stands mid-floor and a room the gate is given no
+point in is a room it says nothing about. Measured on `card_shop_a01`:
+**5 of 5 interior markers reachable, stairs traverse, navigable yes.**
+
+### THE COUNTER IS SLOTTED AT ITS FINAL DEPTH, and the first build was proof
+
+`card_shop_counters` followed the club and MOVED the counter off its wall
+after the room was furnished. The strip it moves into had therefore been open
+floor for the whole of `seed_cover` and `furnish`. On the first build of
+`card_shop_a01` BOTH counters were refused -- one by
+`kiosk_sales_floor_shelter`, a shelter piece placed before any furniture, and
+one by `folding_chair_..._4_3`, a play chair placed after the counter -- and
+the shop came back with no pack wall, no CRT and no shopkeeper. The pass
+reported both correctly, which is the only reason it was not shipped.
+
+`piece_back_off` puts the counter's back `PACK_WALL_DEPTH + aisle` off the
+wall face at slot time (`backed_by`), so its own `_seed_clear` keepout covers
+the staff band for everything placed after it, and the pieces placed before it
+are what keep it off that wall. `_WALL_PIECE_AIR` is inside that number rather
+than on top of it, so `_staff_side_plan`'s "already stands off its wall" branch
+does not fire on a 1 cm overshoot -- which it did, at 1.76 m against a needed
+1.75.
+
+`off_glass` keeps the counter off the STOREFRONT, because the pack wall that
+follows it would board up a 4.0 m shop window from the inside. Measured: it
+did, on the build before the rule.
+
+### FOUR RULES THAT COULD NOT FIRE
+
+Each was found by pointing existing machinery at this room, and each is a
+`check that cannot fail is indistinguishable from one that passed` in a
+different disguise.
+
+  * **A wall-run entry is a lottery ticket, not a promise.** The run is
+    shuffled and then cut to about half the room's target, so `pennant_row`
+    listed twice still came back ZERO times on the sales floor -- and every
+    spot the probe tried was CLEAR. The pennants are a `fixture` now, the
+    dartboard's machinery, which places one per `fixture_limit` with
+    `_FIXTURE_ROUNDS` draws each.
+
+  * **A cap a later pass can walk past is not a cap.** `pack_wall`'s `most`
+    was spent by the wall run and then `card_shop_counters` stood one more per
+    counter, so a two-counter selling floor drew FOUR. At the palette's widest
+    that is 8,448 triangles of pack wall alone and a worst-case room of
+    14,048, 132 % of the 10,664 Zoo measured for a card-shop room.
+    `reserved_by` keeps the later pass's share: 9,824.
+
+  * **A bare `True` for `variants` means four, and two species do not have
+    four.** `_make_volume` reads `int(True)` as 1, which is not `> 1`, so it
+    writes 0..3 for every variant-bearing piece. `folding_table` and
+    `folding_chair` are `module_variants: 2`, and Zoo's rule is
+    all-or-nothing: a variant outside 0..1 would have dropped the `cards`
+    stock with it and a play table would have come back bare. Caught by
+    `test_zoo_honours_every_dressing_furnish_writes` -- which was itself
+    asking the wrong question, `range(4 if p["variants"] else 1)`, a 4 spelled
+    beside the 4 in the writer. That hardcode under-tested `neon_sign` by
+    twenty variants and refused a correct piece. `variant_count` is one
+    function now, asked by the writer and the checker.
+
+  * **A migration's regex was a list of one.** `migrate_furnish_recipes`
+    stripped `^bartender_...` before a refurnish. The card shop's
+    `shopkeeper` markers were therefore kept AND written again, four patrol
+    points for two aisles. The pattern is built from
+    `level_design.STAFF_MARKER_ROLES` now.
+
+### AND A FIXED POINT THAT WAS AN ACCIDENT OF HISTORY
+
+Stripping those markers and letting `furnish` append the new ones moves each
+from the middle of the marker list to the end, so a freshly generated spec is
+not a fixed point of its own migration -- the JSON differs by marker ORDER
+alone. MEASURED on a fresh `strip_club`: `bartender_r1d196568_2` stood at
+index 5 and came back at index 29. `strip_club_a01..a03` hid it because
+0.137.0's own migration had already appended theirs, so
+`test_the_library_carries_the_fixture_pass_and_is_still_a_fixed_point_of_furnish`
+was passing on where those three files happen to be rather than on a property
+of the code. Each re-written marker goes back to the index it held, and
+`presets.make(...)` + strip + refurnish is now byte-identical for `card_shop`,
+`strip_club`, `pawn_shop` and `bank`.
+
+### A hung piece stops answering to a body's rules once it is over the door
+
+`pennant_row` hangs from the CEILING (`under`, not `lift`) because a fixed
+height is right at one storey and inside the slab at the next -- 2.90 m at
+3.4 m, and the arithmetic, not the number, is what is written down.
+
+At that height it was refused everywhere. MEASURED, with a probe printing
+which test rejected each candidate: all 8 spots on `card_shop_a01`'s sales
+floor were on interior walls and all 8 were refused by `_seed_clear`'s
+"a metre off any partition" at **0.17-0.18 m** -- which is what a piece
+standing against a wall measures. Three of that function's rules -- the
+partition standoff and the 1.5 m approach to an exterior or a partition
+opening -- exist because a body walks through doors and along walls, and a
+strip above every opening HEAD is in nobody's path. `hangs_over_openings`
+reads that head from the spec's own openings through
+`spec_types.Opening.resolved`, so the number is the one place that declares
+it.
+
+MEASURED INERT ON EVERYTHING THAT SHIPPED: the bottom of every hung piece this
+pass wrote before today is 1.85 m (`neon_sign`, `wall_tv`) or 1.28 m
+(`dartboard`), each from a FIXED lift, and a plain door's head is 2.2 m. No
+older piece can be exempt at any storey height, and
+`test_the_over_opening_exemption_reaches_no_older_piece` is what says so
+rather than this paragraph.
+
+**AND THE RULE IT EXEMPTS IS ITSELF WORTH A LOOK, WHICH THIS RELEASE DOES NOT
+TAKE.** `_wall_slots` offers candidates against every room bound, and
+`_seed_clear` then refuses every one that lies on a PARTITION -- so in this
+library a wall run can only ever use an EXTERIOR wall. A room enclosed by
+partitions places none of its run, which `furnish` already documents as a
+consequence; what is new is the measurement that it is the standoff, at 0.17 m
+against a 1.00 m limit, and not the openings. A card shop makes it visible
+because a card shop's subject is the product on its walls. Not changed here:
+loosening it moves every furnished room in the library and wants its own
+release and its own frames.
+
+### The triangle arithmetic, in Zoo's currency
+
+Every figure below is Zoo's own planner run over the slots this build emitted
+(`facts["tris"]`), and for four of the five species the planned number IS the
+built number -- checked against `validation.checks.tri_budget` in the kit's
+`meta.json`: pack wall 1,416 = 1,416, display case 1,108 = 1,108, pennant row
+892 = 892. Only `folding_table` differs, because its `cards` stock is drawn by
+the recipe rather than the planner: 132 planned, 228-240 built.
+
+    card_shop_a01, as shipped        sales floor   play area
+      display_case x2 + end             2,864           -
+      pack_wall x2                      2,804           -
+      pennant_row x2                    1,784       1,784
+      crt_tv x2                           808           -
+      folding_table x2 (built)              -         468
+      folding_chair x4 (built)              -         744
+                                      -------      ------
+                                        8,260       2,996
+
+    worst case the caps allow        sales floor   play area
+      2 cases at 3.6 + 2 ends           3,816           -
+      2 pack walls at 3.6               4,224       4,224
+      2 pennant rows                    1,784       1,784
+      2 CRTs                              808           -
+      3 tables + 9 chairs                   -       2,448
+                                      -------      ------
+                                       10,632       8,456
+
+against the **10,664** Zoo measured for one card-shop room. The selling floor
+lands at 99.7 % of it and nothing in the recipe can exceed that.
+
+WHAT THE CAPS COST, said rather than quietly narrowed:
+
+  * **The wall run places no pack wall at all on a two-counter floor**
+    (`reserved_by`). Six bays of boosters where four runs would have been
+    twelve: the reference's "one long aisle of it" is what is given up.
+  * **A selling floor gets no play tables** (`floor: ()`). Two tables and six
+    chairs at the palette's worst are 1,632 triangles and the difference
+    between 10,632 and 12,264. This is the rare cap that is also the truer
+    answer -- the reference's tables are in the tournament area, not scattered
+    across the shop floor.
+  * **Two pennant rows a room, not four.** A strip costs its budget however
+    long it is (`max_pennants` is `(budget - 12) // 20`), so length is free
+    and count is not; four rows are a third of Zoo's whole room.
+
+None of the three is closed. There is still no runtime telemetry from a real
+session, so these are conservative numbers held against a measured reference
+and not against a frame time; when that data exists, the budget is the dial
+and `most` is where it is spent.
+
+### Zoo's L is not taken, and what it would have bought
+
+Zoo's `display_case` builds an L from the slot's DEPTH
+(`pick_form`: `d >= 2 * case_depth + 0.10`), one module with one L-shaped
+glass top and its inner corner left open -- "which is where the staff stand
+and where Deli Counter's own aisle runs", its collision comment says. Asking
+for it means authoring a slot 1.85 m deep whose back 1.25 m is the aisle, and
+Deli Counter writes ONE CONVEX BOX over a hinted volume's whole slot unless
+the species is in `prop_species.SPECIES_OWNS_COLLISION`. That box IS the
+aisle, sealed -- the `cubicle_bank` defect of Zoo 0.93.0, and invisible to the
+nav gate, which grades the greybox shells where that box is the only collider
+there is. Putting `display_case` in that set instead would take the collider
+off every showcase in the library. The L here is a second case
+(`display_case_end`) closing the aisle's blind end, the club's return leg with
+a showcase in place of a panelled counter. The expensive version buys one
+continuous glass top instead of two cases meeting, and is worth reopening the
+day a hinted volume can declare a collider that is not its slot.
+
+### What the frames show
+
+The shell was built and rendered (`review_render.py`, 9 views), and the kit was
+built from its own `slots.json` (`zoo_cli --build-kit --theme card_shop`):
+**74 modules, 0 failed**, with the stems the mirror predicts --
+`prop_display_case_card_shop_09_w240_d60_h100_mwood_panel`,
+`prop_pack_wall_card_shop_14_w240_d50_h220_mslatwall`,
+`prop_pennant_row_card_shop_10_w800_d8_h30_n2` and
+`prop_folding_table_card_shop_11_w240_d76_h74_scards` (no `_m` on the last
+two, which is the point of writing their species' own kind).
+
+  * the showcase counter: glass top, framed panes, a register and a row of
+    white card boxes on the deck, chrome toe kick;
+  * the pack wall: two bays of booster boxes faced out in tight rows, each
+    box carrying its game's art;
+  * the pennant row: 44 angled felt pennants in the invented clubs' colours;
+  * the play table: black cloth to the floor, deck boxes and card stacks on
+    the top.
+
+TWO THINGS THE FRAMES DO NOT SETTLE, said rather than implied. `review_render`
+lights a raw GLB with a neutral rig and no skin packs, so it cannot answer
+whether the case's glass front reads as glass -- Zoo 0.95.0 records that the
+stock behind it is invisible until a theme ships a `glass` pack with
+`transparency`. And nobody has walked this building; the walker has not seen
+these frames.
+
+### Also
+
+`prop_species` routes the five species, and `display_case` re-routes 12
+authored volumes that were plain boxes: the six at 2.4 x 0.9 x 1.0 in
+`cr_pawn`, `night_pawn` and `pawn_shop_a01` now build as the species, and the
+six at 2.4 x 1.2 x 1.4 / 8.0 x 2.0 x 2.2 in `landmark_hall_a01`, `_a03` and
+`cbp_town_finale...` stay boxes on a dimension. `gondola` is deliberately NOT
+a keyword: the library's eight are supermarket aisles 1.0-1.2 m deep against a
+genome depth of 0.35-0.60, so every match would fall back to the box, and a
+keyword whose every match cannot be built is noise in eight reports.
+
+`material_kind` learns `wood_panel` and `slatwall` (Zoo 0.95.0's two new
+kinds) and maps `cloth` and `plastic`, which were in the vocabulary and in no
+spec's map. `KIT_VERSION` 0.104.0 -> 0.105.0, because those three pawn shops'
+`slots.json` changes on a rebuild. `SCHEMA_VERSION` is not bumped for the
+`cards` stock value, as no schema addition since 0.103.0 has been -- including
+0.137.0's `bar_dense`, which is the same shape and is worth saying out loud
+rather than leaving the next reader to wonder.
+
+`specs/card_shop_a01.json` is the library entry. `layout_lint --all`: 133
+specs, **0 FAIL, 341 WARN, 101 specs with findings** -- the same 341 and the
+same 101 as the 132-spec library before it, so the card shop adds none.
+`test_card_shop.py`, 28 tests, all of which fail on 0.138.0 (16 failed,
+11 errors, 1 passed there).
+
 ## [0.138.0] - 2026-09-16  the hole behind the stair, and a cubicle that is not a desk
 
 Two findings from the walker's walk of cold run 9060, both in `office_stepped`.
