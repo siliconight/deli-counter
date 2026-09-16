@@ -89,6 +89,16 @@ PROP_SPECIES = (
     # Measured re-routes among authored volumes: none.
     (("dartboard", "dart_board", "dart_cabinet"), "dartboard"),
     (("cigarette",), "cigarette_machine"),
+    # THE BACK BAR (Zoo 0.92.0), and it has to stand AHEAD of the counter
+    # row below: that row holds `bar_`, and `back_bar_r1d196568_2` carries
+    # `bar_` in the middle of its name, so read in the old order every back
+    # bar in the library would have been built as a counter -- 2.4 m tall,
+    # which the counter genome tops out at 1.2 m short of, so it would not
+    # even have fallen back to a box quietly. Measured re-routes among
+    # authored (not furnished) volumes: none -- no spec names a volume
+    # `back_bar` today, and the club room CALLED `back_bar` in
+    # `strip_club_a03` is a room, not a volume.
+    (("back_bar", "backbar", "bar_back"), "back_bar"),
     (("counter", "reception", "station", "island", "cage", "bar_",
       "workbench", "tool_bench"), "counter"),
     (("desk", "cubicle"), "desk"),

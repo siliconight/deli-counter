@@ -49,6 +49,20 @@ def furnished_by_this_pass(v, tags):
     return m.group("stem") in stems
 
 
+#: MARKERS `furnish` WRITES (0.137.0). The back bar pass drops a
+#: `patrol_point` in each bar's staff aisle, so the nav gate answers
+#: whether a bartender can be reached there. It is generated, it is named
+#: with the room's tag like everything else this pass writes, and it has to
+#: be stripped with the volumes or a refurnish leaves one behind and is no
+#: longer a fixed point.
+_GENERATED_MARKER = re.compile(r"^bartender_(?P<tag>r[0-9a-f]{8})_\d+$")
+
+
+def marker_written_by_this_pass(m, tags):
+    g = _GENERATED_MARKER.match(str(m.get("id") or ""))
+    return bool(g and g.group("tag") in tags)
+
+
 def migrate(d):
     """Strip and refurnish one spec dict in place: (removed, added)."""
     tags = {level_design._room_tag(r) for r in d.get("rooms") or []}
@@ -56,6 +70,11 @@ def migrate(d):
     keep = [v for v in vols if not furnished_by_this_pass(v, tags)]
     removed = len(vols) - len(keep)
     d["volumes"] = keep
+    marks = d.get("markers") or []
+    kept_marks = [m for m in marks if not marker_written_by_this_pass(m, tags)]
+    removed += len(marks) - len(kept_marks)
+    if marks:
+        d["markers"] = kept_marks
     added = level_design.furnish(d) if d.get("rooms") else 0
     return removed, added
 

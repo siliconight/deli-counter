@@ -858,10 +858,30 @@ _PIECES = {p["name"]: p for p in (
     # `test_zoo_honours_every_dressing_furnish_writes`
     _piece("stage_round", ((5.0, 4.0, None), (4.0, 4.0, None), (6.0, 5.0, None)),
            "centre", form="round", most=1, collision="none", deck=0.8),
-    # a bar counter for the long room, stools along its front
+    # A BAR COUNTER FOR THE LONG ROOM, stools along its front -- and, since
+    # 0.137.0, Zoo's `bar` FORM (a brass foot rail under the customer
+    # overhang, tap towers and a register on the service side) and its
+    # DENSE bar top (`bar_dense`: liquor rows, glass towers, cocktails and
+    # a speed rail of spouted bottles) in place of the sparse `bar` stock.
+    # The dive bar is a later slice and keeps `counter_bar` as it is.
     _piece("counter_club", ((4.0, 0.8, 1.08), (5.0, 0.8, 1.1), (3.0, 0.8, 1.08)),
-           "wall", front=True, stock="bar", variants=True,
+           "wall", front=True, form="bar", stock="bar_dense", variants=True,
            seats=("stool", 3, 5), most=2),
+    # THE BACK BAR (Zoo 0.92.0) -- never placed on its own: it belongs to a
+    # bar counter and `back_bar_club_counters` stands it against the wall
+    # behind one, with a bartender's aisle between. `where` is `pair` for
+    # the same reason `bar_stool`'s is `seat`.
+    _piece("back_bar", ((3.0, 0.5, 2.4), (4.0, 0.5, 2.4), (5.0, 0.5, 2.4)),
+           "pair", front=True, variants=True),
+    # THE BAR'S RETURN END -- the short leg that makes the counter an L
+    # where the room's corner allows, closing one end of the staff aisle.
+    # A PLAIN counter and not a `counter_club`: it is the bar's panelled
+    # end, so it carries no foot rail, no taps, no register and no bottles
+    # (the `bar` form and the dense top belong on the run a customer
+    # stands at), and no stools, because there is nothing to sit at. Named
+    # `counter_end` so `prop_species` routes it to `counter` on the
+    # keyword the row already holds.
+    _piece("counter_end", ((1.25, 0.8, 1.08),), "pair", front=True),
     _piece("sofa_club", ((2.0, 0.9, 0.85), (2.4, 0.9, 0.85), (1.6, 0.85, 0.85)),
            "wall", front=True, form="sofa", variants=True, most=4),
     # HUNG ON THE WALL, in free air above the furniture: the sign's centre
@@ -1197,6 +1217,11 @@ _PROP_MATERIALS = (
     (("neon", "tv", "cigarette"), "metal_painted"),
     # the species' own kind, so Zoo's stem carries no `_m` (0.136.0)
     (("dartboard",), "wood_stained"),
+    # ...and the back bar's, for the same reason (0.137.0). No earlier row
+    # here claims it -- the `bar_` keyword that would is in
+    # `prop_species.PROP_SPECIES`, not in this table, and it is handled
+    # there.
+    (("back_bar",), "wood_stained"),
 )
 _PROP_MATERIAL_DEFAULT = "wood"
 _PROP_ACOUSTIC = {"wood": ("Wood", 0.35, 0.3), "metal": ("Metal", 0.2, 0.15),
@@ -1929,6 +1954,341 @@ def place_fixtures(spec):
     return added
 
 
+# ---------------------------------------------------------------------------
+# THE CLUB'S BACK BAR -- a staff side behind every bar counter (0.137.0)
+# ---------------------------------------------------------------------------
+#
+# The walker, 2026-09-15, with three photos of a lounge bar
+# (docs/SET_DRESSING_REFERENCES.md, "The walker's club bar reference"). The
+# third is shot from above: bartenders WORKING between the counter and the
+# back bar, and "just to show the clearance the bar should have for
+# bartenders to stand behind, similar to the bank teller row".
+#
+# `enclose_teller_lines` (0.126.0) is the precedent and this follows its
+# SHAPE -- one pass over the finished spec, a report row per bar saying
+# enclosed or why not, no geometry moved where the room cannot hold it --
+# but not its walls. A teller line's staff side is a locked room behind two
+# doors; a bar's is a working aisle you walk into round the end of the
+# counter, and the reference asks for "a lighter enclosure: no locked
+# doors, a BAR FLAP at one end or both".
+#
+# WHAT THE COUNTER HAD TO GIVE UP. Until this pass a `counter_club` stood
+# flush against its wall (`_wall_slots`: the piece's back `wall_thick / 2 +
+# _WALL_PIECE_AIR` off the room's bound), which leaves 1 cm behind it and
+# no staff side at all. The counter is MOVED into the room by the back
+# bar's depth plus the aisle, and its stools move with it, so the bar's
+# customer front is where it was relative to its stools and the wall
+# behind it is now the back bar's.
+#
+# THE AISLE'S WIDTH IS DERIVED FROM BOTH CONTRACT NUMBERS, not chosen.
+# It is a corridor -- a body walks its length -- so it is at least
+# `min_corridor_width` 1.1 m, the navmesh's own rule (2 x bake radius +
+# 0.3; narrower bakes as an island, as twin_a01's 0.9 m flights did). And
+# it is entered at its END, through the gap between the counter's end and
+# the back bar's: that gap IS the bar flap, and a flap is a door, so it is
+# at least `min_door_width` 1.25 m. One aisle cannot be two widths, so it
+# is the greater of them and the flap is the aisle's own cross-section.
+# The reference's figure of "~0.9 m" is below both and is not used.
+#
+# WHY THERE IS NO FLAP LEAF. Deli Counter has no door in the middle of a
+# volume, and a solid one across the only route to the staff side would
+# make the aisle an island -- the exact defect the nav gate exists to
+# catch. The bar flap here is an opening, not a leaf, and the report says
+# its measured width.
+
+#: Zoo's `back_bar` genome: the default depth and height, and the width
+#: range a unit can be built at.
+BACK_BAR_DEPTH = 0.5
+BACK_BAR_H = 2.4
+BACK_BAR_W = (1.6, 6.0)
+#: How much of the aisle's length the bartender marker stands in from the
+#: mouth: a body's radius and a little, so the marker is not in the
+#: doorway it is reached through.
+_BARTENDER_IN = 0.8
+#: A counter end with less than the aisle's own width plus the counter's
+#: depth between it and the room's side wall makes the bar an L: there is
+#: no walking round that end, so the return leg closes it and the other
+#: end is the flap.
+
+
+def bar_aisle_width():
+    """The clear aisle behind a club bar: the greater of the corridor and
+    the door minimums (see the section note). One number, asked once."""
+    import agent_contract
+    return round(max(agent_contract.min_corridor_width(),
+                     agent_contract.min_door_width()), 4)
+
+
+def _axis_of(bearing):
+    """``(dx, dy)`` for a compass bearing that is square to the axes, or
+    None: a counter set at an angle has no wall behind it to speak of."""
+    b = round(float(bearing) % 360.0, 3)
+    return {0.0: (0.0, 1.0), 90.0: (1.0, 0.0), 180.0: (0.0, -1.0),
+            270.0: (-1.0, 0.0)}.get(b)
+
+
+def _rect_of(v):
+    sx, sy = float(v["size_x"]) / 2.0, float(v["size_y"]) / 2.0
+    return (float(v["x"]) - sx, float(v["y"]) - sy,
+            float(v["x"]) + sx, float(v["y"]) + sy)
+
+
+def _rect_clear(spec, room, rect, skip, pad=0.0):
+    """What stands in `rect` on this room's storey, by name. `skip` is the
+    set of volume names that belong to the bar being built. A HUNG piece
+    over a body's head is not in the way, the same rule `dart_lane_blockers`
+    uses."""
+    out = []
+    story = room.get("story", 0)
+    sh = _story_height(spec)
+    floor = story * sh
+    box = (rect[0] - pad, rect[1] - pad, rect[2] + pad, rect[3] + pad)
+    x0, y0, x1, y1 = room["bounds"]
+    wt = float(spec.get("wall_thick") or 0.3) / 2.0
+    if box[0] < x0 + wt - 1e-6 or box[1] < y0 + wt - 1e-6 or \
+            box[2] > x1 - wt + 1e-6 or box[3] > y1 - wt + 1e-6:
+        out.append("room")
+    for v in spec.get("volumes", []):
+        if v.get("name") in skip:
+            continue
+        vz, vh = float(v.get("z", 0.0)), float(v.get("size_z", 0.0))
+        if not _on_storey(vz, vh, floor, sh):
+            continue
+        if v.get("collision") == "none" and vz - vh / 2.0 - floor >= _HUNG_MIN:
+            continue
+        if _rect_hits(box, _rect_of(v)):
+            out.append("volume:" + str(v.get("name")))
+    for p in spec.get("partitions", []):
+        if p.get("story", 0) != story:
+            continue
+        lo, hi = sorted((float(p["start"]), float(p["end"])))
+        pos = float(p["pos"])
+        seg = ((pos - 0.01, lo, pos + 0.01, hi) if p["axis"] == "Y"
+               else (lo, pos - 0.01, hi, pos + 0.01))
+        if _rect_hits(box, seg):
+            out.append("partition")
+    for rect2 in _stair_reserved_rects(spec):
+        if _rect_hits(box, rect2):
+            out.append("stair")
+    for lad in spec.get("ladders", []):
+        if _rect_point_dist(box, lad["x"], lad["y"]) < 1.0:
+            out.append("ladder")
+    return out
+
+
+def _club_bar_counters(spec, building):
+    """``[(room, counter volume, seq)]`` -- every club bar counter in a
+    strip club, in a stable order."""
+    out = []
+    if not _strip_club_building(building):
+        return out
+    for room in spec.get("rooms", []) or []:
+        if not is_strip_club_room(room, building):
+            continue
+        rtag = _room_tag(room)
+        for stem, seq, v in sorted(_room_names(spec, rtag),
+                                   key=lambda t: (t[0], t[1])):
+            if stem == "counter_club":
+                out.append((room, v, seq))
+    return out
+
+
+def back_bar_club_counters(spec):
+    """Stand a BACK BAR against the wall behind every club bar counter,
+    with a bartender's aisle between, and prove the staff side is a place a
+    body can be.
+
+    Per bar, in one pass and in this order:
+
+      * the counter moves into the room by the back bar's depth plus the
+        aisle (`bar_aisle_width`), and its stools move with it;
+      * a `back_bar` volume goes flush against the wall, as long as the
+        counter (inside Zoo's genome range) and to the storey's clear
+        height;
+      * where the counter's end is against a perpendicular wall, a return
+        leg across the aisle closes that end and the bar is an L;
+      * a `patrol_point` marker stands in the aisle, so the nav gate
+        answers whether a bartender can be reached there rather than
+        anybody assuming it;
+      * the whole thing is skipped, and the report says why, when the room
+        cannot hold it.
+
+    Idempotent (a counter that already has its `back_bar_<tag>_<seq>` is
+    left alone), deterministic, and reads nothing but the spec. Returns
+    ``[report]``, one row per bar counter.
+    """
+    building = club_building_id(spec)
+    aisle = bar_aisle_width()
+    sh = _story_height(spec)
+    clear_h = _clear_height(spec)
+    report = []
+    for room, v, seq in _club_bar_counters(spec, building):
+        rtag = _room_tag(room)
+        entry = {"room": room["id"], "counter": v["name"], "built": False,
+                 "why": "", "aisle_m": None, "flap_m": None, "l_shaped": False}
+        report.append(entry)
+        if any(n == "back_bar" and s == seq
+               for n, s, _v in _room_names(spec, rtag)):
+            entry["built"] = True
+            entry["why"] = "already"
+            continue
+        front = _front_of(v)
+        d = _axis_of(front)
+        if d is None:
+            entry["why"] = ("the counter is set at %g deg, not square to a "
+                            "wall" % front)
+            continue
+        fx, fy = d
+        story = room.get("story", 0)
+        floor = story * sh
+        x0, y0, x1, y1 = room["bounds"]
+        wt = float(spec.get("wall_thick") or 0.3) / 2.0
+        # ONE COORDINATE, so the arithmetic is written once: `t` measures
+        # from the INNER FACE of the wall behind the counter, along the
+        # counter's front bearing, into the room. `along` is the other axis.
+        # A first draft did this in x and y with a sign per branch and had
+        # two spellings of the aisle in it before the line that used it.
+        if fy:
+            dirn = fy
+            wall = (y0 + wt) if dirn > 0 else (y1 - wt)
+            back_t = abs(float(v["y"]) - float(v["size_y"]) / 2.0 * dirn - wall)
+            run, thick = float(v["size_x"]), float(v["size_y"])
+            along = float(v["x"])
+            a_lo, a_hi = x0 + wt, x1 - wt
+            extent = (y1 - y0) - 2 * wt
+        else:
+            dirn = fx
+            wall = (x0 + wt) if dirn > 0 else (x1 - wt)
+            back_t = abs(float(v["x"]) - float(v["size_x"]) / 2.0 * dirn - wall)
+            run, thick = float(v["size_y"]), float(v["size_x"])
+            along = float(v["y"])
+            a_lo, a_hi = y0 + wt, y1 - wt
+            extent = (x1 - x0) - 2 * wt
+
+        def _rect(t0, t1, u0, u1):
+            """A rectangle from `t0` to `t1` off the wall, spanning `u0` to
+            `u1` along it, in the spec's own x/y."""
+            p0, p1 = wall + dirn * t0, wall + dirn * t1
+            lo, hi = min(p0, p1), max(p0, p1)
+            uu0, uu1 = min(u0, u1), max(u0, u1)
+            return (uu0, lo, uu1, hi) if fy else (lo, uu0, hi, uu1)
+
+        need = BACK_BAR_DEPTH + aisle
+        shift = round(need - back_t, 4)
+        if shift < -1e-6:
+            entry["why"] = ("the counter already stands %.2f m off its wall"
+                            % back_t)
+            continue
+        lane = extent - (need + thick)
+        if lane < _CUSTOMER_LANE:
+            entry["why"] = ("moving the counter %.2f m leaves %.2f m of "
+                            "customer floor in front of it" % (shift, lane))
+            continue
+        mine = {v["name"]} | {sv["name"] for n, s, sv in _room_names(spec, rtag)
+                              if n == "bar_stool" and s == seq}
+        u0, u1 = along - run / 2.0, along + run / 2.0
+        bar_rect = _rect(0.0, BACK_BAR_DEPTH, u0, u1)
+        aisle_rect = _rect(BACK_BAR_DEPTH, need, u0, u1)
+        counter_rect = _rect(need, need + thick, u0, u1)
+        blockers = (_rect_clear(spec, room, bar_rect, mine)
+                    + _rect_clear(spec, room, aisle_rect, mine)
+                    + _rect_clear(spec, room, counter_rect, mine))
+        if blockers:
+            entry["why"] = "the staff side is not clear: " + ", ".join(
+                sorted(set(blockers))[:3])
+            continue
+        # THE MOUTHS, one at each end of the aisle: the aisle's own
+        # cross-section carried a door's width past the counter's end. The
+        # `reach` is how much floor there is between that end and the
+        # room's side wall, which is what decides whether a body can get in
+        # at all.
+        mouths = {}
+        for side in ("a", "b"):
+            end, s = (u0, -1.0) if side == "a" else (u1, 1.0)
+            m = _rect(BACK_BAR_DEPTH, need, end, end + s * aisle)
+            reach = abs((a_lo if side == "a" else a_hi) - end)
+            mouths[side] = (m, reach, _rect_clear(spec, room, m, mine))
+        open_ends = [s for s in ("a", "b")
+                     if not mouths[s][2] and mouths[s][1] >= aisle - 1e-6]
+        if not open_ends:
+            entry["why"] = ("neither end of the aisle opens %.2f m clear "
+                            "(a: %.2f m %s; b: %.2f m %s)"
+                            % (aisle, mouths["a"][1],
+                               ",".join(sorted(set(mouths["a"][2]))) or "clear",
+                               mouths["b"][1],
+                               ",".join(sorted(set(mouths["b"][2]))) or "clear"))
+            continue
+
+        # --- from here the bar is built -----------------------------------
+        entry["aisle_m"] = round(aisle, 3)
+        entry["flap_m"] = round(aisle, 3)
+        entry["shift_m"] = round(shift, 3)
+        if fy:
+            v["y"] = round(float(v["y"]) + fy * shift, 2)
+        else:
+            v["x"] = round(float(v["x"]) + fx * shift, 2)
+        for name, s, sv in _room_names(spec, rtag):
+            if name == "bar_stool" and s == seq:
+                if fy:
+                    sv["y"] = round(float(sv["y"]) + fy * shift, 2)
+                else:
+                    sv["x"] = round(float(sv["x"]) + fx * shift, 2)
+        bw = max(BACK_BAR_W[0], min(BACK_BAR_W[1], run))
+        bh = min(BACK_BAR_H, clear_h)
+        cx = (bar_rect[0] + bar_rect[2]) / 2.0
+        cy = (bar_rect[1] + bar_rect[3]) / 2.0
+        sx, sy = (bw, BACK_BAR_DEPTH) if fy else (BACK_BAR_DEPTH, bw)
+        bar = _make_volume(spec, "back_bar", "back_bar_%s_%d" % (rtag, seq),
+                           cx, cy, sx, sy, bh,
+                           _front_turn("back_bar", sx, sy, front), story, sh,
+                           building)
+        spec.setdefault("volumes", []).append(bar)
+        # THE L. Where one end of the counter stands against a
+        # perpendicular wall there is no walking round it, so a return leg
+        # across the aisle closes that end and the bar reads as the
+        # reference's L in dark stained wood. The other end is the flap.
+        closed = [s for s in ("a", "b")
+                  if s not in open_ends and mouths[s][1] <= aisle + thick]
+        if closed:
+            side = closed[0]
+            end, s = (u0, -1.0) if side == "a" else (u1, 1.0)
+            leg_u = end + s * thick / 2.0
+            leg_t = (BACK_BAR_DEPTH + need) / 2.0
+            lcx, lcy = (leg_u, wall + dirn * leg_t) if fy \
+                else (wall + dirn * leg_t, leg_u)
+            lsx, lsy = (thick, aisle) if fy else (aisle, thick)
+            leg = _make_volume(spec, "counter_end",
+                               "counter_end_%s_%d" % (rtag, seq),
+                               lcx, lcy, lsx, lsy, float(v["size_z"]),
+                               _front_turn("counter_end", lsx, lsy,
+                                           (front + (90.0 if s > 0 else 270.0)) % 360.0),
+                               story, sh, building)
+            if not _rect_clear(spec, room, _rect_of(leg),
+                               mine | {bar["name"]}):
+                spec["volumes"].append(leg)
+                entry["l_shaped"] = True
+        # THE BARTENDER, so the nav gate ANSWERS whether the staff side is
+        # a place a body can be rather than anybody assuming it: a marker
+        # in the aisle, a step in from the open end.
+        end, s = (u0, 1.0) if open_ends[0] == "a" else (u1, -1.0)
+        mu = end + s * _BARTENDER_IN
+        mt = (BACK_BAR_DEPTH + need) / 2.0
+        px, py = (mu, wall + dirn * mt) if fy else (wall + dirn * mt, mu)
+        spec.setdefault("markers", []).append({
+            "type": "patrol_point", "id": "bartender_%s_%d" % (rtag, seq),
+            "x": round(px, 3), "y": round(py, 3), "z": round(floor, 3),
+            "rot_z": round(front, 3), "room": room["id"],
+            "meta": {"role": "bartender", "aisle_m": round(aisle, 3)}})
+        entry["built"] = True
+    return report
+
+
+#: A customer needs somewhere to stand in front of a bar: a stool's depth
+#: and a body, which is `_SEAT` plus two radii. The moved counter keeps at
+#: least this much floor between its front and the far side of the room.
+_CUSTOMER_LANE = 2.0
+
+
 def furnish(spec):
     """Put FURNITURE in the rooms -- a different question from cover.
 
@@ -2206,7 +2566,7 @@ def furnish(spec):
                 if h > clear_h:
                     continue
                 half = max(w, d) / 2.0
-                if p["where"] == "seat":
+                if p["where"] in ("seat", "pair"):
                     return False
                 if p["where"] == "wall":
                     spots = [(qx, qy, sx, sy, front) for qx, qy, sx, sy, _r, front
@@ -2353,6 +2713,13 @@ def furnish(spec):
             else:
                 pool, lo, hi = rng.choice(clusters)
                 short -= _cluster(pool, max(1, min(short, hi)))
+    # THE BACK BARS BEFORE THE FIXTURES, because this pass MOVES counters
+    # (0.137.0) and a dartboard's throwing lane is measured against where
+    # the furniture actually stands. Both read only the spec, so a room
+    # this call furnished and a room an earlier release furnished get the
+    # same answer.
+    added += sum(1 for r in back_bar_club_counters(spec)
+                 if r["built"] and r["why"] != "already")
     # FIXTURES LAST, over every room, from the spec alone (0.136.0): a room
     # furnished in this call and a room furnished by an earlier release get
     # the same pass, so `migrate_club_fixtures.py` is this line.

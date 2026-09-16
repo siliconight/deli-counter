@@ -81,6 +81,90 @@
       "z": 3.0,
       "rot_z": 0.0,
       "room": "main_floor"
+    },
+    {
+      "name": "PATROL_POINT_bartender_r1d196568_2",
+      "type": "patrol_point",
+      "id": "bartender_r1d196568_2",
+      "x": -16.725,
+      "y": -2.15,
+      "z": 0.0,
+      "rot_z": 90.0,
+      "room": "main_floor",
+      "meta": {
+        "role": "bartender",
+        "aisle_m": 1.25
+      }
+    },
+    {
+      "name": "PATROL_POINT_bartender_r1d196568_3",
+      "type": "patrol_point",
+      "id": "bartender_r1d196568_3",
+      "x": 16.725,
+      "y": -5.07,
+      "z": 0.0,
+      "rot_z": 270.0,
+      "room": "main_floor",
+      "meta": {
+        "role": "bartender",
+        "aisle_m": 1.25
+      }
+    },
+    {
+      "name": "PATROL_POINT_bartender_ra07f4e1a_2",
+      "type": "patrol_point",
+      "id": "bartender_ra07f4e1a_2",
+      "x": -16.725,
+      "y": 8.15,
+      "z": 0.0,
+      "rot_z": 90.0,
+      "room": "back_bar",
+      "meta": {
+        "role": "bartender",
+        "aisle_m": 1.25
+      }
+    },
+    {
+      "name": "PATROL_POINT_bartender_ra07f4e1a_3",
+      "type": "patrol_point",
+      "id": "bartender_ra07f4e1a_3",
+      "x": 16.725,
+      "y": 8.08,
+      "z": 0.0,
+      "rot_z": 270.0,
+      "room": "back_bar",
+      "meta": {
+        "role": "bartender",
+        "aisle_m": 1.25
+      }
+    },
+    {
+      "name": "PATROL_POINT_bartender_r420234d8_2",
+      "type": "patrol_point",
+      "id": "bartender_r420234d8_2",
+      "x": 16.725,
+      "y": -7.77,
+      "z": 3.6,
+      "rot_z": 270.0,
+      "room": "vip_mezz",
+      "meta": {
+        "role": "bartender",
+        "aisle_m": 1.25
+      }
+    },
+    {
+      "name": "PATROL_POINT_bartender_r420234d8_3",
+      "type": "patrol_point",
+      "id": "bartender_r420234d8_3",
+      "x": -2.66,
+      "y": -10.725,
+      "z": 3.6,
+      "rot_z": 0.0,
+      "room": "vip_mezz",
+      "meta": {
+        "role": "bartender",
+        "aisle_m": 1.25
+      }
     }
   ],
   "rooms": [
@@ -3442,6 +3526,69 @@
       }
     },
     {
+      "node": "back_bar_r1d196568_2_col",
+      "material": {
+        "id": "wood_stained",
+        "acoustic": "Wood",
+        "absorption": 0.35,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "counter_end_r1d196568_2_col",
+      "material": {
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
+      }
+    },
+    {
+      "node": "back_bar_r1d196568_3_col",
+      "material": {
+        "id": "wood_stained",
+        "acoustic": "Wood",
+        "absorption": 0.35,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "back_bar_ra07f4e1a_2_col",
+      "material": {
+        "id": "wood_stained",
+        "acoustic": "Wood",
+        "absorption": 0.35,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "back_bar_ra07f4e1a_3_col",
+      "material": {
+        "id": "wood_stained",
+        "acoustic": "Wood",
+        "absorption": 0.35,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "back_bar_r420234d8_2_col",
+      "material": {
+        "id": "wood_stained",
+        "acoustic": "Wood",
+        "absorption": 0.35,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "back_bar_r420234d8_3_col",
+      "material": {
+        "id": "wood_stained",
+        "acoustic": "Wood",
+        "absorption": 0.35,
+        "damping": 0.3
+      }
+    },
+    {
       "node": "cigarettes_r1d196568_22_col",
       "material": {
         "id": "metal_painted",
@@ -4518,6 +4665,13 @@
     "desk_r8f1a320b_6": "prop",
     "cartons_r8f1a320b_7": "prop",
     "cartons_r8f1a320b_8": "prop",
+    "back_bar_r1d196568_2": "prop",
+    "counter_end_r1d196568_2": "prop",
+    "back_bar_r1d196568_3": "prop",
+    "back_bar_ra07f4e1a_2": "prop",
+    "back_bar_ra07f4e1a_3": "prop",
+    "back_bar_r420234d8_2": "prop",
+    "back_bar_r420234d8_3": "prop",
     "dartboard_r1d196568_21": "prop",
     "cigarettes_r1d196568_22": "prop",
     "dartboard_ra07f4e1a_17": "prop",

@@ -4125,9 +4125,9 @@
       "style": 5,
       "material": "wood",
       "species": "counter",
-      "stock": "bar",
+      "stock": "bar_dense",
       "variant": 3,
-      "form": null,
+      "form": "bar",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
       "wall": null,
@@ -4136,7 +4136,7 @@
       "transform": {
         "translation": [
           -0.27,
-          -11.44,
+          -9.7,
           0.54
         ],
         "rot_y": 180.0,
@@ -4175,7 +4175,7 @@
       "transform": {
         "translation": [
           -1.77,
-          -10.63,
+          -8.89,
           0.38
         ],
         "rot_y": 0.0,
@@ -4214,7 +4214,7 @@
       "transform": {
         "translation": [
           -0.77,
-          -10.63,
+          -8.89,
           0.38
         ],
         "rot_y": 0.0,
@@ -4253,7 +4253,7 @@
       "transform": {
         "translation": [
           0.23,
-          -10.63,
+          -8.89,
           0.38
         ],
         "rot_y": 0.0,
@@ -4292,7 +4292,7 @@
       "transform": {
         "translation": [
           1.23,
-          -10.63,
+          -8.89,
           0.38
         ],
         "rot_y": 0.0,
@@ -7115,6 +7115,45 @@
           0.5,
           0.5,
           0.9
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "back_bar_r1d196568_2",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 12,
+      "material": "wood_stained",
+      "species": "back_bar",
+      "stock": null,
+      "variant": 1,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          -0.27,
+          -11.6,
+          1.2
+        ],
+        "rot_y": 180.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          4.0,
+          0.5,
+          2.4
         ],
         "pivot": "center",
         "openings": [],

@@ -1,3 +1,121 @@
+## [0.137.0] - 2026-09-15  a bar a bartender can stand behind
+
+The walker, with three photos of a lounge bar and one shot from above of
+bartenders WORKING between a counter and the back bar behind it: "just to
+show the clearance the bar should have for bartenders to stand behind,
+similar to the bank teller row". Zoo 0.92.0 builds the back bar, the dense
+bar top and the counter's bartender-side fit-out; Lux 0.39.0 lights it; this
+places all of it and proves the staff side is somewhere a body can be.
+
+`enclose_teller_lines` (0.126.0) is the precedent the walker named, and this
+follows its SHAPE -- one pass over the finished spec, a report row per bar
+saying enclosed or why not, nothing moved where the room cannot hold it --
+but not its walls. A teller line's staff side is a locked room behind two
+doors; a bar's is a working aisle you walk into round the end of the
+counter, and the reference asks for "a lighter enclosure: no locked doors, a
+BAR FLAP at one end or both".
+
+**`back_bar_club_counters`**, run from `furnish` before `place_fixtures`
+(that pass measures throwing lanes against where the furniture actually
+stands, and this one MOVES counters). Per club bar counter, in one pass:
+
+  * the counter moves into the room by the back bar's depth plus the aisle,
+    and its stools move with it. Until now a `counter_club` stood flush
+    against its wall -- `_wall_slots` puts a piece's back `wall_thick / 2 +
+    0.01` off the room's bound -- which leaves a centimetre behind it and no
+    staff side at all;
+  * a `back_bar` volume goes flush against that wall, as long as the counter
+    (inside Zoo's 1.6-6.0 m genome range) and 2.4 m tall;
+  * where one end of the counter stands against a perpendicular wall, a
+    `counter_end` closes that end of the aisle and the bar is an L;
+  * a `patrol_point` marker stands in the aisle a body's step in from the
+    open end;
+  * and the whole thing is skipped, with the report saying why, when the
+    room cannot hold it.
+
+Idempotent by name (`back_bar_<tag>_<seq>`, the counter's own seq),
+deterministic, reads nothing but the spec.
+
+**THE AISLE'S WIDTH IS DERIVED FROM BOTH CONTRACT NUMBERS**
+(`bar_aisle_width`). It is a corridor -- a body walks its length -- so it is
+at least `min_corridor_width` 1.1 m, the navmesh's own rule (2 x bake radius
++ 0.3; narrower bakes as an island, as twin_a01's 0.9 m flights did). And it
+is entered at its END, through the gap between the counter's end and the
+back bar's: that gap IS the bar flap, and a flap is a door, so it is at
+least `min_door_width` 1.25 m. One aisle cannot be two widths, so it is the
+greater of them -- 1.25 m today -- and the flap is the aisle's own
+cross-section. The reference's own figure of "~0.9 m" is below both and is
+not used.
+
+WHY THERE IS NO FLAP LEAF: Deli Counter has no door in the middle of a
+volume, and a solid one across the only route to the staff side would make
+the aisle an island -- the exact defect the nav gate exists to catch. The
+flap here is an opening, not a leaf, and the report gives its measured
+width.
+
+**THE BAR'S L IS TWO VOLUMES, and that is a measurement and not a
+preference.** Zoo's counter could carry an L form; `deli_counter.py:2357`
+writes one box collider per volume, so an L inside a box slot would leave
+the open quadrant solid -- an invisible wall in the middle of a club floor.
+The return is a second volume instead: `counter_end`, a PLAIN counter (no
+bar form, no dense top, no stools -- it is the bar's panelled end, not a
+place anybody is served), spanning the aisle at one end. Two of the
+library's eight club bars take one.
+
+**Every club counter now asks Zoo for the bar** (`_PIECES["counter_club"]`):
+form `bar` -- the brass foot rail, the tap towers and the register -- and
+stock `bar_dense` in place of the sparse `bar`. `counter_bar`, the taproom's
+and the lounge's, is untouched: the walker was explicit that the club's bar
+"will be different from the dive bar species we make later", and the dive
+bar is its own slice.
+
+**The light** (`lights._back_bar_anchors`): a `back_bar` anchor per unit,
+0.15 m proud of the slot's front face in free air -- the neon's own number,
+and inside the aisle, because Lux's omni sits AT the anchor and must never
+be inside the cabinet (roadmap 139). `size` is the LIT FACE, the glass
+shelves between the lower run's worktop and the cornice, from
+`back_bar_face`, which mirrors Zoo's `back_bar_forms` arithmetic the way
+`tv_screen_size` mirrors the CRT's -- `test_back_bar` pins the four
+constants against Zoo's own file when Zoo is beside this repo. `aisle`
+carries this pass's own number, so Lux's range reaches a bartender standing
+in it. No `color`: Lux reads a back bar with none as `tungsten`, the bulb
+colour Zoo paints, and naming it here would be one number written twice.
+
+**Measured on the library, all eight club bars built:**
+
+| spec | room | counter | run | aisle clear | L |
+| --- | --- | --- | --- | --- | --- |
+| strip_club_a01 | main_floor | `counter_club_r1d196568_2` | 4.0 m | 1.25 m | -- |
+| strip_club_a02 | main_floor | `counter_club_r1d196568_2` | 5.0 m | 1.25 m | L |
+| strip_club_a03 | main_floor | `counter_club_r1d196568_2` | 3.0 m | 1.25 m | L |
+| strip_club_a03 | main_floor | `counter_club_r1d196568_3` | 5.0 m | 1.25 m | -- |
+| strip_club_a03 | back_bar | `counter_club_ra07f4e1a_2` | 4.0 m | 1.25 m | -- |
+| strip_club_a03 | back_bar | `counter_club_ra07f4e1a_3` | 3.0 m | 1.25 m | -- |
+| strip_club_a03 | vip_mezz | `counter_club_r420234d8_2` | 4.0 m | 1.25 m | -- |
+| strip_club_a03 | vip_mezz | `counter_club_r420234d8_3` | 5.0 m | 1.25 m | -- |
+
+No room in the library was refused, so the refusal branches are exercised by
+`test_back_bar` rather than by the shipped specs -- which is worth saying
+plainly: the "say so per room rather than squeezing it" half of this has not
+been tried by a real room yet.
+
+**The library is still a fixed point of `furnish`.** Strip every volume AND
+every marker this pass writes, refurnish, compare the JSON: 126 of 126
+identical, the three clubs included.
+`migrate_furnish_recipes.py` strips the `bartender_<tag>_<seq>` markers with
+the volumes -- a refurnish that leaves one behind is not a fixed point --
+and `lf_*.json` is skipped as before. The counts it prints do NOT match
+(-94 removed against +91 added on a01): `furnish`'s return has never counted
+the `stage_deck` colliders, and now does not count the return ends or the
+markers either. A count is not a diff, and the diff is zero.
+
+`test_back_bar.py` (28 cases) holds the derivation, the clear gap measured
+edge to edge, the bar's facing and its back on the wall, an empty aisle, a
+bartender marker inside the aisle and inside no volume, the refusal, the
+L's shape, the counter's dressing fields, the dive bar left alone, the
+light anchor's position and size, and the fixed point. Every one fails on
+0.136.0, where `bar_aisle_width` does not exist.
+
 ## [0.136.0] - 2026-09-15  a strip club has a dartboard, and the bar a cigarette machine
 
 The walker: "we also need dart boards in the strip clubs. The kind where you

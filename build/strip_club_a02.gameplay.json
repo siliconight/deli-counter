@@ -81,6 +81,20 @@
       "z": 3.0,
       "rot_z": 0.0,
       "room": "main_floor"
+    },
+    {
+      "name": "PATROL_POINT_bartender_r1d196568_2",
+      "type": "patrol_point",
+      "id": "bartender_r1d196568_2",
+      "x": 14.725,
+      "y": -3.38,
+      "z": 0.0,
+      "rot_z": 270.0,
+      "room": "main_floor",
+      "meta": {
+        "role": "bartender",
+        "aisle_m": 1.25
+      }
     }
   ],
   "rooms": [
@@ -2413,6 +2427,24 @@
       }
     },
     {
+      "node": "back_bar_r1d196568_2_col",
+      "material": {
+        "id": "wood_stained",
+        "acoustic": "Wood",
+        "absorption": 0.35,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "counter_end_r1d196568_2_col",
+      "material": {
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
+      }
+    },
+    {
       "node": "cigarettes_r1d196568_20_col",
       "material": {
         "id": "metal_painted",
@@ -3570,6 +3602,8 @@
     "table_count_r1c92a876_9": "prop",
     "chair_set_r1c92a876_9_1": "prop",
     "chair_set_r1c92a876_9_2": "prop",
+    "back_bar_r1d196568_2": "prop",
+    "counter_end_r1d196568_2": "prop",
     "dartboard_r1d196568_18": "prop",
     "dartboard_r1d196568_19": "prop",
     "cigarettes_r1d196568_20": "prop",

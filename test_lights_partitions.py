@@ -73,7 +73,7 @@ def test_a_lamp_on_a_crossing_partition_is_nudged_off_it():
     for x in xs:
         assert abs(abs(x) - 8.0) >= 0.4 - 1e-9
     assert rep == {"rows_shifted": 0, "nudged": 2, "dropped": 0, "club_rooms": 0,
-                   "tv_screens": 0}
+                   "tv_screens": 0, "back_bars": 0}
     # a nudged lamp is its own run, so the row is published as several anchors
     ids = sorted(x["id"] for x in a if x.get("room") == "lobby" and "row" in x)
     assert ids == ["lobby_ceiling_%d" % i for i in range(5)]

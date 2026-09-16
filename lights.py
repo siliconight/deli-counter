@@ -64,6 +64,28 @@ _TV_COLOURS = ("cyan", "blue")
 #: Only the set Zoo lights: `crt_tv`'s `bracket` form. A `stand` set is off.
 _TV_SPECIES = "crt_tv"
 _TV_LIT_FORM = "bracket"
+#: THE BACK BAR'S PRACTICAL (Lux 0.39.0). Zoo 0.92.0 paints the bulbs
+#: behind the glass shelves and the porthole's disc as emissive materials,
+#: and a lit material lights nothing round it in GL Compatibility -- the
+#: same finding as the TV screen, one release earlier. The spill is a
+#: `back_bar` anchor per unit: a warm omni whose range is half the lit
+#: face's diagonal plus the working aisle behind the bar.
+#:
+#: It stands this far in FRONT of the slot's front face, in free air: Lux's
+#: omni sits AT the anchor and must never be inside the cabinet (roadmap
+#: 139). 0.15 m is the neon's own number, and it is inside the aisle.
+_BACKBAR_OUT = 0.15
+_BACKBAR_SPECIES = "back_bar"
+#: Zoo's `back_bar_forms`, mirrored, because Deli Counter cannot import Zoo
+#: -- the same arrangement as `tv_screen_size` above, and `test_club_rooms`
+#: pins it against Zoo's own numbers. The lower cabinet run's worktop is at
+#: `min(COUNTER_H, h * COUNTER_SHARE)` plus `TOP_T`, the cornice takes
+#: `CORNICE_H` off the top, and what is between them is the LIT FACE: the
+#: glass shelves, their bulbs and the porthole.
+_BACKBAR_COUNTER_H = 1.05
+_BACKBAR_COUNTER_SHARE = 0.5
+_BACKBAR_TOP_T = 0.04
+_BACKBAR_CORNICE_H = 0.07
 #: The screen's centre above the slot's centre, MEASURED off Zoo 0.90.0's
 #: `crt_forms.plan_bracket` at the two sizes the club recipe places:
 #: +0.0366 m at 0.6 x 0.55 x 0.5 and +0.0351 at 0.7 x 0.6 x 0.55.
@@ -434,6 +456,59 @@ def tv_screen_size(width, height):
     return [round(sh * 4.0 / 3.0, 3), round(sh, 3)]
 
 
+def back_bar_face(height):
+    """``(z above the unit's base, lit height)`` of a back bar's lit face:
+    the glass shelves between the lower run's worktop and the cornice.
+    Zoo's `back_bar_forms` arithmetic, mirrored (see `_BACKBAR_COUNTER_H`).
+
+    Returns the CENTRE of the face and its height, both in metres above the
+    unit's own base -- the slot's bottom, not its centre."""
+    h = float(height)
+    counter = min(_BACKBAR_COUNTER_H, h * _BACKBAR_COUNTER_SHARE)
+    lo = counter + _BACKBAR_TOP_T
+    hi = h - _BACKBAR_CORNICE_H
+    return round((lo + hi) / 2.0, 4), round(max(0.2, hi - lo), 4)
+
+
+def _back_bar_anchors(r, floor_z, volumes, aisle=None):
+    """A `back_bar` spill anchor in front of every back bar in room ``r``:
+    ``<volume name>_niche``, `_BACKBAR_OUT` proud of the slot's front face
+    on its facing, at the lit face's own height, `size` that face and
+    `aisle` the working aisle behind the bar. ``volumes`` are the room's
+    visible volumes. Deterministic."""
+    import math
+    import prop_species
+    rid = r.get("id", "room")
+    out = []
+    for v in volumes:
+        name = str(v.get("name", ""))
+        if prop_species.species_for_name(name) != _BACKBAR_SPECIES:
+            continue
+        bearing = _front_bearing(v)
+        b = math.radians(bearing)
+        fx, fy = math.sin(b), math.cos(b)
+        sx, sy = float(v.get("size_x", 0.0)), float(v.get("size_y", 0.0))
+        width, depth = max(sx, sy), min(sx, sy)
+        height = float(v.get("size_z", 0.0))
+        rise, lit = back_bar_face(height)
+        # the slot's centre is at height / 2 above its base
+        z = float(v.get("z", 0.0)) - height / 2.0 + rise
+        out_d = depth / 2.0 + _BACKBAR_OUT
+        a = {
+            "id": "%s_niche" % name, "type": "back_bar", "source": "derived",
+            "pos": [round(float(v["x"]) + fx * out_d, 3),
+                    round(float(v["y"]) + fy * out_d, 3), round(z, 3)],
+            "rot_y": _bearing_to_rot_y(bearing), "room": rid,
+            "size": [round(width, 3), lit],
+            "row": {"count": 1, "spacing": 0.0},
+            "drop": round(z - floor_z, 3), "reacts_to_alarm": True,
+        }
+        if aisle:
+            a["aisle"] = round(float(aisle), 3)
+        out.append(a)
+    return out
+
+
 def _tv_screen_anchors(r, floor_z, volumes):
     """A `neon` spill anchor in front of every lit TV in room ``r``:
     ``<tv id>_screen``, `_TV_SCREEN_OUT` proud of the slot's front face on
@@ -730,8 +805,16 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
     rep.setdefault("rows_shifted", 0)
     rep.setdefault("club_rooms", 0)
     rep.setdefault("tv_screens", 0)
+    rep.setdefault("back_bars", 0)
     clear = wall_clearance(wall_thick)
     club_ids = set(club_rooms or ())
+    # The aisle behind a club bar, asked of the one function that derives
+    # it (`level_design.bar_aisle_width`) rather than spelled again here.
+    try:
+        import level_design
+        bar_aisle = level_design.bar_aisle_width()
+    except Exception:                                    # noqa: BLE001
+        bar_aisle = None
     for r in rooms or []:
         c = r.get("center")
         bounds = r.get("bounds")
@@ -755,6 +838,9 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
                                  story_height, rects, walls, clear, rep)
             anchors += club
             anchors += screens
+            bars = _back_bar_anchors(r, c[2], in_room, aisle=bar_aisle)
+            rep["back_bars"] += len(bars)
+            anchors += bars
             anchors.append(_room_ambient(
                 r, c[2], ceiling_z, _club_colour(_club_colour_start(r.get("id")), 0)))
             continue

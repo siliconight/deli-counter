@@ -237,6 +237,8 @@ _ZOO_RANGES = {
     # the club's fixtures (Zoo 0.91.0)
     "dartboard": ((0.6, 1.35), (0.14, 0.42), (0.8, 1.0)),
     "cigarette_machine": ((0.78, 1.02), (0.4, 0.58), (1.3, 1.75)),
+    # the club's bar (Zoo 0.92.0)
+    "back_bar": ((1.6, 6.0), (0.35, 0.75), (1.8, 3.0)),
 }
 ZOO = os.environ.get("DC_ZOO_ROOT") or os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "zoo")

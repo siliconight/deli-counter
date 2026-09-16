@@ -6186,9 +6186,9 @@
       "style": 5,
       "material": "wood",
       "species": "counter",
-      "stock": "bar",
+      "stock": "bar_dense",
       "variant": 3,
-      "form": null,
+      "form": "bar",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
       "wall": null,
@@ -6196,7 +6196,7 @@
       "facing": null,
       "transform": {
         "translation": [
-          15.44,
+          13.7,
           -1.68,
           0.55
         ],
@@ -6235,7 +6235,7 @@
       "facing": null,
       "transform": {
         "translation": [
-          14.63,
+          12.89,
           -3.55,
           0.38
         ],
@@ -6274,7 +6274,7 @@
       "facing": null,
       "transform": {
         "translation": [
-          14.63,
+          12.89,
           -2.3,
           0.38
         ],
@@ -6313,7 +6313,7 @@
       "facing": null,
       "transform": {
         "translation": [
-          14.63,
+          12.89,
           -1.05,
           0.38
         ],
@@ -6352,7 +6352,7 @@
       "facing": null,
       "transform": {
         "translation": [
-          14.63,
+          12.89,
           0.2,
           0.38
         ],
@@ -8708,6 +8708,84 @@
           0.5,
           0.5,
           0.9
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "back_bar_r1d196568_2",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 11,
+      "material": "wood_stained",
+      "species": "back_bar",
+      "stock": null,
+      "variant": 1,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          15.6,
+          -1.68,
+          1.2
+        ],
+        "rot_y": 90.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          5.0,
+          0.5,
+          2.4
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "counter_end_r1d196568_2",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 5,
+      "material": "wood",
+      "species": "counter",
+      "stock": null,
+      "variant": 0,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          14.72,
+          1.22,
+          0.55
+        ],
+        "rot_y": 180.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.25,
+          0.8,
+          1.1
         ],
         "pivot": "center",
         "openings": [],

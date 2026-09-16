@@ -396,7 +396,7 @@
   },
   {
    "name": "counter_club_r1d196568_2",
-   "x": 15.44,
+   "x": 13.7,
    "y": -1.68,
    "z": 0.55,
    "size_x": 0.8,
@@ -404,12 +404,13 @@
    "size_z": 1.1,
    "collision": "convex",
    "material": "wood",
-   "stock": "bar",
+   "stock": "bar_dense",
+   "form": "bar",
    "variant": 3
   },
   {
    "name": "bar_stool_r1d196568_2_1",
-   "x": 14.63,
+   "x": 12.89,
    "y": -3.55,
    "z": 0.38,
    "size_x": 0.42,
@@ -422,7 +423,7 @@
   },
   {
    "name": "bar_stool_r1d196568_2_2",
-   "x": 14.63,
+   "x": 12.89,
    "y": -2.3,
    "z": 0.38,
    "size_x": 0.42,
@@ -434,7 +435,7 @@
   },
   {
    "name": "bar_stool_r1d196568_2_3",
-   "x": 14.63,
+   "x": 12.89,
    "y": -1.05,
    "z": 0.38,
    "size_x": 0.42,
@@ -447,7 +448,7 @@
   },
   {
    "name": "bar_stool_r1d196568_2_4",
-   "x": 14.63,
+   "x": 12.89,
    "y": 0.2,
    "z": 0.38,
    "size_x": 0.42,
@@ -1197,6 +1198,30 @@
    "rot_z": 90.0
   },
   {
+   "name": "back_bar_r1d196568_2",
+   "x": 15.6,
+   "y": -1.68,
+   "z": 1.2,
+   "size_x": 0.5,
+   "size_y": 5.0,
+   "size_z": 2.4,
+   "collision": "convex",
+   "material": "wood_stained",
+   "variant": 1
+  },
+  {
+   "name": "counter_end_r1d196568_2",
+   "x": 14.72,
+   "y": 1.22,
+   "z": 0.55,
+   "size_x": 1.25,
+   "size_y": 0.8,
+   "size_z": 1.1,
+   "collision": "convex",
+   "material": "wood",
+   "rot_z": 180.0
+  },
+  {
    "name": "dartboard_r1d196568_18",
    "x": -6.97,
    "y": -10.65,
@@ -1295,6 +1320,19 @@
    "y": -8.0,
    "z": 3.0,
    "room": "main_floor"
+  },
+  {
+   "type": "patrol_point",
+   "id": "bartender_r1d196568_2",
+   "x": 14.725,
+   "y": -3.38,
+   "z": 0.0,
+   "rot_z": 270.0,
+   "room": "main_floor",
+   "meta": {
+    "role": "bartender",
+    "aisle_m": 1.25
+   }
   }
  ]
 }

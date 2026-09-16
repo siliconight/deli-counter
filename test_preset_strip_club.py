@@ -41,7 +41,10 @@ OTHER_KINDS = {"dressing_room": "locker", "cash_office": "vault",
                "stockroom": "storage", "kitchen": "kitchen"}
 CLUB_SPECIES = {"club_stage", "bar_stool", "counter", "booth_seat", "neon_sign",
                 "crt_tv", "cocktail_table", "club_chair", "vending_machine",
-                "dartboard", "cigarette_machine"}
+                "dartboard", "cigarette_machine",
+                # 0.137.0: the lit wall unit behind every bar counter, and
+                # the plain counter that returns the bar to the wall
+                "back_bar"}
 _TAGGED = re.compile(r"_r[0-9a-f]{8}_")
 #: What Level Factory calls the level it builds for the 9055 brief.
 LF_NAME = "lf_club_block_001_7"

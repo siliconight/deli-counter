@@ -27,7 +27,11 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 CLUB_SPECIES = {"club_stage", "bar_stool", "counter", "booth_seat", "neon_sign",
                 "crt_tv", "cocktail_table", "club_chair", "vending_machine",
                 # the fixtures (0.136.0, `test_club_fixtures.py`)
-                "dartboard", "cigarette_machine"}
+                "dartboard", "cigarette_machine",
+                # the bar's staff side (0.137.0): the lit wall unit behind
+                # every counter. The return end that makes the bar an L is
+                # a plain `counter` and is already in this set.
+                "back_bar"}
 _GEN = re.compile(r"^(?P<stem>[a-z_]+?)_(?P<tag>r[0-9a-f]{8})_\d+(_\d+)?$")
 
 
@@ -277,8 +281,15 @@ def test_the_club_keeps_the_furnishing_invariants():
     n = level_design.furnish(s)
     assert n > 0
     assert level_design.furnish(s) == 0
+    # A HOST'S OWN FURNITURE IS NOT A SECOND HOST, which is why the seats
+    # were excluded here from the start. 0.137.0 adds two more: a back bar
+    # stands 1.90 m from its counter BY DERIVATION -- half the bar, the
+    # 1.25 m aisle and half the counter -- and the return end that makes
+    # the bar an L stands across that aisle. Both belong to the counter the
+    # way a stool does, and the 2.2 m spread is between pieces that do not.
     hosts = [v for v in s["volumes"] if v.get("visual", True)
-             and not v["name"].startswith(("bar_stool_", "club_chair_", "neon_sign_", "wall_tv_"))]
+             and not v["name"].startswith(("bar_stool_", "club_chair_", "neon_sign_",
+                                           "wall_tv_", "back_bar_", "counter_end_"))]
     for i, a in enumerate(hosts):
         for b in hosts[i + 1:]:
             assert math.hypot(a["x"] - b["x"], a["y"] - b["y"]) >= 2.2 - 1e-6, (a["name"], b["name"])
