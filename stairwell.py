@@ -506,6 +506,74 @@ def flight_rect(st, s):
     return (px - sx / 2, py - sy / 2, px + sx / 2, py + sy / 2)
 
 
+def flight_run_lateral(st, s):
+    """``(low, high)`` -- the world LATERAL span of the RUN the leg climbing
+    storey `s` uses, treads only, no margin.
+
+    A switchback's legs alternate between two parallel runs (`ascent_surfaces`
+    puts leg 0 at local x ``st.x + width/2`` and the next at
+    ``st.x - width/2``), so on any one storey half the reserved rectangle is
+    the leg and half is the other run. A straight flight has one run and this
+    is its width.
+    """
+    lo = min(st.from_story, st.to_story)
+    sign = 1 if ((s - lo) % 2 == 0 or st.style == "straight") else -1
+    x_off = 0.0 if st.style == "straight" else st.width / 2.0
+    sxl = st.x + (x_off if sign > 0 else -x_off)
+    a = _stair_pt(st, sxl - st.width / 2.0, st.y)
+    b = _stair_pt(st, sxl + st.width / 2.0, st.y)
+    k = 0 if (getattr(st, "facing", "N") or "N") in ("N", "S") else 1
+    return (min(a[k], b[k]), max(a[k], b[k]))
+
+
+def flight_solid_end(st, H, s):
+    """The world point where the leg climbing storey `s` STOPS being solid on
+    that storey's floor: the far edge of its top tread.
+
+    NOT ``st.y + sign * run / 2``, which is where the RUN ends. A multi-storey
+    switchback's leg ends in a turn landing at the top of the storey, and
+    `ascent_surfaces` gives such a leg one tread fewer ("a leg that ends in a
+    turn landing has no top tread: the landing IS the top surface"), so its
+    solid stops a step short and the slot behind it is a step deeper than the
+    run says. Measured in `office_stepped`'s 0.137.0 glb: run end y 2.350,
+    top tread `stair0_0_16` ends at y 2.089, step 0.261.
+
+    For every flight that tops out at the run's end this returns
+    ``st.y + sign * st.run / 2.0`` -- the same expression, not a second
+    spelling of it -- so no number a one-run flight already ships moves.
+    """
+    lo = min(st.from_story, st.to_story)
+    hi = max(st.from_story, st.to_story)
+    sign = 1 if ((s - lo) % 2 == 0 or st.style == "straight") else -1
+    if st.style == "switchback" and s < hi - 1:
+        n = _step_count(st, H)
+        step_d = st.run / n                 # `ascent_surfaces`' own divisor
+        ly = st.y + sign * (step_d * (n - 1) - st.run / 2.0)
+    else:
+        ly = st.y + sign * st.run / 2.0
+    return _stair_pt(st, st.x, ly)
+
+
+def flight_solid_rect(st, H, s):
+    """The plan rect the leg climbing storey `s` fills SOLID on that storey's
+    floor -- its run's lateral span by its treads' travel span.
+
+    For a straight flight and a single-storey switchback this is
+    `footprint_rect` exactly. It differs only where a turn landing takes the
+    top tread, and where the other run of a multi-storey switchback is open
+    air a body walks through.
+    """
+    r_lo, r_hi = flight_run_lateral(st, s)
+    lo = min(st.from_story, st.to_story)
+    sign = 1 if ((s - lo) % 2 == 0 or st.style == "straight") else -1
+    foot = _stair_pt(st, st.x, st.y - sign * st.run / 2.0)
+    end = flight_solid_end(st, H, s)
+    travel_y = (getattr(st, "facing", "N") or "N") in ("N", "S")
+    k = 1 if travel_y else 0
+    t0, t1 = min(foot[k], end[k]), max(foot[k], end[k])
+    return ((r_lo, t0, r_hi, t1) if travel_y else (t0, r_lo, t1, r_hi))
+
+
 def single_run(st):
     """A switchback that climbs ONE storey: one leg, in one run.
 
@@ -823,6 +891,27 @@ def stair_guards(spec):
             #   an open channel under the next leg (`cr_deli`, glb: nothing
             #   between the basement floor and z 0.0 at x -14.3 from y 5.8 to
             #   11), so its "slot" is the mouth of a passage, not a dead end.
+            #
+            #   NARROWED 0.138.0, and the sentence above is why it was too
+            #   wide. The channel is ONE of the two runs, not the rectangle.
+            #   Measured in `office_stepped`'s 0.137.0 glb (building frame, m;
+            #   the walker, cold run 9060, "hole behind this stair and to the
+            #   side"): on storey 0 the leg fills x 0.000..1.600 and its side
+            #   walls stand at x -2.000..-1.605 and 1.605..2.000, so the open
+            #   air inside the rectangle is the channel at x -1.600..0.000
+            #   running y -2.650..3.150 -- open to the room at BOTH ends, 3.4 m
+            #   of headroom under the landing plate -- AND a pocket at
+            #   x 0.000..1.605, y 2.089..3.150, floor to slab underside,
+            #   1.61 x 1.06 x 3.30 m, shut by the flight's own top face and
+            #   open only sideways into the channel. That pocket is the same
+            #   dead end this rule was written for, in the half of the
+            #   rectangle the channel does not use. So a multi-storey
+            #   switchback fills its leg's OWN run and leaves the other one
+            #   end to end: `flight_run_lateral` says which half is which.
+            # * on the floor, always. A leg above the first stands on the slab
+            #   the leg below cut, and `back_only` already refuses a back over
+            #   an opening -- measured across the library, that removes every
+            #   leg-1 candidate (17 of the 34) and leaves the 17 leg 0s.
             # * the leg the builder fills solid (`flight_solid_under`). Above
             #   leg 0 a straight flight's arrival end stands on the discharge
             #   plate of the flight below, which is that flight's way off.
@@ -832,16 +921,27 @@ def stair_guards(spec):
             #   the plate, where no walker goes. Their thin guards stand at
             #   the rectangle's edge, so the fill spans edge to edge.
             one_run = st.style == "straight" or single_run(st)
-            if (one_run and flight_solid_under(spec, st, s)
+            multi_sb = st.style == "switchback" and not one_run
+            if ((one_run or multi_sb) and flight_solid_under(spec, st, s)
                     and any(q["kind"] == "side" and q["stair"] == sid
                             and q["story"] == s for q in raw)):
-                t_a, t_b = ((t_top + SIDE_GAP, t_hi) if arrive_hi
-                            else (t_lo, t_top - SIDE_GAP))
+                end = flight_solid_end(st, H, s)
+                t_end = end[1] if travel == "Y" else end[0]
+                t_a, t_b = ((t_end + SIDE_GAP, t_hi) if arrive_hi
+                            else (t_lo, t_end - SIDE_GAP))
                 inner = 0.0 if narrow else fill
-                backs.append({"stair": sid, "story": s, "kind": "back",
-                              "axis": lateral, "pos": (t_a + t_b) / 2.0,
-                              "thick": t_b - t_a,
-                              "lo": l_lo + inner, "hi": l_hi - inner})
+                b_lo, b_hi = l_lo + inner, l_hi - inner
+                if multi_sb:
+                    r_lo, r_hi = flight_run_lateral(st, s)
+                    if r_lo + r_hi > l_lo + l_hi:   # the leg's run, high side
+                        b_lo = r_lo
+                    else:
+                        b_hi = r_hi
+                if t_b - t_a > T and b_hi - b_lo > T:
+                    backs.append({"stair": sid, "story": s, "kind": "back",
+                                  "axis": lateral, "pos": (t_a + t_b) / 2.0,
+                                  "thick": t_b - t_a,
+                                  "lo": b_lo, "hi": b_hi})
     # AFTER every side and rail, so each of those keeps its index -- and so
     # its builder name (`stair_guard_side_7` is what the walker's overlay read)
     raw += backs

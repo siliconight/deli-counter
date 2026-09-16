@@ -1,3 +1,104 @@
+## [0.138.0] - 2026-09-16  the hole behind the stair, and a cubicle that is not a desk
+
+Two findings from the walker's walk of cold run 9060, both in `office_stepped`.
+Zoo 0.93.0 is the other half of the second.
+
+### THE HOLE BEHIND THE STAIR (`stairwell.stair_guards`)
+
+"hole behind this stair and to the side", standing at Godot (-1.7, 1.6, 6.8)
+-- spec plan (-1.8, 5.7) -- looking at `stair0col_under_0_15`.
+
+0.134.0 fills the slot a flight's side walls leave behind its top, and
+excluded every multi-storey switchback because "its second run is an open
+walkway under the next leg, open to the room at both ends". That sentence is
+true and it was applied to the wrong rectangle. MEASURED in the 0.137.0 glb
+(building frame, metres), `office_stair_0` on storey 0:
+
+    leg 0's treads       x  0.000 ..  1.600   y -2.350 ..  2.089
+    side walls           x -2.000 .. -1.605   x  1.605 ..  2.000
+                         y -0.600 ..  3.150   z  0.000 ..  3.300
+    reserved rectangle   x -2.000 ..  2.000   y -2.650 ..  3.150
+
+so the open air inside the rectangle is TWO shapes, not one:
+
+  * the channel at x -1.600..0.000 running y -2.650..3.150, open to the room
+    at both travel ends with 3.4 m of headroom under the landing plate --
+    the walkway, and it keeps every metre of it;
+  * a pocket at x 0.000..1.605, y 2.089..3.150, floor to slab underside,
+    1.61 x 1.06 x 3.30 m, shut by the flight's own top face and open only
+    sideways into the channel. That is the same dead end 0.134.0 was written
+    for, in the half of the rectangle the channel does not use.
+
+So the fill now covers the leg's OWN run and stops at the run boundary
+(`flight_run_lateral` says which half is which), and a leg above the first
+still gets nothing, because it stands on the slab the leg below cut and
+`back_only` already refuses a back over an opening.
+
+THE SLOT IS A STEP DEEPER THAN THE RUN SAYS. A leg that ends in a turn
+landing is built one tread shorter -- `ascent_surfaces`: "the landing IS the
+top surface" -- so its solid stops at y 2.089 where `st.y + run / 2` says
+2.350. `flight_solid_end` derives that once; for every flight that tops out
+at the run's end it returns the same expression the callers already used, so
+no number a one-run flight ships moves. `flight_solid_rect` pairs it with the
+run's lateral span, and the containment test now measures against that rather
+than `footprint_rect`, which is the air a switchback RESERVES and not what it
+fills.
+
+CENSUS, over the 132 library specs (`test_stair_back.py`): 173 slab-cutting
+interior flights. 130 are one-run solid with side walls, 129 carry a back --
+unchanged. 41 are multi-storey switchback legs, 34 of them can carry one: 17
+leg 0s and 17 leg 1s. All 17 leg 1s are refused by the floor rule. Of the 17
+leg 0s, 15 carry a back and 2 -- `foundry_heist_vertical_stair_0` and
+`primos_pizza_stair_0` -- are refused by the exterior-wall arm of
+`covered_by_walls`, which pre-dates this and is left alone: changing it would
+move the one-run flights too, and that is its own measurement.
+
+### A CUBICLE BANK IS NOT A DESK (`prop_species.py`)
+
+"these desks are too close to each other?", 2.68 m from `cubicles_w_0_col`.
+
+All ten `cubicle*` volumes in the library -- `cubicles_w_0` through
+`cubicles_e_2` in `office` and `office_stepped`, every one 8.0 x 6.0 x 1.2 m
+and `drywall` -- routed to `desk`. The desk genome takes width to 12.0 and
+depth to 6.0, so the slot FIT: it did not fall back to a box, it built as
+desk geometry at that size, four 8 m work surfaces one per `row_max` row,
+butted along the depth. Zoo 0.93.0 grows `cubicle_bank` -- screens, the desks
+inside them, a 1.20 m aisle -- and the keyword row routes to it.
+
+THE ROW STANDS AHEAD OF `counter`, which is further up than the usual rule
+wants and is not a choice: `workstation_bank` carries `station`, so below the
+counter row that keyword could never fire, and a keyword that cannot match is
+the same defect as a parameter nothing reads. What the jump re-routes,
+measured over the 132 specs: nothing.
+
+### A SPECIES THAT OWNS ITS COLLISION GETS NO GREYBOX BOX
+
+`prop_species.SPECIES_OWNS_COLLISION`, read by `Builder._volumes`.
+
+The composer keeps the greybox COLLIDER and drops its visual, so for a volume
+that is mostly air the box is the only thing a body ever meets. Measured in
+cold run 9060's composed shell: `cubicles_w_0_col-convcolonly` is one solid
+box, x -14.000..-6.000, y 3.000..9.000, z 0.000..1.200, across a bank whose
+middle 1.20 m is an aisle. Zoo bakes `cubicle_bank`'s 28 per-part boxes into
+the module's own `-colonly` mesh, so the collision exists -- it is just not a
+box, and the greybox must stop drawing one over it.
+
+Two consequences, both deliberate and both worth stating. The GREYBOX build
+of such a volume now has no collider at all, and the nav bake reads the
+greybox: `office_stepped` goes from 213 navmesh polygons to 581 and `office`
+from 301 to 719, both still `navigable: yes`. The greybox is now permissive
+where it used to be sealed; neither is the themed truth, and the box was
+wrong in the other direction. And every planner that reads the SPEC volume --
+`level_design`, `vault_room`, `stairwell.stair_guards.solid_volumes` -- still
+sees `collision: convex` and treats the footprint as occupied, which is what
+a bank of screens is to a sightline and to a cover marker.
+
+### Tests
+
+`test_stair_back.py` 16 (5 fail on 0.137.0), `test_prop_species.py` 14
+(3 new). The library rebuilt: 132 shells, nav gate 130 shells, 14
+`navigable: NO` -- the same 14 as the baseline, none of them new.
+
 ## [0.137.0] - 2026-09-15  a bar a bartender can stand behind
 
 The walker, with three photos of a lounge bar and one shot from above of

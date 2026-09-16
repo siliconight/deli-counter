@@ -36,7 +36,14 @@ KIT_NAME = "Deli Counter"
 # SEED-DEPENDENT: the same preset at two seeds is two different buildings, so
 # a manifest that cannot name the kit cannot explain why two models from one
 # preset differ.
-KIT_VERSION = "0.103.0"
+# 0.104.0: a multi-storey switchback fills the dead end behind its own
+# leg (the OTHER run stays the open walkway it was), and a volume whose
+# species owns its collision gets no greybox box -- geometry and
+# collision both move, so a rebuilt .glb differs, which is the bump
+# condition stated above. Measured on `office_stepped`: one new solid,
+# `stair_guard_back_10` at x 0.000..1.605, y 2.094..3.150, z 0.000..3.300,
+# and four `cubicles_*_col` boxes gone.
+KIT_VERSION = "0.104.0"
 
 # Schema version is separate: bump when level.schema.json changes shape.
 SCHEMA_VERSION = "1.21.1"

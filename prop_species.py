@@ -99,9 +99,29 @@ PROP_SPECIES = (
     # `back_bar` today, and the club room CALLED `back_bar` in
     # `strip_club_a03` is a room, not a volume.
     (("back_bar", "backbar", "bar_back"), "back_bar"),
+    # A CUBICLE BANK IS NOT A DESK (Zoo 0.93.0). It had to stand ahead of the
+    # desk row, which held `cubicle` and took all ten of them: the desk genome
+    # reaches 12 m wide and 6 m deep, so an 8.0 x 6.0 x 1.2 m cubicle farm
+    # FITS it -- it did not fall back to a box, it built as desk geometry at
+    # that size, four 8 m tops butted edge to edge over the depth
+    # (`desk.py`'s rows), a raft with no aisle. The walker, cold run 9060,
+    # 2.68 m from `office_stepped`'s `cubicles_w_0_col`: "these desks are too
+    # close to each other?".
+    #
+    # AND AHEAD OF THE COUNTER ROW, which is further up than the rule above
+    # wants and is not a choice: `workstation_bank` carries `station`, so
+    # below the counter row that keyword could never fire and the species
+    # would answer to one name instead of two -- a keyword that cannot match
+    # is the same defect as a parameter nothing reads. What the jump
+    # re-routes, measured over the 132 library specs: nothing. The only names
+    # carrying `cubicle` are the 10 `cubicles_*` volumes in `office` and
+    # `office_stepped` (all 8.0 x 6.0 x 1.2, all `drywall`), none of them
+    # carries a keyword from any row between here and `desk`, and no spec
+    # names a volume `workstation_bank`.
+    (("cubicle", "workstation_bank"), "cubicle_bank"),
     (("counter", "reception", "station", "island", "cage", "bar_",
       "workbench", "tool_bench"), "counter"),
-    (("desk", "cubicle"), "desk"),
+    (("desk",), "desk"),
     (("cabinet", "locker"), "filing_cabinet"),
     (("shelf", "shelving", "rack", "stock"), "shelving"),
     (("vending",), "vending_machine"),
@@ -130,6 +150,36 @@ PROP_SPECIES = (
     (("stanchion",), "queue_stanchion"),
     (("payphone",), "payphone"),
 )
+
+
+#: Species whose MODULE owns the volume's collision, so the greybox must not
+#: also draw its box.
+#:
+#: Every other hinted volume is a solid roughly the size of its slot -- a
+#: desk, a counter, a filing cabinet -- and the greybox's convex box is a
+#: fair collider for it whether or not the art pass ever runs. A cubicle bank
+#: is not: it is 8 x 6 m of which the middle 1.2 m is an AISLE, and the box
+#: seals it. Measured in cold run 9060's composed shell,
+#: `lot/office_stepped/site_base.glb` (building frame, m): the composer keeps
+#: the greybox COLLIDER and drops its visual, so `cubicles_w_0_col-convcolonly`
+#: stands x -14.000..-6.000, y 3.000..9.000, z 0.000..1.200 -- one solid box --
+#: while the themed art beside it is the Zoo module. Whatever Zoo builds
+#: inside that box, a body meets the box.
+#:
+#: So for these, `Builder._volumes` skips `_col_box` and the module's own
+#: `-colonly` mesh is the collision. Two consequences, both deliberate:
+#: the GREYBOX build of such a volume has no collider at all (it is a
+#: drawing of a space, and a solid box is a worse lie about it than nothing),
+#: and every planner that reads the SPEC volume -- `level_design`,
+#: `vault_room`, `stairwell.stair_guards.solid_volumes` -- still sees
+#: `collision: convex` and treats the footprint as occupied, which is what a
+#: bank of screens is to a sightline and to a cover marker.
+SPECIES_OWNS_COLLISION = frozenset({"cubicle_bank"})
+
+
+def owns_collision(species):
+    """Does this species' module carry the volume's collision itself?"""
+    return species in SPECIES_OWNS_COLLISION
 
 
 def species_for_name(name):

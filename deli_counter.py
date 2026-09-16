@@ -2291,6 +2291,9 @@ class _Builder:
         for v in self.s.volumes:
             c = (v.x, v.y, v.z)
             size = (v.size_x, v.size_y, v.size_z)
+            # Read once, here: the slot below records it and the collider
+            # below that asks whether the species owns its own.
+            species = prop_species.species_for_name(v.name)
             if v.visual:
                 self._box(v.name, c, size, self.VISUAL, role="prop")
                 # ...and RECORD it, so the manifest is the whole building.
@@ -2321,7 +2324,6 @@ class _Builder:
                 # is y (`prop_species.long_axis_first`); the greybox box
                 # itself is drawn axis-aligned above and is symmetric, so
                 # nothing it collides with moves.
-                species = prop_species.species_for_name(v.name)
                 slot_dims, slot_rot = ((list(size), 0.0) if species is None
                                        else prop_species.long_axis_first(size))
                 # A VOLUME CAN BE TURNED (`Volume.rot_z`): a chair facing its
@@ -2351,9 +2353,19 @@ class _Builder:
                                      round(slot_dims[1], 4),
                                      round(slot_dims[2], 4)],
                             "pivot": "center", "openings": [],
-                            "collision": v.collision},
+                            "collision": ("none" if prop_species
+                                          .owns_collision(species)
+                                          else v.collision)},
                 })
-            if v.collision != "none":
+            # A SPECIES THAT OWNS ITS COLLISION GETS NO BOX (0.138.0). The
+            # composer keeps this collider and drops the greybox visual, so
+            # for a volume that is mostly air the box is the only thing a
+            # body ever meets -- measured on cold run 9060's composed
+            # `office_stepped`: `cubicles_w_0_col-convcolonly` is one solid
+            # 8.00 x 6.00 x 1.20 box across a bank whose middle 1.20 m is an
+            # aisle. See `prop_species.SPECIES_OWNS_COLLISION`.
+            if v.collision != "none" and not prop_species.owns_collision(
+                    species):
                 self._col_box(f"{v.name}_col", c, size, mode=v.collision)
                 self._record_surface(f"{v.name}_col", v.material)
 
