@@ -350,8 +350,13 @@ def test_no_card_shop_room_carries_more_than_its_caps(shop):
 _WORST_TRIS = {
     "display_case": 1148,        # 3.6 x 0.6 x 1.05
     "display_case_end": 760,     # 1.25 x 0.6 x 1.0
-    "pack_wall": 2112,           # 3.6 wide, 3 bays -- HEIGHT DOES NOT MOVE IT
-    "pack_wall_island": 1416,    # 2.4 wide, 2 bays, and an island is TWO
+    # ZOO 0.99.0 MOVED BOTH: a bay's shelf count follows its height now, so
+    # the 2.70 m gondolas this room stands carry seven shelves where they
+    # carried six. The old comment here read "HEIGHT DOES NOT MOVE IT",
+    # which was true of 0.98.0 and is the reason this table is re-read
+    # against Zoo's planner rather than trusted.
+    "pack_wall": 2358,           # 3.6 wide, 3 bays, 7 shelves at 2.70 m
+    "pack_wall_island": 1580,    # 2.4 wide, 2 bays, and an island is TWO
     "pennant_row": 892,          # its budget, whatever its length
     "wall_tv": 404,
     "folding_table": 384,        # with the `cards` stock
@@ -406,10 +411,10 @@ def test_the_room_budget_is_zoo_s_only_real_one_and_the_caps_fit_under_it():
     # caps on these four genomes are not what will hold the room back."
     art = sum(cap(k) * _WORST_TRIS[k] for k in
               ("poster", "hanging_banner", "ceiling_hanger", "aisle_sign"))
-    assert solid == 22304, solid
+    assert solid == 23944, solid
     assert art == 1064, art
     worst = solid + art
-    assert worst == 23368, worst
+    assert worst == 25008, worst
     assert worst <= level_design._CARD_SHOP_ROOM_TRIS
     # ...and the cap is load-bearing: one more island is over it, which is
     # why `most` is 2 and not 3.

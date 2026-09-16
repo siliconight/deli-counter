@@ -942,7 +942,19 @@ PACK_WALL_CEILING = 3.2
 #: on somebody else's machine"), so this is a measured reference held
 #: against a measured reference. When that data exists this is the dial,
 #: and `most` is where it is spent.
-_CARD_SHOP_ROOM_TRIS = 24000
+#: PROVISIONAL, 2026-09-16, AND UNDER MEASUREMENT AS THIS IS WRITTEN. Zoo
+#: 0.99.0 made a bay's shelf count follow its height, which is the fullness
+#: the walker asked for -- and it took the solid furnishing alone from
+#: 22,304 to 23,944, so the flat art (1,064) no longer fits under 24,000.
+#: The number was raised to what the room now measures rather than the room
+#: being thinned to the number, BECAUSE 24,000 WAS NEVER A FRAME COST: it is
+#: `cubicle_bank`'s per-species `budgets.tris_lod0` borrowed as a room
+#: yardstick, and nothing in this toolchain ties a triangle count to a
+#: measured frame. The walker chose to measure rather than trim (their call,
+#: recorded here because a moved line with no reason is how a budget stops
+#: meaning anything). When the frame figure exists, this becomes derived and
+#: this comment goes.
+_CARD_SHOP_ROOM_TRIS = 25008
 
 #: The pennant strip's own height, declared ONCE because two pieces read it:
 #: `pennant_row`'s sizes, and `_UNDER_PENNANTS` below, which is where the
