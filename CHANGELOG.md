@@ -1,3 +1,33 @@
+## [0.141.2] - 2026-09-16  the room's ceiling is what the room measures, and it says it is provisional
+
+ZOO 0.99.0 MOVED THE PACK WALL AND THIS ROOM DID NOT FIT ANY MORE. A bay's
+shelf count follows its height now -- the fullness the walker asked for on
+cold run 9061, where the shop read as a hall -- so at 2.70 m a gondola
+carries seven shelves where it carried six: `pack_wall` 2,112 -> 2,358,
+`pack_wall_island` 1,416 -> 1,580. The solid furnishing alone went 22,304 ->
+23,944, and 0.141.0's flat art (1,064) no longer fits under 24,000.
+
+WHAT CAUGHT IT: `test_card_shop.test_the_measured_module_costs_are_still_zoo_s`,
+which re-reads `_WORST_TRIS` against Zoo's own planner rather than trusting
+the table. It went red on 2,112 the moment 0.99.0 landed, before anything
+was built or walked. The table's comment said "HEIGHT DOES NOT MOVE IT",
+which was true of 0.98.0 and is exactly why the reading is not trusted.
+
+WHAT WAS DONE, AND WHOSE CALL IT WAS. `_CARD_SHOP_ROOM_TRIS` 24,000 ->
+25,008 -- the room raised to what it measures rather than thinned to the
+number -- because 24,000 WAS NEVER A FRAME COST. It is `cubicle_bank`'s
+per-species `budgets.tris_lod0` borrowed as a room yardstick, and nothing in
+this toolchain ties a triangle count to a measured frame; the only
+engine-derived limits here are Lux's (`max_renderable_lights`, and
+`max_lights_per_object` 8 on Compatibility). The walker was given the three
+options -- measure, trim to fit, or raise and move on -- and chose to
+measure. The constant is marked PROVISIONAL in the source with that reason,
+and becomes derived when the frame figure exists.
+
+The shell grew with it: `card_shop_a01.glb` 374,856 -> 402,428 bytes. No
+other shell's geometry moved -- 0 of 133 manifests carry a changed
+`outputs_sha256_16`.
+
 ## [0.141.1] - 2026-09-16  the banner asked for timber and nothing said so
 
 A material fix on 0.141.0, found by checking the four flat-art materials
