@@ -1,3 +1,309 @@
+## [0.140.0] - 2026-09-16  the card shop fills its height and its floor, and the cap was not a budget
+
+The walker walked cold run 9061's `card_shop_a01` and photographed the sales
+floor from (-40.7, 1.6, 10.5): "the card shop should feel saturated with
+posters, ads, playmats, content, fantasy, ect ect." Nine more references,
+written up in `docs/SET_DRESSING_REFERENCES.md` ("The card shop is not dense
+enough, and what dense means"), which splits that verdict into five separate
+properties. This release is the two Deli Counter owns -- **product goes to
+the ceiling** and **the middle of the floor is occupied**. The other three
+(things hang, posters over the shelving, printed playmats) are Zoo's flat-art
+species and are not here.
+
+THIS IS A DEFECT BEING UNDONE, NOT A FEATURE BEING ADDED, and the difference
+is the whole first half of the entry. 0.139.0 capped this room three ways --
+`reserved_by` on `pack_wall`, an empty `floor` run, two pennant rows instead
+of four -- and each cap was written against **10,664**, cited in that entry
+as "the 10,664 Zoo measured for a whole card shop room". It is not a budget.
+Zoo 0.95.0 publishes it under the heading **"THE ROOM-LEVEL NUMBER, because a
+species budget is not a room"**, as a MEASUREMENT of one reference furnishing
+at its worst genome corners -- one L case, four pack bays, four pennant rows,
+three tables, eight chairs -- and follows it immediately with "For scale, one
+`cubicle_bank` is budgeted 24,000 and the club's `back_bar` 8,500."
+
+So the shipped room was capped BELOW the reference furnishing it was citing
+as its ceiling: two pack walls where that reference has four, two pennant
+rows where it has four. The walker then walked it and called it a hall. That
+is not a tradeoff that turned out badly; it is a measurement read as a limit,
+and the correction is in the code rather than in this paragraph
+(`_CARD_SHOP_ROOM_TRIS`, and
+`test_the_room_budget_is_zoo_s_only_real_one_and_the_caps_fit_under_it`).
+
+DOES THIS REDUCE INTERVENTIONS-PER-LEVEL? Not by itself, and the honest
+reading is worse than neutral: this is the generator being walked back to
+where it should have been, so it buys back density a previous release gave
+away. What it leaves behind that is new is `where: "island"` -- a recipe can
+now stand product in the open floor with a contract-width aisle round it,
+which is every retail room this pipeline will ever generate and not only this
+one. Nobody has measured the intervention count (roadmap 17).
+
+### THE FIGURES, VERIFIED RATHER THAN QUOTED
+
+Every number below was re-measured by planning the SHIPPED spec's own volumes
+through Zoo's own planners at each volume's own variant, which is what
+0.139.0's entry did. The before column reproduces that entry exactly, which
+is why the after column can be believed:
+
+    card_shop_a01 sales floor      0.139.0    0.140.0
+      display_case x2 + end          2,864      2,864
+      pack_wall (wall + counters)    2,804      3,510   (2 -> 3)
+      pack_wall_island                   -      4,188   (0 -> 4 modules)
+      pennant_row                    1,784      3,568   (2 -> 4)
+      crt_tv x2                        808        808
+                                   -------    -------
+                                     8,260     14,938
+
+    play area                        2,996      3,888
+
+**VARIANT IS LOAD-BEARING IN THAT TABLE AND WAS NEARLY MISSED.** A first
+pass planned every piece at variant 0 and reported the before column's pack
+walls at 2,832 against the entry's 2,804 -- a 28-triangle disagreement that
+looked like rounding and was not. `_make_volume` writes a variant from the
+name's crc32, and a pack wall's variant moves which rows are peg rows. Two
+instruments disagreeing is one of them being wrong; passing the volume's own
+variant made the two agree to the triangle across every species in the room.
+
+### 1. PRODUCT GOES TO THE CEILING, AND THE HEIGHT IS FREE
+
+A 2.2 m pack-wall bay in a room with 3.10 m of clear height leaves a metre of
+bare wall, and reference property 1 is the opposite of that: "a wall that
+stops at 2.2 m in a 3.4 m room reads as a partition; a wall filled to the
+ceiling reads as a shop."
+
+THE BAYS GET TALLER RATHER THAN SOMETHING STANDING OVER THEM, and the genome
+is what decided it, not a preference. `pack_wall`'s `dimensions.height` runs
+**1.6 to 3.2** and its own note names the reference "floor-to-ceiling gondola
+shelving"; there is no Zoo species today that is "a thing that stands above a
+gondola", so the alternative was not available at any price.
+
+MEASURED through `pack_wall_forms.plan` at every palette width over
+2.2 - 3.2 m: **triangles do not move.** A 2.4 m bay is 1,416 at 2.2 m and
+1,416 at 3.2 m, because `CAPS["shelves_per_bay"]` (6) binds at every height
+in the range and the cost of a pack wall is bays, not metres. What the height
+buys, on a 1.8 m bay: the top stocked shelf rises **1.78 m -> 2.21 m**.
+
+WHAT IT COSTS, SAID RATHER THAN QUIETLY NARROWED. Those six shelves spread to
+fill the taller bay, so the pitch goes **0.258 -> 0.330** and a bay reads
+slightly airier per metre than it did. That cap is Zoo's, not this file's,
+and raising it is Zoo's call against Zoo's own budget -- 578 triangles a bay
+against 6,000. It is filed rather than worked around here.
+
+THE HEIGHT IS DERIVED AND THE DERIVATION HAS THREE TERMS
+(`to_ceiling_height`): the storey's clear height, the species' own genome max
+(`ceiling`), and the band the ceiling-hung fixtures own (`under_hung`,
+computed by `hung_band_bottom` from the hung pieces themselves). At a 3.4 m
+storey that is 3.10 / 3.20 / 2.75, and the product ceiling is **2.70**. A
+taller hung fixture pushes the product down without anything being edited,
+and a `furnace` -- which is meant to run its flue to the slab -- opts out of
+the second term and is unchanged.
+
+`PACK_WALL_H` IS GONE, AND IT WAS TWO SPELLINGS OF ONE NUMBER. It sat beside
+`_PIECES["pack_wall"]`'s own sizes and the two agreed at 2.2 by coincidence;
+raising the run's heights left the two gondolas BEHIND THE COUNTERS -- the
+most visible pack walls in the shop -- at 2.2 while everything else went to
+2.70. `counter_pack_wall_height` reads the one declaration now.
+
+AND THE CRT WAS NEARLY LOST TO IT. `card_shop_counters` hangs the reference's
+"small CRT on a shelf behind" OVER the gondola, so the gondola cannot take
+the whole clear height. MEASURED at the full 2.70: a 0.50 m CRT's bottom
+lands at 2.75 and its top at 3.25 against 3.10 of clear height, so the pass
+reports `crt: false` -- both CRTs silently gone. Taking the CRT's own band
+off first gives **2.55** and keeps both. That is a second derivation, not a
+pinned number: a taller storey gets the full height and the CRT.
+
+`_floor4`, AND WHY A ROUND WOULD HAVE BEEN WRONG. `round(x, 4)` can move a
+value UP by 5e-5, and every caller of these heights asks a LIMIT of the
+result -- `_host` refuses `h > clear_h`, the CRT pass refuses one with no
+room above. A height derived as exactly `clear_h - crt_h - air` and handed
+back 5e-5 over is a piece silently not placed: one quantity, two spellings, a
+threshold between them, which is `_wall_span`'s shape and CLAUDE.md's rule.
+Flooring makes the derived height never larger than what it was derived from.
+
+### 2. THE MIDDLE OF THE FLOOR IS OCCUPIED
+
+Reference property 2: "the current recipe treats the floor as circulation and
+puts everything against a wall. That is what makes the frame read as a hall:
+there is nothing between the camera and the far wall."
+
+`where: "island"` is new and is the general half of this release. A piece
+declared `island` stands in the OPEN FLOOR, long axis along the room's long
+axis, with a walkable aisle on every side -- `_island_slots`,
+`_island_aisle_clear`, `_island`. `card_shop`'s `floor` run, which 0.139.0
+emptied, carries `pack_wall_island`: the same species, off the wall.
+
+THE AISLE IS THE CONTRACT'S AND IS A REUSE, NOT A NEW NUMBER.
+`island_aisle_width` is `staff_aisle_width`, whose derivation was never about
+bars: an aisle is a corridor a body WALKS THE LENGTH of, so at least
+`clearances.min_corridor_width_m` (1.10), and it is ENTERED AT ITS END
+between two units, which is a doorway, so at least
+`clearances.min_door_width_m` (1.25). One aisle cannot be two widths --
+**1.25 m**, the greater, which satisfies the corridor minimum by construction.
+
+`_seed_clear` IS NOT THAT NUMBER AND COULD NOT HAVE BEEN. It keeps a piece
+0.9 m off another volume's edge, which is BELOW the corridor minimum: right
+for a chair beside a desk and wrong for a run a body walks down. An island
+asks both.
+
+AN ISLAND IS TWO FACES, NOT ONE BLANK BACK. `pack_wall`'s back panel owns +Y
+and carries no product, so a single one mid-floor is a slatwall sheet seen
+from half the room. `twin` writes the other face: two volumes sharing a
+spine, each facing its own aisle, each its own module. It doubles the cost --
+4,188 triangles as shipped where one face each would have been 2,094 -- and
+the budget affords it, which is the rare case where the EXPENSIVE version
+ships, so what the cheap one would have saved is recorded here instead of
+the other way round.
+
+AND THEY RUN DOWN THE MIDDLE, WHICH THE FIRST BUILD DID NOT. Shuffling the
+free positions flat put one of two islands hard against the counter wall --
+product where product already was, and the centre of the frame still empty.
+The candidates are sorted by distance from the room's centre line on the
+SHORT axis only, so the band is decided and the position ALONG the room stays
+the shuffle's and two islands do not stack.
+
+**THE INVARIANT THIS BREAKS, DECLARED RATHER THAN DODGED.** `furnish` has
+never created mid-floor SHELTER -- that rule is
+`test_nothing_it_puts_mid_floor_reaches_shelter_height`, whose own first
+draft was refuted for claiming too much. A 2.70 m gondola in the open floor
+IS shelter, on purpose: a retail aisle is something a body fights from, in
+this engine and in a real shop, which is the same argument that refuted that
+draft about a desk. Two things bound it, and a test holds both
+(`test_the_only_mid_floor_shelter_is_a_declared_island`): only a piece whose
+own `where` says `island` can stand there, and `card_shop` is the only recipe
+that names one.
+
+### THE CAPS, BEFORE AND AFTER, AND WHAT EACH BOUGHT
+
+    cap                     0.139.0   0.140.0   what the raise buys
+    pack_wall `most`              2         4   +2 gondolas of product on the
+                                                free walls. `reserved_by` is
+                                                unchanged, so a two-counter
+                                                floor now has two BEHIND the
+                                                counters and two spare rather
+                                                than two and none -- "the
+                                                reference's one long aisle of
+                                                it", which 0.139.0 named as
+                                                the thing it was giving up.
+    pennant_row `most`            2         4   one row a wall, which is Zoo's
+                                                own reference room. The two
+                                                extra walls carry colour at
+                                                the one height nothing else
+                                                in the room reaches.
+    card_shop `floor`            ()  island x2  4 gondola modules standing in
+                                                the open floor, which is the
+                                                whole of property 2.
+
+    worst case the caps allow    0.139.0   0.140.0
+      sales floor                 10,632    22,304
+      against                     10,664    24,000
+      of budget                    99.7 %    92.9 %
+
+**THE NEW CAP IS LOAD-BEARING AND A TEST SAYS SO.** One more island is 2,832
+triangles and puts the room at 25,136, over; that assertion is in
+`test_the_room_budget_is_zoo_s_only_real_one_and_the_caps_fit_under_it`,
+because a cap that is not the thing holding the number is a comment (Zoo's
+words, one layer down).
+
+**AND THE BUDGET IS STILL NOT A FRAME TIME.** 24,000 is one `cubicle_bank`,
+the largest per-module budget Zoo declares and the figure Zoo itself offered
+for scale. It is a measured reference held against a measured reference,
+because there is still no runtime telemetry from a real session (CLAUDE.md,
+"every frame is spent on somebody else's machine"). When that data exists
+this is the dial and `most` is where it is spent. What this release does NOT
+claim is that 22,304 is affordable on the low-end GL Compatibility target;
+what it claims is that 10,664 was never the number that said otherwise.
+
+### WHAT THE FRAMES SHOW, COUNTED
+
+Rendered from the walker's own sight line, identically before and after: the
+export instances the shop at site (-41, 0, 5) and the spec's plan y is
+Godot's -z (checked against the shipped `lot/card_shop_a01/site.tscn`, where
+`display_case_r48016798_1` at spec y -0.18 stands at Godot z +0.18), so the
+walker's eye is spec (0.3, -5.5) at 1.6 m looking north.
+
+THE EYE HAD TO MOVE BACK TO 8.4 m TO RENDER THE PAIR, AND THAT IS ITSELF THE
+RESULT: at the walker's exact spot the after frame is flat grey, because an
+island now stands 0.25 m in front of where they were standing in open floor.
+Both frames below are from (0.3, -8.4, 1.6), 95 degrees, same rig.
+
+    in frame, standing solids              6  ->  10
+    of those at cover-break height or over 1  ->   5
+    clear span down the sight line        10.40 m -> 3.15 m
+
+10.40 m was the room's whole depth: "there is nothing between the camera and
+the far wall", measured rather than described.
+
+TWO THINGS THE FRAMES DO NOT SETTLE. They are greybox shells with a neutral
+rig -- `review_render`'s limitation, restated because it still applies -- so
+they show the footprint and the height of what stands, not the art on it. And
+nobody has walked this build; the walker has not seen these frames.
+
+### THE GATES
+
+  * nav gate, `card_shop_a01`: **5 of 5 interior markers reachable, stairs
+    traverse, navigable yes** -- the same verdict 0.139.0 recorded, with two
+    islands and a full-height wall run now in the room. The staff aisles and
+    the play area are what those markers are.
+  * `layout_lint --all`: **133 specs, 0 FAIL, 341 WARN, 101 specs with
+    findings** -- the same 341 and the same 101 as 0.139.0. The islands add
+    none, which is the claim worth making: a mid-floor solid is exactly the
+    shape L9 and the corridor rules would complain about.
+  * nav gate, `--all` over the rebuilt library: **131 shells, 0 stair
+    failures.** 9 unjudged and 14 `navigable: false` are the standing
+    population (exterior markers on ground Lot lays, which no building bake
+    can answer) and none of them is a card shop.
+  * `migrate_furnish_recipes.py` over the library: **one spec changes**,
+    `card_shop_a01`. The other 126 are byte-identical, so the library is
+    still a fixed point of `furnish` and this release moved nothing else.
+  * AND THE REST OF THE LIBRARY IS PROVABLY UNTOUCHED, which is the claim
+    that makes the three above worth anything. `build.py --all` was run on
+    this checkout and 133 of 135 tracked manifests came back differing in
+    `built_utc` ALONE -- every `.gameplay.json`, `.slots.json` and
+    `.lights.json` in the library byte-identical, `card_shop_a01` the only
+    one whose spec hash and `.glb` hash moved. So the 132 timestamp-only
+    manifests are not in this commit, and no other shell's nav result can
+    have moved because no other shell moved.
+
+### ALSO, AND IT WAS THE SUITE THAT FOUND IT
+
+`test_every_piece_is_a_size_its_species_builds` carried its own copy of
+`_host`'s height line -- `min(_clear_height(spec), _TO_CEILING_MAX)` -- which
+is the `variant_count` defect in a different disguise: a checker spelling out
+what the writer computes. It caught its own staleness the moment a
+to-the-ceiling piece appeared whose species tops out below that constant,
+reporting a **4.0 m pack wall against a genome of 1.6-3.2** that this pass
+will never write. It asks `to_ceiling_height` now.
+
+`PACK_WALL_CEILING` (3.2) is copied out of Zoo's genome, so a test re-reads
+the genome where Zoo is reachable rather than trusting the copy. The same
+goes for the per-module triangle table the budget test multiplies out.
+
+`KIT_VERSION` DOES NOT MOVE, and that is deliberate rather than an oversight.
+The builder's geometry is unchanged: rebuild any existing spec with this code
+and the `.glb` is identical. What changed is what `furnish` WRITES, so
+`card_shop_a01.json` differs and its build differs with it -- a spec change,
+not a kit change. `SCHEMA_VERSION` is unchanged for the same reason.
+
+`test_card_shop.py` gains ELEVEN tests and `test_furnish.py` one, and each
+of the twelve fails on 0.139.0 -- except one, which is said rather than
+counted: `test_the_crt_still_has_its_shelf_over_the_taller_gondola` passes
+there too, because the CRTs did fit at 2.2. It is a guard on a property this
+release nearly took away, not a new rule, and it belongs in the file for that
+reason.
+
+### WHAT IS NOT DONE
+
+Three of the five properties, and they are Zoo's: things hang from the
+ceiling grid, posters live on the wall above the shelving, and a playmat is
+printed rather than flat colour. The bare wall this release fills is the band
+from the floor to 2.70; the band from 2.70 to the ceiling is now the pennants
+and whatever hangs there next, which is not this repo's to draw. A card shop
+with full-height gondolas and no posters is still not the reference.
+
+`shelves_per_bay` is the other open one, and it is Zoo's: six shelves spread
+over a 2.70 m bay is a wider pitch than six over 2.20, so the wall is taller
+and no denser per metre. That is the one place where this release's own
+measurement says the result is not yet what the photographs show.
+
 ## [0.139.0] - 2026-09-16  a 1990s card shop, and four rules that could not fire
 
 The walker, 2026-09-15, with nine photographs of trading-card shops, written

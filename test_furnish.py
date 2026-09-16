@@ -86,6 +86,16 @@ def test_nothing_it_puts_mid_floor_reaches_shelter_height():
     shelter piece per room is the rule that module enforces. So the
     invariant here is that this pass never creates one. Anything that tall
     goes flush against a wall, where it is a bookcase and not a redoubt.
+
+    0.140.0 PUT ONE EXCEPTION IN, AND IT IS DECLARED RATHER THAN DODGED.
+    `where: "island"` stands a shop's gondola in the open floor, and a
+    gondola IS shelter -- a retail aisle is a thing a body fights from, in
+    this engine and in a real shop, which is the same argument that refuted
+    this test's first draft about a desk. Two things bound it: only a
+    recipe that names an `island` piece gets any (the roles below name
+    none, and this still passes over all of them unchanged), and the count
+    is capped -- `test_the_only_mid_floor_shelter_is_a_declared_island`
+    below is what says so, over every recipe rather than over these roles.
     """
     shelter_z = level_design.shelter_height()
     tall_mid_floor = []
@@ -103,6 +113,34 @@ def test_nothing_it_puts_mid_floor_reaches_shelter_height():
             if edge > half + 0.5:
                 tall_mid_floor.append((role, v["name"], round(edge, 2)))
     assert not tall_mid_floor, tall_mid_floor
+
+
+def test_the_only_mid_floor_shelter_is_a_declared_island():
+    """The exception to the rule above, held over EVERY recipe rather than
+    over the seven roles it happens to exercise.
+
+    The rule this pass is built on is that it never creates shelter mid
+    floor; 0.140.0's island gondola does, deliberately, because a shop
+    aisle is shelter. What must stay true is that nothing else acquired
+    that power by accident: a piece stands mid-floor only where its own
+    `where` says `island`, only a recipe that names such a piece can draw
+    one, and every one of them is capped.
+    """
+    islands = {n for n, p in level_design._PIECES.items()
+               if p["where"] == "island"}
+    assert islands, "the exception exists, so something must declare it"
+    for name in islands:
+        p = level_design._PIECES[name]
+        assert p["most"], (name, "an uncapped island is a maze")
+        assert p["front"], (name, "an island has a face a body reads")
+    # and no recipe hands one out without saying so
+    # PARENTHESISED: `&` binds tighter than `|`, so this reads the same
+    # either way -- and a checker that quietly means something else is the
+    # third rule in CLAUDE.md's verification section.
+    naming = {k for k, r in level_design._RECIPES.items()
+              if (islands & set(r["anchors"])) | (islands & set(r["wall"]))
+              | (islands & set(r["floor"]))}
+    assert naming == {"card_shop"}, naming
 
 
 def test_every_name_it_writes_routes_to_a_species_zoo_builds():
@@ -269,7 +307,16 @@ def test_every_piece_is_a_size_its_species_builds():
 
     0.131.0: over every size of every piece in `_PIECES` (a to-the-ceiling
     height is checked at the shortest and tallest storey the library has,
-    3.0 and 6.5 m), where 0.123.1 read the six rows of `_FURNITURE`."""
+    3.0 and 6.5 m), where 0.123.1 read the six rows of `_FURNITURE`.
+
+    0.140.0: THE HEIGHT IS ASKED OF THE WRITER'S OWN FUNCTION. This carried
+    `min(_clear_height(spec), _TO_CEILING_MAX)` -- a second spelling of
+    `_host`'s line, the `variant_count` defect in a different disguise. It
+    caught its own staleness the moment a to-the-ceiling piece appeared
+    whose species tops out below `_TO_CEILING_MAX` (a `pack_wall` at 3.2
+    against that constant's 4.0, which exists because a `furnace` is 4.0):
+    it reported a 4.0 m pack wall this pass will never write. One function,
+    asked by the writer and by the checker."""
     bad = []
     rows = []
     for name, p in level_design._PIECES.items():
@@ -277,8 +324,8 @@ def test_every_piece_is_a_size_its_species_builds():
             if h is None:
                 for sh in (3.0, 6.5):
                     spec = {"story_height": sh}
-                    rows.append((name, w, d, min(level_design._clear_height(spec),
-                                                 level_design._TO_CEILING_MAX)))
+                    rows.append((name, w, d, level_design.to_ceiling_height(
+                        spec, p, level_design._clear_height(spec))))
             else:
                 rows.append((name, w, d, h))
     rows.append(("chair_set", 0.5, 0.5, level_design._CHAIR_H))

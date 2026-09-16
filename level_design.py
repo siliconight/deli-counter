@@ -824,17 +824,128 @@ def seed_cover(spec):
 #: declared here, above `_PIECES`, which reads it at import.
 _CEILING_AIR = 0.05
 
+#: Zoo's `pack_wall` genome height max, read from
+#: `zoo/zoo_keeper/genome/species/pack_wall.json` (`dimensions.height.max`),
+#: 2026-09-16. A slot authored above it is a hint Zoo cannot build: it draws
+#: the plain box and says so, which is "a keyword whose every match cannot be
+#: built" one layer down. Declared here, above `_PIECES`, which reads it at
+#: import. `test_card_shop` checks it against the genome when Zoo is
+#: reachable (`DC_ZOO_ROOT`), so this number cannot drift from the file it
+#: was copied out of without something failing.
+PACK_WALL_CEILING = 3.2
+
+#: THE CARD SHOP'S ROOM BUDGET, in triangles, and where it comes from --
+#: because the number it replaces was not a budget.
+#:
+#: 0.139.0 capped this room against **10,664**, which is Zoo 0.95.0's
+#: MEASUREMENT of one card-shop room at every worst-case genome corner (one
+#: L case, four pack bays, four pennant rows, three tables, eight chairs).
+#: Zoo publishes it under the heading "THE ROOM-LEVEL NUMBER, because a
+#: species budget is not a room" and immediately gives the scale: "For
+#: scale, one `cubicle_bank` is budgeted 24,000 and the club's `back_bar`
+#: 8,500." A measurement of a reference furnishing is not a ceiling, and
+#: treating it as one capped the shipped room BELOW the reference it cited
+#: -- two pack walls where the reference has four, two pennant rows where
+#: it has four -- and the walker walked it and called it a hall.
+#:
+#: The only real budgets in this toolchain are Zoo's per-MODULE
+#: `budgets.tris_lod0`. The largest is `cubicle_bank`'s 24,000, one prop,
+#: and it is the figure Zoo itself offered for scale. So a selling room is
+#: allowed the triangles of one cubicle bank. That is a comparison the
+#: toolchain already makes rather than a number chosen here, and the caps
+#: below are set so that the worst case the palette can produce lands under
+#: it (22,304, 93 %) -- see `test_card_shop`, which multiplies the caps out
+#: against Zoo's own planner and FAILS if they ever exceed this.
+#:
+#: IT IS STILL CONSERVATIVE AND IT IS STILL NOT A FRAME TIME. There is no
+#: runtime telemetry from a real session (CLAUDE.md, "every frame is spent
+#: on somebody else's machine"), so this is a measured reference held
+#: against a measured reference. When that data exists this is the dial,
+#: and `most` is where it is spent.
+_CARD_SHOP_ROOM_TRIS = 24000
+
 
 def _piece(name, sizes, where, front=False, stock=None, variants=False,
            form=None, seats=None, most=None, lift=None, collision="convex",
            deck=None, lane=False, most_big=None, under=None,
-           reserved_by=None, off_glass=False, backed_by=None):
+           reserved_by=None, off_glass=False, backed_by=None,
+           ceiling=None, under_hung=False, twin=False):
     return {"name": name, "sizes": tuple(sizes), "where": where,
             "front": front, "stock": stock, "variants": variants,
             "form": form, "seats": seats, "most": most, "lift": lift,
             "collision": collision, "deck": deck, "lane": lane,
             "most_big": most_big, "under": under, "reserved_by": reserved_by,
-            "off_glass": off_glass, "backed_by": backed_by}
+            "off_glass": off_glass, "backed_by": backed_by,
+            "ceiling": ceiling, "under_hung": under_hung, "twin": twin}
+
+
+def hung_band_bottom(spec):
+    """The bottom of the LOWEST piece this pass hangs under the ceiling, in
+    metres above its storey's floor -- the band the fixtures own.
+
+    Asked by `to_ceiling_height` below, so that a piece authored "to the
+    ceiling" stops under the strip rather than through it. Derived from the
+    pieces themselves (`under`, via `_piece_lift`) and not written down: a
+    pennant row's batten is `_CEILING_AIR` under the slab and the strip is
+    0.30 deep, so at a 3.4 m storey the band starts at 2.75, and a taller
+    hung piece moves it down without anything else being edited.
+
+    `_clear_height` when nothing hangs, which is "no band".
+    """
+    low = None
+    for p in _PIECES.values():
+        if p["under"] is None:
+            continue
+        for size in p["sizes"]:
+            h = size[2]
+            if h is None:
+                continue
+            lift = _piece_lift(spec, p, float(h))
+            if lift is None:
+                continue
+            bottom = lift - float(h) / 2.0
+            low = bottom if low is None else min(low, bottom)
+    return _clear_height(spec) if low is None else low
+
+
+def to_ceiling_height(spec, piece, clear_h):
+    """How tall a piece whose size says ``None`` is actually built.
+
+    THREE LIMITS, AND THE FIRST TWO ARE WHY THIS IS NOT `min(clear_h,
+    _TO_CEILING_MAX)` any more:
+
+      * the SPECIES' own genome max (`ceiling`). `_TO_CEILING_MAX` is 4.0
+        because Zoo's `furnace` tops out there; a `pack_wall` tops out at
+        3.2, and a slot authored above its species' range is a hint that
+        cannot be built -- Zoo draws the plain box and says so. A piece
+        that names its ceiling is held to it.
+      * the HUNG BAND (`under_hung`). The fixtures own the top of the wall
+        (`hung_band_bottom`), so a shop fixture that fills its height stops
+        `_CEILING_AIR` below them instead of standing through the pennants.
+        Opt-in: a furnace's flue is meant to run to the slab, and making
+        this universal would shorten every one in the library.
+      * the storey's own clear height, as before.
+
+    A piece that names neither is exactly what it was.
+
+    ROUNDED DOWN, NOT ROUNDED. `round(x, 4)` can move a value UP by 5e-5,
+    and every caller then asks a LIMIT of the result -- `_host` refuses a
+    piece whose `h > clear_h` and the CRT pass refuses one that leaves no
+    room above. A height derived as "exactly the clear height" that comes
+    back 5e-5 over is a piece silently not placed, which is the shape
+    `_wall_span` had: one quantity, two spellings, a threshold between
+    them. Flooring makes the derived height never larger than the thing it
+    was derived from, so both questions of it answer the same way.
+    """
+    top = float(clear_h)
+    if piece["under_hung"]:
+        top = min(top, hung_band_bottom(spec) - _CEILING_AIR)
+    return _floor4(min(top, float(piece["ceiling"] or _TO_CEILING_MAX)))
+
+
+def _floor4(x):
+    """`x` to four decimals, never upward. See `to_ceiling_height`."""
+    return math.floor(float(x) * 10000.0) / 10000.0
 
 
 def piece_back_off(piece):
@@ -1127,23 +1238,77 @@ _PIECES = {p["name"]: p for p in (
     # is what the reference's aisle is. Placed BOTH by a wall run and by
     # `card_shop_counters` (behind the counter), so `where` is `wall` and
     # not the `pair` a back bar gets.
-    # `most` IS THE ROOM'S TOTAL, AND `reserved_by` IS WHAT MAKES IT ONE.
+    # `most` IS THE ROOM'S TOTAL, AND `reserved_by` IS WHAT MAKES IT ONE:
     # `card_shop_counters` stands one pack wall per showcase counter, after
-    # the wall run has already spent the cap -- so a two-counter selling
-    # floor drew FOUR. MEASURED by planning them through Zoo at the
-    # palette's widest (3.6 m, 2,112 a module): four pack walls put the
-    # worst-case selling room at 14,048 triangles, 132 % of the 10,664 Zoo
-    # measured for a whole card shop room. Reserving one per counter holds
-    # the same room at 9,824.
+    # the wall run has spent the cap, so without it a two-counter floor
+    # draws `most` PLUS two.
     #
-    # WHAT THE CAP COST: a two-counter floor now gets its product behind
-    # the counters and none along the free walls -- six bays of boosters
-    # where four runs would have been twelve. The reference's "one long
-    # aisle of it" is the thing given up, and it comes back the moment
-    # there is runtime telemetry to price a wider budget against.
-    _piece("pack_wall", ((2.4, 0.5, 2.2), (1.2, 0.5, 2.2),
-                         (3.6, 0.5, 2.4)), "wall", front=True, variants=True,
-           most=2, reserved_by="display_case"),
+    # THE CAP WAS 2 AND IS 4, AND THE FIRST NUMBER WAS A MISREADING RATHER
+    # THAN A TRADEOFF. 0.139.0 held the room against 10,664 as if that were
+    # a ceiling. It is not a budget at all: Zoo's own entry calls it "THE
+    # ROOM-LEVEL NUMBER, because a species budget is not a room" and it is
+    # a MEASUREMENT of one furnishing -- one L case, four pack bays, four
+    # pennant rows, three tables, eight chairs -- published "for scale"
+    # beside the one real budget in the file, `cubicle_bank`'s 24,000. So
+    # the shipped shop was capped BELOW Zoo's own reference room while
+    # citing that room as its limit, and the walker's verdict on the frame
+    # was "the card shop should feel saturated". `_CARD_SHOP_ROOM_TRIS` is
+    # the budget now and the arithmetic is there.
+    #
+    # HEIGHT IS FREE, AND THAT IS MEASURED, NOT ASSUMED. The heights here
+    # were 2.2/2.2/2.4 in a room whose clear height is 3.10, leaving a
+    # metre of bare wall over the product -- reference property 1 is the
+    # opposite ("product goes to the ceiling, not to waist height"). Zoo's
+    # genome runs 1.6 to 3.2 and its own note names the reference
+    # "floor-to-ceiling gondola shelving". Planned through
+    # `pack_wall_forms.plan` at every palette width over 2.2 - 3.2 m:
+    # triangles DO NOT MOVE (a 2.4 m bay is 1,416 at every height), because
+    # `CAPS["shelves_per_bay"]` (6) binds at every one of them and the cost
+    # is bays, not metres. What it buys, measured on a 2.4 m bay: the top
+    # stocked shelf rises from 1.78 m to 2.21 m at 2.70.
+    #
+    # WHAT IT COSTS, said rather than quietly narrowed: the six shelves
+    # spread to fill the taller bay, so the pitch goes 0.259 -> 0.331 and a
+    # bay reads slightly airier per metre. That cap is Zoo's
+    # (`shelves_per_bay`), not this file's, and raising it is Zoo's call
+    # with Zoo's budget -- 578 triangles a bay against 6,000.
+    #
+    # `None` IS THE HEIGHT, and `ceiling` / `under_hung` are what make that
+    # safe: the species' own genome max, and the pennant band left free.
+    # See `to_ceiling_height`.
+    _piece("pack_wall", ((2.4, 0.5, None), (1.2, 0.5, None),
+                         (3.6, 0.5, None)), "wall", front=True, variants=True,
+           most=4, reserved_by="display_case",
+           ceiling=PACK_WALL_CEILING, under_hung=True),
+    # THE ISLAND GONDOLA -- the same species standing in the OPEN FLOOR,
+    # back to back with itself, with a walkable aisle all round it.
+    #
+    # REFERENCE PROPERTY 2, and the frame is the argument: "two of the
+    # photos show gondola endcaps and low island displays on casters
+    # standing in the open floor, with aisles between them rather than one
+    # clear span. The current recipe treats the floor as circulation and
+    # puts everything against a wall. That is what makes the frame read as
+    # a hall: there is nothing between the camera and the far wall."
+    #
+    # `twin` BECAUSE A GONDOLA HAS ONE FACE. `pack_wall`'s back panel owns
+    # +Y and carries no product; a single one mid-floor is a blank slatwall
+    # sheet seen from half the room. An island in a shop IS two of them
+    # back to back, which is what `where: "island"` writes -- one volume a
+    # face, sharing a spine, each facing its own aisle. It doubles the
+    # island's triangles and that is affordable at 1,416 a module against
+    # `_CARD_SHOP_ROOM_TRIS`; the cheap version was not shipped because the
+    # expensive one fits.
+    #
+    # NARROWER THAN THE WALL RUN. 2.4 m is an island, 3.6 m is a partition
+    # across a 11 m room, and the reference's islands are endcaps. The cap
+    # is 2 a room: at the palette's worst that is 4 modules x 1,416 =
+    # 5,664, which is what is left under the room budget once the counters,
+    # the wall gondolas, the pennants and the CRTs have taken theirs. A
+    # third island is 2,832 more and would put the room at 25,136, over.
+    _piece("pack_wall_island", ((2.4, 0.5, None), (1.8, 0.5, None),
+                                (1.2, 0.5, None)), "island", front=True,
+           variants=True, most=2, twin=True,
+           ceiling=PACK_WALL_CEILING, under_hung=True),
     # THE PENNANTS, along the TOP of the wall -- `under`, not `lift`: the
     # batten is screwed under the ceiling, so its height is the storey's.
     # No collision: 2.9 m up at a 3.4 m storey, and Zoo's genome declares
@@ -1154,14 +1319,19 @@ _PIECES = {p["name"]: p for p in (
     # `most` IS A BUDGET, NOT A TASTE. A pennant row costs what its budget
     # says however long it is -- `pennant_forms.max_pennants` is
     # `(budget - 12) // 20` = 44, so a 4 m strip and a 14 m strip both draw
-    # ~892 triangles and length buys only spacing. Four rows are a third of
-    # Zoo's measured room (3,568 of 10,664); at two they are 1,784 and the
-    # room clears its own arithmetic with the play area in it. What the
-    # third and fourth row would have bought is one more wall carrying
-    # colour; see the release note.
+    # ~892 triangles and length buys only spacing.
+    #
+    # THE CAP WAS 2 AND IS 4, which is ONE PER WALL and is Zoo's own
+    # reference room ("one pennant row a wall"). 0.139.0 cut it to two
+    # because four rows are "a third of Zoo's measured room (3,568 of
+    # 10,664)" -- a third of a MEASUREMENT of a reference furnishing, which
+    # was never the ceiling it was being read as (`_CARD_SHOP_ROOM_TRIS`).
+    # 3,568 is 15 % of the budget that does exist. What the two extra rows
+    # buy is the other two walls carrying colour at the one height nothing
+    # else in the room reaches.
     _piece("pennant_row", ((6.0, 0.08, 0.3), (4.0, 0.08, 0.3),
                            (8.0, 0.08, 0.3)), "wall", front=True,
-           variants=True, most=2, under=_CEILING_AIR, collision="none"),
+           variants=True, most=4, under=_CEILING_AIR, collision="none"),
     # THE PLAY AREA: banquet tables with two or three folding chairs each.
     # `cards` is `_surface_stock`'s seventh flavour (Zoo 0.95.0) -- a
     # playmat, card piles, deck boxes and dice, planned once per SIDE of
@@ -1400,19 +1570,20 @@ _RECIPES = {
     # whose furniture stands mid-floor.
     "card_shop": {"anchors": ("display_case",),
                   "wall": ("pack_wall", "shelf_run", "pack_wall", "vending"),
-                  # NO FLOOR RUN, AND IT IS THE TRIANGLE BUDGET THAT DECIDED
-                  # IT. `folding_table` sat here and a selling floor drew two
-                  # of them with six chairs -- MEASURED, planned through Zoo
-                  # at the palette's worst: 1,632 triangles that put the
-                  # worst-case selling room at 12,264, 115 % of the 10,664
-                  # Zoo measured for a whole card-shop room. Without them it
-                  # is 10,632. The play area still gets three, because there
-                  # they are ANCHORS (`_card_shop_anchors`) and not a run.
-                  # What the cap cost: nothing the reference asks for -- its
-                  # tables are in the tournament area, not scattered across
-                  # the shop floor -- which is the rare case where the cheap
-                  # version is also the truer one.
-                  "floor": (),
+                  # THE FLOOR RUN IS ISLAND GONDOLAS, and it is per-room:
+                  # `_card_shop_floor` gives it to a SELLING room and gives
+                  # the play area nothing, because the play area's middle is
+                  # already its tables.
+                  #
+                  # WHAT SAT HERE BEFORE AND WHY IT IS NOT BACK.
+                  # `folding_table` was the floor run until 0.139.0 emptied
+                  # it, and that cap is the one of the three that was also
+                  # the truer answer: the reference's tables are in the
+                  # tournament area, not scattered across the shop floor.
+                  # Islands are what the reference actually puts in the open
+                  # floor, so the slot comes back with the right piece in it
+                  # rather than the old one.
+                  "floor": ("pack_wall_island",),
                   "clusters": ((("cartons",), 2, 3),),
                   "per_area": 20.0, "all_anchors": True,
                   # placed after the room is furnished (`place_fixtures`)
@@ -1544,6 +1715,22 @@ def _card_shop_anchors(room, building):
     if area >= _CARD_SECOND_COUNTER_AREA:
         out.append("display_case")
     return tuple(out)
+
+
+def _card_shop_floor(room, building):
+    """The card shop's FLOOR run for one room, as `_card_shop_anchors` is
+    its anchors.
+
+    A SELLING room gets island gondolas standing in the open floor; the
+    PLAY AREA gets nothing, because its middle is already its tables --
+    `_card_shop_anchors` puts up to `_CARD_PLAY_TABLES_MAX` of them there
+    and an island between two of them is a wall across a tournament.
+    Per-room for the same reason the anchors are: the two rooms share one
+    `_RECIPES` entry and differ by what the author called them.
+    """
+    if is_card_play_room(room, building):
+        return ()
+    return _RECIPES["card_shop"]["floor"]
 
 #: At most this many of one (piece, size) in a room: past it a room reads as
 #: one mesh repeated, which is the other half of "boring".
@@ -1957,6 +2144,176 @@ def _wall_slots(spec, room, w, d, rng, with_front=False,
                         90.0 if inset > 0 else 270.0))
     rng.shuffle(out)
     return out if with_front else [o[:5] for o in out]
+
+
+def island_aisle_width():
+    """The clear aisle round a piece standing in the OPEN FLOOR.
+
+    `staff_aisle_width()`, and it is a reuse rather than a new number. That
+    function's derivation is not about bars and not about staff: an aisle is
+    a corridor a body WALKS THE LENGTH OF, so at least
+    `clearances.min_corridor_width_m` (1.10), and it is ENTERED AT ITS END
+    through the gap between two units, which is a doorway, so at least
+    `clearances.min_door_width_m` (1.25). A shop aisle between two island
+    gondolas is exactly that shape, so it is exactly that number -- 1.25 --
+    and it satisfies the corridor minimum by being the greater of the two.
+
+    Named separately from `staff_aisle_width` only because a reader at a
+    gondola is not asking about a counter; it is an alias, not a second
+    body, for the reason the club's spelling is.
+    """
+    return staff_aisle_width()
+
+
+def island_depth(d, twin):
+    """The depth of a whole island of units `d` deep: one unit, or two back
+    to back with `_WALL_PIECE_AIR` between the backs.
+
+    ONE FUNCTION BECAUSE TWO CALLERS NEED IT AND MUST NOT DISAGREE.
+    `_island_slots` measures the aisle against this footprint and `_island`
+    places the halves inside it; the pair's offset is derived from this
+    number rather than spelled a second time, which is the defect this file
+    keeps finding.
+
+    THE AIR IS NOT AN EPSILON, IT IS THE MEASURED ONE. Two backs meeting on
+    exactly one plane are the shape Zoo measured on cold run 9052's lobby --
+    waiting-chair backs coplanar with a wall's inner face, 0.00 mm apart,
+    3.09 m2 of flicker, "z fighting on the [chairs] on the steel". Opposite
+    normals did not save it there and would not here: a gondola's back panel
+    is a slatwall sheet and so is its partner's. `_WALL_PIECE_AIR` is the
+    number that already answers this question one surface along.
+    """
+    # PARENTHESISED ON PURPOSE. A conditional expression binds looser than
+    # the arithmetic beside it, so this reads correctly either way -- and
+    # this repo has already paid for one operator-precedence assumption
+    # (`%` against `+` in a GDScript format string, CLAUDE.md). Cost: two
+    # characters.
+    return (float(d) * 2.0 + _WALL_PIECE_AIR) if twin else float(d)
+
+
+def _island_slots(spec, room, w, d, rng, twin=False):
+    """Candidate ``(x, y, sx, sy, front)`` for a piece standing in the OPEN
+    FLOOR, its long axis along the room's LONG axis and an aisle clear of
+    the room's bounds on every side.
+
+    ``(sx, sy)`` is the WHOLE island's footprint: with `twin` that is two
+    units deep, because an island gondola is two backs meeting and the
+    caller writes both halves (`_host`). ``front`` is the bearing the FIRST
+    half faces; the second faces its opposite.
+
+    THE LONG AXIS RUNS WITH THE ROOM, which is what makes an aisle rather
+    than a barricade: a 2.4 m island across an 11 m room leaves two 4 m
+    gaps at its ends, and the same island across the 20 m length leaves
+    aisles either side that run the room. So a room wider in x lays its
+    islands along x and they face N and S.
+
+    THE AISLE IS NOT `_seed_clear`'s SPACING. That function keeps a piece
+    0.9 m from another volume's edge, which is below
+    `clearances.min_corridor_width_m` (1.10) -- fine for a chair beside a
+    desk and not for a run a body walks down. `_island_aisle_clear` is the
+    one that answers the contract, and the caller asks both.
+    """
+    x0, y0, x1, y1 = room["bounds"]
+    aisle = island_aisle_width()
+    depth = island_depth(d, twin)
+    along_x = (x1 - x0) >= (y1 - y0)
+    sx, sy = (w, depth) if along_x else (depth, w)
+    fronts = (0.0, 180.0) if along_x else (90.0, 270.0)
+    # the island stands an AISLE off every bound, so the strip between it
+    # and the wall is walkable rather than a slot
+    lo_x, hi_x = x0 + aisle + sx / 2.0, x1 - aisle - sx / 2.0
+    lo_y, hi_y = y0 + aisle + sy / 2.0, y1 - aisle - sy / 2.0
+    if lo_x > hi_x or lo_y > hi_y:
+        return []
+    # a grid across the free band, at the aisle's own pitch so two islands
+    # drawn from it can stand side by side with a walkable gap
+    nx = max(1, int((hi_x - lo_x) / (sx + aisle)) + 1)
+    ny = max(1, int((hi_y - lo_y) / (sy + aisle)) + 1)
+    out = []
+    for i in range(nx):
+        for j in range(ny):
+            px = lo_x + (hi_x - lo_x) * (i / max(1, nx - 1) if nx > 1 else 0.5)
+            py = lo_y + (hi_y - lo_y) * (j / max(1, ny - 1) if ny > 1 else 0.5)
+            out.append((px, py, sx, sy, rng.choice(fronts)))
+    rng.shuffle(out)
+    # DOWN THE MIDDLE, AND THE SHUFFLE DECIDES WHERE ALONG IT. A shop's
+    # islands run down the centre band of the floor with the wall runs
+    # either side; the free positions, shuffled flat, are mostly at the
+    # edges of the band, and the first build put one of two islands hard
+    # against the counter wall -- product where product already was, and
+    # the middle of the frame still empty. Sorting by distance from the
+    # room's centre line on the SHORT axis only fixes which band they stand
+    # in; their position ALONG the room stays the shuffle's, so two islands
+    # do not stack.
+    rcx, rcy = (x0 + x1) / 2.0, (y0 + y1) / 2.0
+    mid = (lambda s: abs(s[1] - rcy)) if along_x else (lambda s: abs(s[0] - rcx))
+    out.sort(key=mid)
+    return out
+
+
+def _island_aisle_clear(spec, room, px, py, sx, sy, aisle):
+    """Is every solid on this storey at least `aisle` from the island's
+    footprint, edge to edge?
+
+    The contract's answer to "can a body walk round this", asked of a
+    rectangle rather than a radius -- a margin allowed per axis IS a box
+    here, deliberately, because an aisle is a box: the question is not "how
+    far is the nearest corner" but "is there a walkable strip along this
+    face". A hung piece over a body's head is not in the way, the rule
+    `_seed_clear` and `dart_lane_blockers` both use.
+    """
+    story = room.get("story", 0)
+    sh = _story_height(spec)
+    floor = story * sh
+    x0, y0 = px - sx / 2.0 - aisle, py - sy / 2.0 - aisle
+    x1, y1 = px + sx / 2.0 + aisle, py + sy / 2.0 + aisle
+    for v in spec.get("volumes", []):
+        vz, vh = float(v.get("z", 0.0)), float(v.get("size_z", 0.0))
+        if not _on_storey(vz, vh, floor, sh):
+            continue
+        if v.get("collision") == "none" and vz - vh / 2.0 - floor >= _HUNG_MIN:
+            continue
+        r = _rect_of(v)
+        if x0 < r[2] and r[0] < x1 and y0 < r[3] and r[1] < y1:
+            return False
+    return True
+
+
+def _island(key, make, spec, px, py, w, d, h, front, twin=False):
+    """Write an island's units and return how many were written.
+
+    ONE UNIT A FACE. A gondola has one face and a blank back, so an island
+    is two of them meeting on their backs -- each its own volume, each its
+    own module, each facing its own aisle. `px, py` is the PAIR's centre and
+    each half sits `d / 2` off it along its own bearing, so the two backs
+    are coincident planes rather than overlapping solids and the pair's
+    footprint is exactly the `sx, sy` the clearance was measured with.
+
+    THE BEARING DECIDES THE SLOT'S DIMS, not a guess: a unit facing N or S
+    lies long in x, one facing E or W lies long in y, and `_front_turn`
+    asks the emitter's own question about which way that gets recorded
+    (`prop_species.long_axis_first`). Getting this backwards is the defect
+    `test_a_table_brings_its_chairs` caught one pass along, so the front is
+    computed from the bearing here and nowhere else.
+    """
+    faces = [front] + ([(float(front) + 180.0) % 360.0] if twin else [])
+    # DERIVED FROM THE FOOTPRINT THE AISLE WAS MEASURED AGAINST, not spelled
+    # again: the unit sits half of whatever is left over its own depth,
+    # along the way it faces. With no twin it IS the island and does not
+    # move. Spelling `d / 2` here instead would put the halves 1 cm inside
+    # the rectangle `_island_aisle_clear` cleared, which is the direction
+    # that hides rather than the direction that fails.
+    off = (island_depth(d, twin) - float(d)) / 2.0
+    n = 0
+    for face in faces:
+        ux, uy = round(math.sin(math.radians(face)), 6), \
+            round(math.cos(math.radians(face)), 6)
+        sx, sy = (w, d) if face in (0.0, 180.0) else (d, w)
+        vol = make(key, px + ux * off, py + uy * off, sx, sy, h,
+                   _front_turn(key, sx, sy, face))
+        spec.setdefault("volumes", []).append(vol)
+        n += 1
+    return n
 
 
 def _furnish_target(area, per_area=None):
@@ -2897,8 +3254,35 @@ def back_bar_club_counters(spec):
 #: from `zoo/zoo_keeper/genome/species/pack_wall.json` (0.35-0.60,
 #: 0.8-8.0), not from a brief.
 PACK_WALL_DEPTH = 0.5
-PACK_WALL_H = 2.2
 PACK_WALL_W = (0.8, 8.0)
+
+
+def counter_pack_wall_height(spec):
+    """How tall the gondola behind a showcase counter is built.
+
+    A PINNED 2.2 WAS TWO SPELLINGS OF ONE NUMBER, which is the defect this
+    file keeps finding. `PACK_WALL_H` sat here and `_PIECES["pack_wall"]`
+    carried its own 2.2/2.4 sizes, so the wall run and this pass agreed by
+    coincidence -- and when the run's heights went to the ceiling the two
+    counter gondolas, which are the most visible pack walls in the shop,
+    stayed at 2.2 and the room had one fixture at two heights. `_PIECES` is
+    the one place that declares it now and this reads it.
+
+    AND THE CRT KEEPS ITS SHELF, which is the second term and is why this
+    is not just `to_ceiling_height`. The reference is "a small CRT on a
+    shelf behind the counter"; this pass hangs it over the gondola, so the
+    gondola may not take the whole clear height or there is nowhere for it
+    to go -- MEASURED at the card shop's 3.4 m storey: clear height 3.10,
+    product ceiling 2.70, and a 0.50 m CRT over `_CRT_OVER_PACK` of air
+    needs its bottom at 2.60, so a 2.70 gondola evicts it and the pass
+    reports `crt: false`. Taking the CRT's band off first gives 2.55 and
+    keeps both. A taller storey gets the full height and the CRT, because
+    both terms are derived and neither is pinned.
+    """
+    clear_h = _clear_height(spec)
+    crt_h = _PIECES["wall_tv"]["sizes"][0][2]
+    return _floor4(min(to_ceiling_height(spec, _PIECES["pack_wall"], clear_h),
+                       clear_h - crt_h - _CRT_OVER_PACK))
 #: Air between the top of the pack wall and the bottom of the CRT hung over
 #: it, so the two are not coplanar -- `_CEILING_AIR`'s reason, one surface
 #: down.
@@ -2932,8 +3316,8 @@ def card_shop_counters(spec):
       * the counter moves into the room by the pack wall's depth plus the
         aisle (`staff_aisle_width`);
       * a `pack_wall` volume goes flush against the wall, as long as the
-        counter (inside Zoo's genome range) and `PACK_WALL_H` tall, or
-        shorter where the storey is;
+        counter (inside Zoo's genome range) and `counter_pack_wall_height`
+        tall -- the product ceiling less the CRT's own band;
       * a CRT hangs on the wall clear above it, where the storey leaves
         room -- the reference's "small CRT on a shelf behind";
       * where the counter's end is against a perpendicular wall, a return
@@ -2980,7 +3364,7 @@ def card_shop_counters(spec):
         _shift_counter(plan, v)
         pw_rect = plan["back_rect"]
         pw_w = max(PACK_WALL_W[0], min(PACK_WALL_W[1], run))
-        pw_h = min(PACK_WALL_H, clear_h)
+        pw_h = min(counter_pack_wall_height(spec), clear_h)
         cx = (pw_rect[0] + pw_rect[2]) / 2.0
         cy = (pw_rect[1] + pw_rect[3]) / 2.0
         sx, sy = ((pw_w, PACK_WALL_DEPTH) if plan["fy"]
@@ -2999,7 +3383,14 @@ def card_shop_counters(spec):
         # pass does not model that.
         crt_w, crt_d, crt_h = _PIECES["wall_tv"]["sizes"][0]
         crt_lift = pw_h + _CRT_OVER_PACK + crt_h / 2.0
-        if crt_lift + crt_h / 2.0 <= clear_h:
+        # THE SAME QUANTITY, ASKED TWICE. `counter_pack_wall_height` derives
+        # `pw_h` as `clear_h - crt_h - _CRT_OVER_PACK` precisely so this sum
+        # comes back to `clear_h`, and the two spellings of it differ in the
+        # last bits -- the `_wall_span` shape, where a piece is judged too
+        # tall to hang AND too short to have been shortened. The tolerance is
+        # the float error of one add, not a design margin; `_floor4` on the
+        # other side is what keeps it that small.
+        if crt_lift + crt_h / 2.0 <= clear_h + 1e-9:
             csx, csy = ((crt_w, crt_d) if plan["fy"] else (crt_d, crt_w))
             crt = _make_volume(spec, "wall_tv", "wall_tv_%s_%d" % (rtag, seq),
                                cx, cy, csx, csy, crt_h,
@@ -3300,7 +3691,8 @@ def furnish(spec):
         if kind == "strip_club":
             recipe = dict(recipe, anchors=_club_anchors(room))
         elif kind == "card_shop":
-            recipe = dict(recipe, anchors=_card_shop_anchors(room, building))
+            recipe = dict(recipe, anchors=_card_shop_anchors(room, building),
+                          floor=_card_shop_floor(room, building))
         have = _room_volume_count(spec, room)
         want = max(0, _furnish_target(area, recipe.get("per_area")) - have)
         if recipe.get("cap") is not None:
@@ -3514,13 +3906,16 @@ def furnish(spec):
             for size in sizes:
                 w, d, h = size
                 if h is None:
-                    h = min(clear_h, _TO_CEILING_MAX)
+                    h = to_ceiling_height(spec, p, clear_h)
                 if h > clear_h:
                     continue
                 half = max(w, d) / 2.0
                 if p["where"] in ("seat", "pair"):
                     return False
-                if p["where"] == "wall":
+                if p["where"] == "island":
+                    spots = _island_slots(spec, room, w, d, rng,
+                                          twin=p["twin"])
+                elif p["where"] == "wall":
                     spots = [(qx, qy, sx, sy, front)
                              for qx, qy, sx, sy, _r, front
                              in _wall_slots(spec, room, w, d, rng,
@@ -3558,7 +3953,21 @@ def furnish(spec):
                 above = (lift - h / 2.0) if hung else None
                 over = hangs_over_openings(spec, story, above)
                 for qx, qy, sx, sy, front in spots:
+                    # AN ISLAND'S HALF-EXTENT IS ITS OWN FOOTPRINT, not the
+                    # piece's longest side: `sx`/`sy` already carry the
+                    # twin's doubled depth, and clearing a 1.0 m deep island
+                    # as if it were 0.5 would spend the aisle twice.
+                    if p["where"] == "island":
+                        half = max(sx, sy) / 2.0
                     if _over_rects(inner, qx, qy, half, half):
+                        continue
+                    # THE CONTRACT'S AISLE, and only an island is asked for
+                    # it: `_seed_clear` below keeps 0.9 m from a volume's
+                    # edge, which is under `min_corridor_width_m` and is the
+                    # right answer for a chair beside a desk. A run a body
+                    # walks down is a corridor and gets `island_aisle_width`.
+                    if p["where"] == "island" and not _island_aisle_clear(
+                            spec, room, qx, qy, sx, sy, island_aisle_width()):
                         continue
                     # a hung piece takes no share of the floor: it clears
                     # what reaches up to it and holds no spread against
@@ -3567,6 +3976,14 @@ def furnish(spec):
                                        [] if hung else placed, half=half,
                                        above=above, over_openings=over):
                         continue
+                    if p["where"] == "island":
+                        n = _island(key, _volume, spec, qx, qy, w, d, h,
+                                    front, twin=p["twin"])
+                        placed.append((qx, qy))
+                        per_size[(key, size)] += 1
+                        per_name[key] += 1
+                        added += n
+                        return True
                     rot = (_front_turn(key, sx, sy, front)
                            if front is not None else 0.0)
                     vol = _volume(key, qx, qy, sx, sy, h, rot)

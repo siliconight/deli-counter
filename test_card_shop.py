@@ -140,8 +140,13 @@ def test_the_shop_is_furnished_as_a_card_shop(shop):
     sell = _named(shop, "sales_floor")
     play = _named(shop, "play_area")
     assert len(sell["display_case"]) == 2, "the reference's L of counters"
-    assert len(sell["pack_wall"]) == 2, "one behind each counter"
+    # one behind each counter, PLUS whatever the wall run draws now that the
+    # cap is 4 rather than 2 -- "the reference's one long aisle of it", which
+    # 0.139.0's `reserved_by` share had left at exactly nothing
+    assert len(sell["pack_wall"]) >= 2, "one behind each counter"
+    assert len(sell["pack_wall"]) > 2, "and a run along a free wall"
     assert len(sell["wall_tv"]) == 2, "the CRT on a shelf behind"
+    assert len(sell["pack_wall_island"]) >= 2, "product in the open floor"
     assert sell["pennant_row"], "a row of pennants along the top of the wall"
     assert play["folding_table"] and play["folding_chair"]
     # the stockroom is dressed as storage, which is what it is
@@ -295,18 +300,19 @@ def test_the_variant_count_is_the_species_own_and_asked_once():
 
 def test_a_later_pass_keeps_its_share_of_a_piece_s_cap(shop):
     """`reserved_by`: `card_shop_counters` stands one pack wall per
-    showcase counter AFTER the wall run has spent the cap, so a two-counter
-    selling floor drew four. At the palette's widest that is 8,448
-    triangles of pack wall alone."""
+    showcase counter AFTER the wall run has spent the cap, so without it a
+    two-counter selling floor draws `most` plus two. The mechanism is what
+    is asserted here; `most` itself is the budget test's."""
     p = level_design._PIECES["pack_wall"]
-    assert p["most"] == 2 and p["reserved_by"] == "display_case"
+    assert p["reserved_by"] == "display_case"
     sell = _named(shop, "sales_floor")
     assert len(sell["pack_wall"]) <= p["most"]
-    assert len(sell["pack_wall"]) == len(sell["display_case"])
+    assert len(sell["display_case"]) >= 1
 
 
 def test_no_card_shop_room_carries_more_than_its_caps(shop):
-    caps = {"display_case": 2, "pack_wall": 2, "pennant_row": 2,
+    caps = {"display_case": 2, "pack_wall": 4, "pennant_row": 4,
+            "pack_wall_island": 2 * 2,
             "folding_table": level_design._CARD_PLAY_TABLES_MAX}
     b = level_design.club_building_id(shop)
     for room in shop["rooms"]:
@@ -315,6 +321,318 @@ def test_no_card_shop_room_carries_more_than_its_caps(shop):
         got = _named(shop, room["id"])
         for stem, cap in caps.items():
             assert len(got.get(stem, [])) <= cap, (room["id"], stem)
+
+
+# --- density: the height and the floor (0.140.0) ---------------------------
+#
+# The walker walked cold run 9061's `card_shop_a01` and photographed the
+# sales floor: "the card shop should feel saturated with posters, ads,
+# playmats, content, fantasy, ect ect." `docs/SET_DRESSING_REFERENCES.md`
+# splits that into five properties; these are the two Deli Counter owns --
+# product goes to the ceiling, and the middle of the floor is occupied.
+#
+# Every test below FAILS on 0.139.0: the pack walls were 2.2 m in a room
+# with 3.10 m of clear height, the `floor` run was empty and there was no
+# `island` placement at all.
+
+#: WHAT ONE MODULE COSTS AT THE WORST CORNER OF ITS PALETTE, in triangles.
+#:
+#: MEASURED 2026-09-16 by planning each palette size through Zoo 0.95.0's
+#: own planners at every variant and keeping the largest --
+#: `pack_wall_forms.plan`, `display_case_forms.plan`, `pennant_forms.plan`,
+#: `folding_forms.plan_table` / `plan_chair` -- and read off `facts["tris"]`,
+#: which for four of the five species IS the built number (0.139.0's release
+#: entry checks it against the kit's `meta.json`).
+#:
+#: Pinned here rather than computed, so this test says the same thing on a
+#: machine with no Zoo checkout. `test_the_measured_module_costs_are_still
+#: _zoo_s` is what stops it drifting from the planner it was read off.
+_WORST_TRIS = {
+    "display_case": 1148,        # 3.6 x 0.6 x 1.05
+    "display_case_end": 760,     # 1.25 x 0.6 x 1.0
+    "pack_wall": 2112,           # 3.6 wide, 3 bays -- HEIGHT DOES NOT MOVE IT
+    "pack_wall_island": 1416,    # 2.4 wide, 2 bays, and an island is TWO
+    "pennant_row": 892,          # its budget, whatever its length
+    "wall_tv": 404,
+    "folding_table": 384,        # with the `cards` stock
+    "folding_chair": 192,
+}
+
+
+def test_the_room_budget_is_zoo_s_only_real_one_and_the_caps_fit_under_it():
+    """THE FIGURE 0.139.0 CAPPED AGAINST WAS NOT A BUDGET, and this is the
+    test that says so rather than the release note.
+
+    10,664 is Zoo 0.95.0's MEASUREMENT of one card-shop room at its worst
+    genome corners, published under the heading "THE ROOM-LEVEL NUMBER,
+    because a species budget is not a room" and followed immediately by
+    "For scale, one `cubicle_bank` is budgeted 24,000". 0.139.0 read the
+    measurement as a ceiling and capped the shipped room BELOW the
+    reference furnishing it was citing -- two pack walls where that
+    reference has four, two pennant rows where it has four.
+
+    The budget is one `cubicle_bank`, which is the only room-scale figure
+    in this toolchain that is a budget at all, and the caps are set so the
+    worst case the palette can produce lands under it. A cap that is not
+    the thing holding the number is a comment (Zoo's own words, one layer
+    down), so this multiplies them out.
+    """
+    P = level_design._PIECES
+    worst = (
+        2 * _WORST_TRIS["display_case"] +         # both counters
+        2 * _WORST_TRIS["display_case_end"] +     # both returns
+        P["pack_wall"]["most"] * _WORST_TRIS["pack_wall"] +
+        P["pennant_row"]["most"] * _WORST_TRIS["pennant_row"] +
+        2 * _WORST_TRIS["wall_tv"] +              # one CRT a counter
+        P["pack_wall_island"]["most"] * 2 * _WORST_TRIS["pack_wall_island"]
+    )
+    assert worst == 22304, worst
+    assert worst <= level_design._CARD_SHOP_ROOM_TRIS
+    # ...and the cap is load-bearing: one more island is over it, which is
+    # why `most` is 2 and not 3.
+    assert worst + 2 * _WORST_TRIS["pack_wall_island"] > \
+        level_design._CARD_SHOP_ROOM_TRIS
+
+
+def test_the_measured_module_costs_are_still_zoo_s():
+    """`_WORST_TRIS` is a reading of Zoo's planners, so it can go stale
+    silently. Where Zoo is reachable, it is re-read."""
+    from test_furnish import ZOO
+    if not os.path.isdir(os.path.join(ZOO, "zoo_keeper")):
+        pytest.skip("zoo repo not found at %s (set DC_ZOO_ROOT)" % ZOO)
+    if ZOO not in sys.path:
+        sys.path.insert(0, ZOO)
+    import importlib
+    PW = importlib.import_module("zoo_keeper.core.pack_wall_forms")
+    DCF = importlib.import_module("zoo_keeper.core.display_case_forms")
+    PN = importlib.import_module("zoo_keeper.core.pennant_forms")
+
+    def worst(plan, sizes):
+        return max(plan(w, d, h, variant=v)["facts"]["tris"]
+                   for (w, d, h) in sizes for v in range(4))
+
+    spec = presets.card_shop()
+    clear = level_design._clear_height(spec)
+    tall = level_design.to_ceiling_height(
+        spec, level_design._PIECES["pack_wall"], clear)
+    for key, plan in (("pack_wall", PW.plan), ("pack_wall_island", PW.plan)):
+        sizes = [(w, d, tall) for w, d, _h in
+                 level_design._PIECES[key]["sizes"]]
+        assert worst(plan, sizes) == _WORST_TRIS[key], key
+    assert worst(DCF.plan, level_design._PIECES["display_case"]["sizes"]) == \
+        _WORST_TRIS["display_case"]
+    assert worst(DCF.plan,
+                 level_design._PIECES["display_case_end"]["sizes"]) == \
+        _WORST_TRIS["display_case_end"]
+    assert worst(PN.plan, level_design._PIECES["pennant_row"]["sizes"]) == \
+        _WORST_TRIS["pennant_row"]
+
+
+def test_the_pack_wall_ceiling_is_the_genome_s_and_not_a_number():
+    """`PACK_WALL_CEILING` is copied out of Zoo's genome. A copy drifts."""
+    from test_furnish import ZOO
+    path = os.path.join(ZOO, "zoo_keeper", "genome", "species",
+                        "pack_wall.json")
+    if not os.path.isfile(path):
+        pytest.skip("zoo repo not found at %s (set DC_ZOO_ROOT)" % ZOO)
+    with open(path, encoding="utf-8") as fh:
+        genome = json.load(fh)
+    assert level_design.PACK_WALL_CEILING == \
+        genome["dimensions"]["height"]["max"]
+
+
+def test_product_goes_to_the_ceiling_and_stops_under_the_pennants(shop):
+    """REFERENCE PROPERTY 1. "A wall that stops at 2.2 m in a 3.4 m room
+    reads as a partition; a wall filled to the ceiling reads as a shop."
+
+    The three numbers are derived and each is asked of the room it is in:
+    the clear height, the band the hung fixtures own, and the product
+    ceiling under it. At the card shop's 3.4 m storey that is 3.10 / 2.75 /
+    2.70, and 0.139.0's pack walls were 2.2 -- 0.55 m short of what the
+    room allows and a metre short of its ceiling.
+    """
+    clear = level_design._clear_height(shop)
+    band = level_design.hung_band_bottom(shop)
+    top = level_design.to_ceiling_height(
+        shop, level_design._PIECES["pack_wall"], clear)
+    assert band < clear                       # something hangs
+    assert top == round(band - level_design._CEILING_AIR, 4)
+    assert top > 2.2                          # the number this replaces
+    assert top <= level_design.PACK_WALL_CEILING
+    walls = [v for v in shop["volumes"] if v["name"].startswith("pack_wall")]
+    assert walls
+    for v in walls:
+        # every one of them reaches the product ceiling, or the counter's
+        # own derivation of it, and NONE of them is still at 2.2
+        assert v["size_z"] > 2.2, v["name"]
+        assert v["z"] + v["size_z"] / 2.0 <= clear + 1e-9, v["name"]
+    # ...and nothing standing on the floor reaches into the hung band
+    for v in walls:
+        assert v["z"] + v["size_z"] / 2.0 <= band, v["name"]
+
+
+def test_one_pack_wall_height_a_room_and_not_two_spellings_of_it(shop):
+    """The counter pass and the wall run each used to name their own
+    height -- `PACK_WALL_H` here, the palette's sizes there -- and they
+    agreed by coincidence at 2.2. Raising one moved the run's gondolas to
+    2.70 and left the two behind the counters, which are the most visible
+    in the shop, at 2.2. One declaration, two readers."""
+    assert not hasattr(level_design, "PACK_WALL_H")
+    counter_h = level_design.counter_pack_wall_height(shop)
+    run_h = level_design.to_ceiling_height(
+        shop, level_design._PIECES["pack_wall"],
+        level_design._clear_height(shop))
+    # the counter's is the run's less the CRT's own band, and no more
+    crt_h = level_design._PIECES["wall_tv"]["sizes"][0][2]
+    assert counter_h <= run_h
+    assert run_h - counter_h <= crt_h + level_design._CRT_OVER_PACK + 1e-9
+
+
+def test_the_crt_still_has_its_shelf_over_the_taller_gondola(shop):
+    """What filling the height nearly cost, and the term that keeps it. At
+    the full 2.70 product ceiling a 0.50 m CRT has nowhere to hang and
+    `card_shop_counters` reports `crt: false` -- the reference's "small CRT
+    on a shelf behind" quietly gone. `counter_pack_wall_height` takes the
+    CRT's band off first."""
+    tvs = [v for v in shop["volumes"] if v["name"].startswith("wall_tv")]
+    cases = [v for v in shop["volumes"]
+             if v["name"].startswith("display_case_r")]
+    # ONE CRT A COUNTER, which is the claim -- not one per pack wall, since
+    # the wall run stands its own now and those carry no CRT
+    assert tvs and len(tvs) == len(cases)
+    clear = level_design._clear_height(shop)
+    for v in tvs:
+        assert v["z"] + v["size_z"] / 2.0 <= clear + 1e-9, v["name"]
+        # and each one hangs over a gondola rather than in mid-air
+        under = [w for w in shop["volumes"]
+                 if w["name"].startswith("pack_wall_")
+                 and abs(w["x"] - v["x"]) < 0.3 and abs(w["y"] - v["y"]) < 0.3]
+        assert under, v["name"]
+        top = max(w["z"] + w["size_z"] / 2.0 for w in under)
+        assert v["z"] - v["size_z"] / 2.0 >= top - 1e-9, v["name"]
+
+
+def test_the_middle_of_the_selling_floor_is_occupied(shop):
+    """REFERENCE PROPERTY 2. "The current recipe treats the floor as
+    circulation and puts everything against a wall. That is what makes the
+    frame read as a hall: there is nothing between the camera and the far
+    wall."
+
+    An island is a piece whose every side is open floor. 0.139.0's selling
+    floor had none: `floor` was `()` and every `where` in the recipe was
+    `wall`.
+    """
+    room = _room(shop, "sales_floor")
+    x0, y0, x1, y1 = room["bounds"]
+    islands = [v for v in shop["volumes"]
+               if v["name"].startswith("pack_wall_island")]
+    assert islands, "nothing stands in the open floor"
+    aisle = level_design.island_aisle_width()
+    for v in islands:
+        for lo, hi, c, s in ((x0, x1, v["x"], v["size_x"]),
+                             (y0, y1, v["y"], v["size_y"])):
+            assert c - s / 2.0 - lo >= aisle - 1e-6, (v["name"], "lo")
+            assert hi - (c + s / 2.0) >= aisle - 1e-6, (v["name"], "hi")
+
+
+def test_an_island_is_two_faces_and_never_one_blank_back(shop):
+    """A `pack_wall`'s back panel owns +Y and carries no product, so a
+    single one mid-floor is a blank slatwall sheet seen from half the room.
+    `twin` writes the other face; they share a spine and face opposite
+    ways."""
+    assert level_design._PIECES["pack_wall_island"]["twin"]
+    islands = [v for v in shop["volumes"]
+               if v["name"].startswith("pack_wall_island")]
+    assert islands and len(islands) % 2 == 0
+    by_pos = {}
+    for v in islands:
+        by_pos.setdefault((round(v["size_x"], 2), round(v["size_y"], 2)),
+                          []).append(v)
+    for group in by_pos.values():
+        assert len(group) % 2 == 0, [v["name"] for v in group]
+    # each unit's back is against its partner's, and the two look opposite
+    # ways: their rotations differ by 180
+    rots = sorted({round(float(v.get("rot_z", 0.0)) % 360.0) for v in islands})
+    assert len(rots) == 2 and abs(rots[1] - rots[0]) == 180, rots
+    # ...AND THE TWO BACKS ARE NOT COPLANAR. Two slatwall sheets meeting on
+    # exactly one plane is the shape Zoo measured as 3.09 m2 of flicker on
+    # cold run 9052's lobby; `island_depth` puts `_WALL_PIECE_AIR` between
+    # them, and the gap is checked here rather than trusted to the writer.
+    for v in islands:
+        near = [o for o in islands
+                if o is not v
+                and abs(o["size_x"] - v["size_x"]) < 1e-6
+                and abs(o["size_y"] - v["size_y"]) < 1e-6
+                and math.hypot(o["x"] - v["x"], o["y"] - v["y"]) < 2.0]
+        assert near, v["name"]
+        gap = min(math.hypot(o["x"] - v["x"], o["y"] - v["y"]) for o in near)
+        depth = min(v["size_x"], v["size_y"])
+        assert gap > depth + 1e-9, (v["name"], gap, depth)
+        assert gap <= depth + level_design._WALL_PIECE_AIR + 1e-6, \
+            (v["name"], gap, depth)
+
+
+def test_an_island_keeps_the_contract_s_aisle_from_everything(shop):
+    """THE CONTRACT'S NUMBER, NOT THIS BRIEF'S. `_seed_clear` keeps a piece
+    0.9 m off another volume's edge, which is under
+    `clearances.min_corridor_width_m` (1.10) -- right for a chair beside a
+    desk and wrong for a run a body walks down. An island asks
+    `island_aisle_width`, which is `staff_aisle_width` (1.25) because an
+    aisle is a corridor ENTERED AT ITS END and so a doorway too."""
+    aisle = level_design.island_aisle_width()
+    assert aisle == max(agent_contract.min_corridor_width(),
+                        agent_contract.min_door_width())
+    assert aisle >= agent_contract.min_corridor_width()
+    islands = [v for v in shop["volumes"]
+               if v["name"].startswith("pack_wall_island")]
+    assert islands
+    partners = {v["name"] for v in islands}
+    for v in islands:
+        rect = level_design._rect_of(v)
+        for o in shop["volumes"]:
+            if o["name"] in partners or o.get("collision") == "none":
+                continue
+            if abs(float(o.get("z", 0.0))) > level_design._story_height(shop):
+                continue
+            r = level_design._rect_of(o)
+            gap_x = max(rect[0] - r[2], r[0] - rect[2])
+            gap_y = max(rect[1] - r[3], r[1] - rect[3])
+            assert max(gap_x, gap_y) >= aisle - 1e-6, (v["name"], o["name"])
+
+
+def test_the_play_area_gets_no_islands(shop):
+    """Its middle is already its tables; an island between two of them is a
+    wall across a tournament. The two rooms share one `_RECIPES` entry, so
+    the floor run is per-room the way the anchors are."""
+    b = level_design.club_building_id(shop)
+    play = _room(shop, "play_area")
+    assert level_design._card_shop_floor(play, b) == ()
+    assert level_design._card_shop_floor(_room(shop, "sales_floor"), b)
+    tag = level_design._room_tag(play)
+    for stem, _seq, _v in level_design._room_names(shop, tag):
+        assert stem != "pack_wall_island"
+
+
+def test_a_derived_height_is_never_rounded_up():
+    """`round(x, 4)` moves a value UP by as much as 5e-5, and every caller
+    asks a LIMIT of the result -- `_host` refuses `h > clear_h`, the CRT
+    pass refuses one with no room above. One quantity, two spellings, a
+    threshold between them: the `_wall_span` shape. `_floor4` is what stops
+    it, so it is asked directly rather than only through its callers."""
+    assert level_design._floor4(2.69999999) <= 2.69999999
+    assert level_design._floor4(1.00005) <= 1.00005
+    for storey in (3.0, 3.4, 3.6, 4.2, 5.0, 6.5):
+        spec = presets.card_shop()
+        spec["story_height"] = storey
+        clear = level_design._clear_height(spec)
+        for key in ("pack_wall", "pack_wall_island"):
+            h = level_design.to_ceiling_height(
+                spec, level_design._PIECES[key], clear)
+            assert h <= clear, (storey, key)
+            assert h <= level_design.PACK_WALL_CEILING, (storey, key)
+        pw = level_design.counter_pack_wall_height(spec)
+        crt_h = level_design._PIECES["wall_tv"]["sizes"][0][2]
+        assert pw + level_design._CRT_OVER_PACK + crt_h <= clear + 1e-9, storey
 
 
 def test_every_card_shop_slot_is_a_size_its_species_builds(shop):

@@ -1,1416 +1,1483 @@
 {
-  "$schema": "../schema/level.schema.json",
-  "name": "card_shop_a01",
-  "mode": "heist",
-  "preset": "card_shop",
-  "seed": 1997,
-  "grid": 0.5,
-  "footprint_x": 20.0,
-  "footprint_y": 18.0,
-  "story_height": 3.4,
-  "n_stories": 2,
-  "has_basement": false,
-  "wall_thick": 0.25,
-  "floor_thick": 0.25,
-  "collision": "convex",
-  "auto_exterior": true,
-  "scale_ref": false,
-  "default_material": "brick_ext",
-  "materials": [
+ "$schema": "../schema/level.schema.json",
+ "name": "card_shop_a01",
+ "mode": "heist",
+ "preset": "card_shop",
+ "seed": 1997,
+ "grid": 0.5,
+ "footprint_x": 20.0,
+ "footprint_y": 18.0,
+ "story_height": 3.4,
+ "n_stories": 2,
+ "has_basement": false,
+ "wall_thick": 0.25,
+ "floor_thick": 0.25,
+ "collision": "convex",
+ "auto_exterior": true,
+ "scale_ref": false,
+ "default_material": "brick_ext",
+ "materials": [
+  {
+   "id": "brick_ext",
+   "acoustic": "Concrete",
+   "absorption": 0.6,
+   "damping": 0.5
+  },
+  {
+   "id": "storefront_glass",
+   "acoustic": "Glass",
+   "absorption": 0.1,
+   "damping": 0.05
+  },
+  {
+   "id": "glass",
+   "acoustic": "Glass",
+   "absorption": 0.1,
+   "damping": 0.05
+  },
+  {
+   "id": "drywall",
+   "acoustic": "Drywall",
+   "absorption": 0.42,
+   "damping": 0.38
+  },
+  {
+   "id": "concrete",
+   "acoustic": "Concrete",
+   "absorption": 0.7,
+   "damping": 0.6
+  },
+  {
+   "id": "metal",
+   "acoustic": "Metal",
+   "absorption": 0.2,
+   "damping": 0.15
+  },
+  {
+   "id": "wood",
+   "acoustic": "Wood",
+   "absorption": 0.35,
+   "damping": 0.3
+  },
+  {
+   "id": "tile",
+   "acoustic": "Concrete",
+   "absorption": 0.2,
+   "damping": 0.15
+  },
+  {
+   "id": "carpet",
+   "acoustic": "Curtain",
+   "absorption": 0.8,
+   "damping": 0.7
+  },
+  {
+   "id": "wood_panel",
+   "acoustic": "Wood",
+   "absorption": 0.3,
+   "damping": 0.26
+  },
+  {
+   "id": "plastic",
+   "acoustic": "Wood",
+   "absorption": 0.25,
+   "damping": 0.2
+  },
+  {
+   "id": "leather",
+   "acoustic": "Curtain",
+   "absorption": 0.6,
+   "damping": 0.5
+  },
+  {
+   "id": "slatwall",
+   "acoustic": "Wood",
+   "absorption": 0.28,
+   "damping": 0.24
+  },
+  {
+   "id": "metal_painted",
+   "acoustic": "Metal",
+   "absorption": 0.25,
+   "damping": 0.2
+  },
+  {
+   "id": "cloth",
+   "acoustic": "Curtain",
+   "absorption": 0.7,
+   "damping": 0.6
+  }
+ ],
+ "ext_walls": [
+  {
+   "wall": "S",
+   "story": 0,
+   "material": "storefront_glass",
+   "openings": [
     {
-      "id": "brick_ext",
-      "acoustic": "Concrete",
-      "absorption": 0.6,
-      "damping": 0.5
+     "kind": "door",
+     "pos": -0.15,
+     "width": 1.6,
+     "tag": "front_door"
     },
     {
-      "id": "storefront_glass",
-      "acoustic": "Glass",
-      "absorption": 0.1,
-      "damping": 0.05
+     "kind": "window",
+     "pos": -0.35,
+     "width": 4.0,
+     "sill": 0.6,
+     "vaultable": true,
+     "material": "glass"
     },
     {
-      "id": "glass",
-      "acoustic": "Glass",
-      "absorption": 0.1,
-      "damping": 0.05
-    },
-    {
-      "id": "drywall",
-      "acoustic": "Drywall",
-      "absorption": 0.42,
-      "damping": 0.38
-    },
-    {
-      "id": "concrete",
-      "acoustic": "Concrete",
-      "absorption": 0.7,
-      "damping": 0.6
-    },
-    {
-      "id": "metal",
-      "acoustic": "Metal",
-      "absorption": 0.2,
-      "damping": 0.15
-    },
-    {
-      "id": "wood",
-      "acoustic": "Wood",
-      "absorption": 0.35,
-      "damping": 0.3
-    },
-    {
-      "id": "tile",
-      "acoustic": "Concrete",
-      "absorption": 0.2,
-      "damping": 0.15
-    },
-    {
-      "id": "carpet",
-      "acoustic": "Curtain",
-      "absorption": 0.8,
-      "damping": 0.7
-    },
-    {
-      "id": "wood_panel",
-      "acoustic": "Wood",
-      "absorption": 0.3,
-      "damping": 0.26
-    },
-    {
-      "id": "plastic",
-      "acoustic": "Wood",
-      "absorption": 0.25,
-      "damping": 0.2
-    },
-    {
-      "id": "leather",
-      "acoustic": "Curtain",
-      "absorption": 0.6,
-      "damping": 0.5
-    },
-    {
-      "id": "slatwall",
-      "acoustic": "Wood",
-      "absorption": 0.28,
-      "damping": 0.24
-    },
-    {
-      "id": "metal_painted",
-      "acoustic": "Metal",
-      "absorption": 0.25,
-      "damping": 0.2
-    },
-    {
-      "id": "cloth",
-      "acoustic": "Curtain",
-      "absorption": 0.7,
-      "damping": 0.6
+     "kind": "window",
+     "pos": 0.2,
+     "width": 6.0,
+     "sill": 0.6,
+     "vaultable": true,
+     "material": "glass"
     }
-  ],
-  "ext_walls": [
+   ]
+  },
+  {
+   "wall": "N",
+   "story": 0,
+   "material": "brick_ext",
+   "openings": [
     {
-      "wall": "S",
-      "story": 0,
-      "material": "storefront_glass",
-      "openings": [
-        {
-          "kind": "door",
-          "pos": -0.15,
-          "width": 1.6,
-          "tag": "front_door"
-        },
-        {
-          "kind": "window",
-          "pos": -0.35,
-          "width": 4.0,
-          "sill": 0.6,
-          "vaultable": true,
-          "material": "glass"
-        },
-        {
-          "kind": "window",
-          "pos": 0.2,
-          "width": 6.0,
-          "sill": 0.6,
-          "vaultable": true,
-          "material": "glass"
-        }
-      ]
+     "kind": "door",
+     "pos": -0.3,
+     "width": 1.25,
+     "tag": "rear_door"
     },
     {
-      "wall": "N",
-      "story": 0,
-      "material": "brick_ext",
-      "openings": [
-        {
-          "kind": "door",
-          "pos": -0.3,
-          "width": 1.25,
-          "tag": "rear_door"
-        },
-        {
-          "kind": "breach",
-          "pos": 0.25,
-          "width": 1.2,
-          "breach_class": "soft_wall",
-          "material": "drywall",
-          "tag": "play_breach"
-        }
-      ]
-    },
-    {
-      "wall": "W",
-      "story": 0,
-      "material": "brick_ext",
-      "openings": [
-        {
-          "kind": "window",
-          "pos": -0.4167,
-          "width": 1.4,
-          "sill": 1.2,
-          "vaultable": true,
-          "material": "glass"
-        }
-      ]
-    },
-    {
-      "wall": "E",
-      "story": 0,
-      "material": "brick_ext",
-      "openings": []
-    },
-    {
-      "wall": "S",
-      "story": 1,
-      "material": "brick_ext",
-      "openings": [
-        {
-          "kind": "window",
-          "pos": -0.25,
-          "width": 1.4,
-          "sill": 1.0,
-          "vaultable": true,
-          "material": "glass"
-        },
-        {
-          "kind": "window",
-          "pos": 0.25,
-          "width": 1.4,
-          "sill": 1.0,
-          "vaultable": true,
-          "material": "glass"
-        }
-      ]
-    },
-    {
-      "wall": "N",
-      "story": 1,
-      "material": "brick_ext",
-      "openings": [
-        {
-          "kind": "breach",
-          "pos": 0.0,
-          "width": 1.2,
-          "breach_class": "soft_wall",
-          "material": "drywall"
-        }
-      ]
-    },
-    {
-      "wall": "W",
-      "story": 1,
-      "material": "brick_ext",
-      "openings": [
-        {
-          "kind": "window",
-          "pos": 0.0,
-          "width": 1.4,
-          "sill": 1.0,
-          "vaultable": true,
-          "material": "glass"
-        }
-      ]
-    },
-    {
-      "wall": "E",
-      "story": 1,
-      "material": "brick_ext",
-      "openings": [
-        {
-          "kind": "window",
-          "pos": 0.0,
-          "width": 1.4,
-          "sill": 1.0,
-          "vaultable": true,
-          "material": "glass"
-        }
-      ]
+     "kind": "breach",
+     "pos": 0.25,
+     "width": 1.2,
+     "breach_class": "soft_wall",
+     "material": "drywall",
+     "tag": "play_breach"
     }
-  ],
-  "partitions": [
+   ]
+  },
+  {
+   "wall": "W",
+   "story": 0,
+   "material": "brick_ext",
+   "openings": [
     {
-      "story": 0,
-      "axis": "X",
-      "pos": 2.0,
-      "start": -10.0,
-      "end": 10.0,
-      "material": "wood_panel",
-      "openings": [
-        {
-          "kind": "door",
-          "pos": -0.3,
-          "width": 1.25,
-          "reinforceable": true,
-          "tag": "stock_door"
-        },
-        {
-          "kind": "door",
-          "pos": 0.25,
-          "width": 1.8,
-          "tag": "play_door"
-        }
-      ]
-    },
-    {
-      "story": 0,
-      "axis": "Y",
-      "pos": 0.0,
-      "start": 2.0,
-      "end": 9.0,
-      "material": "wood_panel",
-      "openings": []
-    },
-    {
-      "story": 1,
-      "axis": "X",
-      "pos": 2.0,
-      "start": -10.0,
-      "end": 10.0,
-      "material": "drywall",
-      "openings": [
-        {
-          "kind": "door",
-          "pos": -0.3,
-          "width": 1.25
-        },
-        {
-          "kind": "door",
-          "pos": 0.25,
-          "width": 1.25
-        }
-      ]
+     "kind": "window",
+     "pos": -0.4167,
+     "width": 1.4,
+     "sill": 1.2,
+     "vaultable": true,
+     "material": "glass"
     }
-  ],
-  "stairs": [
+   ]
+  },
+  {
+   "wall": "E",
+   "story": 0,
+   "material": "brick_ext",
+   "openings": []
+  },
+  {
+   "wall": "S",
+   "story": 1,
+   "material": "brick_ext",
+   "openings": [
     {
-      "x": -4.5,
-      "y": 5.5,
-      "from_story": 0,
-      "to_story": 1,
-      "width": 1.1,
-      "run": 4.8,
-      "style": "switchback",
-      "cut_slabs": true,
-      "facing": "E",
-      "id": "card_shop_a01_stair_0",
-      "meta": {
-        "generated_by": "presets"
-      },
-      "role": "public_convenience"
+     "kind": "window",
+     "pos": -0.25,
+     "width": 1.4,
+     "sill": 1.0,
+     "vaultable": true,
+     "material": "glass"
+    },
+    {
+     "kind": "window",
+     "pos": 0.25,
+     "width": 1.4,
+     "sill": 1.0,
+     "vaultable": true,
+     "material": "glass"
     }
-  ],
-  "ladders": [],
-  "vertical_links": [
+   ]
+  },
+  {
+   "wall": "N",
+   "story": 1,
+   "material": "brick_ext",
+   "openings": [
     {
-      "kind": "stair",
-      "from_story": 0,
-      "to_story": 1,
-      "role": "main_route"
+     "kind": "breach",
+     "pos": 0.0,
+     "width": 1.2,
+     "breach_class": "soft_wall",
+     "material": "drywall"
     }
-  ],
-  "volumes": [
+   ]
+  },
+  {
+   "wall": "W",
+   "story": 1,
+   "material": "brick_ext",
+   "openings": [
     {
-      "name": "safe_stockroom",
-      "x": -8.6,
-      "y": 7.6,
-      "z": 0.5,
-      "size_x": 0.9,
-      "size_y": 0.9,
-      "size_z": 1.0,
-      "collision": "convex",
-      "material": "metal"
-    },
-    {
-      "name": "kiosk_sales_floor_shelter",
-      "x": 6.99,
-      "y": -4.9,
-      "z": 0.8,
-      "size_x": 1.2,
-      "size_y": 1.2,
-      "size_z": 1.6,
-      "collision": "convex",
-      "material": "wood"
-    },
-    {
-      "name": "planter_box_sales_floor_1",
-      "x": -2.84,
-      "y": -2.87,
-      "z": 0.45,
-      "size_x": 1.4,
-      "size_y": 0.7,
-      "size_z": 0.9,
-      "collision": "convex",
-      "material": "wood"
-    },
-    {
-      "name": "counter_island_sales_floor_2",
-      "x": 3.38,
-      "y": -3.44,
-      "z": 0.525,
-      "size_x": 0.8,
-      "size_y": 2.2,
-      "size_z": 1.05,
-      "collision": "convex",
-      "material": "wood"
-    },
-    {
-      "name": "planter_box_sales_floor_3",
-      "x": -7.84,
-      "y": -4.38,
-      "z": 0.45,
-      "size_x": 0.7,
-      "size_y": 1.4,
-      "size_z": 0.9,
-      "collision": "convex",
-      "material": "wood"
-    },
-    {
-      "name": "crate_stack_tall_play_area_shelter",
-      "x": 1.78,
-      "y": 5.06,
-      "z": 0.8,
-      "size_x": 1.1,
-      "size_y": 1.1,
-      "size_z": 1.6,
-      "collision": "convex",
-      "material": "wood"
-    },
-    {
-      "name": "crate_stack_play_area_1",
-      "x": 7.54,
-      "y": 4.09,
-      "z": 0.475,
-      "size_x": 1.1,
-      "size_y": 1.1,
-      "size_z": 0.95,
-      "collision": "convex",
-      "material": "wood"
-    },
-    {
-      "name": "crate_stack_tall_apartment_shelter",
-      "x": -7.85,
-      "y": -4.24,
-      "z": 4.2,
-      "size_x": 1.1,
-      "size_y": 1.1,
-      "size_z": 1.6,
-      "collision": "convex",
-      "material": "wood"
-    },
-    {
-      "name": "crate_stack_apartment_1",
-      "x": 1.02,
-      "y": -2.66,
-      "z": 3.875,
-      "size_x": 1.1,
-      "size_y": 1.1,
-      "size_z": 0.95,
-      "collision": "convex",
-      "material": "wood"
-    },
-    {
-      "name": "crate_stack_apartment_2",
-      "x": 4.47,
-      "y": -1.24,
-      "z": 3.875,
-      "size_x": 1.1,
-      "size_y": 1.1,
-      "size_z": 0.95,
-      "collision": "convex",
-      "material": "wood"
-    },
-    {
-      "name": "crate_stack_apartment_3",
-      "x": 3.73,
-      "y": -4.73,
-      "z": 3.875,
-      "size_x": 1.1,
-      "size_y": 1.1,
-      "size_z": 0.95,
-      "collision": "convex",
-      "material": "wood"
-    },
-    {
-      "name": "shelf_run_upper_storage_shelter",
-      "x": 3.81,
-      "y": 5.0,
-      "z": 4.2,
-      "size_x": 0.6,
-      "size_y": 2.6,
-      "size_z": 1.6,
-      "collision": "convex",
-      "material": "wood"
-    },
-    {
-      "name": "pallet_stack_upper_storage_1",
-      "x": 6.62,
-      "y": 7.38,
-      "z": 3.9,
-      "size_x": 1.2,
-      "size_y": 1.2,
-      "size_z": 1.0,
-      "collision": "convex",
-      "material": "wood"
-    },
-    {
-      "name": "display_case_r48016798_1",
-      "x": -7.98,
-      "y": -0.18,
-      "z": 0.475,
-      "size_x": 1.8,
-      "size_y": 0.6,
-      "size_z": 0.95,
-      "collision": "convex",
-      "material": "wood_panel"
-    },
-    {
-      "name": "display_case_r48016798_2",
-      "x": 7.83,
-      "y": -0.74,
-      "z": 0.5,
-      "size_x": 0.6,
-      "size_y": 2.4,
-      "size_z": 1.0,
-      "collision": "convex",
-      "material": "wood_panel",
-      "variant": 2
-    },
-    {
-      "name": "vending_r48016798_3",
-      "x": 9.46,
-      "y": -4.01,
-      "z": 0.95,
-      "size_x": 0.8,
-      "size_y": 1.0,
-      "size_z": 1.9,
-      "collision": "convex",
-      "material": "metal",
-      "variant": 2
-    },
-    {
-      "name": "shelf_run_r48016798_4",
-      "x": 9.62,
-      "y": -7.21,
-      "z": 0.9,
-      "size_x": 0.5,
-      "size_y": 1.2,
-      "size_z": 1.8,
-      "collision": "convex",
-      "material": "wood"
-    },
-    {
-      "name": "cartons_r48016798_5",
-      "x": -1.72,
-      "y": -7.5,
-      "z": 0.45,
-      "size_x": 0.5,
-      "size_y": 0.4,
-      "size_z": 0.9,
-      "collision": "convex",
-      "material": "wood",
-      "variant": 1
-    },
-    {
-      "name": "cartons_r48016798_6",
-      "x": -5.53,
-      "y": -4.58,
-      "z": 0.45,
-      "size_x": 0.4,
-      "size_y": 0.5,
-      "size_z": 0.9,
-      "collision": "convex",
-      "material": "wood",
-      "variant": 3
-    },
-    {
-      "name": "cartons_r48016798_7",
-      "x": -5.53,
-      "y": -3.28,
-      "z": 0.45,
-      "size_x": 0.4,
-      "size_y": 0.5,
-      "size_z": 0.9,
-      "collision": "convex",
-      "material": "wood",
-      "variant": 1
-    },
-    {
-      "name": "shelf_run_r499afdf7_1",
-      "x": -1.07,
-      "y": 8.62,
-      "z": 0.9,
-      "size_x": 1.2,
-      "size_y": 0.5,
-      "size_z": 1.8,
-      "collision": "convex",
-      "material": "wood"
-    },
-    {
-      "name": "shelf_run_r499afdf7_2",
-      "x": -9.62,
-      "y": 4.78,
-      "z": 0.95,
-      "size_x": 0.5,
-      "size_y": 2.0,
-      "size_z": 1.9,
-      "collision": "convex",
-      "material": "wood",
-      "rot_z": 180.0
-    },
-    {
-      "name": "cabinet_file_r499afdf7_3",
-      "x": -4.05,
-      "y": 8.62,
-      "z": 0.65,
-      "size_x": 0.6,
-      "size_y": 0.5,
-      "size_z": 1.3,
-      "collision": "convex",
-      "material": "wood"
-    },
-    {
-      "name": "folding_table_rdc91c3b9_1",
-      "x": 4.87,
-      "y": 5.43,
-      "z": 0.37,
-      "size_x": 1.2,
-      "size_y": 0.7,
-      "size_z": 0.74,
-      "collision": "convex",
-      "material": "plastic",
-      "stock": "cards"
-    },
-    {
-      "name": "folding_chair_rdc91c3b9_1_1",
-      "x": 4.92,
-      "y": 6.53,
-      "z": 0.425,
-      "size_x": 0.46,
-      "size_y": 0.5,
-      "size_z": 0.85,
-      "collision": "convex",
-      "material": "plastic",
-      "variant": 1
-    },
-    {
-      "name": "folding_chair_rdc91c3b9_1_2",
-      "x": 4.82,
-      "y": 4.63,
-      "z": 0.425,
-      "size_x": 0.46,
-      "size_y": 0.5,
-      "size_z": 0.85,
-      "collision": "convex",
-      "material": "plastic",
-      "rot_z": 180.0,
-      "variant": 1
-    },
-    {
-      "name": "folding_table_rdc91c3b9_2",
-      "x": 8.18,
-      "y": 7.3,
-      "z": 0.37,
-      "size_x": 0.76,
-      "size_y": 2.4,
-      "size_z": 0.74,
-      "collision": "convex",
-      "material": "plastic",
-      "stock": "cards"
-    },
-    {
-      "name": "folding_chair_rdc91c3b9_2_1",
-      "x": 9.01,
-      "y": 7.15,
-      "z": 0.425,
-      "size_x": 0.46,
-      "size_y": 0.5,
-      "size_z": 0.85,
-      "collision": "convex",
-      "material": "plastic",
-      "rot_z": 90.0
-    },
-    {
-      "name": "folding_chair_rdc91c3b9_2_2",
-      "x": 7.35,
-      "y": 7.27,
-      "z": 0.425,
-      "size_x": 0.46,
-      "size_y": 0.5,
-      "size_z": 0.85,
-      "collision": "convex",
-      "material": "plastic",
-      "rot_z": 270.0
-    },
-    {
-      "name": "sofa_r4d7e6854_1",
-      "x": 9.44,
-      "y": -5.15,
-      "z": 3.825,
-      "size_x": 0.85,
-      "size_y": 1.6,
-      "size_z": 0.85,
-      "collision": "convex",
-      "material": "leather",
-      "form": "sofa",
-      "variant": 2
-    },
-    {
-      "name": "cabinet_file_r4d7e6854_2",
-      "x": -9.62,
-      "y": -7.38,
-      "z": 4.05,
-      "size_x": 0.5,
-      "size_y": 0.6,
-      "size_z": 1.3,
-      "collision": "convex",
-      "material": "wood",
-      "rot_z": 180.0
-    },
-    {
-      "name": "shelf_run_r4d7e6854_3",
-      "x": 1.33,
-      "y": -8.56,
-      "z": 4.45,
-      "size_x": 2.4,
-      "size_y": 0.6,
-      "size_z": 2.1,
-      "collision": "convex",
-      "material": "wood",
-      "rot_z": 180.0
-    },
-    {
-      "name": "table_dining_r4d7e6854_4",
-      "x": -2.29,
-      "y": -7.3,
-      "z": 3.77,
-      "size_x": 0.9,
-      "size_y": 1.6,
-      "size_z": 0.74,
-      "collision": "convex",
-      "material": "wood"
-    },
-    {
-      "material": "wood",
-      "name": "chair_set_r4d7e6854_4_1",
-      "x": -3.19,
-      "y": -7.39,
-      "z": 3.85,
-      "size_x": 0.5,
-      "size_y": 0.5,
-      "size_z": 0.9,
-      "collision": "convex",
-      "rot_z": 254.2
-    },
-    {
-      "name": "cartons_r4d7e6854_5",
-      "x": -2.61,
-      "y": -0.35,
-      "z": 4.0,
-      "size_x": 1.6,
-      "size_y": 1.2,
-      "size_z": 1.2,
-      "collision": "convex",
-      "material": "wood",
-      "rot_z": 180.0,
-      "variant": 3
-    },
-    {
-      "name": "shelf_run_rde4c5b55_1",
-      "x": 9.62,
-      "y": 6.42,
-      "z": 4.3,
-      "size_x": 0.5,
-      "size_y": 1.2,
-      "size_z": 1.8,
-      "collision": "convex",
-      "material": "wood"
-    },
-    {
-      "name": "cabinet_file_rde4c5b55_2",
-      "x": -9.56,
-      "y": 4.82,
-      "z": 3.925,
-      "size_x": 0.6,
-      "size_y": 0.9,
-      "size_z": 1.05,
-      "collision": "convex",
-      "material": "wood",
-      "rot_z": 180.0
-    },
-    {
-      "name": "cabinet_supply_rde4c5b55_3",
-      "x": 9.62,
-      "y": 3.82,
-      "z": 4.3,
-      "size_x": 0.5,
-      "size_y": 1.0,
-      "size_z": 1.8,
-      "collision": "convex",
-      "material": "wood",
-      "stock": "storage",
-      "variant": 3
-    },
-    {
-      "name": "shelf_run_rde4c5b55_4",
-      "x": -6.58,
-      "y": 8.62,
-      "z": 4.35,
-      "size_x": 2.0,
-      "size_y": 0.5,
-      "size_z": 1.9,
-      "collision": "convex",
-      "material": "wood"
-    },
-    {
-      "name": "cartons_rde4c5b55_5",
-      "x": 0.98,
-      "y": 5.35,
-      "z": 3.85,
-      "size_x": 0.4,
-      "size_y": 0.5,
-      "size_z": 0.9,
-      "collision": "convex",
-      "material": "wood",
-      "rot_z": 180.0,
-      "variant": 2
-    },
-    {
-      "name": "cartons_rde4c5b55_6",
-      "x": 2.14,
-      "y": 5.35,
-      "z": 3.7,
-      "size_x": 0.4,
-      "size_y": 0.6,
-      "size_z": 0.6,
-      "collision": "convex",
-      "material": "wood",
-      "rot_z": 180.0
-    },
-    {
-      "name": "pack_wall_r48016798_1",
-      "x": -7.98,
-      "y": 1.62,
-      "z": 1.1,
-      "size_x": 1.8,
-      "size_y": 0.5,
-      "size_z": 2.2,
-      "collision": "convex",
-      "material": "slatwall"
-    },
-    {
-      "name": "wall_tv_r48016798_1",
-      "x": -7.98,
-      "y": 1.62,
-      "z": 2.5,
-      "size_x": 0.6,
-      "size_y": 0.55,
-      "size_z": 0.5,
-      "collision": "none",
-      "material": "metal_painted",
-      "form": "bracket",
-      "variant": 3
-    },
-    {
-      "name": "display_case_end_r48016798_1",
-      "x": -9.18,
-      "y": 0.75,
-      "z": 0.475,
-      "size_x": 0.6,
-      "size_y": 1.25,
-      "size_z": 0.95,
-      "collision": "convex",
-      "material": "wood_panel",
-      "rot_z": 180.0
-    },
-    {
-      "name": "pack_wall_r48016798_2",
-      "x": 9.62,
-      "y": -0.74,
-      "z": 1.1,
-      "size_x": 0.5,
-      "size_y": 2.4,
-      "size_z": 2.2,
-      "collision": "convex",
-      "material": "slatwall",
-      "variant": 2
-    },
-    {
-      "name": "wall_tv_r48016798_2",
-      "x": 9.62,
-      "y": -0.74,
-      "z": 2.5,
-      "size_x": 0.55,
-      "size_y": 0.6,
-      "size_z": 0.5,
-      "collision": "none",
-      "material": "metal_painted",
-      "form": "bracket",
-      "variant": 1
-    },
-    {
-      "name": "pennant_row_r48016798_8",
-      "x": -9.82,
-      "y": -0.38,
-      "z": 2.9,
-      "size_x": 0.08,
-      "size_y": 4.0,
-      "size_z": 0.3,
-      "collision": "none",
-      "material": "cloth",
-      "rot_z": 180.0,
-      "variant": 2
-    },
-    {
-      "name": "pennant_row_r48016798_9",
-      "x": 9.82,
-      "y": -3.11,
-      "z": 2.9,
-      "size_x": 0.08,
-      "size_y": 4.0,
-      "size_z": 0.3,
-      "collision": "none",
-      "material": "cloth"
-    },
-    {
-      "name": "pennant_row_rdc91c3b9_3",
-      "x": 4.83,
-      "y": 8.82,
-      "z": 2.9,
-      "size_x": 8.0,
-      "size_y": 0.08,
-      "size_z": 0.3,
-      "collision": "none",
-      "material": "cloth",
-      "variant": 2
-    },
-    {
-      "name": "pennant_row_rdc91c3b9_4",
-      "x": 4.54,
-      "y": 2.17,
-      "z": 2.9,
-      "size_x": 8.0,
-      "size_y": 0.08,
-      "size_z": 0.3,
-      "collision": "none",
-      "material": "cloth",
-      "rot_z": 180.0,
-      "variant": 1
+     "kind": "window",
+     "pos": 0.0,
+     "width": 1.4,
+     "sill": 1.0,
+     "vaultable": true,
+     "material": "glass"
     }
-  ],
-  "rooms": [
+   ]
+  },
+  {
+   "wall": "E",
+   "story": 1,
+   "material": "brick_ext",
+   "openings": [
     {
-      "id": "sales_floor",
-      "story": 0,
-      "bounds": [
-        -10.0,
-        -9.0,
-        10.0,
-        2.0
-      ],
-      "role": "public_entry",
-      "combat_range": "long",
-      "floor_material": "tile"
-    },
-    {
-      "id": "stockroom",
-      "story": 0,
-      "bounds": [
-        -10.0,
-        2.0,
-        0.0,
-        9.0
-      ],
-      "role": "objective_room",
-      "objective": true,
-      "fortifiable": true,
-      "combat_range": "medium"
-    },
-    {
-      "id": "play_area",
-      "story": 0,
-      "bounds": [
-        0.0,
-        2.0,
-        10.0,
-        9.0
-      ],
-      "role": "connector",
-      "combat_range": "medium",
-      "floor_material": "carpet"
-    },
-    {
-      "id": "apartment",
-      "story": 1,
-      "bounds": [
-        -10.0,
-        -9.0,
-        10.0,
-        2.0
-      ],
-      "role": "connector",
-      "combat_range": "long"
-    },
-    {
-      "id": "upper_storage",
-      "story": 1,
-      "bounds": [
-        -10.0,
-        2.0,
-        10.0,
-        9.0
-      ],
-      "role": "fortifiable",
-      "fortifiable": true,
-      "combat_range": "medium"
+     "kind": "window",
+     "pos": 0.0,
+     "width": 1.4,
+     "sill": 1.0,
+     "vaultable": true,
+     "material": "glass"
     }
-  ],
-  "objectives": [
+   ]
+  }
+ ],
+ "partitions": [
+  {
+   "story": 0,
+   "axis": "X",
+   "pos": 2.0,
+   "start": -10.0,
+   "end": 10.0,
+   "material": "wood_panel",
+   "openings": [
     {
-      "id": "crack_safe",
-      "kind": "drill",
-      "x": -8.6,
-      "y": 7.6,
-      "z": 0.2,
-      "room": "stockroom",
-      "required": true,
-      "duration": 25.0
+     "kind": "door",
+     "pos": -0.3,
+     "width": 1.25,
+     "reinforceable": true,
+     "tag": "stock_door"
     },
     {
-      "id": "grab_singles",
-      "kind": "grab",
-      "x": 1.5,
-      "y": 7.5,
-      "z": 0.9,
-      "room": "play_area",
-      "required": false,
-      "duration": 6.0
+     "kind": "door",
+     "pos": 0.25,
+     "width": 1.8,
+     "tag": "play_door"
     }
-  ],
-  "loot": [
+   ]
+  },
+  {
+   "story": 0,
+   "axis": "Y",
+   "pos": 0.0,
+   "start": 2.0,
+   "end": 9.0,
+   "material": "wood_panel",
+   "openings": []
+  },
+  {
+   "story": 1,
+   "axis": "X",
+   "pos": 2.0,
+   "start": -10.0,
+   "end": 10.0,
+   "material": "drywall",
+   "openings": [
     {
-      "id": "shop_safe",
-      "kind": "cash",
-      "x": -8.6,
-      "y": 7.6,
-      "z": 0.2,
-      "value": 9000,
-      "bags": 2,
-      "room": "stockroom"
+     "kind": "door",
+     "pos": -0.3,
+     "width": 1.25
     },
     {
-      "id": "graded_singles",
-      "kind": "valuables",
-      "x": 1.5,
-      "y": 7.5,
-      "z": 0.9,
-      "value": 4000,
-      "bags": 1,
-      "room": "play_area"
+     "kind": "door",
+     "pos": 0.25,
+     "width": 1.25
     }
-  ],
-  "zones": [
-    {
-      "id": "front_extract",
-      "kind": "extraction",
-      "story": 0,
-      "bounds": [
-        -10.0,
-        -9.0,
-        10.0,
-        -6.0
-      ]
-    },
-    {
-      "id": "stock_secure",
-      "kind": "secure",
-      "story": 0,
-      "bounds": [
-        -10.0,
-        2.0,
-        0.0,
-        9.0
-      ]
-    }
-  ],
-  "markers": [
-    {
-      "type": "camera_socket",
-      "id": "01",
-      "x": -8.0,
-      "y": -7.0,
-      "z": 2.9,
-      "room": "sales_floor",
-      "rot_z": 45
-    },
-    {
-      "type": "camera_socket",
-      "id": "02",
-      "x": -8.5,
-      "y": 8.0,
-      "z": 2.9,
-      "room": "stockroom",
-      "rot_z": 180
-    },
-    {
-      "type": "crew_spawn",
-      "id": "A",
-      "x": -3.0,
-      "y": -7.5,
-      "z": 0.0,
-      "rot_z": 0,
-      "room": "sales_floor",
-      "meta": {
-        "phase": "stealth"
-      }
-    },
-    {
-      "type": "objective",
-      "id": "SAFE",
-      "x": -8.6,
-      "y": 7.6,
-      "z": 0.2,
-      "room": "stockroom"
-    },
-    {
-      "type": "extraction",
-      "id": "FRONT",
-      "x": -5.0,
-      "y": -7.5,
-      "z": 0.0,
-      "room": "sales_floor"
-    },
-    {
-      "type": "patrol_point",
-      "id": "shopkeeper_r48016798_1",
-      "x": -7.88,
-      "y": 0.75,
-      "z": 0.0,
-      "rot_z": 180.0,
-      "room": "sales_floor",
-      "meta": {
-        "role": "shopkeeper",
-        "aisle_m": 1.25
-      }
-    },
-    {
-      "type": "patrol_point",
-      "id": "shopkeeper_r48016798_2",
-      "x": 8.75,
-      "y": -1.14,
-      "z": 0.0,
-      "rot_z": 270.0,
-      "room": "sales_floor",
-      "meta": {
-        "role": "shopkeeper",
-        "aisle_m": 1.25
-      }
-    },
-    {
-      "type": "patrol_point",
-      "id": "playfloor_rdc91c3b9_1",
-      "x": 1.35,
-      "y": 7.55,
-      "z": 0.0,
-      "rot_z": 0.0,
-      "room": "play_area",
-      "meta": {
-        "role": "playfloor"
-      }
-    },
-    {
-      "type": "cover_high",
-      "id": "AUTO_CRATE_STACK_TALL_PLAY_AREA_SHELTER",
-      "x": 1.78,
-      "y": 5.06,
-      "z": 0.0,
-      "room": "play_area",
-      "meta": {
-        "auto": "cover_from_volume",
-        "from": "crate_stack_tall_play_area_shelter"
-      }
-    },
-    {
-      "type": "cover_low",
-      "id": "AUTO_CRATE_STACK_PLAY_AREA_1",
-      "x": 7.54,
-      "y": 4.09,
-      "z": 0.0,
-      "room": "play_area",
-      "meta": {
-        "auto": "cover_from_volume",
-        "from": "crate_stack_play_area_1"
-      }
-    },
-    {
-      "type": "cover_high",
-      "id": "AUTO_CRATE_STACK_TALL_APARTMENT_SHELTER",
-      "x": -7.85,
-      "y": -4.24,
-      "z": 3.4,
-      "room": "apartment",
-      "meta": {
-        "auto": "cover_from_volume",
-        "from": "crate_stack_tall_apartment_shelter"
-      }
-    },
-    {
-      "type": "cover_low",
-      "id": "AUTO_CRATE_STACK_APARTMENT_1",
-      "x": 1.02,
-      "y": -2.66,
-      "z": 3.4,
-      "room": "apartment",
-      "meta": {
-        "auto": "cover_from_volume",
-        "from": "crate_stack_apartment_1"
-      }
-    },
-    {
-      "type": "cover_low",
-      "id": "AUTO_CRATE_STACK_APARTMENT_2",
-      "x": 4.47,
-      "y": -1.24,
-      "z": 3.4,
-      "room": "apartment",
-      "meta": {
-        "auto": "cover_from_volume",
-        "from": "crate_stack_apartment_2"
-      }
-    },
-    {
-      "type": "cover_low",
-      "id": "AUTO_CRATE_STACK_APARTMENT_3",
-      "x": 3.73,
-      "y": -4.73,
-      "z": 3.4,
-      "room": "apartment",
-      "meta": {
-        "auto": "cover_from_volume",
-        "from": "crate_stack_apartment_3"
-      }
-    },
-    {
-      "type": "cover_high",
-      "id": "AUTO_SHELF_RUN_UPPER_STORAGE_SHELTER",
-      "x": 3.81,
-      "y": 5.0,
-      "z": 3.4,
-      "room": "upper_storage",
-      "meta": {
-        "auto": "cover_from_volume",
-        "from": "shelf_run_upper_storage_shelter"
-      }
-    },
-    {
-      "type": "cover_low",
-      "id": "AUTO_PALLET_STACK_UPPER_STORAGE_1",
-      "x": 6.62,
-      "y": 7.38,
-      "z": 3.4,
-      "room": "upper_storage",
-      "meta": {
-        "auto": "cover_from_volume",
-        "from": "pallet_stack_upper_storage_1"
-      }
-    },
-    {
-      "type": "cover_low",
-      "id": "AUTO_DISPLAY_CASE_R48016798_1",
-      "x": -7.98,
-      "y": -0.18,
-      "z": 0.0,
-      "room": "sales_floor",
-      "meta": {
-        "auto": "cover_from_volume",
-        "from": "display_case_r48016798_1"
-      }
-    },
-    {
-      "type": "cover_low",
-      "id": "AUTO_DISPLAY_CASE_R48016798_2",
-      "x": 7.83,
-      "y": -0.74,
-      "z": 0.0,
-      "room": "sales_floor",
-      "meta": {
-        "auto": "cover_from_volume",
-        "from": "display_case_r48016798_2"
-      }
-    },
-    {
-      "type": "cover_high",
-      "id": "AUTO_SHELF_RUN_R48016798_4",
-      "x": 9.62,
-      "y": -7.21,
-      "z": 0.0,
-      "room": "sales_floor",
-      "meta": {
-        "auto": "cover_from_volume",
-        "from": "shelf_run_r48016798_4"
-      }
-    },
-    {
-      "type": "cover_low",
-      "id": "AUTO_CARTONS_R48016798_5",
-      "x": -1.72,
-      "y": -7.5,
-      "z": 0.0,
-      "room": "sales_floor",
-      "meta": {
-        "auto": "cover_from_volume",
-        "from": "cartons_r48016798_5"
-      }
-    },
-    {
-      "type": "cover_low",
-      "id": "AUTO_CARTONS_R48016798_6",
-      "x": -5.53,
-      "y": -4.58,
-      "z": 0.0,
-      "room": "sales_floor",
-      "meta": {
-        "auto": "cover_from_volume",
-        "from": "cartons_r48016798_6"
-      }
-    },
-    {
-      "type": "cover_high",
-      "id": "AUTO_SHELF_RUN_R499AFDF7_1",
-      "x": -1.07,
-      "y": 8.62,
-      "z": 0.0,
-      "room": "stockroom",
-      "meta": {
-        "auto": "cover_from_volume",
-        "from": "shelf_run_r499afdf7_1"
-      }
-    },
-    {
-      "type": "cover_high",
-      "id": "AUTO_SHELF_RUN_R499AFDF7_2",
-      "x": -9.62,
-      "y": 4.78,
-      "z": 0.0,
-      "room": "stockroom",
-      "meta": {
-        "auto": "cover_from_volume",
-        "from": "shelf_run_r499afdf7_2"
-      }
-    },
-    {
-      "type": "cover_high",
-      "id": "AUTO_CABINET_FILE_R499AFDF7_3",
-      "x": -4.05,
-      "y": 8.62,
-      "z": 0.0,
-      "room": "stockroom",
-      "meta": {
-        "auto": "cover_from_volume",
-        "from": "cabinet_file_r499afdf7_3"
-      }
-    },
-    {
-      "type": "cover_low",
-      "id": "AUTO_SOFA_R4D7E6854_1",
-      "x": 9.44,
-      "y": -5.15,
-      "z": 3.4,
-      "room": "apartment",
-      "meta": {
-        "auto": "cover_from_volume",
-        "from": "sofa_r4d7e6854_1"
-      }
-    },
-    {
-      "type": "cover_high",
-      "id": "AUTO_SHELF_RUN_RDE4C5B55_1",
-      "x": 9.62,
-      "y": 6.42,
-      "z": 3.4,
-      "room": "upper_storage",
-      "meta": {
-        "auto": "cover_from_volume",
-        "from": "shelf_run_rde4c5b55_1"
-      }
-    },
-    {
-      "type": "cover_high",
-      "id": "AUTO_CABINET_SUPPLY_RDE4C5B55_3",
-      "x": 9.62,
-      "y": 3.82,
-      "z": 3.4,
-      "room": "upper_storage",
-      "meta": {
-        "auto": "cover_from_volume",
-        "from": "cabinet_supply_rde4c5b55_3"
-      }
-    },
-    {
-      "type": "cover_high",
-      "id": "AUTO_SHELF_RUN_RDE4C5B55_4",
-      "x": -6.58,
-      "y": 8.62,
-      "z": 3.4,
-      "room": "upper_storage",
-      "meta": {
-        "auto": "cover_from_volume",
-        "from": "shelf_run_rde4c5b55_4"
-      }
-    },
-    {
-      "type": "landmark",
-      "id": "SALES_FLOOR",
-      "x": 0.0,
-      "y": -3.5,
-      "z": 1.0,
-      "room": "sales_floor",
-      "meta": {
-        "auto": "landmark",
-        "label": "sales_floor",
-        "role": "public_entry"
-      }
-    },
-    {
-      "type": "landmark",
-      "id": "STOCKROOM",
-      "x": -5.0,
-      "y": 5.5,
-      "z": 1.0,
-      "room": "stockroom",
-      "meta": {
-        "auto": "landmark",
-        "label": "stockroom",
-        "role": "objective_room"
-      }
-    }
-  ],
-  "parapets": [
-    {
-      "story": 2,
-      "height": 0.9,
-      "thick": 0.3
-    }
-  ],
-  "modular": true
+   ]
+  }
+ ],
+ "stairs": [
+  {
+   "x": -4.5,
+   "y": 5.5,
+   "from_story": 0,
+   "to_story": 1,
+   "width": 1.1,
+   "run": 4.8,
+   "style": "switchback",
+   "cut_slabs": true,
+   "facing": "E",
+   "id": "card_shop_a01_stair_0",
+   "meta": {
+    "generated_by": "presets"
+   },
+   "role": "public_convenience"
+  }
+ ],
+ "ladders": [],
+ "vertical_links": [
+  {
+   "kind": "stair",
+   "from_story": 0,
+   "to_story": 1,
+   "role": "main_route"
+  }
+ ],
+ "volumes": [
+  {
+   "name": "safe_stockroom",
+   "x": -8.6,
+   "y": 7.6,
+   "z": 0.5,
+   "size_x": 0.9,
+   "size_y": 0.9,
+   "size_z": 1.0,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "kiosk_sales_floor_shelter",
+   "x": 6.99,
+   "y": -4.9,
+   "z": 0.8,
+   "size_x": 1.2,
+   "size_y": 1.2,
+   "size_z": 1.6,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "planter_box_sales_floor_1",
+   "x": -2.84,
+   "y": -2.87,
+   "z": 0.45,
+   "size_x": 1.4,
+   "size_y": 0.7,
+   "size_z": 0.9,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "counter_island_sales_floor_2",
+   "x": 3.38,
+   "y": -3.44,
+   "z": 0.525,
+   "size_x": 0.8,
+   "size_y": 2.2,
+   "size_z": 1.05,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "planter_box_sales_floor_3",
+   "x": -7.84,
+   "y": -4.38,
+   "z": 0.45,
+   "size_x": 0.7,
+   "size_y": 1.4,
+   "size_z": 0.9,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "crate_stack_tall_play_area_shelter",
+   "x": 1.78,
+   "y": 5.06,
+   "z": 0.8,
+   "size_x": 1.1,
+   "size_y": 1.1,
+   "size_z": 1.6,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "crate_stack_play_area_1",
+   "x": 7.54,
+   "y": 4.09,
+   "z": 0.475,
+   "size_x": 1.1,
+   "size_y": 1.1,
+   "size_z": 0.95,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "crate_stack_tall_apartment_shelter",
+   "x": -7.85,
+   "y": -4.24,
+   "z": 4.2,
+   "size_x": 1.1,
+   "size_y": 1.1,
+   "size_z": 1.6,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "crate_stack_apartment_1",
+   "x": 1.02,
+   "y": -2.66,
+   "z": 3.875,
+   "size_x": 1.1,
+   "size_y": 1.1,
+   "size_z": 0.95,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "crate_stack_apartment_2",
+   "x": 4.47,
+   "y": -1.24,
+   "z": 3.875,
+   "size_x": 1.1,
+   "size_y": 1.1,
+   "size_z": 0.95,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "crate_stack_apartment_3",
+   "x": 3.73,
+   "y": -4.73,
+   "z": 3.875,
+   "size_x": 1.1,
+   "size_y": 1.1,
+   "size_z": 0.95,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "shelf_run_upper_storage_shelter",
+   "x": 3.81,
+   "y": 5.0,
+   "z": 4.2,
+   "size_x": 0.6,
+   "size_y": 2.6,
+   "size_z": 1.6,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "pallet_stack_upper_storage_1",
+   "x": 6.62,
+   "y": 7.38,
+   "z": 3.9,
+   "size_x": 1.2,
+   "size_y": 1.2,
+   "size_z": 1.0,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "display_case_r48016798_1",
+   "x": -7.98,
+   "y": -0.18,
+   "z": 0.475,
+   "size_x": 1.8,
+   "size_y": 0.6,
+   "size_z": 0.95,
+   "collision": "convex",
+   "material": "wood_panel"
+  },
+  {
+   "name": "display_case_r48016798_2",
+   "x": 7.83,
+   "y": -0.74,
+   "z": 0.5,
+   "size_x": 0.6,
+   "size_y": 2.4,
+   "size_z": 1.0,
+   "collision": "convex",
+   "material": "wood_panel",
+   "variant": 2
+  },
+  {
+   "name": "vending_r48016798_3",
+   "x": 9.46,
+   "y": -4.01,
+   "z": 0.95,
+   "size_x": 0.8,
+   "size_y": 1.0,
+   "size_z": 1.9,
+   "collision": "convex",
+   "material": "metal",
+   "variant": 2
+  },
+  {
+   "name": "pack_wall_r48016798_4",
+   "x": 9.62,
+   "y": -7.21,
+   "z": 1.35,
+   "size_x": 0.5,
+   "size_y": 1.2,
+   "size_z": 2.7,
+   "collision": "convex",
+   "material": "slatwall",
+   "variant": 3
+  },
+  {
+   "name": "pack_wall_island_r48016798_5",
+   "x": -1.57,
+   "y": -0.01,
+   "z": 1.35,
+   "size_x": 1.8,
+   "size_y": 0.5,
+   "size_z": 2.7,
+   "collision": "convex",
+   "material": "slatwall",
+   "variant": 3
+  },
+  {
+   "name": "pack_wall_island_r48016798_6",
+   "x": -1.57,
+   "y": 0.5,
+   "z": 1.35,
+   "size_x": 1.8,
+   "size_y": 0.5,
+   "size_z": 2.7,
+   "collision": "convex",
+   "material": "slatwall",
+   "rot_z": 180.0,
+   "variant": 1
+  },
+  {
+   "name": "pack_wall_island_r48016798_7",
+   "x": 0.0,
+   "y": -4.49,
+   "z": 1.35,
+   "size_x": 1.2,
+   "size_y": 0.5,
+   "size_z": 2.7,
+   "collision": "convex",
+   "material": "slatwall",
+   "rot_z": 180.0,
+   "variant": 3
+  },
+  {
+   "name": "pack_wall_island_r48016798_8",
+   "x": 0.0,
+   "y": -5.0,
+   "z": 1.35,
+   "size_x": 1.2,
+   "size_y": 0.5,
+   "size_z": 2.7,
+   "collision": "convex",
+   "material": "slatwall",
+   "variant": 2
+  },
+  {
+   "name": "cartons_r48016798_9",
+   "x": -1.72,
+   "y": -7.5,
+   "z": 0.3,
+   "size_x": 0.6,
+   "size_y": 0.4,
+   "size_z": 0.6,
+   "collision": "convex",
+   "material": "wood",
+   "rot_z": 180.0,
+   "variant": 2
+  },
+  {
+   "name": "shelf_run_r499afdf7_1",
+   "x": -1.07,
+   "y": 8.62,
+   "z": 0.9,
+   "size_x": 1.2,
+   "size_y": 0.5,
+   "size_z": 1.8,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "shelf_run_r499afdf7_2",
+   "x": -9.62,
+   "y": 4.78,
+   "z": 0.95,
+   "size_x": 0.5,
+   "size_y": 2.0,
+   "size_z": 1.9,
+   "collision": "convex",
+   "material": "wood",
+   "rot_z": 180.0
+  },
+  {
+   "name": "cabinet_file_r499afdf7_3",
+   "x": -4.05,
+   "y": 8.62,
+   "z": 0.65,
+   "size_x": 0.6,
+   "size_y": 0.5,
+   "size_z": 1.3,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "folding_table_rdc91c3b9_1",
+   "x": 4.87,
+   "y": 5.43,
+   "z": 0.37,
+   "size_x": 1.2,
+   "size_y": 0.7,
+   "size_z": 0.74,
+   "collision": "convex",
+   "material": "plastic",
+   "stock": "cards"
+  },
+  {
+   "name": "folding_chair_rdc91c3b9_1_1",
+   "x": 4.92,
+   "y": 6.53,
+   "z": 0.425,
+   "size_x": 0.46,
+   "size_y": 0.5,
+   "size_z": 0.85,
+   "collision": "convex",
+   "material": "plastic",
+   "variant": 1
+  },
+  {
+   "name": "folding_chair_rdc91c3b9_1_2",
+   "x": 4.82,
+   "y": 4.63,
+   "z": 0.425,
+   "size_x": 0.46,
+   "size_y": 0.5,
+   "size_z": 0.85,
+   "collision": "convex",
+   "material": "plastic",
+   "rot_z": 180.0,
+   "variant": 1
+  },
+  {
+   "name": "folding_table_rdc91c3b9_2",
+   "x": 8.18,
+   "y": 7.3,
+   "z": 0.37,
+   "size_x": 0.76,
+   "size_y": 2.4,
+   "size_z": 0.74,
+   "collision": "convex",
+   "material": "plastic",
+   "stock": "cards"
+  },
+  {
+   "name": "folding_chair_rdc91c3b9_2_1",
+   "x": 9.01,
+   "y": 7.15,
+   "z": 0.425,
+   "size_x": 0.46,
+   "size_y": 0.5,
+   "size_z": 0.85,
+   "collision": "convex",
+   "material": "plastic",
+   "rot_z": 90.0
+  },
+  {
+   "name": "folding_chair_rdc91c3b9_2_2",
+   "x": 7.35,
+   "y": 7.27,
+   "z": 0.425,
+   "size_x": 0.46,
+   "size_y": 0.5,
+   "size_z": 0.85,
+   "collision": "convex",
+   "material": "plastic",
+   "rot_z": 270.0
+  },
+  {
+   "name": "sofa_r4d7e6854_1",
+   "x": 9.44,
+   "y": -5.15,
+   "z": 3.825,
+   "size_x": 0.85,
+   "size_y": 1.6,
+   "size_z": 0.85,
+   "collision": "convex",
+   "material": "leather",
+   "form": "sofa",
+   "variant": 2
+  },
+  {
+   "name": "cabinet_file_r4d7e6854_2",
+   "x": -9.62,
+   "y": -7.38,
+   "z": 4.05,
+   "size_x": 0.5,
+   "size_y": 0.6,
+   "size_z": 1.3,
+   "collision": "convex",
+   "material": "wood",
+   "rot_z": 180.0
+  },
+  {
+   "name": "shelf_run_r4d7e6854_3",
+   "x": 1.33,
+   "y": -8.56,
+   "z": 4.45,
+   "size_x": 2.4,
+   "size_y": 0.6,
+   "size_z": 2.1,
+   "collision": "convex",
+   "material": "wood",
+   "rot_z": 180.0
+  },
+  {
+   "name": "table_dining_r4d7e6854_4",
+   "x": -2.29,
+   "y": -7.3,
+   "z": 3.77,
+   "size_x": 0.9,
+   "size_y": 1.6,
+   "size_z": 0.74,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "material": "wood",
+   "name": "chair_set_r4d7e6854_4_1",
+   "x": -3.19,
+   "y": -7.39,
+   "z": 3.85,
+   "size_x": 0.5,
+   "size_y": 0.5,
+   "size_z": 0.9,
+   "collision": "convex",
+   "rot_z": 254.2
+  },
+  {
+   "name": "cartons_r4d7e6854_5",
+   "x": -2.61,
+   "y": -0.35,
+   "z": 4.0,
+   "size_x": 1.6,
+   "size_y": 1.2,
+   "size_z": 1.2,
+   "collision": "convex",
+   "material": "wood",
+   "rot_z": 180.0,
+   "variant": 3
+  },
+  {
+   "name": "shelf_run_rde4c5b55_1",
+   "x": 9.62,
+   "y": 6.42,
+   "z": 4.3,
+   "size_x": 0.5,
+   "size_y": 1.2,
+   "size_z": 1.8,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "cabinet_file_rde4c5b55_2",
+   "x": -9.56,
+   "y": 4.82,
+   "z": 3.925,
+   "size_x": 0.6,
+   "size_y": 0.9,
+   "size_z": 1.05,
+   "collision": "convex",
+   "material": "wood",
+   "rot_z": 180.0
+  },
+  {
+   "name": "cabinet_supply_rde4c5b55_3",
+   "x": 9.62,
+   "y": 3.82,
+   "z": 4.3,
+   "size_x": 0.5,
+   "size_y": 1.0,
+   "size_z": 1.8,
+   "collision": "convex",
+   "material": "wood",
+   "stock": "storage",
+   "variant": 3
+  },
+  {
+   "name": "shelf_run_rde4c5b55_4",
+   "x": -6.58,
+   "y": 8.62,
+   "z": 4.35,
+   "size_x": 2.0,
+   "size_y": 0.5,
+   "size_z": 1.9,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "cartons_rde4c5b55_5",
+   "x": 0.98,
+   "y": 5.35,
+   "z": 3.85,
+   "size_x": 0.4,
+   "size_y": 0.5,
+   "size_z": 0.9,
+   "collision": "convex",
+   "material": "wood",
+   "rot_z": 180.0,
+   "variant": 2
+  },
+  {
+   "name": "cartons_rde4c5b55_6",
+   "x": 2.14,
+   "y": 5.35,
+   "z": 3.7,
+   "size_x": 0.4,
+   "size_y": 0.6,
+   "size_z": 0.6,
+   "collision": "convex",
+   "material": "wood",
+   "rot_z": 180.0
+  },
+  {
+   "name": "pack_wall_r48016798_1",
+   "x": -7.98,
+   "y": 1.62,
+   "z": 1.275,
+   "size_x": 1.8,
+   "size_y": 0.5,
+   "size_z": 2.55,
+   "collision": "convex",
+   "material": "slatwall"
+  },
+  {
+   "name": "wall_tv_r48016798_1",
+   "x": -7.98,
+   "y": 1.62,
+   "z": 2.85,
+   "size_x": 0.6,
+   "size_y": 0.55,
+   "size_z": 0.5,
+   "collision": "none",
+   "material": "metal_painted",
+   "form": "bracket",
+   "variant": 3
+  },
+  {
+   "name": "display_case_end_r48016798_1",
+   "x": -9.18,
+   "y": 0.75,
+   "z": 0.475,
+   "size_x": 0.6,
+   "size_y": 1.25,
+   "size_z": 0.95,
+   "collision": "convex",
+   "material": "wood_panel",
+   "rot_z": 180.0
+  },
+  {
+   "name": "pack_wall_r48016798_2",
+   "x": 9.62,
+   "y": -0.74,
+   "z": 1.275,
+   "size_x": 0.5,
+   "size_y": 2.4,
+   "size_z": 2.55,
+   "collision": "convex",
+   "material": "slatwall",
+   "variant": 2
+  },
+  {
+   "name": "wall_tv_r48016798_2",
+   "x": 9.62,
+   "y": -0.74,
+   "z": 2.85,
+   "size_x": 0.55,
+   "size_y": 0.6,
+   "size_z": 0.5,
+   "collision": "none",
+   "material": "metal_painted",
+   "form": "bracket",
+   "variant": 1
+  },
+  {
+   "name": "pennant_row_r48016798_10",
+   "x": -9.82,
+   "y": -1.77,
+   "z": 2.9,
+   "size_x": 0.08,
+   "size_y": 4.0,
+   "size_z": 0.3,
+   "collision": "none",
+   "material": "cloth",
+   "rot_z": 180.0,
+   "variant": 1
+  },
+  {
+   "name": "pennant_row_r48016798_11",
+   "x": -4.3,
+   "y": -8.82,
+   "z": 2.9,
+   "size_x": 4.0,
+   "size_y": 0.08,
+   "size_z": 0.3,
+   "collision": "none",
+   "material": "cloth",
+   "rot_z": 180.0,
+   "variant": 3
+  },
+  {
+   "name": "pennant_row_r48016798_12",
+   "x": 9.82,
+   "y": -5.52,
+   "z": 2.9,
+   "size_x": 0.08,
+   "size_y": 6.0,
+   "size_z": 0.3,
+   "collision": "none",
+   "material": "cloth",
+   "variant": 1
+  },
+  {
+   "name": "pennant_row_r48016798_13",
+   "x": 3.1,
+   "y": -8.82,
+   "z": 2.9,
+   "size_x": 4.0,
+   "size_y": 0.08,
+   "size_z": 0.3,
+   "collision": "none",
+   "material": "cloth",
+   "rot_z": 180.0,
+   "variant": 3
+  },
+  {
+   "name": "pennant_row_rdc91c3b9_3",
+   "x": 4.83,
+   "y": 8.82,
+   "z": 2.9,
+   "size_x": 8.0,
+   "size_y": 0.08,
+   "size_z": 0.3,
+   "collision": "none",
+   "material": "cloth",
+   "variant": 2
+  },
+  {
+   "name": "pennant_row_rdc91c3b9_4",
+   "x": 4.36,
+   "y": 2.17,
+   "z": 2.9,
+   "size_x": 8.0,
+   "size_y": 0.08,
+   "size_z": 0.3,
+   "collision": "none",
+   "material": "cloth",
+   "rot_z": 180.0,
+   "variant": 1
+  },
+  {
+   "name": "pennant_row_rdc91c3b9_5",
+   "x": 9.82,
+   "y": 5.17,
+   "z": 2.9,
+   "size_x": 0.08,
+   "size_y": 4.0,
+   "size_z": 0.3,
+   "collision": "none",
+   "material": "cloth",
+   "variant": 3
+  }
+ ],
+ "rooms": [
+  {
+   "id": "sales_floor",
+   "story": 0,
+   "bounds": [
+    -10.0,
+    -9.0,
+    10.0,
+    2.0
+   ],
+   "role": "public_entry",
+   "combat_range": "long",
+   "floor_material": "tile"
+  },
+  {
+   "id": "stockroom",
+   "story": 0,
+   "bounds": [
+    -10.0,
+    2.0,
+    0.0,
+    9.0
+   ],
+   "role": "objective_room",
+   "objective": true,
+   "fortifiable": true,
+   "combat_range": "medium"
+  },
+  {
+   "id": "play_area",
+   "story": 0,
+   "bounds": [
+    0.0,
+    2.0,
+    10.0,
+    9.0
+   ],
+   "role": "connector",
+   "combat_range": "medium",
+   "floor_material": "carpet"
+  },
+  {
+   "id": "apartment",
+   "story": 1,
+   "bounds": [
+    -10.0,
+    -9.0,
+    10.0,
+    2.0
+   ],
+   "role": "connector",
+   "combat_range": "long"
+  },
+  {
+   "id": "upper_storage",
+   "story": 1,
+   "bounds": [
+    -10.0,
+    2.0,
+    10.0,
+    9.0
+   ],
+   "role": "fortifiable",
+   "fortifiable": true,
+   "combat_range": "medium"
+  }
+ ],
+ "objectives": [
+  {
+   "id": "crack_safe",
+   "kind": "drill",
+   "x": -8.6,
+   "y": 7.6,
+   "z": 0.2,
+   "room": "stockroom",
+   "required": true,
+   "duration": 25.0
+  },
+  {
+   "id": "grab_singles",
+   "kind": "grab",
+   "x": 1.5,
+   "y": 7.5,
+   "z": 0.9,
+   "room": "play_area",
+   "required": false,
+   "duration": 6.0
+  }
+ ],
+ "loot": [
+  {
+   "id": "shop_safe",
+   "kind": "cash",
+   "x": -8.6,
+   "y": 7.6,
+   "z": 0.2,
+   "value": 9000,
+   "bags": 2,
+   "room": "stockroom"
+  },
+  {
+   "id": "graded_singles",
+   "kind": "valuables",
+   "x": 1.5,
+   "y": 7.5,
+   "z": 0.9,
+   "value": 4000,
+   "bags": 1,
+   "room": "play_area"
+  }
+ ],
+ "zones": [
+  {
+   "id": "front_extract",
+   "kind": "extraction",
+   "story": 0,
+   "bounds": [
+    -10.0,
+    -9.0,
+    10.0,
+    -6.0
+   ]
+  },
+  {
+   "id": "stock_secure",
+   "kind": "secure",
+   "story": 0,
+   "bounds": [
+    -10.0,
+    2.0,
+    0.0,
+    9.0
+   ]
+  }
+ ],
+ "markers": [
+  {
+   "type": "camera_socket",
+   "id": "01",
+   "x": -8.0,
+   "y": -7.0,
+   "z": 2.9,
+   "room": "sales_floor",
+   "rot_z": 45
+  },
+  {
+   "type": "camera_socket",
+   "id": "02",
+   "x": -8.5,
+   "y": 8.0,
+   "z": 2.9,
+   "room": "stockroom",
+   "rot_z": 180
+  },
+  {
+   "type": "crew_spawn",
+   "id": "A",
+   "x": -3.0,
+   "y": -7.5,
+   "z": 0.0,
+   "rot_z": 0,
+   "room": "sales_floor",
+   "meta": {
+    "phase": "stealth"
+   }
+  },
+  {
+   "type": "objective",
+   "id": "SAFE",
+   "x": -8.6,
+   "y": 7.6,
+   "z": 0.2,
+   "room": "stockroom"
+  },
+  {
+   "type": "extraction",
+   "id": "FRONT",
+   "x": -5.0,
+   "y": -7.5,
+   "z": 0.0,
+   "room": "sales_floor"
+  },
+  {
+   "type": "patrol_point",
+   "id": "shopkeeper_r48016798_1",
+   "x": -7.88,
+   "y": 0.75,
+   "z": 0.0,
+   "rot_z": 180.0,
+   "room": "sales_floor",
+   "meta": {
+    "role": "shopkeeper",
+    "aisle_m": 1.25
+   }
+  },
+  {
+   "type": "patrol_point",
+   "id": "shopkeeper_r48016798_2",
+   "x": 8.75,
+   "y": -1.14,
+   "z": 0.0,
+   "rot_z": 270.0,
+   "room": "sales_floor",
+   "meta": {
+    "role": "shopkeeper",
+    "aisle_m": 1.25
+   }
+  },
+  {
+   "type": "patrol_point",
+   "id": "playfloor_rdc91c3b9_1",
+   "x": 1.35,
+   "y": 7.55,
+   "z": 0.0,
+   "rot_z": 0.0,
+   "room": "play_area",
+   "meta": {
+    "role": "playfloor"
+   }
+  },
+  {
+   "type": "cover_high",
+   "id": "AUTO_CRATE_STACK_TALL_PLAY_AREA_SHELTER",
+   "x": 1.78,
+   "y": 5.06,
+   "z": 0.0,
+   "room": "play_area",
+   "meta": {
+    "auto": "cover_from_volume",
+    "from": "crate_stack_tall_play_area_shelter"
+   }
+  },
+  {
+   "type": "cover_low",
+   "id": "AUTO_CRATE_STACK_PLAY_AREA_1",
+   "x": 7.54,
+   "y": 4.09,
+   "z": 0.0,
+   "room": "play_area",
+   "meta": {
+    "auto": "cover_from_volume",
+    "from": "crate_stack_play_area_1"
+   }
+  },
+  {
+   "type": "cover_high",
+   "id": "AUTO_CRATE_STACK_TALL_APARTMENT_SHELTER",
+   "x": -7.85,
+   "y": -4.24,
+   "z": 3.4,
+   "room": "apartment",
+   "meta": {
+    "auto": "cover_from_volume",
+    "from": "crate_stack_tall_apartment_shelter"
+   }
+  },
+  {
+   "type": "cover_low",
+   "id": "AUTO_CRATE_STACK_APARTMENT_1",
+   "x": 1.02,
+   "y": -2.66,
+   "z": 3.4,
+   "room": "apartment",
+   "meta": {
+    "auto": "cover_from_volume",
+    "from": "crate_stack_apartment_1"
+   }
+  },
+  {
+   "type": "cover_low",
+   "id": "AUTO_CRATE_STACK_APARTMENT_2",
+   "x": 4.47,
+   "y": -1.24,
+   "z": 3.4,
+   "room": "apartment",
+   "meta": {
+    "auto": "cover_from_volume",
+    "from": "crate_stack_apartment_2"
+   }
+  },
+  {
+   "type": "cover_low",
+   "id": "AUTO_CRATE_STACK_APARTMENT_3",
+   "x": 3.73,
+   "y": -4.73,
+   "z": 3.4,
+   "room": "apartment",
+   "meta": {
+    "auto": "cover_from_volume",
+    "from": "crate_stack_apartment_3"
+   }
+  },
+  {
+   "type": "cover_high",
+   "id": "AUTO_SHELF_RUN_UPPER_STORAGE_SHELTER",
+   "x": 3.81,
+   "y": 5.0,
+   "z": 3.4,
+   "room": "upper_storage",
+   "meta": {
+    "auto": "cover_from_volume",
+    "from": "shelf_run_upper_storage_shelter"
+   }
+  },
+  {
+   "type": "cover_low",
+   "id": "AUTO_PALLET_STACK_UPPER_STORAGE_1",
+   "x": 6.62,
+   "y": 7.38,
+   "z": 3.4,
+   "room": "upper_storage",
+   "meta": {
+    "auto": "cover_from_volume",
+    "from": "pallet_stack_upper_storage_1"
+   }
+  },
+  {
+   "type": "cover_low",
+   "id": "AUTO_DISPLAY_CASE_R48016798_1",
+   "x": -7.98,
+   "y": -0.18,
+   "z": 0.0,
+   "room": "sales_floor",
+   "meta": {
+    "auto": "cover_from_volume",
+    "from": "display_case_r48016798_1"
+   }
+  },
+  {
+   "type": "cover_low",
+   "id": "AUTO_DISPLAY_CASE_R48016798_2",
+   "x": 7.83,
+   "y": -0.74,
+   "z": 0.0,
+   "room": "sales_floor",
+   "meta": {
+    "auto": "cover_from_volume",
+    "from": "display_case_r48016798_2"
+   }
+  },
+  {
+   "type": "cover_high",
+   "id": "AUTO_SHELF_RUN_R48016798_4",
+   "x": 9.62,
+   "y": -7.21,
+   "z": 0.0,
+   "room": "sales_floor",
+   "meta": {
+    "auto": "cover_from_volume",
+    "from": "shelf_run_r48016798_4"
+   }
+  },
+  {
+   "type": "cover_low",
+   "id": "AUTO_CARTONS_R48016798_5",
+   "x": -1.72,
+   "y": -7.5,
+   "z": 0.0,
+   "room": "sales_floor",
+   "meta": {
+    "auto": "cover_from_volume",
+    "from": "cartons_r48016798_5"
+   }
+  },
+  {
+   "type": "cover_low",
+   "id": "AUTO_CARTONS_R48016798_6",
+   "x": -5.53,
+   "y": -4.58,
+   "z": 0.0,
+   "room": "sales_floor",
+   "meta": {
+    "auto": "cover_from_volume",
+    "from": "cartons_r48016798_6"
+   }
+  },
+  {
+   "type": "cover_high",
+   "id": "AUTO_SHELF_RUN_R499AFDF7_1",
+   "x": -1.07,
+   "y": 8.62,
+   "z": 0.0,
+   "room": "stockroom",
+   "meta": {
+    "auto": "cover_from_volume",
+    "from": "shelf_run_r499afdf7_1"
+   }
+  },
+  {
+   "type": "cover_high",
+   "id": "AUTO_SHELF_RUN_R499AFDF7_2",
+   "x": -9.62,
+   "y": 4.78,
+   "z": 0.0,
+   "room": "stockroom",
+   "meta": {
+    "auto": "cover_from_volume",
+    "from": "shelf_run_r499afdf7_2"
+   }
+  },
+  {
+   "type": "cover_high",
+   "id": "AUTO_CABINET_FILE_R499AFDF7_3",
+   "x": -4.05,
+   "y": 8.62,
+   "z": 0.0,
+   "room": "stockroom",
+   "meta": {
+    "auto": "cover_from_volume",
+    "from": "cabinet_file_r499afdf7_3"
+   }
+  },
+  {
+   "type": "cover_low",
+   "id": "AUTO_SOFA_R4D7E6854_1",
+   "x": 9.44,
+   "y": -5.15,
+   "z": 3.4,
+   "room": "apartment",
+   "meta": {
+    "auto": "cover_from_volume",
+    "from": "sofa_r4d7e6854_1"
+   }
+  },
+  {
+   "type": "cover_high",
+   "id": "AUTO_SHELF_RUN_RDE4C5B55_1",
+   "x": 9.62,
+   "y": 6.42,
+   "z": 3.4,
+   "room": "upper_storage",
+   "meta": {
+    "auto": "cover_from_volume",
+    "from": "shelf_run_rde4c5b55_1"
+   }
+  },
+  {
+   "type": "cover_high",
+   "id": "AUTO_CABINET_SUPPLY_RDE4C5B55_3",
+   "x": 9.62,
+   "y": 3.82,
+   "z": 3.4,
+   "room": "upper_storage",
+   "meta": {
+    "auto": "cover_from_volume",
+    "from": "cabinet_supply_rde4c5b55_3"
+   }
+  },
+  {
+   "type": "cover_high",
+   "id": "AUTO_SHELF_RUN_RDE4C5B55_4",
+   "x": -6.58,
+   "y": 8.62,
+   "z": 3.4,
+   "room": "upper_storage",
+   "meta": {
+    "auto": "cover_from_volume",
+    "from": "shelf_run_rde4c5b55_4"
+   }
+  },
+  {
+   "type": "landmark",
+   "id": "SALES_FLOOR",
+   "x": 0.0,
+   "y": -3.5,
+   "z": 1.0,
+   "room": "sales_floor",
+   "meta": {
+    "auto": "landmark",
+    "label": "sales_floor",
+    "role": "public_entry"
+   }
+  },
+  {
+   "type": "landmark",
+   "id": "STOCKROOM",
+   "x": -5.0,
+   "y": 5.5,
+   "z": 1.0,
+   "room": "stockroom",
+   "meta": {
+    "auto": "landmark",
+    "label": "stockroom",
+    "role": "objective_room"
+   }
+  }
+ ],
+ "parapets": [
+  {
+   "story": 2,
+   "height": 0.9,
+   "thick": 0.3
+  }
+ ],
+ "modular": true
 }
