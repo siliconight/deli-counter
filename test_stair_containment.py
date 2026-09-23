@@ -248,6 +248,53 @@ def _codes_from_msgs(msgs):
     return {m.split(":")[0].replace("STAIRWELL ", "").strip() for m in msgs}
 
 
+def test_a_rail_opening_never_hangs_over_the_shaft():
+    """THE WALKER, cold run 9072: "gaps to step off of the side of a stair
+    case which we don't want, and the back is exposed".
+
+    A long-edge rail is left open by `landing_open` (0.8 + min_door_width =
+    2.050 m) so a body gets onto the flight sideways -- walling the full
+    length once sealed the upstairs objective off, and that stays. What was
+    missing is that the opening must have FLOOR under it. The solid at the
+    arrival end is the landing (step_d + 0.7 * step_d) plus the discharge
+    (WALKOFF_CLEAR - 0.7 * step_d), which is exactly step_d + WALKOFF_CLEAR.
+
+    Measured in cold run 9072's shipped package before this rule: landing
+    0.46 m, discharge 0.61 m, opening 2.05 m -- 0.98 m of it over the open
+    shaft, and `tools/walkable_edge.gd` read a 2.90 m fall at floor level
+    there. FAILS BEFORE 0.143.0."""
+    st = _straight()
+    sp = _shell(st)
+    step_d = st.run / float(S._step_count(st, sp.story_height))
+    solid = step_d + S.WALKOFF_CLEAR
+    landing_open = 0.8 + S.agent_contract.min_door_width()
+    assert solid < landing_open, (solid, landing_open)   # or nothing is tested
+    x0, y0, x1, y1 = S.flight_rect(st, 0)
+    for p in S.stair_guards(sp):
+        if p["kind"] != "rail" or p["axis"] != "Y":
+            continue
+        # a long-edge rail: its opening is whatever it does NOT span
+        opening = (y1 - y0) - (p["hi"] - p["lo"])
+        assert opening <= solid + 1e-9, (opening, solid, p)
+
+
+def test_a_side_is_not_clipped_by_the_rail_rule():
+    """A `side` stands on the storey BELOW and opens at the ENTRY end, where
+    that storey's slab is solid across the whole rectangle. Clipping it would
+    wall a flight in for no reason, and the review would start reporting
+    flights as contained that a body cannot get onto."""
+    st = _straight()
+    sp = _shell(st)
+    landing_open = 0.8 + S.agent_contract.min_door_width()
+    x0, y0, x1, y1 = S.flight_rect(st, 0)
+    sides = [p for p in S.stair_guards(sp)
+             if p["kind"] == "side" and p["axis"] == "Y"]
+    assert sides, "no side guard to check"
+    for p in sides:
+        opening = (y1 - y0) - (p["hi"] - p["lo"])
+        assert abs(opening - landing_open) < 1e-9, (opening, landing_open, p)
+
+
 ALL = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
 
 if __name__ == "__main__":

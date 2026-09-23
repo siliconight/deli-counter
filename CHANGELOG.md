@@ -1,3 +1,61 @@
+## [0.143.0] - a stair rail's opening must have floor under it
+
+THE WALKER, cold run 9072: "this stair case has some unexpected openings
+allowing for gaps to step off of the side of a stair case which we don't want,
+and the back is exposed".
+
+`stair_guards` leaves each long-edge rail open by `landing_open`
+(0.8 + min_door_width = 2.050 m) so a body can get onto a flight sideways.
+That stays: walling the full reserved length once sealed the upstairs
+objective off (nav gate, 0.126.0 candidate, `twin_a01`'s both stairs
+`no_path`), and the decision is still right.
+
+What nothing checked is whether the opening has FLOOR under it. The solid at
+the arrival end is the landing plus the discharge plate:
+
+    landing    land_d  = step_d + 0.7 * step_d
+    discharge  d_depth = WALKOFF_CLEAR - 0.7 * step_d
+                       ------------------------------
+    solid              = step_d + WALKOFF_CLEAR
+
+The 0.7 * step_d split moves where the two plates meet, not how far they
+reach. Measured in the shipped package: landing 0.46 m, discharge 0.61 m,
+opening 2.05 m -- so 0.98 m of the opening hung over the open shaft.
+
+`tools/walkable_edge.gd` found the fall independently, from physics rather
+than from reading extents: 121 unguarded cells at that stairwell, the floor-
+level ones at x 7.35..8.10, y 0.00, dropping 2.90 m -- a full storey, at
+walking height, with nothing between.
+
+### What changed
+
+A long-edge RAIL's opening is now `min(landing_open, step_d + WALKOFF_CLEAR)`.
+On a 3.8 m run at 2.9 m storey height: 2.050 -> 1.022 m.
+
+A `side` is NOT clipped and that is deliberate. It stands on the storey BELOW
+and opens at the ENTRY end, where that storey's slab is solid across the whole
+rectangle; clipping it would wall a flight in for no reason and the review
+would start calling flights contained that a body cannot get onto. Measured:
+side opening stays 2.050 m.
+
+### It still lets a body on
+
+1.022 m against the nav bake's requirement of 2 x agent_radius = 0.80 m. A
+rail is GUARD_THICK (0.1 m) deep, so the opening is a threshold rather than a
+length of passage -- `min_corridor_width` (1.10) is the test for a corridor,
+not for a gap in a rail. And beyond the reserved rectangle's edge there is
+ordinary floor with no rail at all, so the walk-on is the clipped stretch plus
+everything outside the rectangle.
+
+### WALKOFF_CLEAR, and a literal that must NOT be merged
+
+`flight_rect`'s walk-off depth is now the named constant `WALKOFF_CLEAR`
+rather than a bare 0.8, because a third spelling of it was about to be added.
+`hole_span`'s `clear` is also 0.8 and is a LATERAL pad on the hole's width --
+a different quantity that happens to share a value. They are left separate on
+purpose: merging them because the literals match is the mistake the note on
+the constant exists to prevent.
+
 ## [0.142.0] - 2026-09-22  a GLB is not one file, and the closure check could not see the half it was missing
 
 `build_package` bundles a building's art by resolving each
