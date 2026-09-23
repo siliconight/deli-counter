@@ -243,7 +243,19 @@ def gameplay_interactive(machine, slot_ref, transform, building=None):
     }
     if "reversible" in machine:
         entry["reversible"] = machine["reversible"]
-    for advisory in ("material", "breach_class"):
+    # THE ADVISORY SET, and it is four, not three. `docs/INTERACTIVES.md` has
+    # named `reversible, collision_per_state, material, breach_class` as what
+    # a fixture carries since the contract was written, and this list carried
+    # three of them: `collision_per_state` was defined in `_DEFAULTS` for
+    # every kind, documented, referenced by name in `themed_tscn`'s comment on
+    # how the game swaps a state -- and dropped here.
+    #
+    # The cost, measured on cold run 9070's package: all 11 hidden `breached`
+    # nodes ship `visible = false` with a LIVE collider, because nothing told
+    # the scene which states are solid. Two coincident colliders make the
+    # default correctly solid by accident, and a ray at two of six sampled
+    # walls hits `Breach` where a player sees brick.
+    for advisory in ("collision_per_state", "material", "breach_class"):
         if advisory in machine:
             entry[advisory] = machine[advisory]
     if building is not None:

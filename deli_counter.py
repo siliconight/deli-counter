@@ -1769,7 +1769,12 @@ class _Builder:
                 # of every flight z-fight.
                 has_landing = (st.style == "switchback"
                                and s < st.to_story - 1)
-                clear = 0.8                  # walk-off depth past the landing
+                # ONE SOURCE for the walk-off, because there were two. This
+                # read a literal while `stairwell.WALKOFF_CLEAR` governed the
+                # guards and `flight_rect`'s reserved rectangle, so moving the
+                # named constant would have moved two of the four quantities it
+                # names and left the hole and the discharge plate behind.
+                clear = stairwell.WALKOFF_CLEAR   # walk-off past the landing
                 # ONE SOURCE for the cut's width and centre: a single-storey
                 # switchback cuts only the run its one leg climbs in
                 # (`stairwell.hole_span`; cold run 9050's open unused run).

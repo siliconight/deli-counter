@@ -725,6 +725,27 @@ SIDE_GAP = 0.005
 #: literals match would be the mistake this note exists to prevent -- they
 #: move for different reasons.
 WALKOFF_CLEAR = 0.8
+#: The narrowest opening a stair rail can leave and still have the bake connect
+#: the landing to the floor beside it.
+#:
+#: MEASURED, NOT DERIVED, and that is a limitation rather than a shrug. Forcing
+#: `open_rail` to a constant and rebuilding `foundry_heist_vertical` at each
+#: value gave FAIL at 1.0778, 1.2, 1.25, 1.3 and 1.35 and PASS at 1.4, 1.6, 1.8
+#: and 2.05 -- nine distinct glb hashes, monotone, with the 2.05 control
+#: reproducing the pre-0.143.0 glb exactly, so the knob reached the geometry and
+#: the instrument could see a difference. At bake radius 0.40, cell 0.10,
+#: climb 0.15, slope 55 (`agent_contract.nav_bake`).
+#:
+#: TWO CONTRACT CONSTANTS WERE CANDIDATES AND BOTH FAIL: `min_corridor_width`
+#: 1.10 and `min_door_width` 1.25. So this is not a clearance in the contract's
+#: sense -- it is what Recast needs to join two regions through a gap, and it
+#: moves when the bake's radius or cell size moves. Re-measure it then.
+#:
+#: NOTHING BUILDS TO THIS. It is a floor that `test_rail_opening.py` checks the
+#: library against; the geometry is decided by the overhang rule in
+#: `stair_guards`. A constant that is asserted rather than used is deliberate
+#: here -- the alternative is a number in a comment, which rots.
+RAIL_OPEN_MIN = 1.4
 
 
 def stair_guards(spec):
@@ -834,7 +855,40 @@ def stair_guards(spec):
             # opening is at the entry end where that storey's slab is solid
             # across the whole rectangle.
             step_d = st.run / float(_step_count(st, H))
-            open_rail = min(open_, step_d + WALKOFF_CLEAR)
+            # AND IT MAY HANG PAST THAT FLOOR BY LESS THAN A BODY'S RADIUS,
+            # because clipping it to the floor exactly disconnects the landing.
+            # 0.143.0 clipped it exactly and `foundry_heist_vertical`'s
+            # basement stopped baking as part of the building: 339 polygons
+            # against 1,286, with the stair, a 30 deg ramp and a ladder all
+            # failing to carry. Measured by forcing this value and rebuilding
+            # that shell -- FAIL at 1.0778, 1.2, 1.25, 1.3, 1.35; PASS at 1.4,
+            # 1.6, 1.8, 2.05, nine distinct glb hashes with the 2.05 control
+            # reproducing the pre-0.143.0 file exactly -- the bake wants about
+            # 1.4 where the plate is 1.0778. The opening has to be WIDER than
+            # the floor under it, so "opening <= floor" has no solution.
+            #
+            # WHY A BODY RADIUS AND NOT A CHOSEN MARGIN. The hazard is an
+            # unguarded EDGE of length `overhang`, not a hole: a body reaches
+            # the void only by getting its capsule centre over it, and the rail
+            # holds the capsule `radius` short of its own face. The window a
+            # centre can occupy is `overhang - radius`, empty while the
+            # overhang stays under a radius. Before 0.143.0 the overhang was
+            # 0.9722 against a 0.35 radius, which is why the walker could step
+            # off the side of a staircase (cold run 9072).
+            #
+            # REFUTED, so nobody tries it again: deepening the plate by raising
+            # WALKOFF_CLEAR does nothing. The walk-off also sizes
+            # `flight_rect`'s reserved rectangle, which is what `t_lo` above
+            # comes from, so the opening and its reference edge move together
+            # and the rail lands in the same place. Rebuilt at 1.25 and gated:
+            # still `no_path`, glb 2a371e974f9f852d.
+            #
+            # THIN, AND KNOWN TO BE: 1.4278 clears a threshold measured between
+            # 1.35 and 1.40 by 28 mm, on one shell at one bake setting.
+            # `test_rail_opening.py` asserts it over every flight in the
+            # library so the margin cannot go negative unnoticed.
+            open_rail = min(open_, step_d + WALKOFF_CLEAR
+                            + agent_contract.body_radius())
             if st.style == "scissor":
                 side_span = (t_lo + open_, t_hi - open_)
                 rail_span = (t_lo + open_rail, t_hi - open_rail)

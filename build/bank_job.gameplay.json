@@ -3932,6 +3932,10 @@
       ],
       "source": "inferred",
       "reversible": false,
+      "collision_per_state": {
+        "intact": true,
+        "breached": false
+      },
       "material": "drywall",
       "breach_class": "soft_wall",
       "building": "bank_job"
@@ -3967,6 +3971,10 @@
       ],
       "source": "inferred",
       "reversible": true,
+      "collision_per_state": {
+        "closed": true,
+        "open": false
+      },
       "building": "bank_job"
     },
     {
@@ -4000,6 +4008,10 @@
       ],
       "source": "inferred",
       "reversible": true,
+      "collision_per_state": {
+        "closed": true,
+        "open": false
+      },
       "building": "bank_job"
     },
     {
@@ -4033,6 +4045,10 @@
       ],
       "source": "inferred",
       "reversible": true,
+      "collision_per_state": {
+        "closed": true,
+        "open": false
+      },
       "building": "bank_job"
     },
     {
@@ -4066,6 +4082,10 @@
       ],
       "source": "inferred",
       "reversible": true,
+      "collision_per_state": {
+        "closed": true,
+        "open": false
+      },
       "building": "bank_job"
     },
     {
@@ -4099,6 +4119,10 @@
       ],
       "source": "inferred",
       "reversible": true,
+      "collision_per_state": {
+        "closed": true,
+        "open": false
+      },
       "building": "bank_job"
     },
     {
@@ -4132,6 +4156,10 @@
       ],
       "source": "inferred",
       "reversible": true,
+      "collision_per_state": {
+        "closed": true,
+        "open": false
+      },
       "building": "bank_job"
     },
     {
@@ -4165,6 +4193,10 @@
       ],
       "source": "inferred",
       "reversible": true,
+      "collision_per_state": {
+        "closed": true,
+        "open": false
+      },
       "building": "bank_job"
     },
     {
@@ -4193,6 +4225,10 @@
       ],
       "source": "inferred",
       "reversible": false,
+      "collision_per_state": {
+        "intact": true,
+        "breached": false
+      },
       "material": "concrete",
       "breach_class": "reinforced",
       "building": "bank_job"
@@ -4239,6 +4275,11 @@
       ],
       "source": "authored",
       "reversible": true,
+      "collision_per_state": {
+        "locked": true,
+        "closed": true,
+        "open": false
+      },
       "building": "bank_job"
     },
     {
@@ -4283,6 +4324,11 @@
       ],
       "source": "authored",
       "reversible": true,
+      "collision_per_state": {
+        "locked": true,
+        "closed": true,
+        "open": false
+      },
       "building": "bank_job"
     },
     {
@@ -4311,6 +4357,10 @@
       ],
       "source": "inferred",
       "reversible": false,
+      "collision_per_state": {
+        "intact": true,
+        "breached": false
+      },
       "material": "concrete",
       "breach_class": "reinforceable",
       "building": "bank_job"
@@ -4341,6 +4391,10 @@
       ],
       "source": "inferred",
       "reversible": false,
+      "collision_per_state": {
+        "intact": true,
+        "drilled": true
+      },
       "material": "metal",
       "building": "bank_job"
     },
@@ -4397,6 +4451,12 @@
       ],
       "source": "inferred",
       "reversible": false,
+      "collision_per_state": {
+        "locked": true,
+        "unlocked": true,
+        "open": false,
+        "breached": false
+      },
       "material": "metal",
       "building": "bank_job"
     }

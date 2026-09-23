@@ -1,3 +1,144 @@
+## [0.144.0] - a hidden interactive state keeps its collision off
+
+THE WALKER, 2026-09-23: "If I see collision, I expect collision." And, on
+breachable areas: "we don't know if we have breachable areas in the game
+yet... would rather have a fallback to solid walls."
+
+MEASURED FIRST, on cold run 9075's package, with a physics probe rather than
+from the engine's documentation: six hidden `breached` nodes across three
+buildings, every one `visible = false` with a LIVE collider, and the whole
+scene grepped for `collision_layer`, `collision_mask`, `disabled` and
+`process_mode` returning zero lines. A ray at two of six sampled breach walls
+hit `Breach` where a player sees brick.
+
+THE DEFAULT IS STILL SOLID, and saying so is part of the finding. The intact
+and breached colliders are coincident, so their union is the intact wall and
+nothing walks through one. The fallback the walker asked for already held --
+by accident. What it costs is a surface query returning the wrong collider, a
+physics-parsed navmesh baking both states superimposed, and a future breach
+implemented the obvious way (flip `visible`) producing a visible hole that is
+still solid, with no error anywhere.
+
+THE CONTRACT ALREADY SAID SO, in two places, and neither was wired up.
+`interactives._DEFAULTS` gives every kind a `collision_per_state` -- a
+breach_wall's is `{"intact": true, "breached": false}` -- and `themed_tscn`'s
+own comment on the state block already described the game "toggling collision
+per interactive.collision_per_state". It named a field that
+`gameplay_interactive` dropped on the floor.
+
+### What changed
+
+- `interactives.gameplay_interactive` carries `collision_per_state` into the
+  netcode-facing entry. THE ADVISORY SET IS FOUR, not three:
+  `docs/INTERACTIVES.md` has listed `reversible, collision_per_state,
+  material, breach_class` since the contract was written and this list carried
+  three of them.
+- `themed_tscn` emits an editable-instance override for a state the contract
+  calls not-solid: `[editable path="<inst>"]` then, per collision body,
+  `collision_layer = 0` / `collision_mask = 0`. It is SILENT where the
+  contract is: an absent `collision_per_state`, or a state it does not
+  mention, keeps today's behaviour. Collision goes off only where the contract
+  states the state is not solid.
+- `themed_tscn._glb_collision_bodies` derives the body names Godot will give a
+  module, cached per path. Godot strips `-colonly` / `-convcolonly` /
+  `-col` / `-convcol` and makes a StaticBody3D of the stem, so
+  `Breach-colonly` arrives as `Breach`. The same four suffixes `_glb_extent`
+  skips are the ones this looks for -- one spelling of the convention, read
+  from one place.
+- `write_themed_tscn`'s stats gain `state_collision_off`.
+
+### How it was checked before it was generated
+
+The override syntax was loaded headless in a scratch project first, in both
+forms, and the body read `layer=0 mask=0` with and without `index=` -- so the
+index is omitted and nodes match by name. Getting this wrong produces scenes
+that do not load, which is not a thing to discover across a whole library.
+
+The body-name derivation was then run against a REAL shipped module,
+`breach_delco_1997_01_w140_ob6fc1c_breached.glb` from cold run 9075's export,
+which carries exactly two nodes -- `Breach-colonly` and
+`Breach_concrete_delco_1997`. The collider is found and the visual beside it
+is not. `test_state_collision.py` mirrors that exact shape rather than a
+guessed one, and asserts the fixture really contains those nodes, because a
+GLB that fails to load makes the function return `[]` and every assertion
+after it vacuous.
+
+### Also in this release: 0.143.0 disconnected a basement, and this fixes it
+
+0.143.0 clipped a stair rail's opening to the solid plate beneath it,
+`step_d + WALKOFF_CLEAR`. It was right about the floor and silent about whether
+what remained still connected. On `foundry_heist_vertical` it did not: the
+basement baked as a disjoint island of 339 polygons against 1,286 for
+ground-to-roof, and the switchback stair, a 12 m ramp declared at 30 deg and a
+ladder all failed to carry.
+
+**Attributed, not guessed.** `build/*.manifest.json` is tracked and carries
+`outputs_sha256_16`: `c600f22e9178d52e` before 0.143.0 and `8f2b4ae3a33c8567`
+at and since it, so that release moved the geometry and nothing after it did.
+Confirmed by building with `stairwell.py` from HEAD~1 -- the old hash returns
+and both stairs gate `ok` -- and at HEAD, where `stair_0` is `no_path`.
+
+**Two hypotheses refuted first**, kept because they cost a round each: that the
+spec's `to_story == n_stories` was out of range (ten specs use that roof-access
+convention and only this one failed), and that the arrival sat one
+`cell_height` above the ground floor (the glb says landing, discharge and
+ground slab all top out at y = 0.0000; the 0.20/0.35 in the island report are
+Recast voxel tops on the bake's own grid, a rounded artefact).
+
+**The threshold.** Forcing `open_rail` to a constant and rebuilding that shell
+at each value -- nine distinct glb hashes, monotone, the 2.05 control
+reproducing the pre-0.143.0 glb exactly:
+
+    1.0778 FAIL   1.2 FAIL   1.25 FAIL   1.3 FAIL   1.35 FAIL
+    1.4 PASS      1.6 PASS   1.8 PASS    2.05 PASS
+
+The bake wants about 1.4 against a plate of 1.0778. The opening has to be WIDER
+than the floor under it, so 0.143.0's premise -- opening <= floor -- has no
+solution at any clip value.
+
+**A fix that was tried and refuted**, recorded because it looks obviously
+right. Deepening the plate by raising `WALKOFF_CLEAR` from 0.8 to 1.25 does
+NOTHING: the walk-off also sizes `flight_rect`'s reserved rectangle and the
+builder's hole, and the opening is measured from that rectangle's edge, so
+`t_lo` moves out by exactly as much as the opening grows. Rebuilt and gated:
+still `no_path`, glb `2a371e974f9f852d`. Opening and plate are one quantity.
+
+### What changed
+
+- `stair_guards` lets a rail's opening hang past its plate by up to
+  `agent_contract.body_radius()`. DERIVED, not chosen: the hazard is an
+  unguarded EDGE, and a body reaches the void only by getting its capsule
+  centre over it, which the rail prevents while the overhang stays under a
+  radius. It explains all three states at once -- before 0.143.0 the overhang
+  was 0.9722 m against a 0.35 m radius, which is exactly why the walker could
+  step off the side of a staircase on cold run 9072; 0.143.0 made it zero, safe
+  and disconnected; it is now 0.35, and the opening reaches 1.4278.
+- `agent_contract.body_radius()` is new. NOT `nav_bake.agent_radius_m`, which
+  is 0.40 -- the fattest navigating character plus 0.05, what a BAKE is given.
+  This is the body, for questions of the form "can a body get here".
+- `deli_counter._stairs` read its own literal `0.8` for the walk-off while
+  `stairwell.WALKOFF_CLEAR` governed the guards and the reserved rectangle. Two
+  spellings of one quantity, so moving the named one would have left the hole
+  and the discharge plate behind. It reads the constant now. `WALKOFF_CLEAR`
+  itself does not move.
+- `stairwell.RAIL_OPEN_MIN` records the measured 1.4 so a test can assert it.
+
+**1.4 is not a library-wide minimum**, and asserting it as one was this work's
+last wrong turn -- caught by running the test that made the claim. 130 of the
+library's 149 railed flights leave an opening below 1.4 (a typical step_d of
+0.2350 gives 1.3850) and every one gates `navigable: yes`. It is what THIS
+landing needed, for a topological reason rather than a dimensional one:
+`foundry_heist_vertical`'s basement landing sits in a corner against the south
+wall, so the rail's opening is its only way off. `test_rail_opening.py` asserts
+that specific case, the library-wide overhang bound, and the one-source rule --
+and asserts the "not a general minimum" claim too, so it cannot rot into a
+comment nobody believes.
+
+`foundry_heist_vertical` spent eight hours in `navgate_baseline.json` as a
+recorded regression while this was found, and has been removed: it gates
+`navigable: yes` with both stairs `ok` at glb `4914523fd9cf46ab`, and a fixed
+shell left in a baseline hides the next one.
+
 ## [0.143.0] - a stair rail's opening must have floor under it
 
 THE WALKER, cold run 9072: "this stair case has some unexpected openings

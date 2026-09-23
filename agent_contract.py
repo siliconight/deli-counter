@@ -115,6 +115,24 @@ def min_corridor_width():
     return float(contract()["clearances"]["min_corridor_width_m"])
 
 
+def body_radius():
+    """The player capsule's radius, in metres.
+
+    NOT `nav_bake.agent_radius_m`, and the difference has cost this repo two
+    defects. That one is 0.40 -- the fattest navigating character plus 0.05 --
+    and is what a BAKE is given so a 0.35 body has somewhere to stand. This is
+    the body itself, and it is what to reach for when the question is "can a
+    body get here", "does a body fit" or "how far short of a wall does a
+    capsule stop".
+
+    First caller: `stairwell.stair_guards`, deciding how far a rail's opening
+    may hang past the floor under it. A capsule cannot put its centre over a
+    void window narrower than the distance the rail holds it back, which is
+    exactly this.
+    """
+    return float(contract()["characters"]["player"]["radius_m"])
+
+
 def chest_height():
     """Where a shot is aimed on a body, in metres above its feet.
 

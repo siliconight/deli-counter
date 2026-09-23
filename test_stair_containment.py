@@ -262,20 +262,54 @@ def test_a_rail_opening_never_hangs_over_the_shaft():
     Measured in cold run 9072's shipped package before this rule: landing
     0.46 m, discharge 0.61 m, opening 2.05 m -- 0.98 m of it over the open
     shaft, and `tools/walkable_edge.gd` read a 2.90 m fall at floor level
-    there. FAILS BEFORE 0.143.0."""
+    there. FAILS BEFORE 0.143.0.
+
+    THE BOUND IS TWO-SIDED SINCE 0.144.0, and this test failed on the way --
+    correctly, because it guarded a rule that changed on purpose. Clipping the
+    opening to the plate EXACTLY, which is what 0.143.0 did, disconnected
+    `foundry_heist_vertical`'s basement: 339 navmesh polygons against 1,286 for
+    ground-to-roof, with the stair, a 30 deg ramp and a ladder all failing to
+    carry. The bake wants about 1.4 m of opening where that plate is 1.0778, so
+    the opening has to be WIDER than its own floor and `opening <= solid` has
+    no solution at any clip value.
+
+    What makes a wider opening safe is that the hazard is an unguarded EDGE
+    rather than a hole. A body reaches the shaft only by getting its capsule
+    centre over it, and the rail holds the capsule `body_radius` short of its
+    own face, so an overhang under a radius is one a body cannot occupy:
+
+        before 0.143.0   overhang 0.9722 m   > 0.35   a body steps off
+        0.143.0          overhang 0.0000 m            safe, and disconnected
+        0.144.0          overhang 0.3500 m   = 0.35   held back, opening 1.4278
+
+    So both directions are asserted. Too much overhang is the walker's fall;
+    none at all is the disconnected basement. Either regression fails here."""
     st = _straight()
     sp = _shell(st)
     step_d = st.run / float(S._step_count(st, sp.story_height))
     solid = step_d + S.WALKOFF_CLEAR
+    allow = solid + S.agent_contract.body_radius()
     landing_open = 0.8 + S.agent_contract.min_door_width()
-    assert solid < landing_open, (solid, landing_open)   # or nothing is tested
+    # or nothing is tested: the clip must actually bite on this fixture, and
+    # the two bounds must be distinguishable from one another
+    assert solid < allow < landing_open, (solid, allow, landing_open)
     x0, y0, x1, y1 = S.flight_rect(st, 0)
+    checked = 0
     for p in S.stair_guards(sp):
         if p["kind"] != "rail" or p["axis"] != "Y":
             continue
         # a long-edge rail: its opening is whatever it does NOT span
         opening = (y1 - y0) - (p["hi"] - p["lo"])
-        assert opening <= solid + 1e-9, (opening, solid, p)
+        assert opening <= allow + 1e-9, (
+            "opening %.4f hangs %.4f past the floor, at or beyond a body "
+            "radius (%.4f) -- a body can get its centre over the shaft"
+            % (opening, opening - solid, S.agent_contract.body_radius()))
+        assert opening > solid + 1e-9, (
+            "opening %.4f is clipped to the plate (%.4f) with no overhang, "
+            "which is the 0.143.0 rule that disconnected a basement"
+            % (opening, solid))
+        checked += 1
+    assert checked, "no long-edge rail to check -- this test proved nothing"
 
 
 def test_a_side_is_not_clipped_by_the_rail_rule():

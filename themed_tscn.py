@@ -427,6 +427,41 @@ def themed_slot_ids(slots, theme, style, library_dir):
 _BBOX_CACHE = {}
 
 
+_COLBODY_CACHE = {}
+
+
+def _glb_collision_bodies(glb_path):
+    """The names Godot will give this GLB's collision bodies, cached.
+
+    Godot strips the `-colonly` / `-convcolonly` suffix and makes a
+    StaticBody3D of what is left, so `Breach-colonly` arrives as `Breach`.
+    Verified by importing a real breach module headless and dumping the tree:
+    `b (Node3D) -> Breach (StaticBody3D) -> CollisionShape3D`.
+
+    The same suffixes `_glb_extent` skips are the ones this looks FOR -- one
+    spelling of the convention, read from the same file.
+    """
+    if glb_path in _COLBODY_CACHE:
+        return _COLBODY_CACHE[glb_path]
+    out = []
+    try:
+        from pygltflib import GLTF2
+        g = GLTF2().load(glb_path)
+        for n in g.nodes or []:
+            nm = n.name or ""
+            low = nm.lower()
+            for suffix in ("-convcolonly", "-colonly", "-convcol", "-col"):
+                if low.endswith(suffix):
+                    stem = nm[: -len(suffix)]
+                    if stem and stem not in out:
+                        out.append(stem)
+                    break
+    except Exception:
+        out = []
+    _COLBODY_CACHE[glb_path] = out
+    return out
+
+
 def _glb_extent(glb_path):
     """Overall visual (non-collision) bbox extent of a GLB, cached."""
     if glb_path in _BBOX_CACHE:
@@ -575,6 +610,7 @@ def write_themed_tscn(slots, building_id, out_path, *, theme, style=1,
     resolved_refs = {}   # slot_id -> ref used (None -> not emitted)
     state_refs = {}      # id(slot) -> [(state, stem)] hidden variants to place
     state_variants = 0
+    state_collision_off = 0
     state_missing = 0
     # First pass: pick a ref per slot (themed stem, else greybox current_ref).
     # When a base shell is present, a greybox-fallback slot is NOT re-emitted as
@@ -689,10 +725,39 @@ def write_themed_tscn(slots, building_id, out_path, *, theme, style=1,
             out.append(f'metadata/interactive_state = "{st}"')
             state_variants += 1
             out.append("")
+            # COLLISION FOLLOWS VISIBILITY, because the walker's rule is "if I
+            # see collision, I expect collision" and the two are independent in
+            # Godot. A state that is hidden and solid is collision nobody can
+            # see: measured on cold run 9070's package, a ray at two of six
+            # sampled breach walls hit the hidden `Breach` body rather than the
+            # brick in front of it, so a surface query reports the wrong
+            # material. `collision_per_state` says which states are solid --
+            # `interactives._DEFAULTS` has always defined it and Deli Counter
+            # 0.144.0 carries it through.
+            #
+            # Silent when the contract says nothing: an absent
+            # `collision_per_state`, or a state it does not mention, keeps
+            # today's behaviour. This turns collision OFF only where the
+            # contract states the state is not solid.
+            cps = (inter.get("collision_per_state") or {})
+            if cps.get(st) is False:
+                bodies = _glb_collision_bodies(
+                    os.path.join(library_dir, vref + ".glb"))
+                if bodies:
+                    inst = f"{name}_{st}"
+                    out.append(f'[editable path="{inst}"]')
+                    out.append("")
+                    for body in bodies:
+                        out.append(f'[node name="{body}" parent="{inst}"]')
+                        out.append("collision_layer = 0")
+                        out.append("collision_mask = 0")
+                        out.append("")
+                    state_collision_off += 1
 
     with open(out_path, "w", encoding="utf-8") as fh:
         fh.write("\n".join(out) + "\n")
-    return out_path, {"themed": themed, "greybox_fallback": fell_back,
+    return out_path, {"state_collision_off": state_collision_off,
+                      "themed": themed, "greybox_fallback": fell_back,
                       "distinct_modules": len(order), "slots": len(slots),
                       "greybox_base": bool(base_res), "refit": refit,
                       "skipped_fallback_kept_in_base": skipped_fallback,
