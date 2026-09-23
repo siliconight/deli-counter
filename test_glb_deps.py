@@ -130,7 +130,7 @@ def test_a_reference_a_recipient_cannot_follow_is_refused(tmp_path, uri):
 # --- the closure self-check -------------------------------------------------
 
 def test_the_package_check_now_sees_a_reference_inside_a_glb(tmp_path):
-    """The gap that let four packages call themselves portable."""
+    """The gap that let three packages call themselves portable."""
     import portable_building
     _glb(tmp_path / "wall.glb", ["_tex/brick_a1b2c3d4.png"])
     report = portable_building._closure_check(str(tmp_path))

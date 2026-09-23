@@ -7,7 +7,9 @@ carried its images inside its binary chunk. Zoo 1.2.0 stopped: a module's
 textures are now files beside it, named by a relative glTF `images[].uri`,
 and this line went on moving one file where there were several.
 
-`_closure_check` returned `portable: true` on every such package. It walks
+`_closure_check` returned `portable: true` on every such package -- three of
+them shipped, Level Factory cold runs 9067, 9068 and 9069; 9066 predates the
+externalisation by three hours and is clean. It walks
 `.tscn/.tres/.gd/.godot` for `res://` strings, and a glTF `uri` is neither a
 `res://` string nor in a file with one of those suffixes.
 

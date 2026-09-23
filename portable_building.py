@@ -13,7 +13,11 @@ Given a Deli Counter slots.json + gameplay.json and a themed Zoo kit, it emits:
       <building>_main.tscn          entry scene; instances the building and,
                                     under --lf-portability-check, prints the
                                     marker and quits
-      art/zoo/*.glb                 the themed modules (textures embedded)
+      art/zoo/*.glb                 the themed modules, and beside each one
+                                    whatever its glTF names -- a module's
+                                    textures may be embedded in its binary
+                                    chunk or written next to it under a
+                                    relative `images[].uri`, and both ship
       HANDOFF.md, portable_resource_manifest.json
 
 Markers (spawns/objectives/etc.) are BAKED as plain Node3D nodes in groups, so
@@ -610,7 +614,7 @@ def build_package(slots_path, gameplay_path, module_dir, out_dir, *,
     # Zoo module carried its images in its binary chunk. Zoo 1.2.0
     # externalised them to a relative `images[].uri` and did not change the
     # shape of what a bundler has to move; this line did not change either,
-    # and four Level Factory packages went out with every module referencing
+    # and three Level Factory packages went out with every module referencing
     # a texture that was not in them. Measured 2026-09-22 on cold run 9068:
     # 1,136 dead references out of this repo's composer alone.
     #
