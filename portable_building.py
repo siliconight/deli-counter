@@ -31,6 +31,7 @@ import os
 import re
 import shutil
 
+import glb_deps  # sibling module (a GLB and whatever it names beside it)
 import themed_tscn  # sibling module (resolver + transform reuse)
 
 
@@ -600,18 +601,32 @@ def build_package(slots_path, gameplay_path, module_dir, out_dir, *,
         ldir = os.path.join(out_dir, "art", sub)
         os.makedirs(ldir, exist_ok=True)
         fname = os.path.basename(src)
-        shutil.copy2(src, os.path.join(ldir, fname))
+        glb_deps.copy_with_deps(src, os.path.join(ldir, fname))
         if splice_layer_instance(tscn_path, f"res://art/{sub}/{fname}", node):
             layers[sub] = fname
 
-    # 3. bundle the referenced module glbs into art/zoo/.
+    # 3. bundle the referenced module glbs into art/zoo/, WITH WHAT EACH ONE
+    # NAMES. `shutil.copy2` on the .glb alone was this line for as long as a
+    # Zoo module carried its images in its binary chunk. Zoo 1.2.0
+    # externalised them to a relative `images[].uri` and did not change the
+    # shape of what a bundler has to move; this line did not change either,
+    # and four Level Factory packages went out with every module referencing
+    # a texture that was not in them. Measured 2026-09-22 on cold run 9068:
+    # 1,136 dead references out of this repo's composer alone.
+    #
+    # `glb_deps.copy_with_deps` reads the module's own glTF JSON, so it
+    # carries whatever the next Zoo externalises without an edit here. It
+    # RAISES when a named file is absent rather than bundling a module that
+    # cannot be drawn -- a module missing from the kit is still reported the
+    # old way, under `missing`, because that one is the art pass being
+    # progressive rather than a copy losing half its job.
     refs = set(re.findall(r'path="res://art/zoo/([^"]+)"',
                           open(tscn_path, encoding="utf-8").read()))
     bundled, missing = [], []
     for ref in sorted(refs):
         src = os.path.join(module_dir, ref)
         if os.path.exists(src):
-            shutil.copy2(src, os.path.join(art, ref))
+            glb_deps.copy_with_deps(src, os.path.join(art, ref))
             bundled.append(ref)
         else:
             missing.append(ref)
@@ -631,7 +646,10 @@ def build_package(slots_path, gameplay_path, module_dir, out_dir, *,
         "- Walkable: every module carries collision. Markers are plain Node3D "
         "nodes in groups (spawns/objectives/etc.) -- find them with "
         "`get_tree().get_nodes_in_group(<type>)`.\n"
-        "- Modules live in `res://art/zoo/`; textures are embedded in the GLBs.\n")
+        "- Modules live in `res://art/zoo/`. A module's textures are either "
+        "embedded in its GLB or written beside it and named by a relative "
+        "glTF `uri`; both ship, and `portable_resource_manifest.json` records "
+        "how many of the second kind there are.\n")
 
     # 5. closure self-check (the portability contract, statically) + instancing
     # summary (the VRAM story: distinct GLBs = distinct Godot Mesh resources;
@@ -744,7 +762,16 @@ def build_package(slots_path, gameplay_path, module_dir, out_dir, *,
 def _closure_check(pkg_dir) -> dict:
     """Every resource ref is res://-relative and resolves in-package; no ref is
     an absolute filesystem path. (res:// and user:// are engine protocols, not
-    absolute paths.)"""
+    absolute paths.)
+
+    AND EVERY REFERENCE INSIDE A GLB, which this used to have no way of
+    seeing. It walked `.tscn/.tres/.gd/.godot` for `res://` strings, and a
+    glTF `images[].uri` is neither a `res://` string nor in a file with one of
+    those suffixes -- so a package whose every module named a texture it did
+    not carry came back `portable: true`. Four of them shipped. `glb_texture_*`
+    is that count; `portable` now reads it, so a package that cannot be drawn
+    stops calling itself portable.
+    """
     abs_hits, dangling = [], []
     for root, _dirs, files in os.walk(pkg_dir):
         for f in files:
@@ -761,10 +788,14 @@ def _closure_check(pkg_dir) -> dict:
                     continue
                 elif _ABS_START.match(ref):
                     abs_hits.append(f"{f}: {ref}")
+    glb_bad = glb_deps.unresolved(pkg_dir)
     return {"absolute_path_count": len(abs_hits),
             "absolute_paths": abs_hits[:20],
             "dangling_refs": dangling,
-            "portable": len(abs_hits) == 0 and not dangling}
+            "glb_unresolved_count": len(glb_bad),
+            "glb_unresolved": ["%s -> %s" % (g, u) for g, u in glb_bad[:20]],
+            "portable": (len(abs_hits) == 0 and not dangling
+                         and not glb_bad)}
 
 
 if __name__ == "__main__":

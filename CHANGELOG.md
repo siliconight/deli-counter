@@ -1,3 +1,73 @@
+## [0.142.0] - 2026-09-22  a GLB is not one file, and the closure check could not see the half it was missing
+
+`build_package` bundles a building's art by resolving each
+`res://art/zoo/<name>.glb` out of the scene it has just written and calling
+`shutil.copy2` on that one path. That was exactly right while a Zoo module
+carried its images inside its binary chunk. Zoo 1.2.0 stopped: a module's
+textures are now files beside it, named by a relative glTF `images[].uri`,
+and this line went on moving one file where there were several.
+
+`_closure_check` returned `portable: true` on every such package. It walks
+`.tscn/.tres/.gd/.godot` for `res://` strings, and a glTF `uri` is neither a
+`res://` string nor in a file with one of those suffixes.
+
+The HANDOFF.md every package ships said, in its own voice, "textures are
+embedded in the GLBs". It was true when it was written and had become a
+promise the package did not keep.
+
+### What actually shipped, and what this repo owned of it
+
+Measured 2026-09-22 on Level Factory cold run 9068's shipped
+`LF_club_block_007.portable-godot`: 1,264 external references across 265
+GLBs, all of them resolving to nothing. The walker's report was "around 90%
+graybox now with no textures/skins on much of the assets."
+
+BE EXACT ABOUT THIS REPO'S SHARE. 1,136 of those 1,264 are under `lot/<id>/`
+and came out of this composer -- but they were dead before it touched them.
+Level Factory's job store publishes a job's outputs by file SUFFIX, so Zoo's
+`.png` files never left the attempt directory, and the kit directory this
+composer was pointed at had no textures in it to copy. The bundler would have
+dropped them anyway. It is fixed here because leaving one copy site right and
+another wrong is how the next one gets written wrong, not because this is
+where the pixels were lost. Level Factory 0.105.0 is where they were lost.
+
+### What changed
+
+`glb_deps` is new: read a GLB's JSON chunk, list what it names beside itself,
+and copy a GLB with its dependencies. No `pygltflib` -- it never rewrites a
+file, so parsing the container is the whole job, and a library that loads and
+re-saves a GLB to answer "what does it name" is free to change bytes this has
+no business changing.
+
+`build_package` uses it for `art/zoo/`, `art/dressing/` and `art/fixtures/`.
+It RAISES when a module names a file that is not there, rather than bundling
+a module that cannot be drawn. A module missing from the kit is still
+reported the old way, under `missing`, because that is the art pass being
+progressive rather than a copy losing half its job.
+
+`_closure_check` grew `glb_unresolved_count` / `glb_unresolved`, and
+`portable` reads them. A package whose every module names a texture it does
+not carry no longer calls itself portable.
+
+HANDOFF.md now says what is true of both shapes: a module's textures are
+either embedded in its GLB or written beside it and named by a relative glTF
+`uri`, and both ship.
+
+### Keyed on the document, not on a folder name
+
+`_tex` appears in `glb_deps` nowhere. The next asset class Zoo externalises
+is carried on the day it appears, without an edit here. A checker keyed on
+that folder would pass it exactly the way this one was passed.
+
+### The new tests
+
+`test_glb_deps.py`: what a GLB names, what an embedded image is not, a
+container whose JSON chunk is not the first one, the copy carrying the
+texture, two modules sharing one file, the copy refusing rather than moving
+half of what it was asked to, and `_closure_check` seeing a reference inside
+a GLB -- with the control on the same fixture, because a check that can only
+say no proves nothing.
+
 ## [0.141.2] - 2026-09-16  the room's ceiling is what the room measures, and it says it is provisional
 
 ZOO 0.99.0 MOVED THE PACK WALL AND THIS ROOM DID NOT FIT ANY MORE. A bay's
