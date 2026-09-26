@@ -9,7 +9,28 @@ Pure -- operates on the gameplay dicts, so it runs and tests outside Blender.
 See docs/LIGHT_MANIFEST.md for the schema.
 """
 
-LIGHT_MANIFEST_VERSION = "1.2.0"
+LIGHT_MANIFEST_VERSION = "1.3.0"
+
+#: A FUEL CANOPY (v1.3) is an exterior deck on columns and it is the light
+#: source for the forecourt under it -- in every reference the walker
+#: supplied, the tarmac is lit by the canopy and not by street lighting.
+#: These are the volume names the specs author (`gas_station.json`:
+#: `canopy_roof` 24 x 10 x 0.4 at z 5.0, six `canopy_col` 0.4 x 0.4 x 5.0).
+_CANOPY_DECK = "canopy_roof"
+_CANOPY_COL = "canopy_col"
+#: Washes under one canopy: two, plus one per this much deck, to four. A
+#: canopy is not a room -- there are no walls to bounce off -- so the pools
+#: read as pools, which is what a forecourt at night looks like.
+_CANOPY_WASH_BASE = 2
+_CANOPY_WASH_PER_AREA = 150.0
+_CANOPY_WASH_MAX = 4
+#: The lamp grid hangs this far below the soffit. Zoo's `canopy_lights`
+#: stands its lenses proud of the deck by the same amount for the same
+#: reason -- a lit face flush with the deck it sits in is a coplanar pair.
+_CANOPY_DROP = 0.02
+#: Grade, when a canopy has no columns to measure it from. Authored decks
+#: always do; this is the floor under a hand-placed one.
+_CANOPY_GRADE = 0.0
 
 #: THE CLUB SET (Lux 0.37.0): the anchor types a strip club room writes in
 #: place of its fluorescent row, and the palette names Lux accepts on their
@@ -306,6 +327,83 @@ def _bearing_to_rot_y(bearing):
     (degrees about up, 0 == +X): the direction (sin b, cos b) has angle
     atan2(cos b, sin b) = 90 - b from +X."""
     return round((90.0 - float(bearing)) % 360.0, 3)
+
+
+def _canopy_grade(deck, volumes):
+    """The tarmac under ``deck``: the foot of its own columns.
+
+    DERIVED, NOT ASSUMED TO BE ZERO. A canopy's columns stand on the surface
+    its light has to reach, so they are the one thing in the spec that knows
+    where that surface is. A canopy with no columns falls back to grade and
+    the caller gets a `drop` that is honest about the assumption.
+    """
+    feet = []
+    for v in volumes or ():
+        if not str(v.get("name", "")).startswith(_CANOPY_COL):
+            continue
+        # only columns that actually stand under this deck
+        if abs(float(v.get("x", 1e9)) - float(deck.get("x", 0.0))) > \
+                float(deck.get("size_x", 0.0)):
+            continue
+        if abs(float(v.get("y", 1e9)) - float(deck.get("y", 0.0))) > \
+                float(deck.get("size_y", 0.0)):
+            continue
+        feet.append(float(v.get("z", 0.0)) - float(v.get("size_z", 0.0)) / 2.0)
+    return min(feet) if feet else _CANOPY_GRADE
+
+
+def _canopy_anchors(volumes):
+    """A fuel canopy's lights: one hardware grid, and a few washes.
+
+    Emits nothing when no deck is authored, which is every building that is
+    not a fuel stop. See `_CANOPY_DECK` above for why the split exists.
+    """
+    out = []
+    for deck in volumes or ():
+        name = str(deck.get("name", ""))
+        if not name.startswith(_CANOPY_DECK):
+            continue
+        sx = float(deck.get("size_x", 0.0))
+        sy = float(deck.get("size_y", 0.0))
+        if sx <= 0.0 or sy <= 0.0:
+            continue
+        cx, cy = float(deck.get("x", 0.0)), float(deck.get("y", 0.0))
+        soffit = (float(deck.get("z", 0.0))
+                  - float(deck.get("size_z", 0.0)) / 2.0 - _CANOPY_DROP)
+        grade = _canopy_grade(deck, volumes)
+
+        # THE HARDWARE. One anchor for the whole deck: Zoo's `canopy_lights`
+        # lays the grid inside it, in two draw calls, and carries no emitter
+        # marker -- it glows and lights nothing.
+        out.append({
+            "id": "%s_lights" % name, "type": "canopy_lights",
+            "source": "derived",
+            "pos": [round(cx, 3), round(cy, 3), round(soffit, 3)],
+            "rot_y": 0.0, "size": [round(sx, 3), round(sy, 3)],
+            "drop": round(soffit - grade, 3), "reacts_to_alarm": True,
+        })
+
+        # THE LIGHT. A few washes, along the deck's long axis, inset so the
+        # pools land on the tarmac rather than past the drip line.
+        n = _CANOPY_WASH_BASE + int((sx * sy) // _CANOPY_WASH_PER_AREA)
+        n = max(_CANOPY_WASH_BASE, min(_CANOPY_WASH_MAX, n))
+        span, across = (sx, True) if sx >= sy else (sy, False)
+        step = span / float(n)
+        for i in range(n):
+            off = -span / 2.0 + step * (i + 0.5)
+            x = cx + off if across else cx
+            y = cy if across else cy + off
+            out.append({
+                "id": "%s_wash_%d" % (name, i), "type": "canopy_wash",
+                "source": "derived",
+                "pos": [round(x, 3), round(y, 3), round(soffit, 3)],
+                "rot_y": 0.0,
+                # the pool this wash owns, so Lux need not divide the deck
+                # itself and two canopies of different sizes light alike
+                "size": [round(step, 3), round(min(sx, sy), 3)],
+                "drop": round(soffit - grade, 3), "reacts_to_alarm": True,
+            })
+    return out
 
 
 def _volumes_in(volumes, r, story_height):
@@ -932,6 +1030,11 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
     if sign:
         anchor, sign_door = sign
         anchors.append(anchor)
+
+    # v1.3: a fuel canopy, which is not in any room -- it stands outside the
+    # building on its own columns, and until now nothing derived a light from
+    # it. Before the wall packs, so a forecourt's anchors sit together.
+    anchors += _canopy_anchors(volumes)
 
     pack_out = float(wall_thick) * 0.5 + _WALL_PACK_OUT
     pack_n = {}

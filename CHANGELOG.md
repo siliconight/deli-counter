@@ -1,3 +1,55 @@
+## [0.145.0] - a fuel canopy finally emits a light
+
+MEASURED FIRST, on cold run 9080's package: the forecourt canopy is 22 x 13 m
+on six columns with three pump islands under it, and of the 20 Lux fixture
+holders within 45 m every one sits on the SHOP, between world x 58.7 and 81.3.
+The canopy spans 81 to 103. Nothing was over it. The canopy volumes have been
+authored the whole time -- `specs/gas_station.json` carries `canopy_roof`
+24 x 10 x 0.4 at z 5.0 and six `canopy_col` -- and no light anchor had ever
+been derived from them.
+
+TWO KINDS, AND THE SPLIT IS THE POINT (light manifest v1.3):
+
+    canopy_lights   one anchor for the whole deck, `size` its footprint.
+                    Zoo 1.4.0's species of that name lays the lamp grid
+                    inside it in two draw calls and carries no emitter
+                    marker, so it glows and lights nothing.
+    canopy_wash     two to four light positions under the deck, no hardware
+                    at all, lit by Lux from the manifest as `club_wash` is.
+
+`max_lights_per_object` is 8 on GL Compatibility and a literal 12-20 fixture
+grid would put every one of those lights on the forecourt ground mesh, the
+surface that fills the frame when a player stands under it. The walker's call
+of 2026-09-26, with the three options and their costs stated: emissive soffit
+and a few lights.
+
+On the authored gas station this derives:
+
+    canopy_roof_lights   canopy_lights  pos (0, -18, 4.78)  size 24.0 x 10.0
+    canopy_roof_wash_0   canopy_wash    pos (-8, -18, 4.78)
+    canopy_roof_wash_1   canopy_wash    pos ( 0, -18, 4.78)
+    canopy_roof_wash_2   canopy_wash    pos ( 8, -18, 4.78)
+
+GRADE IS DERIVED FROM THE COLUMNS, not assumed to be zero. A canopy's columns
+stand on the surface its light has to reach, so they are the one thing in the
+spec that knows where that surface is -- and `drop` is what Lux derives a range
+from, where a flat value has been wrong at both ends before (roadmap 54's
+brightness grid, and the arena's lit ceilings over a pitch-black floor). A
+canopy with no columns falls back to grade and its `drop` says so. Columns
+belonging to another canopy on the same lot are excluded by footprint, or two
+fuel stops would share a floor.
+
+The lit face hangs `_CANOPY_DROP` below the soffit, the same 2 cm Zoo's species
+stands its lenses proud by, for the same reason: a lit face flush with the deck
+it sits in is a coplanar pair and cold run 9080's package already carries a
+PRESENTATION_ZFIGHT finding.
+
+ADDITIVE, and now tested as such rather than asserted. A building with no
+`canopy_roof` emits neither type, which is every building that is not a fuel
+stop; `test_manifest_version_bumped_additively` had only pinned the version
+string, and now checks that no canopy anchor appears in a building without a
+canopy.
+
 ## [0.144.0] - a hidden interactive state keeps its collision off
 
 THE WALKER, 2026-09-23: "If I see collision, I expect collision." And, on

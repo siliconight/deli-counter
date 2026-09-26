@@ -415,7 +415,7 @@ def test_a_club_room_is_lit_by_the_club_set_and_no_fluorescent_row():
                        "objective": True, "bounds": [10.0, -6.0, 12.0, 6.0]})
     level_design.furnish(s)
     m, rep = _lit(s)
-    assert m["light_manifest_version"] == "1.2.0"
+    assert m["light_manifest_version"] == "1.3.0"
     assert rep["club_rooms"] == 1
     by_room = collections.defaultdict(collections.Counter)
     for a in m["anchors"]:

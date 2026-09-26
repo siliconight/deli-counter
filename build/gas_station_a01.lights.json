@@ -1,5 +1,5 @@
 {
-  "light_manifest_version": "1.2.0",
+  "light_manifest_version": "1.3.0",
   "building_id": "gas_station_a01",
   "theme": "greybox",
   "space": "Blender Z-up, meters; rot_y = degrees about up; pos is the fixture location -- for a ceiling row, hung below the slab's underside, not below the floor above",
@@ -179,6 +179,74 @@
         2.6,
         0.6
       ],
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "canopy_roof_lights",
+      "type": "canopy_lights",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -18.0,
+        4.78
+      ],
+      "rot_y": 0.0,
+      "size": [
+        24.0,
+        10.0
+      ],
+      "drop": 4.78,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "canopy_roof_wash_0",
+      "type": "canopy_wash",
+      "source": "derived",
+      "pos": [
+        -8.0,
+        -18.0,
+        4.78
+      ],
+      "rot_y": 0.0,
+      "size": [
+        8.0,
+        10.0
+      ],
+      "drop": 4.78,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "canopy_roof_wash_1",
+      "type": "canopy_wash",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -18.0,
+        4.78
+      ],
+      "rot_y": 0.0,
+      "size": [
+        8.0,
+        10.0
+      ],
+      "drop": 4.78,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "canopy_roof_wash_2",
+      "type": "canopy_wash",
+      "source": "derived",
+      "pos": [
+        8.0,
+        -18.0,
+        4.78
+      ],
+      "rot_y": 0.0,
+      "size": [
+        8.0,
+        10.0
+      ],
+      "drop": 4.78,
       "reacts_to_alarm": true
     },
     {

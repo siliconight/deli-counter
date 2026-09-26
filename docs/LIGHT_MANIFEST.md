@@ -24,14 +24,14 @@ change; derived lights need zero authoring.
 | Field | Required | Meaning |
 |---|---|---|
 | `id` | yes | Unique, human-readable (`<room-or-wall>_<what>`). |
-| `type` | yes | `fluorescent` \| `pendant` \| `streetlight` \| `window` \| `sign` \| `wall_pack` \| `sun`, and (v1.2) the club set `club_wash` \| `stage_light` \| `neon` \| `room_ambient`. Named after the real fixture; maps 1:1 to a Lux rig — and, for the hardware types, 1:1 to a Zoo fixture species (`zoo --fixtures`), which bakes the visible hardware at the same anchors. The club set bakes no hardware: the neon's glass and the stage's rope light are the prop's own (Zoo 0.88.0). |
+| `type` | yes | `fluorescent` \| `pendant` \| `streetlight` \| `window` \| `sign` \| `wall_pack` \| `sun`, the (v1.2) club set `club_wash` \| `stage_light` \| `neon` \| `room_ambient`, and (v1.3) the forecourt pair `canopy_lights` \| `canopy_wash`. Named after the real fixture; maps 1:1 to a Lux rig — and, for the hardware types, 1:1 to a Zoo fixture species (`zoo --fixtures`), which bakes the visible hardware at the same anchors. The club set bakes no hardware: the neon's glass and the stage's rope light are the prop's own (Zoo 0.88.0). |
 | `source` | yes | `derived` (auto) or `authored` (spec-placed). |
 | `pos` | yes | `[x, y, z]` — the fixture's actual location, at mount height. |
 | `rot_y` | yes | Degrees about up — row axis, or a window's inward facing. |
 | `room` | interior | The `gameplay.json` room id this light lights. |
 | `row` | rows | `{count, spacing}` for repeated fixtures. |
-| `size` | area lights | `[width, height]` for `window`/`sign`/`neon` panels; `[x, y, z]` for `room_ambient` — the room's wall-centreline box, floor to ceiling plane, centred on `pos`. |
-| `drop` | interior | Metres from the anchor down to its room's floor (ceiling types, the club set). |
+| `size` | area lights | `[width, depth]` for `canopy_lights` (the whole deck, which is the Zoo species' dimensions) and for `canopy_wash` (the pool that wash owns); `[width, height]` for `window`/`sign`/`neon` panels; `[x, y, z]` for `room_ambient` — the room's wall-centreline box, floor to ceiling plane, centred on `pos`. |
+| `drop` | interior | Metres from the anchor down to its room's floor (ceiling types, the club set). For the canopy pair it is the soffit down to GRADE, derived from the foot of the canopy's own columns rather than assumed to be zero. |
 | `color` | club set | A name from Lux's palette: `magenta` `hot_pink` `red` `violet` `blue` `cyan` `amber`. Lux REFUSES an unknown name (not built, warned), never substitutes. `null` on a `room_ambient` means "the preset's own ambient, no tint" — Lux 0.37.0 refuses that too, which is the right outcome for an office until its per-room ambient lands. Absent on a `neon` at a sign: Lux picks by anchor id; `cyan` or `blue` on a TV's screen. |
 | `target` | `stage_light` | `[x, y, z]` the spots are aimed at, same frame as `pos`. Required by Lux. |
 | `radius` | `club_wash`, `stage_light` | Floor pool radius (wash) or the lit radius at the target (spot), metres. |
@@ -110,6 +110,32 @@ the face plane, wall-pack body above the emitter, back to the wall).
 
 Exterior lights (`streetlight`) are added by **Lot** at the site level. The
 `sun` is owned by Lux's preset / SkyMint.
+
+## The forecourt pair (v1.3)
+
+A fuel canopy is an exterior deck on columns and it is the light source for the
+tarmac under it: in every period reference the forecourt is lit by the canopy
+and not by street lighting. Until v1.3 nothing derived a light from one.
+Measured on cold run 9080's package -- a 22 x 13 m canopy on six columns, and
+all 20 Lux fixture holders within 45 m sitting on the shop between world
+x 58.7 and 81.3 while the canopy spanned 81 to 103.
+
+It is deliberately TWO kinds, and the split is a performance decision:
+
+| type | what it is | who builds it |
+|---|---|---|
+| `canopy_lights` | one anchor for the whole deck, `size` = its footprint | Zoo's `canopy_lights` species lays the lamp grid inside it, in two draw calls, and carries NO emitter marker |
+| `canopy_wash` | two to four light positions under the deck, no hardware | Lux, from the manifest, the way `club_wash` is |
+
+`max_lights_per_object` is 8 on GL Compatibility, and a literal 12-20 fixture
+grid would put every one of those lights on the forecourt ground mesh -- the
+surface that fills the frame when a player stands under it. So the lamps a
+player SEES are emissive geometry that lights nothing, and the light they
+appear to cast is a handful of washes. The walker's call, 2026-09-26, with the
+three options and their costs put in front of them.
+
+A building with no `canopy_roof` volume emits neither, which is every building
+that is not a fuel stop.
 
 ## Authored overrides
 
