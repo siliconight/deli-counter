@@ -17,6 +17,7 @@ parallel so the set stays consistent.
 from typing import Optional
 
 import level_design
+import migrate_roller_grill
 import migrate_slush_machine
 
 
@@ -1771,6 +1772,11 @@ def gas_station(name: str = "gas_station_preset",
     station, _why = migrate_slush_machine.plan_station(spec)
     if station is not None:
         spec["volumes"].append(station)
+    # THE ROLLER GRILL (0.152.0), by the same rule after the station, the
+    # way the library's stores were given it.
+    grill, _why = migrate_roller_grill.plan_grill(spec)
+    if grill is not None:
+        spec["volumes"].append(grill)
     return spec
 
 

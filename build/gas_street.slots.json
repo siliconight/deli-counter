@@ -4529,6 +4529,45 @@
       }
     },
     {
+      "slot_id": "roller_grill",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 4,
+      "material": "metal",
+      "species": "roller_grill",
+      "stock": null,
+      "variant": 0,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          -15.54,
+          -9.2,
+          0.7
+        ],
+        "rot_y": 270.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.0,
+          0.6,
+          1.4
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
       "slot_id": "counter_service_r48016798_1",
       "role": "prop",
       "size_mod": "full",
@@ -4646,14 +4685,14 @@
       }
     },
     {
-      "slot_id": "shelf_run_r48016798_4",
+      "slot_id": "cartons_r48016798_4",
       "role": "prop",
       "size_mod": "full",
       "style": 5,
       "material": "wood",
-      "species": "shelving",
+      "species": "carton_stack",
       "stock": null,
-      "variant": 0,
+      "variant": 3,
       "form": null,
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -4662,11 +4701,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          0.75,
-          10.54,
-          1.05
+          2.98,
+          -0.56,
+          0.3
         ],
-        "rot_y": 0.0,
+        "rot_y": 270.0,
         "scale": [
           1.0,
           1.0,
@@ -4675,9 +4714,9 @@
       },
       "fit": {
         "dims": [
-          2.4,
           0.6,
-          2.1
+          0.4,
+          0.6
         ],
         "pivot": "center",
         "openings": [],
@@ -4701,9 +4740,9 @@
       "facing": null,
       "transform": {
         "translation": [
-          3.53,
-          -1.05,
-          0.45
+          4.09,
+          -0.56,
+          0.3
         ],
         "rot_y": 90.0,
         "scale": [
@@ -4714,48 +4753,9 @@
       },
       "fit": {
         "dims": [
-          0.5,
+          0.6,
           0.4,
-          0.9
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "cartons_r48016798_6",
-      "role": "prop",
-      "size_mod": "full",
-      "style": 5,
-      "material": "wood",
-      "species": "carton_stack",
-      "stock": null,
-      "variant": 3,
-      "form": null,
-      "current_ref": "prop_greybox_01",
-      "kit_axis": "material",
-      "wall": null,
-      "story": null,
-      "facing": null,
-      "transform": {
-        "translation": [
-          3.53,
-          -0.02,
-          0.45
-        ],
-        "rot_y": 180.0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          0.5,
-          0.4,
-          0.9
+          0.6
         ],
         "pivot": "center",
         "openings": [],

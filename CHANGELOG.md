@@ -1,3 +1,46 @@
+## [0.152.0] - a convenience store has its roller grill
+
+Zoo 1.17.0's `roller_grill` -- the hot dog roller grill on its bun cabinet
+(the walker, 2026-09-28: "do the roller grill next") -- in every convenience
+store. MEASURED FIRST: no spec carried a `roller`, `hot_dog` or `hotdog`
+volume; the library's `grill` volumes are kitchen grills and stay flat tops.
+
+`migrate_roller_grill.py` places it by the slush machine's rule, which
+`migrate_slush_machine.plan_station` now takes a name, a size, anchors and
+an `ahead` for. The grill is 1.0 x 0.6 x 1.4 and stands nearest the
+REGISTER COUNTER, the till the proposal puts it at. Three things the rule
+did not know, each found by measuring the first placement:
+
+  * ANCHORED ON THE COUNTER'S CENTRE, five stores put the grill on the west
+    wall north of the counter -- behind the till. `ahead` measures from a
+    point 1.5 m in front of the counter's face instead, where the queue
+    stands (`_front`, the file's own measured facing rule).
+  * NOTHING KNEW A COUNTER HAS A STAFF SIDE: gas_station_a03's and
+    stop_n_go's grills stood 1.29 m behind the register on the back
+    partition, 1.25 m of aisle satisfied and the clerk's aisle filled. With
+    `ahead`, the counter's footprint carried `STAFF_DEPTH` (3.0 m) back from
+    its rear is an obstacle.
+  * A NEIGHBOUR ON THE SAME WALL NEEDS NO AISLE BETWEEN: the 1.25 m kept on
+    every side put gas_station_a02's grill 10 m up the partition from the
+    slush station it should stand beside. A volume whose back is at the same
+    wall keeps `NEIGHBOUR_GAP` (0.05 m) along it. A first cut that also
+    asked the neighbour be no deeper than the new piece refused the 0.7 m
+    station beside a 0.6 m grill, and the fix did nothing; kept here.
+
+THE SLUSH STATIONS DID NOT MOVE: re-planned from scratch under the
+generalised rule, all nine land volume for volume where 0.150.0 put them
+(a test). Where the grills land: the west wall on the till's customer side
+in the five preset-built stores; beside the slush station on the
+food-service partition in gas_station_a02 and fuel_stop_heist; beside it on
+the back partition, clear of the clerk's zone, in gas_station_a03 and
+stop_n_go. Each store refurnished; the preset carries the grill where the
+library does, both modes.
+
+`prop_species` routes `roller_grill` above the kitchen's `grill` row.
+`test_roller_grill.py`: 6 of its 8 fail without the change.
+`test_slush_machine`'s all-sides aisle check now allows a same-wall
+neighbour, which is the rule as it stands.
+
 ## [0.151.0] - a store made from the preset is the store the library has
 
 `presets.gas_station` still emitted `aisle_1` and `aisle_2`, which route to

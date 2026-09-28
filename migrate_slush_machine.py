@@ -76,6 +76,13 @@ OVERHEAD = HEIGHT
 #: The site pads a building stands on are not furniture (the cooler wall's).
 PAD_AREA = 400.0
 EPS = 1e-6
+#: A neighbour against the same wall: its back this close to where a piece's
+#: back stands, and the air kept between the two along the wall.
+NEIGHBOUR_TOL = 0.05
+NEIGHBOUR_GAP = 0.05
+#: How far behind a counter its staff aisle reaches: no piece placed with
+#: ``ahead`` stands in it (0.152.0).
+STAFF_DEPTH = 3.0
 
 
 def is_store(spec):
@@ -97,8 +104,9 @@ def _subtract(intervals, a, b):
     return out
 
 
-def _obstacles(spec):
-    """Authored volumes on the floor, as ``(x0, y0, x1, y1)``."""
+def _obstacles(spec, overhead=OVERHEAD):
+    """Authored volumes on the floor, as ``(x0, y0, x1, y1)``: a volume whose
+    underside is at or above ``overhead`` is not in the way."""
     tags = {level_design._room_tag(r) for r in spec.get("rooms") or []}
     out = []
     for v in spec.get("volumes") or []:
@@ -106,18 +114,37 @@ def _obstacles(spec):
             continue
         if v["size_x"] * v["size_y"] > PAD_AREA:
             continue
-        if float(v.get("z", 0.0)) - float(v["size_z"]) / 2.0 >= OVERHEAD:
+        if float(v.get("z", 0.0)) - float(v["size_z"]) / 2.0 >= overhead:
             continue
         out.append((v["x"] - v["size_x"] / 2.0, v["y"] - v["size_y"] / 2.0,
                     v["x"] + v["size_x"] / 2.0, v["y"] + v["size_y"] / 2.0))
     return out
 
 
-def _anchor(spec):
+ANCHORS = ("coffee_island", "register_counter")
+
+
+def _front(v):
+    """The unit vector a volume's front faces, by the measured rule this
+    file places with: long in x faces -y, long in y faces -x, and `rot_z`
+    180 turns either round."""
+    s = -1.0 if abs(float(v.get("rot_z") or 0.0) % 360.0 - 180.0) > 1e-6 else 1.0
+    return (0.0, s) if v["size_x"] >= v["size_y"] else (s, 0.0)
+
+
+def _anchor(spec, anchors=ANCHORS, ahead=0.0):
+    """``(name, (x, y))``: the first of ``anchors`` the spec carries, at its
+    centre -- or, with ``ahead``, that far in front of its front face, where
+    a customer stands at it (a register's queue)."""
     vols = {v["name"]: v for v in spec.get("volumes") or []}
-    for name in ("coffee_island", "register_counter"):
+    for name in anchors:
         if name in vols:
-            return name, (vols[name]["x"], vols[name]["y"])
+            v = vols[name]
+            if not ahead:
+                return name, (v["x"], v["y"])
+            fx, fy = _front(v)
+            half = (v["size_y"] if fx == 0.0 else v["size_x"]) / 2.0
+            return name, (v["x"] + fx * (half + ahead), v["y"] + fy * (half + ahead))
     return None, None
 
 
@@ -139,9 +166,18 @@ def _walls(spec, room):
             ("Y", x1, y0, y1, -1, ext(x1, hx, "W", "E"))]
 
 
-def plan_station(spec):
+def plan_station(spec, name=NAME, size=(WIDTH, DEPTH, HEIGHT), anchors=ANCHORS, ahead=0.0):
     """``(volume, report)``: the station this spec should carry, or
-    ``(None, why)``."""
+    ``(None, why)``.
+
+    THE RULE IS NOT THE SLUSH MACHINE'S ALONE (0.152.0): ``name``, ``size``
+    (along the wall, deep, high) and ``anchors`` (the volumes, in order of
+    preference, it stands nearest) place any wall-standing store piece by
+    it -- `migrate_roller_grill` places the roller grill nearest the
+    register. The defaults are the slush machine's, unchanged. ``ahead``
+    measures from a point that far in front of the anchor rather than its
+    centre (`_anchor`)."""
+    WIDTH, DEPTH, HEIGHT = size
     room = next((r for r in spec.get("rooms") or [] if r.get("id") == ROOM), None)
     if room is None:
         return None, "no %s room" % ROOM
@@ -153,10 +189,27 @@ def plan_station(spec):
     aisle = level_design.island_aisle_width()
     clear = level_design._FURNISH_OPENING_CLEAR
     back_off = float(spec.get("wall_thick") or 0.3) / 2.0 + level_design._WALL_PIECE_AIR
-    obstacles = _obstacles(spec)
+    obstacles = _obstacles(spec, HEIGHT)
+    # THE STAFF SIDE OF THE ANCHOR, when a piece is placed by a counter's
+    # queue: its footprint carried `STAFF_DEPTH` back from its rear face is
+    # an obstacle, so nothing customer-facing lands in the clerk's aisle.
+    # MEASURED: without it gas_station_a03's and stop_n_go's roller grills
+    # stood 1.29 m behind the register, on the back partition.
+    if ahead:
+        vols = {v["name"]: v for v in spec.get("volumes") or []}
+        v = next((vols[a] for a in anchors if a in vols), None)
+        if v is not None:
+            fx, fy = _front(v)
+            x0, y0 = v["x"] - v["size_x"] / 2.0, v["y"] - v["size_y"] / 2.0
+            x1, y1 = v["x"] + v["size_x"] / 2.0, v["y"] + v["size_y"] / 2.0
+            if fy:
+                y0, y1 = (y0, y1 + STAFF_DEPTH) if fy < 0 else (y0 - STAFF_DEPTH, y1)
+            else:
+                x0, x1 = (x0, x1 + STAFF_DEPTH) if fx < 0 else (x0 - STAFF_DEPTH, x1)
+            obstacles = obstacles + [(x0, y0, x1, y1)]
     marks = [(float(m["x"]), float(m["y"])) for m in spec.get("markers") or []
              if "x" in m and "y" in m and int(m.get("story", 0) or 0) == int(story or 0)]
-    anchor_name, anchor = _anchor(spec)
+    anchor_name, anchor = _anchor(spec, anchors, ahead)
     best = None
     for k, (axis, line, lo, hi, sign, ext) in enumerate(_walls(spec, room)):
         if ext and ext in glazed:
@@ -184,7 +237,19 @@ def plan_station(spec):
             across_b = (by0, by1) if axis == "X" else (bx0, bx1)
             if across_b[1] + aisle <= across[0] + EPS or across_b[0] - aisle >= across[1] - EPS:
                 continue
-            intervals = _subtract(intervals, along_b[0] - aisle, along_b[1] + aisle)
+            # A NEIGHBOUR ON THE SAME WALL needs no aisle between: two
+            # pieces side by side against one wall share the aisle in front
+            # (0.152.0). MEASURED: without this, gas_station_a02's roller
+            # grill was kept 1.25 m off the slush station and went 10 m up
+            # the partition from the till. Its back within `back_off` +
+            # `NEIGHBOUR_TOL` of this wall's line is what "on the same wall"
+            # means; its depth does not matter (a first cut that also asked
+            # for no deeper than this station refused the 0.7 m slush
+            # station beside a 0.6 m grill, and the fix did nothing).
+            near = min(abs(across_b[0] - line), abs(across_b[1] - line))
+            same_wall = near <= back_off + NEIGHBOUR_TOL
+            gap = NEIGHBOUR_GAP if same_wall else aisle
+            intervals = _subtract(intervals, along_b[0] - gap, along_b[1] + gap)
         for mx, my in marks:
             m_along, m_across = (mx, my) if axis == "X" else (my, mx)
             if across[0] - MARKER_CLEAR < m_across < across[1] + MARKER_CLEAR:
@@ -210,10 +275,10 @@ def plan_station(spec):
         return None, "no stretch of a solid %s wall is %.1f m clear with a %.2f m aisle" % (ROOM, WIDTH, aisle)
     dist, _k, c, axis, cy, sign, ext = best
     if axis == "X":
-        vol = {"name": NAME, "x": round(c, 4), "y": round(cy, 4), "z": HEIGHT / 2.0,
+        vol = {"name": name, "x": round(c, 4), "y": round(cy, 4), "z": HEIGHT / 2.0,
                "size_x": WIDTH, "size_y": DEPTH, "size_z": HEIGHT}
     else:
-        vol = {"name": NAME, "x": round(cy, 4), "y": round(c, 4), "z": HEIGHT / 2.0,
+        vol = {"name": name, "x": round(cy, 4), "y": round(c, 4), "z": HEIGHT / 2.0,
                "size_x": DEPTH, "size_y": WIDTH, "size_z": HEIGHT}
     # THE MATERIAL MUST BE DECLARED (the cooler wall's lesson: the validator
     # refuses an undeclared id). Zoo's recipe builds its own steel, glass
@@ -228,14 +293,14 @@ def plan_station(spec):
         where, "y" if axis == "X" else "x", vol["y"] if axis == "X" else vol["x"], dist, anchor_name)
 
 
-def migrate(d):
+def migrate(d, name=NAME, size=(WIDTH, DEPTH, HEIGHT), anchors=ANCHORS, ahead=0.0):
     """Place the station in one store spec dict and refurnish it: ``(volume
     or None, why)``. A spec that has one, or is not a store, is untouched."""
     if not is_store(d):
         return None, "not a convenience store"
-    if any(v.get("name") == NAME for v in d.get("volumes") or []):
+    if any(v.get("name") == name for v in d.get("volumes") or []):
         return None, "already has one"
-    vol, why = plan_station(d)
+    vol, why = plan_station(d, name, size, anchors, ahead)
     if vol is None:
         return None, why
     d["volumes"].append(vol)
@@ -243,7 +308,7 @@ def migrate(d):
     return vol, why
 
 
-def main(argv=None):
+def main(argv=None, name=NAME, size=(WIDTH, DEPTH, HEIGHT), anchors=ANCHORS, what="a slush station", ahead=0.0):
     argv = sys.argv[1:] if argv is None else argv
     check = "--check" in argv
     root = os.path.join(HERE, "specs")
@@ -257,20 +322,20 @@ def main(argv=None):
             d = json.load(open(p, encoding="utf-8"))
         except ValueError:
             continue
-        if not is_store(d) or any(v.get("name") == NAME for v in d.get("volumes") or []):
+        if not is_store(d) or any(v.get("name") == name for v in d.get("volumes") or []):
             continue
-        vol, why = (plan_station(d) if check else migrate(d))
+        vol, why = (plan_station(d, name, size, anchors, ahead) if check else migrate(d, name, size, anchors, ahead))
         if vol is None:
             refused += 1
-            print(f"[slush_machine] {os.path.basename(p)}: REFUSED -- {why}")
+            print(f"[{name}] {os.path.basename(p)}: REFUSED -- {why}")
             continue
         placed += 1
-        print(f"[slush_machine] {os.path.basename(p)}: {why}")
+        print(f"[{name}] {os.path.basename(p)}: {why}")
         if check:
             continue
         io.open(p, "w", encoding="utf-8", newline="\n").write(json.dumps(d, indent=1) + "\n")
-    verb = "need a slush station" if check else "given a slush station"
-    print(f"[slush_machine] {placed} spec(s) {verb}, {refused} refused")
+    verb = ("need " if check else "given ") + what
+    print(f"[{name}] {placed} spec(s) {verb}, {refused} refused")
     return 1 if check and placed else 0
 
 

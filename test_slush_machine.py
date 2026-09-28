@@ -68,13 +68,18 @@ def test_each_station_stands_on_a_solid_wall_facing_the_room_with_an_aisle():
         # not against a glazed exterior wall
         assert not [w for w in M._walls(d, room) if w[0] == ax and abs(w[1] - line) < 1e-6
                     and w[5] in level_design._glazed_walls(d, 0)], name
-        # no authored volume within the aisle, on any side
+        # no authored volume within the aisle, on any side -- but a
+        # neighbour against the same wall (0.152.0: the roller grill), which
+        # keeps `NEIGHBOUR_GAP` along the wall and shares the aisle in front
         for bx0, by0, bx1, by1 in M._obstacles(d):
             if (bx0, by0, bx1, by1) == (x0, y0, x1, y1):
                 continue
             gap_x = max(bx0 - x1, x0 - bx1)
             gap_y = max(by0 - y1, y0 - by1)
-            assert max(gap_x, gap_y) >= aisle - 1e-6, (name, (bx0, by0, bx1, by1))
+            across_b = (by0, by1) if ax == "X" else (bx0, bx1)
+            same_wall = min(abs(across_b[0] - line), abs(across_b[1] - line)) <= back + M.NEIGHBOUR_TOL
+            need = M.NEIGHBOUR_GAP if same_wall else aisle
+            assert max(gap_x, gap_y) >= need - 1e-6, (name, (bx0, by0, bx1, by1))
 
 
 def test_a02s_station_is_clear_of_the_door_to_food_service():

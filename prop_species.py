@@ -204,6 +204,10 @@ PROP_SPECIES = (
     # one in every convenience store; no volume carried `slush` before it.
     # Above the counter row, whose `station` would claim a `slush_station`.
     (("slush",), "slush_machine"),
+    # THE ROLLER GRILL (Zoo 1.17.0): `migrate_roller_grill.py` puts one in
+    # every convenience store. Above the `grill` row, which is the kitchen's
+    # flat top and would claim it.
+    (("roller_grill",), "roller_grill"),
     (("counter", "reception", "station", "island", "cage", "bar_",
       "workbench", "tool_bench"), "counter"),
     (("desk",), "desk"),
