@@ -2798,6 +2798,31 @@ def build(spec: LevelSpec, base_dir: str = "."):
     return b
 
 
+#: The spec materials that are a SHOP FRONT (0.153.0): a wall or door slot of
+#: one, on a building you can walk into, is tagged `glazing: "storefront"` and
+#: Zoo (1.18.0) builds it as see-through glass in an aluminium frame. The
+#: walker, 2026-09-28: "yes, make the storefront see-through glass". Only
+#: this word: `glass` is also every bank's and tower's curtain wall, which
+#: stay opaque (`zoo_keeper.core.dna.OPAQUE_FOR`).
+STOREFRONT_MATERIALS = ("storefront_glass",)
+#: The slot roles a storefront tag rides on. Not a wall REMAINDER (`end`): it
+#: is one unit box Deli Counter scales per slot, so a pane in it would be
+#: stretched to whatever the remainder is -- the narrow ones stand as the
+#: frame's piers. Not a WINDOW: its pane is already see-through.
+STOREFRONT_ROLES = ("wall", "doorway")
+
+
+def storefront_slot(slot, spec_material, builder):
+    """Is this slot a storefront's full wall or door? Read against the SPEC's
+    material id -- the manifest writes the skin kind, `glass_facade`, which
+    every curtain wall shares -- on a building with an interior (a facade
+    shell's glass stays opaque; there is nothing behind it)."""
+    return (spec_material in STOREFRONT_MATERIALS
+            and slot.get("role") in STOREFRONT_ROLES
+            and slot.get("size_mod", "full") == "full"
+            and not getattr(builder.s, "facade", False))
+
+
 def write_slot_manifest(builder, path):
     """Write <name>.slots.json -- the art-pass input. One record per swappable
     module (wall segment / opening / placement): what kind it is, where it sits,
@@ -2822,7 +2847,10 @@ def write_slot_manifest(builder, path):
         if _m and _k is None:
             _unmapped.append(_m)
             _k = _m
-        _slots.append(dict(_s, material=_k) if _m else _s)
+        _s = dict(_s, material=_k) if _m else _s
+        if storefront_slot(_s, _m, builder):
+            _s = dict(_s, glazing="storefront")
+        _slots.append(_s)
     if _unmapped:
         print(f"[deli_counter] slot manifest: {len(_unmapped)} slot(s) name a "
               f"material with no skin kind and were written through unchanged: "

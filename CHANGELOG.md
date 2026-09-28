@@ -1,3 +1,42 @@
+## [0.153.0] - a storefront is see-through glass
+
+The walker, 2026-09-28: "yes, make the storefront see-through glass", after
+six photographs of stores glowing at night through their doors and shop
+fronts. Zoo 1.18.0 builds a slot tagged `glazing: "storefront"` as an
+aluminium storefront -- kick, header, mullions, a see-through pane; a door
+with a transom and, closed, glass leaves -- its collider unchanged. This
+release puts the tag on the slots it belongs to.
+
+THE TAG (`deli_counter.py`, `storefront_slot` / `write_slot_manifest`): a
+FULL wall or door slot of a `storefront_glass` wall, on a building with an
+interior. Read against the SPEC's word, because the manifest writes the skin
+kind, `glass_facade`, which every curtain wall shares. Not a wall remainder
+(a unit box scaled per slot; the narrow ones stand as the frame's piers),
+not a window (already see-through), not a facade shell (nothing behind it).
+
+THE NAME MIRROR (`themed_tscn`): `_g<glazing>` for `STEM_GLAZINGS`
+("storefront"), after the material, as Zoo writes it; the resolver falls
+back to the plain wall or door when a library predates it; a storefront
+door's open state is its own art (`STOREFRONT_STATE_ART`), the mirror of
+Zoo's, which every other door still defers.
+
+THE WORD: the five stores the `gas_station` preset built -- cr_gas,
+gas_station, gas_station_a01, gas_street, gs_corner_station -- called their
+shop front `glass`, every bank's and tower's word for an opaque curtain
+wall. `migrate_storefront_glass.py` makes it `storefront_glass` in those
+five, and the preset now writes it. `glass` everywhere else is untouched.
+
+MEASURED: seven stores carry the tag on their shop fronts' full walls and
+doors, and no other building in the library does. TWO DO NOT AND CANNOT
+YET: `fuel_stop_heist` and `stop_n_go` build their walls into the shell as
+generated geometry -- their manifests are all prop slots (51 and 17) -- so
+there is no wall slot to tag, and their glass stays the shell's.
+`test_storefront_glazing.py` names them (`SHELL_WALLED`), so the gap is a
+test that changes the day it closes.
+
+The mirror tests fail without the change (2 failed); the tagging tests read
+the built manifests and cannot be proven that way. Suite passes.
+
 ## [0.152.0] - a convenience store has its roller grill
 
 Zoo 1.17.0's `roller_grill` -- the hot dog roller grill on its bun cabinet

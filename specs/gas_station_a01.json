@@ -41,13 +41,19 @@
   {
    "id": "wood",
    "acoustic": "Wood"
+  },
+  {
+   "id": "storefront_glass",
+   "acoustic": "Glass",
+   "absorption": 0.1,
+   "damping": 0.05
   }
  ],
  "ext_walls": [
   {
    "wall": "S",
    "story": 0,
-   "material": "glass",
+   "material": "storefront_glass",
    "openings": [
     {
      "kind": "door",

@@ -84,6 +84,13 @@ OPENING_ROLES = ("doorway", "window", "breach", "vault_door")
 #: ``test_vault_room`` pins it to Zoo's genome when the zoo repo is beside
 #: this one.
 SPECIES_STATE_ART = {"vault_door": ("unlocked", "open", "breached")}
+#: THE STOREFRONT (Zoo 1.18.0, `kit.STEM_GLAZINGS` and
+#: `kit.STOREFRONT_STATE_ART`): a glazing that changes what a wall or door
+#: builds rides in its name as `_g<glazing>`, and a storefront door draws its
+#: own open state (no leaves). Both mirrors of Zoo's, pinned by
+#: `test_themed_stem`'s storefront tests.
+STEM_GLAZINGS = ("storefront",)
+STOREFRONT_STATE_ART = {"doorway": ("open",)}
 
 
 def opening_tag(openings) -> str | None:
@@ -138,7 +145,8 @@ def module_stem(typ: str, theme: str, style: int,
                 depth_cm: int = None, voids_tag: str = None,
                 openings_tag: str = None, height_cm: int = None,
                 species: str = None, form: str = None, stock: str = None,
-                variant: int = None, material: str = None) -> str:
+                variant: int = None, material: str = None,
+                glazing: str = None) -> str:
     """``<type>[_<species>]_<theme>_<style:02d>[_w<cm>][_d<cm>][_h<cm>][_f<form>][_s<stock>][_n<variant>][_m<material>][_v<hash>][_o<hash>][_<state>]``.
 
     THE MIRROR OF ``zoo_keeper.core.kit.module_stem``, and the two must change
@@ -198,6 +206,8 @@ def module_stem(typ: str, theme: str, style: int,
     # resolves the dressing.
     if material:
         base += f"_m{material}"
+    if glazing in STEM_GLAZINGS:
+        base += f"_g{glazing}"
     if voids_tag:
         base += f"_v{voids_tag}"
     if openings_tag:
@@ -277,10 +287,11 @@ def resolve_themed_stem(slot: dict, theme: str, style: int, state: str = None,
         dress = {"form": None if form in (None, "", "auto") else str(form),
                  "stock": None if stock in (None, "", "none") else str(stock),
                  "variant": variant or None}
+    glazing = slot.get("glazing") if slot.get("glazing") in STEM_GLAZINGS else None
     stem = module_stem(typ, theme, eff_style, width_cm,
                        state if state else _default_stem_state(slot),
                        depth_cm, vtag, otag, height_cm, species=species,
-                       material=material, **dress)
+                       material=material, glazing=glazing, **dress)
     return stem, (not exact)
 
 
@@ -336,6 +347,10 @@ def resolve_slot_choice(slot, theme, style, library_dir):
             candidates.append(bare)
         if slot.get("species"):
             candidates.append(dict(bare, species=None))
+    # A STOREFRONT falls back to the plain wall or door (Zoo 1.18.0): a
+    # library built before it has the opaque module and no `_gstorefront`.
+    if slot.get("glazing") in STEM_GLAZINGS:
+        candidates = candidates + [dict(c, glazing=None) for c in candidates]
     mat = stem_material(slot)
     tries = [(cand, m) for cand in candidates
              for m in ((mat, None) if mat else (None,))]
@@ -392,6 +407,8 @@ def state_variant_stems(slot, theme, style, library_dir):
         if st == default:
             continue
         drawn = SPECIES_STATE_ART.get(default_species, ())
+        if slot.get("glazing") in STEM_GLAZINGS:
+            drawn = tuple(drawn) + STOREFRONT_STATE_ART.get(default_species, ())
         if geometry.get(st, typ) == default_species and st not in drawn:
             continue  # identical art today; the kit deferred it too
         # the state carries the material its base resolved with: Zoo

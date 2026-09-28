@@ -1657,10 +1657,13 @@ def gas_station(name: str = "gas_station_preset",
         "n_stories": 1, "has_basement": False, "wall_thick": 0.3,
         "floor_thick": 0.3, "collision": "convex", "auto_exterior": True,
         "scale_ref": bool(scale_ref), "default_material": "concrete",
-        "materials": _mats("concrete", "drywall", "glass", "metal", "wood"),
+        "materials": _mats("concrete", "drywall", "glass", "metal", "wood")
+        # the shop front (0.153.0): `storefront_glass`, which Zoo builds as
+        # see-through glass, where `glass` is every curtain wall's opaque slab
+        + [{"id": "storefront_glass", "acoustic": "Glass", "absorption": 0.1, "damping": 0.05}],
     }
     spec["ext_walls"] = [
-        {"wall": "S", "story": 0, "material": "glass", "openings": [
+        {"wall": "S", "story": 0, "material": "storefront_glass", "openings": [
             {"kind": "door", "pos": -0.16, "width": 1.8, "tag": "front_entry_west"},
             {"kind": "door", "pos": 0.16, "width": 1.8, "tag": "front_entry_east"},
             {"kind": "window", "pos": -0.4, "width": 3.0, "height": 2.4, "sill": 1.0, "material": "glass"},
