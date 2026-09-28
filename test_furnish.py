@@ -294,6 +294,8 @@ _ZOO_RANGES = {
     "hanging_banner": ((0.8, 3.0), (0.03, 0.1), (0.4, 1.6)),
     "ceiling_hanger": ((0.4, 1.6), (0.03, 0.3), (0.25, 0.6)),
     "aisle_sign": ((0.5, 1.8), (0.03, 0.12), (0.25, 0.6)),
+    # the cold-storage walk-in's milk crates (Zoo 1.14.0, grown for 0.149.0)
+    "milk_crate_stack": ((0.3, 0.8), (0.3, 0.8), (0.3, 1.4)),
 }
 ZOO = os.environ.get("DC_ZOO_ROOT") or os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "zoo")

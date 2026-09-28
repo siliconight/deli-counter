@@ -1223,6 +1223,10 @@ _PIECES = {p["name"]: p for p in (
     _piece("barrel_drum", ((0.58, 0.58, 0.88), (0.6, 0.6, 0.9)), "cluster"),
     _piece("pallets", ((1.2, 1.0, 0.95), (1.2, 1.0, 1.4), (1.0, 1.0, 0.7)),
            "cluster"),
+    # a walk-in cooler's stacked plastic milk crates (0.149.0): one, two and
+    # four stacks of 0.33 m crates, built by Zoo 1.14.0's `milk_crate_stack`
+    _piece("milk_crates", ((0.35, 0.35, 1.0), (0.7, 0.35, 1.3), (0.35, 0.35, 0.66),
+                           (0.7, 0.7, 1.0)), "cluster"),
     _piece("litter_bin", ((0.6, 0.6, 1.0), (0.5, 0.5, 0.85)), "cluster"),
     _piece("stanchion", ((0.35, 0.35, 1.0),), "cluster"),
     # --- THE STRIP CLUB (Zoo 0.88.0). The walker: "strip clubs should have
@@ -1582,8 +1586,18 @@ _ROOM_KINDS = (
     ("vault", ("vault", "count", "counting", "cage", "safe", "evidence",
                "strong", "deposit", "lockup", "armory", "money", "cash",
                "bond", "bonded", "loot")),
-    ("kitchen", ("kitchen", "deli", "prep", "cooler", "walkin", "dough",
-                 "food", "galley")),
+    # A WALK-IN COOLER IS COLD STORAGE, NOT A KITCHEN (0.149.0). `cooler` and
+    # `walkin` sat in the kitchen row, so every walk-in in the library was
+    # furnished with a grill, a kitchen counter and work tables: measured,
+    # six specs -- `walk_in_cooler` in gas_station_a02 and fuel_stop_heist,
+    # `walkin_cooler` in gas_station_a03, stop_n_go, primos_pizza and
+    # strip_retail_a01. They get backstock racks, cartons and milk crates.
+    # `cold` is NOT a token here on purpose: the delis' and the market's
+    # `cold_storage` / `cold_store` rooms already furnish as `storage`
+    # (racks, cartons, pallets), which is not wrong, and moving them was not
+    # asked for.
+    ("cold_storage", ("cooler", "walkin", "freezer", "fridge", "refrigerated")),
+    ("kitchen", ("kitchen", "deli", "prep", "dough", "food", "galley")),
     ("locker", ("locker", "lockers")),
     ("mechanical", ("utility", "server", "boiler", "mech", "plant",
                     "machine", "maintenance", "equipment", "comms")),
@@ -1717,6 +1731,12 @@ _RECIPES = {
                     "floor": ("table_tasting",),
                     "clusters": ((("barrel_wine",), 2, 4),
                                  (("cartons", "dust_sheet"), 2, 3))},
+    # 0.149.0: a walk-in cooler -- backstock racks round the walls, and
+    # cartons, milk crates and pallets of product on the floor. No grill.
+    "cold_storage": {"anchors": ("shelf_run",),
+                     "wall": ("shelf_run", "shelf_run", "shelf_run"),
+                     "floor": (),
+                     "clusters": ((("cartons", "milk_crates", "pallets"), 2, 4),)},
     "storage": {"anchors": ("shelf_run",),
                 "wall": ("shelf_run", "cabinet_supply", "cabinet_file"),
                 "floor": (),
@@ -2012,6 +2032,8 @@ _PROP_MATERIALS = (
      "metal"),
     (("booth", "sofa", "couch"), "leather"),
     (("stool",), "metal_bare"),
+    # milk crates are moulded plastic (0.149.0)
+    (("milk_crate",), "plastic"),
     (("neon", "tv", "cigarette"), "metal_painted"),
     # the species' own kind, so Zoo's stem carries no `_m` (0.136.0)
     (("dartboard",), "wood_stained"),

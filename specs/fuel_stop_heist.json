@@ -56,6 +56,12 @@
    "acoustic": "Metal",
    "absorption": 0.16,
    "damping": 0.14
+  },
+  {
+   "id": "plastic",
+   "acoustic": "Wood",
+   "absorption": 0.25,
+   "damping": 0.2
   }
  ],
  "ext_walls": [
@@ -856,62 +862,60 @@
    "variant": 2
   },
   {
-   "name": "grill_r6af9550a_1",
-   "x": 14.48,
-   "y": 10.39,
-   "z": 0.525,
-   "size_x": 1.6,
-   "size_y": 0.9,
-   "size_z": 1.05,
-   "collision": "convex",
-   "material": "metal"
-  },
-  {
-   "name": "counter_kitchen_r6af9550a_2",
-   "x": 15.49,
-   "y": 3.38,
-   "z": 0.46,
-   "size_x": 0.7,
-   "size_y": 1.6,
-   "size_z": 0.92,
-   "collision": "convex",
-   "material": "wood",
-   "stock": "kitchen"
-  },
-  {
-   "name": "counter_kitchen_r6af9550a_3",
-   "x": 10.47,
-   "y": 10.49,
-   "z": 0.46,
-   "size_x": 1.6,
-   "size_y": 0.7,
-   "size_z": 0.92,
-   "collision": "convex",
-   "material": "wood",
-   "stock": "kitchen",
-   "variant": 2
-  },
-  {
-   "name": "table_work_r6af9550a_4",
-   "x": 11.6,
-   "y": 5.89,
-   "z": 0.45,
-   "size_x": 0.7,
-   "size_y": 1.2,
-   "size_z": 0.9,
-   "collision": "convex",
-   "material": "wood"
-  },
-  {
-   "name": "cartons_r6af9550a_5",
-   "x": 11.42,
-   "y": 2.75,
-   "z": 0.45,
-   "size_x": 0.4,
+   "name": "shelf_run_r6af9550a_1",
+   "x": 9.1,
+   "y": 10.59,
+   "z": 0.95,
+   "size_x": 2.0,
    "size_y": 0.5,
-   "size_z": 0.9,
+   "size_z": 1.9,
    "collision": "convex",
    "material": "wood"
+  },
+  {
+   "name": "shelf_run_r6af9550a_2",
+   "x": 15.54,
+   "y": 4.88,
+   "z": 1.05,
+   "size_x": 0.6,
+   "size_y": 2.4,
+   "size_z": 2.1,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "shelf_run_r6af9550a_3",
+   "x": 14.14,
+   "y": 10.59,
+   "z": 0.9,
+   "size_x": 1.2,
+   "size_y": 0.5,
+   "size_z": 1.8,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "milk_crates_r6af9550a_4",
+   "x": 10.85,
+   "y": 2.75,
+   "z": 0.33,
+   "size_x": 0.35,
+   "size_y": 0.35,
+   "size_z": 0.66,
+   "collision": "convex",
+   "material": "plastic",
+   "rot_z": 180.0
+  },
+  {
+   "name": "milk_crates_r6af9550a_5",
+   "x": 11.81,
+   "y": 2.75,
+   "z": 0.5,
+   "size_x": 0.7,
+   "size_y": 0.7,
+   "size_z": 1.0,
+   "collision": "convex",
+   "material": "plastic"
   }
  ],
  "objectives": [

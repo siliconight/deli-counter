@@ -54,6 +54,11 @@ PROP_SPECIES = (
     # volumes; the 4.5 x 2.5 loading stacks are past the genome's 1.8 x 1.5
     # and Zoo still builds them as the box, saying so.
     (("pallet",), "pallet_stack"),
+    # MILK CRATES (0.149.0, Zoo 1.14.0): the cold-storage walk-ins' crate
+    # stacks. Ahead of the box row for the same reason as the pallet: that
+    # row holds `crate` and `stack`, and would make them grey boxes -- which
+    # `test_furnish` refuses for a furnished piece.
+    (("milk_crate",), "milk_crate_stack"),
     (("crate", "col_", "pillar", "column", "stack", "pump_island",
       "cart", "planter", "canopy", "kiosk", "vault"), None),
     # MINTED 2026-09-12 by zoo/tools/new_species.py (roadmap 150): the
@@ -190,6 +195,11 @@ PROP_SPECIES = (
     # `migrate_cooler_wall.py` places carry the name. `cooler_backstock*`
     # (the walk-in's racks) is not a cooler wall and stays shelving.
     (("cooler_run",), "cooler_run"),
+    # THE SNACK GONDOLA (Zoo 1.13.0): a store's aisles. `gondola_aisle_N`
+    # built as plain boxes; `migrate_store_gondolas.py` renames the other
+    # stores' `aisle_N` and `aisle_shelf_N` to it. The supermarkets' `aisle_N`
+    # and the pharmacy's `gondola_a/b` are not a snack aisle and stay.
+    (("gondola_aisle",), "snack_gondola"),
     (("counter", "reception", "station", "island", "cage", "bar_",
       "workbench", "tool_bench"), "counter"),
     (("desk",), "desk"),

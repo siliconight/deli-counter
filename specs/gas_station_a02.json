@@ -56,6 +56,12 @@
    "acoustic": "Metal",
    "absorption": 0.16,
    "damping": 0.14
+  },
+  {
+   "id": "plastic",
+   "acoustic": "Wood",
+   "absorption": 0.25,
+   "damping": 0.2
   }
  ],
  "ext_walls": [
@@ -870,62 +876,60 @@
    "rot_z": 180.0
   },
   {
-   "name": "grill_r6af9550a_1",
-   "x": 15.39,
-   "y": 4.1,
-   "z": 0.525,
-   "size_x": 0.9,
-   "size_y": 1.6,
-   "size_z": 1.05,
-   "collision": "convex",
-   "material": "metal"
-  },
-  {
-   "name": "counter_kitchen_r6af9550a_2",
-   "x": 12.83,
-   "y": 10.49,
-   "z": 0.46,
-   "size_x": 1.6,
-   "size_y": 0.7,
-   "size_z": 0.92,
-   "collision": "convex",
-   "material": "wood",
-   "stock": "kitchen"
-  },
-  {
-   "name": "table_work_r6af9550a_3",
-   "x": 10.88,
-   "y": 5.52,
-   "z": 0.45,
+   "name": "shelf_run_r6af9550a_1",
+   "x": 12.94,
+   "y": 10.59,
+   "z": 0.9,
    "size_x": 1.2,
-   "size_y": 0.7,
-   "size_z": 0.9,
+   "size_y": 0.5,
+   "size_z": 1.8,
    "collision": "convex",
    "material": "wood"
   },
   {
-   "name": "cartons_r6af9550a_4",
+   "name": "shelf_run_r6af9550a_2",
+   "x": 15.54,
+   "y": 3.89,
+   "z": 1.05,
+   "size_x": 0.6,
+   "size_y": 2.4,
+   "size_z": 2.1,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "milk_crates_r6af9550a_3",
+   "x": 10.88,
+   "y": 4.92,
+   "z": 0.5,
+   "size_x": 0.7,
+   "size_y": 0.7,
+   "size_z": 1.0,
+   "collision": "convex",
+   "material": "plastic",
+   "rot_z": 180.0
+  },
+  {
+   "name": "milk_crates_r6af9550a_4",
+   "x": 10.88,
+   "y": 6.12,
+   "z": 0.65,
+   "size_x": 0.35,
+   "size_y": 0.7,
+   "size_z": 1.3,
+   "collision": "convex",
+   "material": "plastic"
+  },
+  {
+   "name": "milk_crates_r6af9550a_5",
    "x": 12.96,
    "y": 2.88,
    "z": 0.5,
-   "size_x": 0.6,
-   "size_y": 0.9,
+   "size_x": 0.7,
+   "size_y": 0.7,
    "size_z": 1.0,
    "collision": "convex",
-   "material": "wood",
-   "rot_z": 180.0,
-   "variant": 2
-  },
-  {
-   "name": "table_work_r6af9550a_5",
-   "x": 8.71,
-   "y": 4.05,
-   "z": 0.45,
-   "size_x": 1.2,
-   "size_y": 0.7,
-   "size_z": 0.9,
-   "collision": "convex",
-   "material": "wood"
+   "material": "plastic"
   }
  ],
  "markers": [

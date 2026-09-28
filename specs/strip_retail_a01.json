@@ -46,6 +46,12 @@
    "acoustic": "Metal",
    "absorption": 0.25,
    "damping": 0.2
+  },
+  {
+   "id": "plastic",
+   "acoustic": "Wood",
+   "absorption": 0.25,
+   "damping": 0.2
   }
  ],
  "auto_exterior": true,
@@ -840,15 +846,16 @@
    "variant": 2
   },
   {
-   "name": "grill_rf9fa3ce2_1",
-   "x": -6.12,
-   "y": 6.39,
-   "z": 0.525,
-   "size_x": 1.2,
-   "size_y": 0.9,
-   "size_z": 1.05,
+   "name": "milk_crates_rf9fa3ce2_1",
+   "x": -6.99,
+   "y": 2.2,
+   "z": 0.65,
+   "size_x": 0.7,
+   "size_y": 0.35,
+   "size_z": 1.3,
    "collision": "convex",
-   "material": "metal"
+   "material": "plastic",
+   "rot_z": 180.0
   },
   {
    "name": "table_dining_r4bf49580_1",

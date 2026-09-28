@@ -555,6 +555,12 @@
       "damping": 0.14
     },
     {
+      "id": "plastic",
+      "acoustic": "Wood",
+      "absorption": 0.25,
+      "damping": 0.2
+    },
+    {
       "id": "concrete",
       "acoustic": "Concrete",
       "absorption": 0.7,
@@ -2123,16 +2129,7 @@
       }
     },
     {
-      "node": "grill_r6af9550a_1_col",
-      "material": {
-        "id": "metal",
-        "acoustic": "Metal",
-        "absorption": 0.18,
-        "damping": 0.16
-      }
-    },
-    {
-      "node": "counter_kitchen_r6af9550a_2_col",
+      "node": "shelf_run_r6af9550a_1_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -2141,7 +2138,7 @@
       }
     },
     {
-      "node": "table_work_r6af9550a_3_col",
+      "node": "shelf_run_r6af9550a_2_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -2150,21 +2147,30 @@
       }
     },
     {
-      "node": "cartons_r6af9550a_4_col",
+      "node": "milk_crates_r6af9550a_3_col",
       "material": {
-        "id": "wood",
+        "id": "plastic",
         "acoustic": "Wood",
-        "absorption": null,
-        "damping": null
+        "absorption": 0.25,
+        "damping": 0.2
       }
     },
     {
-      "node": "table_work_r6af9550a_5_col",
+      "node": "milk_crates_r6af9550a_4_col",
       "material": {
-        "id": "wood",
+        "id": "plastic",
         "acoustic": "Wood",
-        "absorption": null,
-        "damping": null
+        "absorption": 0.25,
+        "damping": 0.2
+      }
+    },
+    {
+      "node": "milk_crates_r6af9550a_5_col",
+      "material": {
+        "id": "plastic",
+        "acoustic": "Wood",
+        "absorption": 0.25,
+        "damping": 0.2
       }
     }
   ],
@@ -2867,10 +2873,10 @@
     "litter_bin_rd0389b71_3": "prop",
     "cartons_r499afdf7_1": "prop",
     "pallets_r499afdf7_2": "prop",
-    "grill_r6af9550a_1": "prop",
-    "counter_kitchen_r6af9550a_2": "prop",
-    "table_work_r6af9550a_3": "prop",
-    "cartons_r6af9550a_4": "prop",
-    "table_work_r6af9550a_5": "prop"
+    "shelf_run_r6af9550a_1": "prop",
+    "shelf_run_r6af9550a_2": "prop",
+    "milk_crates_r6af9550a_3": "prop",
+    "milk_crates_r6af9550a_4": "prop",
+    "milk_crates_r6af9550a_5": "prop"
   }
 }

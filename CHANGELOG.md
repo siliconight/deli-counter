@@ -1,3 +1,62 @@
+## [0.149.0] - a walk-in cooler is cold storage, and a store's aisles are snack gondolas
+
+TWO CHANGES, one rebuild. The second is Zoo 1.13.0's `snack_gondola` (the
+walker, 2026-09-28: "do the snack gondolas next"): `prop_species` routes
+`gondola_aisle` to it -- gas_station_a02's and fuel_stop_heist's aisles,
+which built as plain boxes -- and `migrate_store_gondolas.py` renames the
+other stores' aisles to `gondola_aisle_N`: `aisle_N` (0.9 x 10.0 x 1.8, plain
+boxes) in cr_gas, gas_station, gas_station_a01, gas_street and
+gs_corner_station, and `aisle_shelf_N` (7.0 x 0.7 x 1.6, bare shelving) in
+gas_station_a03 and stop_n_go -- 14 aisles in 7 specs. Only in a STORE (a spec
+with a `register_counter`), because the supermarkets also call their aisles
+`aisle_N`; the supermarkets and the pharmacy's `gondola_a/b` stay. Measured
+first: no store spec refers to an aisle by name outside its volume list. The
+library is still a fixed point of furnishing after the rename.
+`test_store_gondolas.py`.
+
+THE FIRST CHANGE:
+
+Found placing 0.148.0's cooler wall: `gas_station_a02`'s walk-in cooler held a
+grill, a kitchen counter and two work tables.
+
+WHY. `level_design._ROOM_KINDS` matches a room's id on whole tokens, first
+kind wins, and `cooler` and `walkin` were in the KITCHEN row -- so every
+walk-in in the library was furnished with the kitchen recipe (anchor a grill,
+kitchen counters on the walls, a work table on the floor).
+
+MEASURED FIRST: six specs, and only walk-ins -- `walk_in_cooler` in
+gas_station_a02 and fuel_stop_heist, `walkin_cooler` in gas_station_a03,
+stop_n_go, primos_pizza and strip_retail_a01. Counted by each room's own
+furniture tag (`_room_tag`), not by bounds: two of those specs' walk-ins
+overlap a neighbouring room, and a bounds count had shown the neighbours'
+chairs and counters as the walk-in's.
+
+THE FIX: a `cold_storage` kind ahead of the kitchen row takes `cooler`,
+`walkin`, `freezer`, `fridge` and `refrigerated`; its recipe is backstock
+shelving runs round the walls and clusters of cartons, milk crates and
+pallets. `milk_crates` is a new cluster piece -- stacked 0.33 m plastic
+crates, material `plastic` -- routed to Zoo 1.14.0's `milk_crate_stack`. The
+first commit had it as a box by nature, like a crate stack, and the gate
+refused it: `test_furnish` holds every furnished piece to a species ("a
+generated piece that routes to nothing is a grey box"), so Zoo grew one. The four
+specs whose walk-ins carried furniture are refurnished with
+`migrate_furnish_recipes.migrate`, only those (the whole-library run would
+refurnish the strip clubs too), so the library stays a fixed point:
+
+    gas_station_a02    grill, kitchen counter, 2 work tables, cartons
+                       -> 2 shelving runs, 3 milk-crate stacks
+    fuel_stop_heist    grill, 2 kitchen counters, work table, cartons
+                       -> 3 shelving runs, 2 milk-crate stacks
+    strip_retail_a01   grill -> a milk-crate stack
+    primos_pizza       a litter bin -> nothing (a small room)
+
+0.148.0's cooler run is authored, not furnished, and does not move.
+
+NOT CHANGED, on purpose: the delis' and the market's `cold_storage` /
+`cold_store` rooms (8 specs) already furnish as `storage` -- racks, cartons,
+pallets -- which is not wrong; `cold` is not a cold-storage token, so they
+stay. `test_cold_storage.py` fails on 0.148.0 (3 of 3).
+
 ## [0.148.0] - the walk-in cooler has its reach-in doors
 
 For Zoo 1.12.0's `cooler_run`, the glowing reach-in cooler wall (the walker,
