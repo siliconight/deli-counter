@@ -17,6 +17,7 @@ parallel so the set stays consistent.
 from typing import Optional
 
 import level_design
+import migrate_slush_machine
 
 
 # common acoustic palette presets can draw from. Acoustic-only (gool enum +
@@ -1691,8 +1692,13 @@ def gas_station(name: str = "gas_station_preset",
         # keyword and honours the form; the material is the form's (white
         # laminate), whatever is written here.
         {"name": "register_counter", "x": -12.0, "y": -7.0, "z": 0.55, "size_x": 6.0, "size_y": 0.9, "size_z": 1.1, "collision": "convex", "material": "wood", "form": "service"},
-        {"name": "aisle_1", "x": -8.0, "y": 0.0, "z": 0.9, "size_x": 0.9, "size_y": 10.0, "size_z": 1.8, "collision": "convex", "material": "metal"},
-        {"name": "aisle_2", "x": -3.0, "y": 0.0, "z": 0.9, "size_x": 0.9, "size_y": 10.0, "size_z": 1.8, "collision": "convex", "material": "metal"},
+        # THE AISLES ARE SNACK GONDOLAS (0.151.0). `gondola_aisle_N` routes to
+        # Zoo's `snack_gondola`; `aisle_N` routes to nothing and built as a
+        # plain box. 0.149.0 renamed the checked-in stores' aisles and left
+        # this preset emitting the old names, so a store made from it later
+        # had grey boxes where every store in the library has gondolas.
+        {"name": "gondola_aisle_1", "x": -8.0, "y": 0.0, "z": 0.9, "size_x": 0.9, "size_y": 10.0, "size_z": 1.8, "collision": "convex", "material": "metal"},
+        {"name": "gondola_aisle_2", "x": -3.0, "y": 0.0, "z": 0.9, "size_x": 0.9, "size_y": 10.0, "size_z": 1.8, "collision": "convex", "material": "metal"},
         {"name": "coffee_island", "x": 2.0, "y": -7.0, "z": 0.55, "size_x": 3.0, "size_y": 2.0, "size_z": 1.1, "collision": "convex", "material": "metal"},
         {"name": "cooler_run", "x": 4.5, "y": 6.0, "z": 1.1, "size_x": 2.8, "size_y": 8.0, "size_z": 2.2, "collision": "convex", "material": "glass"},
         {"name": "stock_rack_1", "x": 11.0, "y": -6.0, "z": 1.25, "size_x": 6.0, "size_y": 0.9, "size_z": 2.5, "collision": "convex", "material": "metal"},
@@ -1755,6 +1761,16 @@ def gas_station(name: str = "gas_station_preset",
             {"type": "defender_spawn", "id": "D", "x": 12.0, "y": 8.0, "z": 0.0, "rot_z": 200, "room": "back_office"},
             {"type": "objective", "id": "OFFICE", "x": 12.0, "y": 7.0, "z": 0.0, "room": "back_office", "meta": {"kind": "capture"}}]
     spec["markers"] = markers
+    # THE FROZEN DRINK STATION (0.151.0), placed by the rule 0.150.0 gave
+    # every store in the library -- `migrate_slush_machine.plan_station` --
+    # rather than at a spelled position, so a change to the rule or to this
+    # layout moves it the same way in both. Placed last because the rule
+    # keeps clear of the markers and the other volumes. A refusal leaves the
+    # spec without one; `test_slush_machine` holds that this preset is not
+    # refused, in both modes.
+    station, _why = migrate_slush_machine.plan_station(spec)
+    if station is not None:
+        spec["volumes"].append(station)
     return spec
 
 

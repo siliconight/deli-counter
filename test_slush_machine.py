@@ -9,6 +9,8 @@ carry the species, so a spec edit that does not reach the build is caught.
 import json
 import os
 
+import pytest
+
 import level_design
 import migrate_slush_machine as M
 
@@ -93,6 +95,26 @@ def test_the_built_slots_carry_the_species():
         rows = slots["slots"] if isinstance(slots, dict) else slots
         got = [s for s in rows if str(s.get("slot_id", "")).startswith(M.NAME)]
         assert len(got) == 1 and got[0].get("species") == "slush_machine", (name, got)
+
+
+@pytest.mark.parametrize("mode", ["heist", "assault"])
+def test_a_store_made_from_the_preset_has_gondolas_and_a_station(mode):
+    """0.151.0: 0.149.0 and 0.150.0 migrated the checked-in stores and left
+    `presets.gas_station` emitting `aisle_N`, which routes to nothing, and
+    no station. A store generated from it later is held to the library's."""
+    import presets
+    import prop_species
+    spec = presets.gas_station(mode=mode)
+    routed = [prop_species.species_for_name(v["name"]) for v in spec["volumes"]]
+    assert routed.count("snack_gondola") == 2, [v["name"] for v in spec["volumes"]]
+    assert routed.count("slush_machine") == 1
+    assert M.is_store(spec)
+    # placed by the migration's own rule: the same station the checked-in
+    # `gas_station` spec was given, and a second pass adds nothing
+    v = next(x for x in spec["volumes"] if x["name"] == M.NAME)
+    lib = next(x for x in _load("gas_station")["volumes"] if x["name"] == M.NAME)
+    assert v == lib, (v, lib)
+    assert M.plan_station(spec)[0] is not None and M.migrate(spec) == (None, "already has one")
 
 
 def test_the_migration_is_idempotent_and_refuses_rather_than_forces(tmp_path):

@@ -1,3 +1,36 @@
+## [0.151.0] - a store made from the preset is the store the library has
+
+`presets.gas_station` still emitted `aisle_1` and `aisle_2`, which route to
+nothing and build as plain boxes, and no frozen drink station. 0.149.0
+(`migrate_store_gondolas.py`) and 0.150.0 (`migrate_slush_machine.py`)
+migrated the nine checked-in stores and left the preset alone, so every store
+in the library had snack gondolas and a slush station and a store generated
+from the preset later had neither. The same gap 0.146.0 closed for the
+service counter's form, which it gave the preset in the same release.
+
+THE AISLES are `gondola_aisle_1` and `gondola_aisle_2` (`presets.py`), routed
+to Zoo's `snack_gondola`. Their `cover_high` markers keep their ids.
+
+THE STATION is placed by `migrate_slush_machine.plan_station` at the end of
+the preset, after its markers, not at a spelled position: the rule keeps
+clear of markers and volumes, and a change to the rule or to the layout now
+moves it the same way in the preset and in the library. MEASURED in both
+modes before the patch, in memory: heist and assault each place it on the
+stockroom partition at (5.49, -9.0), 4.02 m from the coffee island --
+volume for volume the station the checked-in `gas_station` spec carries.
+
+`test_slush_machine.py::test_a_store_made_from_the_preset_has_gondolas_and_a_station`,
+both modes: two volumes route to `snack_gondola`, one to `slush_machine`,
+equal to the library's, and a second placement pass adds nothing. Proven to
+fail without the preset change (2 failed). Nothing pinned the old names:
+`test_store_gondolas` holds that `aisle_1` routes to nothing, which stays
+true for the supermarkets that keep theirs. Suite 1,020 passed, 2 skipped.
+
+A REFUSAL IS SILENT IN THE PRESET: a layout the rule cannot fit gets no
+station rather than an error, and the test is what holds this preset to one.
+A second store preset (the roadmap's `convenience_store`, today an alias)
+should carry the same test.
+
 ## [0.150.0] - a convenience store has its frozen drink station
 
 Zoo 1.15.0's `slush_machine` -- the twin-hopper frozen drink station, syrup
