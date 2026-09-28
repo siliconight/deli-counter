@@ -1,3 +1,37 @@
+## [0.150.0] - a convenience store has its frozen drink station
+
+Zoo 1.15.0's `slush_machine` -- the twin-hopper frozen drink station, syrup
+rail and cup tubes (the walker, 2026-09-28: "do the slush machine next") --
+placed in every convenience store. MEASURED FIRST: no spec in the library
+carried a `slush`, `frozen` or `drink` volume, so this is placement, not
+routing alone.
+
+`migrate_slush_machine.py`: a store is a spec whose `sales_floor` carries
+`gondola_aisle` volumes (nine: cr_gas, fuel_stop_heist, gas_station,
+gas_station_a01..a03, gas_street, gs_corner_station, stop_n_go); the
+supermarkets, card shop and marina are left alone. The 1.6 x 0.7 x 2.0
+station stands against a side of the sales floor that is not a glazed
+exterior wall, clear of every opening by the furnishing pass's 0.9 m, with
+no authored volume within `island_aisle_width()` (1.25 m) on any side --
+a per-axis box, so conservative near corners, which only ever refuses a
+spot -- no marker within 0.5 m, facing the room by the cooler wall's
+measured rule, and of every place left the one nearest the coffee island,
+or the register counter in a store without one. Nothing is forced: a store
+with no such stretch is refused and reported. None was.
+
+Where it landed: on the stockroom partition 4.02 m from the coffee island
+in the five preset-built stores; on the food-service partition level with
+the register in gas_station_a02 and fuel_stop_heist, clear of the
+`sales_to_food` door; on the back partition in gas_station_a03 and
+stop_n_go. Each is refurnished after so the library stays a fixed point of
+furnishing: a litter bin, a carton stack or a filing cabinet moves or goes
+in each, and stop_n_go's generated vending machine.
+
+`prop_species` routes `slush` to `slush_machine`, above the counter row
+(whose `station` would claim a `slush_station`); only the nine new volumes
+carry the word. `test_slush_machine.py` -- including that the built slots
+carry the species, so a spec edit that does not reach the build fails.
+
 ## [0.149.0] - a walk-in cooler is cold storage, and a store's aisles are snack gondolas
 
 TWO CHANGES, one rebuild. The second is Zoo 1.13.0's `snack_gondola` (the

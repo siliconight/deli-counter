@@ -1994,6 +1994,15 @@
       }
     },
     {
+      "node": "slush_machine_col",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.18,
+        "damping": 0.16
+      }
+    },
+    {
       "node": "counter_service_r48016798_1_col",
       "material": {
         "id": "wood",
@@ -2022,15 +2031,6 @@
     },
     {
       "node": "cartons_r48016798_4_col",
-      "material": {
-        "id": "wood",
-        "acoustic": "Wood",
-        "absorption": null,
-        "damping": null
-      }
-    },
-    {
-      "node": "cartons_r48016798_5_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -2858,11 +2858,11 @@
     "pump_5": "prop",
     "pump_6": "prop",
     "cooler_run": "prop",
+    "slush_machine": "prop",
     "counter_service_r48016798_1": "prop",
     "vending_r48016798_2": "prop",
     "shelf_run_r48016798_3": "prop",
     "cartons_r48016798_4": "prop",
-    "cartons_r48016798_5": "prop",
     "grill_rae0246ea_1": "prop",
     "table_work_rae0246ea_2": "prop",
     "table_work_rae0246ea_3": "prop",

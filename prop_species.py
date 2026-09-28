@@ -200,6 +200,10 @@ PROP_SPECIES = (
     # stores' `aisle_N` and `aisle_shelf_N` to it. The supermarkets' `aisle_N`
     # and the pharmacy's `gondola_a/b` are not a snack aisle and stay.
     (("gondola_aisle",), "snack_gondola"),
+    # THE FROZEN DRINK STATION (Zoo 1.15.0): `migrate_slush_machine.py` puts
+    # one in every convenience store; no volume carried `slush` before it.
+    # Above the counter row, whose `station` would claim a `slush_station`.
+    (("slush",), "slush_machine"),
     (("counter", "reception", "station", "island", "cage", "bar_",
       "workbench", "tool_bench"), "counter"),
     (("desk",), "desk"),

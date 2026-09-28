@@ -3259,6 +3259,45 @@
       }
     },
     {
+      "slot_id": "slush_machine",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 5,
+      "material": "metal",
+      "species": "slush_machine",
+      "stock": null,
+      "variant": 0,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          0.55,
+          2.99,
+          1.0
+        ],
+        "rot_y": 0.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.6,
+          0.7,
+          2.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
       "slot_id": "counter_service_r48016798_1",
       "role": "prop",
       "size_mod": "full",
@@ -3376,14 +3415,14 @@
       }
     },
     {
-      "slot_id": "cabinet_file_r48016798_4",
+      "slot_id": "cartons_r48016798_4",
       "role": "prop",
       "size_mod": "full",
       "style": 7,
       "material": "wood",
-      "species": "filing_cabinet",
+      "species": "carton_stack",
       "stock": null,
-      "variant": 0,
+      "variant": 3,
       "form": null,
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -3392,11 +3431,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          10.54,
-          -4.69,
-          0.525
+          -9.04,
+          -2.59,
+          0.5
         ],
-        "rot_y": 90.0,
+        "rot_y": 180.0,
         "scale": [
           1.0,
           1.0,
@@ -3407,7 +3446,7 @@
         "dims": [
           0.9,
           0.6,
-          1.05
+          1.0
         ],
         "pivot": "center",
         "openings": [],
@@ -3431,50 +3470,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          -8.29,
-          -3.34,
-          0.3
-        ],
-        "rot_y": 0.0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          0.6,
-          0.4,
+          -7.69,
+          -2.59,
           0.6
         ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "cartons_r48016798_6",
-      "role": "prop",
-      "size_mod": "full",
-      "style": 7,
-      "material": "wood",
-      "species": "carton_stack",
-      "stock": null,
-      "variant": 3,
-      "form": null,
-      "current_ref": "prop_greybox_01",
-      "kit_axis": "material",
-      "wall": null,
-      "story": null,
-      "facing": null,
-      "transform": {
-        "translation": [
-          -8.29,
-          -2.09,
-          0.5
-        ],
-        "rot_y": 270.0,
+        "rot_y": 90.0,
         "scale": [
           1.0,
           1.0,
@@ -3483,9 +3483,9 @@
       },
       "fit": {
         "dims": [
-          0.9,
-          0.6,
-          1.0
+          1.6,
+          1.2,
+          1.2
         ],
         "pivot": "center",
         "openings": [],
@@ -3493,7 +3493,7 @@
       }
     },
     {
-      "slot_id": "litter_bin_r48016798_7",
+      "slot_id": "litter_bin_r48016798_6",
       "role": "prop",
       "size_mod": "full",
       "style": 5,
@@ -3509,9 +3509,9 @@
       "facing": null,
       "transform": {
         "translation": [
-          -6.04,
-          -3.97,
-          0.5
+          2.78,
+          1.47,
+          0.425
         ],
         "rot_y": 180.0,
         "scale": [
@@ -3522,9 +3522,9 @@
       },
       "fit": {
         "dims": [
-          0.6,
-          0.6,
-          1.0
+          0.5,
+          0.5,
+          0.85
         ],
         "pivot": "center",
         "openings": [],
