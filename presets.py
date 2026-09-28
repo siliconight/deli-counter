@@ -1685,7 +1685,12 @@ def gas_station(name: str = "gas_station_preset",
         {"x": -12.0, "y": -7.0, "story": 0, "length": 6.0, "axis": "X", "height": 1.1, "material": "wood"},
     ]
     spec["volumes"] = [
-        {"name": "register_counter", "x": -12.0, "y": -7.0, "z": 0.55, "size_x": 6.0, "size_y": 0.9, "size_z": 1.1, "collision": "convex", "material": "wood"},
+        # FORM `service` (Zoo 1.7.0): the convenience store's counter --
+        # checkerboard trim, candy rack, registers, lottery, the cigarette
+        # rack overhead. Zoo resolves `register_counter` to `counter` by
+        # keyword and honours the form; the material is the form's (white
+        # laminate), whatever is written here.
+        {"name": "register_counter", "x": -12.0, "y": -7.0, "z": 0.55, "size_x": 6.0, "size_y": 0.9, "size_z": 1.1, "collision": "convex", "material": "wood", "form": "service"},
         {"name": "aisle_1", "x": -8.0, "y": 0.0, "z": 0.9, "size_x": 0.9, "size_y": 10.0, "size_z": 1.8, "collision": "convex", "material": "metal"},
         {"name": "aisle_2", "x": -3.0, "y": 0.0, "z": 0.9, "size_x": 0.9, "size_y": 10.0, "size_z": 1.8, "collision": "convex", "material": "metal"},
         {"name": "coffee_island", "x": 2.0, "y": -7.0, "z": 0.55, "size_x": 3.0, "size_y": 2.0, "size_z": 1.1, "collision": "convex", "material": "metal"},

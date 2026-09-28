@@ -1,3 +1,30 @@
+## [0.146.0] - the stores' register counters ask for the store's form
+
+Every `register_counter` in the library now carries `"form": "service"`,
+which Zoo 1.7.0's `counter` honours as the convenience store's counter --
+checkerboard trim, a candy rack on the customer face, registers and lottery
+dispensers, the cigarette rack overhead.
+
+THE FIRST DRAFT DID NOTHING, and that is the reason for the migration. It put
+the form on the `gas_station` PRESET and stopped. The buildings a cold run
+places are the checked-in specs, which are not regenerated from a preset at
+build time, and the first rebuild reproduced `gas_station_a02` -- the store
+club_block_014 stands -- with its spec hash unchanged. `migrate_service_counter.py`
+gives the existing specs the form; the preset keeps it for specs made later.
+
+WHICH COUNTERS: a volume named exactly `register_counter`. Measured over
+every non-`lf_` spec, nine carry one and all nine are a fuel stop or a
+convenience store -- seven with a pump forecourt and two storefront-only
+(`gas_station_a03`, `stop_n_go`). A forecourt test was refused because it
+would have missed those two. The delis name theirs `front_register_counter`
+and are untouched. A counter already naming a form keeps it.
+
+`test_service_counter_form.py` holds all of it, and one test reads the
+BUILT `slots.json`: the counter's slot says `service`, which is what Zoo's
+`kit.honour_dressing` reads. Without it, a form on a spec that never reached
+a slot would pass every other check. The prop's material is left as it was
+(`drywall` on `_a02`); the form overrides it with white laminate.
+
 ## [0.145.0] - a fuel canopy finally emits a light
 
 MEASURED FIRST, on cold run 9080's package: the forecourt canopy is 22 x 13 m
