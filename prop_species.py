@@ -177,6 +177,14 @@ PROP_SPECIES = (
     # carries a keyword from any row between here and `desk`, and no spec
     # names a volume `workstation_bank`.
     (("cubicle", "workstation_bank"), "cubicle_bank"),
+    # THE COFFEE ISLAND (Zoo 1.9.0), above the counter row because the
+    # counter row's `island` claimed it: `coffee_island` (3.0 x 2.0 x 1.1,
+    # five store specs) built as a bare counter, and `coffee_food_island`
+    # (4.0 x 3.0 x 1.0, gas_station_a02 and fuel_stop_heist) -- deeper than
+    # the counter genome's 2.0 m -- as the plain prop box. Measured over the
+    # library before it moved: those two names are the only volumes carrying
+    # `coffee`, so nothing else re-routes.
+    (("coffee",), "coffee_island"),
     (("counter", "reception", "station", "island", "cage", "bar_",
       "workbench", "tool_bench"), "counter"),
     (("desk",), "desk"),

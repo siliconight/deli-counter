@@ -263,3 +263,13 @@ def test_a_species_that_owns_its_collision_gets_no_greybox_box(dc):
     fits = {s["slot_id"]: s["fit"]["collision"] for s in b.slots}
     assert fits == {"cubicles_w_0": "none",
                     "desk_r1234abcd_1": "convex"}, fits
+
+
+def test_a_coffee_island_is_the_coffee_species_not_a_counter():
+    """0.147.0: the counter row's `island` used to claim these, and the
+    4.0 x 3.0 one -- too deep for a counter -- built as the plain box."""
+    from prop_species import species_for_name as f
+    assert f("coffee_island") == "coffee_island"
+    assert f("coffee_food_island") == "coffee_island"
+    assert f("register_counter") == "counter"
+    assert f("counter_island_north_concourse") == "counter"

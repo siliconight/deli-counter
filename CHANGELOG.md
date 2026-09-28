@@ -1,3 +1,16 @@
+## [0.147.0] - a coffee island is Zoo's coffee island
+
+One row in `prop_species.PROP_SPECIES`, above the counter row: `coffee`
+routes to Zoo 1.9.0's `coffee_island`. The counter row's `island` had been
+claiming both names, so `coffee_island` (3.0 x 2.0 x 1.1, five store specs)
+built as a bare counter and `coffee_food_island` (4.0 x 3.0 x 1.0,
+`gas_station_a02` and `fuel_stop_heist`) -- deeper than the counter genome's
+2.0 m -- as the plain prop box, which is what cold run 9095 shipped in the
+gas station. Measured over the library before it moved: those two names are
+the only volumes carrying `coffee` (five and two), so nothing else re-routes.
+`test_prop_species.py::test_a_coffee_island_is_the_coffee_species_not_a_counter`
+holds it, with the register counters still counters.
+
 ## [0.146.0] - the stores' register counters ask for the store's form
 
 Every `register_counter` in the library now carries `"form": "service"`,
