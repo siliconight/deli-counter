@@ -185,6 +185,11 @@ PROP_SPECIES = (
     # library before it moved: those two names are the only volumes carrying
     # `coffee`, so nothing else re-routes.
     (("coffee",), "coffee_island"),
+    # THE REACH-IN COOLER WALL (Zoo 1.12.0). `cooler_run` routed nowhere and
+    # built as a box wearing glass; only the five preset volumes and the ones
+    # `migrate_cooler_wall.py` places carry the name. `cooler_backstock*`
+    # (the walk-in's racks) is not a cooler wall and stays shelving.
+    (("cooler_run",), "cooler_run"),
     (("counter", "reception", "station", "island", "cage", "bar_",
       "workbench", "tool_bench"), "counter"),
     (("desk",), "desk"),

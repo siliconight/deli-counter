@@ -273,3 +273,11 @@ def test_a_coffee_island_is_the_coffee_species_not_a_counter():
     assert f("coffee_food_island") == "coffee_island"
     assert f("register_counter") == "counter"
     assert f("counter_island_north_concourse") == "counter"
+
+
+def test_a_cooler_run_is_the_cooler_species_and_the_backstock_is_not():
+    """0.148.0."""
+    from prop_species import species_for_name as f
+    assert f("cooler_run") == "cooler_run"
+    assert f("cooler_backstock_rack") == "shelving"
+    assert f("cooler_backstock") == "shelving"

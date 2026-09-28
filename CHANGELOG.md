@@ -1,3 +1,53 @@
+## [0.148.0] - the walk-in cooler has its reach-in doors
+
+For Zoo 1.12.0's `cooler_run`, the glowing reach-in cooler wall (the walker,
+2026-09-28: "do the cooler wall next", "we also want glowing fridge lights").
+
+`prop_species` routes `cooler_run` to it. Until now the name routed nowhere
+and the five preset volumes built as boxes wearing glass. `cooler_backstock*`
+-- the walk-in's racks -- stays shelving.
+
+`migrate_cooler_wall.py` gives a cooler wall to the store specs that have a
+`walk_in_cooler` room and none: `gas_station_a02` (club_block_014's store)
+and `fuel_stop_heist`, whose drinks were behind a partition nobody sees. The
+run stands on the walk-in's side shared with a customer room, 0.17 m off
+the partition (half its 0.3 m and 2 cm), keeps 0.35 m clear of that
+partition's doors -- a02's `cooler_door_1`, food service into the walk-in, is
+on exactly this wall -- and is cut short where a volume stands in the 0.9 m
+aisle in front, rather than moving it. Measured: a02 3.28 m (a work table in
+front of the door zone cut it), fuel_stop_heist 4.12 m, both facing food
+service; a spec with no 1.6 m clear is REFUSED and reported, never forced.
+
+THE ROOM IS REFURNISHED AROUND IT. The first commit of this release only
+appended the volume and the pre-commit gate refused it on
+`test_club_fixtures`'s fixed-point test: the library's generated furniture
+must be exactly what `furnish` makes of everything else in a spec, and a
+cooler is new input. The migration now refurnishes each spec it touches with
+`migrate_furnish_recipes.migrate` -- ONLY those specs: running that migration
+over the whole library would also refurnish the strip clubs, which carry
+`migrate_club_rooms`'s furnishing instead. Measured: a02 trades a carton
+stack for a litter bin; fuel_stop_heist loses two carton stacks and a work
+table. Proven from the pre-cooler state: the migration's output is a fixed
+point and equals the committed specs byte for byte in content.
+
+AND ITS MATERIAL IS DECLARED. The second attempt was refused by the gate's
+spec check: the run named `glass`, which neither store's palette declares.
+It names the walk-in's own `cooler_panel`, which both do (a store without it
+gets `metal` declared the way furnishing declares a prop's); Zoo's recipe
+builds its own steel and glass whatever the slot's word. `validate.py --all`:
+403 OK, 0 errors.
+
+FACING WAS MEASURED, not reasoned: on cold run 9096's package the unturned
+register counter's doors face its south entry and a turned aisle shelf in
+`deli_a01` faces -x, from the shipped node transforms. So a run long in x
+with its room on the -y side needs no `rot_z`, and one on the +y or +x side
+gets 180.
+
+NOT FIXED, SEEN ON THE WAY: `gas_station_a02`'s `walk_in_cooler` room is
+furnished as a kitchen -- a grill, a kitchen counter and work tables stand
+inside the walk-in. That is the furnishing's choice of a recipe for the room
+and is its own change.
+
 ## [0.147.0] - a coffee island is Zoo's coffee island
 
 One row in `prop_species.PROP_SPECIES`, above the counter row: `coffee`
