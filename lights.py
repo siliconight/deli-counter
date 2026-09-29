@@ -718,6 +718,89 @@ def _storefront_reach(bounds, story, pos, rot, count, spacing, storefronts,
     return round(reach, 3)
 
 
+#: THE STOREFRONT SPILL (0.156.0). The walker, 2026-09-29: "do the outward
+#: spill next". A lamp's height over the pavement: the top of the storefront
+#: glass, which is Zoo's `arch.SF_GLASS_TOP` (3.0 m over the floor) or its
+#: `SF_HEAD_MIN` (0.4 m) under the storey's top when that is lower -- the two
+#: numbers Zoo draws the glass with, so the light leaves where the glass ends.
+_SPILL_HEAD = 3.0
+_SF_HEAD_MIN = 0.4
+#: How far out of the wall's face the source stands: a panel's standoff, the
+#: window's (`_WALL_PACK_OUT` is the pack's own and larger).
+_SPILL_OUT = 0.20
+
+
+def _storefront_spans(bounds, story, storefronts, wall_thick):
+    """``{facing: (line, lo, hi)}`` -- each storefront edge of this room: the
+    wall's centreline coordinate and the glass's extent along it, clipped to
+    the room (0.156.0). The same edge test as `_storefront_reach`; a slot's
+    extent is its centre +/- half its width `w` (0 when a caller sends none).
+    """
+    minx, miny, maxx, maxy = bounds
+    tol = max(float(wall_thick), 0.05)
+    edge = {"S": (1, miny), "N": (1, maxy), "W": (0, minx), "E": (0, maxx)}
+    spans = {}
+    for sf in storefronts or ():
+        if int(sf.get("story", 0) or 0) != story or sf.get("facing") not in edge:
+            continue
+        axis, line = edge[sf["facing"]]
+        at = (float(sf["x"]), float(sf["y"]))
+        along = at[1 - axis]
+        lo, hi = (minx, maxx) if axis == 1 else (miny, maxy)
+        if abs(at[axis] - line) > tol or not (lo - tol <= along <= hi + tol):
+            continue
+        half = float(sf.get("w", 0.0) or 0.0) * 0.5
+        a0, a1 = max(lo, along - half), min(hi, along + half)
+        f = sf["facing"]
+        if f in spans:
+            spans[f] = (spans[f][0], min(spans[f][1], a0), max(spans[f][2], a1))
+        else:
+            spans[f] = (at[axis], a0, a1)
+    return spans
+
+
+def _spill_anchors(room_id, bounds, story, floor_z, storefronts, wall_thick,
+                   head, drop, reach):
+    """The storefront spill along each storefront edge of a room whose
+    ceiling row reaches its glass (0.156.0): one lamp per `2 * head` of glass,
+    evenly spaced, standing `_SPILL_OUT` off the wall's face at the glass's
+    head, facing out. Lux (>= 0.57.0) throws each one out and down through a
+    45-degree cone whose footprint is about 2.8 heads wide where its axis
+    lands, so neighbours two heads apart overlap into a band.
+
+    Each carries the room row's `drop` and `reach` -- Lux solves the spill's
+    level from the floor that row lights -- and `head`, which the throw is
+    measured from. One anchor per lamp, no `row`: a row runs along `rot_y`,
+    and a spill's `rot_y` is its facing, across the row.
+    """
+    out = []
+    spans = _storefront_spans(bounds, story, storefronts, wall_thick)
+    off = float(wall_thick) * 0.5 + _SPILL_OUT
+    for facing in sorted(spans):
+        line, a0, a1 = spans[facing]
+        span = a1 - a0
+        n = max(1, int(round(span / (2.0 * head))))
+        rot, (ox, oy) = _outward(facing)
+        for i in range(n):
+            along = a0 + span * (i + 0.5) / n
+            x, y = (along, line) if facing in ("S", "N") else (line, along)
+            out.append({
+                "id": "%s_spill_%s_%d" % (room_id, facing, i),
+                "type": "storefront_spill",
+                "source": "derived",
+                "pos": [round(x + ox * off, 3), round(y + oy * off, 3),
+                        round(floor_z + head, 3)],
+                "rot_y": rot,
+                "room": room_id,
+                "wall": facing,
+                "head": head,
+                "drop": drop,
+                "reach": reach,
+                "reacts_to_alarm": True,
+            })
+    return out
+
+
 def _row_for_bounds(bounds):
     """A ceiling row runs along the room's longer axis. Returns
     (rot_y, count, spacing)."""
@@ -962,6 +1045,8 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
     rep.setdefault("tv_screens", 0)
     rep.setdefault("back_bars", 0)
     rep.setdefault("storefront_rows", 0)
+    rep.setdefault("storefront_spills", 0)
+    spills = []
     clear = wall_clearance(wall_thick)
     club_ids = set(club_rooms or ())
     # The aisle behind a club bar, asked of the one function that derives
@@ -1031,6 +1116,7 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
         runs = _row_runs([rx, ry, lamp_z], rot, count, spacing, rects,
                          walls=walls, clear=clear, report=rep)
         base_id = ("%s_bulbs" if moody else "%s_ceiling") % r.get("id", "room")
+        room_reach = 0.0
         for i, (pos, n, sp) in enumerate(runs):
             anchors.append({
                 # A single surviving run keeps the ORIGINAL id: splitting is
@@ -1068,6 +1154,18 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
                 if reach > 0.0:
                     anchors[-1]["reach"] = reach
                     rep["storefront_rows"] += 1
+                    room_reach = max(room_reach, reach)
+        # THE STORE'S LIGHT ON THE PAVEMENT (0.156.0): a room whose row
+        # reaches its storefront throws that light back out through the
+        # glass. Collected here and appended LAST, so every anchor before it
+        # keeps its place in the list.
+        if room_reach > 0.0:
+            head = min(_SPILL_HEAD, round(float(story_height) - _SF_HEAD_MIN, 3))
+            got = _spill_anchors(r.get("id", "room"), bounds, story, c[2],
+                                 storefronts, wall_thick, head,
+                                 round(lamp_z - c[2], 3), room_reach)
+            spills += got
+            rep["storefront_spills"] += len(got)
         # the room's box AFTER its row: a room's first anchor is its ceiling
         # light, as every reader of this list has assumed since v1.0
         anchors += screens
@@ -1125,6 +1223,7 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
             "wall": wall,
             "reacts_to_alarm": True,
         })
+    anchors += spills
     return anchors
 
 

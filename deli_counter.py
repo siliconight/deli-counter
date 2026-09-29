@@ -2941,7 +2941,9 @@ def write_light_manifest(builder, path):
     # wall centreline a room's bounds sit on.
     _fronts = [{"story": _s.get("story", 0), "facing": _s.get("facing"),
                 "x": _s["transform"]["translation"][0],
-                "y": _s["transform"]["translation"][1]}
+                "y": _s["transform"]["translation"][1],
+                # its width along the wall, for the spill's span (0.156.0)
+                "w": ((_s.get("fit") or {}).get("dims") or [0.0])[0]}
                for _s in builder.slots
                if storefront_slot(_s, _s.get("material"), builder)]
     data = _lights.build_light_manifest(
@@ -2978,7 +2980,8 @@ def write_light_manifest(builder, path):
           f"{_report.get('club_rooms', 0)} club room(s) lit as a club; "
           f"{_report.get('tv_screens', 0)} TV screen(s) spilling; "
           f"{_report.get('back_bars', 0)} back bar(s) lit; "
-          f"{_report.get('storefront_rows', 0)} row(s) reaching storefront glass)")
+          f"{_report.get('storefront_rows', 0)} row(s) reaching storefront glass; "
+          f"{_report.get('storefront_spills', 0)} spill(s) out through it)")
     return data
 
 

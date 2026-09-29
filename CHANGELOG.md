@@ -1,3 +1,50 @@
+## [0.156.0] - a lit store throws its light out through its storefront
+
+The walker, 2026-09-29: "do the outward spill next" -- no light left a store
+onto its pavement, so a lit shop at night stood behind a black apron.
+
+A room whose fluorescent row reaches its storefront glass (0.155.0) now also
+gets `storefront_spill` anchors along that glass (`lights._spill_anchors`):
+one lamp per twice the head of glass, evenly spaced, `_SPILL_OUT` (0.20 m)
+off the wall's face at the glass's head -- Zoo's `SF_GLASS_TOP` (3.0 m), or
+`SF_HEAD_MIN` (0.4 m) under a lower storey's top -- facing out (`_outward`).
+Each carries the room row's `drop` and `reach`, which Lux (>= 0.57.0) solves
+the spill's level from, and its `head`, which the throw is measured from.
+One anchor per lamp: a `row` runs along `rot_y`, and a spill's `rot_y` is
+its facing. They are appended LAST, so every anchor before them keeps its
+place; a building with no storefront glass is byte-identical to 0.155.0.
+The storefront list gained each slot's width (`w`) for the span. Zoo
+1.22.0 records the type as hardware-elsewhere (the room's own troffers).
+
+THE LIBRARY (build.py --all): 35 spills in 8 buildings, every one in a room
+that reaches its glass --
+
+    gas_station_a02     sales_floor S 3, food_service S 1 + E 2,
+                        walk_in_cooler E 1
+    gas_station_a03     sales_floor S 3 + W 2, back_hall W 1
+    card_shop_a01       sales_floor S 2
+    cr_gas, gas_station, gas_station_a01, gas_street, gs_corner_station
+                        sales_floor S 3, stockroom S 1
+
+The stockrooms and the walk-in cooler spill because they are walled by
+storefront glass in those layouts, which 0.153.0's migration gave them and
+which is a layout question, not this one's.
+
+MEASURED FIRST on cold run 9104's walk copy, three spots at runtime outside
+gas_station_a02's sales floor (the count this derives): at the level Lux now
+solves, the pavement in front of the glass reads as the carpet does through
+it (see Lux 0.57.0 for the frame match and the null result before it).
+
+`test_storefront_spill.py`: 18 m of glass spills three lamps, off the wall's
+face at its head, facing out, carrying the row's drop and reach; spills come
+last and the rest of the manifest is as before; a low storey lowers the head
+with the glass; a short run still gets one, and each facing its own; no
+reach, no spill (a bulb room, glass upstairs, no glass); in the library the
+gas station's sales floor spills three, and the rooms that spill are exactly
+the rooms that reach. `test_storefront_reach.py` now lets a spill carry its
+row's reach; `test_lights_partitions.py`'s pinned report gains the count.
+Against 0.155.0's build/ the library tests fail.
+
 ## [0.155.0] - a row walled by a storefront reaches the glass
 
 The walker, 2026-09-28: "yes, do the glass first then the troffer reach".

@@ -110,7 +110,8 @@ def test_only_a_storefront_building_carries_a_reach_and_only_on_fluorescents():
         if d["building_id"] not in fronts:
             assert not reaching, (d["building_id"], [a["id"] for a in reaching])
         for a in reaching:
-            assert a["type"] == "fluorescent" and a["reach"] > 0.0, (d["building_id"], a)
+            # a spill (0.156.0) carries the reach of the row it comes from
+            assert a["type"] in ("fluorescent", "storefront_spill") and a["reach"] > 0.0,                 (d["building_id"], a)
     # and every storefront building has at least one row that reaches
     for bid in sorted(fronts):
         assert any("reach" in a for a in _lights(bid)), bid
