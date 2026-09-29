@@ -759,6 +759,28 @@ def _storefront_spans(bounds, story, storefronts, wall_thick):
     return spans
 
 
+def storefront_lit_rooms(rooms, storefronts, wall_thick, club_rooms=()):
+    """Ids of the rooms lit from outside through storefront glass (0.157.0):
+    a room with a fluorescent row -- not a club room, not below grade, not an
+    objective that is not a public room (`derive_light_anchors`' own `moody`
+    rule) -- one of whose edges is storefront glass (`_storefront_spans`).
+    These are the rooms `derive_light_anchors` gives a `reach` and storefront
+    spills, asked of the same tests, so the slot manifest can tag their
+    floor and ceiling before the light manifest is written.
+    """
+    club = set(club_rooms or ())
+    out = set()
+    for r in rooms or []:
+        bounds = r.get("bounds")
+        if not r.get("center") or not bounds or r.get("id") in club:
+            continue
+        story = int(r.get("story", 0) or 0)
+        moody = story < 0 or (bool(r.get("objective")) and r.get("role") not in _LIT_ROLES)
+        if not moody and _storefront_spans(bounds, story, storefronts, wall_thick):
+            out.add(r.get("id"))
+    return out
+
+
 def _spill_anchors(room_id, bounds, story, floor_z, storefronts, wall_thick,
                    head, drop, reach):
     """The storefront spill along each storefront edge of a room whose

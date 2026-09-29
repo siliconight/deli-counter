@@ -2812,6 +2812,32 @@ STOREFRONT_MATERIALS = ("storefront_glass",)
 STOREFRONT_ROLES = ("wall", "doorway")
 
 
+#: The plate roles whose tiles can be their own light budgets (0.157.0):
+#: Zoo's `kit.LIGHT_BUDGET_ROLES`.
+LIGHT_BUDGET_ROLES = ("floor", "ceiling")
+
+
+def storefront_lines(builder):
+    """The storefront slots as ``{story, facing, x, y, w}`` at the wall's
+    centreline (0.155.0; one function since 0.157.0, because the slot manifest
+    and the light manifest both ask which rooms the glass walls, and two
+    copies of this list would be two answers)."""
+    return [{"story": _s.get("story", 0), "facing": _s.get("facing"),
+             "x": _s["transform"]["translation"][0],
+             "y": _s["transform"]["translation"][1],
+             # its width along the wall, for the spill's span (0.156.0)
+             "w": ((_s.get("fit") or {}).get("dims") or [0.0])[0]}
+            for _s in builder.slots
+            if storefront_slot(_s, _s.get("material"), builder)]
+
+
+def club_room_ids(builder):
+    """The strip club's club rooms, by `level_design`'s one rule."""
+    import level_design as _ld
+    return {r.id for r in builder.s.rooms
+            if _ld.is_strip_club_room({"id": r.id}, _ld.club_building_id(builder.s))}
+
+
 def storefront_slot(slot, spec_material, builder):
     """Is this slot a storefront's full wall or door? Read against the SPEC's
     material id -- the manifest writes the skin kind, `glass_facade`, which
@@ -2841,6 +2867,15 @@ def write_slot_manifest(builder, path):
     # an unresolvable kind is a grey wall that looks like a styling decision.
     _slots = []
     _unmapped = []
+    # A ROOM LIT FROM OUTSIDE THROUGH ITS STOREFRONT (0.157.0): its floor and
+    # ceiling ask Zoo (>= 1.24.0) to ship their light-budget tiles as their
+    # own meshes. The walker, 2026-09-29: "yes, narrow it to the storefront
+    # rooms" -- after every floor and ceiling split (Zoo 1.23.0) restored
+    # this room and cost the library +7% draws.
+    import lights as _lights
+    _lit = _lights.storefront_lit_rooms(builder.gameplay.get("rooms", []),
+                                        storefront_lines(builder),
+                                        builder.s.wall_thick, club_room_ids(builder))
     for _s in builder.slots:
         _m = _s.get("material")
         _k = material_kind.kind_for(_m)
@@ -2850,6 +2885,8 @@ def write_slot_manifest(builder, path):
         _s = dict(_s, material=_k) if _m else _s
         if storefront_slot(_s, _m, builder):
             _s = dict(_s, glazing="storefront")
+        if _s.get("role") in LIGHT_BUDGET_ROLES and _s.get("room") in _lit:
+            _s = dict(_s, light_budget_tiles=True)
         _slots.append(_s)
     if _unmapped:
         print(f"[deli_counter] slot manifest: {len(_unmapped)} slot(s) name a "
@@ -2927,10 +2964,7 @@ def write_light_manifest(builder, path):
     # stage and the neon signs the furnishing pass wrote -- so the manifest
     # is derived from the same volumes the slots are. Which rooms are club
     # rooms is `level_design`'s one rule (`is_strip_club_room`).
-    import level_design as _ld
-    _club = {r.id for r in builder.s.rooms
-             if _ld.is_strip_club_room({"id": r.id},
-                                       _ld.club_building_id(builder.s))}
+    _club = club_room_ids(builder)
     _vols = [{"name": v.name, "x": v.x, "y": v.y, "z": v.z,
               "size_x": v.size_x, "size_y": v.size_y, "size_z": v.size_z,
               "rot_z": getattr(v, "rot_z", 0.0), "form": getattr(v, "form", None),
@@ -2939,13 +2973,7 @@ def write_light_manifest(builder, path):
     # THE STOREFRONT GLASS a ceiling row must reach (0.155.0): the slots the
     # slot manifest tags `glazing: "storefront"`, by the same rule, at the
     # wall centreline a room's bounds sit on.
-    _fronts = [{"story": _s.get("story", 0), "facing": _s.get("facing"),
-                "x": _s["transform"]["translation"][0],
-                "y": _s["transform"]["translation"][1],
-                # its width along the wall, for the spill's span (0.156.0)
-                "w": ((_s.get("fit") or {}).get("dims") or [0.0])[0]}
-               for _s in builder.slots
-               if storefront_slot(_s, _s.get("material"), builder)]
+    _fronts = storefront_lines(builder)
     data = _lights.build_light_manifest(
         builder.s.name,
         builder.gameplay.get("rooms", []),

@@ -1,3 +1,35 @@
+## [0.157.0] - a storefront-lit room's floor and ceiling ask for light-budget tiles
+
+The walker, 2026-09-29: "yes, narrow it to the storefront rooms". Zoo 1.23.0
+shipped every floor's and ceiling's 8 m light-budget tiles as their own
+meshes: gas_station_a02's sales floor got its own lamps back (the carpet
+through the glass 16.9 -> 20.5, cold run 9106) and the library paid +7.4%
+draws, because every room over 8 m split.
+
+The slot manifest now tags `light_budget_tiles` on the floor and ceiling of
+each room lit from outside through storefront glass --
+`lights.storefront_lit_rooms`, the same tests `derive_light_anchors` gives a
+`reach` and storefront spills by (a fluorescent room, not a club room, one of
+whose edges is storefront glass) -- and Zoo (>= 1.24.0) splits only those,
+under `_lbt`. `themed_tscn` mirrors the name (`LIGHT_BUDGET_ROLES`,
+`LIGHT_BUDGET_STEM`) and falls back to the plain plate for a library built
+before it. The storefront list and the club rooms are one function each now
+(`storefront_lines`, `club_room_ids`), because the slot manifest and the
+light manifest both ask.
+
+THE LIBRARY (build.py --all): 32 plate slots in 8 buildings, exactly the
+rooms that spill -- every store's sales floor, the stockrooms of the five
+`gas_station`-family layouts, gas_station_a02's food service and walk-in
+cooler, gas_station_a03's back hall.
+
+`test_light_budget_tiles.py`: the rooms the glass walls are lit and no others
+(not a stockroom behind a solid wall, not a bulb room, not a club room); the
+flag rides the name on a plate and not on a wall, and a library holding only
+the plain floor resolves the flagged slot to it; the mirror matches Zoo's
+`kit.module_stem` both ways; in the library the gas station's sales floor
+plates are flagged and the flagged rooms are exactly the rooms that spill,
+floors and ceilings only. Against 0.156.0's build/ the library tests fail.
+
 ## [0.156.0] - a lit store throws its light out through its storefront
 
 The walker, 2026-09-29: "do the outward spill next" -- no light left a store

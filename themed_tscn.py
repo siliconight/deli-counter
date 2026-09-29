@@ -91,6 +91,13 @@ SPECIES_STATE_ART = {"vault_door": ("unlocked", "open", "breached")}
 #: `test_themed_stem`'s storefront tests.
 STEM_GLAZINGS = ("storefront",)
 STOREFRONT_STATE_ART = {"doorway": ("open",)}
+#: A STOREFRONT-LIT ROOM'S PLATE (Zoo 1.24.0, `kit.LIGHT_BUDGET_ROLES` and
+#: `kit.LIGHT_BUDGET_STEM`): a floor or ceiling slot carrying
+#: `light_budget_tiles` is built with its tiles as their own meshes and named
+#: `_lbt`, after the glazing. Mirrors of Zoo's, pinned by
+#: `test_light_budget_tiles`.
+LIGHT_BUDGET_ROLES = ("floor", "ceiling")
+LIGHT_BUDGET_STEM = "_lbt"
 
 
 def opening_tag(openings) -> str | None:
@@ -146,7 +153,7 @@ def module_stem(typ: str, theme: str, style: int,
                 openings_tag: str = None, height_cm: int = None,
                 species: str = None, form: str = None, stock: str = None,
                 variant: int = None, material: str = None,
-                glazing: str = None) -> str:
+                glazing: str = None, budget_tiles: bool = False) -> str:
     """``<type>[_<species>]_<theme>_<style:02d>[_w<cm>][_d<cm>][_h<cm>][_f<form>][_s<stock>][_n<variant>][_m<material>][_v<hash>][_o<hash>][_<state>]``.
 
     THE MIRROR OF ``zoo_keeper.core.kit.module_stem``, and the two must change
@@ -208,6 +215,8 @@ def module_stem(typ: str, theme: str, style: int,
         base += f"_m{material}"
     if glazing in STEM_GLAZINGS:
         base += f"_g{glazing}"
+    if budget_tiles:
+        base += LIGHT_BUDGET_STEM
     if voids_tag:
         base += f"_v{voids_tag}"
     if openings_tag:
@@ -288,10 +297,12 @@ def resolve_themed_stem(slot: dict, theme: str, style: int, state: str = None,
                  "stock": None if stock in (None, "", "none") else str(stock),
                  "variant": variant or None}
     glazing = slot.get("glazing") if slot.get("glazing") in STEM_GLAZINGS else None
+    budget = bool(slot.get("light_budget_tiles")) and typ in LIGHT_BUDGET_ROLES
     stem = module_stem(typ, theme, eff_style, width_cm,
                        state if state else _default_stem_state(slot),
                        depth_cm, vtag, otag, height_cm, species=species,
-                       material=material, glazing=glazing, **dress)
+                       material=material, glazing=glazing, budget_tiles=budget,
+                       **dress)
     return stem, (not exact)
 
 
@@ -351,6 +362,10 @@ def resolve_slot_choice(slot, theme, style, library_dir):
     # library built before it has the opaque module and no `_gstorefront`.
     if slot.get("glazing") in STEM_GLAZINGS:
         candidates = candidates + [dict(c, glazing=None) for c in candidates]
+    # ...and a storefront-lit plate to the merged one (Zoo 1.24.0): a library
+    # built before it has the plain floor and no `_lbt`.
+    if slot.get("light_budget_tiles"):
+        candidates = candidates + [dict(c, light_budget_tiles=None) for c in candidates]
     mat = stem_material(slot)
     tries = [(cand, m) for cand in candidates
              for m in ((mat, None) if mat else (None,))]
