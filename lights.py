@@ -675,6 +675,49 @@ def _room_ambient(r, floor_z, ceiling_z, colour):
     }
 
 
+def _storefront_reach(bounds, story, pos, rot, count, spacing, storefronts,
+                      wall_thick):
+    """Horizontal metres from a ceiling row to the storefront glass that
+    walls its room, or 0.0 (0.155.0).
+
+    A fluorescent's range is derived to the floor UNDER it (Lux's `drop +
+    0.75`), and one row runs down a room's middle -- so in a 12 m deep store
+    the floor at the glass, the part the street sees, is 6 m off to the side
+    and outside every pool. `storefronts` are the storefront wall and door
+    slots (`deli_counter.storefront_slot`) as ``{story, facing, x, y}`` at the
+    wall's centreline, which is where a room's bounds sit; a slot walls this
+    room when it lies on one of the room's edges (within a wall's thickness)
+    and inside the room's span along it. For each such slot the distance is
+    from the row's NEAREST lamp, measured across the wall -- a row parallel
+    to the glass is its offset, a row running at the glass is its end lamp's
+    -- and the row's reach is the largest of them: it must light the floor
+    at every glass line it faces. Lux clamps the range, so a far wall costs
+    no more than the clamp.
+    """
+    if not storefronts:
+        return 0.0
+    minx, miny, maxx, maxy = bounds
+    tol = max(float(wall_thick), 0.05)
+    # the rows are axis-aligned, and this is `_row_runs`' own reading of rot
+    dx, dy = (1.0, 0.0) if abs(rot) < 45.0 else (0.0, 1.0)
+    start = -(count - 1) * 0.5 * spacing if count > 1 else 0.0
+    lamps = [(pos[0] + (start + i * spacing) * dx, pos[1] + (start + i * spacing) * dy)
+             for i in range(max(1, count))]
+    edge = {"S": (1, miny), "N": (1, maxy), "W": (0, minx), "E": (0, maxx)}
+    reach = 0.0
+    for sf in storefronts:
+        if int(sf.get("story", 0) or 0) != story or sf.get("facing") not in edge:
+            continue
+        axis, line = edge[sf["facing"]]
+        at = (float(sf["x"]), float(sf["y"]))
+        along = at[1 - axis]
+        lo, hi = (minx, maxx) if axis == 1 else (miny, maxy)
+        if abs(at[axis] - line) > tol or not (lo - tol <= along <= hi + tol):
+            continue
+        reach = max(reach, min(abs(p[axis] - at[axis]) for p in lamps))
+    return round(reach, 3)
+
+
 def _row_for_bounds(bounds):
     """A ceiling row runs along the room's longer axis. Returns
     (rot_y, count, spacing)."""
@@ -876,7 +919,8 @@ def _storefront_sign(openings, wall_thick):
 
 def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
                          wall_thick, ceiling_voids=None, partitions=None,
-                         report=None, volumes=None, club_rooms=None):
+                         report=None, volumes=None, club_rooms=None,
+                         storefronts=None):
     """Derive default light anchors: one fluorescent ceiling row per interior
     room, one area light per window opening, a wall pack over every exterior
     door, and one storefront sign. Every room also carries a `room_ambient`
@@ -905,7 +949,11 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
     With them, a row steps off every partition it would cross and moves off
     any it would lie along (`_row_runs`, `_colinear_shift`). `report`, a
     dict, receives the counts: nudged, dropped, rows_shifted, club_rooms,
-    tv_screens.
+    tv_screens, storefront_rows.
+
+    `storefronts` (0.155.0) are the storefront slots as ``{story, facing, x,
+    y}``; a fluorescent row whose room they wall carries `reach`, the metres
+    to that glass (`_storefront_reach`). Without them no anchor carries it.
     """
     anchors = []
     rep = report if report is not None else {}
@@ -913,6 +961,7 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
     rep.setdefault("club_rooms", 0)
     rep.setdefault("tv_screens", 0)
     rep.setdefault("back_bars", 0)
+    rep.setdefault("storefront_rows", 0)
     clear = wall_clearance(wall_thick)
     club_ids = set(club_rooms or ())
     # The aisle behind a club bar, asked of the one function that derives
@@ -1008,6 +1057,17 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
                 "drop": round(lamp_z - c[2], 3),
                 "reacts_to_alarm": True,
             })
+            # A ROW WALLED BY A STOREFRONT reaches the glass (0.155.0): the
+            # walker, 2026-09-28, "do the glass first then the troffer reach".
+            # Only a fluorescent -- a bulb's pool is moody on purpose -- and
+            # only when there is glass to reach, so every other anchor is
+            # byte-identical to 0.154.0's.
+            if not moody:
+                reach = _storefront_reach(bounds, story, pos, rot, n, sp,
+                                          storefronts, wall_thick)
+                if reach > 0.0:
+                    anchors[-1]["reach"] = reach
+                    rep["storefront_rows"] += 1
         # the room's box AFTER its row: a room's first anchor is its ceiling
         # light, as every reader of this list has assumed since v1.0
         anchors += screens
@@ -1071,7 +1131,7 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
 def build_light_manifest(building_id, rooms, openings, story_height,
                          *, cap_thick, wall_thick, authored=None, theme=None,
                          ceiling_voids=None, partitions=None, report=None,
-                         volumes=None, club_rooms=None):
+                         volumes=None, club_rooms=None, storefronts=None):
     """Full `<name>.lights.json` manifest. `authored` is an optional list of
     hand-placed anchors; an authored anchor replaces a derived one with the
     same id (auto defaults + spec overrides, like props). `volumes` and
@@ -1080,7 +1140,8 @@ def build_light_manifest(building_id, rooms, openings, story_height,
                                    cap_thick=cap_thick, wall_thick=wall_thick,
                                    ceiling_voids=ceiling_voids,
                                    partitions=partitions, report=report,
-                                   volumes=volumes, club_rooms=club_rooms)
+                                   volumes=volumes, club_rooms=club_rooms,
+                                   storefronts=storefronts)
     if authored:
         by_id = {a["id"]: a for a in anchors}
         for a in authored:

@@ -1,3 +1,47 @@
+## [0.155.0] - a row walled by a storefront reaches the glass
+
+The walker, 2026-09-28: "yes, do the glass first then the troffer reach".
+Lux derives a fluorescent's range to the floor UNDER the lamp (`drop +
+0.75`), and `derive_light_anchors` lays one row down a room's middle -- so in
+gas_station_a02's 12 m deep sales floor the floor at the storefront, the part
+the street sees through the glass, was 6 m off to the side and outside every
+pool.
+
+A fluorescent ceiling row whose room is walled by storefront glass now
+carries `reach`: the metres from the row's nearest lamp to that glass,
+across the wall, the largest over every storefront line the room has
+(`lights._storefront_reach`). Lux >= 0.56.0 derives the range to the floor
+at the glass from it, under its usual clamp; Zoo >= 1.21.0 carries it onto
+the fixture markers. The storefront lines are the slots the slot manifest
+tags `glazing: "storefront"` (`storefront_slot`, the same rule), so the two
+cannot disagree about which glass is a shop front. A bare bulb does not
+reach, and a room with no storefront glass is byte-identical to 0.154.0.
+
+THE LIBRARY (build.py --all): 17 rows in 8 buildings reach, and only
+storefront buildings --
+
+    gas_station_a02     sales_floor 6.0, food_service 4.5, walk_in_cooler 4.5
+    gas_station_a03     sales_floor 5.75, back_hall 1.5
+    card_shop_a01       sales_floor 5.5
+    cr_gas, gas_station, gas_station_a01, gas_street, gs_corner_station
+                        sales_floor 11.0 (Lux's clamp caps it at 7.5),
+                        stockroom 2.167
+
+MEASURED FIRST on cold run 9103's walk copy at night, the ranges set at
+runtime (gas_station_a02's sales floor at 7.5 against 4.55), clear storefront
+glass on both sides: the sales floor 9.4 -> 15.7, through the storefront
+9.0 -> 11.1, the store from 8 m 30.5 -> 34.6 at the frame's centre. Moving
+the row toward the glass instead measured worse (through the glass 8.2).
+
+`test_storefront_reach.py`: a parallel row reaches across the room (6.0); the
+control without glass is 0.154.0's anchor exactly; glass on another room, on
+another storey or off the room's edge is not this room's; a row running at
+the glass reaches from its nearest lamp, and takes the largest of two glass
+lines; a bare bulb does not reach; and in the shipped library the gas
+station's sales floor carries 6.0, only storefront buildings carry a reach,
+only on fluorescents, and every storefront building has one. Against
+0.154.0's build/ the last two fail.
+
 ## [0.154.0] - a shop floor is lit to sell things
 
 `lights.derive_light_anchors` gave a room bare-bulb pendants when it was
