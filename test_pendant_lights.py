@@ -37,6 +37,18 @@ def test_an_objective_room_is_moody_at_any_storey():
     assert anchors and anchors[0]["type"] == "pendant"
 
 
+def test_a_public_room_keeps_its_fluorescent_row_even_as_the_objective():
+    """0.154.0: a store's sales floor marked the heist's objective is still
+    a shop floor, lit to sell things -- the walker's night photographs are
+    of exactly that room glowing through its storefront."""
+    rooms = [_room(id="sales_floor", objective=True, role="public_entry")]
+    anchors = lights.derive_light_anchors(rooms, [], 3.7, cap_thick=_cap, wall_thick=0.3)
+    assert anchors[0]["type"] == "fluorescent" and anchors[0]["id"] == "sales_floor_ceiling"
+    # a vault is still a vault, whatever else it is
+    vault = [_room(id="vault", objective=True, role="objective_room")]
+    assert lights.derive_light_anchors(vault, [], 3.7, cap_thick=_cap, wall_thick=0.3)[0]["type"] == "pendant"
+
+
 def test_the_bulb_hangs_on_its_cord_below_the_row_mount():
     moody = lights.derive_light_anchors(
         [_room(id="a", objective=True)], [], 3.7, cap_thick=_cap, wall_thick=0.3)[0]

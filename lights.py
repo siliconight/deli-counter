@@ -144,6 +144,15 @@ _PENDANT_CORD = 0.6     # metres of cord between slab underside and bulb
 #: room and never packed tighter than a real cord spacing; a big room is
 #: supposed to have dark corners -- that is what "moody" MEANS.
 _PENDANT_MAX = 5        # bulbs per room, however big the room
+#: A PUBLIC ROOM IS LIT TO SELL THINGS, whatever a heist wants from it
+#: (0.154.0). The rule above means a vault and a count room; a mode that
+#: marks a store's sales floor the objective made it a cellar -- measured:
+#: `gas_station_a02` and `fuel_stop_heist`, the library's only two
+#: objective rooms with a public role, had five bare bulbs over the sales
+#: floor, the room the walker's night photographs show glowing out through
+#: the storefront. They keep the fluorescent row the other seven stores'
+#: sales floors have.
+_LIT_ROLES = ("public_entry",)
 _PENDANT_MIN_SPACING = 3.5   # metres between bulbs, minimum
 _MAX_FIXTURES = 5       # cap a single room's row
 _CEILING_GAP = 0.1      # hang fixtures this far below the ceiling PLANE
@@ -946,7 +955,7 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
         # Below grade, or guarding the take: bare bulbs instead of the office
         # row. Same run machinery (a stairwell still splits the line around
         # its hole), different type, density and hang -- see _PENDANT_AREA.
-        moody = story < 0 or bool(r.get("objective"))
+        moody = story < 0 or (bool(r.get("objective")) and r.get("role") not in _LIT_ROLES)
         if moody:
             w = bounds[2] - bounds[0]
             d = bounds[3] - bounds[1]

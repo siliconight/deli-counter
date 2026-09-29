@@ -1,3 +1,21 @@
+## [0.154.0] - a shop floor is lit to sell things
+
+`lights.derive_light_anchors` gave a room bare-bulb pendants when it was
+below grade or the objective -- "a vault, a count room" (the rule's own
+words). A heist mode that marks a store's SALES FLOOR its objective made it
+a cellar: MEASURED over every built manifest, `gas_station_a02` and
+`fuel_stop_heist` (and two older builds of it) -- the library's only
+objective rooms with a public role -- had five bare bulbs over the sales
+floor, which is the room the walker's night photographs (2026-09-28) show
+glowing out through a storefront, and the room Deli Counter 0.153.0 just
+made see-through. The other seven stores' sales floors already had the
+fluorescent row.
+
+`_LIT_ROLES` ("public_entry"): an objective room with a public role keeps
+the fluorescent row. A vault, a count room, an office with the safe keep
+their pendants. `test_pendant_lights.py` -- the new test fails without the
+change (1 failed).
+
 ## [0.153.0] - a storefront is see-through glass
 
 The walker, 2026-09-28: "yes, make the storefront see-through glass", after
