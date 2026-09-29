@@ -759,6 +759,29 @@ def _storefront_spans(bounds, story, storefronts, wall_thick):
     return spans
 
 
+def room_on_edge(rooms, story, facing, x, y, wall_thick):
+    """The id of the room one of whose exterior edges passes through
+    (``x``, ``y``) on the side ``facing`` -- the room a wall slot at the wall's
+    centreline stands in front of -- or None (0.159.0). The edge test is
+    `_storefront_spans`'; along the edge the point must lie inside the room's
+    own span, so a slot on a partition's line belongs to the first room."""
+    tol = max(float(wall_thick or 0.3), 0.05)
+    for r in rooms or []:
+        b = r.get("bounds")
+        if not b or int(r.get("story", 0) or 0) != int(story or 0):
+            continue
+        minx, miny, maxx, maxy = b
+        edge = {"S": (1, miny), "N": (1, maxy), "W": (0, minx), "E": (0, maxx)}.get(facing)
+        if edge is None:
+            continue
+        axis, line = edge
+        at = (float(x), float(y))
+        lo, hi = (minx, maxx) if axis == 1 else (miny, maxy)
+        if abs(at[axis] - line) <= tol and lo - 1e-6 <= at[1 - axis] <= hi + 1e-6:
+            return r.get("id")
+    return None
+
+
 def storefront_lit_rooms(rooms, storefronts, wall_thick, club_rooms=()):
     """Ids of the rooms lit from outside through storefront glass (0.157.0):
     a room with a fluorescent row -- not a club room, not below grade, not an

@@ -1,3 +1,47 @@
+## [0.159.0] - storefront glass fronts the customer rooms only
+
+The walker, 2026-09-29: "keep glass off the back rooms, use a room-name list".
+A spec names a whole exterior wall `storefront_glass`, and in five of the
+ten stores that wall also runs past a stockroom, in two past a back hall, in
+two past a walk-in cooler (MEASURED on 0.158.0's build) -- each of which got
+shop-front glass, a pavement spill and light-budget tiles.
+
+THE RULE: `SHOPFRONT_ROOMS` ("sales_floor", "food_service") -- the customer
+rooms behind glass in the library: the sales floor in every store, the food
+counter in the two that have one. Roles could not say it: the food counter
+and the stockroom are both `fortifiable`. `storefront_slot` now also asks the
+room a slot stands in front of (`slot_room`, `lights.room_on_edge`: the room
+one of whose exterior edges passes through the slot at the wall's
+centreline), and `back_room_wall` gives a back room's stretch of a
+storefront wall -- its wall and door slots -- the building's own exterior
+material (`default_material`'s kind: concrete, stone) instead of glass.
+`storefront_lines`, which the reach, the spill and the light-budget tiles
+read, calls `storefront_slot`, so all three follow without a change of their
+own.
+
+THE LIBRARY (build.py --all): per store, storefront slots / spills / tiled
+plates --
+
+    gas_station_a02, fuel_stop_heist   18 -> 14 / 7 -> 6 / 6 -> 4   (the walk-in)
+    gas_station_a01, gas_street,
+    gs_corner_station, cr_gas,
+    gas_station                        10 -> 8  / 4 -> 3 / 4 -> 2   (the stockroom)
+    gas_station_a03, stop_n_go         11 -> 9  / 6 -> 5 / 4 -> 2   (the back hall)
+    card_shop_a01                      unchanged (its glass fronts the sales floor only)
+
+Every building's GLB is byte-identical: the change is the art pass's input
+(slots) and the light manifest, not the greybox. LEFT AS IT WAS: the
+greybox's own wall boxes and their acoustic surfaces on those stretches are
+still the spec wall's `storefront_glass` -- a stockroom wall that sounds like
+glass. Windows in a back room's wall are windows and keep their panes.
+
+`test_storefront_glazing.py`: the shop-front rooms are the customer rooms;
+every tagged slot stands in front of one, and every full wall and door on a
+storefront wall in front of one is tagged; in every store a back room's
+stretch is untagged and built in the building's own material; the nine back
+rooms that had glass have no storefront slot, no spill and no reach. Against
+0.158.0's build/ they fail.
+
 ## [0.158.0] - a storefront is built from the kit, on every store
 
 Two of the library's nine convenience stores had a storefront on paper and a

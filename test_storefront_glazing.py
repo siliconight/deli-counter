@@ -33,6 +33,28 @@ def _slots(name):
     return json.load(open(os.path.join(HERE, "build", name + ".slots.json"), encoding="utf-8"))["slots"]
 
 
+def _rooms(name):
+    return json.load(open(os.path.join(HERE, "build", name + ".gameplay.json"), encoding="utf-8"))["rooms"]
+
+
+def _room(rooms, s):
+    import lights
+    t = s["transform"]["translation"]
+    return lights.room_on_edge(rooms, s.get("story", 0), s.get("facing"), t[0], t[1], 0.3)
+
+
+def _dc_constant(name):
+    # deli_counter imports bpy, so its constants are read from the source
+    import ast
+    tree = ast.parse(open(os.path.join(HERE, "deli_counter.py"), encoding="utf-8").read())
+    (v,) = [ast.literal_eval(n.value) for n in tree.body if isinstance(n, ast.Assign)
+            and any(getattr(t, "id", None) == name for t in n.targets)]
+    return v
+
+
+SHOPFRONT_ROOMS = _dc_constant("SHOPFRONT_ROOMS")
+
+
 def _spec(name):
     return json.load(open(os.path.join(HERE, "specs", name + ".json"), encoding="utf-8"))
 
@@ -69,11 +91,15 @@ def test_only_the_storefronts_full_walls_and_doors_are_tagged(name):
              if w.get("story", 0) == 0 and w["material"] == "storefront_glass"}
     tagged = [s for s in _slots(name) if s.get("glazing") == "storefront"]
     assert tagged, name
+    rooms = _rooms(name)
     for s in tagged:
         assert s["wall"] in walls and s["role"] in ("wall", "doorway") and s["size_mod"] == "full", s["slot_id"]
-    # and every full wall and door on those walls IS tagged
+        assert _room(rooms, s) in SHOPFRONT_ROOMS, (s["slot_id"], _room(rooms, s))
+    # and every full wall and door on those walls, in front of a customer
+    # room, IS tagged
     for s in _slots(name):
-        if s.get("wall") in walls and s["role"] in ("wall", "doorway") and s.get("size_mod") == "full":
+        if (s.get("wall") in walls and s["role"] in ("wall", "doorway") and s.get("size_mod") == "full"
+                and _room(rooms, s) in SHOPFRONT_ROOMS):
             assert s.get("glazing") == "storefront", s["slot_id"]
 
 
@@ -121,3 +147,43 @@ def test_the_mirror_names_what_zoo_plans_for_a_storefront():
     door = next(s for s in slots if s["role"] == "doorway")
     variants = themed_tscn.state_variant_stems(door, "delco_1997", 1, None)
     assert [v[0] for v in variants] == ["open"] and variants[0][1] in planned, variants
+
+
+# --------------------------------------------------------------------------- #
+# 0.159.0: storefront glass fronts the customer rooms only
+# --------------------------------------------------------------------------- #
+
+def test_the_shopfront_rooms_are_the_customer_rooms():
+    assert set(SHOPFRONT_ROOMS) == {"sales_floor", "food_service"}
+
+
+@pytest.mark.parametrize("name", STORES)
+def test_a_back_room_behind_a_storefront_wall_has_a_wall(name):
+    """The walker: "keep glass off the back rooms". A storefront wall's slots
+    in front of a stockroom, back hall or walk-in are untagged and built in
+    the building's own exterior material."""
+    import material_kind
+    spec = _spec(name)
+    walls = {"ext_0_" + w["wall"] for w in spec["ext_walls"]
+             if w.get("story", 0) == 0 and w["material"] == "storefront_glass"}
+    default = material_kind.kind_for(spec.get("default_material"))
+    rooms = _rooms(name)
+    for s in _slots(name):
+        room = _room(rooms, s)
+        if s.get("wall") in walls and s["role"] in ("wall", "doorway") and room is not None                 and room not in SHOPFRONT_ROOMS:
+            assert s.get("glazing") is None, (s["slot_id"], room)
+            assert s["material"] == default, (s["slot_id"], room, s["material"], default)
+
+
+def test_the_back_rooms_that_had_glass_have_none():
+    # MEASURED on 0.158.0's build: these sat behind storefront glass
+    import lights
+    had = {"cr_gas": "stockroom", "gas_station": "stockroom", "gas_station_a01": "stockroom",
+           "gas_street": "stockroom", "gs_corner_station": "stockroom", "gas_station_a02": "walk_in_cooler",
+           "fuel_stop_heist": "walk_in_cooler", "gas_station_a03": "back_hall", "stop_n_go": "back_hall"}
+    for name, room in had.items():
+        rooms = _rooms(name)
+        glass = [s for s in _slots(name) if s.get("glazing") == "storefront" and _room(rooms, s) == room]
+        assert not glass, (name, room, [s["slot_id"] for s in glass])
+        lit = json.load(open(os.path.join(HERE, "build", name + ".lights.json"), encoding="utf-8"))["anchors"]
+        assert not [a for a in lit if a.get("room") == room and (a["type"] == "storefront_spill" or "reach" in a)], (name, room)

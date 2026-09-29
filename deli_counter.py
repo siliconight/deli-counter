@@ -2838,15 +2838,50 @@ def club_room_ids(builder):
             if _ld.is_strip_club_room({"id": r.id}, _ld.club_building_id(builder.s))}
 
 
+#: THE ROOMS A STOREFRONT FRONTS (0.159.0), by name. The walker, 2026-09-29:
+#: "keep glass off the back rooms, use a room-name list". A spec names a whole
+#: exterior wall `storefront_glass`, and in five of the ten stores that wall
+#: also runs past a stockroom, in two past a back hall, in two past a
+#: walk-in cooler -- MEASURED on 0.158.0's build -- which got shop-front
+#: glass, a pavement spill and light-budget tiles. The customer rooms are
+#: these: `sales_floor` in every store, `food_service` in the two with a
+#: food counter. Roles cannot say it: the food counter and the stockroom are
+#: both `fortifiable`.
+SHOPFRONT_ROOMS = ("sales_floor", "food_service")
+
+
+def slot_room(slot, builder):
+    """The room a wall slot stands in front of (`lights.room_on_edge`)."""
+    import lights as _lights
+    t = (slot.get("transform") or {}).get("translation") or []
+    if len(t) < 2:
+        return None
+    return _lights.room_on_edge(builder.gameplay.get("rooms", []), slot.get("story", 0),
+                                slot.get("facing"), t[0], t[1],
+                                getattr(builder.s, "wall_thick", None))
+
+
 def storefront_slot(slot, spec_material, builder):
     """Is this slot a storefront's full wall or door? Read against the SPEC's
     material id -- the manifest writes the skin kind, `glass_facade`, which
     every curtain wall shares -- on a building with an interior (a facade
-    shell's glass stays opaque; there is nothing behind it)."""
+    shell's glass stays opaque; there is nothing behind it), in front of a
+    customer room (`SHOPFRONT_ROOMS`, 0.159.0)."""
     return (spec_material in STOREFRONT_MATERIALS
             and slot.get("role") in STOREFRONT_ROLES
             and slot.get("size_mod", "full") == "full"
-            and not getattr(builder.s, "facade", False))
+            and not getattr(builder.s, "facade", False)
+            and slot_room(slot, builder) in SHOPFRONT_ROOMS)
+
+
+def back_room_wall(slot, spec_material, builder):
+    """A wall or door slot of a storefront wall in front of a BACK room
+    (0.159.0): it is built in the building's own exterior material, not glass
+    -- a stockroom behind a shop front has a wall."""
+    if spec_material not in STOREFRONT_MATERIALS or slot.get("role") not in STOREFRONT_ROLES:
+        return False
+    room = slot_room(slot, builder)
+    return room is not None and room not in SHOPFRONT_ROOMS
 
 
 def write_slot_manifest(builder, path):
@@ -2885,6 +2920,11 @@ def write_slot_manifest(builder, path):
         _s = dict(_s, material=_k) if _m else _s
         if storefront_slot(_s, _m, builder):
             _s = dict(_s, glazing="storefront")
+        elif back_room_wall(_s, _m, builder):
+            # a back room's stretch of the shop front is a wall (0.159.0)
+            _d = material_kind.kind_for(getattr(builder.s, "default_material", None))
+            if _d:
+                _s = dict(_s, material=_d)
         if _s.get("role") in LIGHT_BUDGET_ROLES and _s.get("room") in _lit:
             _s = dict(_s, light_budget_tiles=True)
         _slots.append(_s)
