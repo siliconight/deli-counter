@@ -680,6 +680,24 @@
       "rot_y": 90.0,
       "wall": "ext_0_N",
       "reacts_to_alarm": true
+    },
+    {
+      "id": "customer_floor_counter_accent",
+      "type": "counter_accent",
+      "source": "derived",
+      "pos": [
+        -12.0,
+        -7.0,
+        2.3
+      ],
+      "rot_y": 0.0,
+      "room": "customer_floor",
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 2.3,
+      "reacts_to_alarm": true
     }
   ]
 }

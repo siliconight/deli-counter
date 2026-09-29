@@ -2244,13 +2244,29 @@ def _room_kind(room, building=None):
 
 def _room_volume_count(spec, room):
     """Volumes standing in this room on its own storey -- what is already
-    there, so an authored room is topped up rather than doubled."""
+    there, so an authored room is topped up rather than doubled.
+
+    A piece HUNG over a body's head with no collision (0.160.0) is not in
+    the count: it stands on no floor, so it takes no share of what the
+    target measures. The store window's beer sign -- `window_sign`, 2.4 to
+    3.0 m up, `collision: none` -- counted, and a store refurnished after it
+    was hung placed one piece fewer than the one furnished before it
+    (gas_station_a02's `shelf_run_3`; cr_gas's and stop_n_go's cartons
+    re-drawn), so the library stopped being a fixed point of furnish.
+    "Over a body's head" is `clearances.min_headroom_m`, the same bound
+    `hung_headroom_ok` holds a hung piece to."""
     x0, y0, x1, y1 = room["bounds"]
     sh = _story_height(spec)
     story = room.get("story", 0)
+    import agent_contract
+    headroom = agent_contract.min_headroom()
     n = 0
     for v in spec.get("volumes", []):
         if not (x0 <= v.get("x", 1e9) <= x1 and y0 <= v.get("y", 1e9) <= y1):
+            continue
+        bottom = v.get("z", 0) - v.get("size_z", 0) / 2
+        if (v.get("collision") == "none"
+                and bottom - story * sh >= headroom - 1e-9):
             continue
         if abs(v.get("z", 0) - (story * sh + v.get("size_z", 0) / 2)) < sh:
             n += 1

@@ -62,6 +62,12 @@
    "acoustic": "Wood",
    "absorption": 0.25,
    "damping": 0.2
+  },
+  {
+   "id": "metal_painted",
+   "acoustic": "Metal",
+   "absorption": 0.25,
+   "damping": 0.2
   }
  ],
  "ext_walls": [
@@ -717,6 +723,19 @@
    "size_z": 1.4,
    "collision": "convex",
    "material": "metal"
+  },
+  {
+   "name": "window_sign",
+   "x": -4.2,
+   "y": -10.67,
+   "z": 2.7,
+   "size_x": 1.2,
+   "size_y": 0.06,
+   "size_z": 0.6,
+   "collision": "none",
+   "material": "metal_painted",
+   "form": "window",
+   "variant": 0
   },
   {
    "name": "counter_service_r48016798_1",

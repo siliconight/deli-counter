@@ -3049,7 +3049,8 @@ def write_light_manifest(builder, path):
           f"{_report.get('tv_screens', 0)} TV screen(s) spilling; "
           f"{_report.get('back_bars', 0)} back bar(s) lit; "
           f"{_report.get('storefront_rows', 0)} row(s) reaching storefront glass; "
-          f"{_report.get('storefront_spills', 0)} spill(s) out through it)")
+          f"{_report.get('storefront_spills', 0)} spill(s) out through it; "
+          f"{_report.get('counter_accents', 0)} counter accent(s))")
     return data
 
 

@@ -1,3 +1,56 @@
+## [0.160.0] - a warm bulb over the register; a beer sign in the window
+
+The walker, 2026-09-29: "add the warm counter accent and the window sign
+next", from their 1990s lighting reference on the convenience store at night
+-- cooler light on the aisles, a warmer accent at the counter, and a small red
+or blue window sign as an accent against the fluorescent interior.
+
+THE COUNTER ACCENT (`lights.py`): one `counter_accent` anchor over the centre
+of each volume whose name carries `register_counter` (`_COUNTER_VOLUMES`, the
+substring rule `prop_species` uses -- the gas stations' `register_counter`
+and the delis' `front_register_counter`), in a room the fluorescent row lights
+(not a club room, not a moody one), on the pendant's cord (`_PENDANT_CORD`)
+under the ceiling, `drop` from the bulb. Appended with the spills, LAST, so
+every anchor before it keeps its place. Lux (>= 0.59.0) lights it warm, at a
+troffer's level, scaled with the wash; Zoo (>= 1.27.0) hangs a
+`pendant_fixture` for it. The log line counts them.
+
+THE WINDOW SIGN (`migrate_window_sign.py`, run over specs/): every store
+(`migrate_slush_machine.is_store`) hangs one `window_sign` 1.2 x 0.06 x 0.6
+inside its shop-front glass -- on the storey-0 storefront wall that is an edge
+of the sales floor, beside the door nearest the room's centre, 0.15 inside the
+wall's face, its top at the glass's head (where Zoo's chains end), facing the
+street; refused and reported, never forced, where no span beside a door is
+clear. The sign is `metal_painted`, which none of the nine stores' own
+material tables defined, and `validate` refuses a volume naming a material
+its spec lacks (cr_gas, the first store alphabetically, stopped the commit
+gate); the migration adds the library's one definition of it -- the one 166
+specs already carry -- to a store that does not have it. `prop_species` routes `window_sign` to `neon_sign`; the volume's
+`form: window` rides the slot, so Zoo builds a beer on a clear sheet. No
+collision, and no light: the tube is the bright thing, and a lamp would take a
+per-mesh slot in a room that has spent them.
+
+A HUNG PIECE IS NOT FURNITURE IN THE COUNT (`level_design._room_volume_count`).
+`furnish` tops a room up to a target less the volumes already in it; the sign
+counted, and a store refurnished after it was hung placed one piece fewer
+(gas_station_a02's `shelf_run_3`; cr_gas's and stop_n_go's cartons re-drawn)
+-- `test_club_fixtures`' fixed-point check caught it. A volume with no
+collision whose bottom is at least `clearances.min_headroom_m` (2.0) over its
+storey's floor is skipped: the bound `hung_headroom_ok` already holds a hung
+piece to. The card shop's hangers, signs and pennants are furnish's own and
+stripped before the count, so no other spec moved. And the migration inserts
+the sign BEFORE the pieces furnish wrote, where a refurnish puts it; appended
+last, it came back 10-18 places earlier and the spec failed the same check by
+order alone.
+
+THE LIBRARY (build.py --all): 15 buildings carry a counter accent (the nine
+stores and six delis: corner_deli_heist_01, cr_deli, deli_a01-a03,
+night_deli); 9 carry a window sign. Only the nine stores' GLBs changed (the
+sign's greybox); every other building's recorded output hash is unchanged.
+
+Tests: `test_counter_accent.py` (9) and `test_window_sign.py` (9);
+`test_lights_partitions`' pinned report gains `counter_accents: 0`.
+
 ## [0.159.0] - storefront glass fronts the customer rooms only
 
 The walker, 2026-09-29: "keep glass off the back rooms, use a room-name list".

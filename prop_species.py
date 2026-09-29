@@ -223,6 +223,8 @@ PROP_SPECIES = (
      "booth_seat"),
     (("club_chair", "tub_chair", "lounge_chair"), "club_chair"),
     (("neon", "club_sign"), "neon_sign"),
+    # a store's hung beer sign (0.160.0): the same species in its `window` form
+    (("window_sign",), "neon_sign"),
     (("chair", "seat", "bench", "waiting"), "chair"),
     (("pool", "billiard"), "pool_table"),
     (("cocktail", "club_table", "highboy"), "cocktail_table"),

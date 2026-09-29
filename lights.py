@@ -137,6 +137,16 @@ _TARGET_SPACING = 4.0
 #: warm incandescent omni with a tight, drop-derived range.
 _PENDANT_AREA = 25.0    # m^2 of room per bare bulb
 _PENDANT_CORD = 0.6     # metres of cord between slab underside and bulb
+#: THE COUNTER'S WARM ACCENT (0.160.0). The walker, 2026-09-29: "add the warm
+#: counter accent", from their 1990s lighting reference on the convenience
+#: store at night -- "cooler light on the aisles and a warmer or more
+#: saturated accent at the counter". One bare bulb on the pendant's cord over
+#: the centre of each volume whose name CARRIES one of these -- the gas
+#: stations' `register_counter` and the delis' `front_register_counter`, the
+#: substring rule `prop_species` uses -- in a room lit by a fluorescent row
+#: (not a club room, not a moody one). Lux (>= 0.59.0) lights it warm, at a
+#: troffer's level, scaled with the wash; Zoo builds `pendant_fixture` for it.
+_COUNTER_VOLUMES = ("register_counter",)
 #: Density guardrails, added after census #5 measured the first law's
 #: failure: area/25 alone gave the arena's 275 m^2 skybox suite ELEVEN
 #: bulbs 1.5 m apart -- a chandelier row, not a moody cellar, and every
@@ -1091,6 +1101,7 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
     rep.setdefault("back_bars", 0)
     rep.setdefault("storefront_rows", 0)
     rep.setdefault("storefront_spills", 0)
+    rep.setdefault("counter_accents", 0)
     spills = []
     clear = wall_clearance(wall_thick)
     club_ids = set(club_rooms or ())
@@ -1211,6 +1222,27 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
                                  round(lamp_z - c[2], 3), room_reach)
             spills += got
             rep["storefront_spills"] += len(got)
+        # THE COUNTER'S WARM ACCENT (0.160.0): one bulb over each register
+        # counter in a room the fluorescents light. Appended LAST with the
+        # spills, so every anchor before it keeps its place.
+        if not moody:
+            for k, v in enumerate(sorted((v for v in in_room
+                                          if any(k in str(v.get("name", ""))
+                                                 for k in _COUNTER_VOLUMES)),
+                                         key=lambda v: str(v.get("name")))):
+                bz = round(ceiling_z - _PENDANT_CORD, 3)
+                spills.append({
+                    "id": "%s_counter_accent%s" % (r.get("id", "room"), "_%d" % k if k else ""),
+                    "type": "counter_accent",
+                    "source": "derived",
+                    "pos": [round(float(v["x"]), 3), round(float(v["y"]), 3), bz],
+                    "rot_y": 0.0,
+                    "room": r.get("id"),
+                    "row": {"count": 1, "spacing": 0.0},
+                    "drop": round(bz - c[2], 3),
+                    "reacts_to_alarm": True,
+                })
+                rep["counter_accents"] += 1
         # the room's box AFTER its row: a room's first anchor is its ceiling
         # light, as every reader of this list has assumed since v1.0
         anchors += screens

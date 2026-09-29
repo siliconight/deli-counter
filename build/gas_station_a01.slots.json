@@ -3191,7 +3191,7 @@
       "slot_id": "floor_sales_floor",
       "role": "floor",
       "size_mod": "full",
-      "style": 7,
+      "style": 8,
       "material": "carpet",
       "current_ref": "floor_greybox_01",
       "kit_axis": "theme",
@@ -3229,7 +3229,7 @@
       "slot_id": "ceiling_sales_floor",
       "role": "ceiling",
       "size_mod": "full",
-      "style": 9,
+      "style": 10,
       "material": "ceiling_tile",
       "current_ref": "ceiling_greybox_01",
       "kit_axis": "theme",
@@ -3267,7 +3267,7 @@
       "slot_id": "floor_stockroom",
       "role": "floor",
       "size_mod": "full",
-      "style": 8,
+      "style": 9,
       "material": "tile",
       "current_ref": "floor_greybox_01",
       "kit_axis": "theme",
@@ -3304,7 +3304,7 @@
       "slot_id": "ceiling_stockroom",
       "role": "ceiling",
       "size_mod": "full",
-      "style": 9,
+      "style": 10,
       "material": "ceiling_tile",
       "current_ref": "ceiling_greybox_01",
       "kit_axis": "theme",
@@ -3378,7 +3378,7 @@
       "slot_id": "ceiling_back_office",
       "role": "ceiling",
       "size_mod": "full",
-      "style": 10,
+      "style": 11,
       "material": "plaster",
       "current_ref": "ceiling_greybox_01",
       "kit_axis": "theme",
@@ -4501,6 +4501,45 @@
         "pivot": "center",
         "openings": [],
         "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "window_sign",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 7,
+      "material": "metal_painted",
+      "species": "neon_sign",
+      "stock": null,
+      "variant": 4,
+      "form": "window",
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          -3.2,
+          -10.67,
+          2.7
+        ],
+        "rot_y": 0.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.2,
+          0.06,
+          0.6
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "none"
       }
     },
     {
