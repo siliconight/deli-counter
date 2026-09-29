@@ -20,12 +20,13 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 STORES = ("cr_gas", "fuel_stop_heist", "gas_station", "gas_station_a01", "gas_station_a02",
           "gas_station_a03", "gas_street", "gs_corner_station", "stop_n_go")
 ZOO = os.environ.get("DC_ZOO_ROOT") or os.path.join(os.path.dirname(HERE), "zoo")
-#: Stores whose walls are GENERATED into the shell, not placed as kit modules:
-#: their manifests carry prop slots only, so a storefront tag has no wall
-#: slot to ride on and their glass stays the shell's. MEASURED on 0.153.0's
-#: build: 51 and 17 slots, every one a prop. Named here so the gap is a
-#: failing test the day it closes, not a silent skip.
-SHELL_WALLED = ("fuel_stop_heist", "stop_n_go")
+#: CLOSED in 0.158.0, kept above what replaced it: fuel_stop_heist and
+#: stop_n_go built NON-modular (`modular` unset, mode not `pvp_heist`), so
+#: `_exterior` cut each wall as one box with holes and their manifests carried
+#: prop slots only -- 51 and 17, every one a prop -- and a storefront tag had
+#: no wall slot to ride on. `migrate_modular_storefront` makes every
+#: storefront spec build modular; no store is excepted any more.
+SHELL_WALLED = ()
 
 
 def _slots(name):
@@ -43,9 +44,22 @@ def test_every_store_calls_its_shop_front_a_storefront():
         assert "storefront_glass" in mats and "glass" not in mats, (name, mats)
 
 
-def test_the_shell_walled_stores_have_no_wall_slots():
-    for name in SHELL_WALLED:
-        assert {s["role"] for s in _slots(name)} == {"prop"}, name
+def test_every_storefront_spec_builds_modular():
+    import migrate_modular_storefront as MM
+    assert MM.main(["--check"]) == 0, "run: python migrate_modular_storefront.py"
+    # deli_counter imports bpy, so its constant is read from the source
+    import ast
+    tree = ast.parse(open(os.path.join(HERE, "deli_counter.py"), encoding="utf-8").read())
+    (dc,) = [ast.literal_eval(n.value) for n in tree.body if isinstance(n, ast.Assign)
+             and any(getattr(t, "id", None) == "STOREFRONT_MATERIALS" for t in n.targets)]
+    assert tuple(MM.STOREFRONT_MATERIALS) == tuple(dc)
+
+
+def test_the_once_shell_walled_stores_have_storefront_slots():
+    # 0.158.0: the gap SHELL_WALLED named is closed
+    for name in ("fuel_stop_heist", "stop_n_go"):
+        tagged = [s for s in _slots(name) if s.get("glazing") == "storefront"]
+        assert tagged and {s["role"] for s in tagged} <= {"wall", "doorway"}, name
 
 
 @pytest.mark.parametrize("name", [n for n in STORES if n not in SHELL_WALLED])

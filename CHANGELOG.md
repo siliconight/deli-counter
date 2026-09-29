@@ -1,3 +1,48 @@
+## [0.158.0] - a storefront is built from the kit, on every store
+
+Two of the library's nine convenience stores had a storefront on paper and a
+solid wall on screen. fuel_stop_heist and stop_n_go name `storefront_glass`
+on their shop fronts like the other seven, but they built NON-modular:
+`modular` was unset in both, and `build.py` forces it on only for
+`pvp_heist` (fuel_stop_heist is a `heist`, stop_n_go an `assault`). So
+`_exterior` cut each wall as one box with holes and emitted no wall slots --
+51 and 17 slots, every one a prop -- and the storefront glass (0.153.0), the
+reach (0.155.0), the spill (0.156.0) and the light-budget tiles (0.157.0),
+which all ride on those slots, had nothing to ride on.
+`test_storefront_glazing.SHELL_WALLED` named the gap; it is closed.
+
+THE RULE (`migrate_modular_storefront.py`): a spec with a storey-0
+`storefront_glass` exterior wall and no `modular` key builds modular; a spec
+that says `false` is left as it said and reported. Four specs took the key --
+fuel_stop_heist and stop_n_go, and gas_station_a02 and a03, which were
+already modular through `pvp_heist` and now say so (their GLBs are
+byte-identical).
+
+THE LIBRARY (build.py --all): only those two stores' outputs moved.
+
+    fuel_stop_heist   172 slots (was 51), 18 storefront; rows reaching the
+                      glass on sales_floor 6.0, food_service 4.5,
+                      walk_in_cooler 4.5; 7 spills; 6 plates tiled
+    stop_n_go         96 slots (was 17), 12 storefront; sales_floor 5.75,
+                      back_hall 1.5; 6 spills; 4 plates tiled
+
+NOT SEEN IN A LEVEL: no mission the cold runs build draws either store (the
+three club_block_014 candidates hold nine other buildings), so this is
+verified at Deli Counter's outputs and the nav gate, and the storefront art
+itself is the one gas_station_a02 has shipped since cold run 9102.
+
+Thirteen other specs still build non-modular (07_police_station, bank,
+cbp_town_finale_midbalanced, corner_deli_heist_01, final_stand,
+foundry_heist_vertical, harbor_score, kitbash_demo, primos_pizza,
+rarity_demo, rowhouse_raid, survival_demo, warehouse) -- none has a
+storefront, and they are not changed here.
+
+`test_storefront_glazing.py`: every storefront spec builds modular (the
+migration is a fixed point; its material list equals the builder's, read
+from source because the builder imports bpy); the once-shell-walled stores
+carry storefront wall and door slots; every store's full storefront walls and
+doors are tagged, with no store excepted. Against 0.157.0's build/ they fail.
+
 ## [0.157.0] - a storefront-lit room's floor and ceiling ask for light-budget tiles
 
 The walker, 2026-09-29: "yes, narrow it to the storefront rooms". Zoo 1.23.0
