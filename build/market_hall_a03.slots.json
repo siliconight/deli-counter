@@ -11657,15 +11657,15 @@
       }
     },
     {
-      "slot_id": "poster_wall_store_rf6103d6f_21",
+      "slot_id": "atm_store_rf6103d6f_21",
       "role": "prop",
       "size_mod": "full",
-      "style": 6,
-      "material": "paper",
-      "species": "poster_wall",
+      "style": 4,
+      "material": "metal",
+      "species": "atm",
       "stock": null,
-      "variant": 0,
-      "form": "store",
+      "variant": 3,
+      "form": null,
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
       "wall": null,
@@ -11673,11 +11673,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          15.6,
-          -14.84,
-          1.6
+          22.57,
+          -10.78,
+          0.725
         ],
-        "rot_y": 180.0,
+        "rot_y": 90.0,
         "scale": [
           1.0,
           1.0,
@@ -11686,13 +11686,13 @@
       },
       "fit": {
         "dims": [
-          1.6,
-          0.01,
-          0.6
+          0.6,
+          0.55,
+          1.45
         ],
         "pivot": "center",
         "openings": [],
-        "collision": "none"
+        "collision": "convex"
       }
     },
     {
@@ -11712,7 +11712,7 @@
       "facing": null,
       "transform": {
         "translation": [
-          -15.09,
+          15.6,
           -14.84,
           1.6
         ],
@@ -11751,11 +11751,50 @@
       "facing": null,
       "transform": {
         "translation": [
-          22.84,
-          -8.93,
+          -15.09,
+          -14.84,
           1.6
         ],
-        "rot_y": 90.0,
+        "rot_y": 180.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.6,
+          0.01,
+          0.6
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "none"
+      }
+    },
+    {
+      "slot_id": "poster_wall_store_rf6103d6f_24",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 6,
+      "material": "paper",
+      "species": "poster_wall",
+      "stock": null,
+      "variant": 3,
+      "form": "store",
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          19.07,
+          -14.84,
+          1.6
+        ],
+        "rot_y": 180.0,
         "scale": [
           1.0,
           1.0,

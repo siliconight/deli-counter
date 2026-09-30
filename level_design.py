@@ -990,7 +990,7 @@ def _piece(name, sizes, where, front=False, stock=None, variants=False,
            deck=None, lane=False, most_big=None, under=None,
            reserved_by=None, off_glass=False, backed_by=None,
            ceiling=None, under_hung=False, twin=False, wall_band=False,
-           rooms=None, distinct=False):
+           rooms=None, distinct=False, solo=False):
     return {"name": name, "sizes": tuple(sizes), "where": where,
             "front": front, "stock": stock, "variants": variants,
             "form": form, "seats": seats, "most": most, "lift": lift,
@@ -1000,7 +1000,7 @@ def _piece(name, sizes, where, front=False, stock=None, variants=False,
             "ceiling": ceiling, "under_hung": under_hung, "twin": twin,
             "wall_band": wall_band,
             "rooms": frozenset(rooms) if rooms else None,
-            "distinct": distinct}
+            "distinct": distinct, "solo": solo}
 
 
 def hung_band_bottom(spec):
@@ -1201,6 +1201,21 @@ _PIECES = {p["name"]: p for p in (
     _piece("vending", ((0.85, 0.75, 1.83), (1.0, 0.8, 1.9)), "wall",
            front=True, most=3, variants=True),
     _piece("atm", ((0.6, 0.55, 1.45),), "wall", front=True, most=1),
+    # THE STORE'S ATM (0.164.0). The walker, 2026-09-29: "Convenient stores
+    # should also have ATMs". Zoo 1.35.0 drew a 1990s freestanding surcharge
+    # unit, four invented networks by variant. A FIXTURE, so a selling floor
+    # does not draw for it; one a room, gated to rooms that sell as the sale
+    # posters are; placed before them, so no poster hangs over it. Four
+    # variants, keyed by the volume's name (past four `_make_volume` keys a
+    # variant on the building). Standing, with collision: a body walks into
+    # an ATM.
+    # SOLO: one in the BUILDING, not one a room -- a deli's customer floor and
+    # its market aisles are two selling rooms and one store, and with the
+    # per-room cap alone six delis carried two ATMs each (measured, 37 in 31
+    # specs, before this).
+    _piece("atm_store", ((0.6, 0.55, 1.45),), "wall", front=True, most=1, variants=4,
+           rooms=("sales", "retail", "shop", "customer", "market", "showroom", "stall"),
+           solo=True),
     _piece("payphone", ((0.75, 0.5, 2.3),), "wall", front=True, most=1),
     _piece("chair_waiting", ((2.4, 0.6, 0.9), (1.8, 0.6, 0.9),
                              (3.0, 0.6, 0.9)), "wall", front=True),
@@ -1921,7 +1936,7 @@ _RECIPES = {
                             "vending"),
                    "floor": (),
                    "clusters": ((("cartons",), 2, 3), (("litter_bin",), 1, 1)),
-                   "fixtures": ("poster_wall_store",)},
+                   "fixtures": ("atm_store", "poster_wall_store")},
     "garage": {"anchors": ("workbench",),
                "wall": ("shelf_run", "cabinet_tool"),
                "floor": (),
@@ -3191,6 +3206,9 @@ def place_fixtures(spec):
         for key in fixtures:
             only = _PIECES[key]["rooms"]
             if only and not tokens & only:
+                continue
+            if _PIECES[key]["solo"] and any(
+                    str(v.get("name", "")).startswith(key + "_") for v in spec.get("volumes") or []):
                 continue
             for k in range(fixture_limit(key, area)):
                 have = sum(1 for stem, _s, _v in _room_names(spec, rtag) if stem == key)

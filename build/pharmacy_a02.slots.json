@@ -6958,15 +6958,15 @@
       }
     },
     {
-      "slot_id": "poster_wall_store_r2090556b_11",
+      "slot_id": "atm_store_r2090556b_11",
       "role": "prop",
       "size_mod": "full",
-      "style": 6,
-      "material": "paper",
-      "species": "poster_wall",
+      "style": 4,
+      "material": "metal",
+      "species": "atm",
       "stock": null,
-      "variant": 1,
-      "form": "store",
+      "variant": 2,
+      "form": null,
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
       "wall": null,
@@ -6974,9 +6974,9 @@
       "facing": null,
       "transform": {
         "translation": [
-          -12.84,
-          -0.86,
-          1.6
+          -12.56,
+          -0.75,
+          0.725
         ],
         "rot_y": 270.0,
         "scale": [
@@ -6987,13 +6987,13 @@
       },
       "fit": {
         "dims": [
-          1.0,
-          0.01,
-          0.6
+          0.6,
+          0.55,
+          1.45
         ],
         "pivot": "center",
         "openings": [],
-        "collision": "none"
+        "collision": "convex"
       }
     },
     {
@@ -7014,10 +7014,49 @@
       "transform": {
         "translation": [
           12.84,
-          0.63,
+          1.25,
           1.6
         ],
         "rot_y": 90.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.0,
+          0.01,
+          0.6
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "none"
+      }
+    },
+    {
+      "slot_id": "poster_wall_store_r2090556b_13",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 6,
+      "material": "paper",
+      "species": "poster_wall",
+      "stock": null,
+      "variant": 1,
+      "form": "store",
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          -12.84,
+          -8.04,
+          1.6
+        ],
+        "rot_y": 270.0,
         "scale": [
           1.0,
           1.0,
@@ -7036,14 +7075,14 @@
       }
     },
     {
-      "slot_id": "poster_wall_store_r2090556b_13",
+      "slot_id": "poster_wall_store_r2090556b_14",
       "role": "prop",
       "size_mod": "full",
       "style": 6,
       "material": "paper",
       "species": "poster_wall",
       "stock": null,
-      "variant": 1,
+      "variant": 2,
       "form": "store",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",

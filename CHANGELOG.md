@@ -1,3 +1,42 @@
+## [0.164.0] - an ATM in every store
+
+The walker, 2026-09-29: "Convenient stores should also have ATMs"; Zoo
+1.35.0 redrew the `atm` species as a 1990s freestanding surcharge unit (a
+lit topper, a green CRT, a keypad ledge; four invented networks by variant;
+two draws). This places one in every building that sells.
+
+`atm_store`, A FIXTURE in `shop_floor`'s recipe, placed before the sale
+posters so none hangs over it; gated to rooms that sell, as the posters are
+(sales, retail, shop, customer, market, showroom, stall); four variants,
+keyed by the volume's name; standing, with collision -- a body walks into an
+ATM.
+
+ONE IN THE BUILDING, NOT ONE A ROOM (`_piece(..., solo=True)`, read in
+`place_fixtures`). A deli's customer floor and its market aisles are two
+selling rooms and one store, and with the per-room cap alone the library
+carried 37 ATMs in 31 specs, two each in six delis. Now 31 in 31.
+
+THE LIBRARY, by the refurnish chain from 0.163.0's specs: 31 ATMs (sales
+floors 13, customer floors 6, shop floors 4, stall floors 3, retail floors
+2, a showroom, the marina's shop wing, the country club's pro shop); every
+other volume byte for byte, but the sale posters, which the ATM displaces --
+3 fewer runs, and the rest renumbered (a fixture's name carries its sequence,
+and with it its variant).
+
+Found on the way, and cleared by Zoo 1.35.0 rather than here: the
+airport's existing lobby ATM (`prop_atm_delco_1997_04_w60_d55_h145_mmetal`)
+has failed Zoo's exact fit in every recent cold run -- the old recipe's sign
+stood above its slot (1.57 m against 1.45) and its keypad past its depth
+(0.58 against 0.55). The same slot builds and passes on the new recipe.
+
+BUILT (build.py --all): 133 specs, no errors. Nav gate: 131 shells passed,
+as at 0.163.0 -- an ATM against a wall blocks no route the gate walks.
+
+Tests: `test_store_atms.py` (5): one ATM in every building with a selling
+room and none elsewhere; one store with two selling rooms has one (the
+control for `solo`); it stands on its floor against a wall with collision
+and a network variant; no sale poster over it; the fixture pass idempotent.
+
 ## [0.163.0] - poster walls in the strip clubs, the bars and the shops
 
 The walker, 2026-09-29, choosing where posters go: strip club interiors, bar
