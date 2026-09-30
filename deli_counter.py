@@ -1416,7 +1416,15 @@ class _Builder:
         slot_index = {orig: k for k, orig in enumerate(order)}
         for j, op in enumerate(openings):
             r = op.resolved()
-            u = op.pos * run
+            # WHERE THE HOLE IS CUT, not where the spec asked for it (0.162.0).
+            # `_opening_to_hole` cuts every opening at `snap(pos * run)`; this
+            # recorded `pos * run`, so 957 of the library's 1,943 openings sat
+            # off their own holes, 596 by 0.10 m or more and up to 0.25 m (a
+            # half grid step) -- the door socket, the interactive, the window's
+            # light and the storefront sign box all stood beside the doorway
+            # they belong to. gas_station_a02: its entry door built at x -6.00,
+            # recorded at -5.76, and the lit sign box centred on the record.
+            u = self.snap(op.pos * run)
             cz = wall_center[2] - H / 2 + r["sill"] + r["height"] / 2 \
                 + self.s.floor_thick / 2
             if axis == 0:

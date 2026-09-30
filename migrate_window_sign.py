@@ -71,8 +71,19 @@ def _wall_geometry(d, wall):
             "W": (1, -fx / 2.0, fy, (1.0, 0.0)), "E": (1, fx / 2.0, fy, (-1.0, 0.0))}[wall]
 
 
+def _grid(d):
+    """The spec's grid, or `LevelSpec`'s default when it names none -- the
+    builder snaps every opening to one or the other (`Builder.snap`), and
+    this once left a grid-less spec's openings unsnapped."""
+    import dataclasses
+    import spec_types
+    if d.get("grid"):
+        return float(d["grid"])
+    return next(f.default for f in dataclasses.fields(spec_types.LevelSpec) if f.name == "grid")
+
+
 def _snap(v, grid):
-    return round(v / grid) * grid if grid else v
+    return round(v / grid) * grid
 
 
 def plan(d):
@@ -84,7 +95,7 @@ def plan(d):
         return None, "no storey-0 sales floor"
     x0, y0, x1, y1 = room["bounds"]
     wt = float(d.get("wall_thick") or 0.3)
-    grid = d.get("grid")
+    grid = _grid(d)
     w, dp, h = SIZE
     sh = float(d.get("story_height") or 3.6)
     z = min(GLASS_TOP, sh - HEAD_MIN) - h / 2.0
@@ -97,24 +108,23 @@ def plan(d):
             continue                                   # not the sales floor's wall
         lo, hi = (x0, x1) if axis == 0 else (y0, y1)
         centre = (lo + hi) / 2.0
-        ops = [(_snap(float(o.get("pos", 0.0)) * run, grid), float(o.get("width", 1.0)), o.get("kind"),
-                float(o.get("pos", 0.0)) * run)
+        ops = [(_snap(float(o.get("pos", 0.0)) * run, grid), float(o.get("width", 1.0)), o.get("kind"))
                for o in wall.get("openings") or []]
         doors = sorted([o for o in ops if o[2] == "door" and lo <= o[0] <= hi],
                        key=lambda o: abs(o[0] - centre))
-        for u, dw, _k, u_raw in doors:
+        for u, dw, _k in doors:
             toward = 1.0 if centre >= u else -1.0
             for side in (toward, -toward):
-                # TWO CENTRES FOR ONE DOOR: the module is built at the grid-
-                # snapped position, and `lights._storefront_sign` centres the
-                # box on the UNSNAPPED one (gas_station_a02: -6.00 and -5.76).
-                # Clear the door and the box, each where it actually is.
-                reach = max(side * u + dw / 2.0, side * u_raw + (dw + lights._SIGN_PAD) / 2.0)
-                c = side * (reach + GAP + w / 2.0)
+                # ONE CENTRE FOR THE DOOR AND ITS BOX, the grid-snapped one the
+                # door is built at. Until Deli Counter 0.162.0 the box was
+                # centred on the UNSNAPPED position (gas_station_a02: -5.76
+                # against -6.00) and this cleared both; `_record_openings` now
+                # records the opening where its hole is cut.
+                c = u + side * ((dw + lights._SIGN_PAD) / 2.0 + GAP + w / 2.0)
                 a, b = c - w / 2.0, c + w / 2.0
                 if a < lo + wt or b > hi - wt:
                     continue
-                if any(a < ou + ow / 2.0 and b > ou - ow / 2.0 for ou, ow, _k2, _r in ops):
+                if any(a < ou + ow / 2.0 and b > ou - ow / 2.0 for ou, ow, _k2 in ops):
                     continue
                 inset = wt / 2.0 + INSET + dp / 2.0
                 x, y = (c, line + iy * inset) if axis == 0 else (line + ix * inset, c)

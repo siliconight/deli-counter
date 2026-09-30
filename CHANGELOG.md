@@ -1,3 +1,39 @@
+## [0.162.0] - an opening is recorded where its hole is cut
+
+Found fixing the store window sign (0.161.0): the lit sign box over
+gas_station_a02's entry stood 0.24 m off its own door -- the door built at
+x -6.00, the box centred on -5.76.
+
+THE DEFECT, and it was not the sign's. `_opening_to_hole` cuts every opening
+at `snap(pos * run)`; `_record_openings`, which writes the openings into
+`<id>.gameplay.json` and hands them to the light manifest, used `pos * run`.
+Two spellings of one number. Measured over the library's specs with the grid
+each builds at (`LevelSpec.grid`, 0.5, where a spec names none): 957 of 1,943
+openings recorded off their own holes, 596 by 0.10 m or more, up to 0.25 m --
+472 doors, 222 windows, 194 breaches, 65 garage doors. Everything placed from
+the record stood beside its doorway: the DOOR_SOCKET / BREACH_PANEL markers,
+the interactives, a window's daylight anchor, the storefront sign box. Now
+the record takes `self.snap(pos * run)`, the value the hole is cut at.
+
+THE LIBRARY (build.py --all): 123 GLBs changed (the socket and panel marker
+empties in them move with the record), 12 unchanged; 26 derived storefront
+signs moved onto their doors, up to 0.24 m; nav gate 131 shells passed.
+
+`migrate_window_sign` drops its two-centre workaround for the one centre, and
+takes the grid a spec leaves unnamed from `LevelSpec` -- it had left a
+grid-less spec's openings unsnapped, a third spelling. Every sign still clears
+its box by `GAP`.
+
+KNOWN, NOT CHANGED: `lot/preview.py` synthesizes openings before any build
+with the old unsnapped rule ("mirror the published gameplay.json contract"),
+so the preview's openings now differ from a build's by up to 0.25 m.
+
+Tests: `test_opening_records.py` -- every exterior opening record stands on
+its built opening slot (fails on 0.161.0: airport_terminal_a01's garage at 8.4
+against a slot at 8.5), and every derived sign on its door AS BUILT. The first
+cut of the second compared the sign with the opening record, which 0.161.0
+had wrong the same way, and passed on the build it exists to refuse.
+
 ## [0.161.0] - a cooler wall on every store's sales floor; the window sign clears the lit box
 
 The walker, 2026-09-29: "there should be fridges of cold sodas, beer, milk,
