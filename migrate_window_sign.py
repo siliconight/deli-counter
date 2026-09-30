@@ -19,8 +19,11 @@ THE RULE, in the spec's frame (metres, the footprint centred on 0):
   * the wall: the storey-0 `storefront_glass` exterior wall whose line is an
     edge of the sales floor, and one of its DOORS inside the sales floor's
     span along it (the one nearest the sales floor's centre);
-  * along it: beside that door, toward the sales floor's centre -- the
-    door's half width + `GAP` + half the sign -- or the other side when that
+  * along it: beside that door, toward the sales floor's centre -- half the
+    LIT SIGN BOX's width (the door + `lights._SIGN_PAD`, 0.160.0: the box
+    over the entry hid the sign's door end in cold run 9113, because this
+    measured from the door opening and never asked about the box) + `GAP` +
+    half the sign -- or the other side when that
     overlaps another opening or leaves the sales floor; neither: REFUSED and
     reported, never forced;
   * across it: `INSET` inside the wall's inner face;
@@ -45,6 +48,7 @@ import zlib
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 
+import lights  # noqa: E402
 import migrate_slush_machine  # noqa: E402
 
 NAME = "window_sign"
@@ -93,18 +97,24 @@ def plan(d):
             continue                                   # not the sales floor's wall
         lo, hi = (x0, x1) if axis == 0 else (y0, y1)
         centre = (lo + hi) / 2.0
-        ops = [(_snap(float(o.get("pos", 0.0)) * run, grid), float(o.get("width", 1.0)), o.get("kind"))
+        ops = [(_snap(float(o.get("pos", 0.0)) * run, grid), float(o.get("width", 1.0)), o.get("kind"),
+                float(o.get("pos", 0.0)) * run)
                for o in wall.get("openings") or []]
         doors = sorted([o for o in ops if o[2] == "door" and lo <= o[0] <= hi],
                        key=lambda o: abs(o[0] - centre))
-        for u, dw, _k in doors:
+        for u, dw, _k, u_raw in doors:
             toward = 1.0 if centre >= u else -1.0
             for side in (toward, -toward):
-                c = u + side * (dw / 2.0 + GAP + w / 2.0)
+                # TWO CENTRES FOR ONE DOOR: the module is built at the grid-
+                # snapped position, and `lights._storefront_sign` centres the
+                # box on the UNSNAPPED one (gas_station_a02: -6.00 and -5.76).
+                # Clear the door and the box, each where it actually is.
+                reach = max(side * u + dw / 2.0, side * u_raw + (dw + lights._SIGN_PAD) / 2.0)
+                c = side * (reach + GAP + w / 2.0)
                 a, b = c - w / 2.0, c + w / 2.0
                 if a < lo + wt or b > hi - wt:
                     continue
-                if any(a < ou + ow / 2.0 and b > ou - ow / 2.0 for ou, ow, _ in ops):
+                if any(a < ou + ow / 2.0 and b > ou - ow / 2.0 for ou, ow, _k2, _r in ops):
                     continue
                 inset = wt / 2.0 + INSET + dp / 2.0
                 x, y = (c, line + iy * inset) if axis == 0 else (line + ix * inset, c)
@@ -140,8 +150,17 @@ def migrate(d):
     """``(changed, why)`` for one spec dict, in place."""
     if not migrate_slush_machine.is_store(d):
         return False, None
-    if any(v.get("name") == NAME for v in d.get("volumes") or []):
-        return _define_material(d), None
+    vols = d.get("volumes") or []
+    have = [i for i, v in enumerate(vols) if v.get("name") == NAME]
+    if have:
+        # RE-PLACED where the rule has moved (0.160.0's sign-box clearance),
+        # in its own slot in the list, so nothing around it moves
+        changed = _define_material(d)
+        want, _why = plan(d)
+        if want is not None and vols[have[0]] != want:
+            vols[have[0]] = want
+            changed = True
+        return changed, None
     _define_material(d)
     vol, why = plan(d)
     if vol is None:

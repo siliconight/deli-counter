@@ -178,6 +178,132 @@ def plan_cooler(spec):
     return vol, "%s side of the walk-in, facing %s, %.2f m long" % (axis, rid, length)
 
 
+#: THE SALES FLOOR'S OWN COOLER WALL (0.161.0). The walker, 2026-09-29:
+#: "there should be fridges of cold sodas, beer, milk, etc, with glowing
+#: lights too". Five stores stand an 8 m run on the sales floor; gas_station_a02
+#: and fuel_stop_heist had only the walk-in's short side in the food-service
+#: room (3.28 m, 4.12 m) and gas_station_a03 and stop_n_go had none, so four of
+#: the nine sold their drinks nowhere a shopper stands. A store with no cooler
+#: on its sales floor gets one, by `plan_cooler`'s own clearances:
+#:
+#:   * the WALL: an edge of the sales floor that is an interior partition, or
+#:     an exterior wall with no window on it -- never the storefront, never a
+#:     glazed wall; the edge OPPOSITE the storefront wins a tie of length;
+#:   * its doors keep `DOOR_CLEAR`, and anything in the `AISLE` in front
+#:     cuts the run short;
+#:   * at most `SALES_RUN` long -- the 8.0 m the other five stores already
+#:     stand, ten doors -- centred on the longest stretch left; refused below
+#:     `MIN_RUN`.
+SALES_NAME = "cooler_run_sales"
+SALES_ROOM = "sales_floor"
+SALES_RUN = 8.0
+_OPPOSITE = {"S": "N", "N": "S", "E": "W", "W": "E"}
+
+
+def _edge_walls(spec, room):
+    """``[(axis, line, lo, hi, sign, openings, exterior_side)]``: the four
+    edges of ``room``'s bounds, each with the door/window centres and widths
+    of whatever wall stands on it. ``sign`` is the side the room is on."""
+    x0, y0, x1, y1 = room
+    fx = float(spec.get("footprint_x", 0.0)) / 2.0
+    fy = float(spec.get("footprint_y", 0.0)) / 2.0
+    edges = [("X", y0, x0, x1, +1, "S" if abs(y0 + fy) < EPS else None),
+             ("X", y1, x0, x1, -1, "N" if abs(y1 - fy) < EPS else None),
+             ("Y", x0, y0, y1, +1, "W" if abs(x0 + fx) < EPS else None),
+             ("Y", x1, y0, y1, -1, "E" if abs(x1 - fx) < EPS else None)]
+    out = []
+    for axis, line, lo, hi, sign, ext in edges:
+        ops = []
+        if ext:
+            for w in spec.get("ext_walls") or []:
+                if w.get("wall") != ext or int(w.get("story", 0) or 0) != 0:
+                    continue
+                run = 2.0 * (fx if axis == "X" else fy)
+                for op in w.get("openings") or []:
+                    ops.append((float(op.get("pos", 0.0)) * run, float(op.get("width") or 1.0),
+                                op.get("kind"), w.get("material")))
+        else:
+            for pt in spec.get("partitions") or []:
+                if pt.get("axis") != axis or abs(float(pt.get("pos", 0.0)) - line) > EPS:
+                    continue
+                s0, e0 = float(pt["start"]), float(pt["end"])
+                for op in pt.get("openings") or []:
+                    ops.append(((s0 + e0) / 2.0 + float(op.get("pos", 0.0)) * (e0 - s0),
+                                float(op.get("width") or 1.0), op.get("kind"), None))
+        out.append((axis, line, lo, hi, sign, ops, ext))
+    return out
+
+
+def plan_sales_cooler(spec):
+    """``(volume, why)``: the sales floor's cooler wall, or ``(None, why)``."""
+    room = next((r for r in spec.get("rooms") or [] if r.get("id") == SALES_ROOM
+                 and int(r.get("story", 0) or 0) == 0), None)
+    if not room or not room.get("bounds"):
+        return None, "no storey-0 sales floor"
+    b = room["bounds"]
+    storefront = {w.get("wall") for w in spec.get("ext_walls") or []
+                  if w.get("material") == "storefront_glass" and int(w.get("story", 0) or 0) == 0}
+    back_walls = {_OPPOSITE[w] for w in storefront if w in _OPPOSITE}
+    best = None
+    for axis, line, lo, hi, sign, ops, ext in _edge_walls(spec, b):
+        if ext and (ext in storefront or any(k == "window" for _c, _w, k, _m in ops)):
+            continue
+        intervals = [(lo + CORNER, hi - CORNER)]
+        for c, w, _k, _m in ops:
+            intervals = _subtract(intervals, c - w / 2.0 - DOOR_CLEAR, c + w / 2.0 + DOOR_CLEAR)
+        back = line + sign * WALL_BACK
+        front = back + sign * DEPTH
+        band = sorted((back, front + sign * AISLE))
+        for v in spec.get("volumes") or []:
+            vx0, vx1 = v["x"] - v["size_x"] / 2.0, v["x"] + v["size_x"] / 2.0
+            vy0, vy1 = v["y"] - v["size_y"] / 2.0, v["y"] + v["size_y"] / 2.0
+            along = (vx0, vx1) if axis == "X" else (vy0, vy1)
+            across = (vy0, vy1) if axis == "X" else (vx0, vx1)
+            if across[1] <= band[0] + EPS or across[0] >= band[1] - EPS:
+                continue
+            if v["size_x"] * v["size_y"] > 400.0:
+                continue
+            intervals = _subtract(intervals, along[0] - 0.05, along[1] + 0.05)
+        side = {("X", -1): "N", ("X", +1): "S", ("Y", -1): "E", ("Y", +1): "W"}[(axis, sign)]
+        for a0, a1 in intervals:
+            if a1 - a0 < MIN_RUN:
+                continue
+            key = (min(a1 - a0, SALES_RUN), side in back_walls, a1 - a0)
+            if best is None or key > best[0]:
+                best = (key, a0, a1, axis, back, sign, side)
+    if best is None:
+        return None, "no stretch of a solid sales-floor wall is %.1f m clear" % MIN_RUN
+    _key, a0, a1, axis, back, sign, side = best
+    length = round(min(a1 - a0, SALES_RUN), 3)
+    mid = (a0 + a1) / 2.0
+    cy = back + sign * DEPTH / 2.0
+    if axis == "X":
+        vol = {"name": SALES_NAME, "x": round(mid, 4), "y": round(cy, 4), "z": HEIGHT / 2.0,
+               "size_x": length, "size_y": DEPTH, "size_z": HEIGHT}
+    else:
+        vol = {"name": SALES_NAME, "x": round(cy, 4), "y": round(mid, 4), "z": HEIGHT / 2.0,
+               "size_x": DEPTH, "size_y": length, "size_z": HEIGHT}
+    have = {m.get("id") for m in spec.get("materials") or []}
+    if "cooler_panel" in have:
+        mat = "cooler_panel"
+    else:
+        import level_design
+        mat = level_design._declare_material(spec, "metal", level_design._PROP_ACOUSTIC["metal"])
+    vol.update({"collision": "convex", "material": mat})
+    if sign > 0:
+        vol["rot_z"] = 180.0
+    return vol, "the sales floor's %s wall, %.2f m of a %.2f m stretch" % (side, length, a1 - a0)
+
+
+def _on_sales_floor(spec, v):
+    room = next((r for r in spec.get("rooms") or [] if r.get("id") == SALES_ROOM
+                 and int(r.get("story", 0) or 0) == 0), None)
+    if not room:
+        return False
+    x0, y0, x1, y1 = room["bounds"]
+    return x0 <= v["x"] <= x1 and y0 <= v["y"] <= y1
+
+
 def main(argv=None):
     argv = sys.argv[1:] if argv is None else argv
     check = "--check" in argv
@@ -192,19 +318,41 @@ def main(argv=None):
             d = json.load(open(p, encoding="utf-8"))
         except ValueError:
             continue
-        if any(v.get("name") == NAME for v in d.get("volumes") or []):
-            continue
-        vol, why = plan_cooler(d)
-        if vol is None:
-            if why != "no walk_in_cooler room":
+        import migrate_slush_machine
+        vols = d.get("volumes") or []
+        add = []
+        # TWO RULES, EACH ITS OWN QUESTION, both answerable in one pass. The
+        # first cut of 0.161.0 skipped the walk-in's rule whenever the sales
+        # floor already had a cooler, so a store that lost its walk-in run
+        # never got it back (`test_cooler_wall`'s idempotence test caught it).
+        # 1. the walk-in's customer side (0.148.0)
+        if not any(v.get("name") == NAME for v in vols):
+            vol, why = plan_cooler(d)
+            if vol is not None:
+                add.append((vol, why))
+            elif why != "no walk_in_cooler room":
                 refused += 1
                 print(f"[cooler_wall] {os.path.basename(p)}: REFUSED -- {why}")
+        # 2. a store's sales floor, when no cooler stands on it (0.161.0),
+        #    planned around whatever rule 1 just placed
+        work = dict(d, volumes=vols + [v for v, _w in add])
+        if migrate_slush_machine.is_store(d) and not any(
+                _on_sales_floor(d, v) for v in work["volumes"]
+                if str(v.get("name", "")).startswith(NAME)):
+            vol, why = plan_sales_cooler(work)
+            if vol is not None:
+                add.append((vol, why))
+            else:
+                refused += 1
+                print(f"[cooler_wall] {os.path.basename(p)}: REFUSED -- {why}")
+        if not add:
             continue
         placed += 1
-        print(f"[cooler_wall] {os.path.basename(p)}: {why}")
+        for _v, why in add:
+            print(f"[cooler_wall] {os.path.basename(p)}: {why}")
         if check:
             continue
-        d["volumes"].append(vol)
+        d["volumes"] = vols + [v for v, _w in add]
         # the room is refurnished around the cooler: see the docstring
         import migrate_furnish_recipes
         migrate_furnish_recipes.migrate(d)

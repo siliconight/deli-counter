@@ -122,7 +122,10 @@ def test_the_sign_sits_before_the_pieces_furnish_wrote():
         tags = {level_design._room_tag(r) for r in spec["rooms"]}
         owned = [migrate_furnish_recipes.furnished_by_this_pass(v, tags) for v in spec["volumes"]]
         at = [i for i, v in enumerate(spec["volumes"]) if v["name"] == M.NAME][0]
-        assert all(owned[at + 1:]), name
+        # furnish's pieces are a suffix -- what a refurnish produces -- and
+        # the sign is before them; a cooler wall placed later may follow it
+        first = owned.index(True) if True in owned else len(owned)
+        assert all(owned[first:]) and at < first, name
 
 
 def test_every_store_defines_the_signs_material():
@@ -133,3 +136,26 @@ def test_every_store_defines_the_signs_material():
         spec = _spec(name)
         mats = {m["id"]: m for m in spec["materials"]}
         assert mats.get(_sign(spec)["material"]) == M.MATERIAL, name
+
+
+def test_the_sign_clears_the_lit_sign_box_as_built():
+    """The box over the entrance hid the sign's door end in cold run 9113:
+    the migration measured from the door opening, and the box is the door
+    plus `lights._SIGN_PAD` wide, centred on the door's UNSNAPPED position.
+    Measured against the box Deli Counter actually derived (the `sign`
+    anchor in each store's built light manifest), not against this file's
+    own arithmetic."""
+    for name in STORES:
+        spec = _spec(name)
+        v = _sign(spec)
+        man = json.load(open(os.path.join(BUILD, name + ".lights.json"), encoding="utf-8"))
+        boxes = [a for a in man["anchors"] if a["type"] == "sign"]
+        assert boxes, name
+        for bx in boxes:
+            along_x = v["size_x"] > v["size_y"]
+            if along_x != (bx["rot_y"] in (90.0, 270.0)):
+                continue                      # a box on another wall
+            c_sign, c_box = (v["x"], bx["pos"][0]) if along_x else (v["y"], bx["pos"][1])
+            half_sign = max(v["size_x"], v["size_y"]) / 2.0
+            gap = abs(c_sign - c_box) - half_sign - bx["size"][0] / 2.0
+            assert gap >= M.GAP - 1e-6, (name, round(gap, 3))

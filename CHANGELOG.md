@@ -1,3 +1,43 @@
+## [0.161.0] - a cooler wall on every store's sales floor; the window sign clears the lit box
+
+The walker, 2026-09-29: "there should be fridges of cold sodas, beer, milk,
+etc, with glowing lights too", and, of the window neon, "fix the sign".
+
+THE SALES FLOOR'S COOLER WALL (`migrate_cooler_wall.plan_sales_cooler`). Five
+stores stood an 8 m cooler run on the sales floor; gas_station_a02 and
+fuel_stop_heist had only the walk-in's short side in the food-service room
+(3.28 m, 4.12 m), gas_station_a03 and stop_n_go none at all. A store with no
+cooler on its sales floor now gets `cooler_run_sales`, by `plan_cooler`'s own
+clearances: an edge of the sales floor that is a partition or a windowless
+exterior wall -- never the storefront, never glazed; the one opposite the
+storefront wins a tie -- doors kept `DOOR_CLEAR`, anything in the `AISLE`
+cutting the run short, capped at `SALES_RUN` (8.0 m, what the other five
+stand: ten doors), centred on the longest stretch; refused below `MIN_RUN`.
+All four took their north wall, 8.0 m of 8.62-9.01 m clear, and were
+refurnished around it: a02 a shelf run fewer, a03 and stop_n_go a carton
+stack fewer, fuel_stop_heist its vending machine and a reshuffled chair set.
+The two rules are separate questions answered in one pass; the first cut
+skipped the walk-in's rule once the sales floor had a cooler, and
+`test_cooler_wall`'s idempotence test refused it. Zoo (>= 1.28.0) stocks
+the run soda, beer, dairy first.
+
+THE WINDOW SIGN (`migrate_window_sign`) now clears the lit sign box, not the
+door opening: half the box (door + `lights._SIGN_PAD`) + `GAP`. Cold run 9113
+showed its door end behind the box. And the box is NOT centred on its door:
+`lights._storefront_sign` centres it on the door's unsnapped position while
+the door module stands at the grid-snapped one (gas_station_a02: -5.76
+against -6.00), so the migration clears both, each where it actually is.
+Reported separately; not fixed here. Existing signs are re-placed in their
+own slot in the volume list.
+
+THE LIBRARY (build.py --all): the nine stores' GLBs changed, every other
+building's recorded output hash is unchanged.
+
+Tests: `test_sales_cooler.py` (6, failing on 0.160.0) and
+`test_window_sign.py`'s clearance test, measured against the box in each
+store's built light manifest (fails on 0.160.0's positions: cr_gas cleared it
+by 0.02 m).
+
 ## [0.160.0] - a warm bulb over the register; a beer sign in the window
 
 The walker, 2026-09-29: "add the warm counter accent and the window sign
