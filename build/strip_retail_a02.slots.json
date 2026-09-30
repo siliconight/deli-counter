@@ -2245,7 +2245,7 @@
       "slot_id": "floor_showroom",
       "role": "floor",
       "size_mod": "full",
-      "style": 6,
+      "style": 7,
       "material": "carpet",
       "current_ref": "floor_greybox_01",
       "kit_axis": "theme",
@@ -2282,7 +2282,7 @@
       "slot_id": "ceiling_showroom",
       "role": "ceiling",
       "size_mod": "full",
-      "style": 8,
+      "style": 9,
       "material": "ceiling_tile",
       "current_ref": "ceiling_greybox_01",
       "kit_axis": "theme",
@@ -2319,7 +2319,7 @@
       "slot_id": "floor_workshop",
       "role": "floor",
       "size_mod": "full",
-      "style": 7,
+      "style": 8,
       "material": "tile",
       "current_ref": "floor_greybox_01",
       "kit_axis": "theme",
@@ -2356,7 +2356,7 @@
       "slot_id": "ceiling_workshop",
       "role": "ceiling",
       "size_mod": "full",
-      "style": 8,
+      "style": 9,
       "material": "ceiling_tile",
       "current_ref": "ceiling_greybox_01",
       "kit_axis": "theme",
@@ -2430,7 +2430,7 @@
       "slot_id": "ceiling_stone_vault",
       "role": "ceiling",
       "size_mod": "full",
-      "style": 9,
+      "style": 10,
       "material": "plaster",
       "current_ref": "ceiling_greybox_01",
       "kit_axis": "theme",
@@ -3046,6 +3046,84 @@
         "pivot": "center",
         "openings": [],
         "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "poster_wall_store_r1e2f444f_8",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 6,
+      "material": "paper",
+      "species": "poster_wall",
+      "stock": null,
+      "variant": 0,
+      "form": "store",
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          8.84,
+          -4.87,
+          1.6
+        ],
+        "rot_y": 90.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.0,
+          0.01,
+          0.6
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "none"
+      }
+    },
+    {
+      "slot_id": "poster_wall_store_r1e2f444f_9",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 6,
+      "material": "paper",
+      "species": "poster_wall",
+      "stock": null,
+      "variant": 2,
+      "form": "store",
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          8.84,
+          -0.12,
+          1.6
+        ],
+        "rot_y": 90.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.0,
+          0.01,
+          0.6
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "none"
       }
     }
   ]

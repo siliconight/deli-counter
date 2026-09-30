@@ -233,7 +233,8 @@ def test_a_fixture_moves_nothing_the_room_was_furnished_with():
         level_design.furnish(t)
     finally:
         level_design.place_fixtures = saved
-    fixtures = [v for v in s["volumes"] if v["name"].startswith(("dartboard_", "cigarettes_"))]
+    fixtures = [v for v in s["volumes"]
+                if v["name"].startswith(("dartboard_", "cigarettes_", "poster_wall_"))]
     assert fixtures
     assert [v for v in s["volumes"] if v not in fixtures] == t["volumes"]
 

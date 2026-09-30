@@ -28,6 +28,8 @@ CLUB_SPECIES = {"club_stage", "bar_stool", "counter", "booth_seat", "neon_sign",
                 "crt_tv", "cocktail_table", "club_chair", "vending_machine",
                 # the fixtures (0.136.0, `test_club_fixtures.py`)
                 "dartboard", "cigarette_machine",
+                # the club's poster runs (0.163.0, Zoo 1.30.0-1.32.0)
+                "poster_wall",
                 # the bar's staff side (0.137.0): the lit wall unit behind
                 # every counter. The return end that makes the bar an L is
                 # a plain `counter` and is already in this set.
@@ -289,7 +291,11 @@ def test_the_club_keeps_the_furnishing_invariants():
     # way a stool does, and the 2.2 m spread is between pieces that do not.
     hosts = [v for v in s["volumes"] if v.get("visual", True)
              and not v["name"].startswith(("bar_stool_", "club_chair_", "neon_sign_",
-                                           "wall_tv_", "back_bar_", "counter_end_"))]
+                                           "wall_tv_", "back_bar_", "counter_end_",
+                                           # hung art, as the sign and the TV
+                                           # are: a poster over a couch is
+                                           # not a second host (0.163.0)
+                                           "poster_wall_"))]
     for i, a in enumerate(hosts):
         for b in hosts[i + 1:]:
             assert math.hypot(a["x"] - b["x"], a["y"] - b["y"]) >= 2.2 - 1e-6, (a["name"], b["name"])

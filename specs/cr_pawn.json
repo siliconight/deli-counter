@@ -51,6 +51,12 @@
    "acoustic": "Curtain",
    "absorption": 0.6,
    "damping": 0.5
+  },
+  {
+   "id": "paper",
+   "acoustic": "Wood",
+   "absorption": 0.22,
+   "damping": 0.18
   }
  ],
  "ext_walls": [
@@ -595,6 +601,31 @@
    "size_z": 0.95,
    "collision": "convex",
    "material": "wood"
+  },
+  {
+   "name": "poster_wall_store_r79538c7c_7",
+   "x": 7.86,
+   "y": -2.58,
+   "z": 1.6,
+   "size_x": 0.01,
+   "size_y": 2.2,
+   "size_z": 0.6,
+   "collision": "none",
+   "material": "paper",
+   "form": "store"
+  },
+  {
+   "name": "poster_wall_store_r79538c7c_8",
+   "x": 7.86,
+   "y": -5.73,
+   "z": 1.6,
+   "size_x": 0.01,
+   "size_y": 1.6,
+   "size_z": 0.6,
+   "collision": "none",
+   "material": "paper",
+   "form": "store",
+   "variant": 1
   }
  ],
  "rooms": [

@@ -38,6 +38,12 @@
   {
    "id": "wood",
    "acoustic": "Wood"
+  },
+  {
+   "id": "paper",
+   "acoustic": "Wood",
+   "absorption": 0.22,
+   "damping": 0.18
   }
  ],
  "ext_walls": [
@@ -989,6 +995,46 @@
    "size_z": 0.9,
    "collision": "convex",
    "rot_z": 90.0
+  },
+  {
+   "name": "poster_wall_store_r48016798_19",
+   "x": 19.84,
+   "y": -13.49,
+   "z": 1.6,
+   "size_x": 0.01,
+   "size_y": 1.6,
+   "size_z": 0.6,
+   "collision": "none",
+   "material": "paper",
+   "form": "store"
+  },
+  {
+   "name": "poster_wall_store_r48016798_20",
+   "x": -19.84,
+   "y": -6.34,
+   "z": 1.6,
+   "size_x": 0.01,
+   "size_y": 1.0,
+   "size_z": 0.6,
+   "collision": "none",
+   "material": "paper",
+   "rot_z": 180.0,
+   "form": "store",
+   "variant": 3
+  },
+  {
+   "name": "poster_wall_store_r48016798_21",
+   "x": -19.84,
+   "y": -13.87,
+   "z": 1.6,
+   "size_x": 0.01,
+   "size_y": 1.0,
+   "size_z": 0.6,
+   "collision": "none",
+   "material": "paper",
+   "rot_z": 180.0,
+   "form": "store",
+   "variant": 1
   }
  ],
  "markers": [

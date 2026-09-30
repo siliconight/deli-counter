@@ -1,3 +1,72 @@
+## [0.163.0] - poster walls in the strip clubs, the bars and the shops
+
+The walker, 2026-09-29, choosing where posters go: strip club interiors, bar
+interiors, exterior alley walls and poles, store windows and walls; and on
+2026-09-30, "then placement". Zoo 1.30.0-1.32.0 builds the runs
+(`poster_wall`: four families, one object and one material a run). This is
+the three interior kinds. Alleys and poles are Lot's; a store's WINDOW
+posters, facing the street, are a rule of their own and not in this release.
+
+THREE FIXTURES (`level_design._PIECES`: `poster_wall_club`, `_bar`,
+`_store`), in the recipes' `fixtures` -- the strip club's, the `club` kind's
+and `shop_floor`'s -- so `place_fixtures` hangs them after a room is
+furnished, from the same wall draws and `_seed_clear` as the dartboard. A
+run is three to six sheets wide; its height is Zoo's `band_height` (club
+0.64, bar 0.50, store 0.60); it is centred on the gameplay camera's eye
+(`agent_contract.eye_height`, new, 1.6), paper, collision none.
+
+GATED BY ROOM, and measured. The `club` kind is a tavern's bar and also a
+country club's lounge and a skybox; the bar's gig bills hang only where a
+room's id says bar, taproom, tavern, pub or social. `shop_floor` claims any
+room whose id says `floor` or `aisle`: ungated, sale posters went on 158
+walls including warehouse, foundry, arena, office and self-storage floors;
+gated to rooms that sell (sales, retail, shop, customer, market, showroom,
+stall), 95. A store's runs stay off storefront glass (`off_glass`), where
+they would show the street their backs.
+
+NO ROOM SHOWS THE SAME RUN TWICE. A run's art is keyed on its Zoo stem --
+size, form, variant -- so two runs of one width and variant in a room are
+the same sheets in the same order; measured at placement, 5 rooms of 48.
+`_distinct_variant` moves a `distinct` piece off a variant its size already
+shows in its room (the name's crc32 still chooses first), and the pieces
+write four variants, not Zoo's eight, because past four `_make_volume` keys
+the variant on the building and every same-width run in it would match.
+After: 0 rooms of 48.
+
+`prop_species` routes `poster_wall` above the card shop's `poster` row, and
+`_PROP_MATERIALS` gives it paper above `poster`'s metal -- `poster` is a
+substring of every `poster_wall_*` name, so each run would otherwise have
+been built as one card-shop print.
+
+THE LIBRARY: 132 runs in 38 specs -- 29 club (strip_club_a01 7, a02 5, a03
+17), 8 bar in 4 (the brewery's taprooms, the social clubs), 95 store in 31.
+Written
+by the library's own refurnish chain (`migrate_club_rooms`,
+`migrate_furnish_recipes`) from 0.162.0's specs, and every other volume in
+every spec came back byte for byte: the only differences are the runs and 38
+specs declaring `paper`.
+
+BUILT (build.py --all): 133 specs, no errors; the 38 with runs changed
+beyond the build stamp and no other did. Nav gate: 131 shells passed, as at
+0.162.0 -- the runs carry no collision.
+
+NOT PRICED HERE: a run is one draw, and a room gains one to five. The cold
+run that walks them prices them against the stations.
+
+KNOWN: the library has no tavern or dive bar; the bar family hangs in two
+taprooms and two social clubs. A bar building is a gap, like the VHS store.
+
+Tests: `test_poster_walls.py` (13): the pieces route to Zoo's species on
+paper at its band and the eye; the card shop's poster still routes as it did;
+the band is Zoo's (pinned when Zoo is beside this repo); every strip club
+room hangs club posters; every run is in a room its gate admits, and a control
+that the kinds are wider than the gates; the slot; off the glass; no room
+repeats a run; `_distinct_variant` moves and refuses; the fixture pass is
+idempotent on the library. Five existing tests learned the new piece: two
+club species lists, the fixture stems, the host-spread exemption for hung art
+(a poster over a couch is not a second host, as a neon sign is not), and
+`poster_wall`'s genome range.
+
 ## [0.162.0] - an opening is recorded where its hole is cut
 
 Found fixing the store window sign (0.161.0): the lit sign box over

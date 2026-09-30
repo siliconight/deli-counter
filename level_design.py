@@ -989,7 +989,8 @@ def _piece(name, sizes, where, front=False, stock=None, variants=False,
            form=None, seats=None, most=None, lift=None, collision="convex",
            deck=None, lane=False, most_big=None, under=None,
            reserved_by=None, off_glass=False, backed_by=None,
-           ceiling=None, under_hung=False, twin=False, wall_band=False):
+           ceiling=None, under_hung=False, twin=False, wall_band=False,
+           rooms=None, distinct=False):
     return {"name": name, "sizes": tuple(sizes), "where": where,
             "front": front, "stock": stock, "variants": variants,
             "form": form, "seats": seats, "most": most, "lift": lift,
@@ -997,7 +998,9 @@ def _piece(name, sizes, where, front=False, stock=None, variants=False,
             "most_big": most_big, "under": under, "reserved_by": reserved_by,
             "off_glass": off_glass, "backed_by": backed_by,
             "ceiling": ceiling, "under_hung": under_hung, "twin": twin,
-            "wall_band": wall_band}
+            "wall_band": wall_band,
+            "rooms": frozenset(rooms) if rooms else None,
+            "distinct": distinct}
 
 
 def hung_band_bottom(spec):
@@ -1140,6 +1143,13 @@ def _piece_lift(spec, p, h):
     if p["under"] is None:
         return None
     return _clear_height(spec) - float(p["under"]) - h / 2.0
+
+
+def _eye_height():
+    """`agent_contract.eye_height`, imported where it is asked as this file
+    imports the contract everywhere else."""
+    import agent_contract
+    return agent_contract.eye_height()
 
 
 _PIECES = {p["name"]: p for p in (
@@ -1509,6 +1519,56 @@ _PIECES = {p["name"]: p for p in (
     _piece("hanging_banner", ((1.8, 0.05, 0.7), (2.4, 0.06, 0.9),
                               (1.2, 0.04, 0.6)), "wall", front=True,
            variants=True, most=2, under=_UNDER_PENNANTS, collision="none"),
+    # --- THE POSTER WALLS (Zoo 1.30.0-1.32.0; placed 0.163.0). The walker,
+    # 2026-09-29, choosing where posters go: strip club interiors, bar
+    # interiors, exterior alley walls and poles, store windows and walls.
+    # This is the three INTERIOR kinds; the alleys and poles are Lot's.
+    #
+    # A RUN, NOT A POSTER: Zoo's `poster_wall` lays sheets along the slot
+    # and builds the run as ONE object with ONE material, so a wall of five
+    # club posters is one draw (CLAUDE.md: draw calls are the budget). The
+    # slot's HEIGHT is Zoo's `poster_wall_forms.band_height(family)` -- the
+    # sheet plus the family's wander: club 0.64, bar 0.44 + 0.06, store 0.60
+    # -- and its depth the genome's default 0.01. Widths are runs of three
+    # to six sheets.
+    #
+    # HUNG AT THE EYE (`agent_contract.eye_height`, 1.6): a poster is there
+    # to be looked at, and the band's centre on the camera's eye is where it
+    # faces a player square. Hung, so `_seed_clear` keeps a unit standing
+    # under it lower than its bottom -- a shelf run to 2.70 takes the wall
+    # and the posters go to one that is free, the card shop's arbitration.
+    #
+    # FOUR VARIANTS, NOT ZOO'S EIGHT, and the reason is `_make_volume`: past
+    # four it keys the variant on the BUILDING (neon_sign's one name over
+    # every door), so every same-width run in a building would draw the same
+    # sheets in the same order -- the baseline's "identical pairs side by
+    # side". At four it is the volume name's, and two runs in one room differ.
+    #
+    # `rooms` GATES THE BAR'S AND THE STORE'S. The `club` kind is a tavern's
+    # bar and also a country club's lounge, a stadium's skybox and a trophy
+    # room, and a photocopied gig bill belongs in the first only. The
+    # `shop_floor` kind claims any room whose id says `floor` or `aisle`, and
+    # MEASURED before this gate the library would have hung sale posters on
+    # 158 walls including warehouse, foundry, arena, office and self-storage
+    # floors; a sale poster belongs where something is sold. And OFF THE
+    # GLASS: a run hung inside a storefront faces the shop, so the street
+    # sees its back; a store's window posters face out, and that is a rule
+    # of its own (the window sign's), not this one.
+    _piece("poster_wall_club", ((2.4, 0.01, 0.64), (1.6, 0.01, 0.64),
+                                (3.2, 0.01, 0.64)), "wall", front=True,
+           variants=4, form="club", most=3, most_big=(150.0, 5),
+           lift=_eye_height(), collision="none", distinct=True),
+    _piece("poster_wall_bar", ((1.8, 0.01, 0.5), (1.2, 0.01, 0.5),
+                               (2.4, 0.01, 0.5)), "wall", front=True,
+           variants=4, form="bar", most=2, most_big=(80.0, 3),
+           lift=_eye_height(), collision="none", distinct=True,
+           rooms=("bar", "taproom", "tavern", "pub", "social")),
+    _piece("poster_wall_store", ((1.6, 0.01, 0.6), (1.0, 0.01, 0.6),
+                                 (2.2, 0.01, 0.6)), "wall", front=True,
+           variants=4, form="store", most=2, most_big=(150.0, 3),
+           lift=_eye_height(), collision="none", distinct=True, off_glass=True,
+           rooms=("sales", "retail", "shop", "customer", "market", "showroom",
+                  "stall")),
     # THE CEILING HANGER AND THE AISLE SIGN -- "a painted dragon and a
     # kraken hang from the drop ceiling", "a hand-lettered STRATEGY sign
     # hangs over an aisle". These hang over the FLOOR, not against a wall,
@@ -1749,7 +1809,7 @@ _RECIPES = {
     "club": {"anchors": ("counter_bar", "pool_table"),
              "wall": ("booth", "shelf_run", "booth", "vending"),
              "floor": ("table_dining",),
-             "clusters": (), "fixtures": ("cigarettes",)},
+             "clusters": (), "fixtures": ("cigarettes", "poster_wall_bar")},
     # THE STRIP CLUB. Anchors are chosen by the room's shape
     # (`_club_anchors`), all of them placed: a bar stage as the centrepiece
     # with stools round it, or in a long room a round stage and a bar
@@ -1763,7 +1823,7 @@ _RECIPES = {
                    "floor": ("table_cocktail",),
                    "clusters": (), "per_area": 24.0, "all_anchors": True,
                    # placed after the room is furnished (`place_fixtures`)
-                   "fixtures": ("dartboard", "cigarettes")},
+                   "fixtures": ("dartboard", "cigarettes", "poster_wall_club")},
     # THE TRADING CARD SHOP (Zoo 0.95.0, Pixelcoat 0.44.0). Anchors are
     # chosen by the room (`_card_shop_anchors`): the showcase counter on a
     # selling floor, a play table in the play area. The wall run is pack
@@ -1860,7 +1920,8 @@ _RECIPES = {
                    "wall": ("shelf_run", "shelf_run", "cabinet_file",
                             "vending"),
                    "floor": (),
-                   "clusters": ((("cartons",), 2, 3), (("litter_bin",), 1, 1))},
+                   "clusters": ((("cartons",), 2, 3), (("litter_bin",), 1, 1)),
+                   "fixtures": ("poster_wall_store",)},
     "garage": {"anchors": ("workbench",),
                "wall": ("shelf_run", "cabinet_tool"),
                "floor": (),
@@ -2081,6 +2142,9 @@ _PROP_MATERIALS = (
     # is listed although `wood` IS its genome default and IS what the
     # fallback would have given, because a row that says what it means is
     # worth more than a coincidence that happens to be right.
+    # `poster_wall` is paper, its genome's own kind; above `poster`, whose
+    # keyword every `poster_wall_*` key contains
+    (("poster_wall",), "paper"),
     (("poster",), "metal_bare"),
     (("hanging_banner",), "cloth"),
     (("ceiling_hanger",), "paper"),
@@ -3077,9 +3141,36 @@ def _place_fixture(spec, room, key, k, building):
             continue
         vol = _make_volume(spec, key, f"{key}_{rtag}_{seq}", qx, qy, sx, sy, h, rot,
                            story, sh, building)
+        if p["distinct"] and not _distinct_variant(spec, key, rtag, vol, variant_count(p)):
+            continue
         spec.setdefault("volumes", []).append(vol)
         return vol
     return None
+
+
+def _distinct_variant(spec, key, rtag, vol, mod):
+    """A `distinct` piece's variant, moved off any the same-size piece in its
+    room already shows; False when every variant is taken at this size.
+
+    WHY (0.163.0): a poster run's art is keyed on its Zoo module stem, which
+    is its size, form and variant, so two runs in one room with the same
+    width and variant are the SAME sheets in the same order -- measured on
+    the library at placement, 5 rooms of 48 had such a pair (the poster
+    baseline's "identical pairs side by side"). The name's crc32 still
+    chooses first, so a room with no clash is exactly what it was."""
+    size = (vol["size_x"], vol["size_y"], vol["size_z"])
+    taken = {int(v.get("variant", 0) or 0) for v in spec.get("volumes") or []
+             if str(v.get("name", "")).startswith(f"{key}_{rtag}_")
+             and (v["size_x"], v["size_y"], v["size_z"]) == size}
+    n = int(vol.get("variant", 0) or 0)
+    free = [(n + i) % mod for i in range(mod) if (n + i) % mod not in taken]
+    if not free:
+        return False
+    if free[0]:
+        vol["variant"] = free[0]
+    else:
+        vol.pop("variant", None)
+    return True
 
 
 def place_fixtures(spec):
@@ -3096,7 +3187,11 @@ def place_fixtures(spec):
             continue
         fixtures = _RECIPES[_room_kind(room, building)].get("fixtures") or ()
         rtag = _room_tag(room)
+        tokens = set(str(room.get("id", "")).lower().replace("-", "_").split("_"))
         for key in fixtures:
+            only = _PIECES[key]["rooms"]
+            if only and not tokens & only:
+                continue
             for k in range(fixture_limit(key, area)):
                 have = sum(1 for stem, _s, _v in _room_names(spec, rtag) if stem == key)
                 if have > k:

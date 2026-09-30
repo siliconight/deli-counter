@@ -154,6 +154,11 @@ PROP_SPECIES = (
     # names in this library and a bare keyword is how one of them gets
     # quietly rebuilt as a poster. A keyword whose match would be wrong is
     # worse than one that never fires, because it fires silently.
+    # THE POSTER WALLS (Zoo 1.30.0; placed 0.163.0): a run of posters, one
+    # draw. Above the `poster` row, whose `poster` keyword is a substring of
+    # every `poster_wall_*` name and would build each run as one card-shop
+    # print.
+    (("poster_wall",), "poster_wall"),
     (("poster", "wall_poster", "set_poster", "art_print", "framed_print",
       "picture_frame"), "poster"),
     (("hanging_banner", "cloth_banner", "print_banner", "wall_banner",

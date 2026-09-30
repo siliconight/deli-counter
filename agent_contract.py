@@ -133,6 +133,14 @@ def body_radius():
     return float(contract()["characters"]["player"]["radius_m"])
 
 
+def eye_height():
+    """Where the gameplay camera sees from, in metres above the floor
+    (`review.gameplay_camera_eye_m`): what a player's eye is level with, so
+    the height a thing meant to be LOOKED AT hangs at. First caller:
+    `level_design`'s poster walls (0.163.0), centred on it."""
+    return float(contract()["review"]["gameplay_camera_eye_m"])
+
+
 def chest_height():
     """Where a shot is aimed on a body, in metres above its feet.
 

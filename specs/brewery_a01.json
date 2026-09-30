@@ -50,6 +50,12 @@
    "acoustic": "Metal",
    "absorption": 0.25,
    "damping": 0.2
+  },
+  {
+   "id": "paper",
+   "acoustic": "Wood",
+   "absorption": 0.22,
+   "damping": 0.18
   }
  ],
  "ext_walls": [
@@ -1182,6 +1188,46 @@
    "collision": "convex",
    "material": "metal_painted",
    "rot_z": 180.0,
+   "variant": 3
+  },
+  {
+   "name": "poster_wall_bar_recea99f1_14",
+   "x": 21.84,
+   "y": -12.24,
+   "z": 1.6,
+   "size_x": 0.01,
+   "size_y": 1.2,
+   "size_z": 0.5,
+   "collision": "none",
+   "material": "paper",
+   "form": "bar",
+   "variant": 3
+  },
+  {
+   "name": "poster_wall_bar_recea99f1_15",
+   "x": 21.84,
+   "y": -5.86,
+   "z": 1.6,
+   "size_x": 0.01,
+   "size_y": 2.4,
+   "size_z": 0.5,
+   "collision": "none",
+   "material": "paper",
+   "form": "bar",
+   "variant": 1
+  },
+  {
+   "name": "poster_wall_bar_recea99f1_16",
+   "x": -13.36,
+   "y": -14.84,
+   "z": 1.6,
+   "size_x": 1.8,
+   "size_y": 0.01,
+   "size_z": 0.5,
+   "collision": "none",
+   "material": "paper",
+   "rot_z": 180.0,
+   "form": "bar",
    "variant": 3
   },
   {

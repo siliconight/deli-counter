@@ -46,6 +46,12 @@
    "acoustic": "Metal",
    "absorption": 0.25,
    "damping": 0.2
+  },
+  {
+   "id": "paper",
+   "acoustic": "Wood",
+   "absorption": 0.22,
+   "damping": 0.18
   }
  ],
  "auto_exterior": true,
@@ -1260,6 +1266,19 @@
    "collision": "convex",
    "material": "metal_painted",
    "rot_z": 180.0
+  },
+  {
+   "name": "poster_wall_bar_rf7ffeb16_3",
+   "x": -9.84,
+   "y": -5.62,
+   "z": 4.8,
+   "size_x": 0.01,
+   "size_y": 1.8,
+   "size_z": 0.5,
+   "collision": "none",
+   "material": "paper",
+   "rot_z": 180.0,
+   "form": "bar"
   },
   {
    "name": "cigarettes_rb0f5945e_7",

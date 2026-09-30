@@ -42,6 +42,8 @@ OTHER_KINDS = {"dressing_room": "locker", "cash_office": "vault",
 CLUB_SPECIES = {"club_stage", "bar_stool", "counter", "booth_seat", "neon_sign",
                 "crt_tv", "cocktail_table", "club_chair", "vending_machine",
                 "dartboard", "cigarette_machine",
+                # the club's poster runs (0.163.0, Zoo 1.30.0-1.32.0)
+                "poster_wall",
                 # 0.137.0: the lit wall unit behind every bar counter, and
                 # the plain counter that returns the bar to the wall
                 "back_bar"}
