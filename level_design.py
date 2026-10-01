@@ -1225,11 +1225,13 @@ _PIECES = {p["name"]: p for p in (
     # floor needs -- would put a store's machines on every warehouse floor.
     # Each brings ONE stool in front of its face (`seats`, which
     # `_place_fixture` honours since this release). Standing, collision.
+    # OFF THE GLASS (0.168.2), the walker: "set off_glass on cabinets" -- a
+    # store's machine stood against the storefront window by its door.
     _piece("video_poker_store", ((0.65, 0.65, 1.75),), "wall", front=True, most=2,
-           variants=4, seats=("stool", 1, 1),
+           variants=4, seats=("stool", 1, 1), off_glass=True,
            rooms=("sales", "retail", "shop", "customer", "market", "showroom", "stall")),
     _piece("video_poker_bar", ((0.65, 0.65, 1.75),), "wall", front=True, most=2,
-           most_big=(80.0, 3), variants=4, seats=("stool", 1, 1),
+           most_big=(80.0, 3), variants=4, seats=("stool", 1, 1), off_glass=True,
            rooms=("bar", "taproom", "tavern", "pub", "social", "club", "lounge", "vip",
                   "cabaret", "stage", "dance", "main", "floor")),
     _piece("payphone", ((0.75, 0.5, 2.3),), "wall", front=True, most=1),

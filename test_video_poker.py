@@ -94,3 +94,29 @@ def test_the_fixture_pass_is_idempotent_on_the_library():
     for d in _library():
         e = copy.deepcopy(d)
         assert level_design.place_fixtures(e) == 0, d["name"]
+
+
+def _on_glass(d):
+    """The cabinets standing within a wall's thickness of a glazed wall on
+    their storey -- the poster test's rule (`test_poster_walls`)."""
+    hx, hy = float(d.get("footprint_x", 0.0)) / 2.0, float(d.get("footprint_y", 0.0)) / 2.0
+    wt = float(d.get("wall_thick") or 0.3)
+    sh = level_design._story_height(d)
+    out = []
+    for v in _cabinets(d):
+        story = round((v["z"] - v["size_z"] / 2.0) / sh)
+        glazed = level_design._glazed_walls(d, story)
+        near = {"S": abs(v["y"] + hy) < wt + 0.5, "N": abs(v["y"] - hy) < wt + 0.5,
+                "W": abs(v["x"] + hx) < wt + 0.5, "E": abs(v["x"] - hx) < wt + 0.5}
+        if any(near[w] for w in glazed):
+            out.append(v["name"])
+    return out
+
+
+def test_no_cabinet_stands_against_the_storefront_glass():
+    """0.168.2, the walker: "set off_glass on cabinets" -- cold run 9127 put
+    one of gas_station_a02's against the glass by its door. The 0.5 m band
+    is the cabinet's half-depth and a hand: a cabinet's centre stands 0.33 m
+    and its back a centimetre off the wall it is backed to."""
+    for d in _library():
+        assert not _on_glass(d), (d["name"], _on_glass(d))

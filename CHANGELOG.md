@@ -1,3 +1,30 @@
+## [0.168.2] - a video-poker cabinet stands off the storefront glass
+
+The walker, 2026-10-01, on cold run 9127's frames: "keep the posters off the
+machines, set off_glass on cabinets". One of gas_station_a02's cabinets stood
+against the storefront glass by its door. Both cabinet pieces now carry
+`off_glass`, as the sale posters have since 0.163.0 -- a bar's machine does
+not stand in its window either. The order is kept: cabinets before posters,
+so no poster hangs over a machine.
+
+Refurnished from HEAD's specs (19 change): 9 cabinets find no wall off the
+glass and go, with their stools (8 store, 1 bar: 64 -> 56 and 46 -> 45); 28
+move. With the glass ruled out they compete with the posters for the inside
+walls, and the posters give way where they collide:
+
+    store              posters 0.167 / 0.168.1 / now   cabinets 0.168.1 / now
+    gas_station_a02          2  1  1                         2  1
+    gas_station_a03          2  2  1                         2  1
+    stop_n_go                2  2  1                         2  1
+    pharmacy_a02             3  3  2                         2  2
+    strip_retail_a02         2  0  0                         2  2
+
+(cr_deli, deli_a01, deli_a03, night_deli as in 0.168.1.)
+
+Tests: `test_video_poker.py` -- no cabinet within half a cabinet and a hand of
+a glazed wall on its storey; its control, run on 0.168.1's
+gas_station_a02, names the cabinet that stood by the door.
+
 ## [0.168.1] - a video-poker cabinet's slot names its own kind
 
 Cold run 9127 built every cabinet as `prop_video_poker_..._mwood`: the
