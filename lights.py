@@ -24,6 +24,12 @@ _CANOPY_COL = "canopy_col"
 _CANOPY_WASH_BASE = 2
 _CANOPY_WASH_PER_AREA = 150.0
 _CANOPY_WASH_MAX = 4
+#: THE LANES (0.167.0). Pump islands are the volumes named this, and a gap
+#: between them -- or between the outer island and the deck's edge -- is a
+#: lane when it is at least this wide: a car's width and a door's swing. A
+#: wash hangs over each lane, because the pumps' faces face the lanes.
+_PUMP_ISLAND = "pump_island"
+_CANOPY_LANE_MIN = 2.4
 #: The lamp grid hangs this far below the soffit. Zoo's `canopy_lights`
 #: stands its lenses proud of the deck by the same amount for the same
 #: reason -- a lit face flush with the deck it sits in is a coplanar pair.
@@ -371,6 +377,57 @@ def _canopy_grade(deck, volumes):
     return min(feet) if feet else _CANOPY_GRADE
 
 
+def _canopy_lanes(deck, volumes):
+    """``[(x, y, pool)]``, one per LANE under ``deck``, or [] when no pump
+    island stands under it.
+
+    The islands' long axis is the lanes' direction; the lanes are the gaps
+    ACROSS it -- between neighbouring islands, and between the outer islands
+    and the deck's edge -- at least `_CANOPY_LANE_MIN` wide. A wash stands
+    over each lane's centre, half way along the deck, and owns the lane's
+    width by the deck's length that way. More lanes than `_CANOPY_WASH_MAX`
+    keep the outermost two and the evenly spread rest, so the light budget on
+    the forecourt ground holds whatever the deck."""
+    cx, cy = float(deck.get("x", 0.0)), float(deck.get("y", 0.0))
+    sx, sy = float(deck.get("size_x", 0.0)), float(deck.get("size_y", 0.0))
+    isl = []
+    for v in volumes or ():
+        if not str(v.get("name", "")).startswith(_PUMP_ISLAND):
+            continue
+        vx, vy = float(v.get("x", 0.0)), float(v.get("y", 0.0))
+        if abs(vx - cx) > sx / 2.0 or abs(vy - cy) > sy / 2.0:
+            continue          # another forecourt's island
+        isl.append(v)
+    if not isl:
+        return []
+    # the islands run along y when they are longer in y: the lanes do too,
+    # and are spaced across x
+    along_y = sum(float(v.get("size_y", 0.0)) - float(v.get("size_x", 0.0)) for v in isl) >= 0
+    if along_y:
+        lo, hi, c_al, len_al = cx - sx / 2.0, cx + sx / 2.0, cy, sy
+        spans = sorted((float(v["x"]) - float(v.get("size_x", 0.0)) / 2.0,
+                        float(v["x"]) + float(v.get("size_x", 0.0)) / 2.0) for v in isl)
+    else:
+        lo, hi, c_al, len_al = cy - sy / 2.0, cy + sy / 2.0, cx, sx
+        spans = sorted((float(v["y"]) - float(v.get("size_y", 0.0)) / 2.0,
+                        float(v["y"]) + float(v.get("size_y", 0.0)) / 2.0) for v in isl)
+    edges = [lo] + [e for a, b in spans for e in (a, b)] + [hi]
+    gaps = [(edges[k], edges[k + 1]) for k in range(0, len(edges), 2)]
+    gaps = [(a, b) for a, b in gaps if b - a >= _CANOPY_LANE_MIN]
+    if len(gaps) > _CANOPY_WASH_MAX:
+        keep = [round(k * (len(gaps) - 1) / (_CANOPY_WASH_MAX - 1.0))
+                for k in range(_CANOPY_WASH_MAX)]
+        gaps = [gaps[k] for k in sorted(set(keep))]
+    out = []
+    for a, b in gaps:
+        mid, w = (a + b) / 2.0, b - a
+        if along_y:
+            out.append((mid, c_al, [round(w, 3), round(len_al, 3)]))
+        else:
+            out.append((c_al, mid, [round(len_al, 3), round(w, 3)]))
+    return out
+
+
 def _canopy_anchors(volumes):
     """A fuel canopy's lights: one hardware grid, and a few washes.
 
@@ -402,16 +459,25 @@ def _canopy_anchors(volumes):
             "drop": round(soffit - grade, 3), "reacts_to_alarm": True,
         })
 
-        # THE LIGHT. A few washes, along the deck's long axis, inset so the
-        # pools land on the tarmac rather than past the drip line.
-        n = _CANOPY_WASH_BASE + int((sx * sy) // _CANOPY_WASH_PER_AREA)
-        n = max(_CANOPY_WASH_BASE, min(_CANOPY_WASH_MAX, n))
-        span, across = (sx, True) if sx >= sy else (sy, False)
-        step = span / float(n)
-        for i in range(n):
-            off = -span / 2.0 + step * (i + 0.5)
-            x = cx + off if across else cx
-            y = cy if across else cy + off
+        # THE LIGHT. Over the LANES when pump islands stand under the deck
+        # (0.167.0, `_canopy_lanes`): a pump's faces face its lanes, and a
+        # wash over an island grazes them. Otherwise a few washes, along the
+        # deck's long axis, inset so the pools land on the tarmac rather
+        # than past the drip line.
+        lanes = _canopy_lanes(deck, volumes)
+        if lanes:
+            spots = lanes
+        else:
+            n = _CANOPY_WASH_BASE + int((sx * sy) // _CANOPY_WASH_PER_AREA)
+            n = max(_CANOPY_WASH_BASE, min(_CANOPY_WASH_MAX, n))
+            span, across = (sx, True) if sx >= sy else (sy, False)
+            step = span / float(n)
+            spots = []
+            for i in range(n):
+                off = -span / 2.0 + step * (i + 0.5)
+                spots.append((cx + off if across else cx, cy if across else cy + off,
+                              [round(step, 3), round(min(sx, sy), 3)]))
+        for i, (x, y, pool) in enumerate(spots):
             out.append({
                 "id": "%s_wash_%d" % (name, i), "type": "canopy_wash",
                 "source": "derived",
@@ -419,7 +485,7 @@ def _canopy_anchors(volumes):
                 "rot_y": 0.0,
                 # the pool this wash owns, so Lux need not divide the deck
                 # itself and two canopies of different sizes light alike
-                "size": [round(step, 3), round(min(sx, sy), 3)],
+                "size": pool,
                 "drop": round(soffit - grade, 3), "reacts_to_alarm": True,
             })
     return out

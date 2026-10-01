@@ -1,3 +1,34 @@
+## [0.167.0] - the canopy's washes hang over the lanes
+
+Cold run 9120's FLAPPHAS walk, finding 4: the forecourt is dark -- under the
+canopy "the pump stands in shadow beside a lit patch". `_canopy_anchors`
+spread its washes evenly along the deck, and on gas_station_a02's 22 x 13 m
+deck they stood at x -7.33, 0 and 7.33, within 1.33 m of the islands at -6, 0
+and 6. A downward spot over an island lights the island and the pumps' tops
+and grazes their faces -- and the faces face the lanes, which fell between
+the pools. Measured on cold run 9124's walk copy, one face square on from its
+lane: the pump's pixels at median luminance 2 of 255 (its glowing wheels and
+header lift the mean to 44); the face across the island, in a pool, 31; the
+lane's tarmac toward the store, 0.
+
+`_canopy_lanes`: with pump islands under the deck, a wash hangs over each
+LANE -- the gaps across the islands' long axis, between islands and between
+the outer islands and the deck's edge, at least `_CANOPY_LANE_MIN` (2.4 m)
+wide -- at the deck's middle, owning its lane's width by the deck's length;
+more lanes than `_CANOPY_WASH_MAX` keep the outermost two and the evenly
+spread rest. A deck with no islands keeps the even spread.
+
+gas_station_a02: four washes at -8.9, -3, 3, 8.9 where there were three --
+one light more on the forecourt, priced on the cold run that ships it.
+Rebuilt: gas_station_a01, gas_station_a02 and gas_street's light manifests
+change; nothing else does.
+
+Tests: `test_canopy_lanes.py` -- one wash a lane and never over an island;
+a gap too narrow to drive is not a lane; islands along x put the lanes along
+x; too many lanes are capped; another forecourt's islands do not count; no
+islands, no change; the real gas_station_a02 has its four washes clear of its
+three islands.
+
 ## [0.166.1] - the remainders get the room face too
 
 Cold run 9123 showed stone still inside the gas station at its remainders --
