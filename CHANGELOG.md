@@ -1,3 +1,20 @@
+## [0.166.1] - the remainders get the room face too
+
+Cold run 9123 showed stone still inside the gas station at its remainders --
+the stockroom's frame, beside the sales floor's window, the walk-in cooler's
+corner. 0.166.0 left `size_mod: "end"` out; Zoo 1.38.1 builds the unit
+`wallEnd` with a room face (its per-slot scale is applied in the module's own
+frame, so its -Y face is the room side as a segment's is), and
+`_material_in` no longer excludes it. `themed_tscn.INNER_FACE_ROLES` gains
+`wallEnd`.
+
+Library: 2,024 room-face slots, 394 of them remainders (1,630 before);
+gas_station_a02's 9 among them.
+
+Tests: `test_inner_face.py` -- every stone wall slot at the gas station has
+the room face, its 9 remainders included; the remainder's stem mirror is
+`wallEnd_delco_1997_01_mstone_idrywall`.
+
 ## [0.166.0] - an outside-only wall finish stops at the wall
 
 Cold run 9120's FLAPPHAS walk, finding 3: the gas station's exterior stone on

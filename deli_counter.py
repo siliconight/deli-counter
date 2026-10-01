@@ -659,14 +659,14 @@ class _Builder:
 
     def _material_in(self, slot):
         """`material_in` for a slot AS THE MANIFEST WILL WRITE IT (its final
-        kind and glazing), or None: only a full wall segment or an opening in
-        an EXTERIOR wall (`ext_<story>_<N|E|S|W>`) in an outside-only finish
-        has one. Not a remainder (`end`, a unit box scaled per slot) and not
-        a storefront (glass)."""
+        kind and glazing), or None: only a wall segment -- a remainder too
+        since 0.166.1 -- or an opening in an EXTERIOR wall
+        (`ext_<story>_<N|E|S|W>`) in an outside-only finish has one. Not a
+        storefront (glass)."""
         parts = str(slot.get("wall") or "").split("_")
         if (len(parts) >= 3 and parts[0] == "ext" and parts[2] in ("N", "E", "S", "W")
                 and slot.get("role") in ("wall", "window", "doorway", "breach")
-                and slot.get("size_mod") != "end" and not slot.get("glazing")
+                and not slot.get("glazing")
                 and slot.get("material") in self.OUTSIDE_ONLY):
             return self._interior_finish()
         return None

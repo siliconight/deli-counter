@@ -34,7 +34,7 @@ def test_every_outside_only_exterior_wall_names_its_room_face_and_nothing_else_d
         for s in d["slots"]:
             parts = str(s.get("wall") or "").split("_")
             ext = len(parts) >= 3 and parts[0] == "ext" and parts[2] in ("N", "E", "S", "W")
-            want = (ext and s.get("material") in OUTSIDE_ONLY and s.get("size_mod") != "end"
+            want = (ext and s.get("material") in OUTSIDE_ONLY and not s.get("glazing")
                     and s.get("role") in ("wall", "window", "doorway", "breach"))
             if want:
                 tagged += 1
@@ -46,9 +46,21 @@ def test_every_outside_only_exterior_wall_names_its_room_face_and_nothing_else_d
 
 
 def test_the_gas_station_s_stone_walls_are_drywall_inside():
+    """Every stone wall slot, the 9 remainders cold run 9123 showed stone at
+    included (0.166.1)."""
     d = json.load(open(os.path.join(HERE, "build", "gas_station_a02.slots.json"), encoding="utf-8"))
-    stone = [s for s in d["slots"] if s.get("material") == "stone" and s.get("material_in")]
-    assert stone and {s["material_in"] for s in stone} == {"drywall"}
+    stone = [s for s in d["slots"] if s.get("material") == "stone" and s.get("role") != "roof"]
+    assert stone and all(s.get("material_in") == "drywall" for s in stone), \
+        [s["slot_id"] for s in stone if not s.get("material_in")]
+    assert sum(1 for s in stone if s.get("size_mod") == "end") == 9
+
+
+def test_the_remainder_stem_mirror_writes_the_room_face():
+    slot = {"slot_id": "ext_0_N_seg12", "role": "wall", "size_mod": "end", "style": 1,
+            "material": "stone", "material_in": "drywall",
+            "fit": {"dims": [0.175, 0.3, 3.9], "pivot": "center"}}
+    stem, scaled = themed_tscn.resolve_themed_stem(slot, "delco_1997", 1, material="stone")
+    assert scaled and stem == "wallEnd_delco_1997_01_mstone_idrywall"
 
 
 def test_the_stem_mirror_writes_the_room_face_and_falls_back(tmp_path):

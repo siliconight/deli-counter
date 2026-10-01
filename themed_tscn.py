@@ -313,8 +313,9 @@ def resolve_themed_stem(slot: dict, theme: str, style: int, state: str = None,
 
 
 #: The roles whose module can have a room face (Zoo 1.38.0,
-#: `kit.INNER_FACE_ROLES`): full exterior wall segments and their openings.
-INNER_FACE_ROLES = ("wall", "window", "doorway", "breach")
+#: `kit.INNER_FACE_ROLES`): exterior wall segments, remainders included since
+#: 0.166.1 (`wallEnd`), and their openings.
+INNER_FACE_ROLES = ("wall", "window", "doorway", "breach", "wallEnd")
 
 
 def _themed_available(library_dir: str, stem: str) -> bool:
