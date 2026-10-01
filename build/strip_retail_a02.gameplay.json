@@ -339,6 +339,12 @@
       "damping": 0.18
     },
     {
+      "id": "metal_bare",
+      "acoustic": "Metal",
+      "absorption": 0.2,
+      "damping": 0.15
+    },
+    {
       "id": "carpet",
       "acoustic": "Curtain",
       "absorption": 0.85,
@@ -1083,6 +1089,42 @@
         "absorption": 0.5,
         "damping": 0.3
       }
+    },
+    {
+      "node": "video_poker_store_r1e2f444f_9_col",
+      "material": {
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
+      }
+    },
+    {
+      "node": "bar_stool_r1e2f444f_9_1_col",
+      "material": {
+        "id": "metal_bare",
+        "acoustic": "Metal",
+        "absorption": 0.2,
+        "damping": 0.15
+      }
+    },
+    {
+      "node": "video_poker_store_r1e2f444f_10_col",
+      "material": {
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
+      }
+    },
+    {
+      "node": "bar_stool_r1e2f444f_10_1_col",
+      "material": {
+        "id": "metal_bare",
+        "acoustic": "Metal",
+        "absorption": 0.2,
+        "damping": 0.15
+      }
     }
   ],
   "interactives": [
@@ -1462,7 +1504,9 @@
     "safe_floor_ra81a3b5c_1": "prop",
     "shelf_run_ra81a3b5c_2": "prop",
     "atm_store_r1e2f444f_8": "prop",
-    "poster_wall_store_r1e2f444f_9": "prop",
-    "poster_wall_store_r1e2f444f_10": "prop"
+    "video_poker_store_r1e2f444f_9": "prop",
+    "bar_stool_r1e2f444f_9_1": "prop",
+    "video_poker_store_r1e2f444f_10": "prop",
+    "bar_stool_r1e2f444f_10_1": "prop"
   }
 }

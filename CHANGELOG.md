@@ -1,3 +1,44 @@
+## [0.168.0] - video-poker cabinets, with a stool, in stores, bars and clubs
+
+The walker, 2026-09-30: "'PA Skill Games' ... into the level. We would see
+them in convenient stores, bars, and strip clubs. High stool to play" -- the
+1997 period version agreed. Zoo 1.39.0 draws `video_poker`, a "for amusement
+only" upright, four invented brands by variant.
+
+  * `prop_species`: `video_poker` routes to the species, immediately ahead of
+    the counter row, whose `bar_` would claim `video_poker_bar_*`.
+  * TWO FIXTURE PIECES, ONE SPECIES: a fixture's `rooms` gate is one token set
+    for every recipe listing it, and `floor` -- a strip club's main floor --
+    would put a store's machines on every warehouse floor.
+    `video_poker_store` (the ATM's selling rooms, at most 2) on `shop_floor`,
+    placed after the ATM and before the sale posters; `video_poker_bar` (bar
+    and strip-club rooms, 2, 3 past 80 m2) on `club` and `strip_club`.
+    0.65 x 0.65 x 1.75, standing, collision, four variants.
+  * `_place_fixture` honours `seats` (only the furnishing pass did): one
+    `bar_stool` in front of the cabinet's face, through the same room-edge,
+    nested-room and `_seed_clear` tests, turned to face it; a spot whose stool
+    does not fit is not a spot. Named `bar_stool_<tag>_<cabinet seq>_1`.
+
+THE LIBRARY, refurnished by the chain from HEAD's specs: 110 cabinets (64 in
+stores, 46 in bars and clubs), 110 stools, in 42 specs. Every volume HEAD had
+is present and unchanged EXCEPT store poster runs, which are placed after the
+cabinets and go round them: six stores lose runs -- cr_deli 5 -> 4, deli_a01
+5 -> 3, deli_a03 5 -> 4, gas_station_a02 2 -> 1, night_deli 5 -> 4,
+strip_retail_a02 2 -> 0. The only material declared is `metal_bare` (the
+stool's column). On club_block_014: six cabinets in the strip club (three in
+each of its two large rooms), two on the gas station's sales floor, none in
+the airport (no selling or bar room).
+
+Seven tests named what a club room or a piece may be; each is extended with
+its reason (`patches/patch_dc_video_poker_tests.py`): `CLUB_SPECIES` x2,
+`_ZOO_RANGES`, the 2.2 m host spread (a cabinet stands at a wall with its own
+stool; the reference rows stand side by side), a stool's host (a counter or a
+cabinet), and the fixture pass's invariance (a cabinet's own stools).
+
+Nav gate: 131 shells pass. Tests: `test_video_poker.py` -- routing; cabinets
+only where their piece's gate and recipe allow, at most its count; each with
+one stool in front of it; the fixture pass idempotent.
+
 ## [0.167.0] - the canopy's washes hang over the lanes
 
 Cold run 9120's FLAPPHAS walk, finding 4: the forecourt is dark -- under the

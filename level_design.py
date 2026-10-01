@@ -1216,6 +1216,22 @@ _PIECES = {p["name"]: p for p in (
     _piece("atm_store", ((0.6, 0.55, 1.45),), "wall", front=True, most=1, variants=4,
            rooms=("sales", "retail", "shop", "customer", "market", "showroom", "stall"),
            solo=True),
+    # THE VIDEO-POKER CABINET (0.168.0). The walker, 2026-09-30: "PA Skill
+    # Games ... in convenient stores, bars, and strip clubs. High stool to
+    # play", the 1997 version -- Zoo 1.39.0's `video_poker`, a "for
+    # amusement only" upright with a CRT, four invented brands by variant.
+    # TWO PIECES, ONE SPECIES: a fixture's `rooms` gate is one token set for
+    # every recipe that lists it, and `floor` -- which a strip club's main
+    # floor needs -- would put a store's machines on every warehouse floor.
+    # Each brings ONE stool in front of its face (`seats`, which
+    # `_place_fixture` honours since this release). Standing, collision.
+    _piece("video_poker_store", ((0.65, 0.65, 1.75),), "wall", front=True, most=2,
+           variants=4, seats=("stool", 1, 1),
+           rooms=("sales", "retail", "shop", "customer", "market", "showroom", "stall")),
+    _piece("video_poker_bar", ((0.65, 0.65, 1.75),), "wall", front=True, most=2,
+           most_big=(80.0, 3), variants=4, seats=("stool", 1, 1),
+           rooms=("bar", "taproom", "tavern", "pub", "social", "club", "lounge", "vip",
+                  "cabaret", "stage", "dance", "main", "floor")),
     _piece("payphone", ((0.75, 0.5, 2.3),), "wall", front=True, most=1),
     _piece("chair_waiting", ((2.4, 0.6, 0.9), (1.8, 0.6, 0.9),
                              (3.0, 0.6, 0.9)), "wall", front=True),
@@ -1824,7 +1840,8 @@ _RECIPES = {
     "club": {"anchors": ("counter_bar", "pool_table"),
              "wall": ("booth", "shelf_run", "booth", "vending"),
              "floor": ("table_dining",),
-             "clusters": (), "fixtures": ("cigarettes", "poster_wall_bar")},
+             "clusters": (), "fixtures": ("cigarettes", "poster_wall_bar",
+                                          "video_poker_bar")},
     # THE STRIP CLUB. Anchors are chosen by the room's shape
     # (`_club_anchors`), all of them placed: a bar stage as the centrepiece
     # with stools round it, or in a long room a round stage and a bar
@@ -1838,7 +1855,8 @@ _RECIPES = {
                    "floor": ("table_cocktail",),
                    "clusters": (), "per_area": 24.0, "all_anchors": True,
                    # placed after the room is furnished (`place_fixtures`)
-                   "fixtures": ("dartboard", "cigarettes", "poster_wall_club")},
+                   "fixtures": ("dartboard", "cigarettes", "poster_wall_club",
+                                "video_poker_bar")},
     # THE TRADING CARD SHOP (Zoo 0.95.0, Pixelcoat 0.44.0). Anchors are
     # chosen by the room (`_card_shop_anchors`): the showcase counter on a
     # selling floor, a play table in the play area. The wall run is pack
@@ -1936,7 +1954,7 @@ _RECIPES = {
                             "vending"),
                    "floor": (),
                    "clusters": ((("cartons",), 2, 3), (("litter_bin",), 1, 1)),
-                   "fixtures": ("atm_store", "poster_wall_store")},
+                   "fixtures": ("atm_store", "video_poker_store", "poster_wall_store")},
     "garage": {"anchors": ("workbench",),
                "wall": ("shelf_run", "cabinet_tool"),
                "floor": (),
@@ -3070,6 +3088,9 @@ def fixture_limit(key, area):
 #: `_seed_clear` and every lane met a volume (16), a stair's reservation (8),
 #: a door's approach (4) or the room's edge (2).
 _FIXTURE_ROUNDS = 6
+#: A fixture's stool stands this far off its host's face: knees under the
+#: button deck's lip, a hand's width of floor between (0.168.0).
+_FIXTURE_SEAT_GAP = 0.12
 
 
 def _place_fixture(spec, room, key, k, building):
@@ -3154,11 +3175,46 @@ def _place_fixture(spec, room, key, k, building):
                 continue
         elif _over_rects(lanes, qx, qy, sx / 2.0, sy / 2.0):
             continue
+        # A FIXTURE'S SEAT (0.168.0): a piece with `seats` brings them, one
+        # stool in front of a video-poker cabinet's face -- through the same
+        # room edge, nested-room and `_seed_clear` tests as the cabinet, so
+        # a spot whose stool does not fit is not a spot. The furnishing pass
+        # has always seated its hosts (`_seats`); this pass never had.
+        seat = None
+        if p["seats"] and front is not None:
+            how, _lo, _hi = p["seats"]
+            seat_key = _SEAT_PIECES.get(how)
+            if seat_key:
+                s_w, s_d, s_h = _PIECES[seat_key]["sizes"][0]
+                f = math.radians(front)
+                ux, uy = round(math.sin(f)), round(math.cos(f))
+                depth = sy if uy else sx
+                out = depth / 2.0 + s_d / 2.0 + _FIXTURE_SEAT_GAP
+                cx, cy = qx + ux * out, qy + uy * out
+                s_half = max(s_w, s_d) / 2.0
+                rx0, ry0, rx1, ry1 = room["bounds"]
+                edge = 0.15 + s_half
+                if not (rx0 + edge < cx < rx1 - edge and ry0 + edge < cy < ry1 - edge):
+                    continue
+                if _over_rects(inner, cx, cy, s_half, s_half):
+                    continue
+                if not _seed_clear(spec, room, cx, cy, [], half=s_half):
+                    continue
+                if _over_rects(lanes, cx, cy, s_half, s_half):
+                    continue
+                # facing the cabinet: a seat's front is its local -Y and a
+                # slot turns +Y onto its bearing, so the host's own front
+                # bearing points the seat back at the host (`_seats`)
+                s_rot = float(int(round(front / 90.0)) * 90 % 360)
+                seat = _make_volume(spec, seat_key, f"{seat_key}_{rtag}_{seq}_1", cx, cy,
+                                    s_w, s_d, s_h, s_rot, story, sh, building)
         vol = _make_volume(spec, key, f"{key}_{rtag}_{seq}", qx, qy, sx, sy, h, rot,
                            story, sh, building)
         if p["distinct"] and not _distinct_variant(spec, key, rtag, vol, variant_count(p)):
             continue
         spec.setdefault("volumes", []).append(vol)
+        if seat is not None:
+            spec["volumes"].append(seat)
         return vol
     return None
 

@@ -59,6 +59,12 @@
    "acoustic": "Wood",
    "absorption": 0.22,
    "damping": 0.18
+  },
+  {
+   "id": "metal_bare",
+   "acoustic": "Metal",
+   "absorption": 0.2,
+   "damping": 0.15
   }
  ],
  "ext_walls": [
@@ -741,8 +747,71 @@
    "variant": 3
   },
   {
-   "name": "poster_wall_store_r48016798_7",
-   "x": -5.81,
+   "name": "video_poker_store_r48016798_7",
+   "x": -5.12,
+   "y": 10.52,
+   "z": 0.875,
+   "size_x": 0.65,
+   "size_y": 0.65,
+   "size_z": 1.75,
+   "collision": "convex",
+   "material": "wood",
+   "variant": 3
+  },
+  {
+   "name": "bar_stool_r48016798_7_1",
+   "x": -5.12,
+   "y": 9.86,
+   "z": 0.38,
+   "size_x": 0.42,
+   "size_y": 0.42,
+   "size_z": 0.76,
+   "collision": "convex",
+   "material": "metal_bare",
+   "rot_z": 180.0
+  },
+  {
+   "name": "video_poker_store_r48016798_8",
+   "x": -3.26,
+   "y": 10.52,
+   "z": 0.875,
+   "size_x": 0.65,
+   "size_y": 0.65,
+   "size_z": 1.75,
+   "collision": "convex",
+   "material": "wood",
+   "variant": 2
+  },
+  {
+   "name": "bar_stool_r48016798_8_1",
+   "x": -3.26,
+   "y": 9.86,
+   "z": 0.38,
+   "size_x": 0.42,
+   "size_y": 0.42,
+   "size_z": 0.76,
+   "collision": "convex",
+   "material": "metal_bare",
+   "rot_z": 180.0,
+   "variant": 1
+  },
+  {
+   "name": "poster_wall_store_r48016798_9",
+   "x": -15.84,
+   "y": 2.26,
+   "z": 1.6,
+   "size_x": 0.01,
+   "size_y": 1.6,
+   "size_z": 0.6,
+   "collision": "none",
+   "material": "paper",
+   "rot_z": 180.0,
+   "form": "store",
+   "variant": 3
+  },
+  {
+   "name": "poster_wall_store_r48016798_10",
+   "x": 0.05,
    "y": 10.84,
    "z": 1.6,
    "size_x": 1.6,
@@ -753,21 +822,7 @@
    "form": "store"
   },
   {
-   "name": "poster_wall_store_r48016798_8",
-   "x": -15.84,
-   "y": 0.58,
-   "z": 1.6,
-   "size_x": 0.01,
-   "size_y": 1.6,
-   "size_z": 0.6,
-   "collision": "none",
-   "material": "paper",
-   "rot_z": 180.0,
-   "form": "store",
-   "variant": 1
-  },
-  {
-   "name": "poster_wall_store_r48016798_9",
+   "name": "poster_wall_store_r48016798_11",
    "x": -13.4,
    "y": 10.84,
    "z": 1.6,
@@ -777,7 +832,7 @@
    "collision": "none",
    "material": "paper",
    "form": "store",
-   "variant": 3
+   "variant": 2
   }
  ],
  "rooms": [

@@ -6591,7 +6591,7 @@
       "slot_id": "floor_dining_room",
       "role": "floor",
       "size_mod": "full",
-      "style": 10,
+      "style": 11,
       "material": "carpet",
       "current_ref": "floor_greybox_01",
       "kit_axis": "theme",
@@ -6628,7 +6628,7 @@
       "slot_id": "ceiling_dining_room",
       "role": "ceiling",
       "size_mod": "full",
-      "style": 12,
+      "style": 13,
       "material": "ceiling_tile",
       "current_ref": "ceiling_greybox_01",
       "kit_axis": "theme",
@@ -6753,7 +6753,7 @@
       "slot_id": "floor_walkin_cooler",
       "role": "floor",
       "size_mod": "full",
-      "style": 9,
+      "style": 10,
       "material": "concrete",
       "current_ref": "floor_greybox_01",
       "kit_axis": "theme",
@@ -6790,7 +6790,7 @@
       "slot_id": "ceiling_walkin_cooler",
       "role": "ceiling",
       "size_mod": "full",
-      "style": 13,
+      "style": 14,
       "material": "plaster",
       "current_ref": "ceiling_greybox_01",
       "kit_axis": "theme",
@@ -6996,7 +6996,7 @@
       "slot_id": "floor_social_club",
       "role": "floor",
       "size_mod": "full",
-      "style": 9,
+      "style": 10,
       "material": "concrete",
       "current_ref": "floor_greybox_01",
       "kit_axis": "theme",
@@ -7070,7 +7070,7 @@
       "slot_id": "floor_count_room",
       "role": "floor",
       "size_mod": "full",
-      "style": 9,
+      "style": 10,
       "material": "concrete",
       "current_ref": "floor_greybox_01",
       "kit_axis": "theme",
@@ -7114,7 +7114,7 @@
       "slot_id": "ceiling_count_room",
       "role": "ceiling",
       "size_mod": "full",
-      "style": 13,
+      "style": 14,
       "material": "plaster",
       "current_ref": "ceiling_greybox_01",
       "kit_axis": "theme",
@@ -9695,6 +9695,84 @@
         "pivot": "center",
         "openings": [],
         "collision": "none"
+      }
+    },
+    {
+      "slot_id": "video_poker_bar_rf7ffeb16_4",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 5,
+      "material": "wood",
+      "species": "video_poker",
+      "stock": null,
+      "variant": 2,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          -3.44,
+          -6.51,
+          4.075
+        ],
+        "rot_y": 180.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.65,
+          0.65,
+          1.75
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "bar_stool_rf7ffeb16_4_1",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 9,
+      "material": "metal_bare",
+      "species": "bar_stool",
+      "stock": null,
+      "variant": 1,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          -3.44,
+          -5.86,
+          3.58
+        ],
+        "rot_y": 0.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.42,
+          0.42,
+          0.76
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
       }
     },
     {

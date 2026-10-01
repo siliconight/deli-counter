@@ -234,7 +234,13 @@ def test_a_fixture_moves_nothing_the_room_was_furnished_with():
     finally:
         level_design.place_fixtures = saved
     fixtures = [v for v in s["volumes"]
-                if v["name"].startswith(("dartboard_", "cigarettes_", "poster_wall_"))]
+                if v["name"].startswith(("dartboard_", "cigarettes_", "poster_wall_",
+                                         "video_poker_"))]
+    # ...and a cabinet's own stool (0.168.0), named for the cabinet: read off
+    # the cabinets, not off the `bar_stool_` prefix every bar stool shares
+    own = {"bar_stool_" + v["name"].split("_", 3)[3] + "_1" for v in fixtures
+           if v["name"].startswith("video_poker_bar_")}
+    fixtures += [v for v in s["volumes"] if v["name"] in own]
     assert fixtures
     assert [v for v in s["volumes"] if v not in fixtures] == t["volumes"]
 

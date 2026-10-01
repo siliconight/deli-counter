@@ -50,6 +50,12 @@
    "acoustic": "Metal",
    "absorption": 0.25,
    "damping": 0.2
+  },
+  {
+   "id": "metal_bare",
+   "acoustic": "Metal",
+   "absorption": 0.2,
+   "damping": 0.15
   }
  ],
  "ext_walls": [
@@ -2160,6 +2166,56 @@
    "collision": "convex",
    "material": "metal_painted",
    "variant": 2
+  },
+  {
+   "name": "video_poker_bar_r2d10ec72_11",
+   "x": 7.85,
+   "y": 14.52,
+   "z": 4.675,
+   "size_x": 0.65,
+   "size_y": 0.65,
+   "size_z": 1.75,
+   "collision": "convex",
+   "material": "wood",
+   "variant": 3
+  },
+  {
+   "name": "bar_stool_r2d10ec72_11_1",
+   "x": 7.85,
+   "y": 13.86,
+   "z": 4.18,
+   "size_x": 0.42,
+   "size_y": 0.42,
+   "size_z": 0.76,
+   "collision": "convex",
+   "material": "metal_bare",
+   "rot_z": 180.0,
+   "variant": 1
+  },
+  {
+   "name": "video_poker_bar_r2d10ec72_12",
+   "x": 20.52,
+   "y": 9.16,
+   "z": 4.675,
+   "size_x": 0.65,
+   "size_y": 0.65,
+   "size_z": 1.75,
+   "collision": "convex",
+   "material": "wood",
+   "rot_z": 90.0,
+   "variant": 1
+  },
+  {
+   "name": "bar_stool_r2d10ec72_12_1",
+   "x": 19.86,
+   "y": 9.16,
+   "z": 4.18,
+   "size_x": 0.42,
+   "size_y": 0.42,
+   "size_z": 0.76,
+   "collision": "convex",
+   "material": "metal_bare",
+   "rot_z": 270.0
   },
   {
    "name": "cigarettes_r85a692cb_3",

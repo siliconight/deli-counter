@@ -573,6 +573,12 @@
       "damping": 0.18
     },
     {
+      "id": "metal_bare",
+      "acoustic": "Metal",
+      "absorption": 0.2,
+      "damping": 0.15
+    },
+    {
       "id": "concrete",
       "acoustic": "Concrete",
       "absorption": 0.7,
@@ -2193,6 +2199,42 @@
         "absorption": 0.18,
         "damping": 0.16
       }
+    },
+    {
+      "node": "video_poker_store_r48016798_4_col",
+      "material": {
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
+      }
+    },
+    {
+      "node": "bar_stool_r48016798_4_1_col",
+      "material": {
+        "id": "metal_bare",
+        "acoustic": "Metal",
+        "absorption": 0.2,
+        "damping": 0.15
+      }
+    },
+    {
+      "node": "video_poker_store_r48016798_5_col",
+      "material": {
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
+      }
+    },
+    {
+      "node": "bar_stool_r48016798_5_1_col",
+      "material": {
+        "id": "metal_bare",
+        "acoustic": "Metal",
+        "absorption": 0.2,
+        "damping": 0.15
+      }
     }
   ],
   "interactives": [
@@ -2901,7 +2943,10 @@
     "milk_crates_r6af9550a_4": "prop",
     "milk_crates_r6af9550a_5": "prop",
     "atm_store_r48016798_3": "prop",
-    "poster_wall_store_r48016798_4": "prop",
-    "poster_wall_store_r48016798_5": "prop"
+    "video_poker_store_r48016798_4": "prop",
+    "bar_stool_r48016798_4_1": "prop",
+    "video_poker_store_r48016798_5": "prop",
+    "bar_stool_r48016798_5_1": "prop",
+    "poster_wall_store_r48016798_6": "prop"
   }
 }

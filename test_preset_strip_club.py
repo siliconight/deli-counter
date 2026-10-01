@@ -46,7 +46,9 @@ CLUB_SPECIES = {"club_stage", "bar_stool", "counter", "booth_seat", "neon_sign",
                 "poster_wall",
                 # 0.137.0: the lit wall unit behind every bar counter, and
                 # the plain counter that returns the bar to the wall
-                "back_bar"}
+                "back_bar",
+                # the video-poker cabinets (0.168.0, Zoo 1.39.0)
+                "video_poker"}
 _TAGGED = re.compile(r"_r[0-9a-f]{8}_")
 #: What Level Factory calls the level it builds for the 9055 brief.
 LF_NAME = "lf_club_block_001_7"

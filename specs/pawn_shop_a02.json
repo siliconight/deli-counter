@@ -56,6 +56,12 @@
    "acoustic": "Wood",
    "absorption": 0.22,
    "damping": 0.18
+  },
+  {
+   "id": "metal_bare",
+   "acoustic": "Metal",
+   "absorption": 0.2,
+   "damping": 0.15
   }
  ],
  "ext_walls": [
@@ -711,7 +717,56 @@
    "variant": 2
   },
   {
-   "name": "poster_wall_store_r79538c7c_12",
+   "name": "video_poker_store_r79538c7c_12",
+   "x": -0.32,
+   "y": -6.51,
+   "z": 0.875,
+   "size_x": 0.65,
+   "size_y": 0.65,
+   "size_z": 1.75,
+   "collision": "convex",
+   "material": "wood",
+   "rot_z": 180.0,
+   "variant": 3
+  },
+  {
+   "name": "bar_stool_r79538c7c_12_1",
+   "x": -0.32,
+   "y": -5.86,
+   "z": 0.38,
+   "size_x": 0.42,
+   "size_y": 0.42,
+   "size_z": 0.76,
+   "collision": "convex",
+   "material": "metal_bare",
+   "variant": 3
+  },
+  {
+   "name": "video_poker_store_r79538c7c_13",
+   "x": 1.55,
+   "y": -6.51,
+   "z": 0.875,
+   "size_x": 0.65,
+   "size_y": 0.65,
+   "size_z": 1.75,
+   "collision": "convex",
+   "material": "wood",
+   "rot_z": 180.0,
+   "variant": 1
+  },
+  {
+   "name": "bar_stool_r79538c7c_13_1",
+   "x": 1.55,
+   "y": -5.86,
+   "z": 0.38,
+   "size_x": 0.42,
+   "size_y": 0.42,
+   "size_z": 0.76,
+   "collision": "convex",
+   "material": "metal_bare"
+  },
+  {
+   "name": "poster_wall_store_r79538c7c_14",
    "x": 8.84,
    "y": -3.49,
    "z": 1.6,
@@ -721,7 +776,7 @@
    "collision": "none",
    "material": "paper",
    "form": "store",
-   "variant": 3
+   "variant": 2
   },
   {
    "name": "cigarettes_rb0f5945e_9",

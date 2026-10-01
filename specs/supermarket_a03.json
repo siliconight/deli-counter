@@ -44,6 +44,12 @@
    "acoustic": "Wood",
    "absorption": 0.22,
    "damping": 0.18
+  },
+  {
+   "id": "metal_bare",
+   "acoustic": "Metal",
+   "absorption": 0.2,
+   "damping": 0.15
   }
  ],
  "ext_walls": [
@@ -1009,7 +1015,57 @@
    "variant": 3
   },
   {
-   "name": "poster_wall_store_r48016798_20",
+   "name": "video_poker_store_r48016798_20",
+   "x": 8.37,
+   "y": -14.52,
+   "z": 0.875,
+   "size_x": 0.65,
+   "size_y": 0.65,
+   "size_z": 1.75,
+   "collision": "convex",
+   "material": "wood",
+   "rot_z": 180.0,
+   "variant": 3
+  },
+  {
+   "name": "bar_stool_r48016798_20_1",
+   "x": 8.37,
+   "y": -13.86,
+   "z": 0.38,
+   "size_x": 0.42,
+   "size_y": 0.42,
+   "size_z": 0.76,
+   "collision": "convex",
+   "material": "metal_bare",
+   "variant": 2
+  },
+  {
+   "name": "video_poker_store_r48016798_21",
+   "x": -0.08,
+   "y": -14.52,
+   "z": 0.875,
+   "size_x": 0.65,
+   "size_y": 0.65,
+   "size_z": 1.75,
+   "collision": "convex",
+   "material": "wood",
+   "rot_z": 180.0,
+   "variant": 1
+  },
+  {
+   "name": "bar_stool_r48016798_21_1",
+   "x": -0.08,
+   "y": -13.86,
+   "z": 0.38,
+   "size_x": 0.42,
+   "size_y": 0.42,
+   "size_z": 0.76,
+   "collision": "convex",
+   "material": "metal_bare",
+   "variant": 1
+  },
+  {
+   "name": "poster_wall_store_r48016798_22",
    "x": 19.84,
    "y": -13.49,
    "z": 1.6,
@@ -1022,7 +1078,7 @@
    "variant": 3
   },
   {
-   "name": "poster_wall_store_r48016798_21",
+   "name": "poster_wall_store_r48016798_23",
    "x": -19.84,
    "y": -6.34,
    "z": 1.6,
@@ -1036,7 +1092,7 @@
    "variant": 1
   },
   {
-   "name": "poster_wall_store_r48016798_22",
+   "name": "poster_wall_store_r48016798_24",
    "x": -19.84,
    "y": -13.87,
    "z": 1.6,
@@ -1047,7 +1103,7 @@
    "material": "paper",
    "rot_z": 180.0,
    "form": "store",
-   "variant": 3
+   "variant": 2
   }
  ],
  "markers": [

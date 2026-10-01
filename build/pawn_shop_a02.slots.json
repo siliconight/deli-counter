@@ -3902,7 +3902,7 @@
       "slot_id": "floor_shop_floor",
       "role": "floor",
       "size_mod": "full",
-      "style": 9,
+      "style": 10,
       "material": "carpet",
       "current_ref": "floor_greybox_01",
       "kit_axis": "theme",
@@ -3939,7 +3939,7 @@
       "slot_id": "ceiling_shop_floor",
       "role": "ceiling",
       "size_mod": "full",
-      "style": 11,
+      "style": 12,
       "material": "ceiling_tile",
       "current_ref": "ceiling_greybox_01",
       "kit_axis": "theme",
@@ -3976,7 +3976,7 @@
       "slot_id": "floor_back_room",
       "role": "floor",
       "size_mod": "full",
-      "style": 10,
+      "style": 11,
       "material": "tile",
       "current_ref": "floor_greybox_01",
       "kit_axis": "theme",
@@ -4013,7 +4013,7 @@
       "slot_id": "ceiling_back_room",
       "role": "ceiling",
       "size_mod": "full",
-      "style": 11,
+      "style": 12,
       "material": "ceiling_tile",
       "current_ref": "ceiling_greybox_01",
       "kit_axis": "theme",
@@ -4057,7 +4057,7 @@
       "slot_id": "floor_upper_hall",
       "role": "floor",
       "size_mod": "full",
-      "style": 10,
+      "style": 11,
       "material": "tile",
       "current_ref": "floor_greybox_01",
       "kit_axis": "theme",
@@ -4094,7 +4094,7 @@
       "slot_id": "ceiling_upper_hall",
       "role": "ceiling",
       "size_mod": "full",
-      "style": 11,
+      "style": 12,
       "material": "ceiling_tile",
       "current_ref": "ceiling_greybox_01",
       "kit_axis": "theme",
@@ -4249,7 +4249,7 @@
       "slot_id": "ceiling_lockup",
       "role": "ceiling",
       "size_mod": "full",
-      "style": 12,
+      "style": 13,
       "material": "plaster",
       "current_ref": "ceiling_greybox_01",
       "kit_axis": "theme",
@@ -5726,14 +5726,170 @@
       }
     },
     {
-      "slot_id": "poster_wall_store_r79538c7c_12",
+      "slot_id": "video_poker_store_r79538c7c_12",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 5,
+      "material": "wood",
+      "species": "video_poker",
+      "stock": null,
+      "variant": 3,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          -0.32,
+          -6.51,
+          0.875
+        ],
+        "rot_y": 180.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.65,
+          0.65,
+          1.75
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "bar_stool_r79538c7c_12_1",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 9,
+      "material": "metal_bare",
+      "species": "bar_stool",
+      "stock": null,
+      "variant": 3,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          -0.32,
+          -5.86,
+          0.38
+        ],
+        "rot_y": 0.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.42,
+          0.42,
+          0.76
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "video_poker_store_r79538c7c_13",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 5,
+      "material": "wood",
+      "species": "video_poker",
+      "stock": null,
+      "variant": 1,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          1.55,
+          -6.51,
+          0.875
+        ],
+        "rot_y": 180.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.65,
+          0.65,
+          1.75
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "bar_stool_r79538c7c_13_1",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 9,
+      "material": "metal_bare",
+      "species": "bar_stool",
+      "stock": null,
+      "variant": 0,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          1.55,
+          -5.86,
+          0.38
+        ],
+        "rot_y": 0.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.42,
+          0.42,
+          0.76
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "poster_wall_store_r79538c7c_14",
       "role": "prop",
       "size_mod": "full",
       "style": 8,
       "material": "paper",
       "species": "poster_wall",
       "stock": null,
-      "variant": 3,
+      "variant": 2,
       "form": "store",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",

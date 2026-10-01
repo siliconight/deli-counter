@@ -33,7 +33,9 @@ CLUB_SPECIES = {"club_stage", "bar_stool", "counter", "booth_seat", "neon_sign",
                 # the bar's staff side (0.137.0): the lit wall unit behind
                 # every counter. The return end that makes the bar an L is
                 # a plain `counter` and is already in this set.
-                "back_bar"}
+                "back_bar",
+                # the video-poker cabinets (0.168.0, Zoo 1.39.0)
+                "video_poker"}
 _GEN = re.compile(r"^(?P<stem>[a-z_]+?)_(?P<tag>r[0-9a-f]{8})_\d+(_\d+)?$")
 
 
@@ -151,10 +153,15 @@ def test_a_long_room_gets_a_round_stage_and_a_bar_on_the_wall():
     # counter's (`bar_stool_<tag>_<counter seq>_<n>`), within its length
     counters = {v["name"].rsplit("_", 1)[1]: v for v in s["volumes"]
                 if v["name"].startswith("counter_club_")}
+    # a stool is named for its host's sequence number, unique in the room;
+    # since 0.168.0 the host is a counter or a video-poker cabinet
+    cabinets = {v["name"].rsplit("_", 1)[1]: v for v in s["volumes"]
+                if v["name"].startswith("video_poker_")}
     stools = [v for v in s["volumes"] if v["name"].startswith("bar_stool_")]
     assert stools and len(counters) == 2            # 300 m2: the second bar
     for v in stools:
-        host = counters[v["name"].split("_")[3]]
+        seq = v["name"].split("_")[3]
+        host = counters.get(seq) or cabinets[seq]
         assert math.hypot(v["x"] - host["x"], v["y"] - host["y"]) < 3.5, (v["name"], host["name"])
 
 
@@ -295,7 +302,12 @@ def test_the_club_keeps_the_furnishing_invariants():
                                            # hung art, as the sign and the TV
                                            # are: a poster over a couch is
                                            # not a second host (0.163.0)
-                                           "poster_wall_"))]
+                                           "poster_wall_",
+                                           # a video-poker cabinet stands at a
+                                           # wall with its own stool, and the
+                                           # reference rows stand side by side:
+                                           # nothing gathers round it (0.168.0)
+                                           "video_poker_"))]
     for i, a in enumerate(hosts):
         for b in hosts[i + 1:]:
             assert math.hypot(a["x"] - b["x"], a["y"] - b["y"]) >= 2.2 - 1e-6, (a["name"], b["name"])

@@ -1044,6 +1044,12 @@
       "damping": 0.18
     },
     {
+      "id": "metal_bare",
+      "acoustic": "Metal",
+      "absorption": 0.2,
+      "damping": 0.15
+    },
+    {
       "id": "concrete",
       "acoustic": "Concrete",
       "absorption": 0.7,
@@ -3362,6 +3368,24 @@
       }
     },
     {
+      "node": "video_poker_bar_rf7ffeb16_4_col",
+      "material": {
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": 0.35,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "bar_stool_rf7ffeb16_4_1_col",
+      "material": {
+        "id": "metal_bare",
+        "acoustic": "Metal",
+        "absorption": 0.2,
+        "damping": 0.15
+      }
+    },
+    {
       "node": "cigarettes_rb0f5945e_6_col",
       "material": {
         "id": "metal_painted",
@@ -5191,6 +5215,8 @@
     "cigarettes_r4bf49580_2": "prop",
     "cigarettes_rf7ffeb16_2": "prop",
     "poster_wall_bar_rf7ffeb16_3": "prop",
+    "video_poker_bar_rf7ffeb16_4": "prop",
+    "bar_stool_rf7ffeb16_4_1": "prop",
     "cigarettes_rb0f5945e_6": "prop",
     "stair_guard_side_0": "prop",
     "stair_guard_rail_1": "prop",
