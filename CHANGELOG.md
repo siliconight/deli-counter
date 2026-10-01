@@ -1,3 +1,34 @@
+## [0.165.0] - every sign over a door names its business
+
+Cold run 9120's FLAPPHAS walk found the lit box over the gas station's door
+blank; 9121 attributed it to Zoo's `sign_box`, which painted a face only from
+a sign pack no theme ships, so every sign this repo derives (102 across the
+library) was blank. Zoo 1.37.0 paints the business's name; this hands it the
+business.
+
+`lights.build_light_manifest` takes `business` -- the building's identity,
+`level_design.club_building_id(spec)`, the string a club's `neon_sign`
+variant is keyed on -- and stamps it on every `sign` anchor, derived or
+authored, that does not name its own. `write_light_manifest` passes it. Zoo
+reads the kind of business from it and, for a club, the same name its neon
+shows.
+
+THE FIRST LIBRARY BUILD OF THIS FAILED SILENTLY. The call used `_ld`, which
+`deli_counter.py` imports only locally inside `club_room_ids`; the patch's
+dry run checked that the import's text occurred in the file, not that it was
+in scope. Every building raised `NameError` writing its light manifest, the
+build manifest written after it was skipped, and `build.py --all` exited 0
+with 128 of 131 shells unrebuilt. Fixed by importing it in the function
+(`patches/patch_dc_sign_business_import.py`); the build's silence is its own
+defect, filed separately.
+
+Rebuilt: 82 light manifests change by exactly the stamp (+1 line, and a
+comma); build manifests by their timestamps. Nav gate: 131 shells pass.
+
+Tests: `test_sign_business.py` -- every library sign anchor carries its
+building's identity (102 seen); an authored sign keeps its own business and
+gains one when it has none; no business, nothing stamped.
+
 ## [0.164.0] - an ATM in every store
 
 The walker, 2026-09-29: "Convenient stores should also have ATMs"; Zoo

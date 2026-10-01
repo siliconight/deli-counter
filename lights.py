@@ -1307,11 +1307,18 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
 def build_light_manifest(building_id, rooms, openings, story_height,
                          *, cap_thick, wall_thick, authored=None, theme=None,
                          ceiling_voids=None, partitions=None, report=None,
-                         volumes=None, club_rooms=None, storefronts=None):
+                         volumes=None, club_rooms=None, storefronts=None,
+                         business=None):
     """Full `<name>.lights.json` manifest. `authored` is an optional list of
     hand-placed anchors; an authored anchor replaces a derived one with the
     same id (auto defaults + spec overrides, like props). `volumes` and
-    `club_rooms` are `derive_light_anchors`'s."""
+    `club_rooms` are `derive_light_anchors`'s.
+
+    `business` (0.165.0) is the building's identity,
+    `level_design.club_building_id(spec)`: every `sign` anchor that does not
+    name its own carries it, and Zoo's `sign_box` paints the business's name
+    from it (`storefront_names`) -- until Zoo 1.37.0 every derived sign in
+    the library was a blank lit box (cold run 9120)."""
     anchors = derive_light_anchors(rooms, openings, story_height,
                                    cap_thick=cap_thick, wall_thick=wall_thick,
                                    ceiling_voids=ceiling_voids,
@@ -1339,6 +1346,10 @@ def build_light_manifest(building_id, rooms, openings, story_height,
                 del by_id[k]
             by_id[aid] = a
         anchors = list(by_id.values())
+    if business:
+        for a in anchors:
+            if a.get("type") == "sign" and not a.get("business"):
+                a["business"] = str(business)
     return {
         "light_manifest_version": LIGHT_MANIFEST_VERSION,
         "building_id": building_id,

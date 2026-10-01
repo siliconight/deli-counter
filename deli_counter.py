@@ -2971,6 +2971,7 @@ def write_light_manifest(builder, path):
     rig per anchor and tunes it from the active preset. Output-only -- no schema
     change. See docs/LIGHT_MANIFEST.md."""
     import json
+    import level_design as _ld
     import lights as _lights
     # The slab that caps each storey, from the ONE place that rule lives.
     # A ceiling row hangs below the slab's UNDERSIDE; deriving it from
@@ -3040,6 +3041,9 @@ def write_light_manifest(builder, path):
         volumes=_vols,
         club_rooms=_club,
         storefronts=_fronts,
+        # WHO IS INSIDE (0.165.0): the identity a club's neon is keyed on,
+        # which the sign over the door names (Zoo 1.37.0)
+        business=_ld.club_building_id(builder.s),
     )
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
