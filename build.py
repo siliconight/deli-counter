@@ -73,7 +73,14 @@ def build_one(blender, spec_path, out_paths):
     """out_paths: list of output file paths (one per format)."""
     runner = os.path.join(HERE, "_run_in_blender.py")
     joined = ";".join(out_paths)
-    cmd = [blender, "--background", "--python", runner, "--",
+    # `--python-exit-code 1`: WITHOUT IT BLENDER EXITS 0 WHEN THE SCRIPT
+    # RAISES, and `ok` below is the return code. 0.165.0's first library
+    # build raised a NameError writing every building's light manifest; the
+    # build manifest written after it was skipped, and `--all` exited 0 with
+    # 128 of 131 shells stale. Measured on Blender 5.1.1: a raising script
+    # exits 0 plain and 1 with the flag; a clean one exits 0 either way. The
+    # flag must come BEFORE `--python`, which it governs.
+    cmd = [blender, "--background", "--python-exit-code", "1", "--python", runner, "--",
            spec_path, joined]
     env = os.environ.copy()
     # Production profile: a pvp_heist configuration must always emit its
@@ -305,14 +312,20 @@ def main():
         _report_quarantine()
         if not specs:
             sys.exit("No specs found in specs/")
-        ok = True
+        failed = []
         for sp in specs:
             name = os.path.splitext(os.path.basename(sp))[0]
             outs = _out_paths(build_dir, name, formats, None)
-            ok = build_one(blender, sp, outs) and ok
+            if not build_one(blender, sp, outs):
+                failed.append(os.path.basename(sp))
             if want_tscn:
                 _emit_tscn(build_dir, name, args.tscn_res_root)
-        sys.exit(0 if ok else 1)
+        # SAY WHICH, at the end, where a reader of a long log looks: a failed
+        # shell's outputs on disk are the PREVIOUS build's, not this one's
+        if failed:
+            print(f"[build] FAILED {len(failed)} of {len(specs)} spec(s); their outputs on "
+                  f"disk are stale: {', '.join(failed)}")
+        sys.exit(1 if failed else 0)
 
     if not args.spec:
         ap.error("provide a spec path or --all")

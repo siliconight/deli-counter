@@ -1,3 +1,26 @@
+## [0.165.1] - a build that raises is a failed build
+
+0.165.0's first library build raised a NameError writing every building's
+light manifest, and `build.py --all` exited 0. Blender exits 0 after a
+`--python` script raises unless launched with `--python-exit-code`, and
+`build_one` takes Blender's return code as its verdict -- so every runner
+exception has always read as a pass. `_run_in_blender.main` writes the build
+manifest after the light manifest, so 128 of 131 shells were left stale on
+disk, each with a `[build] X.json -> X.glb` line above its traceback.
+
+Measured on Blender 5.1.1 before changing anything: a script that raises
+exits 0 plain and 1 with `--python-exit-code 1`; a clean script exits 0 both
+ways. `build_one` now launches with the flag (before `--python`, which it
+governs), and `--all` ends by naming every spec that failed and says their
+outputs on disk are the previous build's.
+
+Nothing in the library was hiding behind it: the full build of 0.165.0
+(after its import fix) logged 0 tracebacks.
+
+Tests: `test_build_exit.py` -- the launch carries the flag ahead of the
+script; with Blender present, a spec the runner cannot load is reported
+failed. Both fail on 0.165.0's `build.py`.
+
 ## [0.165.0] - every sign over a door names its business
 
 Cold run 9120's FLAPPHAS walk found the lit box over the gas station's door
