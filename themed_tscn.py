@@ -153,8 +153,9 @@ def module_stem(typ: str, theme: str, style: int,
                 openings_tag: str = None, height_cm: int = None,
                 species: str = None, form: str = None, stock: str = None,
                 variant: int = None, material: str = None,
-                glazing: str = None, budget_tiles: bool = False) -> str:
-    """``<type>[_<species>]_<theme>_<style:02d>[_w<cm>][_d<cm>][_h<cm>][_f<form>][_s<stock>][_n<variant>][_m<material>][_v<hash>][_o<hash>][_<state>]``.
+                glazing: str = None, budget_tiles: bool = False,
+                material_in: str = None) -> str:
+    """``<type>[_<species>]_<theme>_<style:02d>[_w<cm>][_d<cm>][_h<cm>][_f<form>][_s<stock>][_n<variant>][_m<material>][_i<material_in>][_v<hash>][_o<hash>][_<state>]``.
 
     THE MIRROR OF ``zoo_keeper.core.kit.module_stem``, and the two must change
     together. Neither side parses a stem; both CONSTRUCT it from the same slot,
@@ -213,6 +214,10 @@ def module_stem(typ: str, theme: str, style: int,
     # resolves the dressing.
     if material:
         base += f"_m{material}"
+    # THE ROOM FACE (Zoo 1.38.0, `kit.module_stem`): an exterior wall whose
+    # inside is another finish is another build, after the material
+    if material_in:
+        base += f"_i{material_in}"
     if glazing in STEM_GLAZINGS:
         base += f"_g{glazing}"
     if budget_tiles:
@@ -298,12 +303,18 @@ def resolve_themed_stem(slot: dict, theme: str, style: int, state: str = None,
                  "variant": variant or None}
     glazing = slot.get("glazing") if slot.get("glazing") in STEM_GLAZINGS else None
     budget = bool(slot.get("light_budget_tiles")) and typ in LIGHT_BUDGET_ROLES
+    inner = slot.get("material_in") if typ in INNER_FACE_ROLES else None
     stem = module_stem(typ, theme, eff_style, width_cm,
                        state if state else _default_stem_state(slot),
                        depth_cm, vtag, otag, height_cm, species=species,
                        material=material, glazing=glazing, budget_tiles=budget,
-                       **dress)
+                       material_in=inner, **dress)
     return stem, (not exact)
+
+
+#: The roles whose module can have a room face (Zoo 1.38.0,
+#: `kit.INNER_FACE_ROLES`): full exterior wall segments and their openings.
+INNER_FACE_ROLES = ("wall", "window", "doorway", "breach")
 
 
 def _themed_available(library_dir: str, stem: str) -> bool:
@@ -366,6 +377,10 @@ def resolve_slot_choice(slot, theme, style, library_dir):
     # built before it has the plain floor and no `_lbt`.
     if slot.get("light_budget_tiles"):
         candidates = candidates + [dict(c, light_budget_tiles=None) for c in candidates]
+    # ...and a wall with a room face to the plain one (Zoo 1.38.0): a library
+    # built before it has the one-material module and no `_i<kind>`.
+    if slot.get("material_in"):
+        candidates = candidates + [dict(c, material_in=None) for c in candidates]
     mat = stem_material(slot)
     tries = [(cand, m) for cand in candidates
              for m in ((mat, None) if mat else (None,))]

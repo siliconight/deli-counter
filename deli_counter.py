@@ -631,6 +631,46 @@ class _Builder:
             return "wallEnd" if size_mod == "end" else "wall"
         return role  # doorway / window / breach
 
+    #: Wall finishes that belong OUTSIDE (0.166.0). An exterior wall in one of
+    #: these carries `material_in`, its building's interior finish, which Zoo
+    #: builds on the module's room face; concrete, painted block and metal
+    #: read the same both sides and stay one material.
+    OUTSIDE_ONLY = frozenset({"brick", "stone", "wood", "siding"})
+
+    def _interior_finish(self):
+        """The building's interior wall finish: the commonest skin kind among
+        its partitions that is not itself outside-only, else drywall. A card
+        shop panelled in wood gets wood panel; a deli whose partitions are
+        mostly drywall with a brick feature wall gets drywall."""
+        cached = getattr(self, "_inner_finish", None)
+        if cached:
+            return cached
+        import collections
+        import material_kind
+        seen = collections.Counter()
+        for p in self.s.partitions:
+            m = p.material or self.s.default_material
+            k = material_kind.kind_for(m, m if m in material_kind.SKIN_KINDS else None)
+            if k and k in material_kind.SKIN_KINDS and k not in self.OUTSIDE_ONLY:
+                seen[k] += 1
+        self._inner_finish = (sorted(seen.items(), key=lambda kv: (-kv[1], kv[0]))[0][0]
+                              if seen else "drywall")
+        return self._inner_finish
+
+    def _material_in(self, slot):
+        """`material_in` for a slot AS THE MANIFEST WILL WRITE IT (its final
+        kind and glazing), or None: only a full wall segment or an opening in
+        an EXTERIOR wall (`ext_<story>_<N|E|S|W>`) in an outside-only finish
+        has one. Not a remainder (`end`, a unit box scaled per slot) and not
+        a storefront (glass)."""
+        parts = str(slot.get("wall") or "").split("_")
+        if (len(parts) >= 3 and parts[0] == "ext" and parts[2] in ("N", "E", "S", "W")
+                and slot.get("role") in ("wall", "window", "doorway", "breach")
+                and slot.get("size_mod") != "end" and not slot.get("glazing")
+                and slot.get("material") in self.OUTSIDE_ONLY):
+            return self._interior_finish()
+        return None
+
     def _slot_orient(self, wall_name, axis):
         """Facing + Y-rotation (deg) that brings a canonically-authored module
         (along X) onto this wall, plus the story index parsed from the name.
@@ -2935,6 +2975,12 @@ def write_slot_manifest(builder, path):
                 _s = dict(_s, material=_d)
         if _s.get("role") in LIGHT_BUDGET_ROLES and _s.get("room") in _lit:
             _s = dict(_s, light_budget_tiles=True)
+        # THE ROOM FACE (0.166.0), here and not where the slot was recorded:
+        # only now is its kind final -- a palette id became `stone` above, a
+        # back room's glass became the default wall
+        _in = builder._material_in(_s)
+        if _in:
+            _s = dict(_s, material_in=_in)
         _slots.append(_s)
     if _unmapped:
         print(f"[deli_counter] slot manifest: {len(_unmapped)} slot(s) name a "

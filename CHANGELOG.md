@@ -1,3 +1,35 @@
+## [0.166.0] - an outside-only wall finish stops at the wall
+
+Cold run 9120's FLAPPHAS walk, finding 3: the gas station's exterior stone on
+the inside of its exterior walls. Every exterior wall slot named one material
+and Zoo's module wore it on both faces. Concrete, painted block and metal read
+the same both sides; brick, stone, wood boards and siding do not.
+
+`write_slot_manifest` now stamps `material_in` -- the building's interior
+finish (`_interior_finish`: the commonest kind among its partitions that is
+not itself outside-only, else drywall) -- on every full segment and opening
+of an exterior wall whose final kind is in `OUTSIDE_ONLY`. Zoo 1.38.0 builds
+that module's room face in it. 1,630 modules in 15 buildings: drywall in
+thirteen, wood panel in the card shop, concrete in landmark_hall_a03 (its
+partitions). `themed_tscn` mirrors Zoo's `_i<kind>` stem and resolves the
+plain name when the tagged one is not built.
+
+WHICH FACE IS THE ROOM was measured: local +Y, through `tscn_export.
+godot_basis` at each facing's rotation, lands outdoors on all four, and
+`_fit_rotation` keeps the slot's own rotation on a tie. `test_inner_face.py`
+pins it.
+
+WHERE THE STAMP GOES took two wrong tries, kept in
+`patches/patch_dc_inner_face_kind.py`. Stamped when a slot was RECORDED, it
+compared the spec's palette id (`stone_ext`) and caught only the plain-`wood`
+buildings (4 of 15); mapped to a kind at record time, it still missed
+gas_station_a02's east wall, whose back-room stretch of shop front is
+recorded as glass and becomes stone only in the writer. It is decided in the
+writer now, where the kind is final.
+
+NOT COVERED: a remainder (`wallEnd`, a unit box scaled per slot) keeps the
+wall's finish -- gas_station_a02 has 9, the widest 1.65 m.
+
 ## [0.165.1] - a build that raises is a failed build
 
 0.165.0's first library build raised a NameError writing every building's
