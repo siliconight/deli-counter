@@ -2128,7 +2128,9 @@ _PROP_MATERIALS = (
     (("stool",), "metal_bare"),
     # milk crates are moulded plastic (0.149.0)
     (("milk_crate",), "plastic"),
-    (("neon", "tv", "cigarette"), "metal_painted"),
+    # ...and a video-poker cabinet, in its species' own kind so Zoo's stem
+    # carries no `_m` (0.168.1; cold run 9127 built every one `_mwood`)
+    (("neon", "tv", "cigarette", "video_poker"), "metal_painted"),
     # the species' own kind, so Zoo's stem carries no `_m` (0.136.0)
     (("dartboard",), "wood_stained"),
     # ...and the back bar's, for the same reason (0.137.0). No earlier row

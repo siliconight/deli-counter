@@ -1,3 +1,18 @@
+## [0.168.1] - a video-poker cabinet's slot names its own kind
+
+Cold run 9127 built every cabinet as `prop_video_poker_..._mwood`: the
+cabinets fell through `_PROP_MATERIALS` to the default `wood`, which is not
+Zoo 1.39.0's `metal_painted`, so Zoo tagged the stem. The recipe draws from
+its atlas and ignores the material, so nothing looked wrong; the stem said a
+thing that was not so. The cabinets join the painted-sheet row, the species'
+own kind, and the stem carries no `_m` (the dartboard's reason, 0.136.0) --
+gas_station_a02's are `prop_video_poker_delco_1997_09_w65_d65_h175_n1` and
+`_n3`. The skin style follows the material (05 -> 09); the recipe ignores it.
+
+Refurnished from HEAD's specs: the 110 cabinets' `material` is the only volume
+field that changes, in 42 specs; ten of them declare `metal_painted` where
+they had not. Suite 1,139 pass.
+
 ## [0.168.0] - video-poker cabinets, with a stool, in stores, bars and clubs
 
 The walker, 2026-09-30: "'PA Skill Games' ... into the level. We would see

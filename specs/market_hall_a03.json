@@ -50,6 +50,12 @@
    "acoustic": "Metal",
    "absorption": 0.2,
    "damping": 0.15
+  },
+  {
+   "id": "metal_painted",
+   "acoustic": "Metal",
+   "absorption": 0.25,
+   "damping": 0.2
   }
  ],
  "ext_walls": [
@@ -1226,7 +1232,7 @@
    "size_y": 0.65,
    "size_z": 1.75,
    "collision": "convex",
-   "material": "wood",
+   "material": "metal_painted",
    "rot_z": 180.0,
    "variant": 2
   },
@@ -1251,7 +1257,7 @@
    "size_y": 0.65,
    "size_z": 1.75,
    "collision": "convex",
-   "material": "wood",
+   "material": "metal_painted",
    "rot_z": 180.0
   },
   {
