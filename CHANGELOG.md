@@ -1,3 +1,52 @@
+## [0.170.0] - poster runs hang at varied heights; a store tapes a pair in its window
+
+The poster pass the walker queued 2026-09-30 ("we can make them better later
+right?"), its two placement halves. The colour half is Zoo 1.41.0.
+
+VARIED HEIGHTS. Every wall run hung with its centre on the camera's eye, 1.6
+m, on every wall of every building -- the placement guide's "identical
+spacing, height, rotation, or mounting pattern on every wall". A piece may
+carry `lift_steps`, offsets from its `lift`, and a room's k-th run of a kind
+takes one (`_lift_step`); `_place_fixture` clears and builds it there. Club
+one-sheets: -0.1 / 0 / +0.1. Bar bills: -0.15 / -0.05 / 0 / +0.15. A store's
+sale posters: -0.2 / -0.1 / 0.
+
+THE WINDOW. `migrate_window_poster.py`: each of the nine convenience stores
+tapes one `window_poster` -- Zoo's `poster_wall`, `store` family, two sheets,
+1.0 x 0.6 m -- 3 cm inside its sales floor's glass beside an entrance, at
+the eye, facing the street, clear of every opening and 0.3 m clear of the
+window sign. The placement guide's "sparse window: one or two notices
+preserve visibility through the glass". `prop_species` routes the name to
+`poster_wall`, `_PROP_MATERIALS` to paper, and `_room_volume_count` no
+longer counts paper on a wall (it stands on no floor; counted, the poster
+cost the sales floor a piece of furniture -- the window sign's defect of
+0.160.0 again).
+
+THREE THINGS THE FIRST CUTS GOT WRONG, each caught by a test that already
+existed:
+  * the step was keyed on the run's NAME, which carries the room's next free
+    sequence number -- so a run that found no wall at its step was retried
+    by the next pass under a new number, drew a new step and fitted, and the
+    library stopped being a fixed point of the fixture pass (strip_club_a03
+    grew a run on the second pass). It is keyed on the run's ordinal now.
+  * a store's posters stepped +0.15: a run's foot at 1.45 m cleared an ATM's
+    top and hung over it (pharmacy_a02, `test_store_atms`). A store's steps
+    are at or under the eye.
+  * a bar's bills stepped -0.25 and two of the library's eight runs found no
+    wall that low.
+
+Refurnished from HEAD's specs (37 change): 82 runs take a new height; the
+counts are 0.169.0's but for strip_club_a03, which gains a club run (17 ->
+18) and loses a cabinet and its stool (6 -> 5) -- the club recipes place
+cabinets after posters, and the run that now fits took its wall.
+
+NOT YET LOOKED AT: what a window poster shows the shop. Its sheets face the
+street; whether their backs draw from inside is the next cold run's to see.
+
+Tests: `test_window_poster.py` (4); `test_poster_walls.py` -- a piece's
+steps include level and none passes 0.25 m, a run is at the eye plus its own
+step, and the library's runs do not all hang at one height.
+
 ## [0.169.0] - a home has a porch light over its door, not a lit sign
 
 Zoo 1.37.0 paints a business's name on every lit sign box and gives a

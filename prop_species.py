@@ -158,7 +158,9 @@ PROP_SPECIES = (
     # draw. Above the `poster` row, whose `poster` keyword is a substring of
     # every `poster_wall_*` name and would build each run as one card-shop
     # print.
-    (("poster_wall",), "poster_wall"),
+    # `window_poster` (0.170.0): the pair of sale sheets a store tapes in its
+    # glass, the same species; it must sit above `poster` for the same reason
+    (("poster_wall", "window_poster"), "poster_wall"),
     (("poster", "wall_poster", "set_poster", "art_print", "framed_print",
       "picture_frame"), "poster"),
     (("hanging_banner", "cloth_banner", "print_banner", "wall_banner",

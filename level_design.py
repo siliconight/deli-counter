@@ -990,7 +990,7 @@ def _piece(name, sizes, where, front=False, stock=None, variants=False,
            deck=None, lane=False, most_big=None, under=None,
            reserved_by=None, off_glass=False, backed_by=None,
            ceiling=None, under_hung=False, twin=False, wall_band=False,
-           rooms=None, distinct=False, solo=False):
+           rooms=None, distinct=False, solo=False, lift_steps=None):
     return {"name": name, "sizes": tuple(sizes), "where": where,
             "front": front, "stock": stock, "variants": variants,
             "form": form, "seats": seats, "most": most, "lift": lift,
@@ -1000,7 +1000,10 @@ def _piece(name, sizes, where, front=False, stock=None, variants=False,
             "ceiling": ceiling, "under_hung": under_hung, "twin": twin,
             "wall_band": wall_band,
             "rooms": frozenset(rooms) if rooms else None,
-            "distinct": distinct, "solo": solo}
+            "distinct": distinct, "solo": solo,
+            # offsets from `lift`, one taken by a placement's own name
+            # (0.170.0, `_lift_step`); None hangs every one at `lift`
+            "lift_steps": tuple(lift_steps) if lift_steps else None}
 
 
 def hung_band_bottom(spec):
@@ -1143,6 +1146,24 @@ def _piece_lift(spec, p, h):
     if p["under"] is None:
         return None
     return _clear_height(spec) - float(p["under"]) - h / 2.0
+
+
+def _lift_step(p, key, rtag, k):
+    """The offset from its `lift` that a room's ``k``-th ``key`` hangs at
+    (0.170.0): one of the piece's `lift_steps`, by the crc32 of the three,
+    or 0.0 for a piece with none.
+
+    BY ITS ORDINAL IN THE ROOM, NOT ITS NAME. The first cut keyed the step
+    on the volume's name, which carries the room's next free sequence
+    number -- and a run that found no wall at its step was retried by the
+    next pass under a new number, drew a new step, and fitted: the library
+    stopped being a fixed point of the fixture pass (strip_club_a03 grew a
+    run on the second pass). `k` is the same on every pass."""
+    steps = p["lift_steps"]
+    if not steps:
+        return 0.0
+    import zlib
+    return float(steps[(zlib.crc32(f"{key}|{rtag}|{k}".encode("utf-8")) & 0xFFFFFFFF) % len(steps)])
 
 
 def _eye_height():
@@ -1586,20 +1607,33 @@ _PIECES = {p["name"]: p for p in (
     # floors; a sale poster belongs where something is sold. And OFF THE
     # GLASS: a run hung inside a storefront faces the shop, so the street
     # sees its back; a store's window posters face out, and that is a rule
-    # of its own (the window sign's), not this one.
+    # of its own (the window sign's), not this one -- `window_poster`,
+    # `migrate_window_poster.py`, 0.170.0.
+    #
+    # NOT ALL AT ONE HEIGHT (0.170.0). Until now every run's centre was on
+    # the eye, on every wall of every building -- the placement guide's
+    # "identical ... height ... on every wall". `lift_steps` are offsets from
+    # `lift`; a run takes one by its place in its room (`_lift_step`). A club's
+    # one-sheets are framed and hung near level, a store's sale posters step
+    # a little more, a bar's bills were pinned up by whoever was closing.
     _piece("poster_wall_club", ((2.4, 0.01, 0.64), (1.6, 0.01, 0.64),
                                 (3.2, 0.01, 0.64)), "wall", front=True,
            variants=4, form="club", most=3, most_big=(150.0, 5),
-           lift=_eye_height(), collision="none", distinct=True),
+           lift=_eye_height(), collision="none", distinct=True,
+           lift_steps=(-0.1, 0.0, 0.1)),
     _piece("poster_wall_bar", ((1.8, 0.01, 0.5), (1.2, 0.01, 0.5),
                                (2.4, 0.01, 0.5)), "wall", front=True,
            variants=4, form="bar", most=2, most_big=(80.0, 3),
            lift=_eye_height(), collision="none", distinct=True,
+           lift_steps=(-0.15, -0.05, 0.0, 0.15),
            rooms=("bar", "taproom", "tavern", "pub", "social")),
     _piece("poster_wall_store", ((1.6, 0.01, 0.6), (1.0, 0.01, 0.6),
                                  (2.2, 0.01, 0.6)), "wall", front=True,
            variants=4, form="store", most=2, most_big=(150.0, 3),
            lift=_eye_height(), collision="none", distinct=True, off_glass=True,
+           # never ABOVE the eye: 0.15 up, a run's foot (1.45) cleared an ATM's
+           # top and hung over it (pharmacy_a02, `test_store_atms`)
+           lift_steps=(-0.2, -0.1, 0.0),
            rooms=("sales", "retail", "shop", "customer", "market", "showroom",
                   "stall")),
     # THE CEILING HANGER AND THE AISLE SIGN -- "a painted dragon and a
@@ -2181,7 +2215,7 @@ _PROP_MATERIALS = (
     # worth more than a coincidence that happens to be right.
     # `poster_wall` is paper, its genome's own kind; above `poster`, whose
     # keyword every `poster_wall_*` key contains
-    (("poster_wall",), "paper"),
+    (("poster_wall", "window_poster"), "paper"),
     (("poster",), "metal_bare"),
     (("hanging_banner",), "cloth"),
     (("ceiling_hanger",), "paper"),
@@ -2368,6 +2402,12 @@ def _room_volume_count(spec, room):
         bottom = v.get("z", 0) - v.get("size_z", 0) / 2
         if (v.get("collision") == "none"
                 and bottom - story * sh >= headroom - 1e-9):
+            continue
+        # PAPER ON A WALL stands on no floor either (0.170.0): the store's
+        # `window_poster` is taped to the glass at the eye, under the
+        # headroom line the rule above draws, and counted it would cost the
+        # sales floor a piece of furniture -- the window sign's defect again
+        if v.get("collision") == "none" and v.get("material") == "paper":
             continue
         if abs(v.get("z", 0) - (story * sh + v.get("size_z", 0) / 2)) < sh:
             n += 1
@@ -3148,6 +3188,10 @@ def _place_fixture(spec, room, key, k, building):
         half = max(w, d) / 2.0
         lift = _piece_lift(spec, p, h)
         hung = lift is not None
+        # its own step off the piece's height (0.170.0), by its ordinal in
+        # the room: cleared here at the height it is built at
+        if hung and p["lift_steps"]:
+            lift = round(lift + _lift_step(p, key, rtag, k), 3)
         above = (lift - h / 2.0) if hung else None
         below = (lift + h / 2.0) if hung else None
         # A PIECE HUNG OVER THE FLOOR IS SOMETHING A BODY WALKS UNDER. The
@@ -3213,7 +3257,8 @@ def _place_fixture(spec, room, key, k, building):
                 seat = _make_volume(spec, seat_key, f"{seat_key}_{rtag}_{seq}_1", cx, cy,
                                     s_w, s_d, s_h, s_rot, story, sh, building)
         vol = _make_volume(spec, key, f"{key}_{rtag}_{seq}", qx, qy, sx, sy, h, rot,
-                           story, sh, building)
+                           story, sh, building,
+                           lift=lift if p["lift_steps"] else None)
         if p["distinct"] and not _distinct_variant(spec, key, rtag, vol, variant_count(p)):
             continue
         spec.setdefault("volumes", []).append(vol)

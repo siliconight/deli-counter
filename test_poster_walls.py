@@ -73,6 +73,10 @@ def test_a_piece_is_zoo_s_poster_wall_on_paper(key):
     assert level_design._prop_material({"materials": []}, key) == "paper"
     assert p["form"] == PIECES[key] and p["collision"] == "none" and p["where"] == "wall"
     assert p["lift"] == agent_contract.eye_height()
+    # 0.170.0: a run hangs a step off the eye, never more than 0.25 m, and
+    # level is one of the steps
+    assert p["lift_steps"] and 0.0 in p["lift_steps"]
+    assert all(abs(s) <= 0.25 for s in p["lift_steps"])
     assert all(h == BAND[PIECES[key]] for _w, _d, h in p["sizes"])
     # four, so the variant is the NAME's and not the building's (`_make_volume`)
     assert level_design.variant_count(p) == 4 and p["distinct"]
@@ -148,10 +152,34 @@ def test_a_run_is_zoo_s_slot():
         for v in _runs(d):
             fam = PIECES[_stem(v)]
             story = round((v["z"] - agent_contract.eye_height()) / sh)
-            assert v["z"] == round(story * sh + agent_contract.eye_height(), 3), v["name"]
+            # 0.170.0: at the eye plus the run's OWN step -- its room's k-th
+            # run of its kind, in the order the pass numbered them
+            p = level_design._PIECES[_stem(v)]
+            rtag, seq = v["name"][len(_stem(v)) + 1:].rsplit("_", 1)
+            k = sorted(int(u["name"].rsplit("_", 1)[1]) for u in _runs(d)
+                       if u["name"].startswith(f"{_stem(v)}_{rtag}_")).index(int(seq))
+            want = agent_contract.eye_height() + level_design._lift_step(p, _stem(v), rtag, k)
+            assert v["z"] == round(story * sh + round(want, 3), 3), v["name"]
             assert v["form"] == fam and v["collision"] == "none" and v["material"] == "paper"
             assert v["size_z"] == BAND[fam] and min(v["size_x"], v["size_y"]) == 0.01, v["name"]
             assert any(m.get("id") == "paper" for m in d.get("materials") or []), d["name"]
+
+
+def test_the_runs_do_not_all_hang_at_one_height():
+    """0.170.0, the placement guide: "identical spacing, height, rotation,
+    or mounting pattern on every wall" is the tell. Across the library each
+    family's runs take every one of its steps."""
+    seen = {}
+    for d in _library():
+        sh = level_design._story_height(d)
+        for v in _runs(d):
+            story = round((v["z"] - agent_contract.eye_height()) / sh)
+            seen.setdefault(_stem(v), set()).add(round(v["z"] - story * sh - agent_contract.eye_height(), 3))
+    for key in PIECES:
+        steps = set(level_design._PIECES[key]["lift_steps"])
+        # more than one height, and none that is not a step (the library has
+        # eight bar runs: too few to promise every step is drawn)
+        assert seen[key] <= steps and len(seen[key]) >= 2, (key, seen[key])
 
 
 def test_a_store_s_runs_are_off_the_glass():
