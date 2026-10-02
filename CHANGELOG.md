@@ -1,3 +1,33 @@
+## [0.172.0] - the video store, revised from the walker's photographs
+
+0.171.0 laid the store out "from the era". Cold run 9132 put it in a level
+and the walker sent ten photographs (docs/SET_DRESSING_REFERENCES.md, "The
+walker's video store references"): a cult store's tall painted aisles of
+tape spines, and a chain store's new-release wall and counter. Zoo 1.44.0
+redrew the rack -- spines out, painted units, a `display` form; this is the
+floor plan.
+
+  * THE ISLANDS ARE AISLES: 1.9 m where they were 1.4 m. The four rows are
+    corridors with a section sign on each end, not racks a body sees over.
+  * A NEW-RELEASE WALL: the east wall's two runs nearest the storefront are
+    the `display` form, boxes faced out; the third stays spines.
+  * TWO ARMCHAIRS by the shop window, facing the floor.
+  * NO SALE POSTERS: `poster_wall_store` hung the convenience store's
+    SCRATCH & WIN and HOT DOGS 2/$1 in the video store (cold run 9132). Its
+    posters are film one-sheets, which nothing draws yet; the recipe hangs
+    none.
+
+WHAT TALL ISLANDS CHANGE FOR A FIGHT, not measured: the sales floor was one
+room with low cover and is four lanes with none to see over. That is the
+photographs' store and it is also a different room to fight in.
+
+NOT DONE, from the photographs: teal walls, a film one-sheet on a door, the
+hand-painted ceiling board with arrows, an EXIT sign, the counter in the
+store's colours under an overhead sign, stacks of returned tapes on it, the
+chairs' orange velvet (they are `club_chair` as it comes).
+
+Tests: `test_video_store.py` 10 -> 11.
+
 ## [0.171.0] - a 1997 video rental store
 
 The walker's queue, 2026-09-29: "a new building type: a VHS movie rental

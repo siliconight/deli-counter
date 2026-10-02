@@ -25,7 +25,7 @@ import prop_species              # noqa: E402
 
 #: Zoo 1.43.0's `video_rack` genome: width, depth, height.
 ZOO_RANGE = ((1.0, 8.0), (0.35, 1.2), (1.2, 2.2))
-ZOO_FORMS = ("wall", "island", "adult")
+ZOO_FORMS = ("wall", "island", "adult", "display")
 ZOO_VARIANTS = 6
 
 
@@ -79,7 +79,12 @@ def test_every_rack_is_zoo_s_at_a_size_and_a_form_it_builds():
     spec = _store(enrich=False)
     racks = _racks(spec)
     forms = [v["form"] for v in racks]
-    assert forms.count("wall") == 8 and forms.count("island") == 8 and forms.count("adult") == 3
+    # 0.172.0: the east wall's two front runs are the new-release display
+    assert (forms.count("wall"), forms.count("display"), forms.count("island"),
+            forms.count("adult")) == (6, 2, 8, 3)
+    # ...and the islands are aisles, not racks a body sees over
+    assert {v["size_z"] for v in racks if v["form"] == "island"} == {1.9}
+    assert {v["size_z"] for v in racks if v["form"] != "island"} == {2.0}
     assert len({v["name"] for v in racks}) == len(racks)
     mats = {m["id"] for m in spec["materials"]}
     for v in racks:
@@ -164,6 +169,24 @@ def test_every_door_is_clear_of_every_rack():
             assert (gx * gx + gy * gy) ** 0.5 >= reach, (v["name"], (dx, dy))
 
 
+def test_two_armchairs_stand_by_the_window_facing_the_floor():
+    spec = _store(enrich=False)
+    chairs = [v for v in spec["volumes"] if v["name"].startswith("club_chair_window_")]
+    assert len(chairs) == 2
+    hy = spec["footprint_y"] / 2.0
+    aisle = agent_contract.min_corridor_width()
+    for v in chairs:
+        assert prop_species.species_for_name(v["name"]) == "club_chair"
+        assert _room_of(spec, v)["id"] == "sales_floor"
+        assert v["y"] < -hy + 1.5 and float(v["rot_z"]) == 180.0      # at the glass, facing in
+        for r in _racks(spec):
+            x0, y0, x1, y1 = _rect(r)
+            cx0, cy0, cx1, cy1 = _rect(v)
+            gx = max(x0 - cx1, cx0 - x1, 0.0)
+            gy = max(y0 - cy1, cy0 - y1, 0.0)
+            assert (gx * gx + gy * gy) ** 0.5 >= aisle, (v["name"], r["name"])
+
+
 def test_the_back_room_has_two_ways_in():
     spec = _store(enrich=False)
     x0, y0, x1, y1 = next(r["bounds"] for r in spec["rooms"] if r["id"] == "back_room")
@@ -180,8 +203,8 @@ def test_the_back_room_has_two_ways_in():
 def test_the_furnisher_adds_no_rack_and_keeps_the_authored_ones():
     raw, done = _store(enrich=False), _store(enrich=True)
     assert [v for v in _racks(done)] == _racks(raw)
-    posters = [v for v in done["volumes"] if v["name"].startswith("poster_wall_store_")]
-    assert len(posters) >= 1
+    # 0.172.0: no convenience-store sale posters on a video store's wall
+    assert not [v for v in done["volumes"] if v["name"].startswith("poster_wall_")]
     assert not [v for v in done["volumes"] if v["name"].startswith("wall_tv")]
 
 

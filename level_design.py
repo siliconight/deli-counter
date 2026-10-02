@@ -1998,7 +1998,11 @@ _RECIPES = {
                     "floor": (),
                     "clusters": ((("cartons",), 1, 2),),
                     "one_cluster": True,
-                    "fixtures": ("poster_wall_store",)},
+                    # NO SALE POSTERS (0.172.0): `poster_wall_store` is the
+                    # convenience store's copy, and cold run 9132 hung SCRATCH
+                    # & WIN and HOT DOGS 2/$1 in a video store. Its posters are
+                    # film one-sheets, which nothing draws yet.
+                    "fixtures": ()},
     # ITS BACK ROOM: the authored racks and nothing else. Suggestive only,
     # and that is Zoo's to hold (`video_rack_forms`, the `adult` form).
     "video_back": {"anchors": (), "wall": (), "floor": (), "clusters": ()},

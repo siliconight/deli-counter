@@ -2816,19 +2816,24 @@ def video_store(name: str = "video_store_preset", mode: str = "heist",
     # the WEST wall, north of the checkout: two runs, facing the room (+x)
     for k, y in enumerate((-1.75, -1.75 + step)):
         racks.append(_rack(f"tape_wall_w{k + 1}", -hx + off, y, "y", "wall", k, turned=True))
-    # the EAST wall, door to back: three runs, facing the room (-x)
+    # the EAST wall, door to back: three runs, facing the room (-x). The two
+    # nearest the storefront are THE NEW-RELEASE WALL (0.172.0, the
+    # photographs' chain store): Zoo's `display` form, boxes faced out.
     for k, y in enumerate((-4.2, -4.2 + step, -4.2 + 2 * step)):
-        racks.append(_rack(f"tape_wall_e{k + 1}", hx - off, y, "y", "wall", 2 + k))
+        racks.append(_rack(f"tape_wall_e{k + 1}", hx - off, y, "y",
+                           "display" if k < 2 else "wall", 2 + k))
     # the BACK wall, between the two doors: three runs, facing the door (-y)
     for k, x in enumerate((-step, 0.0, step)):
         racks.append(_rack(f"tape_wall_n{k + 1}", x, band - off, "x", "wall", (5 + k) % 6))
-    # FOUR ROWS OF ISLANDS, two runs a row, low enough to see the back wall
-    # over. The aisles between rows are 1.7 to 2.6 m and the one along the
-    # back wall is 1.4: every one is over `min_corridor_width` 1.1.
+    # FOUR ROWS OF ISLANDS, two runs a row. FULL HEIGHT (0.172.0): the
+    # photographs' floor units are 1.9 m double-sided shelving in long rows
+    # -- aisles, with nothing to see over -- where 0.171.0's were 1.4 m. The
+    # aisles between rows are 1.7 to 2.6 m and the one along the back wall
+    # is 1.4: every one is over `min_corridor_width` 1.1.
     for c, x in enumerate((-3.5, 0.0, 3.0, 6.0)):
         for k, y in enumerate((-2.82, -2.82 + step)):
             racks.append(_rack(f"tape_island_{c + 1}{'ab'[k]}", x, y, "y", "island",
-                               (c * 2 + k) % 6, d=0.9, h=1.4))
+                               (c * 2 + k) % 6, d=0.9, h=1.9))
     # THE BACK ROOM: its north and east walls, MEETING AT THE CORNER -- the
     # north run ends on the east rack's front and the east rack ends 2 cm
     # under the north run's. The first draft left a 0.2 x 0.6 m pocket
@@ -2847,6 +2852,12 @@ def video_store(name: str = "video_store_preset", mode: str = "heist",
     counter = {"name": "counter_checkout", "x": -7.2, "y": -5.2, "z": 0.525,
                "size_x": 0.8, "size_y": 2.4, "size_z": 1.05,
                "collision": "convex", "material": "wood"}
+    # TWO ARMCHAIRS by the shop window, facing the floor (0.172.0): the
+    # photographs' pair of velvet chairs in a corner of the stacks.
+    chairs = [{"name": f"club_chair_window_{k + 1}", "x": x, "y": -6.2, "z": 0.39,
+               "size_x": 0.78, "size_y": 0.75, "size_z": 0.78, "rot_z": 180.0,
+               "collision": "convex", "material": "wood", "variant": k}
+              for k, x in enumerate((1.6, 2.8))]
     # ...and the store's floor safe, the objective.
     safe = (-8.2, 6.2, 0.2)
     spec["materials"].append(
@@ -2856,7 +2867,7 @@ def video_store(name: str = "video_store_preset", mode: str = "heist",
          "size_x": 0.9, "size_y": 0.9, "size_z": 1.0, "collision": "convex",
          "material": "metal"},
         counter,
-    ] + racks
+    ] + racks + chairs
     spec["rooms"] = [
         {"id": "sales_floor", "story": 0, "bounds": [-hx, -hy, hx, band],
          "role": "public_entry", "combat_range": "long"},
