@@ -215,6 +215,9 @@ PROP_SPECIES = (
     # every convenience store. Above the `grill` row, which is the kitchen's
     # flat top and would claim it.
     (("roller_grill",), "roller_grill"),
+    # THE VIDEO STORE'S TAPE RACKS (Zoo 1.43.0; placed 0.171.0). Above the
+    # counter row, whose `island` would claim every `tape_island_*`.
+    (("tape_wall", "tape_island"), "video_rack"),
     # THE VIDEO-POKER CABINET (Zoo 1.39.0; placed 0.168.0). Above the
     # counter row, whose `bar_` would claim every `video_poker_bar_*`.
     (("video_poker",), "video_poker"),

@@ -1,3 +1,54 @@
+## [0.171.0] - a 1997 video rental store
+
+The walker's queue, 2026-09-29: "a new building type: a VHS movie rental
+store". Their calls, 2026-10-02: it is MACDADE MOVIES; it has the curtained
+back room, "suggestive only"; no references -- build from the era. Zoo
+1.43.0 draws the tape racks (`video_rack`) and names the door.
+
+THE PRESET, `video_store`: a strip-mall unit, 18 x 14 m, one storey. A glass
+storefront with the door west of centre; the sales floor wall to wall, 18 x
+10 m, its side walls blank brick; behind it a stockroom on the rear door
+(the safe, a soft-wall breach) and THE BACK ROOM, 6 x 4 m, behind a curtain
+off the sales floor and a staff door off the stockroom -- two ways in.
+
+THE RACKS ARE AUTHORED BY THE PRESET, the gas station's gondolas' way: two
+runs on the west wall and three on the east, three along the back wall
+between the doors, FOUR ROWS OF LOW ISLANDS two runs long, the checkout
+counter a staff aisle off the west wall by the door, and the back room's
+north and east walls meeting at its corner. 19 racks, all 2.4 m, each with
+its own variant so no two neighbours open on the same genre.
+
+WHY NOT THE FURNISHER, MEASURED. The first draft gave the recipe `tape_wall`
+pieces. `_seed_clear` clears a piece as a SQUARE of its longest side and the
+sales floor's cover is seeded first: an 18 x 10 m floor stood ONE 4 m rack;
+with the racks as anchors and `all_anchors`, one; at 2 m, two. A rental
+store's walls are lined end to end, and that is a floor plan. What it costs:
+the layout does not vary with the seed, and a second video store is this
+one.
+
+THE KINDS: `video_store` (a selling room of a building whose id says
+`video_store`) and `video_back` (its back room). Their recipes are what the
+furnisher may ADD: a vending machine if a wall is left, a carton or two, a
+run of sale posters. No `wall_tv` -- listed, the pass hung three by the
+checkout, one on the shop glass.
+
+`prop_species`: `tape_wall` / `tape_island` -> `video_rack`, above the
+counter row, whose `island` would claim every `tape_island_*`.
+
+THE LIBRARY: `video_store_a01`. layout_lint 0 FAIL 0 WARN; nav gate
+"navigable: yes", 2 of 2 interior markers reachable.
+
+TWO THINGS A TEST CAUGHT IN THE PLAN: the checkout's corner stood 1.04 m off
+the first west rack's, under `min_corridor_width`, across the way out of the
+staff aisle; and the back room's two walls left a 0.2 x 0.6 m pocket at the
+corner.
+
+NOT DONE: the store has no TV, no "BE KIND, REWIND" sign, no drop box, and
+the back room's doorway is a door, not a curtain. Its lights are a shop's
+fluorescents throughout, the back room's included.
+
+Tests: `test_video_store.py` (10).
+
 ## [0.170.0] - poster runs hang at varied heights; a store tapes a pair in its window
 
 The poster pass the walker queued 2026-09-30 ("we can make them better later

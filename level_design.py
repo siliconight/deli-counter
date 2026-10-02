@@ -1837,6 +1837,35 @@ def is_card_shop_room(room, building):
     return bool(tokens & _CARD_SHOP_TOKENS) or {"main", "floor"} <= tokens
 
 
+#: THE VIDEO RENTAL STORE (0.171.0), on the card shop's terms: only inside a
+#: building whose id says `video_store`. Its SELLING rooms are a video
+#: store; its BACK ROOM -- the one behind the curtain -- is its own kind,
+#: because what stands in it is its own. The stockroom keeps `storage`.
+_VIDEO_STORE_ID = "video_store"
+_VIDEO_STORE_TOKENS = frozenset(("sales", "showroom", "rental", "rentals", "video"))
+_VIDEO_BACK_TOKENS = frozenset(("back", "adult", "adults", "curtain"))
+
+
+def _video_store_building(building):
+    return _VIDEO_STORE_ID in str(building or "").lower()
+
+
+def video_store_room_kind(room, building):
+    """``"video_store"`` for a video store's selling room, ``"video_back"``
+    for its back room, None for any other room or any other building."""
+    if not _video_store_building(building):
+        return None
+    tokens = set(str(room.get("id", "")).lower().replace("-", "_").split("_"))
+    # `stock` first: a `back_stockroom` is a stockroom
+    if tokens & {"stock", "stockroom", "storage", "office"}:
+        return None
+    if tokens & _VIDEO_BACK_TOKENS:
+        return "video_back"
+    if tokens & _VIDEO_STORE_TOKENS or {"main", "floor"} <= tokens:
+        return "video_store"
+    return None
+
+
 def is_card_play_room(room, building):
     """Is `room` the card shop's PLAY AREA?"""
     if not is_card_shop_room(room, building):
@@ -1957,6 +1986,22 @@ _RECIPES = {
                   # banner cap, and one poster is what it cost.
                   "fixtures": ("pennant_row", "hanging_banner", "poster",
                                "ceiling_hanger", "aisle_sign")},
+    # THE VIDEO STORE (0.171.0). The walker: "a VHS movie rental store",
+    # MACDADE MOVIES. Its racks, islands and checkout are AUTHORED by the
+    # preset (`presets.video_store`); this is what the furnisher may add
+    # round them: a vending machine if a wall is left, a carton or two, and
+    # a run of sale posters where the racks are not. NO `wall_tv`: the
+    # first draft listed it and the pass hung three by the checkout, one of
+    # them on the shop glass. A store's one TV is the preset's to author.
+    "video_store": {"anchors": (),
+                    "wall": ("vending",),
+                    "floor": (),
+                    "clusters": ((("cartons",), 1, 2),),
+                    "one_cluster": True,
+                    "fixtures": ("poster_wall_store",)},
+    # ITS BACK ROOM: the authored racks and nothing else. Suggestive only,
+    # and that is Zoo's to hold (`video_rack_forms`, the `adult` form).
+    "video_back": {"anchors": (), "wall": (), "floor": (), "clusters": ()},
     "office": {"anchors": ("desk",),
                "wall": ("cabinet_file", "shelf_run", "cabinet_file"),
                "floor": ("desk",),
@@ -2361,6 +2406,9 @@ def _room_kind(room, building=None):
         return "strip_club"
     if is_card_shop_room(room, building):
         return "card_shop"
+    video = video_store_room_kind(room, building)       # 0.171.0
+    if video:
+        return video
     tokens = set(str(room.get("id", "")).lower().replace("-", "_").split("_"))
     for kind, words in _ROOM_KINDS:
         if tokens.intersection(words):

@@ -108,7 +108,8 @@ def test_a_curtain_wall_and_a_facade_shell_are_not_storefronts():
     import glob
     for p in sorted(glob.glob(os.path.join(HERE, "build", "*.slots.json"))):
         b = os.path.basename(p)[: -len(".slots.json")]
-        if b in STORES or b == "card_shop_a01":
+        # 0.171.0: and the video store, a glass shopfront on a sales floor
+        if b in STORES or b in ("card_shop_a01", "video_store_a01"):
             continue
         slots = json.load(open(p, encoding="utf-8"))["slots"]
         assert not [s for s in slots if s.get("glazing") == "storefront"], b
