@@ -1,3 +1,35 @@
+## [0.169.0] - a home has a porch light over its door, not a lit sign
+
+Zoo 1.37.0 paints a business's name on every lit sign box and gives a
+building of no kind its street number. On a home that is a lit cabinet over
+a front door. The walker was asked whether an apartment or a rowhouse should
+have one at all and, 2026-10-02, left the call here: no.
+
+`lights.is_residence(business)` reads the building's identity for a home's
+word, whole -- apartment, walkup, rowhouse, twin, mansion, duplex, tenement.
+A residence derives no storefront sign, so its front door falls to the loop
+that hangs a wall pack over every other exterior door: one anchor for one
+anchor, and the light count does not move. Eight library buildings
+(apartment_walkup_a01-a03, mansion_a01-a03, rowhouse_raid, twin_a01); 102
+sign anchors -> 94.
+
+Still showing a street number, and not homes: 41 buildings of no kind in
+Zoo's table (auto shops, warehouses, depots, self storage, marinas, offices,
+parking garages, the demos). A name for each kind is Zoo's to grow.
+
+ASKED IN THE SAME BREATH, MEASURED, AND LEFT ALONE: one video-poker cabinet a
+store instead of two, to give the tight stores their poster runs back.
+Refurnished from HEAD with `video_poker_store` at `most=1`: 56 cabinets ->
+32, and 81 store poster runs -> 84 -- three runs back (deli_a03,
+pharmacy_a02, strip_retail_a02) for 24 cabinets. The three gas stations that
+lost a run to 0.168.2 already stand one cabinet and get nothing back. The
+count is not what costs the posters; `most` stays 2.
+
+Tests: `test_residence_lights.py` (3) -- the words are whole words; a home
+takes a wall pack where a shop takes a sign, over the same door, and nothing
+else moves; the library's homes built with no sign. Its library test fails
+on 0.168.2's build. `test_sign_business.py`'s floor 100 -> 90.
+
 ## [0.168.2] - a video-poker cabinet stands off the storefront glass
 
 The walker, 2026-10-01, on cold run 9127's frames: "keep the posters off the

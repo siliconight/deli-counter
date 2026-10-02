@@ -326,6 +326,22 @@ _SIGN_PAD = 0.8         # sign width beyond the door width
 _SIGN_H = 0.6           # sign height
 _DOOR_KINDS = ("door", "garage")
 
+#: A HOME HAS NO LIT SIGN (0.169.0). Zoo 1.37.0 paints a business's name on
+#: the sign box, and a building of no kind gets its street number -- which
+#: on a home is a lit cabinet over a front door, and a lit cabinet says
+#: BUSINESS. The walker left the call here (2026-10-02). A building whose
+#: identity carries one of these words, whole, derives no storefront sign;
+#: its front door takes the wall pack every other exterior door takes, so
+#: the door is still lit and the light count does not move.
+RESIDENCE_WORDS = frozenset(("apartment", "walkup", "rowhouse", "twin", "mansion", "duplex",
+                             "tenement"))
+
+
+def is_residence(business):
+    """Does ``business`` (`level_design.club_building_id`) name a home?"""
+    words = str(business or "").lower().replace("-", "_").replace(" ", "_").split("_")
+    return bool(RESIDENCE_WORDS & set(words))
+
 
 def _club_colour_start(room_id):
     import zlib
@@ -1124,7 +1140,7 @@ def _storefront_sign(openings, wall_thick):
 def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
                          wall_thick, ceiling_voids=None, partitions=None,
                          report=None, volumes=None, club_rooms=None,
-                         storefronts=None):
+                         storefronts=None, residence=False):
     """Derive default light anchors: one fluorescent ceiling row per interior
     room, one area light per window opening, a wall pack over every exterior
     door, and one storefront sign. Every room also carries a `room_ambient`
@@ -1335,7 +1351,9 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
     # v1.1: the storefront sign, then a wall pack over every other exterior
     # door. Both on building power (`reacts_to_alarm: true`) — cutting the
     # power kills the facade with the interiors, the classic heist beat.
-    sign = _storefront_sign(openings, wall_thick)
+    # a residence (0.169.0) derives none: its front door is one more exterior
+    # door to the wall-pack loop below
+    sign = None if residence else _storefront_sign(openings, wall_thick)
     sign_door = None
     if sign:
         anchor, sign_door = sign
@@ -1390,7 +1408,8 @@ def build_light_manifest(building_id, rooms, openings, story_height,
                                    ceiling_voids=ceiling_voids,
                                    partitions=partitions, report=report,
                                    volumes=volumes, club_rooms=club_rooms,
-                                   storefronts=storefronts)
+                                   storefronts=storefronts,
+                                   residence=is_residence(business))
     if authored:
         by_id = {a["id"]: a for a in anchors}
         for a in authored:

@@ -36,7 +36,8 @@ def test_every_library_sign_names_the_building_it_is_on():
             if a["type"] == "sign":
                 seen += 1
                 assert a.get("business") == level_design.club_building_id(spec), (spec["name"], a)
-    assert seen >= 100, seen
+    # 0.169.0: 102 -> 94, the eight homes' doors take a porch light instead
+    assert seen >= 90, seen
 
 
 def test_the_stamp_reaches_authored_signs_and_keeps_their_own():

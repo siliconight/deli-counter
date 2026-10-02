@@ -255,24 +255,6 @@
       "reacts_to_alarm": false
     },
     {
-      "id": "ext_0_S_sign",
-      "type": "sign",
-      "source": "derived",
-      "pos": [
-        -0.0,
-        -8.35,
-        2.55
-      ],
-      "rot_y": 270.0,
-      "wall": "ext_0_S",
-      "size": [
-        2.2,
-        0.6
-      ],
-      "reacts_to_alarm": true,
-      "business": "apartment_walkup_a02"
-    },
-    {
       "id": "ext_0_N_pack_1",
       "type": "wall_pack",
       "source": "derived",
@@ -283,6 +265,19 @@
       ],
       "rot_y": 90.0,
       "wall": "ext_0_N",
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "ext_0_S_pack_1",
+      "type": "wall_pack",
+      "source": "derived",
+      "pos": [
+        -0.0,
+        -8.3,
+        2.45
+      ],
+      "rot_y": 270.0,
+      "wall": "ext_0_S",
       "reacts_to_alarm": true
     }
   ]
