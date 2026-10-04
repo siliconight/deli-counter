@@ -2091,6 +2091,21 @@ class _Builder:
         volume's job, not the mesh's (the game/harness owns the climb mechanic)."""
         H = self.s.story_height
         for li, ld in enumerate(self.s.ladders):
+            # WEATHER, IN THE NAME. The worldskin dresses an exterior ladder
+            # in the theme's rusted steel and an interior one in a dark rail
+            # against a bright rung, and it is handed one GLB with no sight of
+            # this spec -- so the only channel is the node name. Same shape as
+            # `stair<n>col_` / `stair<n>ramp_` above, which carry their kind on
+            # the index token for the same reason.
+            #
+            # `placement_mode` is authored per ladder and defaults to
+            # "interior" on the dataclass, so an unset one is correctly
+            # interior: measured across the spec library, 109 ladders are
+            # interior (52 explicit, 54 unset, 3 shaft) against 3 exterior.
+            # A platform ladder counts as exterior -- it is the one on the
+            # outside of a tank or a dock, and it weathers.
+            mode = getattr(ld, "placement_mode", "interior")
+            tag = "ext" if mode in ("exterior_wall", "platform") else ""
             along_x = ld.facing in ("N", "S")   # rails spread along X if facing N/S
             n_rungs_per_floor = max(3, round(H / ld.rung_spacing))
             for s in range(ld.from_story, ld.to_story):
@@ -2104,8 +2119,8 @@ class _Builder:
                     else:
                         rc = (ld.x, ld.y + sgn * half, z + H / 2)
                         rs = (ld.depth, 0.06, H)
-                    self._box(f"ladder{li}_rail_{s}_{sgn}", rc, rs, self.VISUAL,
-                              role="ladder")
+                    self._box(f"ladder{li}{tag}_rail_{s}_{sgn}", rc, rs,
+                              self.VISUAL, role="ladder")
                 # rungs -- VISUAL only (no collision; the climb is volume-driven).
                 for r in range(n_rungs_per_floor):
                     rz = z + ld.rung_spacing * (r + 0.5)
@@ -2115,8 +2130,8 @@ class _Builder:
                         cc, cs = (ld.x, ld.y, rz), (ld.width, ld.depth, 0.05)
                     else:
                         cc, cs = (ld.x, ld.y, rz), (ld.depth, ld.width, 0.05)
-                    self._box(f"ladder{li}_rung_{s}_{r}", cc, cs, self.VISUAL,
-                              role="ladder")
+                    self._box(f"ladder{li}{tag}_rung_{s}_{r}", cc, cs,
+                              self.VISUAL, role="ladder")
                 if ld.cut_slabs:
                     # The hole a BODY climbs through, biased onto the APPROACH
                     # side -- geometry shared with the L14/L15 linter and the

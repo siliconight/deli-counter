@@ -1,3 +1,20 @@
+## [0.173.0] - an exterior ladder says so in its name
+
+Roadmap 169, the walker's call of 2026-09-23 with two reference photographs:
+a ladder is metal, rusted outside and clean inside. Level Factory's import
+(`zoo_worldskin.gd`, 0.136.0) chooses the metal, and a ladder's NAME is the
+only channel it has -- the import post-processor is handed one GLB and no
+spec. So a ladder whose `placement_mode` puts it outside the building now
+emits `ladder<n>ext_` where it emitted `ladder<n>_`, the convention
+`stair<n>col_` and `stair<n>ramp_` already use. Nothing downstream parses
+these names (checked across deli_counter, lot, level_factory and lasertag
+when this was staged): gameplay addresses a ladder by its `LADDER_<n>`
+marker and `ladder_<n>` id, which are untouched.
+
+STAGED 2026-09-23 (`patches/patch_dc_ladder_mode_in_name.py` at the factory
+root), held behind cold run 9072 and never applied until 2026-10-04, when
+the walker asked where it went. Its three anchors still matched exactly once.
+
 ## [0.172.0] - the video store, revised from the walker's photographs
 
 0.171.0 laid the store out "from the era". Cold run 9132 put it in a level
