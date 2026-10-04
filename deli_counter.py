@@ -1398,7 +1398,16 @@ class _Builder:
         plane as that slab's top face, both pointing up and interpenetrating:
         a z-fight at every storey boundary of every building. One rule, one
         place, because both wall emitters need it and two copies drift.
+
+        AN EMPTY HAS NO SLAB BETWEEN ITS STOREYS (0.175.0), so nothing caps
+        its wall there and it runs the full storey (0.175.2). Stopping short
+        under a slab that was no longer emitted left a 0.3 m slot through
+        every Empty at every storey line -- a dark band across each house in
+        cold run 9147's frames. Under the roof, the one slab it keeps, it
+        still stops.
         """
+        if getattr(self.s, "facade", False) and story + 1 != top:
+            return 0.0
         return ((self.s.roof_thick or self.s.floor_thick)
                 if story + 1 == top else self.s.floor_thick)
 
