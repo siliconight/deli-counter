@@ -65,6 +65,9 @@ GEOMETRY_SOURCES = (
     "spec_types.py",
     "spec_loader.py",
     "build.py",
+    # the slot manifest's `fit.key_height` is decided here as it is written
+    # (`mark_height_keys`, 0.176.0) -- a change to it moves every slots.json
+    "themed_tscn.py",
 )
 
 

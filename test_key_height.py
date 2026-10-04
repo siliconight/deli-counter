@@ -65,7 +65,11 @@ def test_no_built_building_gives_two_geometries_one_name():
                                                 material=tt.stem_material(s))
             if stem is None or unit:
                 continue
-            g[stem].add(tuple(round(float(v), 4) for v in s["fit"]["dims"][:3]))
+            # AT THE NAME'S OWN RESOLUTION, whole centimetres (0.177.0): a
+            # parapet run cut by `floors.slab_tiles` snaps its interior cuts
+            # to millimetres, so equal tiles differ by up to 1 mm (4.666 and
+            # 4.667 m) and are one module at any resolution a name can carry.
+            g[stem].add(tuple(int(round(float(v) * 100)) for v in s["fit"]["dims"][:3]))
         bad += ["%s: %s %s" % (os.path.basename(f), k, sorted(v))
                 for k, v in g.items() if len(v) > 1]
     assert not bad, bad

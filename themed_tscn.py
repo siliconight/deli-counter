@@ -272,7 +272,9 @@ def mark_height_keys(slots: list) -> list:
         stem, unit = resolve_themed_stem(s, "greybox", 1, material=stem_material(s))
         if stem is None or unit:
             continue
-        h = round(float(s["fit"]["dims"][2]), 4)
+        # whole centimetres, the resolution `_h<cm>` can carry (0.177.0): two
+        # heights a millimetre apart would be marked and still share a name
+        h = int(round(float(s["fit"]["dims"][2]) * 100))
         groups.setdefault(stem, {}).setdefault(h, []).append(i)
     out = list(slots)
     for by_h in groups.values():

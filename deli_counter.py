@@ -751,6 +751,26 @@ class _Builder:
                     "pivot": "center", "openings": [], "collision": "convex"},
         })
 
+    def _record_parapet_slot(self, vname, c, sz, side, story):
+        """One wall slot for one parapet tile (0.177.0), named as the tile so
+        the composer strips exactly that greybox piece.
+
+        The material is the TOP STOREY'S wall on the same side -- an explicit
+        `ext_walls` entry when there is one, else the default -- because the
+        parapet is that wall carried past the roof. Its inner face looks onto
+        the roof, not a room, so `_material_in` gives it none (`wall` is not
+        an `ext_` name). Its height can share a width with a storey wall; the
+        manifest's `mark_height_keys` (0.176.0) keeps the two names apart.
+        """
+        below = {(w.wall, w.story): w for w in self.s.ext_walls}.get((side, story - 1))
+        mat = (getattr(below, "material", None) if below else None) or self.s.default_material
+        self._record_wall_slot(vname, c, sz, 0 if side in ("N", "S") else 1,
+                               "wall", "full", material=mat)
+        sl = self.slots[-1]
+        sl.update(wall=f"parapet_{side}", story=story, facing=side,
+                  transform=dict(sl["transform"],
+                                 rot_y={"N": 0, "E": 90, "S": 180, "W": 270}[side]))
+
     def _record_opening_slot(self, vb, center, size, axis, h, ref=None,
                              material=None):
         """One slot for the WHOLE opening (the swap unit), carrying aperture
@@ -2882,6 +2902,14 @@ class _Builder:
                     self._box(f"parapet_{n}{suffix}",
                               (c[0] + dx, c[1] + dy, c[2]),
                               (tx, ty, size[2]), self.VISUAL, role="wall")
+                    # A PARAPET IS THE WALL BELOW IT, CARRIED PAST THE ROOF
+                    # (0.177.0): a slot per tile, so the art pass dresses it
+                    # as that wall. Nothing skinned one before -- 324 grey
+                    # surfaces in cold run 9148, the cornice of every Empty.
+                    if self._modular_on():
+                        self._record_parapet_slot(
+                            f"parapet_{n}{suffix}", (c[0] + dx, c[1] + dy, c[2]),
+                            (tx, ty, size[2]), n, p.story)
                 self._col_box(f"parapet_{n}_col", c, size)
 
 
