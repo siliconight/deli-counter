@@ -1209,6 +1209,12 @@ class _Builder:
             # gameplay -- a non-enterable filler you reuse and art-pass later.
             self._slabs()
             self._exterior()
+            # The roof slot, as a building records it, so Zoo dresses the
+            # roof the shell keeps (0.175.0). A building calls this after
+            # `_slab_holes_cut`; an Empty cuts no hole -- it has no stair or
+            # ladder -- so here is as late as it needs to be.
+            if self._modular_on():
+                self._record_roof_slots()
             self._parapets()
             self._materials()
             self._scale_ref()
@@ -1276,6 +1282,14 @@ class _Builder:
         base, top = self._story_range()
         for s in range(base, top + 1):
             is_roof = (s == top)
+            # AN EMPTY IS EXTERIOR PLUS ROOF (0.175.0). Its ground slab and the
+            # floors between its storeys stand inside a sealed box behind
+            # opaque glass: unseen, unreachable, and with no room to record a
+            # floor slot from, no art pass can dress them -- cold run 9146
+            # shipped 588 of them in the greybox material. The roof stays,
+            # visual and collision, so a greybox level still has a top on it.
+            if getattr(self.s, "facade", False) and not is_roof:
+                continue
             # roof uses roof_thick (defaults to floor_thick); interior floors
             # always use floor_thick.
             ft = (self.s.roof_thick or self.s.floor_thick) if is_roof \

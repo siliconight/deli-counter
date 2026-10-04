@@ -3042,6 +3042,9 @@ def empty_rowhome(name: str = "empty_rowhome", width: float = 6.0,
         ext.append({"wall": "S", "story": st, "material": wall, "openings": front})
         ext.append({"wall": "N", "story": st, "material": wall, "openings": back})
     s["ext_walls"] = ext
+    # A 1990s rowhouse roof is flat tar, silver-coated -- never its brick.
+    # Unnamed, the roof slot's style follows the walls (`roofs.roof_slots`).
+    s["roof_material"] = "concrete"
     s["scale_ref"] = bool(scale_ref)
     return s
 
