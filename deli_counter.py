@@ -823,7 +823,12 @@ class _Builder:
         # Added in 0.80.0 (501c9db) and lost eleven hours later when f54ebfe
         # committed a working copy that predated it; nothing failed because no
         # shipped facade had a window. test_facade_glazing.py now pins it.
-        if role == "window" and getattr(self.s, "facade", False):
+        #
+        # AND ITS DOORWAY (0.178.0). Since 0.174.0 an Empty's door is solid in
+        # collision and was drawn as an open frame -- a doorway into a dark
+        # box that a player walks into as a wall. The same tag says "nothing
+        # behind this opening" to Zoo (>= 1.61.0), which shuts it with a leaf.
+        if role in ("window", "doorway") and getattr(self.s, "facade", False):
             slot["glazing"] = "facade"
         self.slots.append(slot)
 

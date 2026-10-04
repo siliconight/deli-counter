@@ -98,10 +98,15 @@ def test_a_facade_window_slot_carries_facade_glazing(dc):
         assert s.get("glazing") == "facade", s["slot_id"]
 
 
-def test_a_facade_door_carries_no_glazing(dc):
+# RETRACTED 0.178.0, kept above what replaced it: "a facade door carries no
+# glazing". True while no facade had a door anyone could see into. Since
+# 0.174.0 an Empty's door is solid in collision, and untagged it was drawn as
+# an open frame -- cold run 9148's `empties_one_front_*`. Tagged, Zoo
+# (>= 1.61.0) shuts it.
+def test_a_facade_door_carries_facade_glazing_so_zoo_shuts_it(dc):
     slots = _opening_slots(dc, _with_openings(presets.facade_storefront()))
     for s in _by_role(slots, "doorway"):
-        assert "glazing" not in s, s["slot_id"]
+        assert s.get("glazing") == "facade", s["slot_id"]
 
 
 def test_an_enterable_buildings_window_carries_no_glazing(dc):
