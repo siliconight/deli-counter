@@ -564,6 +564,11 @@ class _Builder:
         carve = sorted((h for h in holes
                         if h["kind"] in ("door", "garage", "breach", "vault")),
                        key=lambda h: h["u"])
+        # AN EMPTY'S DOOR IS SOLID (0.174.0): it is drawn, and behind it
+        # there is no interior, no navmesh and nothing to reach, so the
+        # wall it stands in stays one box (roadmap 106).
+        if getattr(self.s, "facade", False):
+            carve = []
         if not carve:
             self._col_box(name, center, size)
             return
@@ -1447,6 +1452,11 @@ class _Builder:
         so Godot can replace baked openings with reusable scenes, and one
         INTERACTIVES entry (the replicable state machine) per interactive
         opening -- see interactives.py + docs/INTERACTIVES.md."""
+        # AN EMPTY CARRIES NO GAMEPLAY (0.174.0): no opening record, no
+        # socket marker, no interactive -- its door opens onto nothing
+        # (roadmap 106).
+        if getattr(self.s, "facade", False):
+            return
         H = self.s.story_height
         # slot_ref must match the modular pass's slot id: _emit_wall_run walks
         # openings sorted by their run-position u, naming each {wall}_open{k}.

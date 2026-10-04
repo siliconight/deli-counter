@@ -2995,6 +2995,73 @@ def facade_industrial(name: str = "facade_industrial", floors: int = 1,
 
 
 # ---------------------------------------------------------------------------
+# EMPTIES (0.174.0) -- non-enterable shells with real fronts (roadmap 106)
+# ---------------------------------------------------------------------------
+#
+# The walker, 2026-10-04, shown `facade_rowhome` and `facade_storefront` (no
+# openings, every slot a wall) standing in a row: "that just looks like a
+# continuous concrete wall". The comps are read off in the factory root's
+# `docs/reference/EMPTIES_COMPS.md`: a Philadelphia rowhouse street, and
+# industrial lofts, all in their 1990s state. A terrace reads as houses
+# because EACH HOUSE DIFFERS -- width, storeys, wall, cornice height, which
+# side the door is on -- so the family below is a table of houses, not one
+# house built six times.
+
+def empty_rowhome(name: str = "empty_rowhome", width: float = 6.0,
+                  floors: int = 3, wall: str = "brick", door_side: str = "W",
+                  cornice: float = 0.8, seed: int = 1911,
+                  scale_ref: bool = False) -> dict:
+    """A Philadelphia / Delco rowhouse Empty. Two window bays wide; a door in
+    one bay and a window in the other at street level, two windows on every
+    storey above, stacked on the same bays; a back door and windows behind.
+    The side walls are left unlisted, so `auto_exterior` seals them: they are
+    party walls. Non-enterable: its door does not carve its wall and its
+    openings carry no gameplay (deli_counter.py, 0.174.0)."""
+    sh = 3.1
+    depth = 12.0
+    s = _facade(name, float(width), depth, int(floors), sh, wall, [
+        {"id": wall, "acoustic": "Concrete", "absorption": 0.7, "damping": 0.6},
+        {"id": "glass", "acoustic": "Glass", "absorption": 0.1, "damping": 0.1},
+        {"id": "wood", "acoustic": "Wood", "absorption": 0.5, "damping": 0.45},
+    ], parapet_h=float(cornice), seed=int(seed))
+    bay = 0.22 if width >= 6.0 else 0.2
+    door = -bay if door_side == "W" else bay
+    win = {"kind": "window", "width": 0.95, "height": 1.6, "sill": 0.85,
+           "material": "glass"}
+    ext = []
+    for st in range(int(floors)):
+        if st == 0:
+            front = [{"kind": "door", "pos": door, "width": 1.0, "height": 2.3,
+                      "tag": "front_door", "material": "wood"},
+                     dict(win, pos=-door)]
+            back = [{"kind": "door", "pos": door, "width": 0.95, "height": 2.2,
+                     "tag": "back_door", "material": "wood"}]
+        else:
+            front = [dict(win, pos=-bay), dict(win, pos=bay)]
+            back = [dict(win, pos=-door)]
+        ext.append({"wall": "S", "story": st, "material": wall, "openings": front})
+        ext.append({"wall": "N", "story": st, "material": wall, "openings": back})
+    s["ext_walls"] = ext
+    s["scale_ref"] = bool(scale_ref)
+    return s
+
+
+#: The rowhome Empties built into the library, one row a house: width (m),
+#: storeys, wall, door side, cornice height (m), seed. Brick dominates as it
+#: does on the comp's street; siding and Formstone (`stone_ext`) are the
+#: 1990s covering one house in a row would wear; painted block is the
+#: painted front. Widths 5.5-6.5 m are the comp's 18-21 ft houses.
+EMPTY_ROWHOMES = {
+    "gs_empty_rowhome_a": dict(width=6.0, floors=3, wall="brick", door_side="W", cornice=0.8, seed=1911),
+    "gs_empty_rowhome_b": dict(width=5.5, floors=3, wall="siding", door_side="E", cornice=0.6, seed=1912),
+    "gs_empty_rowhome_c": dict(width=6.5, floors=3, wall="brick", door_side="E", cornice=1.0, seed=1913),
+    "gs_empty_rowhome_d": dict(width=6.0, floors=2, wall="stone_ext", door_side="W", cornice=0.6, seed=1914),
+    "gs_empty_rowhome_e": dict(width=5.5, floors=3, wall="paint_block", door_side="W", cornice=0.9, seed=1915),
+    "gs_empty_rowhome_f": dict(width=6.0, floors=3, wall="brick", door_side="E", cornice=0.7, seed=1916),
+}
+
+
+# ---------------------------------------------------------------------------
 # REGISTRY
 # ---------------------------------------------------------------------------
 
@@ -3229,6 +3296,7 @@ REGISTRY = {
     "video_store": video_store,
     "facade_rowhome": facade_rowhome,
     "facade_storefront": facade_storefront,
+    "empty_rowhome": empty_rowhome,
     "facade_industrial": facade_industrial,
 }
 
