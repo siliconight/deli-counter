@@ -3030,6 +3030,10 @@ def write_slot_manifest(builder, path):
         if _in:
             _s = dict(_s, material_in=_in)
         _slots.append(_s)
+    # ONE NAME, ONE GEOMETRY (0.176.0): a name that would cover two heights
+    # is marked, so Zoo builds -- and the composer asks for -- one each.
+    import themed_tscn as _tt
+    _slots = _tt.mark_height_keys(_slots)
     if _unmapped:
         print(f"[deli_counter] slot manifest: {len(_unmapped)} slot(s) name a "
               f"material with no skin kind and were written through unchanged: "

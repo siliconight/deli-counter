@@ -92,6 +92,10 @@ remodel.
     placement point *is* the transform.
   - `openings` — for doorway/window/breach: the aperture `{kind, width, height, sill}` the themed
     frame must clear.
+  - `key_height` — present and true only when this slot's module name would otherwise cover two
+    heights in one building (0.176.0); Zoo (>= 1.60.0) and `themed_tscn` then add `_h<cm>` to the
+    name. Set by `themed_tscn.mark_height_keys` as the manifest is written. Today only facade shells
+    (Empties) carry it: their walls are full-storey below the roof storey and stop under the roof.
   - `collision` — the collision mode the replacement must provide. **Constraint:** a themed module must
     supply equivalent collision, or the enterability/nav gates drift (a door that seals, a wall that
     opens). The gates run on the assembled result and catch it; a coverage check flags it earlier.

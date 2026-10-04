@@ -253,6 +253,37 @@ def stem_material(slot: dict):
     return str(m) if m and m in material_kind.SKIN_KINDS else None
 
 
+def mark_height_keys(slots: list) -> list:
+    """Mark ``fit.key_height`` on every slot whose module NAME would cover
+    more than one height in this building; return the slots, marked.
+
+    A wall, doorway or window is named by its width (`module_stem`: "the
+    storey height is fixed"). An Empty broke that (0.175.2) -- walls 3.1 m
+    where no slab sits above, 2.8 m under the roof -- and the two built as one
+    Zoo file, so cold run 9148 stood 2.8 m panels in 3.1 m slots. Grouping by
+    the name THIS module builds, rather than restating its key, means the
+    mark can never disagree with the name it repairs. Only a colliding name
+    is marked, so every other building keeps every name (on 0.175.2: 14
+    names, all in the 8 facade shells). Zoo (>= 1.60.0) and
+    `resolve_themed_stem` both add `_h<cm>` to a marked slot.
+    """
+    groups = {}
+    for i, s in enumerate(slots):
+        stem, unit = resolve_themed_stem(s, "greybox", 1, material=stem_material(s))
+        if stem is None or unit:
+            continue
+        h = round(float(s["fit"]["dims"][2]), 4)
+        groups.setdefault(stem, {}).setdefault(h, []).append(i)
+    out = list(slots)
+    for by_h in groups.values():
+        if len(by_h) < 2:
+            continue
+        for idxs in by_h.values():
+            for i in idxs:
+                out[i] = dict(out[i], fit=dict(out[i].get("fit") or {}, key_height=True))
+    return out
+
+
 def resolve_themed_stem(slot: dict, theme: str, style: int, state: str = None,
                         material: str = None):
     """Return (stem, is_scaled_unit) for a slot, or (None, False) if unroleable.
@@ -278,8 +309,10 @@ def resolve_themed_stem(slot: dict, theme: str, style: int, state: str = None,
     depth_cm = (int(round(dims[1] * 100))
                 if exact and typ in PLATE_ROLES + VOLUME_ROLES + CORNER_ROLES
                 else None)
+    # `fit.key_height` (0.176.0, Zoo 1.60.0): see `mark_height_keys`.
     height_cm = (int(round(dims[2] * 100))
-                 if exact and typ in VOLUME_ROLES + CORNER_ROLES else None)
+                 if exact and (typ in VOLUME_ROLES + CORNER_ROLES
+                               or fit.get("key_height")) else None)
     vtag = void_tag(fit.get("voids")) if typ in PLATE_ROLES else None
     otag = opening_tag(fit.get("openings")) if typ in OPENING_ROLES else None
     eff_style = int(slot.get("style") or style or 1)
