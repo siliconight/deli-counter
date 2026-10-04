@@ -25,6 +25,15 @@ BLENDER_ONLY = [
      "imports bmesh -- needs a real Blender interpreter, not plain python"),
 ]
 
+# Test files that READ WHAT THE NAV GATE WRITES. They run straight after
+# `nav_gate.py --all`, never in the first sweep: there, a shell built for the
+# commit being checked has no `build/<name>.navgate.json` yet, so it is never
+# compared and a new unjudged shell passes on the commit that adds it.
+# Measured 2026-10-04: 0.174.0 added six rowhome Empties and committed clean,
+# and 0.175.0's hook refused for them -- their nav results were first written
+# during that hook. A test that opens build/*.navgate.json belongs here.
+AFTER_NAV_GATE = ["test_navgate_population.py"]
+
 
 def run(args):
     return subprocess.run([sys.executable] + args, cwd=HERE).returncode
@@ -52,6 +61,7 @@ def main():
         if os.path.exists(os.path.join(HERE, f)):
             args += ["--ignore=" + f]
             skipped.append((f, why))
+    args += ["--ignore=" + f for f in AFTER_NAV_GATE]
     rc |= run(args)
     # Say the exclusions out loud every run. A quiet denylist becomes a
     # permanent one.
@@ -83,6 +93,8 @@ def main():
     rc |= run(["build_freshness.py"])
     print("== nav traversal gate (built shells; needs Godot 4) ==")
     rc |= run(["nav_gate.py", "--all"])
+    print("== nav results against their baseline (reads what the gate just wrote) ==")
+    rc |= run(["-m", "pytest", "-q"] + AFTER_NAV_GATE)
     print("== checking catalog freshness ==")
     rc |= run(["catalog.py", "--check"])
     if rc == 0:
