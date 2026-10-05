@@ -1039,6 +1039,18 @@ class _Builder:
             self._seg_box(f"{vb}_pane", f"{cb}_pane", center, size, axis,
                           u, w, (open_bottom + open_top) / 2.0, hh,
                           role="window", material=material, record_slot=False)
+        elif kind == "door" and getattr(self.s, "facade", False):
+            # AN EMPTY'S DOOR IS SHUT (0.186.0, roadmap 183). A door on a facade
+            # shell leads nowhere -- the shell is sealed and hollow -- so its
+            # aperture is filled full-thickness, as a window's is. Left a
+            # walkable void, the 0.7 m between the door module's jambs stopped
+            # the 0.8 m walk capsule but not a shot: rays passed 10 m into
+            # gs_empty_rowhome_f through its front door (cold run 9162). The
+            # art pass's door module still draws the leaf; this is its
+            # collision.
+            self._seg_box(f"{vb}_leaf", f"{cb}_leaf", center, size, axis,
+                          u, w, (open_bottom + open_top) / 2.0, hh,
+                          role="doorway", material=material, record_slot=False)
         elif kind == "breach":
             self._seg_box(f"{vb}_BREACHPANEL", f"{cb}_BREACHPANEL", center,
                           size, axis, u, w, (open_bottom + open_top) / 2.0, hh,
