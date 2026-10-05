@@ -54,6 +54,10 @@ SKIN_KINDS = (
     # an unmapped id -- and Zoo 0.95.0's whole second half is about a kind
     # that reached no mesh and said nothing.
     "wood_panel", "slatwall",
+    # A HOUSE'S OWN BRICK (0.183.0, Pixelcoat 0.57.0, Zoo 1.73.0): the comp's
+    # row is brown, red and orange, one brick a house, and a theme holds one
+    # grammar per kind
+    "brick_brown", "brick_orange",
 )
 
 #: Every material id this spec library uses, and the kind it resolves to.
@@ -63,6 +67,8 @@ SKIN_KINDS = (
 KIND_BY_MATERIAL = {
     # already kinds
     "brick": "brick",
+    "brick_brown": "brick_brown",
+    "brick_orange": "brick_orange",
     "carpet": "carpet",
     "concrete": "concrete",
     "drywall": "drywall",

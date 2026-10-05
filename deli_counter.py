@@ -644,7 +644,7 @@ class _Builder:
     #: these carries `material_in`, its building's interior finish, which Zoo
     #: builds on the module's room face; concrete, painted block and metal
     #: read the same both sides and stay one material.
-    OUTSIDE_ONLY = frozenset({"brick", "stone", "wood", "siding"})
+    OUTSIDE_ONLY = frozenset({"brick", "brick_brown", "brick_orange", "stone", "wood", "siding"})
 
     def _interior_finish(self):
         """The building's interior wall finish: the commonest skin kind among

@@ -112,7 +112,9 @@ def test_six_rowhomes_differ_house_to_house():
     assert doors == {True, False}
     import material_kind
     for s in specs:
-        assert material_kind.kind_for(s["default_material"]) in ("brick", "siding", "stone", "paint_block")
+        # three bricks since 0.183.0: the comp's row is brown, red and orange
+        assert material_kind.kind_for(s["default_material"]) in (
+            "brick", "brick_brown", "brick_orange", "siding", "stone", "paint_block")
 
 
 def test_the_variants_are_the_preset_s_own_output():

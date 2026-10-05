@@ -3065,17 +3065,18 @@ def empty_rowhome(name: str = "empty_rowhome", width: float = 6.0,
 
 #: The rowhome Empties built into the library, one row a house: width (m),
 #: storeys, wall, door side, cornice height (m), seed. Brick dominates as it
-#: does on the comp's street; siding and Formstone (`stone_ext`) are the
+#: does on the comp's street -- three bricks, red, brown and orange, one a
+#: house (0.183.0), as the comp has; siding and Formstone (`stone_ext`) are the
 #: 1990s covering one house in a row would wear; painted block is the
 #: painted front. Widths 5.5-6.5 m are the comp's 18-21 ft houses.
 EMPTY_ROWHOMES = {
     # and its front door (0.182.0): a different paint on every house, as the
     # comp's row has, and a black iron security door on two
-    "gs_empty_rowhome_a": dict(width=6.0, floors=3, wall="brick", door_side="W", cornice=0.8, seed=1911,
+    "gs_empty_rowhome_a": dict(width=6.0, floors=3, wall="brick_orange", door_side="W", cornice=0.8, seed=1911,
                                door_finish="navy", security_door=True),
     "gs_empty_rowhome_b": dict(width=5.5, floors=3, wall="siding", door_side="E", cornice=0.6, seed=1912,
                                door_finish="white"),
-    "gs_empty_rowhome_c": dict(width=6.5, floors=3, wall="brick", door_side="E", cornice=1.0, seed=1913,
+    "gs_empty_rowhome_c": dict(width=6.5, floors=3, wall="brick_brown", door_side="E", cornice=1.0, seed=1913,
                                door_finish="oxblood"),
     "gs_empty_rowhome_d": dict(width=6.0, floors=2, wall="stone_ext", door_side="W", cornice=0.6, seed=1914,
                                door_finish="green"),

@@ -1,8 +1,9 @@
 """An outside-only wall finish stops at the wall (0.166.0).
 
 Cold run 9120, finding 3: the gas station's exterior stone on the inside of
-its exterior walls. Held here: every exterior wall slot in brick, stone, wood
-or siding names its building's interior finish as `material_in`, no other
+its exterior walls. Held here: every exterior wall slot in a brick (red, and
+since 0.183.0 brown or orange), stone, wood or siding names its building's
+interior finish as `material_in`, no other
 slot does, a remainder never does; the finish is never itself outside-only;
 the stem mirror writes `_i<kind>` and resolves the plain name when the tagged
 one is not built; and the room face is local -Y on all four facings,
@@ -19,7 +20,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import themed_tscn  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUTSIDE_ONLY = {"brick", "stone", "wood", "siding"}
+OUTSIDE_ONLY = {"brick", "brick_brown", "brick_orange", "stone", "wood", "siding"}
 
 
 def _manifests():
