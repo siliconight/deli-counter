@@ -67,3 +67,35 @@ def choose(building, seed, slot_id, story, vacant=False):
         return "boarded"
     return _pick(GROUND if int(story or 0) <= 0 else UPPER,
                  "%s:%s:%s" % (building, seed, slot_id))
+
+
+#: THE PANES THAT CARRY BARS (0.181.0). They were painted into the pane; they
+#: are geometry now -- Zoo (>= 1.69.0) builds them from the Patina (>= 0.26.0)
+#: order this slot field asks for, and paints only the room behind.
+BAR_STATES = ("lit_bars", "dark_bars")
+#: Panes no air conditioner sits in: behind flat bars (they stand 3.5 cm off
+#: the wall, a unit 30 cm out -- the bellied grille that takes one is not
+#: built), a boarded window, and the box fan's, which has its own unit.
+NO_AC = BAR_STATES + ("boarded", "dark_fan")
+#: Units in 100 eligible windows. "Window air conditioners in nearly every
+#: photograph" (EMPTIES_COMPS.md, "Window comps"): mostly upstairs, in the
+#: bedrooms, fewer at the street, where a third of the front is barred.
+AC_GROUND = 10
+AC_UPPER = 30
+
+
+def fixtures(pane, building, seed, slot_id, story):
+    """What hangs in one window, as slot fields: ``{"bars": True}`` on a
+    barred pane, ``{"ac": True}`` on a window drawn for an air conditioner,
+    else ``{}``.
+
+    The unit is drawn on its OWN key, not the pane's, so adding units or
+    retuning their rate does not reshuffle which windows glow."""
+    if pane in BAR_STATES:
+        return {"bars": True}
+    if pane in NO_AC or pane not in STATES:
+        return {}
+    rate = AC_GROUND if int(story or 0) <= 0 else AC_UPPER
+    if _crc("ac:%s:%s:%s" % (building, seed, slot_id)) % 100 < rate:
+        return {"ac": True}
+    return {}

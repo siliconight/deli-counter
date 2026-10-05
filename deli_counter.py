@@ -838,6 +838,11 @@ class _Builder:
                 slot["pane"] = empty_panes.choose(
                     self.s.name, self.s.seed, vb, story,
                     vacant=getattr(self.s, "vacant", False))
+                # AND WHAT HANGS IN IT (0.181.0): bars on a barred pane, an
+                # air conditioner in some others. Patina (>= 0.26.0) orders
+                # them from these fields and Zoo (>= 1.69.0) builds them.
+                slot.update(empty_panes.fixtures(
+                    slot["pane"], self.s.name, self.s.seed, vb, story))
         self.slots.append(slot)
 
     def _seg_box(self, vname, cname, center, size, axis, cu, clen, vcz, vh,
