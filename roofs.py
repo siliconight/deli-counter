@@ -47,6 +47,47 @@ def _slot(sid, story, cx, cy, cz, sx, sy, ft, room=None, style=1,
     }
 
 
+def front_facing(spec):
+    """The facing of the exterior wall that holds the spec's `front_door`
+    opening (`presets.empty_rowhome` tags it), or None."""
+    for w in getattr(spec, "ext_walls", None) or []:
+        if any(getattr(o, "tag", None) == "front_door" for o in w.openings):
+            return w.wall
+    return None
+
+
+def roof_fixtures(spec) -> dict:
+    """AN EMPTY'S ROOF FIXTURES (0.185.0): ``antenna`` / ``dish`` for its roof
+    slot, with ``front`` -- the facing of the wall holding its front door --
+    which Patina (>= 0.29.0) sets them back from and Zoo (>= 1.74.0) builds.
+    Authored per house (`roof_antenna`, `roof_dish`), as its door is.
+
+    Empty for a spec that asks for neither, so every other roof slot is
+    unchanged. Asked for on a spec that is not a facade, or on one with no
+    front door, it RAISES: an Empty's roof is never reached, and an antenna a
+    body walked through on a real rooftop would lie about it; with no front
+    there is nothing to set it back from. A fixture that quietly did not
+    appear is a check that cannot fail.
+    """
+    out = {}
+    if getattr(spec, "roof_antenna", False):
+        out["antenna"] = True
+    if getattr(spec, "roof_dish", False):
+        out["dish"] = True
+    if not out:
+        return out
+    name = getattr(spec, "name", "?")
+    if not getattr(spec, "facade", False):
+        raise ValueError("%s: roof fixtures %s are an Empty's, and this spec is not a facade"
+                         % (name, sorted(out)))
+    front = front_facing(spec)
+    if front is None:
+        raise ValueError("%s: roof fixtures %s and no front_door opening to set them back from"
+                         % (name, sorted(out)))
+    out["front"] = front
+    return out
+
+
 def roof_slots(spec, story, cz, ft):
     """Return the roof swap-slots for the top story.
 
@@ -102,9 +143,12 @@ def roof_slots(spec, story, cz, ft):
     # Collapses to the full footprint when nothing is inset. (roadmap 116)
     import setbacks as _sb
     _rx0, _ry0, _rx1, _ry1 = _sb.slab_extent(spec, story)
-    return [_slot("roof_footprint", story, (_rx0 + _rx1) / 2.0,
-                  (_ry0 + _ry1) / 2.0, cz,
-                  _rx1 - _rx0, _ry1 - _ry0, ft,
-                  style=style, material=mat,
-                  voids=room_voids(spec, None, story, 0.0, 0.0,
-                                   _rx1 - _rx0, _ry1 - _ry0))]
+    slot = _slot("roof_footprint", story, (_rx0 + _rx1) / 2.0,
+                 (_ry0 + _ry1) / 2.0, cz,
+                 _rx1 - _rx0, _ry1 - _ry0, ft,
+                 style=style, material=mat,
+                 voids=room_voids(spec, None, story, 0.0, 0.0,
+                                  _rx1 - _rx0, _ry1 - _ry0))
+    # an Empty's TV antenna and satellite dish ride on its roof (0.185.0)
+    slot.update(roof_fixtures(spec))
+    return [slot]

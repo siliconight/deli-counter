@@ -638,6 +638,11 @@ class LevelSpec:
     # the six rowhomes three finishes and no iron door.
     door_finish: Optional[str] = None
     security_door: bool = False
+    # AN EMPTY'S ROOF (0.185.0): a TV antenna, and the odd satellite dish,
+    # authored per house as its door is. `roofs.roof_fixtures` puts them on
+    # the roof slot with the facing of its front.
+    roof_antenna: bool = False
+    roof_dish: bool = False
 
     # --- art-pass pipeline (all optional; None = fall back to the matching
     # DC_* env var, so unset == byte-identical output). See README "Modular
