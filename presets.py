@@ -3087,6 +3087,21 @@ EMPTY_ROWHOMES = {
                                vacant=True, door_finish="black", security_door=True),
     "gs_empty_rowhome_f": dict(width=6.0, floors=3, wall="brick", door_side="E", cornice=0.7, seed=1916,
                                door_finish="stained"),
+    # SIX MORE (0.184.0): a 26-house terrace drawn from six showed one house
+    # seven times (cold run 9159). Across the twelve every wall kind and every
+    # door finish is worn exactly twice, and no two houses share both.
+    "gs_empty_rowhome_g": dict(width=5.8, floors=3, wall="brick_brown", door_side="W", cornice=0.9, seed=1917,
+                               door_finish="green"),
+    "gs_empty_rowhome_h": dict(width=6.3, floors=2, wall="brick_orange", door_side="E", cornice=0.7, seed=1918,
+                               door_finish="white", security_door=True),
+    "gs_empty_rowhome_i": dict(width=6.1, floors=3, wall="siding", door_side="W", cornice=0.8, seed=1919,
+                               door_finish="oxblood"),
+    "gs_empty_rowhome_j": dict(width=6.2, floors=3, wall="brick", door_side="W", cornice=0.6, seed=1920,
+                               door_finish="black"),
+    "gs_empty_rowhome_k": dict(width=5.6, floors=3, wall="paint_block", door_side="E", cornice=1.0, seed=1921,
+                               door_finish="navy"),
+    "gs_empty_rowhome_l": dict(width=6.4, floors=2, wall="stone_ext", door_side="E", cornice=0.8, seed=1922,
+                               door_finish="stained", security_door=True),
 }
 
 

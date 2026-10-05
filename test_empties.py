@@ -24,8 +24,7 @@ sys.path.insert(0, HERE)
 import presets        # noqa: E402
 from spec_loader import spec_from_dict   # noqa: E402
 
-VARIANTS = ["gs_empty_rowhome_a", "gs_empty_rowhome_b", "gs_empty_rowhome_c",
-            "gs_empty_rowhome_d", "gs_empty_rowhome_e", "gs_empty_rowhome_f"]
+VARIANTS = ["gs_empty_rowhome_%s" % c for c in "abcdefghijkl"]   # twelve since 0.184.0
 
 
 @pytest.fixture

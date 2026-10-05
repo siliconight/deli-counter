@@ -36,9 +36,9 @@ def test_a_house_brick_belongs_outside_like_brick():
         assert '"%s"' % kind in line, line
 
 
-def test_the_brick_houses_are_three_different_bricks():
-    bricks = sorted(a["wall"] for a in presets.EMPTY_ROWHOMES.values() if a["wall"].startswith("brick"))
-    assert bricks == ["brick", "brick_brown", "brick_orange"]
+def test_the_brick_houses_wear_all_three_bricks():
+    bricks = [a["wall"] for a in presets.EMPTY_ROWHOMES.values() if a["wall"].startswith("brick")]
+    assert set(bricks) == {"brick", "brick_brown", "brick_orange"}
 
 
 @pytest.mark.skipif(not glob.glob(os.path.join(HERE, "build", "gs_empty_rowhome_*.slots.json")),

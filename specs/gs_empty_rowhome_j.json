@@ -1,0 +1,165 @@
+{
+  "$schema": "../schema/level.schema.json",
+  "name": "gs_empty_rowhome_j",
+  "mode": "heist",
+  "seed": 1920,
+  "grid": 0.5,
+  "facade": true,
+  "footprint_x": 6.2,
+  "footprint_y": 12.0,
+  "story_height": 3.1,
+  "n_stories": 3,
+  "has_basement": false,
+  "wall_thick": 0.3,
+  "floor_thick": 0.3,
+  "collision": "convex",
+  "auto_exterior": true,
+  "modular": true,
+  "scale_ref": false,
+  "default_material": "brick",
+  "materials": [
+    {
+      "id": "brick",
+      "acoustic": "Concrete",
+      "absorption": 0.7,
+      "damping": 0.6
+    },
+    {
+      "id": "glass",
+      "acoustic": "Glass",
+      "absorption": 0.1,
+      "damping": 0.1
+    },
+    {
+      "id": "wood",
+      "acoustic": "Wood",
+      "absorption": 0.5,
+      "damping": 0.45
+    }
+  ],
+  "parapets": [
+    {
+      "story": 3,
+      "height": 0.6,
+      "thick": 0.3
+    }
+  ],
+  "ext_walls": [
+    {
+      "wall": "S",
+      "story": 0,
+      "material": "brick",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.22,
+          "width": 1.0,
+          "height": 2.3,
+          "tag": "front_door",
+          "material": "wood"
+        },
+        {
+          "kind": "window",
+          "width": 0.95,
+          "height": 1.6,
+          "sill": 0.85,
+          "material": "glass",
+          "pos": 0.22
+        }
+      ]
+    },
+    {
+      "wall": "N",
+      "story": 0,
+      "material": "brick",
+      "openings": [
+        {
+          "kind": "door",
+          "pos": -0.22,
+          "width": 0.95,
+          "height": 2.2,
+          "tag": "back_door",
+          "material": "wood"
+        }
+      ]
+    },
+    {
+      "wall": "S",
+      "story": 1,
+      "material": "brick",
+      "openings": [
+        {
+          "kind": "window",
+          "width": 0.95,
+          "height": 1.6,
+          "sill": 0.85,
+          "material": "glass",
+          "pos": -0.22
+        },
+        {
+          "kind": "window",
+          "width": 0.95,
+          "height": 1.6,
+          "sill": 0.85,
+          "material": "glass",
+          "pos": 0.22
+        }
+      ]
+    },
+    {
+      "wall": "N",
+      "story": 1,
+      "material": "brick",
+      "openings": [
+        {
+          "kind": "window",
+          "width": 0.95,
+          "height": 1.6,
+          "sill": 0.85,
+          "material": "glass",
+          "pos": 0.22
+        }
+      ]
+    },
+    {
+      "wall": "S",
+      "story": 2,
+      "material": "brick",
+      "openings": [
+        {
+          "kind": "window",
+          "width": 0.95,
+          "height": 1.6,
+          "sill": 0.85,
+          "material": "glass",
+          "pos": -0.22
+        },
+        {
+          "kind": "window",
+          "width": 0.95,
+          "height": 1.6,
+          "sill": 0.85,
+          "material": "glass",
+          "pos": 0.22
+        }
+      ]
+    },
+    {
+      "wall": "N",
+      "story": 2,
+      "material": "brick",
+      "openings": [
+        {
+          "kind": "window",
+          "width": 0.95,
+          "height": 1.6,
+          "sill": 0.85,
+          "material": "glass",
+          "pos": 0.22
+        }
+      ]
+    }
+  ],
+  "roof_material": "concrete",
+  "door_finish": "black"
+}

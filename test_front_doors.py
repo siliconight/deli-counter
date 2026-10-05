@@ -70,11 +70,13 @@ def test_the_name_is_zoo_s_name():
     assert "_enavy" in ours and ours == zoo_stem
 
 
-def test_the_family_authors_a_different_door_on_every_house_and_two_iron():
+def test_the_family_authors_every_finish_at_most_twice_and_a_few_iron():
+    """Six houses wore six different doors; twelve (0.184.0) wear each finish
+    at most twice."""
     doors = [a.get("door_finish") for a in presets.EMPTY_ROWHOMES.values()]
-    assert None not in doors and len(set(doors)) == len(doors) == 6
-    assert set(doors) <= set(empty_panes.DOOR_FINISHES)
-    assert sum(1 for a in presets.EMPTY_ROWHOMES.values() if a.get("security_door")) == 2
+    assert None not in doors and set(doors) == set(empty_panes.DOOR_FINISHES)
+    assert max(doors.count(f) for f in set(doors)) <= 2
+    assert 2 <= sum(1 for a in presets.EMPTY_ROWHOMES.values() if a.get("security_door")) <= 4
 
 
 @pytest.fixture
