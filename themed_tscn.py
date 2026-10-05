@@ -154,7 +154,7 @@ def module_stem(typ: str, theme: str, style: int,
                 species: str = None, form: str = None, stock: str = None,
                 variant: int = None, material: str = None,
                 glazing: str = None, budget_tiles: bool = False,
-                material_in: str = None) -> str:
+                material_in: str = None, pane: str = None) -> str:
     """``<type>[_<species>]_<theme>_<style:02d>[_w<cm>][_d<cm>][_h<cm>][_f<form>][_s<stock>][_n<variant>][_m<material>][_i<material_in>][_v<hash>][_o<hash>][_<state>]``.
 
     THE MIRROR OF ``zoo_keeper.core.kit.module_stem``, and the two must change
@@ -218,6 +218,9 @@ def module_stem(typ: str, theme: str, style: int,
     # inside is another finish is another build, after the material
     if material_in:
         base += f"_i{material_in}"
+    # A painted pane's state (0.179.0), as `kit.module_stem` writes it
+    if pane:
+        base += f"_p{pane}"
     if glazing in STEM_GLAZINGS:
         base += f"_g{glazing}"
     if budget_tiles:
@@ -339,11 +342,15 @@ def resolve_themed_stem(slot: dict, theme: str, style: int, state: str = None,
     glazing = slot.get("glazing") if slot.get("glazing") in STEM_GLAZINGS else None
     budget = bool(slot.get("light_budget_tiles")) and typ in LIGHT_BUDGET_ROLES
     inner = slot.get("material_in") if typ in INNER_FACE_ROLES else None
+    # the same test Zoo's `plan_kit` makes (1.64.0), so the names agree
+    import empty_panes
+    pane = (slot.get("pane") if typ == "window" and slot.get("glazing") == "facade"
+            and slot.get("pane") in empty_panes.STATES else None)
     stem = module_stem(typ, theme, eff_style, width_cm,
                        state if state else _default_stem_state(slot),
                        depth_cm, vtag, otag, height_cm, species=species,
                        material=material, glazing=glazing, budget_tiles=budget,
-                       material_in=inner, **dress)
+                       material_in=inner, pane=pane, **dress)
     return stem, (not exact)
 
 

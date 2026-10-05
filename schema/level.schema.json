@@ -1256,6 +1256,10 @@
       "type": "boolean",
       "description": "non-enterable facade shell: exterior+roof+collision only, no interior/gameplay"
     },
+    "vacant": {
+      "type": "boolean",
+      "description": "a vacant facade shell: every window painted boarded (empty_panes, 0.179.0)"
+    },
     "audit_accept": {
       "type": "array",
       "description": "Author-declared intended designs the combat audit reports as accepted instead of flagging (e.g. a one-breach vault as the designed climax).",

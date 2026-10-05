@@ -58,6 +58,7 @@ from rarity import resolve_rarity
 import interactives
 import roofs
 import floors
+import empty_panes
 import vault_room
 
 
@@ -830,6 +831,13 @@ class _Builder:
         # behind this opening" to Zoo (>= 1.61.0), which shuts it with a leaf.
         if role in ("window", "doorway") and getattr(self.s, "facade", False):
             slot["glazing"] = "facade"
+            # AND WHAT IT SHOWS (0.179.0): lit, dark, curtained, barred or
+            # boarded, chosen per window -- which windows glow is a fact about
+            # this building. Zoo (>= 1.64.0) paints the state.
+            if role == "window":
+                slot["pane"] = empty_panes.choose(
+                    self.s.name, self.s.seed, vb, story,
+                    vacant=getattr(self.s, "vacant", False))
         self.slots.append(slot)
 
     def _seg_box(self, vname, cname, center, size, axis, cu, clen, vcz, vh,

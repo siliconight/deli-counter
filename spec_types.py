@@ -628,6 +628,10 @@ class LevelSpec:
     # so the walls are art-pass-ready swap slots -- the windows/brick come later
     # by resolving the slots, and the same shell is reused all over a block.
     facade: bool = False
+    # A VACANT facade (0.179.0): every window boarded (`empty_panes`). The
+    # 1990s vacancy the Empties' comps call for, authored per house like its
+    # wall material -- not drawn, so a street is not left without one.
+    vacant: bool = False
 
     # --- art-pass pipeline (all optional; None = fall back to the matching
     # DC_* env var, so unset == byte-identical output). See README "Modular

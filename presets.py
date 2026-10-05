@@ -3010,7 +3010,7 @@ def facade_industrial(name: str = "facade_industrial", floors: int = 1,
 def empty_rowhome(name: str = "empty_rowhome", width: float = 6.0,
                   floors: int = 3, wall: str = "brick", door_side: str = "W",
                   cornice: float = 0.8, seed: int = 1911,
-                  scale_ref: bool = False) -> dict:
+                  scale_ref: bool = False, vacant: bool = False) -> dict:
     """A Philadelphia / Delco rowhouse Empty. Two window bays wide; a door in
     one bay and a window in the other at street level, two windows on every
     storey above, stacked on the same bays; a back door and windows behind.
@@ -3046,6 +3046,10 @@ def empty_rowhome(name: str = "empty_rowhome", width: float = 6.0,
     # Unnamed, the roof slot's style follows the walls (`roofs.roof_slots`).
     s["roof_material"] = "concrete"
     s["scale_ref"] = bool(scale_ref)
+    # boarded, every window (0.179.0); absent unless asked, so every other
+    # house's spec is unchanged
+    if vacant:
+        s["vacant"] = True
     return s
 
 
@@ -3059,7 +3063,10 @@ EMPTY_ROWHOMES = {
     "gs_empty_rowhome_b": dict(width=5.5, floors=3, wall="siding", door_side="E", cornice=0.6, seed=1912),
     "gs_empty_rowhome_c": dict(width=6.5, floors=3, wall="brick", door_side="E", cornice=1.0, seed=1913),
     "gs_empty_rowhome_d": dict(width=6.0, floors=2, wall="stone_ext", door_side="W", cornice=0.6, seed=1914),
-    "gs_empty_rowhome_e": dict(width=5.5, floors=3, wall="paint_block", door_side="W", cornice=0.9, seed=1915),
+    # the vacant one (0.179.0): painted block, boarded -- the family's
+    # "boarded variant", one in six as a 1990s Delco street has a few
+    "gs_empty_rowhome_e": dict(width=5.5, floors=3, wall="paint_block", door_side="W", cornice=0.9, seed=1915,
+                               vacant=True),
     "gs_empty_rowhome_f": dict(width=6.0, floors=3, wall="brick", door_side="E", cornice=0.7, seed=1916),
 }
 
