@@ -3010,7 +3010,8 @@ def facade_industrial(name: str = "facade_industrial", floors: int = 1,
 def empty_rowhome(name: str = "empty_rowhome", width: float = 6.0,
                   floors: int = 3, wall: str = "brick", door_side: str = "W",
                   cornice: float = 0.8, seed: int = 1911,
-                  scale_ref: bool = False, vacant: bool = False) -> dict:
+                  scale_ref: bool = False, vacant: bool = False,
+                  door_finish: str = None, security_door: bool = False) -> dict:
     """A Philadelphia / Delco rowhouse Empty. Two window bays wide; a door in
     one bay and a window in the other at street level, two windows on every
     storey above, stacked on the same bays; a back door and windows behind.
@@ -3050,6 +3051,15 @@ def empty_rowhome(name: str = "empty_rowhome", width: float = 6.0,
     # house's spec is unchanged
     if vacant:
         s["vacant"] = True
+    # the front door (0.182.0): its finish and its iron security door, absent
+    # unless asked, as `vacant` is. NAMED `door_finish`, not `door`: `door` is
+    # this function's front-door POSITION, a few lines up, and a parameter of
+    # that name was shadowed by it -- the first build of this patch wrote the
+    # position, -0.22, as the finish, and `empty_panes.door` refused it.
+    if door_finish:
+        s["door_finish"] = door_finish
+    if security_door:
+        s["security_door"] = True
     return s
 
 
@@ -3059,15 +3069,23 @@ def empty_rowhome(name: str = "empty_rowhome", width: float = 6.0,
 #: 1990s covering one house in a row would wear; painted block is the
 #: painted front. Widths 5.5-6.5 m are the comp's 18-21 ft houses.
 EMPTY_ROWHOMES = {
-    "gs_empty_rowhome_a": dict(width=6.0, floors=3, wall="brick", door_side="W", cornice=0.8, seed=1911),
-    "gs_empty_rowhome_b": dict(width=5.5, floors=3, wall="siding", door_side="E", cornice=0.6, seed=1912),
-    "gs_empty_rowhome_c": dict(width=6.5, floors=3, wall="brick", door_side="E", cornice=1.0, seed=1913),
-    "gs_empty_rowhome_d": dict(width=6.0, floors=2, wall="stone_ext", door_side="W", cornice=0.6, seed=1914),
+    # and its front door (0.182.0): a different paint on every house, as the
+    # comp's row has, and a black iron security door on two
+    "gs_empty_rowhome_a": dict(width=6.0, floors=3, wall="brick", door_side="W", cornice=0.8, seed=1911,
+                               door_finish="navy", security_door=True),
+    "gs_empty_rowhome_b": dict(width=5.5, floors=3, wall="siding", door_side="E", cornice=0.6, seed=1912,
+                               door_finish="white"),
+    "gs_empty_rowhome_c": dict(width=6.5, floors=3, wall="brick", door_side="E", cornice=1.0, seed=1913,
+                               door_finish="oxblood"),
+    "gs_empty_rowhome_d": dict(width=6.0, floors=2, wall="stone_ext", door_side="W", cornice=0.6, seed=1914,
+                               door_finish="green"),
     # the vacant one (0.179.0): painted block, boarded -- the family's
-    # "boarded variant", one in six as a 1990s Delco street has a few
+    # "boarded variant", one in six as a 1990s Delco street has a few; its
+    # door black and secured
     "gs_empty_rowhome_e": dict(width=5.5, floors=3, wall="paint_block", door_side="W", cornice=0.9, seed=1915,
-                               vacant=True),
-    "gs_empty_rowhome_f": dict(width=6.0, floors=3, wall="brick", door_side="E", cornice=0.7, seed=1916),
+                               vacant=True, door_finish="black", security_door=True),
+    "gs_empty_rowhome_f": dict(width=6.0, floors=3, wall="brick", door_side="E", cornice=0.7, seed=1916,
+                               door_finish="stained"),
 }
 
 

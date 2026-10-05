@@ -154,7 +154,8 @@ def module_stem(typ: str, theme: str, style: int,
                 species: str = None, form: str = None, stock: str = None,
                 variant: int = None, material: str = None,
                 glazing: str = None, budget_tiles: bool = False,
-                material_in: str = None, pane: str = None) -> str:
+                material_in: str = None, pane: str = None,
+                door: str = None) -> str:
     """``<type>[_<species>]_<theme>_<style:02d>[_w<cm>][_d<cm>][_h<cm>][_f<form>][_s<stock>][_n<variant>][_m<material>][_i<material_in>][_v<hash>][_o<hash>][_<state>]``.
 
     THE MIRROR OF ``zoo_keeper.core.kit.module_stem``, and the two must change
@@ -221,6 +222,10 @@ def module_stem(typ: str, theme: str, style: int,
     # A painted pane's state (0.179.0), as `kit.module_stem` writes it
     if pane:
         base += f"_p{pane}"
+    # An Empty front door's finish (0.182.0), as `kit.module_stem` writes it
+    # (Zoo 1.72.0): `_e`, because `_d` is the depth's
+    if door:
+        base += f"_e{door}"
     if glazing in STEM_GLAZINGS:
         base += f"_g{glazing}"
     if budget_tiles:
@@ -346,11 +351,13 @@ def resolve_themed_stem(slot: dict, theme: str, style: int, state: str = None,
     import empty_panes
     pane = (slot.get("pane") if typ == "window" and slot.get("glazing") == "facade"
             and slot.get("pane") in empty_panes.STATES else None)
+    door = (slot.get("door") if typ == "doorway" and slot.get("glazing") == "facade"
+            and slot.get("door") in empty_panes.DOOR_FINISHES else None)
     stem = module_stem(typ, theme, eff_style, width_cm,
                        state if state else _default_stem_state(slot),
                        depth_cm, vtag, otag, height_cm, species=species,
                        material=material, glazing=glazing, budget_tiles=budget,
-                       material_in=inner, pane=pane, **dress)
+                       material_in=inner, pane=pane, door=door, **dress)
     return stem, (not exact)
 
 

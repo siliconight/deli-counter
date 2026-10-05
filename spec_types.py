@@ -632,6 +632,12 @@ class LevelSpec:
     # 1990s vacancy the Empties' comps call for, authored per house like its
     # wall material -- not drawn, so a street is not left without one.
     vacant: bool = False
+    # AN EMPTY'S FRONT DOOR (0.182.0): its painted finish (one of
+    # `empty_panes.DOOR_FINISHES`) and whether a black iron security door
+    # hangs in front of it. Authored per house like `vacant`: a drawn mix left
+    # the six rowhomes three finishes and no iron door.
+    door_finish: Optional[str] = None
+    security_door: bool = False
 
     # --- art-pass pipeline (all optional; None = fall back to the matching
     # DC_* env var, so unset == byte-identical output). See README "Modular

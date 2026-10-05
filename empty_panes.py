@@ -99,3 +99,31 @@ def fixtures(pane, building, seed, slot_id, story):
     if _crc("ac:%s:%s:%s" % (building, seed, slot_id)) % 100 < rate:
         return {"ac": True}
     return {}
+
+
+#: AN EMPTY'S FRONT DOOR (0.182.0): the finishes Zoo (>= 1.72.0) paints a
+#: facade leaf in, in Zoo's order (`zoo_keeper.core.doors.FINISHES`, pinned by
+#: `test_front_doors.py`). The comp's row paints its doors house by house;
+#: `stained` is the wood every Empty door wore before this.
+DOOR_FINISHES = ("navy", "oxblood", "green", "black", "white", "stained")
+
+
+def door(tag, finish=None, security=False):
+    """What an Empty's doorway carries, as slot fields.
+
+    On the FRONT door (the opening the preset tagged ``front_door``) the
+    house's authored finish and its iron security door; on the back door, or
+    a house that authored neither, nothing -- it keeps the leaf every Empty
+    door had. AUTHORED, NOT DRAWN, as `vacant` is: a seeded draw over the six
+    rowhomes gave three finishes, two of them twice, and no iron door. A
+    finish outside `DOOR_FINISHES` is refused rather than dropped."""
+    if tag != "front_door":
+        return {}
+    out = {}
+    if finish is not None:
+        if finish not in DOOR_FINISHES:
+            raise ValueError("door finish %r is not one of %s" % (finish, DOOR_FINISHES))
+        out["door"] = finish
+    if security:
+        out["security_door"] = True
+    return out

@@ -510,7 +510,10 @@ class _Builder:
         v = -H / 2.0 + r["sill"] + r["height"] / 2.0 + self.s.floor_thick / 2.0
         hole = dict(u=u, v=v, w=r["width"], h=r["height"], kind=op.kind,
                     sill=r["sill"], face=getattr(op, "face", None),
-                    interactive=self._machine_for(op, wall_name, story))
+                    interactive=self._machine_for(op, wall_name, story),
+                    # which opening this is (0.182.0): an Empty's front door
+                    # is the one its preset tagged `front_door`
+                    tag=getattr(op, "tag", None))
         if op.kind == "vault":
             # A VAULT SLOT IS AS WIDE AS THE DOOR, NOT ITS APERTURE. Zoo's round
             # door circumscribes the aperture and adds a frame, hinge barrels
@@ -843,6 +846,13 @@ class _Builder:
                 # them from these fields and Zoo (>= 1.69.0) builds them.
                 slot.update(empty_panes.fixtures(
                     slot["pane"], self.s.name, self.s.seed, vb, story))
+            # AND ITS FRONT DOOR (0.182.0): the house's painted finish and its
+            # iron security door, authored on the spec. Zoo (>= 1.72.0) paints
+            # the leaf; Patina (>= 0.28.0) orders the security door.
+            elif role == "doorway":
+                slot.update(empty_panes.door(
+                    h.get("tag"), getattr(self.s, "door_finish", None),
+                    getattr(self.s, "security_door", False)))
         self.slots.append(slot)
 
     def _seg_box(self, vname, cname, center, size, axis, cu, clen, vcz, vh,
