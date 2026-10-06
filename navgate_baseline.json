@@ -7,7 +7,8 @@
     "shells": 135,
     "unjudged": 21,
     "stair_failures": 3,
-    "navigable_null": 20
+    "navigable_null": 20,
+    "grid_fragile": 7
   },
   "navigable_null_reconciliation": {
     "unjudged": 8,
@@ -192,6 +193,70 @@
         "primos_pizza_stair_0"
       ],
       "reason": "stair(s) reported not traversable by the Godot bake; a geometry fix, not a marker one"
+    }
+  ],
+  "grid_fragile": [
+    {
+      "shell": "corner_deli_heist_01",
+      "stairs": [],
+      "markers": [
+        "objective_REGISTER (2/8 grid origins)"
+      ],
+      "reason": "objective_REGISTER is reached from spawn at 2 of 8 voxel-grid origins (nav_gate 0.189.0). It stands inside its register counter and snaps about 1.1 m to the floor beside it (nav_gate.gd MARKER_MAX_ABOVE); which side of the counter it resolves to, and whether that side joins the floor, is not yet located. Not fit for a themed lot before the sweep either."
+    },
+    {
+      "shell": "cr_deli",
+      "stairs": [],
+      "markers": [
+        "objective_REGISTER (2/8 grid origins)"
+      ],
+      "reason": "objective_REGISTER is reached from spawn at 2 of 8 voxel-grid origins (nav_gate 0.189.0). It stands inside its register counter and snaps about 1.1 m to the floor beside it (nav_gate.gd MARKER_MAX_ABOVE); which side of the counter it resolves to, and whether that side joins the floor, is not yet located. Not fit for a themed lot before the sweep either."
+    },
+    {
+      "shell": "foundry_heist_vertical",
+      "stairs": [
+        "foundry_heist_vertical_stair_0",
+        "foundry_heist_vertical_stair_1"
+      ],
+      "markers": [],
+      "reason": "both stairs traverse at only some of 8 voxel-grid origins (nav_gate 0.189.0); the necks are not yet located. Not fit for a themed lot before the sweep either."
+    },
+    {
+      "shell": "fuel_stop_heist",
+      "stairs": [],
+      "markers": [
+        "objective_REGISTER (4/8 grid origins)"
+      ],
+      "reason": "objective_REGISTER is reached from spawn at 4 of 8 voxel-grid origins (nav_gate 0.189.0). It stands inside its register counter and snaps about 1.1 m to the floor beside it (nav_gate.gd MARKER_MAX_ABOVE); which side of the counter it resolves to, and whether that side joins the floor, is not yet located. Not fit for a themed lot before the sweep either."
+    },
+    {
+      "shell": "night_deli",
+      "stairs": [],
+      "markers": [
+        "objective_REGISTER (2/8 grid origins)"
+      ],
+      "reason": "objective_REGISTER is reached from spawn at 2 of 8 voxel-grid origins (nav_gate 0.189.0). It stands inside its register counter and snaps about 1.1 m to the floor beside it (nav_gate.gd MARKER_MAX_ABOVE); which side of the counter it resolves to, and whether that side joins the floor, is not yet located. Not fit for a themed lot before the sweep either."
+    },
+    {
+      "shell": "primos_pizza",
+      "stairs": [
+        "primos_pizza_stair_0"
+      ],
+      "markers": [
+        "objective_COUNT_SAFE (6/8 grid origins)",
+        "loot_STASH (6/8 grid origins)"
+      ],
+      "reason": "primos_pizza_stair_0 traverses at only some of 8 voxel-grid origins, and the safe and the stash are reached at 6 of 8 (nav_gate 0.189.0). The stair is already in stair_failures from an older run. Not fit for a themed lot before the sweep either."
+    },
+    {
+      "shell": "twin_a01",
+      "stairs": [
+        "twin_a01_stair_1"
+      ],
+      "markers": [
+        "objective_UPSTAIRS (7/8 grid origins)"
+      ],
+      "reason": "twin_a01_stair_1 traverses at only some of 8 voxel-grid origins and objective_UPSTAIRS is reached at 7 of 8 (nav_gate 0.189.0); level_factory's spawn_placement.py records cold run 9058 meeting trouble with the same objective. Fit for a themed lot before the sweep, and the only shell of the twin family, which leaves themed lots with it."
     }
   ]
 }

@@ -124,6 +124,24 @@ var SNAP_MAX := _envf("DC_QA_SNAP", 2.0)
 # 1.91).
 var MARKER_MAX_ABOVE := 0.3 + AGENT_MAX_CLIMB
 
+# THE GRID SWEEP (0.189.0). A navmesh's voxel grid starts at the corner of
+# whatever is baked, so one building baked alone and the same building
+# standing in a site sit on different grids -- and a connection that passes
+# through a neck a few cells wide holds on some and not others. Measured
+# 2026-10-06 (roadmap 189): deli_a03's objective upstairs joins its ground
+# floor at 8 of 32 origins; this gate baked one, at its own bounds, and that
+# one connected. Cold run 9185's site fell on another and lost two candidates.
+#
+# So the same parsed geometry is baked again at eight origins inside one cell:
+# eight distinct X and Z phases, four Y phases. Fractions of a cell, not
+# metres, so they follow agent_contract.json when the cell size changes.
+const GRID_FRACTIONS := [[0.0, 0.0, 0.0], [0.5, 0.5, 0.25], [0.25, 0.0, 0.75],
+	[0.75, 0.5, 0.5], [0.125, 0.25, 0.375], [0.625, 0.75, 0.125],
+	[0.375, 0.25, 0.875], [0.875, 0.75, 0.625]]
+# Margin round the geometry's bounds for a swept bake, so moving the origin
+# never crops a wall out of it.
+const GRID_PAD_M := 2.0
+
 var _exit_code := 0
 
 
@@ -281,6 +299,9 @@ func _run(glb_path: String, gp_path: String) -> Dictionary:
 	# -- markers: the documented F5 check, headless (secondary, warn-only) ---
 	result["markers"] = _check_markers(gp, nm, graph)
 
+	# -- the grid sweep: does any of it depend on where the grid falls? ------
+	_grid_sweep(gp, src, result)
+
 	# -- verdict -------------------------------------------------------------
 	# `failures` counts STAIRS and only stairs: the loop above is the only
 	# thing that increments it, and the marker section is warn-only. So the
@@ -328,6 +349,78 @@ func _run(glb_path: String, gp_path: String) -> Dictionary:
 	else:
 		print("[nav-gate] all traversable stairs pass in both directions")
 	return result
+
+
+func _grid_sweep(gp: Variant, src: NavigationMeshSourceGeometryData3D,
+		result: Dictionary) -> void:
+	## Bake `src` again at every GRID_FRACTIONS origin and write, beside each
+	## traversable stair and each checked marker, the list of origins at which
+	## it connected (`grid`). The stair test is the main loop's -- both ends
+	## snapped within SNAP_MAX and joined in the polygon graph -- and the
+	## marker test is _check_markers' own. Reports; decides nothing. Where a
+	## list is mixed, nav_gate.py scopes it into `navigable`.
+	var bounds: AABB = src.get_bounds()
+	var pad := Vector3(GRID_PAD_M, GRID_PAD_M, GRID_PAD_M)
+	var systems: Array = gp.get("stair_systems", [])
+	var stair_grid := {}
+	var marker_grid := {}
+	var polys: Array = []
+	for f in GRID_FRACTIONS:
+		var fr: Array = f
+		var nm := NavigationMesh.new()
+		nm.agent_radius = AGENT_RADIUS
+		nm.agent_height = AGENT_HEIGHT
+		nm.agent_max_climb = AGENT_MAX_CLIMB
+		nm.agent_max_slope = AGENT_MAX_SLOPE
+		nm.cell_size = CELL_SIZE
+		nm.cell_height = CELL_HEIGHT
+		nm.filter_baking_aabb = AABB(bounds.position - pad + Vector3(
+			float(fr[0]) * CELL_SIZE, float(fr[1]) * CELL_HEIGHT,
+			float(fr[2]) * CELL_SIZE), bounds.size + pad * 2.0)
+		NavigationServer3D.bake_from_source_geometry_data(nm, src)
+		polys.append(nm.get_polygon_count())
+		var graph := _poly_graph(nm)
+		for sysd in systems:
+			if sysd.get("role") == "decorative_nontraversable":
+				continue
+			var eps: Variant = sysd.get("nav_endpoints")
+			if eps == null or eps.get("lower") == null or eps.get("upper") == null:
+				continue
+			var lo_hit := _snap(nm, _to_godot(eps["lower"]))
+			var hi_hit := _snap(nm, _to_godot(eps["upper"]))
+			var ok: bool = lo_hit["dist"] <= SNAP_MAX and hi_hit["dist"] <= SNAP_MAX \
+				and _connected(graph, lo_hit["poly"], hi_hit["poly"])
+			var sid := str(sysd.get("id", "?"))
+			if not stair_grid.has(sid):
+				stair_grid[sid] = []
+			stair_grid[sid].append(ok)
+		var mk := _check_markers(gp, nm, graph, false)
+		for row in mk.get("detail", []):
+			var mname: String = row["name"]
+			if not marker_grid.has(mname):
+				marker_grid[mname] = []
+			marker_grid[mname].append(bool(row["reachable"]))
+	var fragile_stairs: Array = []
+	for rep in result["stairs"]:
+		var sid := str(rep.get("id", "?"))
+		if stair_grid.has(sid):
+			rep["grid"] = stair_grid[sid]
+			if stair_grid[sid].has(false) and stair_grid[sid].has(true):
+				fragile_stairs.append(sid)
+	var fragile_markers: Array = []
+	var mk_base: Dictionary = result["markers"]
+	for row in mk_base.get("detail", []):
+		var mname: String = row["name"]
+		if marker_grid.has(mname):
+			row["grid"] = marker_grid[mname]
+			if marker_grid[mname].has(false) and marker_grid[mname].has(true):
+				fragile_markers.append(mname)
+	result["grid"] = {"origins": GRID_FRACTIONS.size(), "fractions": GRID_FRACTIONS,
+					  "cell": [CELL_SIZE, CELL_HEIGHT], "pad_m": GRID_PAD_M,
+					  "polys": polys, "fragile_stairs": fragile_stairs,
+					  "fragile_markers": fragile_markers}
+	print("[nav-gate] grid: %d origins, polys %s; connects at only some: stairs %s, markers %s"
+		% [GRID_FRACTIONS.size(), str(polys), str(fragile_stairs), str(fragile_markers)])
 
 
 func _to_godot(p: Array) -> Vector3:
@@ -426,7 +519,8 @@ func _connected(adj: Array, a: int, b: int) -> bool:
 	return false
 
 
-func _check_markers(gp: Variant, nm: NavigationMesh, graph: Array) -> Dictionary:
+func _check_markers(gp: Variant, nm: NavigationMesh, graph: Array,
+		loud: bool = true) -> Dictionary:
 	var markers: Array = gp.get("markers", [])
 	var spawn := Vector3.INF
 	for m in markers:
@@ -472,9 +566,10 @@ func _check_markers(gp: Variant, nm: NavigationMesh, graph: Array) -> Dictionary
 			# Format unchanged: `library_census.py` and 135 manifests on disk
 			# parse this string.
 			unreachable.append("%s (snap %.1fm)" % [mname, hit["dist"]])
-	print("[nav-check] %d/%d markers reachable by a nav agent from the spawn" % [reachable, checked])
-	if not unreachable.is_empty():
-		print("[nav-check] UNREACHABLE: %s" % ", ".join(unreachable))
+	if loud:
+		print("[nav-check] %d/%d markers reachable by a nav agent from the spawn" % [reachable, checked])
+		if not unreachable.is_empty():
+			print("[nav-check] UNREACHABLE: %s" % ", ".join(unreachable))
 	return {"checked": checked, "reachable": reachable,
 			"unreachable": unreachable, "detail": detail}
 

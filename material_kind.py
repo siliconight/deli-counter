@@ -58,6 +58,9 @@ SKIN_KINDS = (
     # row is brown, red and orange, one brick a house, and a theme holds one
     # grammar per kind
     "brick_brown", "brick_orange",
+    # THE CHAIN-LINK FENCE'S FABRIC (Zoo 1.77.0, Pixelcoat 0.59.0): Lot stands
+    # the fence; no spec here writes it, so it has no KIND_BY_MATERIAL row
+    "chain_link",
 )
 
 #: Every material id this spec library uses, and the kind it resolves to.

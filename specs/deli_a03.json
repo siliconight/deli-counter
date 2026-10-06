@@ -254,8 +254,8 @@
     },
     {
      "kind": "door",
-     "pos": -0.4,
-     "width": 1.25,
+     "pos": -0.38,
+     "width": 2.4,
      "tag": "office_stair_door"
     },
     {
@@ -386,7 +386,8 @@
    "role": "public_convenience",
    "open_under": true,
    "meta": {
-    "open_under_why": "Nav gate 2026-09-13: with the underside solid, objective_A upstairs is unreachable; the only route to this flight's foot passes under its high end, because deli_stair_down's slab hole leaves 0.4 m beside it. Reachable with the underside open."
+    "open_under_why": "Nav gate 2026-09-13: with the underside solid, objective_A upstairs is unreachable; the only route to this flight's foot passes under its high end, because deli_stair_down's slab hole leaves 0.4 m beside it. Reachable with the underside open.",
+    "door_why": "Deli Counter 0.189.0: office_stair_door is 2.4 m centred on x -14.5, not 1.25 m on -15.0. At 1.25 m all but its east 0.2 m opened over deli_stair_down's slab hole, so the way to this flight turned inside the door's reveal, and that turn baked at 4 of 8 voxel-grid origins (nav_gate grid sweep; cold run 9185 lost two candidates to it). The wider door still meets the basement flight's top and opens about 0.5 m straight onto the strip beside this flight: 8 of 8."
    }
   }
  ],
@@ -812,8 +813,8 @@
   },
   {
    "name": "table_work_r9a51d20f_5",
-   "x": -15.16,
-   "y": 2.91,
+   "x": -15.21,
+   "y": 3.91,
    "z": 0.45,
    "size_x": 1.2,
    "size_y": 0.7,

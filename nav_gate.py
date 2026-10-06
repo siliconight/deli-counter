@@ -142,7 +142,8 @@ def run_gate(glb_path, gameplay_path=None, godot=None, timeout=300):
     if isinstance(result.get("markers"), dict):
         scoped, navigable, why = scope_markers(
             result["markers"], footprint,
-            stairs_ok=bool(result.get("stairs_ok", result.get("ok", False))))
+            stairs_ok=bool(result.get("stairs_ok", result.get("ok", False))),
+            stairs_grid_ok=not grid_fragile_stairs(result))
         result["markers"] = scoped
         result["navigable"] = navigable
         result["navigable_reason"] = why
@@ -161,6 +162,18 @@ def run_gate(glb_path, gameplay_path=None, godot=None, timeout=300):
         result.setdefault("error", (proc.stderr or proc.stdout or
                                     "gate crashed").strip()[:500])
     return result
+
+
+def grid_fragile_stairs(result):
+    """Ids of the stairs the gate's grid sweep found connected at some origins
+    and not others. A result written before 0.189.0 has no `grid` and answers
+    none, which is what it measured."""
+    out = []
+    for st in result.get("stairs") or []:
+        g = st.get("grid")
+        if isinstance(g, list) and any(g) and not all(g):
+            out.append(st.get("id", "?"))
+    return out
 
 
 #: Marker types the gate asks about. Mirrors the list in `nav_gate.gd`
@@ -199,7 +212,7 @@ def marker_is_exterior(row, footprint):
         return None
 
 
-def scope_markers(markers, footprint, stairs_ok=True):
+def scope_markers(markers, footprint, stairs_ok=True, stairs_grid_ok=True):
     """(markers, navigable, reason) -- judge only what this bake can see.
 
     Returns a NEW markers dict. `checked`, `reachable` and `unreachable` are
@@ -237,6 +250,17 @@ def scope_markers(markers, footprint, stairs_ok=True):
     interior = [r for r, ext in zip(rows, flags) if not ext]
     exterior = [r for r, ext in zip(rows, flags) if ext]
     unreached = [r for r in interior if not r.get("reachable")]
+    # REACHED HERE, BUT NOT WHEREVER THE GRID FALLS (0.189.0). `grid` is the
+    # gate's sweep: the same marker at eight more voxel-grid origins. A marker
+    # this bake reached and some of those did not is one a level reaches or
+    # not by where the shell lands -- deli_a03's objective, 2026-10-06. Kept
+    # out of `interior_unreachable`, whose string format other tools parse.
+    fragile = [r for r in interior if r.get("reachable")
+               and isinstance(r.get("grid"), list) and not all(r["grid"])]
+    markers["interior_grid_fragile"] = [
+        "%s (%d/%d grid origins)" % (r.get("name", "?"),
+                                     sum(1 for g in r["grid"] if g), len(r["grid"]))
+        for r in fragile]
     markers["interior_checked"] = len(interior)
     markers["interior_reachable"] = len(interior) - len(unreached)
     markers["interior_unreachable"] = [
@@ -256,6 +280,10 @@ def scope_markers(markers, footprint, stairs_ok=True):
         return markers, False, (
             "a stair is not traversable, so this shell cannot be walked "
             "whatever its markers say" + tail)
+    if not stairs_grid_ok:
+        return markers, False, (
+            "a stair traverses at only some voxel-grid origins, so whether a "
+            "level can climb it depends on where the shell lands" + tail)
     if not interior:
         # TWO different ways to have measured nothing, and they are not the
         # same fact. `warehouse` has no spawn marker at all, so the gate
@@ -276,6 +304,13 @@ def scope_markers(markers, footprint, stairs_ok=True):
             "%d of %d interior marker(s) unreachable from spawn: %s"
             % (len(unreached), len(interior),
                ", ".join(markers["interior_unreachable"][:4])) + tail)
+    if fragile:
+        return markers, False, (
+            "%d of %d interior marker(s) reachable from spawn at only some "
+            "voxel-grid origins, so whether a level reaches them depends on "
+            "where the shell lands: %s"
+            % (len(fragile), len(interior),
+               ", ".join(markers["interior_grid_fragile"][:4])) + tail)
     return markers, True, (
         "stairs traverse and all %d interior marker(s) reachable from spawn"
         % len(interior) + tail)
@@ -317,6 +352,10 @@ def verdict(result):
     for st in result.get("stairs", []):
         lines.append(f"stair {st.get('id')}: {st.get('status')} "
                      f"({st.get('detail', '')})")
+        g = st.get("grid")
+        if isinstance(g, list) and any(g) and not all(g):
+            lines.append(f"  grid: traverses at {sum(1 for x in g if x)} of "
+                         f"{len(g)} voxel-grid origins")
     mk = result.get("markers") or {}
     if mk.get("checked"):
         lines.append(f"markers: {mk.get('reachable', 0)}/{mk['checked']} "
@@ -338,6 +377,8 @@ def verdict(result):
         for d in mk.get("exterior_deferred", []):
             lines.append(f"  deferred to site scope: {d.get('name')} "
                          f"(snap {d.get('snap')}m, outside the footprint)")
+        for u in mk.get("interior_grid_fragile", []):
+            lines.append(f"  interior, reached at only some grid origins: {u}")
     # Say the tri-state out loud. Reading this output used to require noticing
     # that "markers: 0/1 reachable from spawn" sat one line under a verdict
     # that said the shell passed -- which is how 101 shells reported ok: true

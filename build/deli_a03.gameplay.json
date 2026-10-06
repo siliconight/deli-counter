@@ -715,10 +715,10 @@
       "wall": "int_0_1",
       "kind": "door",
       "story": 0,
-      "x": -15.0,
+      "x": -14.5,
       "y": 6.0,
       "z": 1.1,
-      "width": 1.25,
+      "width": 2.4,
       "height": 2.2,
       "sill": 0.0,
       "tag": "office_stair_door",
@@ -3394,7 +3394,7 @@
       }
     },
     {
-      "node": "int_col_0_1_seg11",
+      "node": "int_col_0_1_open1_lintel",
       "material": {
         "id": "drywall",
         "acoustic": "Drywall",
@@ -3403,7 +3403,7 @@
       }
     },
     {
-      "node": "int_col_0_1_open1_lintel",
+      "node": "int_col_0_1_seg11",
       "material": {
         "id": "drywall",
         "acoustic": "Drywall",
@@ -3430,7 +3430,7 @@
       }
     },
     {
-      "node": "int_col_0_1_seg14",
+      "node": "int_col_0_1_open2_lintel",
       "material": {
         "id": "drywall",
         "acoustic": "Drywall",
@@ -3439,7 +3439,7 @@
       }
     },
     {
-      "node": "int_col_0_1_open2_lintel",
+      "node": "int_col_0_1_seg14",
       "material": {
         "id": "drywall",
         "acoustic": "Drywall",
@@ -3467,15 +3467,6 @@
     },
     {
       "node": "int_col_0_1_seg17",
-      "material": {
-        "id": "drywall",
-        "acoustic": "Drywall",
-        "absorption": 0.42,
-        "damping": 0.38
-      }
-    },
-    {
-      "node": "int_col_0_1_seg18",
       "material": {
         "id": "drywall",
         "acoustic": "Drywall",
@@ -5752,12 +5743,12 @@
       "building": "deli_a03"
     },
     {
-      "id": "deli_a03:if:9c410bab",
+      "id": "deli_a03:if:8ee82b65",
       "kind": "door",
       "slot_ref": "int_0_1_open0",
       "transform": {
         "translation": [
-          -15.0,
+          -14.5,
           6.0,
           1.1
         ],
@@ -6256,8 +6247,8 @@
           "floor": 0,
           "kind": "door",
           "wall": "int_0_1",
-          "pos": -0.4,
-          "interactive": "deli_a03:if:9c410bab",
+          "pos": -0.38,
+          "interactive": "deli_a03:if:8ee82b65",
           "default_state": "closed",
           "connects_from": "deli_counter",
           "discharge_door": false
@@ -6403,8 +6394,8 @@
           "floor": 0,
           "kind": "door",
           "wall": "int_0_1",
-          "pos": -0.4,
-          "interactive": "deli_a03:if:9c410bab",
+          "pos": -0.38,
+          "interactive": "deli_a03:if:8ee82b65",
           "default_state": "closed",
           "connects_from": "deli_counter",
           "discharge_door": false
@@ -6431,7 +6422,8 @@
         }
       ],
       "meta": {
-        "open_under_why": "Nav gate 2026-09-13: with the underside solid, objective_A upstairs is unreachable; the only route to this flight's foot passes under its high end, because deli_stair_down's slab hole leaves 0.4 m beside it. Reachable with the underside open."
+        "open_under_why": "Nav gate 2026-09-13: with the underside solid, objective_A upstairs is unreachable; the only route to this flight's foot passes under its high end, because deli_stair_down's slab hole leaves 0.4 m beside it. Reachable with the underside open.",
+        "door_why": "Deli Counter 0.189.0: office_stair_door is 2.4 m centred on x -14.5, not 1.25 m on -15.0. At 1.25 m all but its east 0.2 m opened over deli_stair_down's slab hole, so the way to this flight turned inside the door's reveal, and that turn baked at 4 of 8 voxel-grid origins (nav_gate grid sweep; cold run 9185 lost two candidates to it). The wider door still meets the basement flight's top and opens about 0.5 m straight onto the strip beside this flight: 8 of 8."
       },
       "gameplay": {
         "network_authority": "server",
@@ -7301,16 +7293,15 @@
     "int_0_1_seg8": "wall",
     "int_0_1_seg9": "wall",
     "int_0_1_seg10": "wall",
-    "int_0_1_seg11": "wall",
     "int_0_1_open1_lintel": "doorway",
+    "int_0_1_seg11": "wall",
     "int_0_1_seg12": "wall",
     "int_0_1_seg13": "wall",
-    "int_0_1_seg14": "wall",
     "int_0_1_open2_lintel": "doorway",
+    "int_0_1_seg14": "wall",
     "int_0_1_seg15": "wall",
     "int_0_1_seg16": "wall",
     "int_0_1_seg17": "wall",
-    "int_0_1_seg18": "wall",
     "int_1_2_seg0": "wall",
     "int_1_2_seg1": "wall",
     "int_1_2_seg2": "wall",
