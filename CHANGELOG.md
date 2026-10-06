@@ -1,3 +1,31 @@
+## [0.193.0] - the root is the builder and its gates; 23 one-shots move under migrations/
+
+Repo hygiene (`docs/findings/repo_hygiene_2026-10/` at the factory root).
+The root held 235 files, and the README's Layout section described 22 of
+them. The 120 `test_*.py` stay: `check.py` collects them there, and
+COMMANDS.md says so.
+
+**Moved to `migrations/`, unchanged, history following each** (`git mv`):
+the seven `phase*_status.py` reports, `p2_collect.py`, `remediate_l5.py`,
+`probe_fights.py`, `sweep_stair_obstruction.py`, `walk_harness.py`,
+`review_render.py`, `review_sheet.py` and the `ai_review.py` it imports,
+the five `patch_dc_*.py` that were applied here rather than from the
+factory's `patches/`, and `generated_sweep.json`, `rockay_sweep.json`,
+`stair_sweep.json`. Measured first: nothing at the root, in `hooks/` or in
+the workflow imports or reads any of them. Each ran from the root when it
+ran, and is kept because a patch script is the only record of how the
+source came to be.
+
+**Not moved:** the 21 `migrate_*.py`. They are live code -- presets,
+`level_design.py`, `layout_lint.py` and twenty tests import them -- so
+moving them is a code change for another release.
+
+`migrations/README.md` is a generated index (`tools/factory_index.py` at
+the factory root), one line per file from its own docstring; `--check`
+fails when it drifts.
+
+**Suite:** unchanged in content; the pre-commit hook ran the full check.
+
 ## [0.192.0] - a piece where a stair now is: L23 asks every piece, and 17 pieces in 10 shells move
 
 **Found by 0.191.0's restored circulation gate.** Its one real finding on
