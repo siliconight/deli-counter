@@ -681,33 +681,10 @@ def _seed_clear(spec, room, px, py, placed, half=0.0, above=None,
     for m in spec.get("markers", []):
         if m.get("type") in ("objective", "loot") and                 math.hypot(m.get("x", 1e9) - px, m.get("y", 1e9) - py) < 1.2:
             return False
-    # exterior + partition opening approach clearance
-    hx = spec.get("footprint_x", 20) / 2
-    hy = spec.get("footprint_y", 20) / 2
-    for w in spec.get("ext_walls", []):
-        if over_openings:
-            break
-        if w.get("story", 0) != story:
-            continue
-        run = spec.get("footprint_x", 20) if w["wall"] in ("N", "S") else spec.get("footprint_y", 20)
-        for op in w.get("openings", []):
-            u = op.get("pos", 0.0) * run
-            ox, oy = {"N": (u, hy), "S": (u, -hy), "E": (hx, u), "W": (-hx, u)}[w["wall"]]
-            # FROM THE EDGE, like every other check here: a flat 1.5 m from
-            # the CENTRE let a 1.6 m desk stand 0.2 m off a door jamb.
-            if math.hypot(ox - px, oy - py) < 1.5 + half:
-                return False
-    for p in spec.get("partitions", []):
-        if over_openings:
-            break
-        if p.get("story", 0) != story:
-            continue
-        run = abs(p["end"] - p["start"])
-        for op in p.get("openings", []):
-            u = p["start"] + (op.get("pos", 0.0) + 0.5) * run
-            ox, oy = (p["pos"], u) if p["axis"] == "Y" else (u, p["pos"])
-            if math.hypot(ox - px, oy - py) < 1.5 + half:
-                return False
+    # exterior + partition opening approach clearance (`_seed_clear_doors`,
+    # which `reseat_piece` asks too: one spelling of the rule, 0.192.0)
+    if not over_openings and not _seed_clear_doors(spec, room, px, py, half):
+        return False
     # A VAULT DOOR'S LEAF SWINGS 2.6 m OUT. The 1.5 m radius above is a
     # door's approach; a round vault door's open and breached leaf occupies a
     # rectangle in front of its face (`vault_room.swing_rect`), and a piece
@@ -720,6 +697,126 @@ def _seed_clear(spec, room, px, py, placed, half=0.0, above=None,
     for (qx, qy) in placed:
         if math.hypot(qx - px, qy - py) < 2.2:
             return False
+    return True
+
+
+def _seeded_cover(v, room):
+    """Was `v` placed by `seed_cover` in `room`? Its names are
+    ``{piece}_{room}_{k}`` and ``{shelter}_{room}_shelter``."""
+    if not room:
+        return False
+    name, rid = str(v.get("name", "")), str(room.get("id", ""))
+    pieces = {p[0] for _w, arch in _SEED_ARCHETYPES for p in arch}
+    pieces |= {p[0] for p in _SEED_DEFAULT}
+    shelters = {p[0] for _w, p in _SEED_SHELTER} | {_SEED_SHELTER_DEFAULT[0]}
+    if name in {f"{s}_{rid}_shelter" for s in shelters}:
+        return True
+    head, _sep, k = name.rpartition("_")
+    return k.isdigit() and any(head == f"{p}_{rid}" for p in pieces)
+
+
+def reseat_piece(spec, name, reach=12.0, step=0.1, margin=0.15):
+    """Move ONE volume to the nearest place clear of every stair (layout_lint
+    L23), and return the move ``(dx, dy)``: ``(0.0, 0.0)`` when it already
+    stood clear, ``None`` when nothing within `reach` m answers.
+
+    WHY (0.192.0). Every placement pass clears a piece of the stairs when it
+    places it and is idempotent by name, so a piece placed before a stair
+    changed is never asked again: deli_a01-a03's counter islands stood 41%
+    and 54% over the up-stair's hole, and 0.190.0's wider flights put
+    twin_a01's wardrobes over theirs.
+
+    The new place keeps the piece IN ITS ROOM and off every other piece on
+    its storey; stays `margin` m clear of the stair's holes and walks (a
+    guard's thickness and a hand); and is never in a door's approach the old
+    place was not in. A piece `seed_cover` placed (`_seeded_cover`) goes only
+    where the seeder itself would put it: `_seed_clear`, the same rule.
+    Candidates are a `step` m grid, nearest first, ties broken by position,
+    so a re-run makes the same move."""
+    import layout_lint
+    vols = spec.get("volumes") or []
+    v = next((x for x in vols if x.get("name") == name), None)
+    if v is None:
+        return None
+    if not any(p["name"] == name for p in layout_lint.stale_pieces(spec)):
+        return (0.0, 0.0)
+    story = layout_lint.piece_story(spec, v)
+    if story is None:
+        return None
+    room = _room_for_point(spec, float(v["x"]), float(v["y"]), story)
+    if room is None:
+        return None
+    holes, walks = layout_lint.stair_space(spec)
+    keep = [(r[0] - margin, r[1] - margin, r[2] + margin, r[3] + margin)
+            for r in holes.get(story, []) + walks.get(story, [])]
+    sx, sy = float(v.get("size_x", 0.0)), float(v.get("size_y", 0.0))
+    others = []
+    for o in vols:
+        if o is v or layout_lint.piece_story(spec, o) != story:
+            continue
+        hx, hy = float(o.get("size_x", 0.0)) / 2.0, float(o.get("size_y", 0.0)) / 2.0
+        others.append((o["x"] - hx, o["y"] - hy, o["x"] + hx, o["y"] + hy))
+    rb = room["bounds"]
+    rx0, rx1 = sorted((rb[0], rb[2]))
+    ry0, ry1 = sorted((rb[1], rb[3]))
+    without = dict(spec)
+    without["volumes"] = [o for o in vols if o is not v]
+    seeded = _seeded_cover(v, room)
+    placed = [(float(o["x"]), float(o["y"])) for o in vols
+              if o is not v and _seeded_cover(o, room)]
+    half = max(sx, sy) / 2.0
+    door_ok_before = _seed_clear_doors(spec, room, float(v["x"]), float(v["y"]), half)
+    n = int(round(reach / step))
+    cands = sorted(((i * step, j * step) for i in range(-n, n + 1)
+                    for j in range(-n, n + 1)
+                    if (i * step) ** 2 + (j * step) ** 2 <= reach ** 2 + 1e-9),
+                   key=lambda d: (round(d[0] ** 2 + d[1] ** 2, 6), d))
+    for dx, dy in cands:
+        px, py = float(v["x"]) + dx, float(v["y"]) + dy
+        r = (px - sx / 2.0, py - sy / 2.0, px + sx / 2.0, py + sy / 2.0)
+        if r[0] < rx0 or r[2] > rx1 or r[1] < ry0 or r[3] > ry1:
+            continue
+        if any(min(r[2], k[2]) > max(r[0], k[0]) and min(r[3], k[3]) > max(r[1], k[1])
+               for k in keep):
+            continue
+        if any(min(r[2], o[2]) - max(r[0], o[0]) > -0.05
+               and min(r[3], o[3]) - max(r[1], o[1]) > -0.05 for o in others):
+            continue
+        if door_ok_before and not _seed_clear_doors(spec, room, px, py, half):
+            continue
+        if seeded and not _seed_clear(without, room, px, py, placed, half=half):
+            continue
+        v["x"], v["y"] = round(px, 2), round(py, 2)
+        return (round(dx, 2), round(dy, 2))
+    return None
+
+
+def _seed_clear_doors(spec, room, px, py, half):
+    """`_seed_clear`'s door-approach rule, on its own so `reseat_piece` asks
+    the same one: no piece within 1.5 m of an exterior or partition opening
+    on its storey, measured FROM THE EDGE, like every other check there -- a
+    flat 1.5 m from the CENTRE let a 1.6 m desk stand 0.2 m off a door jamb."""
+    story = room.get("story", 0)
+    hx = spec.get("footprint_x", 20) / 2
+    hy = spec.get("footprint_y", 20) / 2
+    for w in spec.get("ext_walls", []):
+        if w.get("story", 0) != story:
+            continue
+        run = spec.get("footprint_x", 20) if w["wall"] in ("N", "S") else spec.get("footprint_y", 20)
+        for op in w.get("openings", []):
+            u = op.get("pos", 0.0) * run
+            ox, oy = {"N": (u, hy), "S": (u, -hy), "E": (hx, u), "W": (-hx, u)}[w["wall"]]
+            if math.hypot(ox - px, oy - py) < 1.5 + half:
+                return False
+    for p in spec.get("partitions", []):
+        if p.get("story", 0) != story:
+            continue
+        run = abs(p["end"] - p["start"])
+        for op in p.get("openings", []):
+            u = p["start"] + (op.get("pos", 0.0) + 0.5) * run
+            ox, oy = (p["pos"], u) if p["axis"] == "Y" else (u, p["pos"])
+            if math.hypot(ox - px, oy - py) < 1.5 + half:
+                return False
     return True
 
 

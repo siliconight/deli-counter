@@ -1,0 +1,72 @@
+{
+  "stale_pieces": {
+    "apartment_walkup_a01": [
+      "chair_set_re6154351_10_1",
+      "table_dining_re6154351_10",
+      "table_dining_re6154351_7"
+    ],
+    "cbp_town_finale_midbalanced_schemafixed": [
+      "cartons_r1fea40f7_11",
+      "cartons_r1fea40f7_12",
+      "cartons_r1fea40f7_2",
+      "cartons_r1fea40f7_3",
+      "cartons_r1fea40f7_4",
+      "cartons_r1fea40f7_8",
+      "cartons_r1fea40f7_9",
+      "cash_counting_tables",
+      "chair_set_r16b4c2ae_4_2",
+      "chair_set_r1fea40f7_1_1",
+      "chair_set_r1fea40f7_7_1",
+      "chair_set_r1fea40f7_7_2",
+      "chair_set_r1fea40f7_7_3",
+      "chair_set_r1fea40f7_7_4",
+      "chair_set_r5c2f4b93_1_1",
+      "desk_r5c2f4b93_1",
+      "left_field_power_cabinet",
+      "security_console_cluster",
+      "table_dining_r16b4c2ae_4",
+      "table_dining_r1fea40f7_1",
+      "table_dining_r1fea40f7_10",
+      "table_dining_r1fea40f7_5",
+      "table_dining_r1fea40f7_7"
+    ],
+    "cr_garage": [
+      "col_0_02",
+      "col_1_02"
+    ],
+    "final_stand": [
+      "boss_desk",
+      "cartons_rd8bd0867_7",
+      "dust_sheet_rd8bd0867_1",
+      "dust_sheet_rd8bd0867_2",
+      "dust_sheet_rd8bd0867_5",
+      "dust_sheet_rd8bd0867_8",
+      "garage_cover",
+      "north_statue",
+      "table_dining_r93a11b70_10",
+      "upper_cover_west"
+    ],
+    "foundry_heist_vertical": [
+      "bridge_server_rack",
+      "roof_ac_block_a",
+      "skylight_box"
+    ],
+    "parking_garage": [
+      "col_0_02",
+      "col_1_02"
+    ],
+    "parking_garage_a01": [
+      "col_0_02",
+      "col_1_02"
+    ],
+    "parking_garage_a02": [
+      "col_0_02",
+      "col_1_02"
+    ]
+  },
+  "reason": "Pieces standing over a slab opening or in a stair's walk on their own storey (layout_lint L23), left in place by 0.192.0 because each needs a look before it moves: cbp_town_finale's and final_stand's tables, cartons and desks stand wholly inside large openings, which may be authored space or floating furniture; foundry's skylight box and roof AC stand over roof openings, which may be by design; the garages' columns stand at a ramp opening's edge and are structure. A fixed piece must leave this list (test_stale_baseline_has_not_gone_stale); a new one fails (test_no_new_stale_piece). apartment_walkup_a01's dining set stands over an AUTHORED slab hole, and today's furnish puts it back there: furnish clears the stairs, not authored openings, so its fix is in the generator, not a move.",
+  "counts": {
+    "pieces": 47,
+    "shells": 8
+  }
+}
