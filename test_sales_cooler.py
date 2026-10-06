@@ -16,7 +16,7 @@ import prop_species
 HERE = os.path.dirname(os.path.abspath(__file__))
 BUILD = os.path.join(HERE, "build")
 STORES = ("cr_gas", "fuel_stop_heist", "gas_station", "gas_station_a01", "gas_station_a02",
-          "gas_station_a03", "gas_street", "gs_corner_station", "stop_n_go")
+          "convenience_store_a01", "gas_street", "gs_corner_station", "stop_n_go")
 
 
 def _spec(name):
@@ -76,7 +76,7 @@ def test_a_store_without_a_sales_cooler_gets_one_and_its_doors_stay_clear():
 
 
 def test_every_built_store_carries_its_sales_cooler_as_a_cooler_slot():
-    for name in ("fuel_stop_heist", "gas_station_a02", "gas_station_a03", "stop_n_go"):
+    for name in ("fuel_stop_heist", "gas_station_a02", "convenience_store_a01", "stop_n_go"):
         slots = json.load(open(os.path.join(BUILD, name + ".slots.json"), encoding="utf-8"))["slots"]
         got = [s for s in slots if s.get("species") == "cooler_run" and "sales" in s["slot_id"]]
         assert len(got) == 1, (name, len(got))

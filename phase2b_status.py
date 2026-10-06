@@ -3,7 +3,7 @@ WAVE_A = ["credit_union_a01","credit_union_a02","credit_union_a03","supermarket_
           "supermarket_a02","supermarket_a03","pharmacy_a01","pharmacy_a02",
           "large_warehouse_a01","large_warehouse_a02","large_warehouse_a03",
           "depot_a01","depot_a02","clinic_a01","clinic_a02"]
-WAVE_B = ["gas_station_a01","gas_station_a02","gas_station_a03","auto_shop_a01",
+WAVE_B = ["gas_station_a01","gas_station_a02","convenience_store_a01","auto_shop_a01",
           "auto_shop_a02","pawn_shop_a01","pawn_shop_a02","strip_retail_a01",
           "strip_retail_a02","apartment_walkup_a01","apartment_walkup_a02","apartment_walkup_a03"]
 print("=== PHASE 2 BUILDING GATES (27 configs) ===")

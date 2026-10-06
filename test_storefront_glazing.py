@@ -18,7 +18,7 @@ import themed_tscn
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 STORES = ("cr_gas", "fuel_stop_heist", "gas_station", "gas_station_a01", "gas_station_a02",
-          "gas_station_a03", "gas_street", "gs_corner_station", "stop_n_go")
+          "convenience_store_a01", "gas_street", "gs_corner_station", "stop_n_go")
 ZOO = os.environ.get("DC_ZOO_ROOT") or os.path.join(os.path.dirname(HERE), "zoo")
 #: CLOSED in 0.158.0, kept above what replaced it: fuel_stop_heist and
 #: stop_n_go built NON-modular (`modular` unset, mode not `pvp_heist`), so
@@ -181,7 +181,7 @@ def test_the_back_rooms_that_had_glass_have_none():
     import lights
     had = {"cr_gas": "stockroom", "gas_station": "stockroom", "gas_station_a01": "stockroom",
            "gas_street": "stockroom", "gs_corner_station": "stockroom", "gas_station_a02": "walk_in_cooler",
-           "fuel_stop_heist": "walk_in_cooler", "gas_station_a03": "back_hall", "stop_n_go": "back_hall"}
+           "fuel_stop_heist": "walk_in_cooler", "convenience_store_a01": "back_hall", "stop_n_go": "back_hall"}
     for name, room in had.items():
         rooms = _rooms(name)
         glass = [s for s in _slots(name) if s.get("glazing") == "storefront" and _room(rooms, s) == room]

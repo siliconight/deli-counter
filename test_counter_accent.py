@@ -92,7 +92,7 @@ def test_two_counters_two_bulbs_the_first_keeps_the_plain_id():
 # --- what the build shipped ---------------------------------------------------
 
 STORES = ("cr_gas", "fuel_stop_heist", "gas_station", "gas_station_a01", "gas_station_a02",
-          "gas_station_a03", "gas_street", "gs_corner_station", "stop_n_go")
+          "convenience_store_a01", "gas_street", "gs_corner_station", "stop_n_go")
 
 
 def test_every_built_store_hangs_its_accent_over_its_counter():

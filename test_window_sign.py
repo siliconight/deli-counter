@@ -17,7 +17,7 @@ import prop_species
 HERE = os.path.dirname(os.path.abspath(__file__))
 BUILD = os.path.join(HERE, "build")
 STORES = ("cr_gas", "fuel_stop_heist", "gas_station", "gas_station_a01", "gas_station_a02",
-          "gas_station_a03", "gas_street", "gs_corner_station", "stop_n_go")
+          "convenience_store_a01", "gas_street", "gs_corner_station", "stop_n_go")
 
 
 def _spec(name):

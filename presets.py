@@ -19,6 +19,8 @@ from typing import Optional
 import level_design
 import migrate_roller_grill
 import migrate_slush_machine
+import migrate_window_poster
+import migrate_window_sign
 
 
 # common acoustic palette presets can draw from. Acoustic-only (gool enum +
@@ -1636,7 +1638,8 @@ def gas_station(name: str = "gas_station_preset",
                 mode: str = "heist",
                 floors: int = 1,
                 scale_ref: bool = False,
-                basement: bool = False) -> dict:
+                basement: bool = False,
+                forecourt: bool = True) -> dict:
     """A highway gas station / convenience store: a glass-front sales floor with
     market aisles and a coffee island, a back stockroom, and a manager office
     holding the safe (the objective), all fronted by a pump forecourt under a
@@ -1652,7 +1655,11 @@ def gas_station(name: str = "gas_station_preset",
 
     spec = {
         "$schema": "../schema/level.schema.json",
-        "name": name, "mode": mode, "seed": 1999, "grid": 0.5,
+        # `preset` (0.188.0), as `strip_club` writes it: the recipe says what
+        # the building is when Level Factory's `lf_<mission>_<seed>` name
+        # does not, and `level_design.club_building_id` -- the door sign's
+        # business -- reads both.
+        "name": name, "mode": mode, "preset": "gas_station", "seed": 1999, "grid": 0.5,
         "footprint_x": fx, "footprint_y": fy, "story_height": sh,
         "n_stories": 1, "has_basement": False, "wall_thick": 0.3,
         "floor_thick": 0.3, "collision": "convex", "auto_exterior": True,
@@ -1765,6 +1772,15 @@ def gas_station(name: str = "gas_station_preset",
             {"type": "defender_spawn", "id": "D", "x": 12.0, "y": 8.0, "z": 0.0, "rot_z": 200, "room": "back_office"},
             {"type": "objective", "id": "OFFICE", "x": 12.0, "y": 7.0, "z": 0.0, "room": "back_office", "meta": {"kind": "capture"}}]
     spec["markers"] = markers
+    # A STORE WITHOUT FUEL (0.188.0): `forecourt=False` is the layout without
+    # its pump forecourt -- what `convenience_store` builds, and what the
+    # library's Flappahs store, `convenience_store_a01`, stands. Filtered from
+    # the one layout rather than spelled twice, and before the rules below
+    # place anything, so nothing is placed against a canopy that is not there.
+    if not forecourt:
+        spec["volumes"] = [v for v in spec["volumes"]
+                           if not str(v.get("name", "")).startswith(_FORECOURT_PARTS)]
+        spec["rooms"] = [r for r in spec["rooms"] if r.get("id") != "forecourt"]
     # THE FROZEN DRINK STATION (0.151.0), placed by the rule 0.150.0 gave
     # every store in the library -- `migrate_slush_machine.plan_station` --
     # rather than at a spelled position, so a change to the rule or to this
@@ -1780,6 +1796,38 @@ def gas_station(name: str = "gas_station_preset",
     grill, _why = migrate_roller_grill.plan_grill(spec)
     if grill is not None:
         spec["volumes"].append(grill)
+    # THE WINDOW (0.188.0): the beer sign and the pair of sale posters, by
+    # the rules the library's stores were given them with
+    # (`migrate_window_sign.migrate`, `migrate_window_poster.migrate`), so
+    # a store generated for a level dresses its glass as a drawn one does.
+    # Until now only the migrated specs had them: 0 of 6 generated store
+    # specs did. The sign first -- the posters keep clear of it. A refusal
+    # leaves the spec without one; `test_store_window` holds that this
+    # preset is not refused, in both modes.
+    migrate_window_sign.migrate(spec)
+    migrate_window_poster.migrate(spec)
+    return spec
+
+
+#: The forecourt's volumes, by the names `gas_station` gives them.
+_FORECOURT_PARTS = ("forecourt_", "canopy_", "pump_island_", "pump_")
+
+
+def convenience_store(name: str = "convenience_store_preset",
+                      mode: str = "heist",
+                      floors: int = 1,
+                      scale_ref: bool = False,
+                      basement: bool = False) -> dict:
+    """THE FLAPPAHS STORE (0.188.0): the gas station's shop -- glass front,
+    counter, gondolas, coffee island, glowing cooler wall, slush machine,
+    roller grill, the window's beer sign and sale posters, stockroom and the
+    manager's office with its safe -- without the pump forecourt. The
+    walker, 2026-10-06: "a03 as convenience store; Flappahs store always
+    Flappahs". `preset` says `convenience_store`, so a generated store reads
+    as one whatever Level Factory names the level."""
+    spec = gas_station(name=name, mode=mode, floors=floors,
+                       scale_ref=scale_ref, basement=basement, forecourt=False)
+    spec["preset"] = "convenience_store"
     return spec
 
 
@@ -3341,6 +3389,7 @@ REGISTRY = {
     "twin": twin,
     "casino_tower": casino_tower,
     "gas_station": gas_station,
+    "convenience_store": convenience_store,
     "office": office,
     "parking_garage": parking_garage,
     "auto_shop": auto_shop,
