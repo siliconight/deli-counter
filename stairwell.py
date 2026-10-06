@@ -2613,3 +2613,34 @@ def ramp_foot_extension(pitch_rad, step_rise, thickness=0.25):
     lead = step_rise / 2.0 + (thickness / 2.0) / math.cos(pitch_rad)
     extra = lead / math.sin(pitch_rad)
     return extra, extra / 2.0 * math.cos(pitch_rad), extra / 2.0 * math.sin(pitch_rad)
+
+
+def ramp_head_trim(pitch_rad, step_rise, thickness=0.25):
+    """How much of a stair's collision ramp to cut from its HEAD so the head
+    meets the landing flush (0.190.0).
+
+    The half-step-proud offset that makes the surface ride the nosings, plus
+    half the slab's thickness through the tilt, leaves the top face's end
+    corner `step_rise / 2 + (thickness / 2) * cos(pitch)` above the landing:
+    0.19 to 0.21 m on all 174 library ramps. Going up a body rides over it;
+    coming DOWN it meets a step about twice what a capsule walks up
+    unassisted, and on deli_a03 a body of Laser Tag's size never started down.
+
+    TRIMMED, NOT SUNK. Sinking the ramp by the same amount lands the head too,
+    and was built and reverted: it puts the ramp under the nosings, every
+    visual tread stands above it, and the nav bake -- which reads visual meshes
+    -- saw 0.206 m risers against a 0.15 climb on 94 of 144 shells. Cutting
+    `overshoot / sin(pitch)` from the head along the incline keeps the surface
+    on the nosings and puts the corner where the nosing line reaches the
+    landing: the top tread's front edge. The strip left behind is less than one
+    tread deep, which the visual top tread fills.
+
+    Returns `(trim, back, drop)`: shorten the ramp by `trim` along its own
+    incline, move its centre `back` downhill in plan and `drop` downward, and
+    the FOOT stays exactly where it was.
+    """
+    if pitch_rad <= 0.0:
+        return 0.0, 0.0, 0.0
+    over = step_rise / 2.0 + (thickness / 2.0) * math.cos(pitch_rad)
+    trim = over / math.sin(pitch_rad)
+    return trim, trim / 2.0 * math.cos(pitch_rad), trim / 2.0 * math.sin(pitch_rad)

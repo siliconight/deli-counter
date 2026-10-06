@@ -8,7 +8,7 @@
     "unjudged": 21,
     "stair_failures": 3,
     "navigable_null": 20,
-    "grid_fragile": 7
+    "grid_fragile": 6
   },
   "navigable_null_reconciliation": {
     "unjudged": 8,
@@ -244,19 +244,10 @@
       ],
       "markers": [
         "objective_COUNT_SAFE (6/8 grid origins)",
-        "loot_STASH (6/8 grid origins)"
+        "loot_STASH (6/8 grid origins)",
+        "patrol_point_PAT_CLUB (6/8 grid origins)"
       ],
-      "reason": "primos_pizza_stair_0 traverses at only some of 8 voxel-grid origins, and the safe and the stash are reached at 6 of 8 (nav_gate 0.189.0). The stair is already in stair_failures from an older run. Not fit for a themed lot before the sweep either."
-    },
-    {
-      "shell": "twin_a01",
-      "stairs": [
-        "twin_a01_stair_1"
-      ],
-      "markers": [
-        "objective_UPSTAIRS (7/8 grid origins)"
-      ],
-      "reason": "twin_a01_stair_1 traverses at only some of 8 voxel-grid origins and objective_UPSTAIRS is reached at 7 of 8 (nav_gate 0.189.0); level_factory's spawn_placement.py records cold run 9058 meeting trouble with the same objective. Fit for a themed lot before the sweep, and the only shell of the twin family, which leaves themed lots with it."
+      "reason": "primos_pizza_stair_0 traverses at only some of 8 voxel-grid origins, and the safe and the stash are reached at 6 of 8 (nav_gate 0.189.0). The stair is already in stair_failures from an older run. Not fit for a themed lot before the sweep either. Since 0.190.0's ramp-head trim the base origin also reaches patrol_point_PAT_CLUB, unreachable there under 0.189.0, and it too connects at 6 of 8, where the stair does."
     }
   ]
 }

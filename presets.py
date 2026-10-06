@@ -23,6 +23,28 @@ import migrate_window_poster
 import migrate_window_sign
 
 
+def _stair_flight_width():
+    """A stair flight is a corridor to the nav bake, so a generator draws it
+    at the contract's corridor minimum and one bake cell over: a flight AT the
+    minimum keeps a strip a few cells wide after erosion, and whether that
+    strip joins up depends on where the voxel grid falls.
+
+    Measured 2026-10-06 (Deli Counter 0.190.0, roadmap 189): twin_a01's
+    0.9 m flights traversed at 7 of 8 grid origins; at this width, 1.2 m, at 8
+    of 8, under the nav gate's sweep and the factory census both. The
+    library's 1.0 m (cr_pawn, night_pawn) and 1.1 m (card_shop_a01) flights
+    connect at 8 of 8 as they stand. This is what a generator draws, not a
+    floor those specs are held to.
+    """
+    import agent_contract
+    c = agent_contract.contract()
+    return round(float(c["clearances"]["min_corridor_width_m"])
+                 + float(c["nav_bake"]["cell_size_m"]), 3)
+
+
+STAIR_FLIGHT_WIDTH = _stair_flight_width()
+
+
 # common acoustic palette presets can draw from. Acoustic-only (gool enum +
 # absorption/damping); visuals are textured in Godot.
 _PALETTE = {
@@ -1328,7 +1350,7 @@ def suburban_safehouse(name: str = "suburban_safehouse_preset",
         parts.append({"story": -1, "axis": "Y", "pos": 0.0, "start": -hy, "end": hy, "material": "concrete", "openings": [{"kind": "door", "pos": 0.0, "width": 1.1}]})
     spec["partitions"] = parts
     stair_lo = -1 if basement else 0
-    spec["stairs"] = [{"x": 5.0, "y": 4.0, "from_story": stair_lo, "to_story": 1, "width": 1.0, "run": 3.5, "style": "switchback", "cut_slabs": True}]
+    spec["stairs"] = [{"x": 5.0, "y": 4.0, "from_story": stair_lo, "to_story": 1, "width": STAIR_FLIGHT_WIDTH, "run": 3.5, "style": "switchback", "cut_slabs": True}]
     spec["vertical_links"] = [{"kind": "stair", "from_story": stair_lo, "to_story": 1, "role": "main_route"}]
     spec["volumes"] = [
         {"name": "living_sofa", "x": -6.0, "y": -4.0, "z": 0.45, "size_x": 2.6, "size_y": 1.0, "size_z": 0.9, "collision": "convex", "material": "wood"},
@@ -1431,7 +1453,7 @@ def rowhome(name: str = "rowhome_preset",
     spec["partitions"] = parts
     # single rear stair spanning all floors
     stair_lo = -1 if basement else 0
-    spec["stairs"] = [{"x": 0.0, "y": hy - 2.5, "from_story": stair_lo, "to_story": 2, "width": 0.9, "run": 3.0, "style": "switchback", "cut_slabs": True}]
+    spec["stairs"] = [{"x": 0.0, "y": hy - 2.5, "from_story": stair_lo, "to_story": 2, "width": STAIR_FLIGHT_WIDTH, "run": 3.0, "style": "switchback", "cut_slabs": True}]
     spec["vertical_links"] = [{"kind": "stair", "from_story": stair_lo, "to_story": 2, "role": "main_route"}]
     spec["volumes"] = [
         {"name": "front_sofa", "x": 0.0, "y": -7.0, "z": 0.45, "size_x": 2.2, "size_y": 0.9, "size_z": 0.9, "collision": "convex", "material": "wood"},
@@ -2280,7 +2302,8 @@ def pawn_shop(name: str = "pawn_shop_preset", mode: str = "heist",
     # need ~8.6 m of run axis), so it lies along the back room's E-W axis;
     # _finish_stairs orients it so entry and exit both open onto clear floor.
     spec["stairs"] = [{"x": 2.5, "y": 5.5, "from_story": 0, "to_story": 1,
-                       "width": 1.0, "run": run, "style": "switchback", "cut_slabs": True}]
+                       "width": STAIR_FLIGHT_WIDTH, "run": run,
+                       "style": "switchback", "cut_slabs": True}]
     spec["ladders"] = [{"x": -6.0, "y": 4.5, "from_story": 1, "to_story": 2,
                         "width": 0.5, "depth": 0.15, "facing": "S", "cut_slabs": True}]
     spec["vertical_links"] = [
@@ -3278,9 +3301,11 @@ def twin(name: str = "twin_preset",
         # the wall: the nav gate's "objective unreachable" on the lengthened
         # twin, with both stairs reported traversable.
         {"x": -qx, "y": hy - 3.2, "from_story": stair_lo, "to_story": 1,
-         "width": 0.9, "run": 3.0, "style": "switchback", "cut_slabs": True},
+         "width": STAIR_FLIGHT_WIDTH, "run": 3.0, "style": "switchback",
+         "cut_slabs": True},
         {"x": qx, "y": hy - 3.2, "from_story": stair_lo, "to_story": 1,
-         "width": 0.9, "run": 3.0, "style": "switchback", "cut_slabs": True},
+         "width": STAIR_FLIGHT_WIDTH, "run": 3.0, "style": "switchback",
+         "cut_slabs": True},
     ]
     spec["vertical_links"] = [
         {"kind": "stair", "from_story": stair_lo, "to_story": 1, "role": "main_route"},

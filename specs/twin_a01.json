@@ -336,14 +336,15 @@
    "y": 3.3,
    "from_story": -1,
    "to_story": 1,
-   "width": 0.9,
+   "width": 1.2,
    "run": 3.8,
    "style": "switchback",
    "cut_slabs": true,
    "facing": "N",
    "id": "twin_a01_stair_0",
    "meta": {
-    "generated_by": "presets"
+    "generated_by": "presets",
+    "width_why": "Deli Counter 0.190.0: 1.2 m, presets.STAIR_FLIGHT_WIDTH (the contract's corridor minimum and one bake cell), not 0.9. At 0.9 m this flight traversed at 7 of 8 voxel-grid origins and objective_UPSTAIRS was reached at 7 of 8 (nav gate sweep, roadmap 189); at 1.2 m, 8 of 8."
    },
    "role": "primary_egress"
   },
@@ -352,14 +353,15 @@
    "y": 3.3,
    "from_story": -1,
    "to_story": 1,
-   "width": 0.9,
+   "width": 1.2,
    "run": 3.8,
    "style": "switchback",
    "cut_slabs": true,
    "facing": "N",
    "id": "twin_a01_stair_1",
    "meta": {
-    "generated_by": "presets"
+    "generated_by": "presets",
+    "width_why": "Deli Counter 0.190.0: 1.2 m, presets.STAIR_FLIGHT_WIDTH (the contract's corridor minimum and one bake cell), not 0.9. At 0.9 m this flight traversed at 7 of 8 voxel-grid origins and objective_UPSTAIRS was reached at 7 of 8 (nav gate sweep, roadmap 189); at 1.2 m, 8 of 8."
    },
    "role": "secondary_egress"
   }

@@ -1970,11 +1970,22 @@ class _Builder:
                     # centre by half leaves the head of the flight untouched.
                     _ext, _back, _drop = stairwell.ramp_foot_extension(
                         angle, step_h)
-                    wx, wy = self._stair_pt(st, sx, st.y - sign * _back)
+                    # THE HEAD, TOO (0.190.0): trimmed so its corner meets the
+                    # landing instead of standing 0.2 m over it -- a step a
+                    # body coming DOWN cannot climb (stairwell.ramp_head_trim).
+                    # A scissor channel delivers at both ends with no plate to
+                    # reach back over the cut, so it keeps its full ramp.
+                    _trim, _tback, _tdrop = ((0.0, 0.0, 0.0)
+                                             if st.style == "scissor" else
+                                             stairwell.ramp_head_trim(angle,
+                                                                      step_h))
+                    wx, wy = self._stair_pt(st, sx,
+                                            st.y - sign * (_back + _tback))
                     ramp = self._box(
                         f"stair{si}{ch}ramp_{s}" + self.col_suffix["convex"],
-                        (wx, wy, z + H / 2 + step_h / 2 - _drop),
-                        self._stair_sz(st, st.width, length3d + _ext, 0.25),
+                        (wx, wy, z + H / 2 + step_h / 2 - _drop - _tdrop),
+                        self._stair_sz(st, st.width,
+                                       length3d + _ext - _trim, 0.25),
                         self.COLLISION)
                     ramp.rotation_euler = self._stair_tilt(st, sign, angle)
                 # landing at the top of each leg (except the final one) bridges
@@ -2059,9 +2070,20 @@ class _Builder:
                                       self._stair_sz(st, hole_w, d_depth,
                                                      step_h),
                                       self.VISUAL, role="stair")
+                            # THE COLLIDER REACHES BACK over the strip the
+                            # ramp's head trim leaves on the top tread (0.190.0),
+                            # so a body walks from plate to ramp on one surface.
+                            # A landing already reaches back over its top tread.
+                            c_back = (0.0 if has_landing else
+                                      stairwell.ramp_head_trim(angle, step_h)[0]
+                                      * _m.cos(angle))
+                            c_depth = d_depth + c_back
+                            c_y = st.y + sign * (st.run / 2 + d_near - c_back
+                                                 + c_depth / 2)
+                            cwx, cwy = self._stair_pt(st, hole_cx, c_y)
                             self._col_box(f"stair{si}col_discharge_{s}",
-                                          (wx, wy, dz),
-                                          self._stair_sz(st, hole_w, d_depth,
+                                          (cwx, cwy, dz),
+                                          self._stair_sz(st, hole_w, c_depth,
                                                          step_h))
 
     def _stair_l_shaped(self, si, st, H):
