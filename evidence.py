@@ -101,6 +101,9 @@ def collect(spec_path):
     report["mode"] = spec.mode
     facade = bool(getattr(spec, "facade", False))
     report["facade"] = facade
+    # A DEMO (0.187.0): carried for the level tools, which leave it out of a
+    # lot as they leave out a facade. It changes nothing this report judges.
+    report["demo"] = bool(getattr(spec, "demo", False))
 
     combat = None
     nav = None

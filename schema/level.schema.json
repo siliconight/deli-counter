@@ -1256,6 +1256,10 @@
       "type": "boolean",
       "description": "non-enterable facade shell: exterior+roof+collision only, no interior/gameplay"
     },
+    "demo": {
+      "type": "boolean",
+      "description": "a spec that demonstrates or tests a capability, not a building a level stands (0.187.0); written to <id>.validation.json so level tools leave it out"
+    },
     "vacant": {
       "type": "boolean",
       "description": "a vacant facade shell: every window painted boarded (empty_panes, 0.179.0)"

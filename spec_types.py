@@ -628,6 +628,13 @@ class LevelSpec:
     # so the walls are art-pass-ready swap slots -- the windows/brick come later
     # by resolving the slots, and the same shell is reused all over a block.
     facade: bool = False
+    # A DEMO (0.187.0): a spec that exists to demonstrate or test a capability
+    # -- stepped setbacks, kitbash assets, rarity tiers, a survival layout, a
+    # PvP station reference -- not a building a level stands. It builds and
+    # validates like any other; the flag only says where it belongs. A tool
+    # that assembles levels reads it from the validation manifest the way it
+    # reads `facade` (Level Factory's `building_library.source_exclusion`).
+    demo: bool = False
     # A VACANT facade (0.179.0): every window boarded (`empty_panes`). The
     # 1990s vacancy the Empties' comps call for, authored per house like its
     # wall material -- not drawn, so a street is not left without one.
