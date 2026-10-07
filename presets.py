@@ -751,6 +751,13 @@ def corner_deli(name: str = "corner_deli_preset",
     spec.setdefault("ladders", []).append(
         {"x": -7.0, "y": -13.0, "from_story": -1, "to_story": 0,
          "facing": "N", "cut_slabs": True})
+    # THE WINDOW (0.201.0): the beer sign in the deli's front window and the
+    # pair of sale posters under it, by the rules the library's delis were
+    # given them with (`migrate_window_sign`, `migrate_window_poster`), as
+    # `gas_station` dresses its glass (0.188.0). A refusal leaves the spec
+    # without one; `test_deli_window` holds that this recipe is not refused.
+    migrate_window_sign.migrate(spec)
+    migrate_window_poster.migrate(spec)
     return spec
 
 

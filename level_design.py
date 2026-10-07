@@ -2642,6 +2642,12 @@ def _room_volume_count(spec, room):
         # sales floor a piece of furniture -- the window sign's defect again
         if v.get("collision") == "none" and v.get("material") == "paper":
             continue
+        # A SIGN HUNG IN A WINDOW stands on no floor either (0.201.0): a
+        # deli's punched window puts its beer sign's foot at 1.65 m, under
+        # the headroom line, and counted it would cost the market aisles a
+        # piece -- the store's window sign's defect again, a storey lower
+        if v.get("collision") == "none" and v.get("form") == "window":
+            continue
         if abs(v.get("z", 0) - (story * sh + v.get("size_z", 0) / 2)) < sh:
             n += 1
     return n

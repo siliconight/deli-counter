@@ -100,8 +100,10 @@ def test_a_hung_sign_is_not_furniture_in_the_rooms_count():
     """`furnish` tops a room up to a target less what is already there; a
     sign hung over a body's head takes no floor, so it must not count --
     it did, and a refurnish placed one piece fewer (gas_station_a02's
-    `shelf_run_3`). The control: the same volume at a wall-fixture height
-    (a dartboard's, 1.3 m) still counts."""
+    `shelf_run_3`). The control: the same sign in its WALL form at a
+    wall-fixture height (a dartboard's, 1.3 m) still counts. In its window
+    form it does not, at any height (0.201.0): a sign hung in a window
+    stands on no floor, and a deli's window puts its foot at 1.65 m."""
     import level_design
     spec = _spec("gas_station_a02")
     room = next(r for r in spec["rooms"] if r["id"] == M.ROOM)
@@ -110,7 +112,7 @@ def test_a_hung_sign_is_not_furniture_in_the_rooms_count():
     n = level_design._room_volume_count(bare, room)
     assert level_design._room_volume_count(spec, room) == n
     low = copy.deepcopy(bare)
-    low["volumes"].append(dict(_sign(spec), z=1.3 + 0.3))
+    low["volumes"].append(dict(_sign(spec), z=1.3 + 0.3, form="wall"))
     assert level_design._room_volume_count(low, room) == n + 1
 
 

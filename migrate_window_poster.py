@@ -133,21 +133,72 @@ def plan(d):
     return None, "no storefront on the sales floor"
 
 
+# --------------------------------------------------------------------------
+# THE DELI'S WINDOW (0.201.0, the sign's own reason: `migrate_window_sign`).
+# The pair is taped LOW on the deli's front window, under where its beer sign
+# hangs -- `WINDOW_FOOT` over the sill, `WINDOW_GAP` under the sign's foot --
+# and shifted `WINDOW_SHIFT` toward the customers' door, where they pass:
+# taped by somebody, not centred by a rule.
+WINDOW_FOOT = 0.10
+WINDOW_GAP = 0.05
+WINDOW_SHIFT = 0.25
+
+
+def plan_window(d):
+    """``(volume, why)``: the pair a deli tapes in its front window, or None
+    and the reason it cannot."""
+    fw = SIGN.front_window(d)
+    if fw is None:
+        return None, "no window on the wall of the customers' door"
+    w, dp, h = SIZE
+    sign = next((v for v in d.get("volumes") or [] if v.get("name") == SIGN.NAME), None)
+    sign_foot = (float(sign["z"]) - float(sign["size_z"]) / 2.0 if sign is not None
+                 else fw["head"] - SIGN.SIZE[2])
+    foot, top = fw["sill"] + WINDOW_FOOT, sign_foot - WINDOW_GAP
+    if top - foot < h:
+        return None, "the front window has %.2f m under the sign, and the pair is %.2f" % (
+            max(0.0, top - foot), h)
+    lo = fw["u"] - fw["width"] / 2.0 + SIGN.WINDOW_MARGIN + w / 2.0
+    hi = fw["u"] + fw["width"] / 2.0 - SIGN.WINDOW_MARGIN - w / 2.0
+    if hi < lo:
+        return None, "the front window is %.2f m wide, and the pair is %.2f" % (fw["width"], w)
+    toward = -1.0 if fw["door_u"] < fw["u"] else 1.0
+    c = min(hi, max(lo, fw["u"] + toward * WINDOW_SHIFT))
+    wt = float(d.get("wall_thick") or 0.3)
+    inset = wt / 2.0 + INSET + dp / 2.0
+    ix, iy = fw["inward"]
+    x, y = ((c, fw["line"] + iy * inset) if fw["axis"] == 0
+            else (fw["line"] + ix * inset, c))
+    vol = {"name": NAME, "x": round(x, 3), "y": round(y, 3), "z": round(foot + h / 2.0, 3),
+           "size_x": w if fw["axis"] == 0 else dp, "size_y": dp if fw["axis"] == 0 else w,
+           "size_z": h, "collision": "none", "material": MATERIAL["id"],
+           "form": FAMILY,
+           "variant": zlib.crc32((str(d.get("name", "")) + "|window_poster").encode()) % VARIANTS}
+    if fw["wall"] in ("N", "E"):
+        vol["rot_z"] = 180.0
+    return vol, None
+
+
 def migrate(d):
-    """``(changed, why)`` for one spec dict, in place."""
-    if not migrate_slush_machine.is_store(d):
+    """``(changed, why)`` for one spec dict, in place: a store's pair beside
+    its door (`plan`), a deli's under its window sign (`plan_window`, 0.201.0)."""
+    if migrate_slush_machine.is_store(d):
+        planner = plan
+    elif SIGN.is_deli(d):
+        planner = plan_window
+    else:
         return False, None
     vols = d.get("volumes") or []
     have = [i for i, v in enumerate(vols) if v.get("name") == NAME]
     if have:
         changed = _define_material(d)
         bare = dict(d, volumes=[v for v in vols if v.get("name") != NAME])
-        want, _why = plan(bare)
+        want, _why = planner(bare)
         if want is not None and vols[have[0]] != want:
             vols[have[0]] = want
             changed = True
         return changed, None
-    vol, why = plan(d)
+    vol, why = planner(d)
     if vol is None:
         return False, why
     _define_material(d)

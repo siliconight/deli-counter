@@ -141,6 +141,88 @@ def plan(d):
     return None, "no storefront on the sales floor"
 
 
+# --------------------------------------------------------------------------
+# THE DELI'S WINDOW (0.201.0). A corner deli has no shop front of glass: its
+# street face is brick, with the customers' door and one punched window
+# (`presets.corner_deli`'s S wall: the door at pos -0.28, a 2.0 m window at
+# pos 0.0, sill 0.85). Its beer sign hangs IN that window -- centred on it,
+# its top the window's head, `WINDOW_INSET` inside the wall's inner face,
+# against the pane as a deli's neon hangs -- not beside a door in a wall of
+# glass. Not one of the six library delis had a sign before this.
+DELI_CASE = "deli_case"
+DOOR_TAG = "front_customer_entry"
+WINDOW_INSET = 0.04              # inside the wall's inner face: on the pane
+WINDOW_MARGIN = 0.10             # the sign's ends inside the window's jambs
+
+
+def is_deli(d):
+    """A corner deli: a building with a deli case (`presets.corner_deli`'s
+    `deli_case_cover`, Zoo's `deli_case`)."""
+    return any(str(v.get("name", "")).startswith(DELI_CASE) for v in d.get("volumes") or [])
+
+
+def front_window(d):
+    """The storey-0 window on the wall that carries the customers' door
+    (`DOOR_TAG`), nearest that door, in the spec's frame: ``{wall, axis,
+    line, inward, u, width, sill, head, door_u}`` -- ``u`` and ``door_u``
+    along the wall from its centre, snapped as the builder cuts them; ``sill``
+    and ``head`` over the storey's floor, `Opening.resolved`'s defaults where
+    the spec gives none. None when no such window stands."""
+    import spec_types
+    grid = _grid(d)
+    best = None
+    for wall in d.get("ext_walls") or []:
+        if int(wall.get("story", 0) or 0) != 0:
+            continue
+        ops = wall.get("openings") or []
+        door = next((o for o in ops if o.get("kind") == "door" and o.get("tag") == DOOR_TAG), None)
+        if door is None:
+            continue
+        axis, line, run, inward = _wall_geometry(d, wall["wall"])
+        du = _snap(float(door.get("pos", 0.0)) * run, grid)
+        for o in ops:
+            if o.get("kind") != "window":
+                continue
+            r = spec_types.Opening(kind="window", width=o.get("width"), height=o.get("height"),
+                                   sill=o.get("sill")).resolved()
+            u = _snap(float(o.get("pos", 0.0)) * run, grid)
+            got = {"wall": wall["wall"], "axis": axis, "line": line, "inward": inward, "u": u,
+                   "width": float(r["width"]), "sill": float(r["sill"]),
+                   "head": float(r["sill"]) + float(r["height"]), "door_u": du}
+            if best is None or abs(u - du) < abs(best["u"] - du):
+                best = got
+    return best
+
+
+def plan_window(d):
+    """``(volume, why)``: the sign a deli hangs in its front window, or None
+    and the reason it cannot."""
+    fw = front_window(d)
+    if fw is None:
+        return None, "no window on the wall of the customers' door"
+    w, dp, h = SIZE
+    if fw["width"] < w + 2.0 * WINDOW_MARGIN:
+        return None, "the front window is %.2f m wide, and the sign needs %.2f" % (
+            fw["width"], w + 2.0 * WINDOW_MARGIN)
+    if fw["head"] - fw["sill"] < h:
+        return None, "the front window is %.2f m tall, and the sign is %.2f" % (
+            fw["head"] - fw["sill"], h)
+    wt = float(d.get("wall_thick") or 0.3)
+    inset = wt / 2.0 + WINDOW_INSET + dp / 2.0
+    ix, iy = fw["inward"]
+    x, y = ((fw["u"], fw["line"] + iy * inset) if fw["axis"] == 0
+            else (fw["line"] + ix * inset, fw["u"]))
+    vol = {"name": NAME, "x": round(x, 3), "y": round(y, 3), "z": round(fw["head"] - h / 2.0, 3),
+           "size_x": w if fw["axis"] == 0 else dp, "size_y": dp if fw["axis"] == 0 else w,
+           "size_z": h, "collision": "none", "material": MATERIAL["id"],
+           "form": "window",
+           "variant": zlib.crc32(str(d.get("name", "")).encode()) % NAMES}
+    # out of the building: S and W already face out (-y, -x)
+    if fw["wall"] in ("N", "E"):
+        vol["rot_z"] = 180.0
+    return vol, None
+
+
 #: The sign's material, as the 166 specs that define it do. A store's own
 #: table need not carry it -- none of the nine did, and `validate` refuses a
 #: volume naming a material its spec does not define (cr_gas, first refused
@@ -157,8 +239,13 @@ def _define_material(d):
 
 
 def migrate(d):
-    """``(changed, why)`` for one spec dict, in place."""
-    if not migrate_slush_machine.is_store(d):
+    """``(changed, why)`` for one spec dict, in place: a store's sign beside
+    its door (`plan`), a deli's in its front window (`plan_window`, 0.201.0)."""
+    if migrate_slush_machine.is_store(d):
+        planner = plan
+    elif is_deli(d):
+        planner = plan_window
+    else:
         return False, None
     vols = d.get("volumes") or []
     have = [i for i, v in enumerate(vols) if v.get("name") == NAME]
@@ -166,13 +253,13 @@ def migrate(d):
         # RE-PLACED where the rule has moved (0.160.0's sign-box clearance),
         # in its own slot in the list, so nothing around it moves
         changed = _define_material(d)
-        want, _why = plan(d)
+        want, _why = planner(d)
         if want is not None and vols[have[0]] != want:
             vols[have[0]] = want
             changed = True
         return changed, None
     _define_material(d)
-    vol, why = plan(d)
+    vol, why = planner(d)
     if vol is None:
         return False, why
     # BEFORE the pieces `furnish` wrote, not after them. A refurnish keeps
