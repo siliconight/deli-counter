@@ -19,6 +19,7 @@ from typing import Optional
 import level_design
 import migrate_roller_grill
 import migrate_slush_machine
+import migrate_wall_crossing
 import migrate_window_poster
 import migrate_window_sign
 
@@ -3585,6 +3586,13 @@ def make(preset: str, enrich: bool = True, stairs_first: bool = False,
         raise KeyError(f"unknown preset '{preset}'. "
                        f"available: {', '.join(sorted(REGISTRY))}")
     spec = REGISTRY[preset](**kwargs)
+    # NO PIECE THROUGH A WALL (0.199.0): a piece a recipe authors through one
+    # of its own walls is trimmed back to the side it stands on --
+    # `corner_deli`'s case came 0.825 m out into the market aisles and the
+    # hospital's waiting seats 0.35 m into the next room. Here, before every
+    # pass below, so the cover `enrich` seeds is placed round the piece that
+    # is built. A piece ALONG a wall is reported (layout_lint L25), not moved.
+    migrate_wall_crossing.trim(spec)
     if seed is not None:
         spec["seed"] = int(seed)
     # orientation FIRST: the stair's facing (and therefore its landing

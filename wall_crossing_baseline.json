@@ -1,0 +1,37 @@
+{
+  "wall_crossings": {
+    "bank_branch_a04": [
+      "VAULT_DOOR"
+    ],
+    "cbp_town_finale_midbalanced_schemafixed": [
+      "field_service_locked_rollgate",
+      "first_base_vomitory_wall_cover",
+      "third_base_vomitory_wall_cover"
+    ],
+    "cr_garage": [
+      "col_0_00"
+    ],
+    "parking_garage": [
+      "col_0_00"
+    ],
+    "parking_garage_a01": [
+      "col_0_00"
+    ],
+    "parking_garage_a02": [
+      "col_1_22"
+    ],
+    "setback_demo": [
+      "forklift_bay",
+      "rack_long_b"
+    ],
+    "warehouse_a02": [
+      "forklift_bay",
+      "rack_long_b"
+    ]
+  },
+  "reason": "Pieces a built wall runs ALONG, centred on its line (layout_lint L25, shape 'along'), left in place by 0.199.0 because each needs a look, not a trim: setback_demo's and warehouse_a02's 14 m rack and forklift bay stand centred on the partition at y -3.0, 0.45 and 0.85 m of each out either side; cbp_town_finale's two 8 m vomitory covers are centred on the partitions at x -18 and 18, and its field-service rollgate is 5.0 m wide across a 2.2 m doorway; bank_branch_a04's VAULT_DOOR stands on its basement partition with no opening cut under it; four garage columns, 0.5 m square, stand on 0.35 m walls. The pieces THROUGH a wall -- every deli's case and warehouse's shelving run -- were trimmed by migrate_wall_crossing. A fixed piece must leave this list (test_the_baseline_has_not_gone_stale); a new one fails (test_no_new_wall_crossing).",
+  "counts": {
+    "pieces": 12,
+    "shells": 8
+  }
+}
