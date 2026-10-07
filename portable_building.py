@@ -411,9 +411,12 @@ def _overall_extent(bboxes):
     return [round(hi[i] - lo[i], 3) for i in range(3)]
 
 
-def _slot_greybox_extent(gb_bboxes, slot_id):
+def _slot_greybox_extent(gb_bboxes, slot_id, slot_ids):
     """Union bbox of greybox nodes carrying the slot_id (an opening's
-    lintel/sill/pane sub-parts all share the slot_id)."""
+    lintel/sill/pane sub-parts all share the slot_id) -- and only this
+    slot's: `slot_ids` is every slot of the building, so a sibling whose id
+    begins `<slot_id>_` keeps its own nodes (0.203.0, roadmap 205)."""
+    siblings = themed_tscn.longer_siblings(slot_id, slot_ids)
     lo = [1e18] * 3
     hi = [-1e18] * 3
     found = False
@@ -422,7 +425,12 @@ def _slot_greybox_extent(gb_bboxes, slot_id):
         # (<slot_id>_lintel/_sill/_pane/...). A bare substring test would let
         # 'ext_0_N_seg1' also swallow 'ext_0_N_seg10'..'seg19' -- masked before
         # only because the local-space union collapsed them onto the origin.
-        if nm == slot_id or nm.startswith(slot_id + "_"):
+        # AND NOT A SIBLING SLOT (0.203.0, roadmap 205): the prefix rule alone
+        # let gas_station_a02's `cooler_run` (3.28 m) take in
+        # `cooler_run_sales` (8.0 m) and read 25.442 m, refusing a module
+        # built exactly to its slot and stopping cold run 9195's art leg.
+        # One rule, shared with the composer's fit: `themed_tscn.owns_node`.
+        if themed_tscn.owns_node(slot_id, nm, siblings):
             found = True
             for i in range(3):
                 lo[i] = min(lo[i], l[i])
@@ -448,6 +456,10 @@ def verify_placement(greybox_glb, slots, module_dir, theme, style, tol=0.25):
     is reported as an advisory (never fails the footprint gate)."""
     import tscn_export as _te
     gb = _glb_visual_bboxes(greybox_glb)
+    # every slot id of the building: an extent is one slot's nodes, never a
+    # sibling's (0.203.0). Listed first, since `slots` is walked twice.
+    slots = list(slots)
+    slot_ids = {x.get("slot_id") for x in slots if x.get("slot_id")}
     cache = {}
     checked = matched = 0
     mismatches = []
@@ -465,7 +477,7 @@ def verify_placement(greybox_glb, slots, module_dir, theme, style, tol=0.25):
         mp = os.path.join(module_dir, stem + ".glb")
         if not os.path.exists(mp):
             continue
-        ge = _slot_greybox_extent(gb, sid)
+        ge = _slot_greybox_extent(gb, sid, slot_ids)
         if ge is None:
             continue
         if stem not in cache:

@@ -623,15 +623,47 @@ def greybox_slot_extents(greybox_glb):
     return per
 
 
-def _slot_extent(per, slot_id):
+def longer_siblings(slot_id, slot_ids):
+    """The slot ids that begin `<slot_id>_`: SIBLING slots, not parts of this
+    one (0.203.0, roadmap 205). gas_station_a02's `cooler_run_sales` begins
+    `cooler_run_`, and the pawn shops' `counter_service_..._1` begins
+    `counter_`."""
+    return [x for x in slot_ids
+            if x and x != slot_id and x.startswith(slot_id + "_")]
+
+
+def owns_node(slot_id, node_name, siblings):
+    """Does greybox node `node_name` belong to `slot_id`?
+
+    It does when it is the slot's own node or a named part of it
+    (`<slot_id>_lintel`, `_sill`, `_pane`) -- never a numeric neighbour
+    (`seg1` does not own `seg10`) -- and no LONGER slot id in `siblings`
+    (`longer_siblings`) names it. A node belongs to the longest slot id that
+    names it (0.203.0, roadmap 205). The placement gate
+    (`portable_building._slot_greybox_extent`) and the composer's fit
+    (`_slot_extent`) both ask this, so the two cannot disagree.
+    """
+    if not slot_id or not (node_name == slot_id
+                           or node_name.startswith(slot_id + "_")):
+        return False
+    return not any(node_name == x or node_name.startswith(x + "_")
+                   for x in siblings)
+
+
+def _slot_extent(per, slot_id, slot_ids):
+    # ONE SLOT'S NODES ONLY (0.203.0, roadmap 205): the prefix rule alone let
+    # gas_station_a02's `cooler_run` (3.28 m) take in `cooler_run_sales`
+    # (8.0 m, 20 m away) and fit its module against 25.442 m. `slot_ids` is
+    # every slot of the building; see `owns_node`.
+    siblings = longer_siblings(slot_id, slot_ids)
     lo = [1e18] * 3
     hi = [-1e18] * 3
     found = False
     for nm, (l, h) in per.items():
         # precise: the slot's node or a named sub-part (<slot_id>_lintel/...),
-        # never a numeric sibling (seg1 must not swallow seg10). See
-        # portable_building._slot_greybox_extent for the rationale.
-        if slot_id and (nm == slot_id or nm.startswith(slot_id + "_")):
+        # never a numeric sibling (seg1 must not swallow seg10), never a
+        # sibling slot. See portable_building._slot_greybox_extent.
+        if owns_node(slot_id, nm, siblings):
             found = True
             for i in range(3):
                 lo[i] = min(lo[i], l[i])
@@ -760,6 +792,9 @@ def write_themed_tscn(slots, building_id, out_path, *, theme, style=1,
         out.append('[node name="GreyboxBase" parent="." '
                    'instance=ExtResource("0_greybox_base")]')
         out.append("")
+    # every slot id of the building, so a fit measures one slot's greybox
+    # nodes and never a sibling's (`owns_node`, 0.203.0)
+    slot_ids = {s.get("slot_id") for s in slots if s.get("slot_id")}
     for sl in slots:
         ref = resolved_refs[id(sl)]
         if not ref:
@@ -786,7 +821,7 @@ def write_themed_tscn(slots, building_id, out_path, *, theme, style=1,
         if tr and sl.get("role") in _SLAB_CAP_SINK_ROLES:
             tr = [tr[0], tr[1], tr[2] - SLAB_CAP_SINK]
         if gb_per is not None:
-            ge = _slot_extent(gb_per, sl.get("slot_id", ""))
+            ge = _slot_extent(gb_per, sl.get("slot_id", ""), slot_ids)
             me = _glb_extent(os.path.join(library_dir, ref + ".glb"))
             if ge and me:
                 fit = _fit_rotation(me, ge, fallback=(tf.get("rot_y") or 0),
