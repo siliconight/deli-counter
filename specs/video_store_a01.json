@@ -1,766 +1,764 @@
 {
-  "$schema": "../schema/level.schema.json",
-  "name": "video_store_a01",
-  "mode": "heist",
-  "preset": "video_store",
-  "seed": 1997,
-  "grid": 0.5,
-  "footprint_x": 18.0,
-  "footprint_y": 14.0,
-  "story_height": 3.4,
-  "n_stories": 1,
-  "has_basement": false,
-  "wall_thick": 0.25,
-  "floor_thick": 0.25,
-  "collision": "convex",
-  "auto_exterior": true,
-  "scale_ref": false,
-  "default_material": "brick_ext",
-  "materials": [
+ "$schema": "../schema/level.schema.json",
+ "name": "video_store_a01",
+ "mode": "heist",
+ "preset": "video_store",
+ "seed": 1997,
+ "grid": 0.5,
+ "footprint_x": 18.0,
+ "footprint_y": 14.0,
+ "story_height": 3.4,
+ "n_stories": 1,
+ "has_basement": false,
+ "wall_thick": 0.25,
+ "floor_thick": 0.25,
+ "collision": "convex",
+ "auto_exterior": true,
+ "scale_ref": false,
+ "default_material": "brick_ext",
+ "materials": [
+  {
+   "id": "brick_ext",
+   "acoustic": "Concrete",
+   "absorption": 0.6,
+   "damping": 0.5
+  },
+  {
+   "id": "storefront_glass",
+   "acoustic": "Glass",
+   "absorption": 0.1,
+   "damping": 0.05
+  },
+  {
+   "id": "glass",
+   "acoustic": "Glass",
+   "absorption": 0.1,
+   "damping": 0.05
+  },
+  {
+   "id": "drywall",
+   "acoustic": "Drywall",
+   "absorption": 0.42,
+   "damping": 0.38
+  },
+  {
+   "id": "concrete",
+   "acoustic": "Concrete",
+   "absorption": 0.7,
+   "damping": 0.6
+  },
+  {
+   "id": "metal",
+   "acoustic": "Metal",
+   "absorption": 0.2,
+   "damping": 0.15
+  },
+  {
+   "id": "wood",
+   "acoustic": "Wood",
+   "absorption": 0.35,
+   "damping": 0.3
+  },
+  {
+   "id": "metal_painted",
+   "acoustic": "Metal",
+   "absorption": 0.25,
+   "damping": 0.2
+  }
+ ],
+ "ext_walls": [
+  {
+   "wall": "S",
+   "story": 0,
+   "material": "storefront_glass",
+   "openings": [
     {
-      "id": "brick_ext",
-      "acoustic": "Concrete",
-      "absorption": 0.6,
-      "damping": 0.5
+     "kind": "door",
+     "pos": -0.2222,
+     "width": 1.6,
+     "tag": "front_door"
     },
     {
-      "id": "storefront_glass",
-      "acoustic": "Glass",
-      "absorption": 0.1,
-      "damping": 0.05
-    },
-    {
-      "id": "glass",
-      "acoustic": "Glass",
-      "absorption": 0.1,
-      "damping": 0.05
-    },
-    {
-      "id": "drywall",
-      "acoustic": "Drywall",
-      "absorption": 0.42,
-      "damping": 0.38
-    },
-    {
-      "id": "concrete",
-      "acoustic": "Concrete",
-      "absorption": 0.7,
-      "damping": 0.6
-    },
-    {
-      "id": "metal",
-      "acoustic": "Metal",
-      "absorption": 0.2,
-      "damping": 0.15
-    },
-    {
-      "id": "wood",
-      "acoustic": "Wood",
-      "absorption": 0.35,
-      "damping": 0.3
-    },
-    {
-      "id": "metal_painted",
-      "acoustic": "Metal",
-      "absorption": 0.25,
-      "damping": 0.2
+     "kind": "window",
+     "pos": 0.1667,
+     "width": 8.0,
+     "sill": 0.6,
+     "vaultable": true,
+     "material": "glass"
     }
-  ],
-  "ext_walls": [
+   ]
+  },
+  {
+   "wall": "N",
+   "story": 0,
+   "material": "brick_ext",
+   "openings": [
     {
-      "wall": "S",
-      "story": 0,
-      "material": "storefront_glass",
-      "openings": [
-        {
-          "kind": "door",
-          "pos": -0.2222,
-          "width": 1.6,
-          "tag": "front_door"
-        },
-        {
-          "kind": "window",
-          "pos": 0.1667,
-          "width": 8.0,
-          "sill": 0.6,
-          "vaultable": true,
-          "material": "glass"
-        }
-      ]
+     "kind": "door",
+     "pos": -0.3333,
+     "width": 1.25,
+     "tag": "rear_door"
     },
     {
-      "wall": "N",
-      "story": 0,
-      "material": "brick_ext",
-      "openings": [
-        {
-          "kind": "door",
-          "pos": -0.3333,
-          "width": 1.25,
-          "tag": "rear_door"
-        },
-        {
-          "kind": "breach",
-          "pos": 0.0278,
-          "width": 1.2,
-          "breach_class": "soft_wall",
-          "material": "drywall",
-          "tag": "stock_breach"
-        }
-      ]
-    },
-    {
-      "wall": "W",
-      "story": 0,
-      "material": "brick_ext",
-      "openings": []
-    },
-    {
-      "wall": "E",
-      "story": 0,
-      "material": "brick_ext",
-      "openings": []
+     "kind": "breach",
+     "pos": 0.0278,
+     "width": 1.2,
+     "breach_class": "soft_wall",
+     "material": "drywall",
+     "tag": "stock_breach"
     }
-  ],
-  "partitions": [
+   ]
+  },
+  {
+   "wall": "W",
+   "story": 0,
+   "material": "brick_ext",
+   "openings": []
+  },
+  {
+   "wall": "E",
+   "story": 0,
+   "material": "brick_ext",
+   "openings": []
+  }
+ ],
+ "partitions": [
+  {
+   "story": 0,
+   "axis": "X",
+   "pos": 3.0,
+   "start": -9.0,
+   "end": 9.0,
+   "material": "drywall",
+   "openings": [
     {
-      "story": 0,
-      "axis": "X",
-      "pos": 3.0,
-      "start": -9.0,
-      "end": 9.0,
-      "material": "drywall",
-      "openings": [
-        {
-          "kind": "door",
-          "pos": -0.3333,
-          "width": 1.25,
-          "reinforceable": true,
-          "tag": "stock_door"
-        },
-        {
-          "kind": "door",
-          "pos": 0.3333,
-          "width": 1.25,
-          "tag": "back_room_curtain"
-        }
-      ]
+     "kind": "door",
+     "pos": -0.3333,
+     "width": 1.25,
+     "reinforceable": true,
+     "tag": "stock_door"
     },
     {
-      "story": 0,
-      "axis": "Y",
-      "pos": 3.0,
-      "start": 3.0,
-      "end": 7.0,
-      "material": "drywall",
-      "openings": [
-        {
-          "kind": "door",
-          "pos": 0.0,
-          "width": 1.25,
-          "tag": "back_room_staff_door"
-        }
-      ]
+     "kind": "door",
+     "pos": 0.3333,
+     "width": 1.25,
+     "tag": "back_room_curtain"
     }
-  ],
-  "stairs": [],
-  "ladders": [],
-  "vertical_links": [],
-  "volumes": [
+   ]
+  },
+  {
+   "story": 0,
+   "axis": "Y",
+   "pos": 3.0,
+   "start": 3.0,
+   "end": 7.0,
+   "material": "drywall",
+   "openings": [
     {
-      "name": "safe_stockroom",
-      "x": -8.2,
-      "y": 6.2,
-      "z": 0.5,
-      "size_x": 0.9,
-      "size_y": 0.9,
-      "size_z": 1.0,
-      "collision": "convex",
-      "material": "metal"
-    },
-    {
-      "name": "counter_checkout",
-      "x": -7.2,
-      "y": -5.2,
-      "z": 0.525,
-      "size_x": 0.8,
-      "size_y": 2.4,
-      "size_z": 1.05,
-      "collision": "convex",
-      "material": "wood"
-    },
-    {
-      "name": "tape_wall_w1",
-      "x": -8.64,
-      "y": -1.75,
-      "z": 1.0,
-      "size_x": 0.45,
-      "size_y": 2.4,
-      "size_z": 2.0,
-      "collision": "convex",
-      "material": "metal_painted",
-      "form": "wall",
-      "variant": 0,
-      "rot_z": 180.0
-    },
-    {
-      "name": "tape_wall_w2",
-      "x": -8.64,
-      "y": 0.67,
-      "z": 1.0,
-      "size_x": 0.45,
-      "size_y": 2.4,
-      "size_z": 2.0,
-      "collision": "convex",
-      "material": "metal_painted",
-      "form": "wall",
-      "variant": 1,
-      "rot_z": 180.0
-    },
-    {
-      "name": "tape_wall_e1",
-      "x": 8.64,
-      "y": -4.2,
-      "z": 1.0,
-      "size_x": 0.45,
-      "size_y": 2.4,
-      "size_z": 2.0,
-      "collision": "convex",
-      "material": "metal_painted",
-      "form": "display",
-      "variant": 2
-    },
-    {
-      "name": "tape_wall_e2",
-      "x": 8.64,
-      "y": -1.78,
-      "z": 1.0,
-      "size_x": 0.45,
-      "size_y": 2.4,
-      "size_z": 2.0,
-      "collision": "convex",
-      "material": "metal_painted",
-      "form": "display",
-      "variant": 3
-    },
-    {
-      "name": "tape_wall_e3",
-      "x": 8.64,
-      "y": 0.64,
-      "z": 1.0,
-      "size_x": 0.45,
-      "size_y": 2.4,
-      "size_z": 2.0,
-      "collision": "convex",
-      "material": "metal_painted",
-      "form": "wall",
-      "variant": 4
-    },
-    {
-      "name": "tape_wall_n1",
-      "x": -2.42,
-      "y": 2.64,
-      "z": 1.0,
-      "size_x": 2.4,
-      "size_y": 0.45,
-      "size_z": 2.0,
-      "collision": "convex",
-      "material": "metal_painted",
-      "form": "wall",
-      "variant": 5
-    },
-    {
-      "name": "tape_wall_n2",
-      "x": 0.0,
-      "y": 2.64,
-      "z": 1.0,
-      "size_x": 2.4,
-      "size_y": 0.45,
-      "size_z": 2.0,
-      "collision": "convex",
-      "material": "metal_painted",
-      "form": "wall",
-      "variant": 0
-    },
-    {
-      "name": "tape_wall_n3",
-      "x": 2.42,
-      "y": 2.64,
-      "z": 1.0,
-      "size_x": 2.4,
-      "size_y": 0.45,
-      "size_z": 2.0,
-      "collision": "convex",
-      "material": "metal_painted",
-      "form": "wall",
-      "variant": 1
-    },
-    {
-      "name": "tape_island_1a",
-      "x": -3.5,
-      "y": -2.82,
-      "z": 0.95,
-      "size_x": 0.9,
-      "size_y": 2.4,
-      "size_z": 1.9,
-      "collision": "convex",
-      "material": "metal_painted",
-      "form": "island",
-      "variant": 0
-    },
-    {
-      "name": "tape_island_1b",
-      "x": -3.5,
-      "y": -0.4,
-      "z": 0.95,
-      "size_x": 0.9,
-      "size_y": 2.4,
-      "size_z": 1.9,
-      "collision": "convex",
-      "material": "metal_painted",
-      "form": "island",
-      "variant": 1
-    },
-    {
-      "name": "tape_island_2a",
-      "x": 0.0,
-      "y": -2.82,
-      "z": 0.95,
-      "size_x": 0.9,
-      "size_y": 2.4,
-      "size_z": 1.9,
-      "collision": "convex",
-      "material": "metal_painted",
-      "form": "island",
-      "variant": 2
-    },
-    {
-      "name": "tape_island_2b",
-      "x": 0.0,
-      "y": -0.4,
-      "z": 0.95,
-      "size_x": 0.9,
-      "size_y": 2.4,
-      "size_z": 1.9,
-      "collision": "convex",
-      "material": "metal_painted",
-      "form": "island",
-      "variant": 3
-    },
-    {
-      "name": "tape_island_3a",
-      "x": 3.0,
-      "y": -2.82,
-      "z": 0.95,
-      "size_x": 0.9,
-      "size_y": 2.4,
-      "size_z": 1.9,
-      "collision": "convex",
-      "material": "metal_painted",
-      "form": "island",
-      "variant": 4
-    },
-    {
-      "name": "tape_island_3b",
-      "x": 3.0,
-      "y": -0.4,
-      "z": 0.95,
-      "size_x": 0.9,
-      "size_y": 2.4,
-      "size_z": 1.9,
-      "collision": "convex",
-      "material": "metal_painted",
-      "form": "island",
-      "variant": 5
-    },
-    {
-      "name": "tape_island_4a",
-      "x": 6.0,
-      "y": -2.82,
-      "z": 0.95,
-      "size_x": 0.9,
-      "size_y": 2.4,
-      "size_z": 1.9,
-      "collision": "convex",
-      "material": "metal_painted",
-      "form": "island",
-      "variant": 0
-    },
-    {
-      "name": "tape_island_4b",
-      "x": 6.0,
-      "y": -0.4,
-      "z": 0.95,
-      "size_x": 0.9,
-      "size_y": 2.4,
-      "size_z": 1.9,
-      "collision": "convex",
-      "material": "metal_painted",
-      "form": "island",
-      "variant": 1
-    },
-    {
-      "name": "tape_wall_adult_n1",
-      "x": 4.795,
-      "y": 6.64,
-      "z": 1.0,
-      "size_x": 2.4,
-      "size_y": 0.45,
-      "size_z": 2.0,
-      "collision": "convex",
-      "material": "metal_painted",
-      "form": "adult",
-      "variant": 0
-    },
-    {
-      "name": "tape_wall_adult_n2",
-      "x": 7.215,
-      "y": 6.64,
-      "z": 1.0,
-      "size_x": 2.4,
-      "size_y": 0.45,
-      "size_z": 2.0,
-      "collision": "convex",
-      "material": "metal_painted",
-      "form": "adult",
-      "variant": 1
-    },
-    {
-      "name": "tape_wall_adult_e1",
-      "x": 8.64,
-      "y": 5.195,
-      "z": 1.0,
-      "size_x": 0.45,
-      "size_y": 2.4,
-      "size_z": 2.0,
-      "collision": "convex",
-      "material": "metal_painted",
-      "form": "adult",
-      "variant": 2
-    },
-    {
-      "name": "club_chair_window_1",
-      "x": 1.6,
-      "y": -6.2,
-      "z": 0.39,
-      "size_x": 0.78,
-      "size_y": 0.75,
-      "size_z": 0.78,
-      "rot_z": 180.0,
-      "collision": "convex",
-      "material": "wood",
-      "variant": 0
-    },
-    {
-      "name": "club_chair_window_2",
-      "x": 2.8,
-      "y": -6.2,
-      "z": 0.39,
-      "size_x": 0.78,
-      "size_y": 0.75,
-      "size_z": 0.78,
-      "rot_z": 180.0,
-      "collision": "convex",
-      "material": "wood",
-      "variant": 1
-    },
-    {
-      "name": "shelf_run_stockroom_shelter",
-      "x": -3.74,
-      "y": 5.13,
-      "z": 0.8,
-      "size_x": 2.6,
-      "size_y": 0.6,
-      "size_z": 1.6,
-      "collision": "convex",
-      "material": "wood"
-    },
-    {
-      "name": "cartons_r499afdf7_1",
-      "x": -7.43,
-      "y": 4.44,
-      "z": 0.3,
-      "size_x": 0.6,
-      "size_y": 0.4,
-      "size_z": 0.6,
-      "collision": "convex",
-      "material": "wood",
-      "rot_z": 180.0,
-      "variant": 2
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.25,
+     "tag": "back_room_staff_door"
     }
-  ],
-  "rooms": [
-    {
-      "id": "sales_floor",
-      "story": 0,
-      "bounds": [
-        -9.0,
-        -7.0,
-        9.0,
-        3.0
-      ],
-      "role": "public_entry",
-      "combat_range": "long"
-    },
-    {
-      "id": "stockroom",
-      "story": 0,
-      "bounds": [
-        -9.0,
-        3.0,
-        3.0,
-        7.0
-      ],
-      "role": "objective_room",
-      "objective": true,
-      "fortifiable": true,
-      "combat_range": "medium"
-    },
-    {
-      "id": "back_room",
-      "story": 0,
-      "bounds": [
-        3.0,
-        3.0,
-        9.0,
-        7.0
-      ],
-      "role": "connector",
-      "combat_range": "close"
-    }
-  ],
-  "objectives": [
-    {
-      "id": "crack_safe",
-      "kind": "drill",
-      "x": -8.2,
-      "y": 6.2,
-      "z": 0.2,
-      "room": "stockroom",
-      "required": true,
-      "duration": 25.0
-    },
-    {
-      "id": "grab_late_fees",
-      "kind": "grab",
-      "x": 6.0,
-      "y": 5.0,
-      "z": 0.9,
-      "room": "back_room",
-      "required": false,
-      "duration": 6.0
-    }
-  ],
-  "loot": [
-    {
-      "id": "store_safe",
-      "kind": "cash",
-      "x": -8.2,
-      "y": 6.2,
-      "z": 0.2,
-      "value": 7000,
-      "bags": 2,
-      "room": "stockroom"
-    },
-    {
-      "id": "late_fees",
-      "kind": "cash",
-      "x": 6.0,
-      "y": 5.0,
-      "z": 0.9,
-      "value": 1500,
-      "bags": 1,
-      "room": "back_room"
-    }
-  ],
-  "zones": [
-    {
-      "id": "front_extract",
-      "kind": "extraction",
-      "story": 0,
-      "bounds": [
-        -9.0,
-        -7.0,
-        9.0,
-        -4.5
-      ]
-    },
-    {
-      "id": "stock_secure",
-      "kind": "secure",
-      "story": 0,
-      "bounds": [
-        -9.0,
-        3.0,
-        3.0,
-        7.0
-      ]
-    }
-  ],
-  "markers": [
-    {
-      "type": "camera_socket",
-      "id": "01",
-      "x": -8.0,
-      "y": -6.0,
-      "z": 2.9,
-      "room": "sales_floor",
-      "rot_z": 45
-    },
-    {
-      "type": "camera_socket",
-      "id": "02",
-      "x": -8.2,
-      "y": 3.8,
-      "z": 2.9,
-      "room": "stockroom",
-      "rot_z": 135
-    },
-    {
-      "type": "crew_spawn",
-      "id": "A",
-      "x": -4.0,
-      "y": -5.5,
-      "z": 0.0,
-      "rot_z": 0,
-      "room": "sales_floor",
-      "meta": {
-        "phase": "stealth"
-      }
-    },
-    {
-      "type": "objective",
-      "id": "SAFE",
-      "x": -8.2,
-      "y": 6.2,
-      "z": 0.2,
-      "room": "stockroom"
-    },
-    {
-      "type": "extraction",
-      "id": "FRONT",
-      "x": -6.0,
-      "y": -5.5,
-      "z": 0.0,
-      "room": "sales_floor"
-    },
-    {
-      "type": "cover_low",
-      "id": "AUTO_COUNTER_CHECKOUT",
-      "x": -7.2,
-      "y": -5.2,
-      "z": 0.0,
-      "room": "sales_floor",
-      "meta": {
-        "auto": "cover_from_volume",
-        "from": "counter_checkout"
-      }
-    },
-    {
-      "type": "cover_high",
-      "id": "AUTO_TAPE_ISLAND_1A",
-      "x": -3.5,
-      "y": -2.82,
-      "z": 0.0,
-      "room": "sales_floor",
-      "meta": {
-        "auto": "cover_from_volume",
-        "from": "tape_island_1a"
-      }
-    },
-    {
-      "type": "cover_high",
-      "id": "AUTO_TAPE_ISLAND_1B",
-      "x": -3.5,
-      "y": -0.4,
-      "z": 0.0,
-      "room": "sales_floor",
-      "meta": {
-        "auto": "cover_from_volume",
-        "from": "tape_island_1b"
-      }
-    },
-    {
-      "type": "cover_high",
-      "id": "AUTO_TAPE_ISLAND_2A",
-      "x": 0.0,
-      "y": -2.82,
-      "z": 0.0,
-      "room": "sales_floor",
-      "meta": {
-        "auto": "cover_from_volume",
-        "from": "tape_island_2a"
-      }
-    },
-    {
-      "type": "cover_high",
-      "id": "AUTO_TAPE_ISLAND_2B",
-      "x": 0.0,
-      "y": -0.4,
-      "z": 0.0,
-      "room": "sales_floor",
-      "meta": {
-        "auto": "cover_from_volume",
-        "from": "tape_island_2b"
-      }
-    },
-    {
-      "type": "cover_high",
-      "id": "AUTO_SHELF_RUN_STOCKROOM_SHELTER",
-      "x": -3.74,
-      "y": 5.13,
-      "z": 0.0,
-      "room": "stockroom",
-      "meta": {
-        "auto": "cover_from_volume",
-        "from": "shelf_run_stockroom_shelter"
-      }
-    },
-    {
-      "type": "cover_low",
-      "id": "AUTO_CARTONS_R499AFDF7_1",
-      "x": -7.43,
-      "y": 4.44,
-      "z": 0.0,
-      "room": "stockroom",
-      "meta": {
-        "auto": "cover_from_volume",
-        "from": "cartons_r499afdf7_1"
-      }
-    },
-    {
-      "type": "landmark",
-      "id": "SALES_FLOOR",
-      "x": 0.0,
-      "y": -2.0,
-      "z": 1.0,
-      "room": "sales_floor",
-      "meta": {
-        "auto": "landmark",
-        "label": "sales_floor",
-        "role": "public_entry"
-      }
-    },
-    {
-      "type": "landmark",
-      "id": "STOCKROOM",
-      "x": -3.0,
-      "y": 5.0,
-      "z": 1.0,
-      "room": "stockroom",
-      "meta": {
-        "auto": "landmark",
-        "label": "stockroom",
-        "role": "objective_room"
-      }
-    }
-  ],
-  "parapets": [
-    {
-      "story": 1,
-      "height": 0.9,
-      "thick": 0.3
-    }
-  ],
-  "modular": true
+   ]
+  }
+ ],
+ "stairs": [],
+ "ladders": [],
+ "vertical_links": [],
+ "volumes": [
+  {
+   "name": "safe_stockroom",
+   "x": -8.2,
+   "y": 6.2,
+   "z": 0.5,
+   "size_x": 0.9,
+   "size_y": 0.9,
+   "size_z": 1.0,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "counter_checkout",
+   "x": -7.2,
+   "y": -5.2,
+   "z": 0.525,
+   "size_x": 0.8,
+   "size_y": 2.4,
+   "size_z": 1.05,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "tape_wall_w1",
+   "x": -8.64,
+   "y": -1.75,
+   "z": 1.0,
+   "size_x": 0.45,
+   "size_y": 2.4,
+   "size_z": 2.0,
+   "collision": "convex",
+   "material": "metal_painted",
+   "form": "wall",
+   "variant": 0,
+   "rot_z": 180.0
+  },
+  {
+   "name": "tape_wall_w2",
+   "x": -8.64,
+   "y": 0.67,
+   "z": 1.0,
+   "size_x": 0.45,
+   "size_y": 2.4,
+   "size_z": 2.0,
+   "collision": "convex",
+   "material": "metal_painted",
+   "form": "wall",
+   "variant": 1,
+   "rot_z": 180.0
+  },
+  {
+   "name": "tape_wall_e1",
+   "x": 8.64,
+   "y": -4.2,
+   "z": 1.0,
+   "size_x": 0.45,
+   "size_y": 2.4,
+   "size_z": 2.0,
+   "collision": "convex",
+   "material": "metal_painted",
+   "form": "display",
+   "variant": 2
+  },
+  {
+   "name": "tape_wall_e2",
+   "x": 8.64,
+   "y": -1.78,
+   "z": 1.0,
+   "size_x": 0.45,
+   "size_y": 2.4,
+   "size_z": 2.0,
+   "collision": "convex",
+   "material": "metal_painted",
+   "form": "display",
+   "variant": 3
+  },
+  {
+   "name": "tape_wall_e3",
+   "x": 8.64,
+   "y": 0.64,
+   "z": 1.0,
+   "size_x": 0.45,
+   "size_y": 2.4,
+   "size_z": 2.0,
+   "collision": "convex",
+   "material": "metal_painted",
+   "form": "wall",
+   "variant": 4
+  },
+  {
+   "name": "tape_wall_n1",
+   "x": -2.42,
+   "y": 2.64,
+   "z": 1.0,
+   "size_x": 2.4,
+   "size_y": 0.45,
+   "size_z": 2.0,
+   "collision": "convex",
+   "material": "metal_painted",
+   "form": "wall",
+   "variant": 5
+  },
+  {
+   "name": "tape_wall_n2",
+   "x": 0.0,
+   "y": 2.64,
+   "z": 1.0,
+   "size_x": 2.4,
+   "size_y": 0.45,
+   "size_z": 2.0,
+   "collision": "convex",
+   "material": "metal_painted",
+   "form": "wall",
+   "variant": 0
+  },
+  {
+   "name": "tape_wall_n3",
+   "x": 2.42,
+   "y": 2.64,
+   "z": 1.0,
+   "size_x": 2.4,
+   "size_y": 0.45,
+   "size_z": 2.0,
+   "collision": "convex",
+   "material": "metal_painted",
+   "form": "wall",
+   "variant": 1
+  },
+  {
+   "name": "tape_island_1a",
+   "x": -3.5,
+   "y": -2.82,
+   "z": 0.95,
+   "size_x": 0.9,
+   "size_y": 2.4,
+   "size_z": 1.9,
+   "collision": "convex",
+   "material": "metal_painted",
+   "form": "island",
+   "variant": 0
+  },
+  {
+   "name": "tape_island_1b",
+   "x": -3.5,
+   "y": -0.4,
+   "z": 0.95,
+   "size_x": 0.9,
+   "size_y": 2.4,
+   "size_z": 1.9,
+   "collision": "convex",
+   "material": "metal_painted",
+   "form": "island",
+   "variant": 1
+  },
+  {
+   "name": "tape_island_2a",
+   "x": 0.0,
+   "y": -2.82,
+   "z": 0.95,
+   "size_x": 0.9,
+   "size_y": 2.4,
+   "size_z": 1.9,
+   "collision": "convex",
+   "material": "metal_painted",
+   "form": "island",
+   "variant": 2
+  },
+  {
+   "name": "tape_island_2b",
+   "x": 0.0,
+   "y": -0.4,
+   "z": 0.95,
+   "size_x": 0.9,
+   "size_y": 2.4,
+   "size_z": 1.9,
+   "collision": "convex",
+   "material": "metal_painted",
+   "form": "island",
+   "variant": 3
+  },
+  {
+   "name": "tape_island_3a",
+   "x": 3.0,
+   "y": -2.82,
+   "z": 0.95,
+   "size_x": 0.9,
+   "size_y": 2.4,
+   "size_z": 1.9,
+   "collision": "convex",
+   "material": "metal_painted",
+   "form": "island",
+   "variant": 4
+  },
+  {
+   "name": "tape_island_3b",
+   "x": 3.0,
+   "y": -0.4,
+   "z": 0.95,
+   "size_x": 0.9,
+   "size_y": 2.4,
+   "size_z": 1.9,
+   "collision": "convex",
+   "material": "metal_painted",
+   "form": "island",
+   "variant": 5
+  },
+  {
+   "name": "tape_island_4a",
+   "x": 6.0,
+   "y": -2.82,
+   "z": 0.95,
+   "size_x": 0.9,
+   "size_y": 2.4,
+   "size_z": 1.9,
+   "collision": "convex",
+   "material": "metal_painted",
+   "form": "island",
+   "variant": 0
+  },
+  {
+   "name": "tape_island_4b",
+   "x": 6.0,
+   "y": -0.4,
+   "z": 0.95,
+   "size_x": 0.9,
+   "size_y": 2.4,
+   "size_z": 1.9,
+   "collision": "convex",
+   "material": "metal_painted",
+   "form": "island",
+   "variant": 1
+  },
+  {
+   "name": "tape_wall_adult_n1",
+   "x": 4.795,
+   "y": 6.64,
+   "z": 1.0,
+   "size_x": 2.4,
+   "size_y": 0.45,
+   "size_z": 2.0,
+   "collision": "convex",
+   "material": "metal_painted",
+   "form": "adult",
+   "variant": 0
+  },
+  {
+   "name": "tape_wall_adult_n2",
+   "x": 7.215,
+   "y": 6.64,
+   "z": 1.0,
+   "size_x": 2.4,
+   "size_y": 0.45,
+   "size_z": 2.0,
+   "collision": "convex",
+   "material": "metal_painted",
+   "form": "adult",
+   "variant": 1
+  },
+  {
+   "name": "tape_wall_adult_e1",
+   "x": 8.64,
+   "y": 5.195,
+   "z": 1.0,
+   "size_x": 0.45,
+   "size_y": 2.4,
+   "size_z": 2.0,
+   "collision": "convex",
+   "material": "metal_painted",
+   "form": "adult",
+   "variant": 2
+  },
+  {
+   "name": "club_chair_window_1",
+   "x": 1.6,
+   "y": -6.2,
+   "z": 0.39,
+   "size_x": 0.78,
+   "size_y": 0.75,
+   "size_z": 0.78,
+   "rot_z": 180.0,
+   "collision": "convex",
+   "material": "wood",
+   "variant": 0
+  },
+  {
+   "name": "club_chair_window_2",
+   "x": 2.8,
+   "y": -6.2,
+   "z": 0.39,
+   "size_x": 0.78,
+   "size_y": 0.75,
+   "size_z": 0.78,
+   "rot_z": 180.0,
+   "collision": "convex",
+   "material": "wood",
+   "variant": 1
+  },
+  {
+   "name": "shelf_run_r499afdf7_1",
+   "x": -3.49,
+   "y": 6.62,
+   "z": 0.9,
+   "size_x": 1.2,
+   "size_y": 0.5,
+   "size_z": 1.8,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "cartons_r499afdf7_2",
+   "x": -1.4,
+   "y": 4.86,
+   "z": 0.3,
+   "size_x": 0.4,
+   "size_y": 0.6,
+   "size_z": 0.6,
+   "collision": "convex",
+   "material": "wood"
+  }
+ ],
+ "rooms": [
+  {
+   "id": "sales_floor",
+   "story": 0,
+   "bounds": [
+    -9.0,
+    -7.0,
+    9.0,
+    3.0
+   ],
+   "role": "public_entry",
+   "combat_range": "long"
+  },
+  {
+   "id": "stockroom",
+   "story": 0,
+   "bounds": [
+    -9.0,
+    3.0,
+    3.0,
+    7.0
+   ],
+   "role": "objective_room",
+   "objective": true,
+   "fortifiable": true,
+   "combat_range": "medium"
+  },
+  {
+   "id": "back_room",
+   "story": 0,
+   "bounds": [
+    3.0,
+    3.0,
+    9.0,
+    7.0
+   ],
+   "role": "connector",
+   "combat_range": "close"
+  }
+ ],
+ "objectives": [
+  {
+   "id": "crack_safe",
+   "kind": "drill",
+   "x": -8.2,
+   "y": 6.2,
+   "z": 0.2,
+   "room": "stockroom",
+   "required": true,
+   "duration": 25.0
+  },
+  {
+   "id": "grab_late_fees",
+   "kind": "grab",
+   "x": 6.0,
+   "y": 5.0,
+   "z": 0.9,
+   "room": "back_room",
+   "required": false,
+   "duration": 6.0
+  }
+ ],
+ "loot": [
+  {
+   "id": "store_safe",
+   "kind": "cash",
+   "x": -8.2,
+   "y": 6.2,
+   "z": 0.2,
+   "value": 7000,
+   "bags": 2,
+   "room": "stockroom"
+  },
+  {
+   "id": "late_fees",
+   "kind": "cash",
+   "x": 6.0,
+   "y": 5.0,
+   "z": 0.9,
+   "value": 1500,
+   "bags": 1,
+   "room": "back_room"
+  }
+ ],
+ "zones": [
+  {
+   "id": "front_extract",
+   "kind": "extraction",
+   "story": 0,
+   "bounds": [
+    -9.0,
+    -7.0,
+    9.0,
+    -4.5
+   ]
+  },
+  {
+   "id": "stock_secure",
+   "kind": "secure",
+   "story": 0,
+   "bounds": [
+    -9.0,
+    3.0,
+    3.0,
+    7.0
+   ]
+  }
+ ],
+ "markers": [
+  {
+   "type": "camera_socket",
+   "id": "01",
+   "x": -8.0,
+   "y": -6.0,
+   "z": 2.9,
+   "room": "sales_floor",
+   "rot_z": 45
+  },
+  {
+   "type": "camera_socket",
+   "id": "02",
+   "x": -8.2,
+   "y": 3.8,
+   "z": 2.9,
+   "room": "stockroom",
+   "rot_z": 135
+  },
+  {
+   "type": "crew_spawn",
+   "id": "A",
+   "x": -4.0,
+   "y": -5.5,
+   "z": 0.0,
+   "rot_z": 0,
+   "room": "sales_floor",
+   "meta": {
+    "phase": "stealth"
+   }
+  },
+  {
+   "type": "objective",
+   "id": "SAFE",
+   "x": -8.2,
+   "y": 6.2,
+   "z": 0.2,
+   "room": "stockroom"
+  },
+  {
+   "type": "extraction",
+   "id": "FRONT",
+   "x": -6.0,
+   "y": -5.5,
+   "z": 0.0,
+   "room": "sales_floor"
+  },
+  {
+   "type": "cover_low",
+   "id": "AUTO_COUNTER_CHECKOUT",
+   "x": -7.2,
+   "y": -5.2,
+   "z": 0.0,
+   "room": "sales_floor",
+   "meta": {
+    "auto": "cover_from_volume",
+    "from": "counter_checkout"
+   }
+  },
+  {
+   "type": "cover_high",
+   "id": "AUTO_TAPE_ISLAND_1A",
+   "x": -3.5,
+   "y": -2.82,
+   "z": 0.0,
+   "room": "sales_floor",
+   "meta": {
+    "auto": "cover_from_volume",
+    "from": "tape_island_1a"
+   }
+  },
+  {
+   "type": "cover_high",
+   "id": "AUTO_TAPE_ISLAND_1B",
+   "x": -3.5,
+   "y": -0.4,
+   "z": 0.0,
+   "room": "sales_floor",
+   "meta": {
+    "auto": "cover_from_volume",
+    "from": "tape_island_1b"
+   }
+  },
+  {
+   "type": "cover_high",
+   "id": "AUTO_TAPE_ISLAND_2A",
+   "x": 0.0,
+   "y": -2.82,
+   "z": 0.0,
+   "room": "sales_floor",
+   "meta": {
+    "auto": "cover_from_volume",
+    "from": "tape_island_2a"
+   }
+  },
+  {
+   "type": "cover_high",
+   "id": "AUTO_TAPE_ISLAND_2B",
+   "x": 0.0,
+   "y": -0.4,
+   "z": 0.0,
+   "room": "sales_floor",
+   "meta": {
+    "auto": "cover_from_volume",
+    "from": "tape_island_2b"
+   }
+  },
+  {
+   "type": "cover_high",
+   "id": "AUTO_SHELF_RUN_STOCKROOM_SHELTER",
+   "x": -3.74,
+   "y": 5.13,
+   "z": 0.0,
+   "room": "stockroom",
+   "meta": {
+    "auto": "cover_from_volume",
+    "from": "shelf_run_stockroom_shelter"
+   }
+  },
+  {
+   "type": "cover_low",
+   "id": "AUTO_CARTONS_R499AFDF7_1",
+   "x": -7.43,
+   "y": 4.44,
+   "z": 0.0,
+   "room": "stockroom",
+   "meta": {
+    "auto": "cover_from_volume",
+    "from": "cartons_r499afdf7_1"
+   }
+  },
+  {
+   "type": "landmark",
+   "id": "SALES_FLOOR",
+   "x": 0.0,
+   "y": -2.0,
+   "z": 1.0,
+   "room": "sales_floor",
+   "meta": {
+    "auto": "landmark",
+    "label": "sales_floor",
+    "role": "public_entry"
+   }
+  },
+  {
+   "type": "landmark",
+   "id": "STOCKROOM",
+   "x": -3.0,
+   "y": 5.0,
+   "z": 1.0,
+   "room": "stockroom",
+   "meta": {
+    "auto": "landmark",
+    "label": "stockroom",
+    "role": "objective_room"
+   }
+  }
+ ],
+ "parapets": [
+  {
+   "story": 1,
+   "height": 0.9,
+   "thick": 0.3
+  }
+ ],
+ "modular": true
 }
