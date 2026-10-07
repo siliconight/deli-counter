@@ -65,6 +65,54 @@ def _room_at(spec, story, x, y):
     return best.id if best is not None else None
 
 
+def shared_open_edge(a, b, parts):
+    """Do two same-storey room rects touch along an edge no partition covers
+    for at least 1.2 m? Then they are one continuous floor.
+
+    ``a`` and ``b`` are ``[min_x, min_y, max_x, max_y]``; ``parts`` is the
+    storey's partitions as ``(axis, pos, start, end)``. Two rects touch when
+    an edge of one lies within 0.05 m of the other's; the shared length, less
+    every same-axis partition lying on that line, must leave 1.2 m.
+
+    ONE RULE, TWO ASKERS (0.197.0): `build_graph` below, for open floor plans
+    in the tactical graph, and `layout_lint._reach_from_ext`, for L12 and L24.
+    L24 shipped without it and named nine rooms reachable only by breaching
+    that open floor already joined -- deli_a01's basement utility room among
+    them, whose north edge cold run 9189's bake walks across where its
+    partition stops at x 12. Lifted from `build_graph`'s closure unchanged."""
+    ax0, ay0, ax1, ay1 = a
+    bx0, by0, bx1, by1 = b
+    # vertical shared edge (a's right == b's left or vice versa)
+    for x_edge, lo, hi in ((ax1, max(ay0, by0), min(ay1, by1))
+                           if abs(ax1 - bx0) < 0.05 else (None, 0, 0),
+                           (bx1, max(ay0, by0), min(ay1, by1))
+                           if abs(bx1 - ax0) < 0.05 else (None, 0, 0)):
+        if x_edge is not None and hi - lo >= 1.2:
+            covered = 0.0
+            for axis, pos, start, end in parts:
+                if axis != "Y":
+                    continue
+                if abs(pos - x_edge) < 0.05:
+                    covered += max(0.0, min(end, hi) - max(start, lo))
+            if (hi - lo) - covered >= 1.2:
+                return True
+    # horizontal shared edge
+    for y_edge, lo, hi in ((ay1, max(ax0, bx0), min(ax1, bx1))
+                           if abs(ay1 - by0) < 0.05 else (None, 0, 0),
+                           (by1, max(ax0, bx0), min(ax1, bx1))
+                           if abs(by1 - ay0) < 0.05 else (None, 0, 0)):
+        if y_edge is not None and hi - lo >= 1.2:
+            covered = 0.0
+            for axis, pos, start, end in parts:
+                if axis != "X":
+                    continue
+                if abs(pos - y_edge) < 0.05:
+                    covered += max(0.0, min(end, hi) - max(start, lo))
+            if (hi - lo) - covered >= 1.2:
+                return True
+    return False
+
+
 def build_graph(spec):
     """Nodes = room ids. Edges from interior openings (same story, between two
     rooms) and vertical links (between stories). Returns (adjacency, info)."""
@@ -131,39 +179,12 @@ def build_graph(spec):
     # open-plan adjacency: two same-story rooms whose rects share an edge
     # with NO partition covering it are one continuous space (a lobby flowing
     # into a bullpen). Without this, open floor plans read as disconnected
-    # and open-plan rooms false-flag as dead ends. Additive only.
+    # and open-plan rooms false-flag as dead ends. Additive only. The rule is
+    # `shared_open_edge`, which layout_lint's L12 and L24 ask too (0.197.0).
     def _shared_open_edge(ra, rb):
-        ax0, ay0, ax1, ay1 = ra.bounds
-        bx0, by0, bx1, by1 = rb.bounds
-        # vertical shared edge (ra right == rb left or vice versa)
-        for x_edge, lo, hi in ((ax1, max(ay0, by0), min(ay1, by1))
-                               if abs(ax1 - bx0) < 0.05 else (None, 0, 0),
-                               (bx1, max(ay0, by0), min(ay1, by1))
-                               if abs(bx1 - ax0) < 0.05 else (None, 0, 0)):
-            if x_edge is not None and hi - lo >= 1.2:
-                covered = 0.0
-                for p in spec.partitions:
-                    if p.story != ra.story or p.axis != "Y":
-                        continue
-                    if abs(p.pos - x_edge) < 0.05:
-                        covered += max(0.0, min(p.end, hi) - max(p.start, lo))
-                if (hi - lo) - covered >= 1.2:
-                    return True
-        # horizontal shared edge
-        for y_edge, lo, hi in ((ay1, max(ax0, bx0), min(ax1, bx1))
-                               if abs(ay1 - by0) < 0.05 else (None, 0, 0),
-                               (by1, max(ax0, bx0), min(ax1, bx1))
-                               if abs(by1 - ay0) < 0.05 else (None, 0, 0)):
-            if y_edge is not None and hi - lo >= 1.2:
-                covered = 0.0
-                for p in spec.partitions:
-                    if p.story != ra.story or p.axis != "X":
-                        continue
-                    if abs(p.pos - y_edge) < 0.05:
-                        covered += max(0.0, min(p.end, hi) - max(p.start, lo))
-                if (hi - lo) - covered >= 1.2:
-                    return True
-        return False
+        return shared_open_edge(ra.bounds, rb.bounds,
+                                [(p.axis, p.pos, p.start, p.end)
+                                 for p in spec.partitions if p.story == ra.story])
 
     room_list = list(spec.rooms)
     for i, ra in enumerate(room_list):

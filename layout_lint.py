@@ -797,6 +797,26 @@ def _reach_from_ext(spec, walk_only=False):
         if x0 < -hx - tol or x1 > hx + tol or y0 < -hy - tol or y1 > hy + tol:
             link(r["id"], "EXT")
 
+    # open floor (0.197.0): two rooms on one storey whose shared edge no
+    # partition covers for 1.2 m are one floor -- tactical's rule, asked here
+    # too (`tactical.shared_open_edge`). Without it L24 named nine rooms
+    # reachable only by breaching that open floor already joined. A partition
+    # with no start or end runs the footprint, as `_opening_xy` reads it.
+    import tactical
+    for st, rs in by.items():
+        parts = []
+        for p in spec.get("partitions", []):
+            if p.get("story", 0) != st:
+                continue
+            lo, hi = (-hy, hy) if p["axis"] == "Y" else (-hx, hx)
+            parts.append((p["axis"], p["pos"],
+                          lo if p.get("start") is None else p["start"],
+                          hi if p.get("end") is None else p["end"]))
+        for i, ra in enumerate(rs):
+            for rb in rs[i + 1:]:
+                if tactical.shared_open_edge(ra["bounds"], rb["bounds"], parts):
+                    link(ra["id"], rb["id"])
+
     # stairs/ladders connect every floor they pass through, not just endpoints
     for st in list(spec.get("stairs", [])) + list(spec.get("ladders", [])):
         a, b = st.get("from_story"), st.get("to_story")
@@ -878,7 +898,7 @@ def walk_reach_findings(spec):
     call, and test_walk_reach fails on a new one."""
     return [f"L24 reachable only by breaching: '{r['id']}' (story {r.get('story')}) "
             f"-- every way in is a breach panel, a window or a drop; no door, "
-            f"stair or ladder reaches it"
+            f"stair, ladder or open floor reaches it"
             for r in walk_unreachable(spec)]
 
 

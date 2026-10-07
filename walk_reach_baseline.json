@@ -1,40 +1,21 @@
 {
   "walk_unreachable": {
-    "apartment_walkup_a01": [
-      "bedroom",
-      "kitchen",
-      "office"
-    ],
-    "corner_deli_heist_01": [
-      "utility_room"
-    ],
     "cr_deli": [
-      "server_room",
-      "utility_room"
-    ],
-    "deli_a01": [
-      "utility_room"
+      "server_room"
     ],
     "deli_a02": [
-      "server_room",
-      "utility_room"
+      "server_room"
     ],
     "deli_a03": [
-      "server_room",
-      "utility_room"
+      "server_room"
     ],
     "night_deli": [
-      "server_room",
-      "utility_room"
-    ],
-    "rowhouse_raid": [
-      "basement_vault",
-      "kitchen"
+      "server_room"
     ]
   },
-  "reason": "Rooms a body can only reach by breaching a panel, vaulting a window or dropping through a hole (layout_lint L24), left as authored by 0.194.0 because each is a design call: deli_a01's server room was the first, and the walker gave it a door (2026-10-06). The deli family repeats its layout: a server room on story 1 (fortifiable in deli_a01 and deli_a03, the OBJECTIVE in cr_deli, deli_a02 and night_deli, where breaching in may be the point) and a utility room in the basement whose role is 'connector', which a room with no door contradicts. apartment_walkup_a01's kitchen, bedroom and office and rowhouse_raid's kitchen and basement vault are the rest. A room given a door must leave this list (test_walk_baseline_has_not_gone_stale); a new one fails (test_no_new_room_only_a_breach_reaches).",
+  "reason": "Rooms a body can only reach by breaching a panel, vaulting a window or dropping through a hole (layout_lint L24). KEPT BY DESIGN, the walker's call (2026-10-06): the server room where it is the OBJECTIVE -- cr_deli, deli_a02, night_deli -- an objective you breach into. PENDING the walker: deli_a03's server room (fortifiable, on deli_a01's layout, whose server room got a door in 0.194.0). REFUTED, kept: 0.194.0 froze 15 here, and 11 were open floor L24's graph did not model -- the deli family's six basement utility rooms, apartment_walkup_a01's kitchen and, downstream of it, its bedroom (by the stair) and office (by a door), and rowhouse_raid's kitchen and basement vault. 0.197.0 asks tactical.shared_open_edge, and cold run 9189's bake walks into deli_a01's utility room. A scratch census first kept the bedroom and office: it added open-floor links without re-following stairs and doors from the rooms they reached. A room given a door must leave this list (test_walk_baseline_has_not_gone_stale); a new one fails (test_no_new_room_only_a_breach_reaches).",
   "counts": {
-    "rooms": 15,
-    "shells": 8
+    "rooms": 4,
+    "shells": 4
   }
 }
