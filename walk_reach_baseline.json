@@ -1,0 +1,40 @@
+{
+  "walk_unreachable": {
+    "apartment_walkup_a01": [
+      "bedroom",
+      "kitchen",
+      "office"
+    ],
+    "corner_deli_heist_01": [
+      "utility_room"
+    ],
+    "cr_deli": [
+      "server_room",
+      "utility_room"
+    ],
+    "deli_a01": [
+      "utility_room"
+    ],
+    "deli_a02": [
+      "server_room",
+      "utility_room"
+    ],
+    "deli_a03": [
+      "server_room",
+      "utility_room"
+    ],
+    "night_deli": [
+      "server_room",
+      "utility_room"
+    ],
+    "rowhouse_raid": [
+      "basement_vault",
+      "kitchen"
+    ]
+  },
+  "reason": "Rooms a body can only reach by breaching a panel, vaulting a window or dropping through a hole (layout_lint L24), left as authored by 0.194.0 because each is a design call: deli_a01's server room was the first, and the walker gave it a door (2026-10-06). The deli family repeats its layout: a server room on story 1 (fortifiable in deli_a01 and deli_a03, the OBJECTIVE in cr_deli, deli_a02 and night_deli, where breaching in may be the point) and a utility room in the basement whose role is 'connector', which a room with no door contradicts. apartment_walkup_a01's kitchen, bedroom and office and rowhouse_raid's kitchen and basement vault are the rest. A room given a door must leave this list (test_walk_baseline_has_not_gone_stale); a new one fails (test_no_new_room_only_a_breach_reaches).",
+  "counts": {
+    "rooms": 15,
+    "shells": 8
+  }
+}

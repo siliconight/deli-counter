@@ -757,16 +757,29 @@ def structural_findings(spec):
     return fails, warns
 
 
-def reachability_findings(spec):
-    """L12 -- every room must have a path from an exterior entrance. Catches
-    SEALED spaces (a stair landing in a closed box, a room with no door): a
-    *missing* connection, which the coherence rules (dead openings) cannot see.
-    Runs for every mode. Uses the same graph as the nav check, but treats a
-    stair/ladder as serving every floor it passes through (real stairwell
-    behaviour), and counts ramps + floor-hole/hatch drops as connections."""
+# The ways through a wall a body WALKS (L24): a doorway, a garage, a vault
+# door. `graph()` labels a vaultable window "vault" as well, so the filter
+# acts on the raw opening kind, before graph() ever sees it.
+WALK_KINDS = ("door", "garage", "vault")
+
+
+def _reach_from_ext(spec, walk_only=False):
+    """Room ids with a path from an exterior entrance, plus "EXT".
+
+    Uses the same graph as the nav check, but treats a stair/ladder as
+    serving every floor it passes through (real stairwell behaviour), and
+    counts ramps + floor-hole/hatch drops as connections. That is L12's
+    search. ``walk_only`` (L24) keeps only `WALK_KINDS` among the openings
+    and drops the floor-hole/hatch links: what a body reaches without
+    breaching a panel, vaulting a window or dropping through a hole. The
+    caller's spec is never changed; a filtered copy goes to `graph()`."""
     rooms = spec.get("rooms", [])
-    if not rooms:
-        return []
+    if walk_only:
+        spec = dict(spec)
+        for key in ("partitions", "ext_walls"):
+            spec[key] = [dict(w, openings=[o for o in w.get("openings", [])
+                                           if o.get("kind", "door") in WALK_KINDS])
+                         for w in spec.get(key, [])]
     edges, _ = graph(spec)
     by = _rooms_by_story(spec)
 
@@ -802,8 +815,9 @@ def reachability_findings(spec):
         b = _room_at(by.get(rp.get("to_story", 0), []), rp.get("x", 0), rp.get("y", 0))
         if a and b:
             link(a["id"], b["id"])
-    # floor holes / hatches (vertical drops) connect the two stacked rooms
-    for vl in spec.get("vertical_links", []):
+    # floor holes / hatches (vertical drops) connect the two stacked rooms;
+    # a drop goes one way, down, so a walk does not count it
+    for vl in ([] if walk_only else spec.get("vertical_links", [])):
         if vl.get("kind") in ("floor_hole", "hatch") and vl.get("x") is not None:
             s = vl.get("story", 0)
             a = _room_at(by.get(s, []), vl["x"], vl["y"])
@@ -819,6 +833,19 @@ def reachability_findings(spec):
             if v not in seen:
                 seen.add(v)
                 stk.append(v)
+    return seen
+
+
+def reachability_findings(spec):
+    """L12 -- every room must have a path from an exterior entrance. Catches
+    SEALED spaces (a stair landing in a closed box, a room with no door): a
+    *missing* connection, which the coherence rules (dead openings) cannot see.
+    Runs for every mode. The search is `_reach_from_ext`, which counts every
+    way through a wall, breach panels and windows included."""
+    rooms = spec.get("rooms", [])
+    if not rooms:
+        return []
+    seen = _reach_from_ext(spec)
     fails = []
     for r in rooms:
         if r["id"] not in seen:
@@ -826,6 +853,33 @@ def reachability_findings(spec):
                          f"has no path from an exterior entrance -- sealed space or "
                          f"missing door/stair connection")
     return fails
+
+
+def walk_unreachable(spec):
+    """The rooms L12 reaches that a body cannot walk to (L24): every way in
+    is a breach panel, a window or a drop. Room dicts, in spec order."""
+    rooms = spec.get("rooms", [])
+    if not rooms:
+        return []
+    full = _reach_from_ext(spec)
+    walk = _reach_from_ext(spec, walk_only=True)
+    return [r for r in rooms if r["id"] in full and r["id"] not in walk]
+
+
+def walk_reach_findings(spec):
+    """L24 (WARN, 0.194.0): a room reached only by breaching, vaulting a
+    window or dropping through a hole.
+
+    L12 counts every way through a wall, so a room behind breach panels
+    passes it. deli_a01's server room was one (186 m2, two soft-wall breaches,
+    no door), and cold run 9188's site bake made it its own navmesh island.
+    A warning, not a failure: an objective behind breach walls can be the
+    design. `walk_reach_baseline.json` freezes the ones awaiting the walker's
+    call, and test_walk_reach fails on a new one."""
+    return [f"L24 reachable only by breaching: '{r['id']}' (story {r.get('story')}) "
+            f"-- every way in is a breach panel, a window or a drop; no door, "
+            f"stair or ladder reaches it"
+            for r in walk_unreachable(spec)]
 
 
 def gate(spec):
@@ -1069,6 +1123,7 @@ def lint_spec(spec, name):
     fails += [f"L20 {c}: {m}"                # L20 unbuildable setback
               for c, m in __import__("setbacks").findings(_LintSpec(spec))]
     fails += reachability_findings(spec)    # L12 sealed/unreachable rooms (all modes)
+    warns += walk_reach_findings(spec)      # L24 a room only a breach, window or drop reaches
     if spec.get("mode") != "pvp_heist":
         return name, fails, warns
     edges, ext_faces = graph(spec)
