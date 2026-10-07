@@ -202,6 +202,12 @@ PROP_SPECIES = (
     # `migrate_cooler_wall.py` places carry the name. `cooler_backstock*`
     # (the walk-in's racks) is not a cooler wall and stays shelving.
     (("cooler_run",), "cooler_run"),
+    # THE DELI CASE (Zoo 1.81.0). `deli_case_cover` routed nowhere and built
+    # as a plain box wearing glass: cold run 9189's composed deli_a01 stood a
+    # 7 m `prop_delco_1997_03_w700_d110_h130_mglass` where its case is. Only
+    # the six delis' cases carry `deli_case`; `the_deli_counter` (primos_pizza,
+    # strip_retail_a01) is a counter and stays one.
+    (("deli_case",), "deli_case"),
     # THE SNACK GONDOLA (Zoo 1.13.0): a store's aisles. `gondola_aisle_N`
     # built as plain boxes; `migrate_store_gondolas.py` renames the other
     # stores' `aisle_N` and `aisle_shelf_N` to it. The supermarkets' `aisle_N`

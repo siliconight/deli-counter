@@ -289,3 +289,16 @@ def test_a_cooler_run_is_the_cooler_species_and_the_backstock_is_not():
     assert f("cooler_run") == "cooler_run"
     assert f("cooler_backstock_rack") == "shelving"
     assert f("cooler_backstock") == "shelving"
+
+
+def test_a_deli_case_is_the_deli_case_species():
+    """0.200.0 (Zoo 1.81.0): `deli_case_cover` routed nowhere and built as a
+    plain box wearing glass -- cold run 9189's composed deli_a01 stood
+    `prop_delco_1997_03_w700_d110_h130_mglass` where its case is. The six
+    delis' cases are the only library volumes the keyword reaches; a deli's
+    own counter is a counter still."""
+    from prop_species import species_for_name as f
+    assert f("deli_case_cover") == "deli_case"
+    assert f("the_deli_counter") == "counter"
+    assert f("front_register_counter") == "counter"
+    assert f("cooler_run") == "cooler_run"
