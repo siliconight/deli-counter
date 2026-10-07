@@ -8,7 +8,8 @@
     "unjudged": 21,
     "stair_failures": 3,
     "navigable_null": 20,
-    "grid_fragile": 6
+    "grid_fragile": 6,
+    "entry_unreached": 1
   },
   "navigable_null_reconciliation": {
     "unjudged": 8,
@@ -248,6 +249,15 @@
         "patrol_point_PAT_CLUB (6/8 grid origins)"
       ],
       "reason": "primos_pizza_stair_0 traverses at only some of 8 voxel-grid origins, and the safe and the stash are reached at 6 of 8 (nav_gate 0.189.0). The stair is already in stair_failures from an older run. Not fit for a themed lot before the sweep either. Since 0.190.0's ramp-head trim the base origin also reaches patrol_point_PAT_CLUB, unreachable there under 0.189.0, and it too connects at 6 of 8, where the stair does."
+    }
+  ],
+  "entry_unreached": [
+    {
+      "shell": "primos_pizza",
+      "stairs": [
+        "primos_pizza_stair_0"
+      ],
+      "reason": "All 3 storey-0 entrances snap onto one island, and the stair -- basement to storey 1, through the ground floor -- joins its two ends, but neither end is on the entrances' island at the gate's own origin: the ground floor it passes through cannot reach it (nav_gate 0.196.0, 2026-10-06). Roadmap 189 located the neck at its discharge plate against the north wall beside its breach panel (docs/findings/stairwell_on_one_grid_in_four/ at the factory root, necks.txt); 'primos_pizza's discharge' is on that item's list. Not fixed here."
     }
   ]
 }

@@ -142,6 +142,13 @@ const GRID_FRACTIONS := [[0.0, 0.0, 0.0], [0.5, 0.5, 0.25], [0.25, 0.0, 0.75],
 # never crops a wall out of it.
 const GRID_PAD_M := 2.0
 
+# AN ENTRANCE IS SNAPPED A STEP INSIDE ITS DOOR (0.196.0). 1.0 m along the
+# wall's inward normal is past the wall's erosion (half a wall, 0.15-0.175 m,
+# plus the 0.4 m bake radius) and inside the 1.5 m approach no seeded piece
+# may stand in (`level_design._seed_clear_doors`), so it lands on the floor
+# a body walks in on rather than on the door's own threshold.
+const ENTRY_IN := 1.0
+
 var _exit_code := 0
 
 
@@ -261,6 +268,27 @@ func _run(glb_path: String, gp_path: String) -> Dictionary:
 	print("[nav-gate] islands: %d -- %s" % [result["islands"].size(),
 		str(result["islands"])])
 
+	# -- entrances: snapped once, asked of every stair below (0.196.0) -------
+	# A stair whose two ends join is a stair, not a route. deli_a01's up-stair
+	# passed the stair check in every build while two crate stacks cut its foot
+	# off from the stairwell's door, and its whole upper storey with it (cold
+	# runs 9187 and 9188; Deli Counter 0.195.0). Each stair now also reports
+	# `from_entry`: is either end on an island an entrance is on. REPORTED, NOT
+	# GATED, like `navigable` -- nav_gate.py prints it and the library's
+	# population test freezes the set, so the exit code is unchanged.
+	var entry_islands := {}
+	var entry_rows := []
+	for e in _entry_points(gp):
+		var ed: Dictionary = e
+		var ehit := _snap(nm, _to_godot([ed["x"], ed["y"], ed["z"]]), MARKER_MAX_ABOVE)
+		var eisl := -1
+		if ehit["dist"] <= SNAP_MAX:
+			eisl = _island_of(islands, ehit["poly"])
+			entry_islands[eisl] = true
+		entry_rows.append({"tag": ed["tag"], "kind": ed["kind"],
+						   "x": ed["x"], "y": ed["y"],
+						   "snap": snappedf(ehit["dist"], 0.01), "island": eisl})
+
 	# -- stairs: prove lower <-> upper --------------------------------------
 	var failures := 0
 	var systems: Array = gp.get("stair_systems", [])
@@ -293,8 +321,38 @@ func _run(glb_path: String, gp_path: String) -> Dictionary:
 			rep["detail"] = "endpoints on disjoint islands (lower on %d, upper on %d)" % [
 				_island_of(islands, lo_hit["poly"]), _island_of(islands, hi_hit["poly"])]
 			failures += 1
+		# An entrance reaches the stair when either end is on an island an
+		# entrance is on. Null when no entrance snapped, or an end is off the
+		# mesh: nothing measured, so nothing claimed.
+		if entry_islands.is_empty() or rep["status"] == "off_navmesh":
+			rep["from_entry"] = null
+		else:
+			rep["from_entry"] = entry_islands.has(_island_of(islands, lo_hit["poly"])) \
+				or entry_islands.has(_island_of(islands, hi_hit["poly"]))
 		result["stairs"].append(rep)
 		print("[nav-gate] stair %s: %s -- %s" % [rep["id"], rep["status"], rep["detail"]])
+
+	var judged := 0
+	var unreached := []
+	for srep in result["stairs"]:
+		var sd: Dictionary = srep
+		if not sd.has("from_entry") or sd["from_entry"] == null:
+			continue
+		judged += 1
+		if not bool(sd["from_entry"]):
+			unreached.append(str(sd.get("id", "?")))
+	var snapped := 0
+	for row in entry_rows:
+		var rd: Dictionary = row
+		if int(rd["island"]) >= 0:
+			snapped += 1
+	result["entries"] = {"points": entry_rows, "snapped": snapped,
+						 "stairs_judged": judged, "stairs_unreached": unreached}
+	var not_line := ""
+	if not unreached.is_empty():
+		not_line = " -- NOT: " + ", ".join(unreached)
+	print("[nav-gate] entrances: %d of %d snapped; stairs an entrance reaches: %d/%d%s"
+		% [snapped, entry_rows.size(), judged - unreached.size(), judged, not_line])
 
 	# -- markers: the documented F5 check, headless (secondary, warn-only) ---
 	result["markers"] = _check_markers(gp, nm, graph)
@@ -426,6 +484,31 @@ func _grid_sweep(gp: Variant, src: NavigationMeshSourceGeometryData3D,
 func _to_godot(p: Array) -> Vector3:
 	# level space (x, y_north, z_up) -> Godot (x, z_up, -y_north)
 	return Vector3(p[0], p[2], -p[1])
+
+
+func _entry_points(gp: Variant) -> Array:
+	## Each storey-0 exterior door and garage in gameplay.json, ENTRY_IN m
+	## inside its wall at the storey's level, in LEVEL space (x, y_north,
+	## z_up) -- the space the openings and markers are written in. The side
+	## is the third field of the wall's name (`ext_0_S`); a name without one
+	## is skipped rather than guessed at.
+	var out := []
+	var inward := {"N": [0.0, -1.0], "S": [0.0, 1.0], "E": [-1.0, 0.0], "W": [1.0, 0.0]}
+	for o in gp.get("openings", []):
+		var od: Dictionary = o
+		var kind := str(od.get("kind", ""))
+		var wall := str(od.get("wall", ""))
+		if not (kind in ["door", "garage"]) or not wall.begins_with("ext_0_"):
+			continue
+		var parts := wall.split("_")
+		if parts.size() < 3 or not inward.has(parts[2]):
+			continue
+		var n: Array = inward[parts[2]]
+		out.append({"tag": str(od.get("tag", "")), "kind": kind,
+					"x": float(od.get("x", 0.0)) + float(n[0]) * ENTRY_IN,
+					"y": float(od.get("y", 0.0)) + float(n[1]) * ENTRY_IN,
+					"z": 0.0})
+	return out
 
 
 func _poly_graph(nm: NavigationMesh) -> Array:

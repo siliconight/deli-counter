@@ -356,6 +356,23 @@ def verdict(result):
         if isinstance(g, list) and any(g) and not all(g):
             lines.append(f"  grid: traverses at {sum(1 for x in g if x)} of "
                          f"{len(g)} voxel-grid origins")
+    # 0.196.0: does an entrance reach each stair? A stair whose ends join can
+    # still be cut off from every door -- deli_a01's was, in cold runs 9187
+    # and 9188 -- so the gate snaps each storey-0 exterior door a step inside
+    # and asks. Reported here, frozen by test_navgate_population; the
+    # returned `ok` is unchanged.
+    ent = result.get("entries")
+    if isinstance(ent, dict):
+        judged = ent.get("stairs_judged", 0)
+        unreached = ent.get("stairs_unreached") or []
+        lines.append(f"entrances: {ent.get('snapped', 0)} of "
+                     f"{len(ent.get('points') or [])} snapped; stairs an "
+                     f"entrance reaches: {judged - len(unreached)}/{judged}")
+        for sid in unreached:
+            lines.append(f"  no entrance reaches stair {sid}")
+    else:
+        lines.append("entrances: UNJUDGED -- this result predates the "
+                     "entrance check (0.196.0)")
     mk = result.get("markers") or {}
     if mk.get("checked"):
         lines.append(f"markers: {mk.get('reachable', 0)}/{mk['checked']} "
