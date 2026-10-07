@@ -35,8 +35,11 @@ BODY_R = 0.35
 
 
 def _club(w=20.0, d=12.0, rid="main_floor", name="strip_club_probe", **kw):
+    # the room is the shell, its walls the building's own (0.202.0): a wall
+    # piece needs a wall behind it, and a room inside a larger footprint had
+    # none
     s = {"name": name, "seed": 1997, "story_height": 3.6, "wall_thick": 0.3,
-         "footprint_x": w + 4.0, "footprint_y": d + 4.0, "n_stories": 1,
+         "footprint_x": w, "footprint_y": d, "n_stories": 1,
          "default_material": "concrete",
          "materials": [{"id": "concrete"}, {"id": "drywall"}, {"id": "wood"}],
          "rooms": [{"id": rid, "story": 0, "role": "public_entry",
@@ -286,7 +289,9 @@ def test_the_library_carries_the_fixture_pass_and_is_still_a_fixed_point_of_furn
         for v in d["volumes"]:
             if v["name"].startswith(("dartboard_", "cigarettes_")):
                 counts[v["name"].split("_r")[0]] += 1
-    assert counts == {"dartboard": 11, "cigarettes": 121}, counts
+    # 121 -> 119 cigarette machines (0.202.0): two stood against open room
+    # edges, and no wall in their rooms holds them
+    assert counts == {"dartboard": 11, "cigarettes": 119}, counts
 
 
 def test_the_strip_club_preset_hangs_a_board():

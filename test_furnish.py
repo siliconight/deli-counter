@@ -22,13 +22,15 @@ import prop_species   # noqa: E402
 
 
 def _spec(w=12.0, d=10.0, role="office", **kw):
-    # The footprint is deliberately LARGER than the room: wall furniture
-    # stands against interior walls only, because `_seed_clear` knows about
-    # partitions and nothing here knows where the openings in an outside
-    # wall are. A probe room that WAS the whole building would have four
-    # exterior walls and no shelf would ever be placed.
+    # THE ROOM IS THE SHELL (0.202.0): its walls are the building's own,
+    # which furnish stands wall pieces against, clear of their openings
+    # (`_ext_openings`). Until 0.202.0 the footprint was 4 m LARGER than the
+    # room so that its walls were "interior" -- edges with no partition on
+    # them, which furnish took for walls and no longer does: a wall piece
+    # needs a wall behind it. That reasoning dated from 0.122.0, which banned
+    # exterior walls; the ban was lifted the release after.
     s = {"name": "furnish_probe", "seed": 1997, "story_height": 3.0,
-         "footprint_x": w + 4.0, "footprint_y": d + 4.0, "n_stories": 1,
+         "footprint_x": w, "footprint_y": d, "n_stories": 1,
          "rooms": [{"id": "r0", "story": 0, "role": role,
                     "bounds": [-w / 2, -d / 2, w / 2, d / 2],
                     "combat_range": "medium"}],
@@ -691,7 +693,9 @@ def test_clusters_pack_small_pieces_a_hand_apart():
     """2-4 pieces 0.3-0.8 m apart: every cluster piece but a lone litter bin
     has a neighbour within 0.8 m, edge to edge, and none stands taller than
     `_CLUSTER_MAX_H` in the middle of the floor."""
-    s = _spec(30.0, 24.0, role="connector")
+    # a room on storey -1 stands in a basement the building declares: the
+    # builder stands no walls on a storey it does not build (0.202.0)
+    s = _spec(30.0, 24.0, role="connector", has_basement=True)
     s["rooms"][0].update(id="storage_basement", story=-1)
     level_design.furnish(s)
     cl = [v for v in s["volumes"]
@@ -739,7 +743,8 @@ def test_a_to_the_ceiling_piece_stops_short_of_the_ceiling():
     """Zoo's furnace and water heater run their flue to the slot's top; the
     slot reaches the ceiling less `_CEILING_AIR`, never through it."""
     for sh, roof in ((3.0, None), (3.8, 0.5), (6.5, None)):
-        s = _spec(20.0, 16.0, role="utility", story_height=sh)
+        # in a basement the building declares (0.202.0)
+        s = _spec(20.0, 16.0, role="utility", story_height=sh, has_basement=True)
         s["rooms"][0].update(id="boiler_room", story=-1)
         if roof:
             s["roof_thick"] = roof

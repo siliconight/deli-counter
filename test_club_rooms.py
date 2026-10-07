@@ -40,10 +40,12 @@ _GEN = re.compile(r"^(?P<stem>[a-z_]+?)_(?P<tag>r[0-9a-f]{8})_\d+(_\d+)?$")
 
 
 def _club(w=20.0, d=12.0, rid="main_floor", name="strip_club_probe", **kw):
-    """A strip club with one room; the footprint is larger than the room so
-    its walls are interior (the furnish probe's reasoning)."""
+    """A strip club with one room, which is the whole shell: its walls are
+    the building's own (0.202.0, the furnish probe's reasoning -- a wall
+    piece needs a wall behind it, and a room floating 2 m inside its
+    footprint had none)."""
     s = {"name": name, "seed": 1997, "story_height": 3.6, "wall_thick": 0.3,
-         "footprint_x": w + 4.0, "footprint_y": d + 4.0, "n_stories": 1,
+         "footprint_x": w, "footprint_y": d, "n_stories": 1,
          "default_material": "concrete",
          "materials": [{"id": "concrete"}, {"id": "drywall"}, {"id": "wood"}],
          "rooms": [{"id": rid, "story": 0, "role": "public_entry",
@@ -398,7 +400,8 @@ def test_a_vending_machine_has_a_brand_and_a_room_may_take_three():
     variants = set()
     for seed in range(6):
         s = {"name": "lobby_probe", "seed": seed, "story_height": 3.6,
-             "footprint_x": 44.0, "footprint_y": 34.0, "n_stories": 1,
+             # the room is the shell (0.202.0): a wall piece needs a wall
+             "footprint_x": 40.0, "footprint_y": 30.0, "n_stories": 1,
              "rooms": [{"id": "upper_hall", "story": 0, "role": "connector",
                         "bounds": [-20.0, -15.0, 20.0, 15.0]}],
              "volumes": [], "partitions": [], "stairs": []}

@@ -738,6 +738,22 @@ def _seed_clear(spec, room, px, py, placed, half=0.0, above=None,
         if px + half > rect[0] - 0.3 and px - half < rect[2] + 0.3 and \
                 py + half > rect[1] - 0.3 and py - half < rect[3] + 0.3:
             return False
+    # AN AUTHORED HOLE IN THIS STOREY'S FLOOR (0.202.0), kept off by the stair
+    # reserve's own 0.3 m. Furnish cleared the stairs and never an authored
+    # `slab_holes` opening (layout_lint L23's "UNSEEN"): apartment_walkup_a01's
+    # dining set stood over its drop hole, and cbp_town_finale's and
+    # final_stand's furniture inside atrium holes nothing fills. Its own
+    # storey only -- the storey below stands under a hole, not on it -- and a
+    # hung piece hangs over the floor and is not asked.
+    if above is None:
+        for h in spec.get("slab_holes", []) or []:
+            if int(h.get("story", 0) or 0) != story:
+                continue
+            hx0, hx1 = h["x"] - h["size_x"] / 2.0, h["x"] + h["size_x"] / 2.0
+            hy0, hy1 = h["y"] - h["size_y"] / 2.0, h["y"] + h["size_y"] / 2.0
+            if px + half > hx0 - 0.3 and px - half < hx1 + 0.3 and \
+                    py + half > hy0 - 0.3 and py - half < hy1 + 0.3:
+                return False
     for l in spec.get("ladders", []):
         if math.hypot(l["x"] - px, l["y"] - py) < 1.6 + half:
             return False
@@ -2702,6 +2718,55 @@ def _clear_of_openings(openings, wall, centre, half_len):
 #: Air between a wall-slotted piece's back and the wall's face.
 _WALL_PIECE_AIR = 0.01
 
+#: A WALL PIECE NEEDS A WALL BEHIND IT (0.202.0). How close a built wall's
+#: centreline must lie to a room edge to stand on it: a room's bound lies on
+#: its wall's centreline, and 0.10 m is the census's (the factory's
+#: docs/findings/wall_pieces_without_walls/), under which 3,931 of the
+#: library's 4,086 furnished wall pieces found their wall.
+_EDGE_WALL_TOL = 0.10
+#: Every spec field the builder's walls are drawn from (`layout_lint.built_walls`
+#: and the stair voids it asks): furnish adds volumes, never these, so the
+#: walls are measured once a spec and kept.
+_WALL_MODEL_KEYS = ("footprint_x", "footprint_y", "wall_thick", "n_stories", "has_basement",
+                    "auto_exterior", "story_height", "partitions", "ext_walls", "stairs",
+                    "ramps", "slab_holes", "setbacks")
+_WALLS_SEEN = {}
+
+
+def _built_walls(spec):
+    """`layout_lint.built_walls`, kept by the fields it reads: furnish asks
+    `_wall_slots` for every size of every piece in every room."""
+    import json
+    import layout_lint
+    key = json.dumps([spec.get(k) for k in _WALL_MODEL_KEYS], sort_keys=True, default=str)
+    got = _WALLS_SEEN.get(key)
+    if got is None:
+        if len(_WALLS_SEEN) > 512:
+            _WALLS_SEEN.clear()
+        got = _WALLS_SEEN[key] = layout_lint.built_walls(spec)
+    return got
+
+
+def _edge_backing(spec, story, n, line):
+    """The stretches of a room edge a built wall stands on, merged: every wall
+    on ``story`` whose faces look along axis ``n`` (0: x, a wall running along
+    y) with its centreline within `_EDGE_WALL_TOL` of ``line``."""
+    spans = sorted(s for _label, ws, wn, plane, _half, sp in _built_walls(spec)
+                   if ws == story and wn == n and abs(plane - line) <= _EDGE_WALL_TOL
+                   for s in sp)
+    out = []
+    for s0, s1 in spans:
+        if out and s0 <= out[-1][1] + 1e-6:
+            out[-1] = (out[-1][0], max(out[-1][1], s1))
+        else:
+            out.append((s0, s1))
+    return out
+
+
+def _held(backing, a, b):
+    """Does one stretch of wall hold the run ``a``..``b`` whole?"""
+    return any(s0 - 1e-6 <= a and b <= s1 + 1e-6 for s0, s1 in backing)
+
 
 def _glazed_walls(spec, story):
     """The compass letters of this storey's exterior walls whose MATERIAL
@@ -2743,8 +2808,19 @@ def _wall_slots(spec, room, w, d, rng, with_front=False,
     (away from its wall), so the caller can turn a piece the emitter will
     not turn -- `_front_turn` -- rather than trust `rot_z`, which is right
     only for a piece longer than it is deep.
+
+    A WALL BEHIND IT (0.202.0). An edge is offered only where a wall the
+    builder stands lies on it and holds the piece's whole run
+    (`_edge_backing`, `_held`). Until then an interior edge was taken for a
+    wall: where two rooms meet across open floor, 155 of the library's 4,086
+    wall pieces stood with their backs against nothing -- deli_a01's ATM and
+    two paper lottery boards among them, in front of its deli case. Every
+    slot is drawn and shuffled as before and the unheld ones dropped after,
+    so the held ones keep their order and only a piece that stood against
+    nothing moves.
     """
     x0, y0, x1, y1 = room["bounds"]
+    story = int(room.get("story", 0) or 0)
     hx = float(spec.get("footprint_x", 0.0)) / 2.0
     hy = float(spec.get("footprint_y", 0.0)) / 2.0
     openings = _ext_openings(spec, room.get("story", 0))
@@ -2775,6 +2851,7 @@ def _wall_slots(spec, room, w, d, rng, with_front=False,
         span = (x1 - x0) - long_side - 0.6
         if span <= 0:
             continue
+        backing = _edge_backing(spec, story, 1, wy)
         for _ in range(4):
             px = x0 + 0.3 + long_side / 2.0 + rng.random() * span
             if not over_openings and ext and not _clear_of_openings(
@@ -2782,9 +2859,10 @@ def _wall_slots(spec, room, w, d, rng, with_front=False,
                 continue
             # against the S wall (inset +1) the front must face N; against
             # the N wall, S. Long axis along x, so no long-axis turn is added.
-            out.append((px, wy + inset * (short_side / 2.0 + back),
-                        long_side, short_side, 180.0 if inset > 0 else 0.0,
-                        0.0 if inset > 0 else 180.0))
+            out.append(((px, wy + inset * (short_side / 2.0 + back),
+                         long_side, short_side, 180.0 if inset > 0 else 0.0,
+                         0.0 if inset > 0 else 180.0),
+                        _held(backing, px - long_side / 2.0, px + long_side / 2.0)))
     # E and W walls: the long axis runs in y
     for wx, inset in ((x0, +1), (x1, -1)):
         ext = _wall_of(wx, hx, "W", "E")
@@ -2793,6 +2871,7 @@ def _wall_slots(spec, room, w, d, rng, with_front=False,
         span = (y1 - y0) - long_side - 0.6
         if span <= 0:
             continue
+        backing = _edge_backing(spec, story, 0, wx)
         for _ in range(4):
             py = y0 + 0.3 + long_side / 2.0 + rng.random() * span
             if not over_openings and ext and not _clear_of_openings(
@@ -2801,10 +2880,17 @@ def _wall_slots(spec, room, w, d, rng, with_front=False,
             # against the W wall the front must face E; against the E wall,
             # W. `long_axis_first` already turns this piece 90, so the front
             # sits at 90 + rot_z + 180: 180 here gives E, 0 gives W.
-            out.append((wx + inset * (short_side / 2.0 + back), py,
-                        short_side, long_side, 180.0 if inset > 0 else 0.0,
-                        90.0 if inset > 0 else 270.0))
+            out.append(((wx + inset * (short_side / 2.0 + back), py,
+                         short_side, long_side, 180.0 if inset > 0 else 0.0,
+                         90.0 if inset > 0 else 270.0),
+                        _held(backing, py - long_side / 2.0, py + long_side / 2.0)))
+    # THE SHUFFLE FIRST, THEN THE WALL (0.202.0): shuffled with every slot in
+    # it, as it always was, so the held slots keep the order they had and the
+    # stream every later draw reads is untouched; then the slots no wall holds
+    # go. Filtered before the shuffle, a room with one open edge re-rolled
+    # whole -- 33 specs moved where 18 held a piece against nothing.
     rng.shuffle(out)
+    out = [o for o, held in out if held]
     return out if with_front else [o[:5] for o in out]
 
 
