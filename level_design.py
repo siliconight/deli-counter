@@ -1452,7 +1452,11 @@ _PIECES = {p["name"]: p for p in (
            most_big=(80.0, 3), variants=4, seats=("stool", 1, 1), off_glass=True,
            rooms=("bar", "taproom", "tavern", "pub", "social", "club", "lounge", "vip",
                   "cabaret", "stage", "dance", "main", "floor")),
-    _piece("payphone", ((0.75, 0.5, 2.3),), "wall", front=True, most=1),
+    # THE PAYPHONE ON A WALL IS A WALL UNIT (0.204.0, roadmap 210): Zoo
+    # 1.88.0's `wall` form -- no post, a conduit down the wall, a phone book
+    # under the shelf. Asked for nothing, Zoo's `auto` stood a booth on a post
+    # in front of the wall.
+    _piece("payphone", ((0.75, 0.5, 2.3),), "wall", front=True, form="wall", most=1),
     _piece("chair_waiting", ((2.4, 0.6, 0.9), (1.8, 0.6, 0.9),
                              (3.0, 0.6, 0.9)), "wall", front=True),
     _piece("booth", ((1.8, 0.75, 1.15), (2.4, 0.75, 1.15)), "wall",

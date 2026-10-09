@@ -61,6 +61,11 @@ SKIN_KINDS = (
     # THE CHAIN-LINK FENCE'S FABRIC (Zoo 1.77.0, Pixelcoat 0.59.0): Lot stands
     # the fence; no spec here writes it, so it has no KIND_BY_MATERIAL row
     "chain_link",
+    # THE GETAWAY VAN'S PAINT (Zoo 1.82.0, roadmap 206): flat black, object-
+    # owned, no pack in any theme. Lot stands the van, so no spec here writes
+    # it. Copied in 0.204.0: Zoo grew it after 0.203.0's suite ran, and the
+    # pin to Zoo's list had failed since
+    "paint_matte",
 )
 
 #: Every material id this spec library uses, and the kind it resolves to.
