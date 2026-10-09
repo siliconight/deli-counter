@@ -3158,22 +3158,24 @@ def empty_rowhome(name: str = "empty_rowhome", width: float = 6.0,
 EMPTY_ROWHOMES = {
     # and its front door (0.182.0): a different paint on every house, as the
     # comp's row has, and a black iron security door on two
-    # and its roof (0.185.0): a TV antenna on eight of the twelve, as a 1990s
-    # Philadelphia street has -- cable came late to the city -- and the odd
-    # satellite dish on two; c, f and h have neither
+    # and its roof (0.185.0): a TV antenna, and the odd satellite dish. Eight
+    # antennas and two dishes, as a 1990s Philadelphia street had them -- cable
+    # came late to the city -- read as uniform and computer generated: the
+    # walker, 2026-10-09, "perhaps 30% as many?" (0.204.1). So three:
+    # antennas on a and g, the dish on k; the other nine have neither.
     "gs_empty_rowhome_a": dict(width=6.0, floors=3, wall="brick_orange", door_side="W", cornice=0.8, seed=1911,
                                door_finish="navy", security_door=True, antenna=True),
     "gs_empty_rowhome_b": dict(width=5.5, floors=3, wall="siding", door_side="E", cornice=0.6, seed=1912,
-                               door_finish="white", antenna=True, dish=True),
+                               door_finish="white"),
     "gs_empty_rowhome_c": dict(width=6.5, floors=3, wall="brick_brown", door_side="E", cornice=1.0, seed=1913,
                                door_finish="oxblood"),
     "gs_empty_rowhome_d": dict(width=6.0, floors=2, wall="stone_ext", door_side="W", cornice=0.6, seed=1914,
-                               door_finish="green", antenna=True),
+                               door_finish="green"),
     # the vacant one (0.179.0): painted block, boarded -- the family's
     # "boarded variant", one in six as a 1990s Delco street has a few; its
     # door black and secured
     "gs_empty_rowhome_e": dict(width=5.5, floors=3, wall="paint_block", door_side="W", cornice=0.9, seed=1915,
-                               vacant=True, door_finish="black", security_door=True, antenna=True),
+                               vacant=True, door_finish="black", security_door=True),
     "gs_empty_rowhome_f": dict(width=6.0, floors=3, wall="brick", door_side="E", cornice=0.7, seed=1916,
                                door_finish="stained"),
     # SIX MORE (0.184.0): a 26-house terrace drawn from six showed one house
@@ -3184,13 +3186,13 @@ EMPTY_ROWHOMES = {
     "gs_empty_rowhome_h": dict(width=6.3, floors=2, wall="brick_orange", door_side="E", cornice=0.7, seed=1918,
                                door_finish="white", security_door=True),
     "gs_empty_rowhome_i": dict(width=6.1, floors=3, wall="siding", door_side="W", cornice=0.8, seed=1919,
-                               door_finish="oxblood", antenna=True),
+                               door_finish="oxblood"),
     "gs_empty_rowhome_j": dict(width=6.2, floors=3, wall="brick", door_side="W", cornice=0.6, seed=1920,
-                               door_finish="black", antenna=True),
+                               door_finish="black"),
     "gs_empty_rowhome_k": dict(width=5.6, floors=3, wall="paint_block", door_side="E", cornice=1.0, seed=1921,
                                door_finish="navy", dish=True),
     "gs_empty_rowhome_l": dict(width=6.4, floors=2, wall="stone_ext", door_side="E", cornice=0.8, seed=1922,
-                               door_finish="stained", security_door=True, antenna=True),
+                               door_finish="stained", security_door=True),
 }
 
 

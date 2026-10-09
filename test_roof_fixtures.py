@@ -54,11 +54,15 @@ def test_asked_for_with_no_front_door_or_on_a_real_building_refuses():
         _roof(_spec(roof_dish=True, facade=False))
 
 
-def test_the_family_has_antennas_on_eight_and_dishes_on_two():
+def test_the_family_has_antennas_on_two_and_a_dish_on_one():
+    """FAILS ON 0.204.0. The walker, 2026-10-09: "far too many Sattelite/Attena
+    that makes the rowhomes look a little too uniform and computer generated.
+    perhaps 30% as many?" 0.185.0's eight antennas and two dishes, cut to
+    three (0.204.1)."""
     rows = list(presets.EMPTY_ROWHOMES.values())
-    assert sum(1 for a in rows if a.get("antenna")) == 8
-    assert sum(1 for a in rows if a.get("dish")) == 2
-    assert sum(1 for a in rows if not (a.get("antenna") or a.get("dish"))) == 3
+    assert sum(1 for a in rows if a.get("antenna")) == 2
+    assert sum(1 for a in rows if a.get("dish")) == 1
+    assert sum(1 for a in rows if not (a.get("antenna") or a.get("dish"))) == 9
 
 
 def test_every_built_rowhome_s_roof_carries_what_its_preset_asked_for():
