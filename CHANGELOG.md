@@ -1,3 +1,18 @@
+## [0.206.1] - a home's room in any building takes the home rule
+
+**Cold run 9229** (roadmap 229): the deli's `apartment_hideout`, a
+residence-like room on a shop's upper floor, took three rows of four
+troffers, an office ceiling on a bedsit, because 0.206.0's home rule keyed
+on the BUILDING being a residence (`is_residence(business)`).
+
+**Now** a room whose role or id carries `apartment`, `hideout`, `bedroom`,
+`living`, `flat` or `bedsit` takes the home rule whatever the building: one
+fixture at its centre (`_home_room`, `_HOME_WORDS`), and the floor as its
+work plane. A residence's rooms are as 0.206.0 laid them.
+
+**Tests:** 1 pure test in `test_fixture_rows.py`, failing on 0.206.0.
+**Suite:** 1,379 passed, 2 skipped, exit 0, before and after the rebuild (1,378 as 0.206.0 and the one new case). **The library rebuilt:** 1,140 rows and 4,133 lamps where 0.206.0 read 1,156 and 4,217: ten more rooms take the home's one fixture (124 single-fixture rows where 114 stood) and 390 rooms carry more than one run where 400 did (`docs/findings/fixture_rows/row_census_0206_1.txt`).
+
 ## [0.206.0] - ceiling rows laid to the work, on the ceiling's grid
 
 **The walker, 2026-10-10** (roadmap 229): indoor light fixtures should "not

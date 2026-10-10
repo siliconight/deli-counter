@@ -216,6 +216,10 @@ _WORK_PLANE = (
       "lounge", "cafe", "diner", "deli"), 1.0),
 )
 _WORK_PLANE_FLOOR = 0.0
+#: A residence-like ROOM inside any building takes the home rule (0.206.1):
+#: cold run 9229's deli hung three rows of four over its `apartment_hideout`,
+#: an office ceiling on a bedsit, because the rule keyed on the building.
+_HOME_WORDS = ("apartment", "hideout", "bedroom", "living", "flat", "bedsit")
 #: WOOD: rows at most this times A apart.
 _ROW_SPACING_OVER_A = 1.5
 #: A room up to (1 + this) x B wide keeps one row: WOOD's half-spacing to the
@@ -998,6 +1002,15 @@ def _work_plane(r, residence):
     return _WORK_PLANE_FLOOR
 
 
+def _home_room(r, residence):
+    """A home's room: by the building (`residence`) or by the room's own
+    words (0.206.1, `_HOME_WORDS`)."""
+    if residence:
+        return True
+    key = ((r.get("role") or "") + " " + (r.get("id") or "")).lower()
+    return any(w in key for w in _HOME_WORDS)
+
+
 def _ceiling_pitch(work_plane):
     """Tiles over a desk or a counter, joists everywhere else."""
     return _CEILING_PITCH_TILE if work_plane > 0.0 else _CEILING_PITCH_JOIST
@@ -1379,8 +1392,9 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
             spacing = round(long_axis / count, 3)
             rows = [(rot, c[0], c[1], count, spacing)]
         else:
+            home = _home_room(r, residence)
             rows = _rows_for_room(bounds, ceiling_z, c[2],
-                                  _work_plane(r, residence), residence)
+                                  _work_plane(r, home), home)
             rep["rows_laid"] += len(rows)
         lamp_z = round(ceiling_z - _PENDANT_CORD, 3) if moody else ceiling_z
         base_id = ("%s_bulbs" if moody else "%s_ceiling") % r.get("id", "room")

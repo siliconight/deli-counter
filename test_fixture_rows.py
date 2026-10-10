@@ -99,8 +99,9 @@ def test_a_home_room_is_one_fixture_at_its_centre():
     assert len(rows) == 1
     assert rows[0]["row"] == {"count": 1, "spacing": 0.0}
     assert rows[0]["pos"][:2] == [4.5, 3.5]           # the centre, not the grid
-    # the same room in a store is two rows: 7 / 4.65 = 1.5 spacings, past the slack
-    assert len(_rows(_derive([r]), "living_room")) == 2
+    # the same bounds under a name with no home in it, in a store, is two rows: 7 / 4.65 =
+    # 1.5 spacings, past the slack (0.206.1: a living room is a home's in any building)
+    assert len(_rows(_derive([dict(r, id="back_floor")]), "back_floor")) == 2
 
 
 def test_below_grade_bulbs_are_as_they_were():
@@ -137,3 +138,15 @@ def test_a_colinear_partition_moves_the_row_it_lies_under_only():
     assert rep["rows_shifted"] == 1
     assert [a["pos"][1] for a in rows][0] == 1.2 and [a["pos"][1] for a in rows][2] == 6.6
     assert rows[1]["pos"][1] != 4.2                    # moved to the larger side's centre
+
+
+def test_a_home_room_in_a_shop_takes_the_home_rule():
+    # cold run 9229: the deli's apartment hideout, 21 x 16 m, took three rows of four
+    r = {"id": "apartment_hideout", "story": 1, "bounds": [-2.0, -14.0, 19.0, 2.0],
+         "role": "fortifiable", "center": [8.5, -6.0, 3.3]}
+    rows = _rows(_derive([r]), "apartment_hideout")
+    assert len(rows) == 1 and rows[0]["row"] == {"count": 1, "spacing": 0.0}
+    assert rows[0]["pos"][:2] == [8.5, -6.0]
+    # the same bounds under a name that says nothing of a home is still an office ceiling
+    office = dict(r, id="upper_office")
+    assert len(_rows(_derive([office]), "upper_office")) == 3
