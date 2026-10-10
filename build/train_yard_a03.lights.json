@@ -10,15 +10,51 @@
       "type": "fluorescent",
       "source": "derived",
       "pos": [
-        4.8,
-        -4.25,
+        0.0,
+        -10.0,
         4.6
       ],
       "rot_y": 0.0,
       "room": "shed_floor",
       "row": {
         "count": 4,
-        "spacing": 9.6
+        "spacing": 12.0
+      },
+      "drop": 4.6,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "shed_floor_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        6.0,
+        -4.4,
+        4.6
+      ],
+      "rot_y": 0.0,
+      "room": "shed_floor",
+      "row": {
+        "count": 3,
+        "spacing": 12.0
+      },
+      "drop": 4.6,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "shed_floor_ceiling_r2",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        1.6,
+        4.6
+      ],
+      "rot_y": 0.0,
+      "room": "shed_floor",
+      "row": {
+        "count": 4,
+        "spacing": 12.0
       },
       "drop": 4.6,
       "reacts_to_alarm": true
@@ -48,7 +84,7 @@
       "source": "derived",
       "pos": [
         -0.0,
-        8.75,
+        8.8,
         4.6
       ],
       "rot_y": 0.0,
@@ -85,7 +121,25 @@
       "source": "derived",
       "pos": [
         -0.0,
-        -6.5,
+        -9.6,
+        9.6
+      ],
+      "rot_y": 0.0,
+      "room": "upper_ring",
+      "row": {
+        "count": 5,
+        "spacing": 9.6
+      },
+      "drop": 4.6,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "upper_ring_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -0.0,
+        -3.2,
         9.6
       ],
       "rot_y": 0.0,
@@ -122,7 +176,25 @@
       "source": "derived",
       "pos": [
         -7.8,
-        6.5,
+        3.2,
+        9.6
+      ],
+      "rot_y": 0.0,
+      "room": "upper_west",
+      "row": {
+        "count": 5,
+        "spacing": 6.48
+      },
+      "drop": 4.6,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "upper_west_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -7.8,
+        9.6,
         9.6
       ],
       "rot_y": 0.0,

@@ -193,6 +193,51 @@ _CEILING_GAP = 0.1      # hang fixtures this far below the ceiling PLANE
 _FIXTURE_DEPTH = 0.3
 _FIXTURE_GAP = _CEILING_GAP
 
+#: ROWS LAID TO THE WORK, ON THE CEILING'S GRID (0.206.0, roadmap 229). The
+#: walker, 2026-10-10: fixtures should "not always be in a perfect line, so
+#: it looks a little less robotic". Counted over the 131 shipped manifests,
+#: 513 of 513 fluorescent rows stood on their room's centreline along its
+#: longer axis, 303 of them at the five-lamp cap with lamps 3.0 to 11.6 m
+#: apart, because one rule lit every room from its bounds alone. A real
+#: ceiling is laid to what is under it. WOOD's shop rule (the walker's
+#: references, `docs/reference/INDOOR_FIXTURE_PLACEMENT_GUIDE.md` in the
+#: factory): with A the height from the work surface to the fixture, rows
+#: stand at most 1.5 x A apart and the outer row within half of that of the
+#: wall -- so a room wider than 1.5 x A takes a second row, and a 24 x 24 ft
+#: shop under a 9 ft ceiling takes three. The work surface is the room's: a
+#: desk where the furnish seeds desks, a counter or a shelf where it sells
+#: or serves, the floor in a hall, a stockroom, a bay or a home. Words from
+#: the furnish's own archetypes (`level_design._SEED_ARCHETYPES`), matched
+#: on the room's role and id.
+_WORK_PLANE = (
+    (("office", "manager", "exec", "admin", "suite", "booking", "clinic",
+      "exam", "reception", "teller"), 0.75),
+    (("sales", "retail", "shop_floor", "counter", "kitchen", "food", "bar",
+      "lounge", "cafe", "diner", "deli"), 1.0),
+)
+_WORK_PLANE_FLOOR = 0.0
+#: WOOD: rows at most this times A apart.
+_ROW_SPACING_OVER_A = 1.5
+#: A room up to (1 + this) x B wide keeps one row: WOOD's half-spacing to the
+#: wall is a shop's shadow-free bench rule, and a 4 m office under one row
+#: of troffers is what an office is. The slack is taken off the row count's
+#: fraction before it is rounded up.
+_ROW_SLACK = 0.3
+#: A room's rows across its width and its lamps are capped: the lamp count
+#: was a budget number before the bake (`_TARGET_SPACING`, above), and the
+#: cap keeps a 20 x 58 m hall at twelve lamps rather than forty until the
+#: price of more is measured (roadmap 229). The row cap, `_MAX_FIXTURES`,
+#: is unchanged.
+_MAX_ROWS = 3
+_MAX_LAMPS_ROOM = 12
+#: THE CEILING'S GRID. A fixture hangs from a joist or sits in a tile, so a
+#: row's line is a multiple of the pitch from the building's origin, not
+#: the room's centre: 0.6 m tiles over a desk or a counter, 0.4 m joists
+#: everywhere else. The snap moves a line by half a pitch at most, and it
+#: is the same in every build of a spec.
+_CEILING_PITCH_TILE = 0.6
+_CEILING_PITCH_JOIST = 0.4
+
 
 def wall_clearance(wall_thick):
     """Lamp-centre to wall-centreline clearance, metres (derivation above)."""
@@ -247,7 +292,7 @@ def _band(w, clear):
     return (cx - ex, cy - ey, cx + ex, cy + ey)
 
 
-def _colinear_shift(bounds, rot, walls, clear):
+def _colinear_shift(bounds, rot, walls, clear, line=None):
     """Where a partition runs ALONG the row -- its band contains the row's
     line over at least half the row's length -- the row is not crossing a
     wall, it is lying in one, and no point-wise nudge can save it. The
@@ -258,7 +303,8 @@ def _colinear_shift(bounds, rot, walls, clear):
     One row, one side, on purpose: the other side stays unlit and the
     caller reports the shift so a re-walk can judge whether that space
     wanted its own row -- which is a room-splitting question for the spec,
-    not a lighting one.
+    not a lighting one. ``line`` (0.206.0) is the row's own perpendicular
+    coordinate when it is not the room's centre.
     """
     minx, miny, maxx, maxy = bounds
     along_x = abs(rot) < 45.0
@@ -266,6 +312,8 @@ def _colinear_shift(bounds, rot, walls, clear):
         perp, lo, hi, a0, a1 = (miny + maxy) / 2.0, miny, maxy, minx, maxx
     else:
         perp, lo, hi, a0, a1 = (minx + maxx) / 2.0, minx, maxx, miny, maxy
+    if line is not None:
+        perp = line
     row_len = max(a1 - a0, 1e-9)
     for w in walls or ():
         b = _band(w, clear)
@@ -938,6 +986,71 @@ def _spill_anchors(room_id, bounds, story, floor_z, storefronts, wall_thick,
     return out
 
 
+def _work_plane(r, residence):
+    """The height over its floor of what a room's ceiling lights (0.206.0):
+    a desk, a counter, or the floor itself. See `_WORK_PLANE`."""
+    if residence:
+        return _WORK_PLANE_FLOOR
+    key = ((r.get("role") or "") + " " + (r.get("id") or "")).lower()
+    for words, height in _WORK_PLANE:
+        if any(w in key for w in words):
+            return height
+    return _WORK_PLANE_FLOOR
+
+
+def _ceiling_pitch(work_plane):
+    """Tiles over a desk or a counter, joists everywhere else."""
+    return _CEILING_PITCH_TILE if work_plane > 0.0 else _CEILING_PITCH_JOIST
+
+
+def _snap(value, pitch):
+    """``value`` moved to the nearest multiple of ``pitch`` from the origin."""
+    return round(pitch * round(value / pitch), 3)
+
+
+def _rows_for_room(bounds, lamp_z, floor_z, work_plane, residence):
+    """The ceiling rows of a room (0.206.0, roadmap 229): along its longer
+    axis as before, and across the shorter one as many as the work plane
+    asks. With A the height from the work plane to the lamp and B = 1.5 x A
+    (`_ROW_SPACING_OVER_A`), a room W wide takes ceil(W / B - `_ROW_SLACK`)
+    rows, so the outer row stands near B / 2 of its wall; the lamps along each row at
+    B, held to `_MAX_FIXTURES` a row and `_MAX_LAMPS_ROOM` a room by
+    thinning every row alike. Each row's line is snapped to the ceiling's
+    pitch (`_ceiling_pitch`) from the building's origin and kept a pitch
+    inside the room. A home's room is one fixture at its centre whatever
+    its size: a line of one is not a line.
+
+    Returns ``[(rot_y, x, y, count, spacing)]``, the rows across in order."""
+    minx, miny, maxx, maxy = bounds
+    dx, dy = maxx - minx, maxy - miny
+    cx, cy = (minx + maxx) / 2.0, (miny + maxy) / 2.0
+    along_x = dx >= dy
+    rot = 0.0 if along_x else 90.0
+    if residence:
+        return [(rot, round(cx, 3), round(cy, 3), 1, 0.0)]
+    length, width = (dx, dy) if along_x else (dy, dx)
+    a = max(lamp_z - floor_z - work_plane, 1.0)
+    b = _ROW_SPACING_OVER_A * a
+    # ceil of the width in spacings, less the slack: a room up to 1.3 B wide is one row
+    n_rows = max(1, min(_MAX_ROWS, int(-(-(width / b - _ROW_SLACK) // 1))))
+    count = max(1, min(_MAX_FIXTURES, int(round(length / b))))
+    while n_rows * count > _MAX_LAMPS_ROOM and count > 1:
+        count -= 1
+    spacing = round(length / count, 3) if count > 1 else 0.0
+    pitch = _ceiling_pitch(work_plane)
+    lo = (miny if along_x else minx) + pitch
+    hi = (maxy if along_x else maxx) - pitch
+    rows = []
+    for k in range(n_rows):
+        line = (cy if along_x else cx) + (k + 0.5) * width / n_rows - width / 2.0
+        line = min(max(_snap(line, pitch), lo), hi)
+        if along_x:
+            rows.append((rot, round(cx, 3), round(line, 3), count, spacing))
+        else:
+            rows.append((rot, round(line, 3), round(cy, 3), count, spacing))
+    return rows
+
+
 def _row_for_bounds(bounds):
     """A ceiling row runs along the room's longer axis. Returns
     (rot_y, count, spacing)."""
@@ -1208,6 +1321,7 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
     rep.setdefault("storefront_rows", 0)
     rep.setdefault("storefront_spills", 0)
     rep.setdefault("counter_accents", 0)
+    rep.setdefault("rows_laid", 0)
     spills = []
     clear = wall_clearance(wall_thick)
     club_ids = set(club_rooms or ())
@@ -1247,12 +1361,15 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
             anchors.append(_room_ambient(
                 r, c[2], ceiling_z, _club_colour(_club_colour_start(r.get("id")), 0)))
             continue
-        rot, count, spacing = _row_for_bounds(bounds)
-        # Below grade, or guarding the take: bare bulbs instead of the office
-        # row. Same run machinery (a stairwell still splits the line around
-        # its hole), different type, density and hang -- see _PENDANT_AREA.
+        # THE ROWS (0.206.0, roadmap 229): along the room's longer axis as
+        # before, and across it as many as its work plane asks, each on the
+        # ceiling's grid -- `_rows_for_room`. Below grade, or guarding the
+        # take: bare bulbs on one centre row instead, unchanged -- the same
+        # run machinery (a stairwell still splits a line around its hole),
+        # different type, density and hang; see _PENDANT_AREA.
         moody = story < 0 or (bool(r.get("objective")) and r.get("role") not in _LIT_ROLES)
         if moody:
+            rot, count, spacing = _row_for_bounds(bounds)
             w = bounds[2] - bounds[0]
             d = bounds[3] - bounds[1]
             long_axis = max(w, d)
@@ -1260,31 +1377,43 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
                                _PENDANT_MAX,
                                int(long_axis / _PENDANT_MIN_SPACING) or 1))
             spacing = round(long_axis / count, 3)
+            rows = [(rot, c[0], c[1], count, spacing)]
+        else:
+            rows = _rows_for_room(bounds, ceiling_z, c[2],
+                                  _work_plane(r, residence), residence)
+            rep["rows_laid"] += len(rows)
         lamp_z = round(ceiling_z - _PENDANT_CORD, 3) if moody else ceiling_z
-        # A row is laid across the whole room; a stairwell punched through the
-        # ceiling is a hole in the middle of it. Split around the holes on this
-        # storey -- see `_row_runs`.
-        # A partition ALONG the row (the hospital roof's y = 0 spine under a
-        # row laid at y = 0) is not a crossing: the row moves to the larger
-        # side of it before any point is judged.
-        rx, ry = c[0], c[1]
-        shifted = _colinear_shift(bounds, rot, walls, clear)
-        if shifted is not None:
-            if abs(rot) < 45.0:
-                ry = shifted
-            else:
-                rx = shifted
-            rep["rows_shifted"] += 1
-        runs = _row_runs([rx, ry, lamp_z], rot, count, spacing, rects,
-                         walls=walls, clear=clear, report=rep)
         base_id = ("%s_bulbs" if moody else "%s_ceiling") % r.get("id", "room")
+        # Each row is laid across the whole room; a stairwell punched through
+        # the ceiling is a hole in the middle of it. Split around the holes on
+        # this storey -- see `_row_runs`. A partition ALONG a row (the hospital
+        # roof's y = 0 spine under a row laid at y = 0) is not a crossing: the
+        # row moves to the larger side of it before any point is judged.
+        runs = []
+        for k, (rot, rx, ry, count, spacing) in enumerate(rows):
+            shifted = _colinear_shift(bounds, rot, walls, clear,
+                                      line=ry if abs(rot) < 45.0 else rx)
+            if shifted is not None:
+                if abs(rot) < 45.0:
+                    ry = shifted
+                else:
+                    rx = shifted
+                rep["rows_shifted"] += 1
+            got = _row_runs([rx, ry, lamp_z], rot, count, spacing, rects,
+                            walls=walls, clear=clear, report=rep)
+            # The first row's one run keeps the ORIGINAL id: a split and a
+            # second row are the exceptions, and a room that has neither must
+            # not get a renamed anchor (ids are how authored overrides bind).
+            # A split run is `<id>_<i>` as before; a further row is
+            # `<id>_r<k>`, and its split runs `<id>_r<k>_<i>`.
+            row_id = base_id if k == 0 else "%s_r%d" % (base_id, k)
+            for i, (pos, n, sp) in enumerate(got):
+                runs.append((pos, n, sp, rot,
+                             row_id if len(got) == 1 else "%s_%d" % (row_id, i)))
         room_reach = 0.0
-        for i, (pos, n, sp) in enumerate(runs):
+        for pos, n, sp, rot, rid in runs:
             anchors.append({
-                # A single surviving run keeps the ORIGINAL id: splitting is
-                # the exception, and a room that never had a hole must not get
-                # a renamed anchor (ids are how authored overrides bind).
-                "id": base_id if len(runs) == 1 else "%s_%d" % (base_id, i),
+                "id": rid,
                 "type": "pendant" if moody else "fluorescent",
                 "source": "derived",
                 "pos": pos,

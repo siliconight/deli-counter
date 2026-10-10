@@ -11,14 +11,50 @@
       "source": "derived",
       "pos": [
         0.0,
-        -5.55,
+        -13.2,
         5.1
       ],
       "rot_y": 0.0,
       "room": "event_floor",
       "row": {
-        "count": 5,
-        "spacing": 10.0
+        "count": 4,
+        "spacing": 12.5
+      },
+      "drop": 5.1,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "event_floor_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -5.6,
+        5.1
+      ],
+      "rot_y": 0.0,
+      "room": "event_floor",
+      "row": {
+        "count": 4,
+        "spacing": 12.5
+      },
+      "drop": 5.1,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "event_floor_ceiling_r2",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        2.0,
+        5.1
+      ],
+      "rot_y": 0.0,
+      "room": "event_floor",
+      "row": {
+        "count": 4,
+        "spacing": 12.5
       },
       "drop": 5.1,
       "reacts_to_alarm": true
@@ -84,8 +120,26 @@
       "type": "fluorescent",
       "source": "derived",
       "pos": [
+        1.6,
+        8.8,
+        5.1
+      ],
+      "rot_y": 0.0,
+      "room": "back_of_house",
+      "row": {
+        "count": 4,
+        "spacing": 7.8
+      },
+      "drop": 5.1,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "back_of_house_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
         5.5,
-        11.45,
+        14.4,
         5.1
       ],
       "rot_y": 0.0,

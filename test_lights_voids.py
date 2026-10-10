@@ -17,9 +17,11 @@ import lights
 CAP = 0.3
 SH = 3.5
 
-# The room from the measured case: 24 m wide on story 0, row along x.
-OFFICE = {"id": "manager_office", "story": 0, "bounds": [-15.0, 4.0, 0.0, 9.0],
-          "center": [-7.5, 6.5, 0.0]}
+# The room from the measured case: 24 m wide on story 0, row along x. Since
+# 0.206.0 a 5 m deep office takes two rows over its desks; this slice of it,
+# 3.4 m deep, keeps the one row the argument below is about.
+OFFICE = {"id": "manager_office", "story": 0, "bounds": [-15.0, 4.0, 0.0, 7.4],
+          "center": [-7.5, 5.7, 0.0]}
 # A room on the same storey with no hole in its ceiling.
 LOBBY = {"id": "lobby", "story": 0, "bounds": [-15.0, -9.0, 15.0, 0.0],
          "center": [0.0, -4.5, 0.0]}

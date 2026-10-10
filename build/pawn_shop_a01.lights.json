@@ -10,8 +10,44 @@
       "type": "fluorescent",
       "source": "derived",
       "pos": [
+        -4.0,
+        -5.4,
+        3.05
+      ],
+      "rot_y": 0.0,
+      "room": "shop_floor",
+      "row": {
+        "count": 2,
+        "spacing": 4.0
+      },
+      "drop": 3.05,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "shop_floor_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
         0.0,
-        -2.5,
+        -2.4,
+        3.05
+      ],
+      "rot_y": 0.0,
+      "room": "shop_floor",
+      "row": {
+        "count": 4,
+        "spacing": 4.0
+      },
+      "drop": 3.05,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "shop_floor_ceiling_r2",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        0.6,
         3.05
       ],
       "rot_y": 0.0,
@@ -85,14 +121,32 @@
       "source": "derived",
       "pos": [
         0.0,
-        -3.5,
+        -5.2,
         6.45
       ],
       "rot_y": 0.0,
       "room": "apartment",
       "row": {
-        "count": 4,
-        "spacing": 4.0
+        "count": 3,
+        "spacing": 5.333
+      },
+      "drop": 3.05,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "apartment_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -1.6,
+        6.45
+      ],
+      "rot_y": 0.0,
+      "room": "apartment",
+      "row": {
+        "count": 3,
+        "spacing": 5.333
       },
       "drop": 3.05,
       "reacts_to_alarm": true
@@ -121,15 +175,33 @@
       "type": "fluorescent",
       "source": "derived",
       "pos": [
-        2.0,
-        3.5,
+        0.0,
+        1.6,
         6.45
       ],
       "rot_y": 0.0,
       "room": "upper_storage",
       "row": {
         "count": 3,
-        "spacing": 4.0
+        "spacing": 5.333
+      },
+      "drop": 3.05,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "upper_storage_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        5.2,
+        6.45
+      ],
+      "rot_y": 0.0,
+      "room": "upper_storage",
+      "row": {
+        "count": 3,
+        "spacing": 5.333
       },
       "drop": 3.05,
       "reacts_to_alarm": true

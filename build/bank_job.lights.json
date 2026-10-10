@@ -11,14 +11,50 @@
       "source": "derived",
       "pos": [
         0.0,
-        -4.5,
+        -8.8,
         3.2
       ],
       "rot_y": 0.0,
       "room": "lobby",
       "row": {
-        "count": 5,
-        "spacing": 6.0
+        "count": 4,
+        "spacing": 7.5
+      },
+      "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "lobby_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -4.4,
+        3.2
+      ],
+      "rot_y": 0.0,
+      "room": "lobby",
+      "row": {
+        "count": 4,
+        "spacing": 7.5
+      },
+      "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "lobby_ceiling_r2",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        0.0,
+        3.2
+      ],
+      "rot_y": 0.0,
+      "room": "lobby",
+      "row": {
+        "count": 4,
+        "spacing": 7.5
       },
       "drop": 3.2,
       "reacts_to_alarm": true
@@ -48,7 +84,61 @@
       "source": "derived",
       "pos": [
         -3.75,
-        6.5,
+        3.6,
+        3.2
+      ],
+      "rot_y": 0.0,
+      "room": "manager_office",
+      "row": {
+        "count": 2,
+        "spacing": 3.75
+      },
+      "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "manager_office_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -3.75,
+        6.6,
+        3.2
+      ],
+      "rot_y": 0.0,
+      "room": "manager_office",
+      "row": {
+        "count": 2,
+        "spacing": 3.75
+      },
+      "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "manager_office_ceiling_r2_0",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -13.125,
+        9.6,
+        3.2
+      ],
+      "rot_y": 0.0,
+      "room": "manager_office",
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "manager_office_ceiling_r2_1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -3.75,
+        9.6,
         3.2
       ],
       "rot_y": 0.0,
@@ -85,14 +175,32 @@
       "source": "derived",
       "pos": [
         7.5,
-        6.5,
+        4.4,
         3.2
       ],
       "rot_y": 0.0,
       "room": "security_room",
       "row": {
-        "count": 4,
-        "spacing": 3.75
+        "count": 3,
+        "spacing": 5.0
+      },
+      "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "security_room_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        7.5,
+        8.8,
+        3.2
+      ],
+      "rot_y": 0.0,
+      "room": "security_room",
+      "row": {
+        "count": 3,
+        "spacing": 5.0
       },
       "drop": 3.2,
       "reacts_to_alarm": true

@@ -590,10 +590,12 @@ def test_a_tv_outside_a_club_spills_and_a_set_that_is_off_does_not():
     n, rep = _lit(t)
     assert rep["club_rooms"] == 0 and rep["tv_screens"] == 1
     types = collections.Counter(a["type"] for a in n["anchors"])
-    assert types == {"fluorescent": 1, "neon": 1, "room_ambient": 1}, types
+    # three rows over the 20 x 12 bullpen since 0.206.0
+    assert types == {"fluorescent": 3, "neon": 1, "room_ambient": 1}, types
     ids = [a["id"] for a in n["anchors"]]
-    # the room's ceiling light first and its box last, as every reader assumes
-    assert ids == ["bullpen_ceiling", "wall_tv_r00000001_1_screen", "bullpen_ambient"], ids
+    # the room's ceiling lights first and its box last, as every reader assumes
+    assert ids == ["bullpen_ceiling", "bullpen_ceiling_r1", "bullpen_ceiling_r2",
+                   "wall_tv_r00000001_1_screen", "bullpen_ambient"], ids
 
 
 def test_the_library_clubs_light_every_tv():
@@ -630,7 +632,7 @@ def test_every_room_carries_its_box_for_the_ambient_probe():
     n, rep = _lit(t)
     assert rep["club_rooms"] == 0
     types = collections.Counter(a["type"] for a in n["anchors"])
-    assert types == {"fluorescent": 1, "room_ambient": 1}, types
+    assert types == {"fluorescent": 3, "room_ambient": 1}, types   # three rows since 0.206.0
 
 
 # --- the library ------------------------------------------------------------------

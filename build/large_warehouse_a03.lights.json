@@ -10,15 +10,15 @@
       "type": "fluorescent",
       "source": "derived",
       "pos": [
-        -16.8,
-        -5.0,
+        -21.0,
+        -12.8,
         4.6
       ],
       "rot_y": 0.0,
       "room": "main_floor",
       "row": {
-        "count": 2,
-        "spacing": 11.2
+        "count": 1,
+        "spacing": 0.0
       },
       "drop": 4.6,
       "reacts_to_alarm": true
@@ -28,15 +28,87 @@
       "type": "fluorescent",
       "source": "derived",
       "pos": [
-        16.8,
-        -5.0,
+        21.0,
+        -12.8,
         4.6
       ],
       "rot_y": 0.0,
       "room": "main_floor",
       "row": {
-        "count": 2,
-        "spacing": 11.2
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 4.6,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "main_floor_ceiling_r1_0",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -21.0,
+        -4.8,
+        4.6
+      ],
+      "rot_y": 0.0,
+      "room": "main_floor",
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 4.6,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "main_floor_ceiling_r1_1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        21.0,
+        -4.8,
+        4.6
+      ],
+      "rot_y": 0.0,
+      "room": "main_floor",
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 4.6,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "main_floor_ceiling_r2_0",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -21.0,
+        3.2,
+        4.6
+      ],
+      "rot_y": 0.0,
+      "room": "main_floor",
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 4.6,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "main_floor_ceiling_r2_1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        21.0,
+        3.2,
+        4.6
+      ],
+      "rot_y": 0.0,
+      "room": "main_floor",
+      "row": {
+        "count": 1,
+        "spacing": 0.0
       },
       "drop": 4.6,
       "reacts_to_alarm": true
@@ -66,7 +138,25 @@
       "source": "derived",
       "pos": [
         -0.0,
-        12.0,
+        9.6,
+        4.6
+      ],
+      "rot_y": 0.0,
+      "room": "north_stock",
+      "row": {
+        "count": 5,
+        "spacing": 11.2
+      },
+      "drop": 4.6,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "north_stock_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -0.0,
+        14.4,
         4.6
       ],
       "rot_y": 0.0,
@@ -102,15 +192,51 @@
       "type": "fluorescent",
       "source": "derived",
       "pos": [
-        -0.0,
-        -7.5,
+        0.0,
+        -13.8,
         9.6
       ],
       "rot_y": 0.0,
       "room": "mezz_offices",
       "row": {
-        "count": 5,
-        "spacing": 11.2
+        "count": 4,
+        "spacing": 14.0
+      },
+      "drop": 4.6,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "mezz_offices_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -7.2,
+        9.6
+      ],
+      "rot_y": 0.0,
+      "room": "mezz_offices",
+      "row": {
+        "count": 4,
+        "spacing": 14.0
+      },
+      "drop": 4.6,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "mezz_offices_ceiling_r2",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -1.2,
+        9.6
+      ],
+      "rot_y": 0.0,
+      "room": "mezz_offices",
+      "row": {
+        "count": 4,
+        "spacing": 14.0
       },
       "drop": 4.6,
       "reacts_to_alarm": true
@@ -140,7 +266,25 @@
       "source": "derived",
       "pos": [
         -0.0,
-        9.5,
+        5.6,
+        9.6
+      ],
+      "rot_y": 0.0,
+      "room": "mezz_stock",
+      "row": {
+        "count": 5,
+        "spacing": 11.2
+      },
+      "drop": 4.6,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "mezz_stock_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -0.0,
+        13.2,
         9.6
       ],
       "rot_y": 0.0,

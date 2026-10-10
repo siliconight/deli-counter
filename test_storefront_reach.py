@@ -35,10 +35,22 @@ def _rows(rooms, storefronts):
         if a["type"] in ("fluorescent", "pendant")}
 
 
+def _all_rows(rooms, storefronts):
+    """Every ceiling row of each room, in order (0.206.0 lays more than one)."""
+    out = {}
+    for a in lights.derive_light_anchors(rooms, [], 4.2, cap_thick=_cap, wall_thick=0.3,
+                                         storefronts=storefronts):
+        if a["type"] in ("fluorescent", "pendant"):
+            out.setdefault(a["room"], []).append(a)
+    return out
+
+
 def test_a_row_parallel_to_its_storefront_reaches_across_the_room():
-    row = _rows([SALES], SOUTH_GLASS)["sales_floor"]
-    assert row["type"] == "fluorescent"
-    assert row["reach"] == 6.0          # the row at y -5, the glass at -11
+    # 0.206.0 lays the 12 m deep sales floor in three rows over its counters, at y -9.0,
+    # -4.8 and -1.2 (the tile grid); each reaches the glass at -11 from its own line
+    rows = _all_rows([SALES], SOUTH_GLASS)["sales_floor"]
+    assert [a["type"] for a in rows] == ["fluorescent"] * 3
+    assert [a["reach"] for a in rows] == [2.0, 6.2, 9.8]
 
 
 def test_no_storefront_no_reach_and_the_row_is_as_before():
@@ -65,9 +77,11 @@ def test_a_row_running_at_the_glass_reaches_from_its_nearest_lamp():
             "bounds": [7.0, -11.0, 16.0, 1.0]}
     south = [{"story": 0, "facing": "S", "x": 9.9, "y": -11.0}]
     east = [{"story": 0, "facing": "E", "x": 16.0, "y": -5.0}]
-    assert _rows([food], south)["food_service"]["reach"] == 2.0
-    # the largest of the glass lines it faces
-    assert _rows([food], south + east)["food_service"]["reach"] == 4.5
+    # two rows across the 9 m room since 0.206.0, at x 9.0 and 13.8: both reach the south
+    # glass from their lamp at y -9, and the east glass at x 16 from their own line
+    assert [a["reach"] for a in _all_rows([food], south)["food_service"]] == [2.0, 2.0]
+    # the largest of the glass lines each faces
+    assert [a["reach"] for a in _all_rows([food], south + east)["food_service"]] == [7.0, 2.2]
 
 
 def test_a_bare_bulb_does_not_reach():
@@ -96,8 +110,11 @@ def _lights(bid):
 
 
 def test_the_gas_stations_sales_floor_reaches_its_glass():
+    # three rows since 0.206.0, each reaching the glass from its own line; the built
+    # manifest (`build.py --all`) agrees with the pure case above to the centimetre
     a = {x["id"]: x for x in _lights("gas_station_a02")}
-    assert a["sales_floor_ceiling"]["reach"] == 6.0
+    assert [a[k]["reach"] for k in ("sales_floor_ceiling", "sales_floor_ceiling_r1",
+                                    "sales_floor_ceiling_r2")] == [2.0, 6.2, 9.8]
 
 
 def test_only_a_storefront_building_carries_a_reach_and_only_on_fluorescents():

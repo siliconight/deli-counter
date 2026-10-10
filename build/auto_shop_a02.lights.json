@@ -11,14 +11,50 @@
       "source": "derived",
       "pos": [
         0.0,
-        -2.5,
+        -6.8,
         3.2
       ],
       "rot_y": 0.0,
       "room": "service_bay",
       "row": {
-        "count": 5,
-        "spacing": 5.2
+        "count": 4,
+        "spacing": 6.5
+      },
+      "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "service_bay_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -2.4,
+        3.2
+      ],
+      "rot_y": 0.0,
+      "room": "service_bay",
+      "row": {
+        "count": 4,
+        "spacing": 6.5
+      },
+      "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "service_bay_ceiling_r2",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        2.0,
+        3.2
+      ],
+      "rot_y": 0.0,
+      "room": "service_bay",
+      "row": {
+        "count": 4,
+        "spacing": 6.5
       },
       "drop": 3.2,
       "reacts_to_alarm": true
@@ -85,7 +121,25 @@
       "source": "derived",
       "pos": [
         0.0,
-        5.5,
+        3.6,
+        6.8
+      ],
+      "rot_y": 0.0,
+      "room": "upper_office",
+      "row": {
+        "count": 5,
+        "spacing": 5.2
+      },
+      "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "upper_office_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        7.2,
         6.8
       ],
       "rot_y": 0.0,
@@ -121,8 +175,26 @@
       "type": "fluorescent",
       "source": "derived",
       "pos": [
+        2.6,
+        -6.4,
+        6.8
+      ],
+      "rot_y": 0.0,
+      "room": "upper_storage",
+      "row": {
+        "count": 4,
+        "spacing": 5.2
+      },
+      "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "upper_storage_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
         0.0,
-        -3.5,
+        -0.8,
         6.8
       ],
       "rot_y": 0.0,

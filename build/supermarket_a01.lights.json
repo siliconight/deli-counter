@@ -11,14 +11,50 @@
       "source": "derived",
       "pos": [
         0.0,
-        -4.0,
+        -12.0,
         4.1
       ],
       "rot_y": 0.0,
       "room": "sales_floor",
       "row": {
-        "count": 5,
-        "spacing": 8.8
+        "count": 4,
+        "spacing": 11.0
+      },
+      "drop": 4.1,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "sales_floor_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -4.2,
+        4.1
+      ],
+      "rot_y": 0.0,
+      "room": "sales_floor",
+      "row": {
+        "count": 4,
+        "spacing": 11.0
+      },
+      "drop": 4.1,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "sales_floor_ceiling_r2",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        4.2,
+        4.1
+      ],
+      "rot_y": 0.0,
+      "room": "sales_floor",
+      "row": {
+        "count": 4,
+        "spacing": 11.0
       },
       "drop": 4.1,
       "reacts_to_alarm": true
@@ -85,7 +121,25 @@
       "source": "derived",
       "pos": [
         5.0,
-        12.0,
+        10.0,
+        4.1
+      ],
+      "rot_y": 0.0,
+      "room": "back_stock",
+      "row": {
+        "count": 5,
+        "spacing": 6.8
+      },
+      "drop": 4.1,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "back_stock_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        5.0,
+        14.0,
         4.1
       ],
       "rot_y": 0.0,

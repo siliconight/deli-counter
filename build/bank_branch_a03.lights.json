@@ -11,14 +11,50 @@
       "source": "derived",
       "pos": [
         0.0,
-        -4.5,
+        -8.8,
         3.2
       ],
       "rot_y": 0.0,
       "room": "lobby",
       "row": {
-        "count": 5,
-        "spacing": 6.0
+        "count": 4,
+        "spacing": 7.5
+      },
+      "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "lobby_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -3.75,
+        -4.4,
+        3.2
+      ],
+      "rot_y": 0.0,
+      "room": "lobby",
+      "row": {
+        "count": 3,
+        "spacing": 7.5
+      },
+      "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "lobby_ceiling_r2",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        0.0,
+        3.2
+      ],
+      "rot_y": 0.0,
+      "room": "lobby",
+      "row": {
+        "count": 4,
+        "spacing": 7.5
       },
       "drop": 3.2,
       "reacts_to_alarm": true
@@ -48,7 +84,43 @@
       "source": "derived",
       "pos": [
         -7.5,
-        6.5,
+        3.6,
+        3.2
+      ],
+      "rot_y": 0.0,
+      "room": "manager_office",
+      "row": {
+        "count": 4,
+        "spacing": 3.75
+      },
+      "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "manager_office_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -7.5,
+        6.6,
+        3.2
+      ],
+      "rot_y": 0.0,
+      "room": "manager_office",
+      "row": {
+        "count": 4,
+        "spacing": 3.75
+      },
+      "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "manager_office_ceiling_r2",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -7.5,
+        9.6,
         3.2
       ],
       "rot_y": 0.0,
@@ -85,14 +157,32 @@
       "source": "derived",
       "pos": [
         7.5,
-        6.5,
+        4.4,
         3.2
       ],
       "rot_y": 0.0,
       "room": "garage_bay",
       "row": {
-        "count": 4,
-        "spacing": 3.75
+        "count": 3,
+        "spacing": 5.0
+      },
+      "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "garage_bay_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        7.5,
+        8.8,
+        3.2
+      ],
+      "rot_y": 0.0,
+      "room": "garage_bay",
+      "row": {
+        "count": 3,
+        "spacing": 5.0
       },
       "drop": 3.2,
       "reacts_to_alarm": true
@@ -122,14 +212,50 @@
       "source": "derived",
       "pos": [
         0.0,
-        -5.5,
+        -9.0,
         6.8
       ],
       "rot_y": 0.0,
       "room": "offices",
       "row": {
-        "count": 5,
-        "spacing": 6.0
+        "count": 4,
+        "spacing": 7.5
+      },
+      "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "offices_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -5.4,
+        6.8
+      ],
+      "rot_y": 0.0,
+      "room": "offices",
+      "row": {
+        "count": 4,
+        "spacing": 7.5
+      },
+      "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "offices_ceiling_r2",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -1.8,
+        6.8
+      ],
+      "rot_y": 0.0,
+      "room": "offices",
+      "row": {
+        "count": 4,
+        "spacing": 7.5
       },
       "drop": 3.2,
       "reacts_to_alarm": true
@@ -159,14 +285,32 @@
       "source": "derived",
       "pos": [
         -7.5,
-        5.5,
+        2.8,
         6.8
       ],
       "rot_y": 0.0,
       "room": "upper_hall",
       "row": {
-        "count": 4,
-        "spacing": 3.75
+        "count": 3,
+        "spacing": 5.0
+      },
+      "drop": 3.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "upper_hall_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -7.5,
+        8.4,
+        6.8
+      ],
+      "rot_y": 0.0,
+      "room": "upper_hall",
+      "row": {
+        "count": 3,
+        "spacing": 5.0
       },
       "drop": 3.2,
       "reacts_to_alarm": true

@@ -40,9 +40,15 @@ change; derived lights need zero authoring.
 
 ## What Deli Counter derives
 
-- **One `fluorescent` row per room** — at the room center, mounted just below
-  the ceiling (`center.z + story_height`), running along the room's longer
-  axis, fixture count scaled to the room's length. `reacts_to_alarm: true`.
+- **`fluorescent` rows per room, laid to the work (0.206.0)** — along the
+  room's longer axis, mounted just below the ceiling, and across it as many
+  as the room's work plane asks: rows at most 1.5 x the height from the work
+  surface to the lamp apart (a desk in an office, a counter on a sales
+  floor, the floor elsewhere), each row's line on the ceiling's 0.6 m tile
+  or 0.4 m joist pitch from the building's origin, held to 3 rows and 12
+  lamps a room; a home's room gets one fixture at its centre. The first row
+  keeps the id `<room>_ceiling`, further rows `<room>_ceiling_r<k>`.
+  `reacts_to_alarm: true`.
   The row is split into runs around the ceiling voids (stairwells, hatches)
   and stepped off the partitions: a lamp that would hang inside a wall is
   nudged along the row to 0.40 m off the centreline (its own run), one

@@ -6,37 +6,55 @@
   "rig_library": "lux",
   "anchors": [
     {
-      "id": "sales_floor_ceiling_0",
+      "id": "sales_floor_ceiling",
       "type": "fluorescent",
       "source": "derived",
       "pos": [
-        -7.2,
-        -5.0,
+        0.0,
+        -9.6,
         3.6
       ],
       "rot_y": 0.0,
       "room": "sales_floor",
       "row": {
-        "count": 3,
-        "spacing": 7.2
+        "count": 4,
+        "spacing": 9.0
       },
       "drop": 3.6,
       "reacts_to_alarm": true
     },
     {
-      "id": "sales_floor_ceiling_1",
+      "id": "sales_floor_ceiling_r1",
       "type": "fluorescent",
       "source": "derived",
       "pos": [
-        14.4,
-        -5.0,
+        0.0,
+        -4.8,
         3.6
       ],
       "rot_y": 0.0,
       "room": "sales_floor",
       "row": {
-        "count": 1,
-        "spacing": 0.0
+        "count": 4,
+        "spacing": 9.0
+      },
+      "drop": 3.6,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "sales_floor_ceiling_r2",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -0.6,
+        3.6
+      ],
+      "rot_y": 0.0,
+      "room": "sales_floor",
+      "row": {
+        "count": 4,
+        "spacing": 9.0
       },
       "drop": 3.6,
       "reacts_to_alarm": true
@@ -66,14 +84,32 @@
       "source": "derived",
       "pos": [
         -6.0,
-        7.0,
+        4.4,
         3.6
       ],
       "rot_y": 0.0,
       "room": "gear_hall",
       "row": {
-        "count": 5,
-        "spacing": 4.8
+        "count": 4,
+        "spacing": 6.0
+      },
+      "drop": 3.6,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "gear_hall_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -6.0,
+        9.6,
+        3.6
+      ],
+      "rot_y": 0.0,
+      "room": "gear_hall",
+      "row": {
+        "count": 4,
+        "spacing": 6.0
       },
       "drop": 3.6,
       "reacts_to_alarm": true

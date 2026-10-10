@@ -10,15 +10,51 @@
       "type": "fluorescent",
       "source": "derived",
       "pos": [
-        -0.0,
-        -4.5,
+        0.0,
+        -11.6,
         4.6
       ],
       "rot_y": 0.0,
       "room": "lanes",
       "row": {
-        "count": 5,
-        "spacing": 9.6
+        "count": 4,
+        "spacing": 12.0
+      },
+      "drop": 4.6,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "lanes_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -4.4,
+        4.6
+      ],
+      "rot_y": 0.0,
+      "room": "lanes",
+      "row": {
+        "count": 4,
+        "spacing": 12.0
+      },
+      "drop": 4.6,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "lanes_ceiling_r2",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        2.4,
+        4.6
+      ],
+      "rot_y": 0.0,
+      "room": "lanes",
+      "row": {
+        "count": 4,
+        "spacing": 12.0
       },
       "drop": 4.6,
       "reacts_to_alarm": true
@@ -48,7 +84,25 @@
       "source": "derived",
       "pos": [
         -0.0,
-        10.5,
+        8.4,
+        4.6
+      ],
+      "rot_y": 0.0,
+      "room": "sort_hall",
+      "row": {
+        "count": 5,
+        "spacing": 9.6
+      },
+      "drop": 4.6,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "sort_hall_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -0.0,
+        12.8,
         4.6
       ],
       "rot_y": 0.0,

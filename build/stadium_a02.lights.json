@@ -10,15 +10,51 @@
       "type": "fluorescent",
       "source": "derived",
       "pos": [
-        -0.0,
-        -5.55,
+        0.0,
+        -13.2,
         5.6
       ],
       "rot_y": 0.0,
       "room": "concourse",
       "row": {
-        "count": 5,
-        "spacing": 11.6
+        "count": 4,
+        "spacing": 14.5
+      },
+      "drop": 5.6,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "concourse_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -5.6,
+        5.6
+      ],
+      "rot_y": 0.0,
+      "room": "concourse",
+      "row": {
+        "count": 4,
+        "spacing": 14.5
+      },
+      "drop": 5.6,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "concourse_ceiling_r2",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        2.0,
+        5.6
+      ],
+      "rot_y": 0.0,
+      "room": "concourse",
+      "row": {
+        "count": 4,
+        "spacing": 14.5
       },
       "drop": 5.6,
       "reacts_to_alarm": true
@@ -84,8 +120,26 @@
       "type": "fluorescent",
       "source": "derived",
       "pos": [
+        1.856,
+        8.8,
+        5.6
+      ],
+      "rot_y": 0.0,
+      "room": "ops_band",
+      "row": {
+        "count": 4,
+        "spacing": 9.048
+      },
+      "drop": 5.6,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "ops_band_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
         6.38,
-        11.45,
+        14.4,
         5.6
       ],
       "rot_y": 0.0,

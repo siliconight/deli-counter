@@ -11,9 +11,11 @@ import lights
 SLAB = 0.3
 WALL = 0.3
 
-#: the hospital lobby: x longer, row along x at y = -7.5, count 5, spacing 8
-LOBBY = {"id": "lobby", "story": 0, "bounds": [-20.0, -15.0, 20.0, 0.0],
-         "role": "safe_room", "center": [0.0, -7.5, 0.0]}
+#: the hospital lobby: x longer, row along x, count 5, spacing 8. Since
+#: 0.206.0 the 15 m deep lobby takes three rows across; this 4.5 m slice of
+#: it keeps the one row, with the same five lamps at the same x.
+LOBBY = {"id": "lobby", "story": 0, "bounds": [-20.0, -4.5, 20.0, 0.0],
+         "role": "safe_room", "center": [0.0, -2.25, 0.0]}
 #: the two ward partitions crossing it, as the spec authors them
 WARD_WALLS = [
     {"story": 0, "axis": "Y", "pos": -8.0, "start": -15.0, "end": 15.0},
@@ -74,7 +76,7 @@ def test_a_lamp_on_a_crossing_partition_is_nudged_off_it():
         assert abs(abs(x) - 8.0) >= 0.4 - 1e-9
     assert rep == {"rows_shifted": 0, "nudged": 2, "dropped": 0, "club_rooms": 0,
                    "tv_screens": 0, "back_bars": 0, "storefront_rows": 0,
-                   "storefront_spills": 0, "counter_accents": 0}
+                   "storefront_spills": 0, "counter_accents": 0, "rows_laid": 1}
     # a nudged lamp is its own run, so the row is published as several anchors
     ids = sorted(x["id"] for x in a if x.get("room") == "lobby" and "row" in x)
     assert ids == ["lobby_ceiling_%d" % i for i in range(5)]

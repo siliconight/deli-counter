@@ -10,15 +10,51 @@
       "type": "fluorescent",
       "source": "derived",
       "pos": [
-        -0.0,
-        -4.25,
+        0.0,
+        -10.0,
         4.2
       ],
       "rot_y": 0.0,
       "room": "assembly_hall",
       "row": {
-        "count": 5,
-        "spacing": 6.8
+        "count": 4,
+        "spacing": 8.5
+      },
+      "drop": 4.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "assembly_hall_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        4.25,
+        -4.4,
+        4.2
+      ],
+      "rot_y": 0.0,
+      "room": "assembly_hall",
+      "row": {
+        "count": 3,
+        "spacing": 8.5
+      },
+      "drop": 4.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "assembly_hall_ceiling_r2",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        1.6,
+        4.2
+      ],
+      "rot_y": 0.0,
+      "room": "assembly_hall",
+      "row": {
+        "count": 4,
+        "spacing": 8.5
       },
       "drop": 4.2,
       "reacts_to_alarm": true
@@ -48,7 +84,25 @@
       "source": "derived",
       "pos": [
         -0.0,
-        8.75,
+        6.8,
+        4.2
+      ],
+      "rot_y": 0.0,
+      "room": "curator_band",
+      "row": {
+        "count": 5,
+        "spacing": 6.8
+      },
+      "drop": 4.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "curator_band_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -0.0,
+        10.8,
         4.2
       ],
       "rot_y": 0.0,
@@ -85,7 +139,25 @@
       "source": "derived",
       "pos": [
         -0.0,
-        -6.5,
+        -9.6,
+        8.8
+      ],
+      "rot_y": 0.0,
+      "room": "upper_ring",
+      "row": {
+        "count": 5,
+        "spacing": 6.8
+      },
+      "drop": 4.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "upper_ring_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -0.0,
+        -3.2,
         8.8
       ],
       "rot_y": 0.0,
@@ -122,14 +194,32 @@
       "source": "derived",
       "pos": [
         -5.525,
-        6.5,
+        3.2,
         8.8
       ],
       "rot_y": 0.0,
       "room": "upper_west",
       "row": {
-        "count": 5,
-        "spacing": 4.59
+        "count": 4,
+        "spacing": 5.737
+      },
+      "drop": 4.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "upper_west_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -5.525,
+        9.6,
+        8.8
+      ],
+      "rot_y": 0.0,
+      "room": "upper_west",
+      "row": {
+        "count": 4,
+        "spacing": 5.737
       },
       "drop": 4.2,
       "reacts_to_alarm": true

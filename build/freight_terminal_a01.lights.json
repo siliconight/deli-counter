@@ -11,14 +11,50 @@
       "source": "derived",
       "pos": [
         5.5,
+        -10.8,
+        5.6
+      ],
+      "rot_y": 0.0,
+      "room": "cross_dock",
+      "row": {
+        "count": 4,
+        "spacing": 10.75
+      },
+      "drop": 5.6,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "cross_dock_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        5.5,
         0.0,
         5.6
       ],
       "rot_y": 0.0,
       "room": "cross_dock",
       "row": {
-        "count": 5,
-        "spacing": 8.6
+        "count": 4,
+        "spacing": 10.75
+      },
+      "drop": 5.6,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "cross_dock_ceiling_r2",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        5.5,
+        10.8,
+        5.6
+      ],
+      "rot_y": 0.0,
+      "room": "cross_dock",
+      "row": {
+        "count": 4,
+        "spacing": 10.75
       },
       "drop": 5.6,
       "reacts_to_alarm": true
@@ -47,15 +83,33 @@
       "type": "fluorescent",
       "source": "derived",
       "pos": [
-        -21.5,
+        -24.4,
         -4.0,
         5.6
       ],
       "rot_y": 90.0,
       "room": "west_hall",
       "row": {
-        "count": 5,
-        "spacing": 4.8
+        "count": 3,
+        "spacing": 8.0
+      },
+      "drop": 5.6,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "west_hall_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -18.8,
+        -4.0,
+        5.6
+      ],
+      "rot_y": 90.0,
+      "room": "west_hall",
+      "row": {
+        "count": 3,
+        "spacing": 8.0
       },
       "drop": 5.6,
       "reacts_to_alarm": true

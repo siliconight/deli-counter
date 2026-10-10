@@ -41,13 +41,16 @@ def test_a_storefront_row_spills_along_its_glass_outside_it():
     sp = _spills(a)
     # 18 m of glass (-11.5 .. 6.5), one lamp per 2 x 3.0 m head -> 3
     assert len(sp) == 3
-    row = next(x for x in a if x["id"] == "sales_floor_ceiling")
+    rows = [x for x in a if x["type"] == "fluorescent" and x["room"] == "sales_floor"]
+    row = rows[0]
+    # the spill carries the room's FARTHEST row's reach (0.206.0: three rows at 2.0, 6.2, 9.8 m)
+    reach = max(x["reach"] for x in rows)
     for s in sp:
         assert s["rot_y"] == 270.0                     # the S wall's outward
         assert s["pos"][1] == -11.0 - (0.15 + 0.20)    # off the wall's face
         assert s["pos"][2] == 3.0                      # the glass's head
         assert s["head"] == 3.0
-        assert s["drop"] == row["drop"] and s["reach"] == row["reach"]
+        assert s["drop"] == row["drop"] and s["reach"] == reach
         assert s["reacts_to_alarm"] is True and s["room"] == "sales_floor"
     xs = [s["pos"][0] for s in sp]
     assert xs == sorted(xs) and xs[0] == -11.5 + 3.0 and xs[-1] == 6.5 - 3.0

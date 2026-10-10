@@ -10,8 +10,26 @@
       "type": "fluorescent",
       "source": "derived",
       "pos": [
-        -5.5,
-        -10.4,
+        -13.2,
+        -6.5,
+        4.6
+      ],
+      "rot_y": 90.0,
+      "room": "loading_floor",
+      "row": {
+        "count": 2,
+        "spacing": 6.5
+      },
+      "drop": 4.6,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "loading_floor_ceiling_1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -13.2,
+        9.75,
         4.6
       ],
       "rot_y": 90.0,
@@ -24,19 +42,55 @@
       "reacts_to_alarm": true
     },
     {
-      "id": "loading_floor_ceiling_1",
+      "id": "loading_floor_ceiling_r1_0",
       "type": "fluorescent",
       "source": "derived",
       "pos": [
-        -5.5,
-        5.2,
+        -5.6,
+        -6.5,
         4.6
       ],
       "rot_y": 90.0,
       "room": "loading_floor",
       "row": {
-        "count": 3,
-        "spacing": 5.2
+        "count": 2,
+        "spacing": 6.5
+      },
+      "drop": 4.6,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "loading_floor_ceiling_r1_1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -5.6,
+        9.75,
+        4.6
+      ],
+      "rot_y": 90.0,
+      "room": "loading_floor",
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 4.6,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "loading_floor_ceiling_r2",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        2.0,
+        0.0,
+        4.6
+      ],
+      "rot_y": 90.0,
+      "room": "loading_floor",
+      "row": {
+        "count": 4,
+        "spacing": 6.5
       },
       "drop": 4.6,
       "reacts_to_alarm": true
@@ -65,7 +119,25 @@
       "type": "fluorescent",
       "source": "derived",
       "pos": [
-        11.5,
+        9.0,
+        0.0,
+        4.6
+      ],
+      "rot_y": 90.0,
+      "room": "office_wing",
+      "row": {
+        "count": 5,
+        "spacing": 5.2
+      },
+      "drop": 4.6,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "office_wing_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        14.4,
         0.0,
         4.6
       ],

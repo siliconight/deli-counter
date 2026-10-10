@@ -11,7 +11,25 @@
       "source": "derived",
       "pos": [
         0.0,
-        -10.0,
+        -12.0,
+        2.8
+      ],
+      "rot_y": 0.0,
+      "room": "south_aisle",
+      "row": {
+        "count": 5,
+        "spacing": 8.0
+      },
+      "drop": 2.8,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "south_aisle_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -8.0,
         2.8
       ],
       "rot_y": 0.0,
@@ -43,37 +61,55 @@
       "reacts_to_alarm": false
     },
     {
-      "id": "mid_aisle_ceiling_0",
+      "id": "mid_aisle_ceiling",
       "type": "fluorescent",
       "source": "derived",
       "pos": [
-        -16.0,
         0.0,
+        -4.0,
         2.8
       ],
       "rot_y": 0.0,
       "room": "mid_aisle",
       "row": {
-        "count": 1,
-        "spacing": 0.0
+        "count": 4,
+        "spacing": 10.0
       },
       "drop": 2.8,
       "reacts_to_alarm": true
     },
     {
-      "id": "mid_aisle_ceiling_1",
+      "id": "mid_aisle_ceiling_r1",
       "type": "fluorescent",
       "source": "derived",
       "pos": [
-        16.0,
+        0.0,
         0.0,
         2.8
       ],
       "rot_y": 0.0,
       "room": "mid_aisle",
       "row": {
-        "count": 1,
-        "spacing": 0.0
+        "count": 4,
+        "spacing": 10.0
+      },
+      "drop": 2.8,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "mid_aisle_ceiling_r2",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        4.0,
+        2.8
+      ],
+      "rot_y": 0.0,
+      "room": "mid_aisle",
+      "row": {
+        "count": 4,
+        "spacing": 10.0
       },
       "drop": 2.8,
       "reacts_to_alarm": true
@@ -140,7 +176,25 @@
       "source": "derived",
       "pos": [
         4.0,
-        10.0,
+        8.0,
+        2.8
+      ],
+      "rot_y": 0.0,
+      "room": "north_aisle",
+      "row": {
+        "count": 5,
+        "spacing": 6.4
+      },
+      "drop": 2.8,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "north_aisle_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        4.0,
+        12.0,
         2.8
       ],
       "rot_y": 0.0,

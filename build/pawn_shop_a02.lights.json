@@ -11,7 +11,43 @@
       "source": "derived",
       "pos": [
         0.0,
-        -2.5,
+        -5.4,
+        2.8
+      ],
+      "rot_y": 0.0,
+      "room": "shop_floor",
+      "row": {
+        "count": 4,
+        "spacing": 4.5
+      },
+      "drop": 2.8,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "shop_floor_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -2.4,
+        2.8
+      ],
+      "rot_y": 0.0,
+      "room": "shop_floor",
+      "row": {
+        "count": 4,
+        "spacing": 4.5
+      },
+      "drop": 2.8,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "shop_floor_ceiling_r2",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        0.6,
         2.8
       ],
       "rot_y": 0.0,
@@ -43,30 +79,12 @@
       "reacts_to_alarm": false
     },
     {
-      "id": "back_room_ceiling_0",
-      "type": "fluorescent",
-      "source": "derived",
-      "pos": [
-        -6.75,
-        4.5,
-        2.8
-      ],
-      "rot_y": 0.0,
-      "room": "back_room",
-      "row": {
-        "count": 1,
-        "spacing": 0.0
-      },
-      "drop": 2.8,
-      "reacts_to_alarm": true
-    },
-    {
-      "id": "back_room_ceiling_1",
+      "id": "back_room_ceiling",
       "type": "fluorescent",
       "source": "derived",
       "pos": [
         4.5,
-        4.5,
+        4.4,
         2.8
       ],
       "rot_y": 0.0,
@@ -103,7 +121,25 @@
       "source": "derived",
       "pos": [
         0.0,
-        -3.5,
+        -5.2,
+        6.0
+      ],
+      "rot_y": 0.0,
+      "room": "upper_hall",
+      "row": {
+        "count": 4,
+        "spacing": 4.5
+      },
+      "drop": 2.8,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "upper_hall_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -1.6,
         6.0
       ],
       "rot_y": 0.0,
@@ -140,7 +176,25 @@
       "source": "derived",
       "pos": [
         -4.0,
-        3.5,
+        1.6,
+        6.0
+      ],
+      "rot_y": 0.0,
+      "room": "upper_flat",
+      "row": {
+        "count": 2,
+        "spacing": 5.0
+      },
+      "drop": 2.8,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "upper_flat_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -4.0,
+        5.2,
         6.0
       ],
       "rot_y": 0.0,
