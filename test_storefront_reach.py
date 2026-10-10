@@ -110,11 +110,16 @@ def _lights(bid):
 
 
 def test_the_gas_stations_sales_floor_reaches_its_glass():
-    # three rows since 0.206.0, each reaching the glass from its own line; the built
-    # manifest (`build.py --all`) agrees with the pure case above to the centimetre
+    # since 0.207.0 the built sales floor is laid to its gondolas and the cap's trade
+    # (the pure case above has no shelves and keeps its three rows), so the shape is
+    # asserted: every row reaches the glass from its own line, the nearer the shorter,
+    # and the first row keeps the original id
     a = {x["id"]: x for x in _lights("gas_station_a02")}
-    assert [a[k]["reach"] for k in ("sales_floor_ceiling", "sales_floor_ceiling_r1",
-                                    "sales_floor_ceiling_r2")] == [2.0, 6.2, 9.8]
+    rows = sorted((x["pos"][1], x["reach"]) for x in a.values()
+                  if x["type"] == "fluorescent" and x.get("room") == "sales_floor")
+    assert len(rows) >= 2 and "sales_floor_ceiling" in a
+    assert all(r > 0.0 for _y, r in rows)
+    assert [r for _y, r in rows] == sorted(r for _y, r in rows)
 
 
 def test_only_a_storefront_building_carries_a_reach_and_only_on_fluorescents():

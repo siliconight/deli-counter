@@ -150,3 +150,117 @@ def test_a_home_room_in_a_shop_takes_the_home_rule():
     # the same bounds under a name that says nothing of a home is still an office ceiling
     office = dict(r, id="upper_office")
     assert len(_rows(_derive([office]), "upper_office")) == 3
+
+
+# --- rows over the aisles (0.207.0) -------------------------------------------------------------
+
+def _gondola(name, x, y, sx=1.0, sy=6.0, h=1.6, z=None):
+    return {"name": name, "x": x, "y": y, "z": h / 2.0 if z is None else z,
+            "size_x": sx, "size_y": sy, "size_z": h}
+
+
+def test_a_sales_floor_lays_its_rows_over_the_aisles_between_the_gondolas():
+    # 15 x 20 m, long in y, two gondolas standing along y: three lanes across x of 5.5, 3.5 and
+    # 4.0 m; on the counter's plane B = 3.15 the wide lane asks two rows and the others one, and
+    # 20 m along asks 5 lamps a row: 20 for the room's twelve, so the cap binds and the long
+    # hall's trade gives the wide lane one row (5.5 m across) for four lamps along (5.0 m) rather
+    # than two for three (6.7 m); every line on the 0.6 m tiles and none over a gondola
+    r = {"id": "market_aisles", "story": 0, "bounds": [-8.0, -14.0, 7.0, 6.0], "role": "sales",
+         "center": [-0.5, -4.0, 0.0]}
+    vols = [_gondola("gondola_aisle_1", -2.0, -9.5), _gondola("gondola_aisle_2", 2.5, -9.5)]
+    rep = {}
+    rows = _rows(_derive([r], volumes=vols, report=rep), "market_aisles")
+    assert [a["id"] for a in rows] == ["market_aisles_ceiling", "market_aisles_ceiling_r1",
+                                       "market_aisles_ceiling_r2"]
+    lines = [a["pos"][0] for a in rows]
+    assert lines == [-5.4, 0.0, 4.8]
+    assert all(_on_pitch(x, 0.6) for x in lines)
+    for x in lines:
+        assert not (-2.5 <= x <= -1.5) and not (2.0 <= x <= 3.0)
+    assert all(a["rot_y"] == 90.0 and a["pos"][1] == -4.0 for a in rows)
+    assert all(a["row"] == {"count": 4, "spacing": 5.0} for a in rows)
+    assert rep["rows_over_aisles"] == 1 and rep["rows_laid"] == 3
+
+
+def test_a_shelf_in_an_office_does_not_move_its_grid():
+    # an office is laid to its desks on the tile grid whatever stands against its wall
+    r = {"id": "manager_office", "story": 0, "bounds": [-5.0, -3.0, 5.0, 3.0], "role": "objective_room",
+         "center": [0.0, 0.0, 0.0]}
+    unit = _gondola("shelf_unit_r1", 0.0, 2.7, sx=1.0, sy=0.5, h=1.4)
+    bare = _rows(_derive([r]), "manager_office")
+    rep = {}
+    shelved = _rows(_derive([r], volumes=[unit], report=rep), "manager_office")
+    assert [a["pos"] for a in shelved] == [a["pos"] for a in bare]
+    assert rep["rows_over_aisles"] == 0
+
+
+def test_a_stockroom_with_one_wall_run_lights_the_floor_beside_it():
+    # 12 x 8 m on the floor plane (B = 4.65), a shelf run along the north wall: the lane is the
+    # 7.4 m south of it and takes two rows on the joists, where the bare room's second row stood
+    # at 6.0
+    r = {"id": "stockroom", "story": 0, "bounds": [0.0, 0.0, 12.0, 8.0], "role": "service",
+         "center": [6.0, 4.0, 0.0]}
+    run = _gondola("shelf_run_r1", 6.0, 7.7, sx=6.0, sy=0.6, h=1.9)
+    assert [a["pos"][1] for a in _rows(_derive([r]), "stockroom")] == [2.0, 6.0]
+    assert [a["pos"][1] for a in _rows(_derive([r], volumes=[run]), "stockroom")] == [2.0, 5.6]
+
+
+def test_a_sign_hung_over_an_aisle_is_not_a_shelf():
+    r = {"id": "market_aisles", "story": 0, "bounds": [-8.0, -14.0, 7.0, 6.0], "role": "sales",
+         "center": [-0.5, -4.0, 0.0]}
+    sign = _gondola("gondola_aisle_sign", 0.25, -9.5, sx=0.8, sy=0.1, h=0.4, z=2.6)
+    vols = [_gondola("gondola_aisle_1", -2.0, -9.5), _gondola("gondola_aisle_2", 2.5, -9.5), sign]
+    assert [a["pos"][0] for a in _rows(_derive([r], volumes=vols), "market_aisles")] == [-5.4, 0.0, 4.8]
+
+
+def test_shelves_that_leave_no_lane_lay_the_room_as_before():
+    # a 4 m wide cold store filled by two racks 1.0 m apart: no aisle, so WOOD's one row stands
+    r = {"id": "cold_room_stock", "story": 0, "bounds": [0.0, 0.0, 10.0, 4.0], "role": "service",
+         "center": [5.0, 2.0, 0.0]}
+    racks = [_gondola("stock_rack_a", 5.0, 0.75, sx=8.0, sy=1.5, h=2.0),
+             _gondola("stock_rack_b", 5.0, 3.25, sx=8.0, sy=1.5, h=2.0)]
+    rep = {}
+    rows = _rows(_derive([r], volumes=racks, report=rep), "cold_room_stock")
+    assert [a["pos"] for a in rows] == [[5.0, 2.0, 3.1]]
+    assert rep["rows_over_aisles"] == 0
+
+
+def test_a_field_of_staggered_islands_is_laid_as_before():
+    # two gondolas standing at different places ALONG the room whose spans across it overlap
+    # into a 2.2 m band (4.5 and 5.5, each 1.2 deep): not parallel runs but a field, and a row
+    # kept off the band would leave the middle dark, so the room keeps 0.206.1's grid
+    r = {"id": "sales_floor", "story": 0, "bounds": [0.0, 0.0, 20.0, 12.0], "role": "sales",
+         "center": [10.0, 6.0, 0.0]}
+    field = [_gondola("gondola_aisle_1", 5.0, 4.5, sx=4.0, sy=1.2), _gondola("gondola_aisle_2", 14.0, 5.5, sx=4.0, sy=1.2)]
+    bare = _rows(_derive([r]), "sales_floor")
+    rep = {}
+    got = _rows(_derive([r], volumes=field, report=rep), "sales_floor")
+    assert [a["pos"] for a in got] == [a["pos"] for a in bare] and len(got) == 3
+    assert rep["rows_over_aisles"] == 0
+
+
+def test_a_long_hall_favours_lamps_along_over_rows_across():
+    # 58 x 20 m on the floor plane (B = 4.65): WOOD asks 3 rows of 12; the cap allowed 3 rows of
+    # 4 at 14.5 m along, where 2 rows of 5 at 11.6 m along and 10 m across is the smaller worst
+    r = {"id": "concourse_hall", "story": 0, "bounds": [0.0, 0.0, 58.0, 20.0], "role": "public_entry",
+         "center": [29.0, 10.0, 0.0]}
+    rows = _rows(_derive([r]), "concourse_hall")
+    assert len(rows) == 2
+    assert all(a["row"] == {"count": 5, "spacing": 11.6} for a in rows)
+    assert [a["pos"][1] for a in rows] == [4.8, 15.2]          # 5.0 and 15.0 on the 0.4 m joists
+    # a 24 x 20 m hall, where the cap also binds, keeps its three rows of four: its across spacing
+    # (6.7 m) is the larger and two rows would only widen it
+    hall = {"id": "concourse", "story": 0, "bounds": [0.0, 0.0, 24.0, 20.0], "role": "public_entry",
+            "center": [12.0, 10.0, 0.0]}
+    got = _rows(_derive([hall]), "concourse")
+    assert len(got) == 3 and all(a["row"]["count"] == 4 for a in got)
+
+
+def test_the_room_cap_holds_over_many_aisles():
+    # five gondolas across a 24 x 18 m floor make six lanes; six rows share the room's twelve lamps
+    r = {"id": "sales_floor", "story": 0, "bounds": [0.0, 0.0, 24.0, 18.0], "role": "sales",
+         "center": [12.0, 9.0, 0.0]}
+    vols = [_gondola("gondola_%d" % i, 12.0, 3.0 * (i + 1), sx=12.0, sy=1.0) for i in range(5)]
+    rows = _rows(_derive([r], volumes=vols), "sales_floor")
+    assert len(rows) == 6
+    assert sum(a["row"]["count"] for a in rows) == lights._MAX_LAMPS_ROOM == 12

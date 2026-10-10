@@ -220,6 +220,38 @@ _WORK_PLANE_FLOOR = 0.0
 #: cold run 9229's deli hung three rows of four over its `apartment_hideout`,
 #: an office ceiling on a bedsit, because the rule keyed on the building.
 _HOME_WORDS = ("apartment", "hideout", "bedroom", "living", "flat", "bedsit")
+#: ROWS OVER THE AISLES (0.207.0, roadmap 229). In a room organised by its
+#: shelving -- a selling floor's gondolas, a stockroom's or a warehouse's
+#: racks -- the ceiling is laid to the AISLES between the runs, not across
+#: the room: a fixture over a gondola lights its top shelf and leaves the
+#: aisle beside it to spill. The room's shelf volumes (`_SHELF_WORDS` on the
+#: volume's name, standing on the floor) are projected across the room's
+#: long axis, the spans merged, and every gap at least an aisle wide
+#: (`level_design.island_aisle_width`, the contract's door width, 1.25 m) is
+#: a LANE; each lane takes WOOD's rows within its own width, so the open
+#: band beside one wall run is still lit as a floor (`_lanes_for_room`,
+#: `_rows_for_room`). Only in a room whose words say it sells or stores
+#: (`_AISLE_ROOM_WORDS`): an office with a shelf unit against the wall keeps
+#: its tile grid, which is what an office is. Counted over the furnished
+#: library before the change (`docs/findings/fixture_rows/aisle_census.py`):
+#: 514 of 702 rooms carry a shelf volume, 293 of them with two or more lanes.
+_SHELF_WORDS = ("shelf", "gondola", "rack", "pack_wall")
+_AISLE_ROOM_WORDS = ("sales", "retail", "shop_floor", "aisle", "market", "store",
+                     "stock", "storage", "ware", "parts", "supply", "cellar", "bond")
+#: The aisle's width when `level_design` cannot be asked: the contract's
+#: `clearances.min_door_width_m`, the number `island_aisle_width` returns.
+_AISLE_MIN_FALLBACK = 1.25
+#: A shelf stands on the floor; a sign hung over an aisle does not.
+_SHELF_FOOT_MAX = 0.5
+#: A merged shelf span wider than this is a FIELD of islands, not a run: the
+#: deepest run in `level_design._PIECES` is 0.6 m and a twin island, two
+#: backs meeting, 1.2 m (`level_design.island_depth`); the furnish stands a
+#: selling room's islands down its middle band at shuffled positions along
+#: it, and their spans overlap into a band 2 to 10 m wide (66 of the 98
+#: shelved selling and storage rooms in the library; 32 have runs). A row
+#: kept off such a band leaves the middle of the floor dark, so past this
+#: the room is laid across as before.
+_SHELF_SPAN_MAX = 2.0
 #: WOOD: rows at most this times A apart.
 _ROW_SPACING_OVER_A = 1.5
 #: A room up to (1 + this) x B wide keeps one row: WOOD's half-spacing to the
@@ -1021,17 +1053,25 @@ def _snap(value, pitch):
     return round(pitch * round(value / pitch), 3)
 
 
-def _rows_for_room(bounds, lamp_z, floor_z, work_plane, residence):
+def _rows_for_room(bounds, lamp_z, floor_z, work_plane, residence, lanes=None):
     """The ceiling rows of a room (0.206.0, roadmap 229): along its longer
     axis as before, and across the shorter one as many as the work plane
     asks. With A the height from the work plane to the lamp and B = 1.5 x A
-    (`_ROW_SPACING_OVER_A`), a room W wide takes ceil(W / B - `_ROW_SLACK`)
-    rows, so the outer row stands near B / 2 of its wall; the lamps along each row at
-    B, held to `_MAX_FIXTURES` a row and `_MAX_LAMPS_ROOM` a room by
-    thinning every row alike. Each row's line is snapped to the ceiling's
-    pitch (`_ceiling_pitch`) from the building's origin and kept a pitch
-    inside the room. A home's room is one fixture at its centre whatever
-    its size: a line of one is not a line.
+    (`_ROW_SPACING_OVER_A`), a band W wide takes ceil(W / B - `_ROW_SLACK`)
+    rows, so the outer row stands near B / 2 of its edge; the lamps along
+    each row at B, held to `_MAX_FIXTURES` a row and `_MAX_LAMPS_ROOM` a
+    room by thinning every row alike. Each row's line is snapped to the
+    ceiling's pitch (`_ceiling_pitch`) from the building's origin and kept a
+    pitch inside its band. A home's room is one fixture at its centre
+    whatever its size: a line of one is not a line.
+
+    The BANDS are the room's whole width, or its `lanes` (0.207.0,
+    `_lanes_for_room`): the aisles between its shelf runs, each laid as a
+    floor of its own width, so a room with no shelving is laid exactly as
+    before and a room organised by its shelving is lit between the runs. A
+    lane too narrow to keep a pitch inside each edge takes its centre.
+    Where the room's cap binds, rows across are traded for lamps along
+    while the larger spacing shrinks (0.207.0, the long hall).
 
     Returns ``[(rot_y, x, y, count, spacing)]``, the rows across in order."""
     minx, miny, maxx, maxy = bounds
@@ -1041,27 +1081,125 @@ def _rows_for_room(bounds, lamp_z, floor_z, work_plane, residence):
     rot = 0.0 if along_x else 90.0
     if residence:
         return [(rot, round(cx, 3), round(cy, 3), 1, 0.0)]
-    length, width = (dx, dy) if along_x else (dy, dx)
+    length = dx if along_x else dy
+    bands = list(lanes) if lanes else [(miny, maxy) if along_x else (minx, maxx)]
     a = max(lamp_z - floor_z - work_plane, 1.0)
     b = _ROW_SPACING_OVER_A * a
-    # ceil of the width in spacings, less the slack: a room up to 1.3 B wide is one row
-    n_rows = max(1, min(_MAX_ROWS, int(-(-(width / b - _ROW_SLACK) // 1))))
-    count = max(1, min(_MAX_FIXTURES, int(round(length / b))))
-    while n_rows * count > _MAX_LAMPS_ROOM and count > 1:
-        count -= 1
+    # ceil of each band's width in spacings, less the slack: a band up to 1.3 B wide is one row
+    per_band = [max(1, min(_MAX_ROWS, int(-(-((hi - lo) / b - _ROW_SLACK) // 1))))
+                for lo, hi in bands]
+    count_ask = max(1, min(_MAX_FIXTURES, int(round(length / b))))
+
+    def _fit(rows_per_band):
+        n = count_ask
+        while sum(rows_per_band) * n > _MAX_LAMPS_ROOM and n > 1:
+            n -= 1
+        return n
+
+    count = _fit(per_band)
+    if count < count_ask:
+        # THE LONG HALL (0.207.0): the cap binds, so WOOD's rule cannot hold
+        # in both directions at once. Trade rows across for lamps along
+        # while the LARGER of the two spacings shrinks, a row at a time from
+        # the band that loses least by it: a 58 x 20 m hall is two rows of
+        # five at 11.6 m along rather than three of four at 14.5, and a
+        # 12 x 11 m office keeps its three of four, whose across spacing
+        # (3.7 m) is the larger and would only grow. Nothing changes where
+        # the cap does not bind.
+        def _worst(rows_per_band, n_lamps):
+            across = max((hi - lo) / n for (lo, hi), n in zip(bands, rows_per_band))
+            along = length / n_lamps if n_lamps > 1 else length
+            return max(across, along)
+
+        best = (_worst(per_band, count), list(per_band), count)
+        cur = list(per_band)
+        while True:
+            more = [i for i, n in enumerate(cur) if n > 1]
+            if not more:
+                break
+            k = min(more, key=lambda i: (bands[i][1] - bands[i][0]) / (cur[i] - 1))
+            cur[k] -= 1
+            n_lamps = _fit(cur)
+            worst = _worst(cur, n_lamps)
+            if worst < best[0] - 1e-9:
+                best = (worst, list(cur), n_lamps)
+        per_band, count = best[1], best[2]
+    n_rows = sum(per_band)
     spacing = round(length / count, 3) if count > 1 else 0.0
     pitch = _ceiling_pitch(work_plane)
-    lo = (miny if along_x else minx) + pitch
-    hi = (maxy if along_x else maxx) - pitch
     rows = []
-    for k in range(n_rows):
-        line = (cy if along_x else cx) + (k + 0.5) * width / n_rows - width / 2.0
-        line = min(max(_snap(line, pitch), lo), hi)
-        if along_x:
-            rows.append((rot, round(cx, 3), round(line, 3), count, spacing))
-        else:
-            rows.append((rot, round(line, 3), round(cy, 3), count, spacing))
+    for (lo, hi), n in zip(bands, per_band):
+        width = hi - lo
+        centre = (lo + hi) / 2.0
+        inner_lo, inner_hi = lo + pitch, hi - pitch
+        for k in range(n):
+            line = centre + (k + 0.5) * width / n - width / 2.0
+            if inner_lo <= inner_hi:
+                line = min(max(_snap(line, pitch), inner_lo), inner_hi)
+            else:
+                line = centre
+            if along_x:
+                rows.append((rot, round(cx, 3), round(line, 3), count, spacing))
+            else:
+                rows.append((rot, round(line, 3), round(cy, 3), count, spacing))
     return rows
+
+
+def _lanes_for_room(r, bounds, floor_z, volumes, aisle):
+    """The LANES between a room's shelf runs, across its long axis (0.207.0,
+    roadmap 229): ``[(lo, hi)]`` in order, or None when the room is not
+    organised by shelving. The room's words must say it sells or stores
+    (`_AISLE_ROOM_WORDS`), and a shelf is a visible volume standing in it
+    whose name carries one of `_SHELF_WORDS` and whose foot is on the floor
+    (`_SHELF_FOOT_MAX`: a sign hung over an aisle is not a shelf). The
+    shelves' spans across the room's long axis are clipped to the bounds and
+    merged, and every gap between them and the bounds at least `aisle` wide
+    is a lane. Shelving that leaves no lane returns [], and the room is laid
+    across as before; so is a room whose merged spans are wider than a run
+    is deep (`_SHELF_SPAN_MAX`), a field of staggered islands rather than
+    parallel runs, which returns None. `volumes` are the room's visible
+    volumes on its storey (`_volumes_in`)."""
+    key = ((r.get("role") or "") + " " + (r.get("id") or "")).lower()
+    if not any(w in key for w in _AISLE_ROOM_WORDS):
+        return None
+    minx, miny, maxx, maxy = bounds
+    along_x = (maxx - minx) >= (maxy - miny)
+    lo, hi = (miny, maxy) if along_x else (minx, maxx)
+    spans = []
+    for v in volumes or ():
+        name = str(v.get("name", "")).lower()
+        if not any(w in name for w in _SHELF_WORDS):
+            continue
+        foot = float(v.get("z", 0.0)) - float(v.get("size_z", 0.0)) / 2.0
+        if foot - floor_z > _SHELF_FOOT_MAX:
+            continue
+        if along_x:
+            c, s = float(v.get("y", 0.0)), float(v.get("size_y", 0.0))
+        else:
+            c, s = float(v.get("x", 0.0)), float(v.get("size_x", 0.0))
+        a, b = max(lo, c - s / 2.0), min(hi, c + s / 2.0)
+        if b > a:
+            spans.append((a, b))
+    if not spans:
+        return None
+    spans.sort()
+    merged = []
+    for a, b in spans:
+        if merged and a <= merged[-1][1]:
+            merged[-1] = (merged[-1][0], max(merged[-1][1], b))
+        else:
+            merged.append((a, b))
+    # A FIELD OF ISLANDS IS NOT A RUN. The furnish stands a selling room's
+    # islands down its middle band at shuffled positions along it, so their
+    # spans across the room overlap into one band wider than any shelf is
+    # deep; a row kept off that band would leave the middle of the floor
+    # dark (the gas station's sales floor, 14 m between rows on the first
+    # build). Past `_SHELF_SPAN_MAX` the room is laid across as before.
+    if max(b - a for a, b in merged) > _SHELF_SPAN_MAX:
+        return None
+    edges = [lo] + [e for a, b in merged for e in (a, b)] + [hi]
+    gaps = [(edges[k], edges[k + 1]) for k in range(0, len(edges), 2)]
+    return [(round(a, 3), round(b, 3)) for a, b in gaps if b - a >= aisle - 1e-6]
 
 
 def _row_for_bounds(bounds):
@@ -1335,6 +1473,7 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
     rep.setdefault("storefront_spills", 0)
     rep.setdefault("counter_accents", 0)
     rep.setdefault("rows_laid", 0)
+    rep.setdefault("rows_over_aisles", 0)
     spills = []
     clear = wall_clearance(wall_thick)
     club_ids = set(club_rooms or ())
@@ -1343,8 +1482,10 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
     try:
         import level_design
         bar_aisle = level_design.bar_aisle_width()
+        aisle_min = level_design.island_aisle_width()
     except Exception:                                    # noqa: BLE001
         bar_aisle = None
+        aisle_min = _AISLE_MIN_FALLBACK
     for r in rooms or []:
         c = r.get("center")
         bounds = r.get("bounds")
@@ -1393,8 +1534,13 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
             rows = [(rot, c[0], c[1], count, spacing)]
         else:
             home = _home_room(r, residence)
+            # over the aisles between the room's shelf runs when it has them
+            # (0.207.0, `_lanes_for_room`); a home's room has no aisles
+            lanes = None if home else _lanes_for_room(r, bounds, c[2], in_room, aisle_min)
             rows = _rows_for_room(bounds, ceiling_z, c[2],
-                                  _work_plane(r, home), home)
+                                  _work_plane(r, home), home, lanes=lanes)
+            if lanes:
+                rep["rows_over_aisles"] += 1
             rep["rows_laid"] += len(rows)
         lamp_z = round(ceiling_z - _PENDANT_CORD, 3) if moody else ceiling_z
         base_id = ("%s_bulbs" if moody else "%s_ceiling") % r.get("id", "room")
