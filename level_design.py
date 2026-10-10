@@ -460,6 +460,18 @@ def _stair_reserved_rects(spec):
 _HUNG_MIN = 1.8
 
 
+def _hung(v, floor):
+    """Over the furniture, not among it: a collision-free volume whose foot
+    is `_HUNG_MIN` over ``floor``, or a den's drape (0.205.0, `_is_drape`),
+    hung against its window from 1.3 to 1.7 m up, whose span a wall piece
+    already keeps off (`_clear_of_openings`)."""
+    if v.get("collision") != "none":
+        return False
+    if _is_drape(v):
+        return True
+    return float(v.get("z", 0.0)) - float(v.get("size_z", 0.0)) / 2.0 - floor >= _HUNG_MIN
+
+
 def _on_storey(vz, vh, floor, sh):
     """Does a volume centred at `vz`, `vh` tall, reach into the storey whose
     floor is at `floor`? A slab-thick tolerance either side, so a piece
@@ -627,7 +639,7 @@ def _corridor_obstacles(spec, story, floor, sh):
         vz, vh = float(v.get("z", 0.0)), float(v.get("size_z", 0.0))
         if not _on_storey(vz, vh, floor, sh):
             continue
-        if v.get("collision") == "none" and vz - vh / 2.0 - floor >= _HUNG_MIN:
+        if _hung(v, floor):
             continue
         ax = float(v.get("size_x", 1)) / 2.0
         ay = float(v.get("size_y", 1)) / 2.0
@@ -723,7 +735,7 @@ def _seed_clear(spec, room, px, py, placed, half=0.0, above=None,
             # own top shares no height with it. See the docstring.
             if below is not None and vz - vh / 2.0 - floor >= below:
                 continue
-        elif v.get("collision") == "none" and vz - vh / 2.0 - floor >= _HUNG_MIN:
+        elif _hung(v, floor):
             continue
         if abs(v["x"] - px) < v.get("size_x", 1) / 2 + 0.9 + half and \
                 abs(v["y"] - py) < v.get("size_y", 1) / 2 + 0.9 + half:
@@ -2536,6 +2548,136 @@ def _prop_material(spec, name):
     return mat
 
 
+# ---------------------------------------------------------------------------
+# A DEN'S WINDOWS ARE DRAWN SHUT (0.205.0)
+# ---------------------------------------------------------------------------
+#
+# The walker, 2026-10-09, walking club_block_014 (roadmap 219, note 2): "the
+# windows in any 'den of sin' building should have curtains or drapes or
+# blinds So people outside can't see in, and you keep the streetlight light
+# out of the club". Every window of a strip club (`_strip_club_building`)
+# hangs Zoo's `window_drape` (>= 1.91.0) on its room side: two velvet panels
+# drawn shut under a pelmet, wider than the glass and longer than it.
+# `lights.derive_light_anchors` derives no window light behind one, and
+# `migrate_den_drapes` applies the rule to the authored specs, whose
+# furnishing is baked in.
+
+#: the name a den's drape carries, and the start of every one of them
+#: (`lights.DRAPE_NAME` reads it)
+DRAPE_NAME = "window_drape"
+#: past each jamb, so no edge of the glass shows
+DRAPE_SIDE = 0.15
+#: under the sill
+DRAPE_BELOW = 0.10
+#: the pelmet's top over the head, where the ceiling (`_clear_height`) allows
+DRAPE_ABOVE = 0.15
+#: Zoo's genome default: two pleated panels and their pelmet
+DRAPE_DEPTH = 0.16
+#: off the wall's inner face, as a window poster is taped
+#: (`migrate_window_poster.INSET`)
+DRAPE_INSET = 0.03
+#: velvet, which the acoustics hear as the club carpet's `Curtain`
+DRAPE_MATERIAL = ("velvet", ("Curtain", 0.85, 0.75))
+
+
+def _is_drape(v):
+    """A den's drape: furnish never sees one (`_hung`, `_room_volume_count`).
+    It hangs against its window from 1.3 to 1.7 m up, under the hung line,
+    and seen as a floor piece it re-drew the clubs' rooms -- the library
+    stopped being a fixed point of furnish (see `_room_volume_count`)."""
+    return v.get("collision") == "none" and str(v.get("name", "")).startswith(DRAPE_NAME)
+
+
+def _opening_grid(spec):
+    """The spec's grid, or `LevelSpec`'s default: the builder snaps every
+    opening to one or the other (`Builder.snap`), so a drape stands where
+    the built window is -- strip_club_a01's at x 12.0, where `pos * run`
+    alone says 11.9."""
+    import dataclasses
+    import spec_types
+    if spec.get("grid"):
+        return float(spec["grid"])
+    return next(f.default for f in dataclasses.fields(spec_types.LevelSpec) if f.name == "grid")
+
+
+def plan_den_drapes(spec):
+    """``[volume, ...]``: the drape each window of a strip club hangs, in the
+    spec's frame, named ``window_drape_<wall><storey>_<n>``; empty for any
+    other building. A volume long in x faces -y and one long in y faces -x
+    (`migrate_slush_machine._front`), so the S and W walls' drapes turn
+    `rot_z` 180 to face their room."""
+    if not _strip_club_building(club_building_id(spec)):
+        return []
+    import spec_types
+    fx = float(spec.get("footprint_x", 0.0))
+    fy = float(spec.get("footprint_y", 0.0))
+    wt = float(spec.get("wall_thick") or 0.3)
+    sh = _story_height(spec)
+    ceiling = _clear_height(spec)
+    grid = _opening_grid(spec)
+    lines = {"S": (0, -fy / 2.0, 1.0), "N": (0, fy / 2.0, -1.0),
+             "W": (1, -fx / 2.0, 1.0), "E": (1, fx / 2.0, -1.0)}
+    out, count = [], {}
+    for w in spec.get("ext_walls") or []:
+        side = w.get("wall")
+        if side not in lines:
+            continue
+        axis, line, inward = lines[side]
+        run = fx if axis == 0 else fy
+        story = int(w.get("story", 0) or 0)
+        for op in w.get("openings") or []:
+            if op.get("kind") != "window":
+                continue
+            r = spec_types.Opening(kind="window", width=op.get("width"),
+                                   height=op.get("height"), sill=op.get("sill")).resolved()
+            u = round(float(op.get("pos", 0.0)) * run / grid) * grid
+            width = float(r["width"]) + 2.0 * DRAPE_SIDE
+            foot = float(r["sill"]) - DRAPE_BELOW
+            top = min(float(r["sill"]) + float(r["height"]) + DRAPE_ABOVE, ceiling)
+            across = line + inward * (wt / 2.0 + DRAPE_INSET + DRAPE_DEPTH / 2.0)
+            key = "%s%d" % (side.lower(), story)
+            count[key] = count.get(key, 0) + 1
+            x, y = (u, across) if axis == 0 else (across, u)
+            vol = {"name": "%s_%s_%d" % (DRAPE_NAME, key, count[key]),
+                   "x": round(x, 3), "y": round(y, 3),
+                   "z": round(story * sh + (foot + top) / 2.0, 3),
+                   "size_x": round(width if axis == 0 else DRAPE_DEPTH, 3),
+                   "size_y": round(DRAPE_DEPTH if axis == 0 else width, 3),
+                   "size_z": round(top - foot, 3),
+                   "collision": "none", "material": DRAPE_MATERIAL[0]}
+            if side in ("S", "W"):
+                vol["rot_z"] = 180.0
+            out.append(vol)
+    return out
+
+
+def drape_den_windows(spec):
+    """Hang `plan_den_drapes`'s volumes in the spec, in place and idempotent:
+    a drape already named is replaced by the rule's, one the rule no longer
+    asks for is removed, a new one is appended -- `furnish` runs this before
+    it appends its own pieces. Returns how many volumes changed."""
+    want = plan_den_drapes(spec)
+    vols = spec.get("volumes") or []
+    names = {v["name"] for v in want}
+    keep = [v for v in vols if not (str(v.get("name", "")).startswith(DRAPE_NAME)
+                                    and v.get("name") not in names)]
+    n = len(vols) - len(keep)
+    at = {v.get("name"): i for i, v in enumerate(keep)}
+    for v in want:
+        i = at.get(v["name"])
+        if i is None:
+            keep.append(v)
+            n += 1
+        elif keep[i] != v:
+            keep[i] = v
+            n += 1
+    if want:
+        _declare_material(spec, *DRAPE_MATERIAL)
+    if n:
+        spec["volumes"] = keep
+    return n
+
+
 def dress_club_rooms(spec):
     """The strip club's surfaces (`_CLUB_FINISHES`), in place, idempotent:
     every club room's floor is `carpet_club` unless it names its own; a
@@ -2667,6 +2809,14 @@ def _room_volume_count(spec, room):
         # the headroom line, and counted it would cost the market aisles a
         # piece -- the store's window sign's defect again, a storey lower
         if v.get("collision") == "none" and v.get("form") == "window":
+            continue
+        # A DEN'S DRAPE stands on no floor either (0.205.0): hung across its
+        # window from 1.3 to 1.7 m up, under the headroom line, and counted
+        # it re-drew strip_club_a01's club room -- the window sign's defect a
+        # fourth time. Not a rule by foot height: furnish's own wall pieces,
+        # 683 across the library, count toward the target today, and such a
+        # rule would refurnish the library.
+        if _is_drape(v):
             continue
         if abs(v.get("z", 0) - (story * sh + v.get("size_z", 0) / 2)) < sh:
             n += 1
@@ -3023,7 +3173,7 @@ def _island_aisle_clear(spec, room, px, py, sx, sy, aisle):
         vz, vh = float(v.get("z", 0.0)), float(v.get("size_z", 0.0))
         if not _on_storey(vz, vh, floor, sh):
             continue
-        if v.get("collision") == "none" and vz - vh / 2.0 - floor >= _HUNG_MIN:
+        if _hung(v, floor):
             continue
         r = _rect_of(v)
         if x0 < r[2] and r[0] < x1 and y0 < r[3] and r[1] < y1:
@@ -3381,7 +3531,7 @@ def dart_lane_blockers(spec, room, lane, skip=()):
         vz, vh = float(v.get("z", 0.0)), float(v.get("size_z", 0.0))
         if not _on_storey(vz, vh, floor, sh):
             continue
-        if v.get("collision") == "none" and vz - vh / 2.0 - floor >= _HUNG_MIN:
+        if _hung(v, floor):
             continue
         hx, hy = float(v.get("size_x", 1.0)) / 2.0, float(v.get("size_y", 1.0)) / 2.0
         if abs(float(v.get("rot_z", 0.0))) % 90.0 > 1e-6:
@@ -3783,7 +3933,7 @@ def _rect_clear(spec, room, rect, skip, pad=0.0):
         vz, vh = float(v.get("z", 0.0)), float(v.get("size_z", 0.0))
         if not _on_storey(vz, vh, floor, sh):
             continue
-        if v.get("collision") == "none" and vz - vh / 2.0 - floor >= _HUNG_MIN:
+        if _hung(v, floor):
             continue
         if _rect_hits(box, _rect_of(v)):
             out.append("volume:" + str(v.get("name")))
@@ -4509,6 +4659,8 @@ def furnish(spec):
     added = 0
     building = club_building_id(spec)
     dress_club_rooms(spec)
+    # a den's windows drawn shut (0.205.0), before any piece is appended
+    drape_den_windows(spec)
     dress_card_shop_rooms(spec)
     for room in spec.get("rooms", []):
         x0, y0, x1, y1 = room["bounds"]

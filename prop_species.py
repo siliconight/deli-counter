@@ -244,6 +244,9 @@ PROP_SPECIES = (
     (("neon", "club_sign"), "neon_sign"),
     # a store's hung beer sign (0.160.0): the same species in its `window` form
     (("window_sign",), "neon_sign"),
+    # a den's drawn drape (0.205.0, `level_design.DRAPE_NAME`): Zoo's
+    # `window_drape` (>= 1.91.0)
+    (("window_drape",), "window_drape"),
     (("chair", "seat", "bench", "waiting"), "chair"),
     (("pool", "billiard"), "pool_table"),
     (("cocktail", "club_table", "highboy"), "cocktail_table"),

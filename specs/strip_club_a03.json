@@ -86,6 +86,12 @@
    "acoustic": "Wood",
    "absorption": 0.22,
    "damping": 0.18
+  },
+  {
+   "id": "velvet",
+   "acoustic": "Curtain",
+   "absorption": 0.85,
+   "damping": 0.75
   }
  ],
  "ext_walls": [
@@ -304,6 +310,42 @@
  "vertical_links": [],
  "parapets": [],
  "volumes": [
+  {
+   "name": "window_drape_s0_1",
+   "x": 11.0,
+   "y": -11.74,
+   "z": 2.475,
+   "size_x": 1.5,
+   "size_y": 0.16,
+   "size_z": 1.55,
+   "collision": "none",
+   "material": "velvet",
+   "rot_z": 180.0
+  },
+  {
+   "name": "window_drape_s1_1",
+   "x": -11.0,
+   "y": -11.74,
+   "z": 5.725,
+   "size_x": 1.7,
+   "size_y": 0.16,
+   "size_z": 1.65,
+   "collision": "none",
+   "material": "velvet",
+   "rot_z": 180.0
+  },
+  {
+   "name": "window_drape_s1_2",
+   "x": 11.0,
+   "y": -11.74,
+   "z": 5.725,
+   "size_x": 1.7,
+   "size_y": 0.16,
+   "size_z": 1.65,
+   "collision": "none",
+   "material": "velvet",
+   "rot_z": 180.0
+  },
   {
    "name": "stage_round_r1d196568_1",
    "x": 0.0,

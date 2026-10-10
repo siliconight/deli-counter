@@ -1137,6 +1137,30 @@ def _storefront_sign(openings, wall_thick):
     }, d
 
 
+#: THE NAME A DEN'S DRAPE CARRIES (0.205.0), `level_design.DRAPE_NAME`'s: a
+#: window with one over it lets no light in (`_drapes_window`)
+DRAPE_NAME = "window_drape"
+
+
+def _drapes_window(v, o):
+    """Does volume ``v``, a den's drape, hang over window opening ``o``? On the
+    same stretch of the same wall: its centre along the wall within half its
+    width of the opening's, within a metre of the opening's line across it,
+    and its height spanning the opening's centre. ``o`` is a gameplay opening
+    (``wall`` like ``ext_0_S``, its centre in x, y and z)."""
+    side = str(o.get("wall", "")).rsplit("_", 1)[-1]
+    if side in ("N", "S"):
+        along, across, half = "x", "y", float(v.get("size_x", 0.0)) / 2.0
+    elif side in ("E", "W"):
+        along, across, half = "y", "x", float(v.get("size_y", 0.0)) / 2.0
+    else:
+        return False
+    return (abs(float(v.get(along, 0.0)) - float(o.get(along, 0.0))) <= half
+            and abs(float(v.get(across, 0.0)) - float(o.get(across, 0.0))) <= 1.0
+            and abs(float(v.get("z", 0.0)) - float(o.get("z", 0.0)))
+            <= float(v.get("size_z", 0.0)) / 2.0)
+
+
 def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
                          wall_thick, ceiling_voids=None, partitions=None,
                          report=None, volumes=None, club_rooms=None,
@@ -1330,12 +1354,21 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
         anchors += screens
         anchors.append(_room_ambient(r, c[2], ceiling_z, None))
 
+    # A DRAPED WINDOW LETS NO LIGHT IN (0.205.0). A den's windows are drawn
+    # shut (`level_design.drape_den_windows`; the walker: "keep the
+    # streetlight light out of the club"), so the area light that stands for
+    # the street through the glass is not derived behind one. Counted before
+    # the skip, so every other window on the wall keeps its id.
+    drapes = [v for v in volumes or [] if str(v.get("name", "")).startswith(DRAPE_NAME)]
     win_n = {}
     for o in openings or []:
         if o.get("kind") != "window":
             continue
         wall = o.get("wall") or "win"
         win_n[wall] = win_n.get(wall, 0) + 1
+        if any(_drapes_window(v, o) for v in drapes):
+            rep["draped_windows"] = rep.get("draped_windows", 0) + 1
+            continue
         facing = _wall_facing(wall)
         anchors.append({
             "id": "%s_window_%d" % (wall, win_n[wall]),
