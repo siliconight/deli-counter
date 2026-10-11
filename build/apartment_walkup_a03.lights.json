@@ -10,8 +10,8 @@
       "type": "fluorescent",
       "source": "derived",
       "pos": [
+        -7.5,
         -4.0,
-        0.0,
         2.8
       ],
       "rot_y": 90.0,
@@ -19,6 +19,24 @@
       "row": {
         "count": 1,
         "spacing": 0.0
+      },
+      "drop": 2.8,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "living_floor_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -0.5,
+        0.0,
+        2.8
+      ],
+      "rot_y": 90.0,
+      "room": "living_floor",
+      "row": {
+        "count": 2,
+        "spacing": 8.0
       },
       "drop": 2.8,
       "reacts_to_alarm": true
@@ -91,8 +109,8 @@
       "rot_y": 0.0,
       "room": "upper_front",
       "row": {
-        "count": 1,
-        "spacing": 0.0
+        "count": 3,
+        "spacing": 7.333
       },
       "drop": 2.8,
       "reacts_to_alarm": true
@@ -128,8 +146,8 @@
       "rot_y": 0.0,
       "room": "upper_rear",
       "row": {
-        "count": 1,
-        "spacing": 0.0
+        "count": 3,
+        "spacing": 7.333
       },
       "drop": 2.8,
       "reacts_to_alarm": true

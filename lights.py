@@ -220,6 +220,14 @@ _WORK_PLANE_FLOOR = 0.0
 #: cold run 9229's deli hung three rows of four over its `apartment_hideout`,
 #: an office ceiling on a bedsit, because the rule keyed on the building.
 _HOME_WORDS = ("apartment", "hideout", "bedroom", "living", "flat", "bedsit")
+#: A HOME IS LIT A ROOM AT A TIME (0.207.1): one ceiling fixture a bay the
+#: size of an ordinary room (the guide's "by room": a pendant or flush mount
+#: over the sink, one pendant in a bedroom; docs/reference/
+#: INDOOR_FIXTURE_PLACEMENT_GUIDE.md in the factory). A home's room within
+#: one bay keeps its one fixture at its centre; a bigger one -- cold run
+#: 9232's 21 x 16 m hideout, dark at both ends under one troffer -- takes
+#: a grid of bays at this spacing, the fixtures at the bays' centres.
+_HOME_SPACING = 7.0
 #: ROWS OVER THE AISLES (0.207.0, roadmap 229). In a room organised by its
 #: shelving -- a selling floor's gondolas, a stockroom's or a warehouse's
 #: racks -- the ceiling is laid to the AISLES between the runs, not across
@@ -1062,8 +1070,10 @@ def _rows_for_room(bounds, lamp_z, floor_z, work_plane, residence, lanes=None):
     each row at B, held to `_MAX_FIXTURES` a row and `_MAX_LAMPS_ROOM` a
     room by thinning every row alike. Each row's line is snapped to the
     ceiling's pitch (`_ceiling_pitch`) from the building's origin and kept a
-    pitch inside its band. A home's room is one fixture at its centre
-    whatever its size: a line of one is not a line.
+    pitch inside its band. A home's room is one fixture at its centre while
+    it is one bay (`_HOME_SPACING`), and a fixture a bay beyond that, at the
+    bays' centres (0.207.1): a line of one is not a line, and a hall is not
+    a bedsit.
 
     The BANDS are the room's whole width, or its `lanes` (0.207.0,
     `_lanes_for_room`): the aisles between its shelf runs, each laid as a
@@ -1079,9 +1089,25 @@ def _rows_for_room(bounds, lamp_z, floor_z, work_plane, residence, lanes=None):
     cx, cy = (minx + maxx) / 2.0, (miny + maxy) / 2.0
     along_x = dx >= dy
     rot = 0.0 if along_x else 90.0
+    length, width = (dx, dy) if along_x else (dy, dx)
     if residence:
-        return [(rot, round(cx, 3), round(cy, 3), 1, 0.0)]
-    length = dx if along_x else dy
+        # a fixture a bay (0.207.1): WOOD's row rule at the bay's spacing, the
+        # lines at the bays' centres, never snapped -- a home hangs its fixture
+        # from the middle of the room; one bay is the one fixture it always was
+        b = _HOME_SPACING
+        n_rows = max(1, min(_MAX_ROWS, int(-(-(width / b - _ROW_SLACK) // 1))))
+        count = max(1, min(_MAX_FIXTURES, int(round(length / b))))
+        while n_rows * count > _MAX_LAMPS_ROOM and count > 1:
+            count -= 1
+        spacing = round(length / count, 3) if count > 1 else 0.0
+        rows = []
+        for k in range(n_rows):
+            line = (cy if along_x else cx) + (k + 0.5) * width / n_rows - width / 2.0
+            if along_x:
+                rows.append((rot, round(cx, 3), round(line, 3), count, spacing))
+            else:
+                rows.append((rot, round(line, 3), round(cy, 3), count, spacing))
+        return rows
     bands = list(lanes) if lanes else [(miny, maxy) if along_x else (minx, maxx)]
     a = max(lamp_z - floor_z - work_plane, 1.0)
     b = _ROW_SPACING_OVER_A * a

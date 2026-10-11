@@ -145,8 +145,10 @@ def test_a_home_room_in_a_shop_takes_the_home_rule():
     r = {"id": "apartment_hideout", "story": 1, "bounds": [-2.0, -14.0, 19.0, 2.0],
          "role": "fortifiable", "center": [8.5, -6.0, 3.3]}
     rows = _rows(_derive([r]), "apartment_hideout")
-    assert len(rows) == 1 and rows[0]["row"] == {"count": 1, "spacing": 0.0}
-    assert rows[0]["pos"][:2] == [8.5, -6.0]
+    # the home rule, not the office ceiling: a fixture a bay (0.207.1), two rows of three at
+    # the bays' centres rather than three rows of four on the tile grid
+    assert len(rows) == 2 and all(a["row"] == {"count": 3, "spacing": 7.0} for a in rows)
+    assert [a["pos"][1] for a in rows] == [-10.0, -2.0]
     # the same bounds under a name that says nothing of a home is still an office ceiling
     office = dict(r, id="upper_office")
     assert len(_rows(_derive([office]), "upper_office")) == 3
@@ -264,3 +266,19 @@ def test_the_room_cap_holds_over_many_aisles():
     rows = _rows(_derive([r], volumes=vols), "sales_floor")
     assert len(rows) == 6
     assert sum(a["row"]["count"] for a in rows) == lights._MAX_LAMPS_ROOM == 12
+
+
+def test_a_big_home_room_takes_a_fixture_a_bay():
+    # cold run 9232: the deli's 21 x 16 m hideout read dark at both ends under one troffer;
+    # at a 7 m bay it is two rows of three at the bays' centres, 7 m apart along, no snap
+    r = {"id": "apartment_hideout", "story": 1, "bounds": [-2.0, -14.0, 19.0, 2.0],
+         "role": "fortifiable", "center": [8.5, -6.0, 3.3]}
+    rows = _rows(_derive([r]), "apartment_hideout")
+    assert [a["id"] for a in rows] == ["apartment_hideout_ceiling", "apartment_hideout_ceiling_r1"]
+    assert [a["pos"][1] for a in rows] == [-10.0, -2.0]
+    assert all(a["row"] == {"count": 3, "spacing": 7.0} and a["pos"][0] == 8.5 for a in rows)
+    # a bedroom is one bay and keeps its one fixture at its centre
+    bed = {"id": "bedroom", "story": 1, "bounds": [0.0, 0.0, 4.0, 5.0], "role": "connector",
+           "center": [2.0, 2.5, 3.3]}
+    one = _rows(_derive([bed]), "bedroom")
+    assert len(one) == 1 and one[0]["pos"][:2] == [2.0, 2.5] and one[0]["row"] == {"count": 1, "spacing": 0.0}
