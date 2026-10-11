@@ -384,3 +384,37 @@ def test_a_guard_in_a_doorway_is_not_excused(monkeypatch):
     gp = {"surface_roles": {"stair_guard_rail_1": "prop"}}
     out = C.check_shell("ignored.glb", {"slots": [_doorway()]}, gp)
     assert out["ok"] is False and out["excused"] == []
+
+
+# ---- 0.209.1: the column ends at the top floor's ceiling ----------------------
+
+def _served(**kw):
+    """A stair serving floors 0 to 2 of a 3.6 m building: landings at 0.0 and 7.2."""
+    return _stair(floors_served=[0, 1, 2],
+                  nav_endpoints={"lower": [5.0, 4.5, 0.0], "upper": [6.0, 5.5, 7.2]}, **kw)
+
+
+def test_a_stairs_column_reaches_one_storey_above_its_upper_landing():
+    """FAILS ON 0.209.0: the column was +/-1e6 whatever the stair served."""
+    assert C.stair_column(_served()) == (0.0, 7.2 + 3.6)
+    vols = dict(C.circulation_volumes({}, {"stair_systems": [_served()]}))
+    lo, hi = vols["stair:stair_0"]
+    assert lo[2] == 0.0 and abs(hi[2] - 10.8) < 1e-9
+
+
+def test_a_roof_prop_over_a_stair_two_slabs_down_is_not_in_its_column():
+    """Cold run 9245's office: HVAC units on a roof at 10.8 m over a stair
+    serving floors 0 to 2 read as seven conflicts. Prop boxes are in Godot
+    space (x, up, -y): a unit standing ON the roof grazes the column's top
+    face by nothing, under the 2 cm floor; a table in the well is caught."""
+    vols = C.circulation_volumes({}, {"stair_systems": [_served()]})
+    on_roof = [("Hvac#0", ([4.5, 10.8, -5.5], [6.5, 11.7, -4.5]))]
+    in_well = [("Table#0", ([4.5, 5.0, -5.5], [6.5, 6.0, -4.5]))]
+    assert C.prop_conflicts(on_roof, vols) == []
+    assert [c["prop"] for c in C.prop_conflicts(in_well, vols)] == ["Table#0"]
+
+
+def test_a_stair_without_endpoints_keeps_the_full_column():
+    assert C.stair_column(_stair(floors_served=[0, 1])) == (-1e6, 1e6)
+    vols = dict(C.circulation_volumes({}, {"stair_systems": [_stair()]}))
+    assert vols["stair:stair_0"][1][2] == 1e6

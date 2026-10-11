@@ -164,6 +164,39 @@ def stair_volume(system, z_lo=-1e6, z_hi=1e6):
     return [min(xs), min(ys), z_lo], [max(xs), max(ys), z_hi]
 
 
+#: A stair's column reaches one storey above its upper landing -- the ceiling
+#: of the top floor it serves -- and no further (0.209.1). It used to reach
+#: +/-1e6: a prop anywhere over the footprint, on any floor, was "in the
+#: shaft". Cold run 9245's roof props found it: seven HVAC parts on the
+#: office's roof over `office_stair_0` (floors 0 to 2, the roof two slabs up)
+#: and a dish on the deli's over its BASEMENT stair -- eight conflicts, none a
+#: body could meet. The storey is read off the stair's own landings, so no
+#: manifest field is guessed; a stair without `nav_endpoints` keeps the full
+#: column, as before.
+def stair_column(system):
+    """``(z_lo, z_hi)`` of a stair system's column, Blender z: from its lowest
+    landing to one storey above its highest, the storey being the landings'
+    rise over the floors they span. ``(-1e6, 1e6)`` without endpoints."""
+    ends = system.get("nav_endpoints") or {}
+    zs = []
+    for key in ("lower", "upper"):
+        pt = ends.get(key)
+        if isinstance(pt, (list, tuple)) and len(pt) >= 3:
+            try:
+                zs.append(float(pt[2]))
+            except (TypeError, ValueError):
+                pass
+    if len(zs) < 2 or zs[0] == zs[1]:
+        return -1e6, 1e6
+    z_lo, z_hi = min(zs), max(zs)
+    floors = system.get("floors_served") or []
+    try:
+        spanned = max(1, int(max(floors)) - int(min(floors)))
+    except (TypeError, ValueError):
+        spanned = 1
+    return z_lo, z_hi + (z_hi - z_lo) / spanned
+
+
 def circulation_volumes(slots_manifest, gameplay):
     """All named circulation volumes for a build, in Blender space.
 
@@ -183,7 +216,8 @@ def circulation_volumes(slots_manifest, gameplay):
         if v:
             vols.append((f"doorway:{s.get('slot_id')}", v))
     for st in ((gameplay or {}).get("stair_systems") or []):
-        v = stair_volume(st)
+        # the floors it serves, one storey of headroom above (0.209.1)
+        v = stair_volume(st, *stair_column(st))
         if v:
             vols.append((f"stair:{st.get('id')}", v))
     return vols
