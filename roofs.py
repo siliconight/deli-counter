@@ -25,10 +25,14 @@ laid on it.
 
 ROOF_SLOT_ROLE = "roof"
 GREYBOX_REF = "roof_greybox_01"
+#: Half-size of the square a body needs where it steps off a ladder onto the
+#: roof (0.209.0): the hatch cut for it is about 1.3 m across
+#: (`ladder_geom.through_hole`), and a stride past its edge is 0.85 m.
+LANDING_HALF_M = 1.5
 
 
 def _slot(sid, story, cx, cy, cz, sx, sy, ft, room=None, style=1,
-          material=None, voids=None):
+          material=None, voids=None, keep_out=None):
     return {
         "slot_id": sid, "role": ROOF_SLOT_ROLE, "size_mod": "full",
         "style": style, "material": material,
@@ -43,7 +47,12 @@ def _slot(sid, story, cx, cy, cz, sx, sy, ft, room=None, style=1,
                 # `floors._slot` emits, and named `voids` for the reason stated
                 # there: `openings` is the WALL contract, a hole in a standing
                 # slab's x/z, and the two are not the same shape.
-                "voids": list(voids or ())},
+                "voids": list(voids or ()),
+                # Where a body steps off a ladder onto this roof (0.209.0):
+                # rects in the same centred coords as `voids`, for Zoo's roof
+                # props (>= 1.101.0) to keep off. Empty on a roof no ladder
+                # reaches.
+                "keep_out": list(keep_out or ())},
     }
 
 
@@ -85,6 +94,33 @@ def roof_fixtures(spec) -> dict:
         raise ValueError("%s: roof fixtures %s and no front_door opening to set them back from"
                          % (name, sorted(out)))
     out["front"] = front
+    return out
+
+
+def roof_keep_out(spec, story, cx, cy, sx, sy):
+    """Where a body steps off a ladder onto the roof that caps ``story``: a
+    ``2 * LANDING_HALF_M`` square around each ladder whose top story is that
+    one, in the centred coords ``floors.room_voids`` writes the slab's holes
+    in (world minus the centre it is handed), dropped when it misses the
+    rect entirely, as a hole is. Zoo's roof props (>= 1.101.0) keep off
+    these; a hatch ladder's hole is already in `voids`, and its landing is
+    the stride beyond the hole, which no hole and no climb volume names.
+    Pure, tested.
+    """
+    hx, hy = sx / 2.0, sy / 2.0
+    out = []
+    for lad in getattr(spec, "ladders", ()) or ():
+        if int(getattr(lad, "to_story", -1)) != int(story):
+            continue
+        x0 = float(lad.x) - LANDING_HALF_M - cx
+        x1 = float(lad.x) + LANDING_HALF_M - cx
+        y0 = float(lad.y) - LANDING_HALF_M - cy
+        y1 = float(lad.y) + LANDING_HALF_M - cy
+        if x1 <= -hx or x0 >= hx or y1 <= -hy or y0 >= hy:
+            continue
+        out.append({"x0": round(x0, 4), "y0": round(y0, 4),
+                    "x1": round(x1, 4), "y1": round(y1, 4),
+                    "ladder": getattr(lad, "id", None)})
     return out
 
 
@@ -135,7 +171,9 @@ def roof_slots(spec, story, cz, ft):
                                  sx, sy, ft, room=r.id,
                                  style=style, material=mat,
                                  voids=room_voids(spec, r, story,
-                                                  cx, cy, sx, sy)))
+                                                  cx, cy, sx, sy),
+                                 keep_out=roof_keep_out(spec, story,
+                                                        cx, cy, sx, sy)))
         return out
     # THE ROOF CAPS THE STOREY BELOW IT, so it takes that storey's extent --
     # the same rule `Builder._slabs` follows, and on a stepped building the
@@ -148,7 +186,14 @@ def roof_slots(spec, story, cz, ft):
                  _rx1 - _rx0, _ry1 - _ry0, ft,
                  style=style, material=mat,
                  voids=room_voids(spec, None, story, 0.0, 0.0,
-                                  _rx1 - _rx0, _ry1 - _ry0))
+                                  _rx1 - _rx0, _ry1 - _ry0),
+                 # THE SAME CENTRE THE VOIDS TAKE, 0.0, 0.0: right when the
+                 # top slab is centred, which every library roof with a
+                 # hole is (two of 133 roofs stand off-centre, both
+                 # hole-less, measured 2026-10-11); a stepped building's
+                 # holes and landings would be off by its inset together.
+                 keep_out=roof_keep_out(spec, story, 0.0, 0.0,
+                                        _rx1 - _rx0, _ry1 - _ry0))
     # an Empty's TV antenna and satellite dish ride on its roof (0.185.0)
     slot.update(roof_fixtures(spec))
     return [slot]

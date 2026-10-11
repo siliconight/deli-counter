@@ -74,3 +74,36 @@ def test_every_built_rowhome_s_roof_carries_what_its_preset_asked_for():
         assert roof.get("dish", False) == bool(args.get("dish")), name
         if args.get("antenna") or args.get("dish"):
             assert roof["front"] == "S", name
+
+
+# --- 0.209.0: where a body steps off a ladder onto the roof --------------------------
+
+def _ladder(**kw):
+    from spec_types import Ladder
+    base = dict(x=2.0, y=-5.0, from_story=0, to_story=3, facing="N", id="l0",
+                role="roof_access")
+    base.update(kw)
+    return Ladder(**base)
+
+
+def test_a_ladder_to_the_roof_writes_its_landing_on_the_roof_slot():
+    """FAILS ON 0.208.0: the roof slot carried no `keep_out`."""
+    s = _roof(_spec(facade=False, ladders=[_ladder()]))
+    assert s["fit"]["keep_out"] == [
+        {"x0": 0.5, "y0": -6.5, "x1": 3.5, "y1": -3.5, "ladder": "l0"}]
+
+
+def test_a_ladder_that_stops_below_the_roof_writes_nothing():
+    s = _roof(_spec(facade=False, ladders=[_ladder(to_story=2, id="l1",
+                                                   role="service_access")]))
+    assert s["fit"]["keep_out"] == []
+
+
+def test_a_landing_is_in_the_roof_s_centred_coords_and_dropped_off_it():
+    """FAILS ON 0.208.0 (no `roof_keep_out`). Written as the holes are: world
+    minus the centre handed in, and gone when it misses the rect entirely."""
+    sp = _spec(facade=False, ladders=[_ladder(x=20.0, y=0.0)])
+    assert roofs.roof_keep_out(sp, 3, 0.0, 0.0, 6.0, 12.0) == []
+    sp = _spec(facade=False, ladders=[_ladder(x=4.0, y=1.0)])
+    assert roofs.roof_keep_out(sp, 3, 3.0, 1.0, 6.0, 12.0) == [
+        {"x0": -0.5, "y0": -1.5, "x1": 2.5, "y1": 1.5, "ladder": "l0"}]

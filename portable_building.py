@@ -550,9 +550,28 @@ def splice_layer_instance(tscn_path, res_path, node_name):
     return True
 
 
+def combine_circulation(arms):
+    """One `circulation_check` from the arms that ran (0.209.0): ``[(name,
+    check)]``, a check None when its layer was absent. One arm is returned
+    as itself (it carries its `source`); two or more become ``{"ok",
+    <name>: check, ...}`` with the verdict the AND of theirs -- the shape
+    0.149.0's readers split by name (`run_presentation_compose.
+    circulation_gate`, Level Factory's `_circulation_arms`); none is None.
+    """
+    ran = [(name, check) for name, check in arms if check is not None]
+    if not ran:
+        return None
+    if len(ran) == 1:
+        return ran[0][1]
+    out = {"ok": all(bool(check.get("ok")) for _, check in ran)}
+    for name, check in ran:
+        out[name] = check
+    return out
+
+
 def build_package(slots_path, gameplay_path, module_dir, out_dir, *,
                   theme, style=1, building_id=None, greybox_glb=None,
-                  dressing_glb=None, fixtures_glb=None):
+                  dressing_glb=None, fixtures_glb=None, roofprops_glb=None):
     if os.path.exists(out_dir):
         shutil.rmtree(out_dir)
     art = os.path.join(out_dir, "art", "zoo")
@@ -609,9 +628,13 @@ def build_package(slots_path, gameplay_path, module_dir, out_dir, *,
     # pass (light fixtures carrying LuxEmit markers -- Lux's runtime spawner
     # turns them into placed lights). Without these the composed building
     # is skinned architecture with empty rooms; with them it is the level.
+    # And the ROOF PROPS pass (0.209.0, roadmap 181): Zoo's rooftop units,
+    # vents, fans, skylights and dishes, planned off the roof's hatches and
+    # landings (`roofs.roof_keep_out`), one merged mesh a material a roof.
     layers = {}
     for src, sub, node in ((dressing_glb, "dressing", "Dressing"),
-                           (fixtures_glb, "fixtures", "Fixtures")):
+                           (fixtures_glb, "fixtures", "Fixtures"),
+                           (roofprops_glb, "roofprops", "RoofProps")):
         if not (src and os.path.exists(src)):
             continue
         ldir = os.path.join(out_dir, "art", sub)
@@ -746,13 +769,26 @@ def build_package(slots_path, gameplay_path, module_dir, out_dir, *,
             circ_dressing = {"ok": False, "source": "dressing",
                              "error": f"gate failed to run: {ex}"}
 
-    # One key, both arms, and a combined verdict -- a consumer asking "is
-    # circulation clear" must not have to know which pass placed the prop.
-    if circ is None and circ_dressing is not None:
-        circ = circ_dressing
-    elif circ is not None and circ_dressing is not None:
-        circ = {"ok": bool(circ.get("ok")) and bool(circ_dressing.get("ok")),
-                "shell": circ, "dressing": circ_dressing}
+    # THE ROOF PROPS ARM (0.209.0): the same question of the third layer. A
+    # ladder's climb volume reaches above its hatch, so a unit standing on
+    # the hatch is caught here; the landing beside it is Zoo's keep-out
+    # (`roofs.roof_keep_out`), which no volume names.
+    circ_roof = None
+    if layers.get("roofprops"):
+        try:
+            import circulation
+            circ_roof = circulation.check_dressing(
+                os.path.join(out_dir, "art", "roofprops", layers["roofprops"]),
+                slots, gameplay)
+            circ_roof["source"] = "roofprops"
+        except Exception as ex:  # gate must report, never crash the compose
+            circ_roof = {"ok": False, "source": "roofprops",
+                         "error": f"gate failed to run: {ex}"}
+
+    # One key, every arm that ran, and a combined verdict -- a consumer asking
+    # "is circulation clear" must not have to know which pass placed the prop.
+    circ = combine_circulation([("shell", circ), ("dressing", circ_dressing),
+                                ("roofprops", circ_roof)])
 
     manifest = {
         "schema": "portable_building.v0.1", "building_id": bid, "theme": theme,
