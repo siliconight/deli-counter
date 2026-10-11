@@ -1549,6 +1549,7 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
         # different type, density and hang; see _PENDANT_AREA.
         moody = story < 0 or (bool(r.get("objective")) and r.get("role") not in _LIT_ROLES)
         if moody:
+            home = False          # a bare bulb below grade or over the take
             rot, count, spacing = _row_for_bounds(bounds)
             w = bounds[2] - bounds[0]
             d = bounds[3] - bounds[1]
@@ -1600,7 +1601,11 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
         for pos, n, sp, rot, rid in runs:
             anchors.append({
                 "id": rid,
-                "type": "pendant" if moody else "fluorescent",
+                # A HOME'S DOME (0.208.0, roadmap 229's species step): a home's
+                # room hangs a flush-mount dome a bay (Zoo 1.98.0's hardware,
+                # Lux 0.75.0's warm lamp under its bowl), not a 2 x 4 office
+                # troffer; the rows are the home rule's, unchanged.
+                "type": "pendant" if moody else ("dome" if home else "fluorescent"),
                 "source": "derived",
                 "pos": pos,
                 "rot_y": rot,

@@ -18,7 +18,8 @@ def _derive(rooms, residence=False, **kw):
 
 
 def _rows(anchors, room):
-    return [a for a in anchors if a["type"] == "fluorescent" and a["room"] == room]
+    # a home's room lays the same rows as domes (0.208.0)
+    return [a for a in anchors if a["type"] in ("fluorescent", "dome") and a["room"] == room]
 
 
 def _on_pitch(value, pitch):
@@ -282,3 +283,23 @@ def test_a_big_home_room_takes_a_fixture_a_bay():
            "center": [2.0, 2.5, 3.3]}
     one = _rows(_derive([bed]), "bedroom")
     assert len(one) == 1 and one[0]["pos"][:2] == [2.0, 2.5] and one[0]["row"] == {"count": 1, "spacing": 0.0}
+
+
+def test_a_homes_room_hangs_domes_and_a_shops_keeps_its_troffers():
+    """0.208.0, roadmap 229's species step: the home rule's rows are domes -- in a
+    residence, and in a residence-like room inside a shop (the deli's hideout) --
+    and a shop's own room keeps its fluorescent rows."""
+    home = {"id": "living_room", "story": 0, "bounds": [0.0, 0.0, 9.0, 7.0], "role": "connector",
+            "center": [4.5, 3.5, 0.0]}
+    hideout = {"id": "apartment_hideout", "story": 1, "bounds": [-2.0, -14.0, 19.0, 2.0],
+               "role": "fortifiable", "center": [8.5, -6.0, 3.3]}
+    office = {"id": "back_office", "story": 0, "bounds": [30.0, 0.0, 39.0, 7.0], "role": "connector",
+              "center": [34.5, 3.5, 0.0]}
+    house = _derive([home], residence=True)
+    shop = _derive([hideout, office])
+    assert _rows(house, "living_room") and _rows(shop, "apartment_hideout")
+    assert not [a for a in house if a["room"] == "living_room" and a["type"] == "fluorescent"]
+    assert all(a["type"] == "dome" for a in _rows(house, "living_room"))
+    assert all(a["type"] == "dome" for a in _rows(shop, "apartment_hideout"))
+    assert _rows(shop, "back_office") and all(
+        a["type"] == "fluorescent" for a in _rows(shop, "back_office"))
