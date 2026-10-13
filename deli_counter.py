@@ -2559,8 +2559,9 @@ class _Builder:
     def _stoop(self):
         """AN EMPTY'S STOOP (0.211.0, factory roadmap 240; `stoop.py`): the
         steps up to its raised front door. The landing and the treads are
-        visuals recorded as `prop` slots in concrete, so the art pass dresses
-        them as it does a volume; the collision is what the contract body
+        `stair` to the circulation gate -- the way to the door, never a prop
+        standing in its doorway (0.211.1) -- and visuals recorded as `prop`
+        slots in concrete, so the art pass dresses them as it does a volume; the collision is what the contract body
         walks -- ONE ramp whose top face rides the nosings, the landing, and
         a block under each tread but the lowest, one riser short of it -- as
         the stairs' is (`_stairs`). Nothing when the spec asks for none."""
@@ -2574,7 +2575,12 @@ class _Builder:
             ("stoop_tread_%d" % k, piece)
             for k, piece in enumerate(p["treads"], 1)]
         for name, (c, size) in pieces:
-            self._box(name, c, size, self.VISUAL, role="prop")
+            # A STOOP IS CIRCULATION (0.211.1): drawn `prop`, the landing read
+            # as a prop 0.15 m into its own doorway in all twelve rowhomes
+            # (cold run 9271) -- `circulation.doorway_volume` starts a door at
+            # its wall's bottom plus its sill, 0.15 m under the threshold the
+            # landing's top is. A flight's treads are `stair`, and so is this.
+            self._box(name, c, size, self.VISUAL, role="stair")
             self.slots.append({
                 "slot_id": name, "role": "prop", "size_mod": "full",
                 "style": style, "material": mat, "species": None,
