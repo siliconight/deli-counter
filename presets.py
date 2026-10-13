@@ -3175,6 +3175,10 @@ def empty_rowhome(name: str = "empty_rowhome", width: float = 6.0,
         if not any(m["id"] == "concrete" for m in s["materials"]):
             s["materials"].append({"id": "concrete", "acoustic": "Concrete",
                                    "absorption": 0.7, "damping": 0.6})
+        # and its railings' iron (0.212.0)
+        if not any(m["id"] == "metal_painted" for m in s["materials"]):
+            s["materials"].append({"id": "metal_painted", "acoustic": "Metal",
+                                   "absorption": 0.25, "damping": 0.2})
     return s
 
 

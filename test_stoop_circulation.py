@@ -24,6 +24,8 @@ import circulation   # noqa: E402
 NAMES = sorted(os.path.basename(p)[:-4]
                for p in glob.glob(os.path.join(HERE, "build", "gs_empty_rowhome_*.glb")))
 PIECES = ("stoop_landing", "stoop_tread_1", "stoop_tread_2")
+RAILS = ("stoop_rail_w_level", "stoop_rail_w_flight",
+         "stoop_rail_e_level", "stoop_rail_e_flight")
 
 
 def _built(name):
@@ -53,6 +55,15 @@ def test_the_stoop_is_a_stair_to_the_gate_and_a_volume_to_the_art(name):
     roles = gp["surface_roles"]
     for piece in PIECES:
         assert roles.get(piece) == "stair", (name, piece, roles.get(piece))
-    st = {s["slot_id"]: s for s in slots["slots"] if s["slot_id"].startswith("stoop_")}
+    st = {s["slot_id"]: s for s in slots["slots"] if s["slot_id"] in PIECES}
     assert sorted(st) == sorted(PIECES)
     assert all(s["role"] == "prop" and s["material"] == "concrete" for s in st.values())
+    # and its railings (0.212.0): Zoo's stoop_railing in iron, two forms a side, props
+    # the gate reads and finds clear of the doorway
+    rails = {s["slot_id"]: s for s in slots["slots"] if s["slot_id"].startswith("stoop_rail_")}
+    assert sorted(rails) == sorted(RAILS)
+    assert all(s["species"] == "stoop_railing" and s["material"] == "metal_painted"
+               and s["form"] in ("level", "flight") for s in rails.values())
+    assert all(roles.get(r) == "prop" for r in RAILS)
+    every = {s["slot_id"] for s in slots["slots"] if s["slot_id"].startswith("stoop_")}
+    assert every == set(PIECES) | set(RAILS)

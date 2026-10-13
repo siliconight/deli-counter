@@ -20,6 +20,16 @@ WHERE IT STANDS: Level Factory's terrace keeps every Empty's front 2.0 m behind 
 edge (`level_factory/packages/pipeline/empties.py`, `FRONTAGE`); the stoop, its ramp's foot included,
 is `depth(...)` deep and must stay inside that (`test_stoop.py` holds it to `TERRACE_FRONTAGE`).
 
+THE RAILINGS (0.212.0, the walker's calls of 2026-10-13: "railings both sides"): one a side,
+`RAIL_INSET` inside the stoop's side, each Zoo's `stoop_railing` (1.105.0) in two slots -- a LEVEL
+section along the landing, from its front edge to the facade, and a FLIGHT from that edge down to a
+post on the bottom tread. Zoo draws either from its slot's box alone, its run along X and the high end
+at +X: a level's rail along the box's top; a flight's from `RAIL_H` over the box's bottom at its post
+to the box's top at the high end. So the boxes here ARE the railing: the level's bottom is the landing
+and its top `RAIL_H` over it; the flight's bottom is the bottom tread, its low end the post's outer
+face, its top `RAIL_H` over the landing at the landing's edge. Their colliders are written here, as
+the stoop's are: a box along the landing, and a slab whose top face is the flight's rail.
+
 Frame: the building's -- x along the front, y back into the house, z up, the front wall `S` at
 -footprint_y / 2. Pure: no Blender, so every number here is tested without a build.
 """
@@ -43,6 +53,26 @@ SKIRT = 0.05
 RAMP_THICK = 0.25
 #: the terrace's frontage a stoop must fit inside (`level_factory/packages/pipeline/empties.py`)
 TERRACE_FRONTAGE = 2.0
+#: THE RAILINGS (0.212.0). The rail's height over the walking line: IRC R311.7.8.1's 34-38 in, at 36
+#: -- Zoo's `stoop_railing_forms.RAIL_H`, the same source and the same number
+RAIL_H = round(36 * IN, 4)           # 0.9144 m
+#: the railing's depth across: Zoo's top rail, a 1-1/2 in flat bar
+RAIL_D = 0.038
+#: and how far inside the stoop's side it stands. Flush, a flight's box shares the middle tread's
+#: side plane, facing the same way, over a tread by a riser (0.2794 x 0.1778 = 0.0497 m^2); the
+#: composer's z-fight gate reads a module as its box and skips a pair under 0.05 m^2
+#: (`zfight_gate.AREA_MIN`), so it passed by 0.3 cm^2 -- one deeper tread from a flag. Inside it,
+#: no railing face lies on a step's
+RAIL_INSET = 0.05
+#: the post Zoo stands at a flight's low end (1-1/4 in square), its centre `RAIL_BACK` behind the
+#: bottom nosing, so it stands on the bottom tread
+RAIL_POST = round(1.25 * IN, 4)      # 0.0318 m
+RAIL_BACK = 0.05
+#: THE TURN. Zoo draws a railing's run along its X, the high end at +X; the composer turns a module
+#: by `tscn_export.godot_basis`, Ry(-t), so 270 points +X at Godot -Z -- Blender +Y, the house. 90
+#: would point every flight's rail down at the street. A thin railing's footprint ties 90 and 270, and
+#: the composer's fit keeps the slot's own turn on a tie (`themed_tscn._fit_rotation`).
+RAIL_ROT_Y = 270.0
 
 
 def front_door(spec):
@@ -114,6 +144,35 @@ def plan(spec):
     cy = mid_y + (RAMP_THICK / 2.0) * total / length
     cz = mid_z - (RAMP_THICK / 2.0) * run / length
     out["ramp"] = ((x, cy, cz), (width, length, RAMP_THICK), pitch)
+    # THE RAILINGS (0.212.0): `centre` and `size` in the building's frame, `dims` the module's (its
+    # run, its depth, its height), `collider` Deli Counter's
+    bottom_top = total - (n - 1) * riser               # the bottom tread's top
+    post_y = head - (n - 1) * tread + RAIL_BACK        # the flight's post, on the bottom tread
+    lo_y = post_y - RAIL_POST / 2.0                    # the flight's low end: the post's face
+    rails = []
+    for side, sgn in (("w", -1.0), ("e", 1.0)):
+        rx = x + sgn * (width / 2.0 - RAIL_INSET - RAIL_D / 2.0)
+        run = face - head
+        centre = (rx, (head + face) / 2.0, total + RAIL_H / 2.0)
+        size = (RAIL_D, run, RAIL_H)
+        rails.append({"name": "stoop_rail_%s_level" % side, "form": "level",
+                      "centre": centre, "size": size, "dims": (run, RAIL_D, RAIL_H),
+                      "collider": ("box", centre, size)})
+        run = head - lo_y
+        z0, z1 = bottom_top, total + RAIL_H
+        # the rail: RAIL_H over the bottom tread at the post's centre, RAIL_H over the landing at its
+        # edge; the collider a slab under it, RAIL_H deep measured upright
+        r_run, r_drop = head - post_y, total - bottom_top
+        r_pitch = math.atan2(r_drop, r_run)
+        thick = RAIL_H * math.cos(r_pitch)
+        ym, zm = (post_y + head) / 2.0, (bottom_top + total) / 2.0 + RAIL_H
+        rails.append({"name": "stoop_rail_%s_flight" % side, "form": "flight",
+                      "centre": (rx, (lo_y + head) / 2.0, (z0 + z1) / 2.0),
+                      "size": (RAIL_D, run, z1 - z0), "dims": (run, RAIL_D, z1 - z0),
+                      "collider": ("slab", (rx, ym + (thick / 2.0) * math.sin(r_pitch),
+                                           zm - (thick / 2.0) * math.cos(r_pitch)),
+                                   (RAIL_D, math.hypot(r_run, r_drop), thick), r_pitch)})
+    out["rails"] = rails
     return out
 
 

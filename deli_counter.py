@@ -2609,6 +2609,40 @@ class _Builder:
         # its high end toward the house: local +Y up the flight
         ramp.rotation_euler = (pitch, 0.0, 0.0)
         self._record_surface("stoop_ramp", mat)
+        # ITS RAILINGS (0.212.0): Zoo's `stoop_railing`, two slots a side, dressed
+        # as volumes are and turned so each flight rises to the house
+        # (`stoop.RAIL_ROT_Y`); and their colliders, Deli Counter's, so the
+        # greybox the graders walk has them as the art does
+        iron = "metal_painted"
+        iron_style = skin_style.style_for(iron, self._mat_style,
+                                          self.s.default_material)
+        for r in p["rails"]:
+            c, size = r["centre"], r["size"]
+            self._box(r["name"], c, size, self.VISUAL, role="prop")
+            self.slots.append({
+                "slot_id": r["name"], "role": "prop", "size_mod": "full",
+                "style": iron_style, "material": iron,
+                "species": "stoop_railing", "stock": None, "variant": 0,
+                "form": r["form"],
+                "current_ref": "prop_greybox_01", "kit_axis": "material",
+                "wall": None, "story": None, "facing": None,
+                "transform": {"translation": [round(c[0], 4),
+                                              round(c[1], 4),
+                                              round(c[2], 4)],
+                              "rot_y": stoop.RAIL_ROT_Y,
+                              "scale": [1.0, 1.0, 1.0]},
+                "fit": {"dims": [round(v, 4) for v in r["dims"]],
+                        "pivot": "center", "openings": [],
+                        "collision": "none"},
+            })
+            col = r["collider"]
+            if col[0] == "box":
+                self._col_box(r["name"] + "_col", col[1], col[2], mode="convex")
+            else:
+                slab = self._box(r["name"] + "_col" + self.col_suffix["convex"],
+                                 col[1], col[2], self.COLLISION)
+                slab.rotation_euler = (col[3], 0.0, 0.0)
+            self._record_surface(r["name"] + "_col", iron)
 
     # ----------------------------------------------------------------------
     # KITBASHING  --  import external models and place instances
