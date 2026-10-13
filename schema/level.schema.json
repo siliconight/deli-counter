@@ -1281,6 +1281,18 @@
       "type": "boolean",
       "description": "a satellite dish on an Empty's roof (roofs.roof_fixtures, 0.185.0)"
     },
+    "stoop": {
+      "type": "object",
+      "description": "an Empty's stoop: the steps up to its raised front door (stoop.plan, 0.211.0)",
+      "properties": {
+        "risers": {"type": "integer", "minimum": 1},
+        "tread": {"type": "number", "exclusiveMinimum": 0},
+        "landing": {"type": "number", "exclusiveMinimum": 0},
+        "width": {"type": "number", "exclusiveMinimum": 0}
+      },
+      "required": ["risers", "tread", "landing", "width"],
+      "additionalProperties": false
+    },
     "audit_accept": {
       "type": "array",
       "description": "Author-declared intended designs the combat audit reports as accepted instead of flagging (e.g. a one-breach vault as the designed climax).",

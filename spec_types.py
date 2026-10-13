@@ -650,6 +650,11 @@ class LevelSpec:
     # the roof slot with the facing of its front.
     roof_antenna: bool = False
     roof_dish: bool = False
+    # AN EMPTY'S STOOP (0.211.0): the steps up to its raised front door,
+    # `{"risers", "tread", "landing", "width"}` for `stoop.plan`; None, a
+    # door at grade. The preset raises the door and the ground storey's front
+    # window with it (factory roadmap 240).
+    stoop: Optional[dict] = None
 
     # --- art-pass pipeline (all optional; None = fall back to the matching
     # DC_* env var, so unset == byte-identical output). See README "Modular

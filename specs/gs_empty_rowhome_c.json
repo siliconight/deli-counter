@@ -35,6 +35,12 @@
       "acoustic": "Wood",
       "absorption": 0.5,
       "damping": 0.45
+    },
+    {
+      "id": "concrete",
+      "acoustic": "Concrete",
+      "absorption": 0.7,
+      "damping": 0.6
     }
   ],
   "parapets": [
@@ -56,13 +62,14 @@
           "width": 1.0,
           "height": 2.3,
           "tag": "front_door",
-          "material": "wood"
+          "material": "wood",
+          "sill": 0.3834
         },
         {
           "kind": "window",
           "width": 0.95,
           "height": 1.6,
-          "sill": 0.85,
+          "sill": 1.2334,
           "material": "glass",
           "pos": -0.22
         }
@@ -161,5 +168,11 @@
     }
   ],
   "roof_material": "tar",
-  "door_finish": "oxblood"
+  "door_finish": "oxblood",
+  "stoop": {
+    "risers": 3,
+    "tread": 0.2794,
+    "landing": 0.9,
+    "width": 1.5
+  }
 }

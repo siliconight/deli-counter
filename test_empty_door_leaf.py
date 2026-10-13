@@ -35,12 +35,14 @@ def _facade(name):
 
 
 def _doors(names):
-    """`ext_<storey>_<facing>_open<k>` openings with a lintel and neither a
-    sill nor a pane: the doors."""
+    """`ext_<storey>_<facing>_open<k>` openings with a lintel and no pane:
+    the doors. A window always carries its pane; a SILL no longer says
+    window, since a rowhome's front door stands raised over its stoop with
+    a sill under it (0.211.0)."""
     out = set()
     for n in names:
         m = re.match(r"^(ext_\d+_[NESW]_open\d+)_lintel$", n)
-        if m and m.group(1) + "_sill" not in names and m.group(1) + "_pane" not in names:
+        if m and m.group(1) + "_pane" not in names:
             out.add(m.group(1))
     return out
 

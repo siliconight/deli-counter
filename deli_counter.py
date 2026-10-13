@@ -59,6 +59,7 @@ import interactives
 import roofs
 import floors
 import empty_panes
+import stoop
 import vault_room
 
 
@@ -1269,6 +1270,9 @@ class _Builder:
             # gameplay -- a non-enterable filler you reuse and art-pass later.
             self._slabs()
             self._exterior()
+            # AN EMPTY'S STOOP (0.211.0): the steps up to its raised door,
+            # built here because a facade runs no `_volumes` or `_stairs`.
+            self._stoop()
             # The roof slot, as a building records it, so Zoo dresses the
             # roof the shell keeps (0.175.0). A building calls this after
             # `_slab_holes_cut`; an Empty cuts no hole -- it has no stair or
@@ -2551,6 +2555,54 @@ class _Builder:
                     species):
                 self._col_box(f"{v.name}_col", c, size, mode=v.collision)
                 self._record_surface(f"{v.name}_col", v.material)
+
+    def _stoop(self):
+        """AN EMPTY'S STOOP (0.211.0, factory roadmap 240; `stoop.py`): the
+        steps up to its raised front door. The landing and the treads are
+        visuals recorded as `prop` slots in concrete, so the art pass dresses
+        them as it does a volume; the collision is what the contract body
+        walks -- ONE ramp whose top face rides the nosings, the landing, and
+        a block under each tread but the lowest, one riser short of it -- as
+        the stairs' is (`_stairs`). Nothing when the spec asks for none."""
+        p = stoop.plan(self.s)
+        if p is None:
+            return
+        mat = "concrete"
+        style = skin_style.style_for(mat, self._mat_style,
+                                     self.s.default_material)
+        pieces = [("stoop_landing", p["landing"])] + [
+            ("stoop_tread_%d" % k, piece)
+            for k, piece in enumerate(p["treads"], 1)]
+        for name, (c, size) in pieces:
+            self._box(name, c, size, self.VISUAL, role="prop")
+            self.slots.append({
+                "slot_id": name, "role": "prop", "size_mod": "full",
+                "style": style, "material": mat, "species": None,
+                "stock": None, "variant": 0, "form": None,
+                "current_ref": "prop_greybox_01", "kit_axis": "material",
+                "wall": None, "story": None, "facing": None,
+                "transform": {"translation": [round(c[0], 4),
+                                              round(c[1], 4),
+                                              round(c[2], 4)],
+                              "rot_y": 0.0, "scale": [1.0, 1.0, 1.0]},
+                # the stoop's collision is its own, below, never a module's
+                "fit": {"dims": [round(size[0], 4), round(size[1], 4),
+                                 round(size[2], 4)],
+                        "pivot": "center", "openings": [],
+                        "collision": "none"},
+            })
+        self._col_box("stoop_landing_col", p["landing"][0], p["landing"][1],
+                      mode="convex")
+        self._record_surface("stoop_landing_col", mat)
+        for k, (c, size) in enumerate(p["unders"], 1):
+            self._col_box("stoop_under_%d_col" % k, c, size, mode="convex")
+            self._record_surface("stoop_under_%d_col" % k, mat)
+        c, size, pitch = p["ramp"]
+        ramp = self._box("stoop_ramp" + self.col_suffix["convex"], c, size,
+                         self.COLLISION)
+        # its high end toward the house: local +Y up the flight
+        ramp.rotation_euler = (pitch, 0.0, 0.0)
+        self._record_surface("stoop_ramp", mat)
 
     # ----------------------------------------------------------------------
     # KITBASHING  --  import external models and place instances

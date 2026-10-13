@@ -22,6 +22,7 @@ import migrate_slush_machine
 import migrate_wall_crossing
 import migrate_window_poster
 import migrate_window_sign
+import stoop as stoop_geom
 
 
 def _stair_flight_width():
@@ -3091,7 +3092,8 @@ def empty_rowhome(name: str = "empty_rowhome", width: float = 6.0,
                   cornice: float = 0.8, seed: int = 1911,
                   scale_ref: bool = False, vacant: bool = False,
                   door_finish: str = None, security_door: bool = False,
-                  antenna: bool = False, dish: bool = False) -> dict:
+                  antenna: bool = False, dish: bool = False,
+                  stoop: int = 0) -> dict:
     """A Philadelphia / Delco rowhouse Empty. Two window bays wide; a door in
     one bay and a window in the other at street level, two windows on every
     storey above, stacked on the same bays; a back door and windows behind.
@@ -3109,12 +3111,24 @@ def empty_rowhome(name: str = "empty_rowhome", width: float = 6.0,
     door = -bay if door_side == "W" else bay
     win = {"kind": "window", "width": 0.95, "height": 1.6, "sill": 0.85,
            "material": "glass"}
+    # A STOOP (0.211.0, factory roadmap 240): `stoop` steps up to the front
+    # door -- the comps' "three or four steps up to each door ... the first
+    # floor stands above the sidewalk" -- which `stoop.plan` builds. The
+    # ground storey's front door and window rise together by `lift`, so the
+    # floor behind them is the landing's: the door's threshold, the slab's top
+    # (floor_thick / 2) plus its sill, is `stoop` risers of `stoop.RISER`
+    # above grade. 0 keeps the door at grade and the spec as it was.
+    lift = (round(int(stoop) * stoop_geom.RISER - s["floor_thick"] / 2.0, 4)
+            if stoop else 0.0)
     ext = []
     for st in range(int(floors)):
         if st == 0:
             front = [{"kind": "door", "pos": door, "width": 1.0, "height": 2.3,
                       "tag": "front_door", "material": "wood"},
                      dict(win, pos=-door)]
+            if lift:
+                front[0]["sill"] = lift
+                front[1]["sill"] = round(win["sill"] + lift, 4)
             back = [{"kind": "door", "pos": door, "width": 0.95, "height": 2.2,
                      "tag": "back_door", "material": "wood"}]
         else:
@@ -3153,6 +3167,14 @@ def empty_rowhome(name: str = "empty_rowhome", width: float = 6.0,
         s["roof_antenna"] = True
     if dish:
         s["roof_dish"] = True
+    # and its stoop (0.211.0): what `stoop.plan` builds in front of the raised
+    # door, in concrete, which the palette then declares
+    if stoop:
+        s["stoop"] = {"risers": int(stoop), "tread": stoop_geom.TREAD,
+                      "landing": stoop_geom.LANDING, "width": stoop_geom.WIDTH}
+        if not any(m["id"] == "concrete" for m in s["materials"]):
+            s["materials"].append({"id": "concrete", "acoustic": "Concrete",
+                                   "absorption": 0.7, "damping": 0.6})
     return s
 
 
@@ -3201,6 +3223,12 @@ EMPTY_ROWHOMES = {
     "gs_empty_rowhome_l": dict(width=6.4, floors=2, wall="stone_ext", door_side="E", cornice=0.8, seed=1922,
                                door_finish="stained", security_door=True),
 }
+
+# A STOOP AT EVERY DOOR (0.211.0): the comps' "three or four steps up to
+# each door", three being what the terrace's 2.0 m frontage holds
+# (`stoop.depth`) -- written once here rather than on every row.
+for _args in EMPTY_ROWHOMES.values():
+    _args.setdefault("stoop", stoop_geom.RISERS)
 
 
 # ---------------------------------------------------------------------------
