@@ -3123,9 +3123,16 @@ def empty_rowhome(name: str = "empty_rowhome", width: float = 6.0,
         ext.append({"wall": "S", "story": st, "material": wall, "openings": front})
         ext.append({"wall": "N", "story": st, "material": wall, "openings": back})
     s["ext_walls"] = ext
-    # A 1990s rowhouse roof is flat tar, silver-coated -- never its brick.
+    # A rowhouse roof is a membrane over a wood deck -- built-up or modified
+    # bitumen, the skin kind `tar` -- never its brick; and `tar` is what Zoo's
+    # roof wears in the delco themes, so a row's Empties match its other
+    # roofs (0.210.0). It was `concrete`, under a comment calling it "flat
+    # tar, silver-coated": neither had a source. "Silver" is the colour of an
+    # aluminum coating over the membrane; how many 1990s Philadelphia roofs
+    # carried one has none yet, and the walker held it until one is found
+    # (the factory's docs/reference/ROWHOUSE_ROOFS.md, roadmap 240).
     # Unnamed, the roof slot's style follows the walls (`roofs.roof_slots`).
-    s["roof_material"] = "concrete"
+    s["roof_material"] = "tar"
     s["scale_ref"] = bool(scale_ref)
     # boarded, every window (0.179.0); absent unless asked, so every other
     # house's spec is unchanged

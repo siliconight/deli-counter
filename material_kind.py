@@ -154,6 +154,9 @@ KIND_BY_MATERIAL = {
     "rusted_metal": "metal",
     # the rest
     "asphalt": "tar",
+    # a rowhome Empty's roof (0.210.0): a membrane, built-up or modified
+    # bitumen. `asphalt` above is a forecourt's pad
+    "tar": "tar",
     "seat_plastic": "plastic",
     "turf": "vegetation",
     "wood_kiosk": "wood",

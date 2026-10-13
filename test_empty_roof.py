@@ -66,8 +66,9 @@ def test_an_empty_records_one_roof_slot_in_its_roof_material(dc):
     b._record_roof_slots()
     assert [s["role"] for s in b.slots] == ["roof"]
     roof = b.slots[0]
-    # the flat roof of a 1990s rowhouse is tar, silver-coated; never its brick
-    assert roof["material"] == "concrete"
+    # a rowhouse roof is a membrane, the skin kind `tar`; never its brick
+    # (0.210.0: it was `concrete`, unsourced)
+    assert roof["material"] == "tar"
     assert abs(roof["fit"]["dims"][0] - 6.0) < 1e-9 and abs(roof["fit"]["dims"][1] - 12.0) < 1e-9
 
 

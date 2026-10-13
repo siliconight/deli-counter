@@ -43,6 +43,10 @@ def _spec_material_ids():
             continue
         if spec.get("default_material"):
             ids.add(spec["default_material"])
+        # the roof's own material (0.210.0): read nowhere here before, so a
+        # misspelt one reached the build with a printed warning and no more
+        if spec.get("roof_material"):
+            ids.add(spec["roof_material"])
         for m in spec.get("materials") or []:
             if m.get("id"):
                 ids.add(m["id"])
