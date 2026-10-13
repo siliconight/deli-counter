@@ -23,6 +23,15 @@ import migrate_wall_crossing
 import migrate_window_poster
 import migrate_window_sign
 import stoop as stoop_geom
+import agent_contract
+
+#: THE CONTRACT'S DOOR (0.214.0, factory roadmap 197): every walkable door a
+#: preset writes is `clearances.min_door_width_m`. 61 were written at 1.1 and
+#: 1.2 m, under the contract's 1.25, as were 152 doors authored in the library's
+#: specs (`migrate_door_width.py`) and 47 that took this builder's old 1.2
+#: default. An Empty's doors are shut and nothing walks through them, so
+#: `empty_rowhome` and `empty_midrise` keep theirs.
+DOOR_W = agent_contract.min_door_width()
 
 
 def _stair_flight_width():
@@ -111,10 +120,10 @@ def bank(name: str = "bank_preset",
             {"kind": "window", "pos": 0.4, "width": 2.4, "sill": 0.9, "vaultable": True},
         ]},
         {"wall": "W", "story": 0, "material": "concrete", "openings": [
-            {"kind": "door", "pos": 0.0, "width": 1.2, "tag": "side_entry"},
+            {"kind": "door", "pos": 0.0, "width": DOOR_W, "tag": "side_entry"},
         ]},
         {"wall": "E", "story": 0, "material": "concrete", "openings": [
-            {"kind": "door", "pos": 0.25, "width": 1.2, "tag": "staff_entry"},
+            {"kind": "door", "pos": 0.25, "width": DOOR_W, "tag": "staff_entry"},
         ]},
         {"wall": "N", "story": 0, "material": "concrete", "openings": [
             {"kind": "breach", "pos": 0.2, "width": 1.4, "breach_class": "soft_wall", "material": "drywall"},
@@ -361,7 +370,7 @@ def police_station(name: str = "police_station_preset",
             {"kind": "garage", "pos": -0.1, "width": 3.2, "tag": "garage_bay"},
         ]},
         {"wall": "W", "story": 0, "material": "concrete", "openings": [
-            {"kind": "door", "pos": 0.0, "width": 1.2, "tag": "staff_entry"},
+            {"kind": "door", "pos": 0.0, "width": DOOR_W, "tag": "staff_entry"},
         ]},
         {"wall": "N", "story": 0, "material": "concrete", "openings": [
             {"kind": "breach", "pos": 0.2, "width": 1.4, "breach_class": "soft_wall", "material": "drywall"},
@@ -571,12 +580,12 @@ def corner_deli(name: str = "corner_deli_preset",
     # --- exterior walls ------------------------------------------------------
     spec["ext_walls"] = [
         {"wall": "S", "story": 0, "material": "brick_ext", "openings": [
-            {"kind": "door", "pos": -0.28, "width": 1.2, "tag": "front_customer_entry"},
+            {"kind": "door", "pos": -0.28, "width": DOOR_W, "tag": "front_customer_entry"},
             {"kind": "window", "pos": 0.0, "width": 2.0, "sill": 0.85, "vaultable": True, "material": "glass"},
             {"kind": "breach", "pos": 0.34, "width": 1.6, "breach_class": "soft_wall", "material": "drywall", "tag": "south_breach"}]},
         {"wall": "N", "story": 0, "material": "brick_ext", "openings": [
             {"kind": "garage", "pos": -0.25, "width": 3.2, "height": 2.7, "tag": "loading_bay"},
-            {"kind": "door", "pos": 0.32, "width": 1.1, "tag": "rear_staff_entry"}]},
+            {"kind": "door", "pos": 0.32, "width": DOOR_W, "tag": "rear_staff_entry"}]},
         {"wall": "W", "story": 0, "material": "brick_ext", "openings": [
             {"kind": "door", "pos": 0.18, "width": 1.4, "tag": "alley_entry"},
             {"kind": "breach", "pos": -0.32, "width": 1.5, "breach_class": "soft_wall", "material": "drywall", "tag": "alley_soft_wall"}]},
@@ -596,7 +605,7 @@ def corner_deli(name: str = "corner_deli_preset",
     # --- partitions (ground + upper always; basement only if present) --------
     parts = [
         {"story": 0, "axis": "Y", "pos": -8.0, "start": -14.0, "end": 14.0, "material": "drywall", "openings": [
-            {"kind": "door", "pos": -0.4, "width": 1.1, "tag": "customer_to_counter"},
+            {"kind": "door", "pos": -0.4, "width": DOOR_W, "tag": "customer_to_counter"},
             {"kind": "breach", "pos": 0.38, "width": 1.4, "breach_class": "soft_wall", "material": "drywall"}]},
         # Coherence fix (layout_lint L10/L11): the old X@7 and Y@-3 partitions
         # sat 1 m off the real room boundaries, so they bounded no rooms and
@@ -605,10 +614,10 @@ def corner_deli(name: str = "corner_deli_preset",
         # former unassigned centre (see rooms), so every wall is a real boundary.
         {"story": 0, "axis": "X", "pos": 6.0, "start": -19.0, "end": 19.0, "material": "drywall", "openings": [
             {"kind": "garage", "pos": 0.15, "width": 2.4, "height": 2.5, "tag": "stockroom_gate"},
-            {"kind": "door", "pos": -0.4, "width": 1.2, "tag": "office_stair_door"},
-            {"kind": "door", "pos": 0.3095, "width": 1.1, "tag": "kitchen_to_loading"}]},
+            {"kind": "door", "pos": -0.4, "width": DOOR_W, "tag": "office_stair_door"},
+            {"kind": "door", "pos": 0.3095, "width": DOOR_W, "tag": "kitchen_to_loading"}]},
         {"story": 1, "axis": "Y", "pos": -2.0, "start": -14.0, "end": 14.0, "material": "drywall", "openings": [
-            {"kind": "door", "pos": 0.0, "width": 1.1, "tag": "hall_to_manager_office"},
+            {"kind": "door", "pos": 0.0, "width": DOOR_W, "tag": "hall_to_manager_office"},
             {"kind": "breach", "pos": 0.36, "width": 1.4, "breach_class": "soft_wall", "material": "drywall"}]},
         {"story": 1, "axis": "X", "pos": 2.0, "start": -19.0, "end": 19.0, "material": "drywall", "openings": [
             {"kind": "door", "pos": -0.25, "width": 1.4, "tag": "apartment_hall"},
@@ -617,10 +626,10 @@ def corner_deli(name: str = "corner_deli_preset",
     if basement:
         parts += [
             {"story": -1, "axis": "X", "pos": 1.0, "start": -12.0, "end": 12.0, "material": "brick_ext", "openings": [
-                {"kind": "door", "pos": -0.35, "width": 1.1, "tag": "basement_corridor"},
+                {"kind": "door", "pos": -0.35, "width": DOOR_W, "tag": "basement_corridor"},
                 {"kind": "breach", "pos": 0.3, "width": 1.4, "breach_class": "reinforceable", "material": "brick_ext", "reinforceable": True, "tag": "vault_side_breach"}]},
             {"story": -1, "axis": "Y", "pos": 1.0, "start": -half_y, "end": half_y, "material": "brick_ext", "openings": [
-                {"kind": "door", "pos": 0.1, "width": 1.1, "tag": "cold_room_door"},
+                {"kind": "door", "pos": 0.1, "width": DOOR_W, "tag": "cold_room_door"},
                 {"kind": "breach", "pos": -0.32, "width": 1.4, "breach_class": "reinforceable", "material": "brick_ext", "reinforceable": True}]},
         ]
     spec["partitions"] = parts
@@ -819,10 +828,10 @@ def compound(name: str = "compound_preset",
             {"kind": "door", "pos": -0.18, "width": 1.5, "tag": "rear_service"},
             {"kind": "breach", "pos": 0.22, "width": 1.5, "breach_class": "soft_wall", "material": "drywall", "tag": "rear_breach"}]},
         {"wall": "W", "story": 0, "material": "concrete", "openings": [
-            {"kind": "door", "pos": -0.10, "width": 1.1, "tag": "west_entry"},
+            {"kind": "door", "pos": -0.10, "width": DOOR_W, "tag": "west_entry"},
             {"kind": "window", "pos": 0.28, "width": 2.0, "sill": 1.0, "vaultable": True}]},
         {"wall": "E", "story": 0, "material": "concrete", "openings": [
-            {"kind": "door", "pos": 0.10, "width": 1.1, "tag": "east_entry"},
+            {"kind": "door", "pos": 0.10, "width": DOOR_W, "tag": "east_entry"},
             {"kind": "breach", "pos": -0.25, "width": 1.5, "breach_class": "soft_wall", "material": "drywall", "tag": "east_breach"}]},
     ]
     # middle floors (everything between ground and top): windowed on all sides
@@ -1036,9 +1045,9 @@ def hospital(name: str = "hospital_preset",
             {"kind": "window", "pos": 0.3, "width": 2.4, "sill": 0.9, "vaultable": True, "material": "glass"}]},
         {"wall": "N", "story": 0, "material": "concrete", "openings": [
             {"kind": "garage", "pos": -0.3, "width": 3.4, "height": 2.8, "tag": "ambulance_bay"},
-            {"kind": "door", "pos": 0.3, "width": 1.2, "tag": "service_entrance"}]},
+            {"kind": "door", "pos": 0.3, "width": DOOR_W, "tag": "service_entrance"}]},
         {"wall": "W", "story": 0, "material": "concrete", "openings": [
-            {"kind": "door", "pos": 0.0, "width": 1.2, "tag": "west_entrance"}]},
+            {"kind": "door", "pos": 0.0, "width": DOOR_W, "tag": "west_entrance"}]},
         {"wall": "E", "story": 0, "material": "concrete", "openings": [
             {"kind": "breach", "pos": 0.0, "width": 1.5, "breach_class": "soft_wall", "material": "drywall", "tag": "east_breach"}]},
     ]
@@ -1062,11 +1071,11 @@ def hospital(name: str = "hospital_preset",
         # ward cross-walls
         parts.append({"story": st, "axis": "Y", "pos": -8.0, "start": -half_y + 1, "end": half_y - 1,
                       "material": "drywall", "openings": [
-                          {"kind": "door", "pos": -0.2, "width": 1.2},
+                          {"kind": "door", "pos": -0.2, "width": DOOR_W},
                           {"kind": "breach", "pos": 0.3, "width": 1.4, "breach_class": "soft_wall", "material": "drywall"}]})
         parts.append({"story": st, "axis": "Y", "pos": 8.0, "start": -half_y + 1, "end": half_y - 1,
                       "material": "drywall", "openings": [
-                          {"kind": "door", "pos": 0.2, "width": 1.2},
+                          {"kind": "door", "pos": 0.2, "width": DOOR_W},
                           {"kind": "breach", "pos": -0.3, "width": 1.4, "breach_class": "soft_wall", "material": "drywall"}]})
     spec["partitions"] = parts
 
@@ -1228,14 +1237,14 @@ def warehouse(name: str = "warehouse_preset",
         {"wall": "S", "story": 0, "material": "metal", "openings": [
             {"kind": "garage", "pos": -0.3, "width": 4.5, "height": 4.5, "tag": "loading_dock_1"},
             {"kind": "garage", "pos": 0.2, "width": 4.5, "height": 4.5, "tag": "loading_dock_2"},
-            {"kind": "door", "pos": 0.45, "width": 1.2, "tag": "south_mandoor"}]},
+            {"kind": "door", "pos": 0.45, "width": DOOR_W, "tag": "south_mandoor"}]},
         {"wall": "N", "story": 0, "material": "metal", "openings": [
-            {"kind": "door", "pos": -0.3, "width": 1.2, "tag": "north_mandoor"},
+            {"kind": "door", "pos": -0.3, "width": DOOR_W, "tag": "north_mandoor"},
             {"kind": "breach", "pos": 0.25, "width": 1.6, "breach_class": "soft_wall", "material": "drywall", "tag": "north_breach"}]},
         {"wall": "W", "story": 0, "material": "metal", "openings": [
-            {"kind": "door", "pos": 0.0, "width": 1.2, "tag": "west_mandoor"}]},
+            {"kind": "door", "pos": 0.0, "width": DOOR_W, "tag": "west_mandoor"}]},
         {"wall": "E", "story": 0, "material": "metal", "openings": [
-            {"kind": "door", "pos": 0.2, "width": 1.2, "tag": "east_office_door"},
+            {"kind": "door", "pos": 0.2, "width": DOOR_W, "tag": "east_office_door"},
             {"kind": "window", "pos": -0.2, "width": 2.0, "sill": 1.0, "vaultable": True}]},
     ]
     # partitions: a full-width wall at y=8 splits main floor from the north
@@ -1248,8 +1257,8 @@ def warehouse(name: str = "warehouse_preset",
             {"kind": "door", "pos": 0.0, "width": 1.4},
             {"kind": "door", "pos": 0.35, "width": 1.4, "tag": "to_office_zone"}]},
         {"story": 0, "axis": "Y", "pos": 11.0, "start": 8.0, "end": half_y, "material": "drywall", "openings": [
-            {"kind": "door", "pos": -0.4, "width": 1.1, "tag": "office_door_1"},
-            {"kind": "door", "pos": 0.2, "width": 1.1, "tag": "office_door_2"}]},
+            {"kind": "door", "pos": -0.4, "width": DOOR_W, "tag": "office_door_1"},
+            {"kind": "door", "pos": 0.2, "width": DOOR_W, "tag": "office_door_2"}]},
     ]
     # mezzanine catwalk: a proper partial upper story would need n_stories=2;
     # to keep this a clean single-floor sandbox we use tall stacked cover for
@@ -1332,7 +1341,7 @@ def suburban_safehouse(name: str = "suburban_safehouse_preset",
             {"kind": "door", "pos": -0.2, "width": 1.4, "tag": "front_door"},
             {"kind": "window", "pos": 0.25, "width": 1.4, "sill": 0.9, "vaultable": True, "material": "glass"}]},
         {"wall": "N", "story": 0, "material": "wood", "openings": [
-            {"kind": "door", "pos": 0.2, "width": 1.2, "tag": "back_door"},
+            {"kind": "door", "pos": 0.2, "width": DOOR_W, "tag": "back_door"},
             {"kind": "breach", "pos": -0.25, "width": 1.3, "breach_class": "soft_wall", "material": "drywall"}]},
         {"wall": "W", "story": 0, "material": "wood", "openings": [
             {"kind": "window", "pos": 0.0, "width": 1.3, "sill": 0.9, "vaultable": True, "material": "glass"}]},
@@ -1350,13 +1359,13 @@ def suburban_safehouse(name: str = "suburban_safehouse_preset",
             {"kind": "window", "pos": 0.0, "width": 1.2, "sill": 1.0, "vaultable": True, "material": "glass"}]},
     ]
     parts = [
-        {"story": 0, "axis": "Y", "pos": -1.0, "start": -hy, "end": hy, "material": "drywall", "openings": [{"kind": "door", "pos": -0.3, "width": 1.1}]},
-        {"story": 0, "axis": "X", "pos": 2.0, "start": -hx, "end": -1.0, "material": "drywall", "openings": [{"kind": "door", "pos": 0.0, "width": 1.1}]},
-        {"story": 1, "axis": "Y", "pos": -1.0, "start": -hy, "end": hy, "material": "drywall", "openings": [{"kind": "door", "pos": 0.3, "width": 1.1}]},
-        {"story": 1, "axis": "Y", "pos": 1.0, "start": 1.0, "end": hy, "material": "drywall", "openings": [{"kind": "door", "pos": 0.0, "width": 1.1}]},
+        {"story": 0, "axis": "Y", "pos": -1.0, "start": -hy, "end": hy, "material": "drywall", "openings": [{"kind": "door", "pos": -0.3, "width": DOOR_W}]},
+        {"story": 0, "axis": "X", "pos": 2.0, "start": -hx, "end": -1.0, "material": "drywall", "openings": [{"kind": "door", "pos": 0.0, "width": DOOR_W}]},
+        {"story": 1, "axis": "Y", "pos": -1.0, "start": -hy, "end": hy, "material": "drywall", "openings": [{"kind": "door", "pos": 0.3, "width": DOOR_W}]},
+        {"story": 1, "axis": "Y", "pos": 1.0, "start": 1.0, "end": hy, "material": "drywall", "openings": [{"kind": "door", "pos": 0.0, "width": DOOR_W}]},
     ]
     if basement:
-        parts.append({"story": -1, "axis": "Y", "pos": 0.0, "start": -hy, "end": hy, "material": "concrete", "openings": [{"kind": "door", "pos": 0.0, "width": 1.1}]})
+        parts.append({"story": -1, "axis": "Y", "pos": 0.0, "start": -hy, "end": hy, "material": "concrete", "openings": [{"kind": "door", "pos": 0.0, "width": DOOR_W}]})
     spec["partitions"] = parts
     stair_lo = -1 if basement else 0
     spec["stairs"] = [{"x": 5.0, "y": 4.0, "from_story": stair_lo, "to_story": 1, "width": STAIR_FLIGHT_WIDTH, "run": 3.5, "style": "switchback", "cut_slabs": True}]
@@ -1448,7 +1457,7 @@ def rowhome(name: str = "rowhome_preset",
             else [{"kind": "window", "pos": -0.2, "width": 1.1, "sill": 1.0, "vaultable": True, "material": "glass"},
                   {"kind": "window", "pos": 0.2, "width": 1.1, "sill": 1.0, "vaultable": True, "material": "glass"}])})
         ext.append({"wall": "N", "story": st, "material": "brick", "openings": (
-            [{"kind": "door", "pos": 0.0, "width": 1.2, "tag": "back_door"}] if st == 0
+            [{"kind": "door", "pos": 0.0, "width": DOOR_W, "tag": "back_door"}] if st == 0
             else [{"kind": "window", "pos": 0.0, "width": 1.1, "sill": 1.0, "vaultable": True, "material": "glass"},
                   {"kind": "breach", "pos": 0.3, "width": 1.0, "breach_class": "soft_wall", "material": "drywall"}])})
         # party walls (W/E) solid — no openings
@@ -1458,7 +1467,7 @@ def rowhome(name: str = "rowhome_preset",
     # one cross-partition per floor splitting front/back room
     parts = []
     for st in range(0, 3):
-        parts.append({"story": st, "axis": "X", "pos": 0.0, "start": -hx, "end": hx, "material": "drywall", "openings": [{"kind": "door", "pos": -0.2, "width": 1.1}]})
+        parts.append({"story": st, "axis": "X", "pos": 0.0, "start": -hx, "end": hx, "material": "drywall", "openings": [{"kind": "door", "pos": -0.2, "width": DOOR_W}]})
     spec["partitions"] = parts
     # single rear stair spanning all floors
     stair_lo = -1 if basement else 0
@@ -1550,10 +1559,10 @@ def casino_tower(name: str = "casino_tower_preset",
             {"kind": "window", "pos": -0.35, "width": 3.0, "sill": 0.8, "vaultable": True, "material": "glass"},
             {"kind": "window", "pos": 0.3, "width": 3.0, "sill": 0.8, "vaultable": True, "material": "glass"}]},
         {"wall": "N", "story": 0, "material": "concrete", "openings": [
-            {"kind": "door", "pos": -0.2, "width": 1.2, "tag": "staff_entrance"},
+            {"kind": "door", "pos": -0.2, "width": DOOR_W, "tag": "staff_entrance"},
             {"kind": "breach", "pos": 0.25, "width": 1.5, "breach_class": "soft_wall", "material": "drywall", "tag": "back_breach"}]},
         {"wall": "W", "story": 0, "material": "concrete", "openings": [
-            {"kind": "door", "pos": 0.0, "width": 1.2, "tag": "valet_entrance"}]},
+            {"kind": "door", "pos": 0.0, "width": DOOR_W, "tag": "valet_entrance"}]},
         {"wall": "E", "story": 0, "material": "concrete", "openings": [
             {"kind": "garage", "pos": 0.0, "width": 3.2, "height": 2.6, "tag": "armored_car_bay"}]},
         {"wall": "S", "story": 1, "material": "glass", "openings": [
@@ -1570,9 +1579,9 @@ def casino_tower(name: str = "casino_tower_preset",
         {"story": 0, "axis": "X", "pos": 8.0, "start": -hx, "end": hx, "material": "drywall", "openings": [
             {"kind": "door", "pos": -0.3, "width": 1.4}, {"kind": "door", "pos": 0.3, "width": 1.4}]},
         {"story": 0, "axis": "Y", "pos": 10.0, "start": 8.0, "end": hy, "material": "metal", "openings": [
-            {"kind": "door", "pos": 0.0, "width": 1.1, "tag": "cage_door"}]},
+            {"kind": "door", "pos": 0.0, "width": DOOR_W, "tag": "cage_door"}]},
         {"story": 1, "axis": "X", "pos": 0.0, "start": -hx, "end": hx, "material": "drywall", "openings": [
-            {"kind": "door", "pos": -0.25, "width": 1.2}, {"kind": "door", "pos": 0.25, "width": 1.2}]},
+            {"kind": "door", "pos": -0.25, "width": DOOR_W}, {"kind": "door", "pos": 0.25, "width": DOOR_W}]},
         {"story": 1, "axis": "Y", "pos": 0.0, "start": 0.0, "end": hy, "material": "metal", "openings": [
             {"kind": "door", "pos": 0.0, "width": 1.4, "tag": "count_room_door"}]},
     ]
@@ -1708,20 +1717,20 @@ def gas_station(name: str = "gas_station_preset",
             {"kind": "window", "pos": 0.4, "width": 3.0, "height": 2.4, "sill": 1.0, "material": "glass"}]},
         {"wall": "N", "story": 0, "material": "concrete", "openings": [
             {"kind": "garage", "pos": 0.28, "width": 3.0, "height": 3.0, "tag": "stock_roll_door"},
-            {"kind": "door", "pos": 0.46, "width": 1.2, "tag": "office_back_door"},
+            {"kind": "door", "pos": 0.46, "width": DOOR_W, "tag": "office_back_door"},
             {"kind": "breach", "pos": -0.3, "width": 1.6, "breach_class": "soft_wall", "material": "drywall", "tag": "north_breach"}]},
         {"wall": "W", "story": 0, "material": "concrete", "openings": [
-            {"kind": "door", "pos": -0.1, "width": 1.1, "tag": "west_service"},
+            {"kind": "door", "pos": -0.1, "width": DOOR_W, "tag": "west_service"},
             {"kind": "window", "pos": 0.3, "width": 1.6, "sill": 1.2, "vaultable": True}]},
         {"wall": "E", "story": 0, "material": "concrete", "openings": [
-            {"kind": "door", "pos": -0.2, "width": 1.1, "tag": "east_stock_service"}]},
+            {"kind": "door", "pos": -0.2, "width": DOOR_W, "tag": "east_stock_service"}]},
     ]
     spec["partitions"] = [
         {"story": 0, "axis": "Y", "pos": 6.0, "start": -half_y, "end": half_y, "material": "drywall", "openings": [
             {"kind": "door", "pos": -0.3, "width": 1.4, "tag": "sales_to_stock"},
-            {"kind": "door", "pos": 0.3, "width": 1.1, "tag": "sales_to_office"}]},
+            {"kind": "door", "pos": 0.3, "width": DOOR_W, "tag": "sales_to_office"}]},
         {"story": 0, "axis": "X", "pos": 2.0, "start": 6.0, "end": half_x, "material": "drywall", "openings": [
-            {"kind": "door", "pos": 0.0, "width": 1.2, "tag": "stock_to_office"}]},
+            {"kind": "door", "pos": 0.0, "width": DOOR_W, "tag": "stock_to_office"}]},
     ]
     spec["stairs"] = []
     spec["vault_ledges"] = [
@@ -1900,10 +1909,10 @@ def office(name: str = "office_preset",
             {"kind": "window", "pos": -0.38, "width": 4.0, "height": 2.6, "sill": 0.4, "material": "glass"},
             {"kind": "window", "pos": 0.38, "width": 4.0, "height": 2.6, "sill": 0.4, "material": "glass"}]},
         {"wall": "N", "story": 0, "material": "concrete", "openings": [
-            {"kind": "door", "pos": -0.35, "width": 1.2, "tag": "service_north"},
+            {"kind": "door", "pos": -0.35, "width": DOOR_W, "tag": "service_north"},
             {"kind": "breach", "pos": 0.3, "width": 1.6, "breach_class": "soft_wall", "material": "drywall", "tag": "north_breach"}]},
         {"wall": "W", "story": 0, "material": "concrete", "openings": [
-            {"kind": "door", "pos": 0.0, "width": 1.2, "tag": "west_service"}]},
+            {"kind": "door", "pos": 0.0, "width": DOOR_W, "tag": "west_service"}]},
         {"wall": "E", "story": 0, "material": "glass", "openings": [
             {"kind": "window", "pos": 0.0, "width": 3.0, "height": 2.6, "sill": 0.4, "material": "glass", "vaultable": True}]},
     ]
@@ -1926,7 +1935,7 @@ def office(name: str = "office_preset",
                       "openings": [{"kind": "door", "pos": 0.0, "width": 1.4, "tag": f"core_e_{st}"}]})
     # top-floor exec suite, NE corner, two doors for >=2 access
     parts.append({"story": top, "axis": "Y", "pos": 8.0, "start": 4.0, "end": half_y, "material": "drywall",
-                  "openings": [{"kind": "door", "pos": 0.0, "width": 1.1, "tag": "exec_w"}]})
+                  "openings": [{"kind": "door", "pos": 0.0, "width": DOOR_W, "tag": "exec_w"}]})
     parts.append({"story": top, "axis": "X", "pos": 4.0, "start": 8.0, "end": half_x, "material": "drywall",
                   "openings": [{"kind": "door", "pos": 0.0, "width": 1.4, "tag": "exec_s"}]})
     spec["partitions"] = parts
@@ -2051,14 +2060,14 @@ def parking_garage(name: str = "parking_garage_preset",
         {"wall": "S", "story": 0, "material": "concrete", "openings": [
             {"kind": "garage", "pos": -0.25, "width": 5.0, "height": 2.4, "tag": "vehicle_in"},
             {"kind": "garage", "pos": 0.25, "width": 5.0, "height": 2.4, "tag": "vehicle_out"},
-            {"kind": "door", "pos": 0.45, "width": 1.1, "tag": "pedestrian_s"}]},
+            {"kind": "door", "pos": 0.45, "width": DOOR_W, "tag": "pedestrian_s"}]},
         {"wall": "N", "story": 0, "material": "concrete", "openings": [
-            {"kind": "door", "pos": -0.4, "width": 1.1, "tag": "pedestrian_n"},
+            {"kind": "door", "pos": -0.4, "width": DOOR_W, "tag": "pedestrian_n"},
             {"kind": "breach", "pos": 0.3, "width": 1.6, "breach_class": "soft_wall", "material": "drywall", "tag": "north_breach"}]},
         {"wall": "W", "story": 0, "material": "concrete", "openings": [
-            {"kind": "door", "pos": 0.0, "width": 1.1, "tag": "west_ped"}]},
+            {"kind": "door", "pos": 0.0, "width": DOOR_W, "tag": "west_ped"}]},
         {"wall": "E", "story": 0, "material": "concrete", "openings": [
-            {"kind": "door", "pos": 0.0, "width": 1.1, "tag": "east_ped"}]},
+            {"kind": "door", "pos": 0.0, "width": DOOR_W, "tag": "east_ped"}]},
     ]
     # upper decks: open bays (windows) on every facing — shell stays sealed but reads open
     for st in range(1, floors):
@@ -2073,7 +2082,7 @@ def parking_garage(name: str = "parking_garage_preset",
         {"story": 0, "axis": "Y", "pos": -half_x + 8.0, "start": -half_y, "end": -half_y + 6.0, "material": "glass",
          "openings": [{"kind": "door", "pos": 0.0, "width": 1.4, "tag": "booth_e"}]},
         {"story": 0, "axis": "X", "pos": -half_y + 6.0, "start": -half_x, "end": -half_x + 8.0, "material": "glass",
-         "openings": [{"kind": "door", "pos": 0.0, "width": 1.2, "tag": "booth_n"}]},
+         "openings": [{"kind": "door", "pos": 0.0, "width": DOOR_W, "tag": "booth_n"}]},
     ]
 
     # drivable ramp (E side) linking each deck to the next; pedestrian stair (NW)
@@ -2172,14 +2181,14 @@ def auto_shop(name: str = "auto_shop_preset", mode: str = "heist",
     spec["ext_walls"] = [
         {"wall": "S", "story": 0, "material": "metal", "openings": [
             {"kind": "garage", "pos": -0.15, "width": 4.0, "height": 3.0, "tag": "bay_door"},
-            {"kind": "door", "pos": 0.35, "width": 1.1, "tag": "front_man_door"}]},
+            {"kind": "door", "pos": 0.35, "width": DOOR_W, "tag": "front_man_door"}]},
         {"wall": "N", "story": 0, "material": "concrete", "openings": [
-            {"kind": "door", "pos": 0.3, "width": 1.1, "tag": "rear_door"},
+            {"kind": "door", "pos": 0.3, "width": DOOR_W, "tag": "rear_door"},
             {"kind": "breach", "pos": -0.3, "width": 1.3, "breach_class": "soft_wall", "material": "drywall"}]},
         {"wall": "W", "story": 0, "material": "concrete", "openings": [
             {"kind": "window", "pos": 0.25, "width": 1.4, "sill": 1.2, "vaultable": True, "material": "glass"}]},
         {"wall": "E", "story": 0, "material": "concrete", "openings": [
-            {"kind": "door", "pos": -0.3, "width": 1.1, "tag": "side_door"}]},
+            {"kind": "door", "pos": -0.3, "width": DOOR_W, "tag": "side_door"}]},
         {"wall": "S", "story": 1, "material": "concrete", "openings": [
             {"kind": "window", "pos": -0.2, "width": 1.3, "sill": 1.0, "vaultable": True, "material": "glass"},
             {"kind": "window", "pos": 0.25, "width": 1.3, "sill": 1.0, "vaultable": True, "material": "glass"}]},
@@ -2194,7 +2203,7 @@ def auto_shop(name: str = "auto_shop_preset", mode: str = "heist",
     spec["partitions"] = [
         # ground: wall off the back strip (parts/stair) from the open bay
         {"story": 0, "axis": "X", "pos": 4.0, "start": -hx, "end": hx, "material": "concrete",
-         "openings": [{"kind": "door", "pos": -0.25, "width": 1.1}, {"kind": "door", "pos": 0.3, "width": 1.1}]},
+         "openings": [{"kind": "door", "pos": -0.25, "width": DOOR_W}, {"kind": "door", "pos": 0.3, "width": DOOR_W}]},
         # upper: split office (objective) from storage
         {"story": 1, "axis": "X", "pos": 2.0, "start": -hy, "end": hy, "material": "drywall",
          "openings": [{"kind": "door", "pos": 0.2, "width": 1.4}]},
@@ -2283,12 +2292,12 @@ def pawn_shop(name: str = "pawn_shop_preset", mode: str = "heist",
             {"kind": "door", "pos": -0.2, "width": 1.4, "tag": "front_door"},
             {"kind": "window", "pos": 0.25, "width": 2.2, "sill": 0.6, "vaultable": True, "material": "glass"}]},
         {"wall": "N", "story": 0, "material": "concrete", "openings": [
-            {"kind": "door", "pos": 0.0, "width": 1.1, "tag": "rear_door"},
+            {"kind": "door", "pos": 0.0, "width": DOOR_W, "tag": "rear_door"},
             {"kind": "breach", "pos": 0.35, "width": 1.1, "breach_class": "soft_wall", "material": "drywall"}]},
         {"wall": "W", "story": 0, "material": "concrete", "openings": [
             {"kind": "window", "pos": -0.2, "width": 1.2, "sill": 0.8, "vaultable": True, "material": "glass"}]},
         {"wall": "E", "story": 0, "material": "concrete", "openings": [
-            {"kind": "door", "pos": 0.25, "width": 1.1, "tag": "alley_door"}]},
+            {"kind": "door", "pos": 0.25, "width": DOOR_W, "tag": "alley_door"}]},
         {"wall": "S", "story": 1, "material": "concrete", "openings": [
             {"kind": "window", "pos": 0.0, "width": 1.4, "sill": 1.0, "vaultable": True, "material": "glass"}]},
         {"wall": "N", "story": 1, "material": "concrete", "openings": [
@@ -2301,10 +2310,10 @@ def pawn_shop(name: str = "pawn_shop_preset", mode: str = "heist",
     spec["partitions"] = [
         # ground: counter wall splitting shop floor (front) from back safe room
         {"story": 0, "axis": "X", "pos": 2.0, "start": -hx, "end": hx, "material": "wood",
-         "openings": [{"kind": "door", "pos": -0.3, "width": 1.4}, {"kind": "door", "pos": 0.35, "width": 1.1}]},
+         "openings": [{"kind": "door", "pos": -0.3, "width": 1.4}, {"kind": "door", "pos": 0.35, "width": DOOR_W}]},
         # upper: split storage from apartment
         {"story": 1, "axis": "X", "pos": 0.0, "start": -hy, "end": hy, "material": "drywall",
-         "openings": [{"kind": "door", "pos": 0.0, "width": 1.1}]},
+         "openings": [{"kind": "door", "pos": 0.0, "width": DOOR_W}]},
     ]
     # back-room stair to the upper storage/apartment. The 16x14 shell is too
     # tight for a N/S ascent against the rear wall (the flight + landings
@@ -3410,8 +3419,8 @@ def twin(name: str = "twin_preset",
                      {"kind": "door", "pos": 0.25, "width": 1.3, "tag": "front_door_right"},
                      {"kind": "window", "pos": -0.40, "width": 1.2, "sill": 0.95, "vaultable": True, "material": "glass"},
                      {"kind": "window", "pos": 0.40, "width": 1.2, "sill": 0.95, "vaultable": True, "material": "glass"}]
-            back = [{"kind": "door", "pos": -0.25, "width": 1.2, "tag": "back_door_left"},
-                    {"kind": "door", "pos": 0.25, "width": 1.2, "tag": "back_door_right"}]
+            back = [{"kind": "door", "pos": -0.25, "width": DOOR_W, "tag": "back_door_left"},
+                    {"kind": "door", "pos": 0.25, "width": DOOR_W, "tag": "back_door_right"}]
         else:
             front = [{"kind": "window", "pos": p, "width": 1.1, "sill": 1.0,
                       "vaultable": True, "material": "glass"}
@@ -3439,7 +3448,7 @@ def twin(name: str = "twin_preset",
             parts.append({"story": st, "axis": "X", "pos": xp,
                           "start": x_lo, "end": x_hi,
                           "material": "drywall",
-                          "openings": [{"kind": "door", "pos": door, "width": 1.2}]})
+                          "openings": [{"kind": "door", "pos": door, "width": DOOR_W}]})
     spec["partitions"] = parts
     stair_lo = -1 if basement else 0
     spec["stairs"] = [

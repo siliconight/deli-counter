@@ -66,6 +66,14 @@ class Placement:
     name: Optional[str] = None             # optional instance name suffix
 
 
+def _min_door_width():
+    """`agent_contract.min_door_width()`: the width a door with none of its
+    own is built at. Read when a door is resolved, so a contract named by
+    $DC_AGENT_CONTRACT is the one that answers."""
+    import agent_contract
+    return agent_contract.min_door_width()
+
+
 @dataclass
 class Opening:
     """A door or window cut into a wall."""
@@ -100,7 +108,11 @@ class Opening:
     def resolved(self):
         d = dict(width=self.width, height=self.height, sill=self.sill)
         defaults = {
-            "door":   dict(width=1.2, height=2.2, sill=0.0),
+            # A WIDTH-LESS DOOR IS THE CONTRACT'S (0.214.0, factory roadmap
+            # 197): `clearances.min_door_width_m`, read when the door is
+            # resolved. It was 1.2, under the contract's 1.25, and 47 of the
+            # library's doors were built at it.
+            "door":   dict(width=_min_door_width(), height=2.2, sill=0.0),
             "window": dict(width=1.6, height=1.4, sill=1.0),
             "garage": dict(width=3.5, height=3.0, sill=0.0),
             "breach": dict(width=1.5, height=2.2, sill=0.0),

@@ -37,10 +37,22 @@ import copy
 import spec_loader
 import stair_place
 import stairwell
+from spec_types import Opening
 
 _MIN_PIECE = 0.8        # m; a split room remnant thinner than this is dropped
 _MIN_WALL_SEG = 0.6     # m; a trimmed partition shorter than this is dropped
-_PUNCH_DOOR_W = 1.1     # m; door punched where an enclosure crosses a landing
+#: The door punched where an enclosure crosses a landing, in m: the contract's
+#: `min_corridor_width_m` (0.214.0, factory roadmap 197; it was a literal 1.1,
+#: the same number), so a change to the body moves it with the corridor and
+#: the flight (`presets.STAIR_FLIGHT_WIDTH`, the corridor plus a cell). Of the
+#: 20 crossings in `stair_regression`'s 140 variants, 18 are 1.2 m -- a
+#: flight's width and `stairwell.LANDING_DEPTH` are both 1.2 -- and 2 are
+#: 1.1, the door's own. It is UNDER `min_door_width_m` (1.25), and the
+#: contract names it: at 1.25 none of the 20 is punched and the sweep's checks
+#: fail 21 times against 2 -- 16 a stair's top flight facing the solid
+#: partition (STAIR_EXIT_FACES_SOLID), 3 a prop in a stair's reserved volume.
+#: Level Factory never builds stairs-first.
+_PUNCH_DOOR_W = __import__("agent_contract").min_corridor_width()
 
 # preset -> stair_place archetype for core-first generation. Chosen by what
 # the building IS, not by floor-count pedantry (a mismatch only notes).
@@ -222,13 +234,21 @@ def _punch_door(p, land, wall_thick):
         if not (land[1] - t2 <= p["pos"] <= land[3] + t2):
             return False
         ov0, ov1 = max(lo, land[0]), min(hi, land[2])
-    if ov1 - ov0 < _PUNCH_DOOR_W:
+    # A crossing exactly the door's width is not too short. Two of the 20
+    # measured are 1.1000000000000014 against a 1.1 door and were punched by
+    # 1.4e-15; spelt 6.1 - 5.0, the same crossing is 1.0999999999999996 and
+    # was not (0.214.0).
+    if ov1 - ov0 < _PUNCH_DOOR_W - 1e-9:
         return False                      # crossing too short for a doorway
     length = hi - lo
     for op in p.get("openings") or []:
         if op.get("kind", "door") in ("door", "garage", "breach", "vault"):
             along = lo + (op["pos"] + 0.5) * length
-            half = (op.get("width") or 1.2) / 2
+            # The width it is BUILT at: a width-less door is the contract's
+            # minimum (0.214.0), and garages, breaches and vaults have their
+            # own. This read a literal 1.2 for all four.
+            half = Opening(kind=op.get("kind", "door"),
+                           width=op.get("width")).resolved()["width"] / 2
             if along + half >= ov0 and along - half <= ov1:
                 return False              # already doored here
     center = (ov0 + ov1) / 2

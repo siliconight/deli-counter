@@ -5172,7 +5172,11 @@ _TELLER_MIN_HEIGHT = 2.0
 #: is a back office, not the space behind a teller line.
 _STAFF_MIN_DEPTH = 1.85
 _STAFF_MAX_DEPTH = 6.0
-_STAFF_DOOR_WIDTH = 1.25            # agent_contract min_door_width_m
+#: The contract's `min_door_width_m`, asked (0.214.0, factory roadmap 197). It
+#: was a literal 1.25 beside a comment naming the contract, while
+#: `staff_aisle_width` says the staff room asks the contract for its door: a
+#: contract that moved the number would have left this door where it was.
+_STAFF_DOOR_WIDTH = __import__("agent_contract").min_door_width()
 _LEAF_MARGIN = 0.3                  # layout_lint.LEAF_MARGIN
 
 #: The staff door's state machine: an ordinary door that ships LOCKED, with

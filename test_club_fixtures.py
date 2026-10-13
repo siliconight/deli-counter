@@ -290,8 +290,11 @@ def test_the_library_carries_the_fixture_pass_and_is_still_a_fixed_point_of_furn
             if v["name"].startswith(("dartboard_", "cigarettes_")):
                 counts[v["name"].split("_r")[0]] += 1
     # 121 -> 119 cigarette machines (0.202.0): two stood against open room
-    # edges, and no wall in their rooms holds them
-    assert counts == {"dartboard": 11, "cigarettes": 119}, counts
+    # edges, and no wall in their rooms holds them. 119 -> 118 (0.214.0):
+    # stop_n_go's back-room rack stood on its north wall 0.96 m from
+    # `rear_service`, which widened 1.0 -> 1.25 m to the contract's door, and
+    # refurnished beside it the rack is placed no more
+    assert counts == {"dartboard": 11, "cigarettes": 118}, counts
 
 
 def test_the_strip_club_preset_hangs_a_board():
