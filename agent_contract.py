@@ -21,6 +21,7 @@ fallbacks.
 """
 
 import json
+import math
 import os
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -113,6 +114,44 @@ def min_door_width():
 
 def min_corridor_width():
     return float(contract()["clearances"]["min_corridor_width_m"])
+
+
+def stair_flight_width():
+    """The width a generator draws a stair flight at, and the depth of a
+    stair's landing, in metres: the corridor minimum and one bake cell over
+    (`clearances.stair_landing_derivation`).
+
+    A flight is a corridor to the nav bake, and one AT the minimum keeps a
+    strip whose joining depends on where the voxel grid falls (measured in
+    `presets._stair_flight_width`'s docstring). A landing as deep as the
+    flight is wide is the building code's rule (IBC 2018 section 1011.6),
+    without its 48 in cap, which assumes a human body. Spelt once, here:
+    `presets.STAIR_FLIGHT_WIDTH` and `stairwell.LANDING_DEPTH` both read it
+    (0.215.0), so a change to the body moves the flight and the landing
+    together.
+    """
+    c = contract()
+    return round(float(c["clearances"]["min_corridor_width_m"])
+                 + float(c["nav_bake"]["cell_size_m"]), 3)
+
+
+def vault_aperture():
+    """The round vault door's opening, as a fresh dict of width, height and
+    sill in metres: the door minimum rounded up to the next 0.1 m, by the
+    headroom and 0.1, on the floor (`clearances.vault_aperture_derivation`).
+
+    1.3 x 2.1, sill 0, at the ratified contract -- the numbers
+    `vault_room.APERTURE` and `spec_types`' vault default spelt beside a
+    comment giving this rule, until 0.215.0. The quotient is rounded to nine
+    places before the ceiling, so a door already on the 0.1 grid (1.3 / 0.1
+    is not always 13.0 in a float) is not rounded past it. The sill is 0
+    because 0.15 put a step above `unassisted_step_max_m` in the doorway.
+    """
+    c = contract()["clearances"]
+    width = math.ceil(round(float(c["min_door_width_m"]) / 0.1, 9)) * 0.1
+    return {"width": round(width, 3),
+            "height": round(float(c["min_headroom_m"]) + 0.1, 3),
+            "sill": 0.0}
 
 
 def body_radius():

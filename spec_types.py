@@ -74,6 +74,13 @@ def _min_door_width():
     return agent_contract.min_door_width()
 
 
+def _vault_aperture():
+    """`agent_contract.vault_aperture()`, a fresh dict: the round vault
+    door's opening, read when a vault is resolved (0.215.0)."""
+    import agent_contract
+    return dict(agent_contract.vault_aperture())
+
+
 @dataclass
 class Opening:
     """A door or window cut into a wall."""
@@ -116,10 +123,11 @@ class Opening:
             "window": dict(width=1.6, height=1.4, sill=1.0),
             "garage": dict(width=3.5, height=3.0, sill=0.0),
             "breach": dict(width=1.5, height=2.2, sill=0.0),
-            # Zoo's round vault door (`vault_room.APERTURE`): 1.3 x 2.1 on
-            # the floor. 1.4 x 2.3 at sill 0.15 put a step above
+            # Zoo's round vault door (`vault_room.APERTURE`): the contract's
+            # `vault_aperture()`, 1.3 x 2.1 on the floor (0.215.0; a literal
+            # until then). 1.4 x 2.3 at sill 0.15 put a step above
             # `unassisted_step_max_m` (0.1025) in the doorway.
-            "vault":  dict(width=1.3, height=2.1, sill=0.0),
+            "vault":  _vault_aperture(),
             "teller": dict(width=2.0, height=3.0, sill=0.0),
             "safe_deposit": dict(width=2.0, height=2.4, sill=0.0),
         }[self.kind]

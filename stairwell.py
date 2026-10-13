@@ -83,7 +83,11 @@ _TREAD_MARGIN = 0.6             # m shaved off each run end for the door test
 # Physical circulation clearances (game-readability defaults, not code
 # compliance). A stair is an ORIENTED system: approach -> lower landing ->
 # flight -> upper landing -> departure. Both landings are reserved floor.
-LANDING_DEPTH = 1.2             # m of clear floor at each entry/exit edge
+#: m of clear floor at each entry/exit edge: a landing as deep as the flight
+#: the generator draws is wide, the contract's corridor and one bake cell
+#: (`agent_contract.stair_flight_width`; IBC 2018 1011.6's rule without its
+#: 48 in cap). A literal 1.2 until 0.215.0, the same number.
+LANDING_DEPTH = agent_contract.stair_flight_width()
 EXIT_STEP_OFF = 0.8             # m the builder's slab hole extends past the
                                 # top flight; the upper landing starts after it
 _SOLID_BAND = 0.45              # a wall this close to the entry/exit edge =

@@ -43,11 +43,14 @@ import re
 
 # ------------------------------------------------------------ Zoo's constants
 #: `vault_forms.DEFAULT_OPENING`: the body contract's `min_door_width_m` 1.25
-#: rounded up, 2.1 m against `min_headroom_m` 2.0. Sill 0: Deli Counter's old
-#: 0.15 sat above `clearances.unassisted_step_max_m` (0.1025), the known
-#: contract tension (the factory root's "Known contract tensions"), and Zoo
-#: lays a 16 mm threshold plate there.
-APERTURE = {"width": 1.3, "height": 2.1, "sill": 0.0}
+#: rounded up, 2.1 m against `min_headroom_m` 2.0 -- asked of the contract
+#: since 0.215.0 (`agent_contract.vault_aperture`), where it was spelt here.
+#: Deli Counter writes it into the vault door's slot and Zoo builds the door
+#: to it. Sill 0: Deli Counter's old 0.15 sat above
+#: `clearances.unassisted_step_max_m` (0.1025), the known contract tension
+#: (the factory root's "Known contract tensions"), and Zoo lays a 16 mm
+#: threshold plate there.
+APERTURE = __import__("agent_contract").vault_aperture()
 
 FRAME_FRAC = 0.22          # vault_forms.DEFAULTS["frame_frac"]
 MARGIN = 0.10              # vault_forms.DEFAULTS["margin"]

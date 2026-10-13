@@ -47,10 +47,9 @@ def _stair_flight_width():
     connect at 8 of 8 as they stand. This is what a generator draws, not a
     floor those specs are held to.
     """
-    import agent_contract
-    c = agent_contract.contract()
-    return round(float(c["clearances"]["min_corridor_width_m"])
-                 + float(c["nav_bake"]["cell_size_m"]), 3)
+    # Spelt once, in the contract's loader (0.215.0): the stair landing is as
+    # deep as this, and both read `agent_contract.stair_flight_width`.
+    return agent_contract.stair_flight_width()
 
 
 STAIR_FLIGHT_WIDTH = _stair_flight_width()
