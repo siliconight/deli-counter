@@ -3236,6 +3236,104 @@ for _args in EMPTY_ROWHOMES.values():
 
 
 # ---------------------------------------------------------------------------
+# MID-RISE EMPTIES (0.213.0, factory roadmap 241)
+# ---------------------------------------------------------------------------
+#
+# The walker, 2026-10-11, with three frames of a mid-rise city -- "more around
+# potential lot layout city building height" -- chose a NEW URBAN LEVEL TYPE:
+# mid-rise Empties of five to twelve storeys forming continuous street walls
+# at the sidewalk line, the enterable buildings among them, and the Delco
+# strip levels left as they are (the factory root's
+# `docs/reference/URBAN_MIDRISE_COMPS.md`). This is the family's first cut:
+# the brick block, its windows in regular bays front and back, a parapet. Its
+# rooftop penthouse, its corner shop at grade and its bay windows each need a
+# capability this builder does not have yet, and are not here.
+#
+# NAMED `gs_midrise_*`, NOT `gs_empty_*`. Level Factory hands every
+# `gs_empty_*` in the library to any brief that stands a terrace
+# (`building_library.empty_rows`), so under that prefix these would stand in
+# today's Delco streets. They are Empties in every other respect -- `facade`
+# true, so their doors are shut, their windows painted and only their roof
+# slab kept, all keyed on the flag and never on the name -- and they wait for
+# the urban brief that asks for them (roadmap 241, step 3).
+
+#: The window bay of a mid-rise front, one window a bay. CHOSEN, not read: the
+#: comps give no dimension, and a little over 3 m reads as an apartment's
+#: rooms. `empty_midrise` rounds the bays to the width, so the spacing lands
+#: within a few tenths of this.
+MIDRISE_BAY = 3.2
+
+
+def empty_midrise(name: str = "empty_midrise", width: float = 18.0,
+                  floors: int = 8, wall: str = "brick", lobby: float = 0.0,
+                  cornice: float = 1.2, seed: int = 1931,
+                  scale_ref: bool = False, door_finish: str = None) -> dict:
+    """A mid-rise apartment block Empty. `floors` storeys of windows in
+    regular bays about `MIDRISE_BAY` apart across its `width`, on the front
+    (S) and the back (N); at grade a lobby door in the front bay nearest
+    `lobby` (a fraction of the front, -0.5 to 0.5) and a service door behind
+    it. The side walls are left unlisted, so `auto_exterior` seals them: in a
+    street wall they are party walls. A parapet `cornice` high. 15 m deep and
+    3.1 m a storey, the rowhome Empty's storey. Non-enterable, as every
+    Empty is."""
+    sh = 3.1
+    depth = 15.0
+    s = _facade(name, float(width), depth, int(floors), sh, wall, [
+        {"id": wall, "acoustic": "Concrete", "absorption": 0.7, "damping": 0.6},
+        {"id": "glass", "acoustic": "Glass", "absorption": 0.1, "damping": 0.1},
+        {"id": "wood", "acoustic": "Wood", "absorption": 0.5, "damping": 0.45},
+    ], parapet_h=float(cornice), seed=int(seed))
+    bays = max(3, int(round(float(width) / MIDRISE_BAY)))
+    pos = [round((i + 0.5) / bays - 0.5, 4) for i in range(bays)]
+    door_bay = min(range(bays), key=lambda i: abs(pos[i] - float(lobby)))
+    win = {"kind": "window", "width": 1.1, "height": 1.6, "sill": 0.85,
+           "material": "glass"}
+    ext = []
+    for st in range(int(floors)):
+        front, back = [], []
+        for i, p in enumerate(pos):
+            if st == 0 and i == door_bay:
+                front.append({"kind": "door", "pos": p, "width": 1.2, "height": 2.4,
+                              "tag": "front_door", "material": "wood"})
+                back.append({"kind": "door", "pos": p, "width": 0.95, "height": 2.2,
+                             "tag": "back_door", "material": "wood"})
+            else:
+                front.append(dict(win, pos=p))
+                back.append(dict(win, pos=p))
+        ext.append({"wall": "S", "story": st, "material": wall, "openings": front})
+        ext.append({"wall": "N", "story": st, "material": wall, "openings": back})
+    s["ext_walls"] = ext
+    # a flat membrane roof, as the rowhome Empty's (0.210.0)
+    s["roof_material"] = "tar"
+    s["scale_ref"] = bool(scale_ref)
+    if door_finish:
+        s["door_finish"] = door_finish
+    return s
+
+
+#: The mid-rise Empties built into the library, one row a block: width (m),
+#: storeys, wall, lobby door's place, parapet height (m), seed, door finish.
+#: Five to twelve storeys, no two the same height, so a street can draw them
+#: by cause -- taller away from the action (roadmap 241) -- once a layout
+#: asks; the comps' blocks are brick -- here the rowhome family's three
+#: bricks -- with one stone front.
+EMPTY_MIDRISES = {
+    "gs_midrise_a": dict(width=15.0, floors=5, wall="brick_brown", lobby=-0.3, cornice=1.0,
+                         seed=1931, door_finish="black"),
+    "gs_midrise_b": dict(width=18.0, floors=6, wall="brick", lobby=0.0, cornice=1.2,
+                         seed=1932, door_finish="stained"),
+    "gs_midrise_c": dict(width=21.0, floors=7, wall="brick_orange", lobby=0.25, cornice=1.0,
+                         seed=1933, door_finish="green"),
+    "gs_midrise_d": dict(width=16.5, floors=8, wall="stone_ext", lobby=-0.2, cornice=1.4,
+                         seed=1934, door_finish="navy"),
+    "gs_midrise_e": dict(width=24.0, floors=10, wall="brick_brown", lobby=0.0, cornice=1.5,
+                         seed=1935, door_finish="oxblood"),
+    "gs_midrise_f": dict(width=19.5, floors=12, wall="brick", lobby=-0.25, cornice=1.5,
+                         seed=1936, door_finish="white"),
+}
+
+
+# ---------------------------------------------------------------------------
 # REGISTRY
 # ---------------------------------------------------------------------------
 
@@ -3474,6 +3572,7 @@ REGISTRY = {
     "facade_rowhome": facade_rowhome,
     "facade_storefront": facade_storefront,
     "empty_rowhome": empty_rowhome,
+    "empty_midrise": empty_midrise,
     "facade_industrial": facade_industrial,
 }
 
