@@ -683,6 +683,10 @@ class LevelSpec:
     # form (`shop_awning.FORMS`, the shop's canvas colour), hung over the
     # storefront where `shop_awning.plan` says; None, no awning.
     awning: Optional[str] = None
+    # A WALK-UP'S FIRE ESCAPE (0.220.0, factory roadmaps 156 and 241): Zoo's
+    # `fire_escape`, a storey a slot, on that wall ("front") where
+    # `fire_escape_stack.plan` says; None, none.
+    fire_escape_stack: Optional[str] = None
 
     # --- art-pass pipeline (all optional; None = fall back to the matching
     # DC_* env var, so unset == byte-identical output). See README "Modular

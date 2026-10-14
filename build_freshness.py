@@ -72,6 +72,8 @@ GEOMETRY_SOURCES = (
     "empty_panes.py",
     # where a corner block's awning hangs, a slot of its shell (0.219.0)
     "shop_awning.py",
+    # where a walk-up's fire escape stands, a storey a slot (0.220.0)
+    "fire_escape_stack.py",
 )
 
 

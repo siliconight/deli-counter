@@ -23,6 +23,7 @@ import migrate_wall_crossing
 import migrate_window_poster
 import migrate_window_sign
 import stoop as stoop_geom
+import fire_escape_stack
 import agent_contract
 
 #: THE CONTRACT'S DOOR (0.214.0, factory roadmap 197): every walkable door a
@@ -3283,7 +3284,7 @@ def empty_midrise(name: str = "empty_midrise", width: float = 18.0,
                   cornice: float = 1.2, seed: int = 1931,
                   scale_ref: bool = False, door_finish: str = None,
                   security_door: bool = False, shop: str = None,
-                  awning: str = None) -> dict:
+                  awning: str = None, fire_escape: bool = None) -> dict:
     """A mid-rise apartment block Empty. `floors` storeys of windows in
     regular bays about `MIDRISE_BAY` apart across its `width`, on the front
     (S) and the back (N); at grade a lobby door in the front bay nearest
@@ -3300,7 +3301,10 @@ def empty_midrise(name: str = "empty_midrise", width: float = 18.0,
     service door behind. `security_door` hangs an iron door on the front,
     as the rowhome Empty's does. `awning` (0.219.0) hangs Zoo's
     `shop_awning` in that form over the storefront (`shop_awning.plan`),
-    in canvas the palette then declares."""
+    in canvas the palette then declares. A walk-up (0.220.0) stands Zoo's
+    `fire_escape` on its front, a storey a slot (`fire_escape_stack`):
+    `fire_escape` None asks the walk-up rule -- `WALKUP_STOREYS` storeys or
+    fewer and no shop -- and True or False overrides it."""
     sh = 3.1
     depth = 15.0
     s = _facade(name, float(width), depth, int(floors), sh, wall, [
@@ -3346,6 +3350,16 @@ def empty_midrise(name: str = "empty_midrise", width: float = 18.0,
         s["awning"] = awning
         s["materials"].append({"id": "canvas", "acoustic": "Curtain",
                                "absorption": 0.5, "damping": 0.4})
+    # and a walk-up's fire escape (0.220.0), in painted steel, which the
+    # palette then declares
+    if fire_escape is None:
+        fire_escape = (int(floors) <= fire_escape_stack.WALKUP_STOREYS
+                       and not shop)
+    if fire_escape:
+        s["fire_escape_stack"] = "front"
+        if not any(m["id"] == "metal_painted" for m in s["materials"]):
+            s["materials"].append({"id": "metal_painted", "acoustic": "Metal",
+                                   "absorption": 0.25, "damping": 0.2})
     return s
 
 

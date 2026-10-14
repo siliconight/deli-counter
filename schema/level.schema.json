@@ -1297,6 +1297,11 @@
       "type": ["string", "null"],
       "description": "a corner block's awning: Zoo's shop_awning form, hung over the storefront (shop_awning.plan, 0.219.0)"
     },
+    "fire_escape_stack": {
+      "type": ["string", "null"],
+      "enum": ["front", null],
+      "description": "a walk-up's fire escape: Zoo's fire_escape a storey a slot, on that wall (fire_escape_stack.plan, 0.220.0)"
+    },
     "audit_accept": {
       "type": "array",
       "description": "Author-declared intended designs the combat audit reports as accepted instead of flagging (e.g. a one-breach vault as the designed climax).",

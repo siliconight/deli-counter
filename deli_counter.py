@@ -60,6 +60,7 @@ import roofs
 import floors
 import empty_panes
 import shop_awning
+import fire_escape_stack
 import stoop
 import vault_room
 
@@ -1282,6 +1283,9 @@ class _Builder:
             # A CORNER SHOP'S AWNING (0.219.0): over its storefront, a
             # `prop` slot Zoo dresses; nothing on any other Empty.
             self._awning()
+            # A WALK-UP'S FIRE ESCAPE (0.220.0): on its front, a `prop` slot
+            # a storey Zoo dresses; nothing on any other Empty.
+            self._fire_escape_stack()
             # The roof slot, as a building records it, so Zoo dresses the
             # roof the shell keeps (0.175.0). A building calls this after
             # `_slab_holes_cut`; an Empty cuts no hole -- it has no stair or
@@ -2680,6 +2684,36 @@ class _Builder:
             "fit": {"dims": [round(v, 4) for v in size],
                     "pivot": "center", "openings": [], "collision": "none"},
         })
+
+    def _fire_escape_stack(self):
+        """A WALK-UP'S FIRE ESCAPE (0.220.0, factory roadmaps 156 and 241;
+        `fire_escape_stack.py`): Zoo's `fire_escape` (>= 1.110.0) on the
+        front, a `prop` slot a storey and one for the drop ladder, in painted
+        steel, each greyboxed as a visual box. No collision: the lowest landing
+        stands a storey up, and Level Factory reads an Empty's street edge off
+        its colliders. Nothing when the spec asks for none."""
+        parts = fire_escape_stack.plan(self.s)
+        if not parts:
+            return
+        mat = "metal_painted"
+        style = skin_style.style_for(mat, self._mat_style,
+                                     self.s.default_material)
+        for p in parts:
+            c, size = p["centre"], p["size"]
+            self._box(p["slot_id"], c, size, self.VISUAL, role="prop")
+            self.slots.append({
+                "slot_id": p["slot_id"], "role": "prop", "size_mod": "full",
+                "style": style, "material": mat, "species": "fire_escape",
+                "stock": None, "variant": 0, "form": p["form"],
+                "current_ref": "prop_greybox_01", "kit_axis": "material",
+                "wall": None, "story": None, "facing": None,
+                "transform": {"translation": [round(c[0], 4), round(c[1], 4),
+                                              round(c[2], 4)],
+                              "rot_y": 0.0, "scale": [1.0, 1.0, 1.0]},
+                "fit": {"dims": [round(v, 4) for v in size],
+                        "pivot": "center", "openings": [],
+                        "collision": "none"},
+            })
 
     # ----------------------------------------------------------------------
     # KITBASHING  --  import external models and place instances
