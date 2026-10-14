@@ -3270,12 +3270,19 @@ for _args in EMPTY_ROWHOMES.values():
 #: rooms. `empty_midrise` rounds the bays to the width, so the spacing lands
 #: within a few tenths of this.
 MIDRISE_BAY = 3.2
+#: A CORNER SHOP'S WINDOW (0.218.0, roadmap 241): a bay less a pier either
+#: side, from a low bulkhead to the front door's head, so the storefront reads
+#: as one run of glass with the shop's door in it. CHOSEN, not read: 2.4 m of
+#: glass in a bay of about 3 m, 0.3 m up, its head at the door's 2.4 m.
+SHOP_WINDOW = {"kind": "window", "width": 2.4, "height": 2.1, "sill": 0.3,
+               "material": "glass"}
 
 
 def empty_midrise(name: str = "empty_midrise", width: float = 18.0,
                   floors: int = 8, wall: str = "brick", lobby: float = 0.0,
                   cornice: float = 1.2, seed: int = 1931,
-                  scale_ref: bool = False, door_finish: str = None) -> dict:
+                  scale_ref: bool = False, door_finish: str = None,
+                  security_door: bool = False, shop: str = None) -> dict:
     """A mid-rise apartment block Empty. `floors` storeys of windows in
     regular bays about `MIDRISE_BAY` apart across its `width`, on the front
     (S) and the back (N); at grade a lobby door in the front bay nearest
@@ -3283,7 +3290,14 @@ def empty_midrise(name: str = "empty_midrise", width: float = 18.0,
     it. The side walls are left unlisted, so `auto_exterior` seals them: in a
     street wall they are party walls. A parapet `cornice` high. 15 m deep and
     3.1 m a storey, the rowhome Empty's storey. Non-enterable, as every
-    Empty is."""
+    Empty is.
+
+    A CORNER BLOCK (0.218.0, factory roadmap 241): with `shop`, one of
+    `empty_panes.SHOP_STATES`, the ground floor's front is that shop. Every
+    front bay but the door's is a `SHOP_WINDOW` authored in the shop's
+    state, the front door is the shop's, and the homes above keep the
+    service door behind. `security_door` hangs an iron door on the front,
+    as the rowhome Empty's does."""
     sh = 3.1
     depth = 15.0
     s = _facade(name, float(width), depth, int(floors), sh, wall, [
@@ -3308,6 +3322,9 @@ def empty_midrise(name: str = "empty_midrise", width: float = 18.0,
                               "tag": "front_door", "material": "wood"})
                 back.append({"kind": "door", "pos": p, "width": 0.95, "height": 2.2,
                              "tag": "back_door", "material": "wood"})
+            elif st == 0 and shop:
+                front.append(dict(SHOP_WINDOW, pos=p, pane=shop))
+                back.append(dict(win, pos=p))
             else:
                 front.append(dict(win, pos=p))
                 back.append(dict(win, pos=p))
@@ -3319,6 +3336,8 @@ def empty_midrise(name: str = "empty_midrise", width: float = 18.0,
     s["scale_ref"] = bool(scale_ref)
     if door_finish:
         s["door_finish"] = door_finish
+    if security_door:
+        s["security_door"] = True
     return s
 
 
@@ -3357,6 +3376,27 @@ EMPTY_MIDRISE_NARROW = {
                          seed=1938, door_finish="stained"),
     "gs_midrise_i": dict(width=6.3, floors=4, wall="brick_brown", lobby=0.0, cornice=0.8,
                          seed=1939, door_finish="green"),
+}
+
+#: THE CORNER BLOCKS (0.218.0, factory roadmap 241). The comps: "Corners carry
+#: the life. The corner building has the shop at grade (lit, awning), homes
+#: above" (the factory root's `docs/reference/URBAN_MIDRISE_COMPS.md`). Four
+#: mid-rises whose ground-floor front is a shop (`empty_midrise`'s `shop`),
+#: one shop each and no two alike: which shop stands on a corner is a fact
+#: about the building, so it is authored, as `vacant` is. Their own prefix,
+#: `gs_cornershop_`: Level Factory deals `gs_midrise_` along an urban street's
+#: wall, and a corner block dealt mid-block would put the life in the middle.
+#: The door's bay is the centre's, so the shop's door stands mid-front at
+#: whichever end of a wall the block closes.
+EMPTY_CORNERS = {
+    "gs_cornershop_a": dict(width=15.0, floors=6, wall="brick", lobby=0.0, cornice=1.0,
+                            seed=1941, door_finish="black", security_door=True, shop="shop_deli"),
+    "gs_cornershop_b": dict(width=18.0, floors=8, wall="brick_orange", lobby=0.0, cornice=1.2,
+                            seed=1942, door_finish="oxblood", shop="shop_bar"),
+    "gs_cornershop_c": dict(width=12.0, floors=5, wall="brick_brown", lobby=0.0, cornice=1.0,
+                            seed=1943, door_finish="white", shop="shop_laundry"),
+    "gs_cornershop_d": dict(width=16.5, floors=7, wall="stone_ext", lobby=0.0, cornice=1.4,
+                            seed=1944, door_finish="green", security_door=True, shop="shop_grocery"),
 }
 
 

@@ -111,6 +111,10 @@ class Opening:
     # out on it, a deposit wall's boxes open on it. A partition has two faces
     # and its slot bearing alone cannot say which. None: the wall's bearing.
     face: Optional[Literal["N", "S", "E", "W"]] = None
+    # AN EMPTY WINDOW'S AUTHORED STATE (0.218.0, factory roadmap 241): a corner
+    # shop's window shows its shop (`empty_panes.SHOP_STATES`, which Zoo >=
+    # 1.107.0 paints), not a drawn room. None: drawn (`empty_panes.choose`).
+    pane: Optional[str] = None
 
     def resolved(self):
         d = dict(width=self.width, height=self.height, sill=self.sill)

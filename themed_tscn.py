@@ -347,10 +347,12 @@ def resolve_themed_stem(slot: dict, theme: str, style: int, state: str = None,
     glazing = slot.get("glazing") if slot.get("glazing") in STEM_GLAZINGS else None
     budget = bool(slot.get("light_budget_tiles")) and typ in LIGHT_BUDGET_ROLES
     inner = slot.get("material_in") if typ in INNER_FACE_ROLES else None
-    # the same test Zoo's `plan_kit` makes (1.64.0), so the names agree
+    # the same test Zoo's `plan_kit` makes (1.64.0), so the names agree --
+    # a corner shop's state too (0.218.0, Zoo >= 1.107.0)
     import empty_panes
     pane = (slot.get("pane") if typ == "window" and slot.get("glazing") == "facade"
-            and slot.get("pane") in empty_panes.STATES else None)
+            and (slot.get("pane") in empty_panes.STATES
+                 or slot.get("pane") in empty_panes.SHOP_STATES) else None)
     door = (slot.get("door") if typ == "doorway" and slot.get("glazing") == "facade"
             and slot.get("door") in empty_panes.DOOR_FINISHES else None)
     stem = module_stem(typ, theme, eff_style, width_cm,

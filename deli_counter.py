@@ -514,7 +514,10 @@ class _Builder:
                     interactive=self._machine_for(op, wall_name, story),
                     # which opening this is (0.182.0): an Empty's front door
                     # is the one its preset tagged `front_door`
-                    tag=getattr(op, "tag", None))
+                    tag=getattr(op, "tag", None),
+                    # and what an Empty's window shows where its preset says
+                    # (0.218.0): a corner shop's front
+                    pane=getattr(op, "pane", None))
         if op.kind == "vault":
             # A VAULT SLOT IS AS WIDE AS THE DOOR, NOT ITS APERTURE. Zoo's round
             # door circumscribes the aperture and adds a frame, hinge barrels
@@ -839,7 +842,9 @@ class _Builder:
             # boarded, chosen per window -- which windows glow is a fact about
             # this building. Zoo (>= 1.64.0) paints the state.
             if role == "window":
-                slot["pane"] = empty_panes.choose(
+                # AUTHORED BEFORE DRAWN (0.218.0): a corner shop's window
+                # shows the shop its preset names on the opening
+                slot["pane"] = empty_panes.authored(h.get("pane")) or empty_panes.choose(
                     self.s.name, self.s.seed, vb, story,
                     vacant=getattr(self.s, "vacant", False))
                 # AND WHAT HANGS IN IT (0.181.0): bars on a barred pane, an

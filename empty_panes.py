@@ -27,6 +27,12 @@ STATES = ("lit", "lit_amber", "lit_cool", "lit_pink",
           "lit_blind", "lit_blind_cool", "lit_curtain", "lit_shade",
           "lit_bars", "dark", "dark_blind", "dark_shade",
           "dark_curtain", "dark_bars", "dark_fan", "boarded")
+#: A CORNER SHOP'S STATES (0.218.0, factory roadmap 241), in Zoo's shop atlas
+#: order (`zoo_keeper.core.shop_panes.STATES`, pinned by `test_empty_corner.py`).
+#: AUTHORED on the opening, never drawn: a shop is one room, and which shop
+#: stands on a corner is a fact about the building (`presets.EMPTY_CORNERS`).
+SHOP_STATES = ("shop_deli", "shop_grocery", "shop_bar", "shop_laundry",
+               "shop_gate", "shop_dark")
 
 #: (state, weight), each table summing to 100. COLOUR VARIATION IS KEY (the
 #: walker, 0.180.0): the lit share is spread across four room lights and the
@@ -67,6 +73,18 @@ def choose(building, seed, slot_id, story, vacant=False):
         return "boarded"
     return _pick(GROUND if int(story or 0) <= 0 else UPPER,
                  "%s:%s:%s" % (building, seed, slot_id))
+
+
+def authored(pane):
+    """An opening's authored state (0.218.0), or None where its preset
+    authored none and `choose` draws one. A corner shop's front names its
+    shop (`SHOP_STATES`); a window state is honoured as authored too. Anything
+    else is refused rather than dropped, as a door finish is."""
+    if pane is None:
+        return None
+    if pane not in STATES and pane not in SHOP_STATES:
+        raise ValueError("pane %r is not one of %s or %s" % (pane, STATES, SHOP_STATES))
+    return pane
 
 
 #: THE PANES THAT CARRY BARS (0.181.0). They were painted into the pane; they
