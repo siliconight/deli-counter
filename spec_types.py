@@ -679,6 +679,10 @@ class LevelSpec:
     # door at grade. The preset raises the door and the ground storey's front
     # window with it (factory roadmap 240).
     stoop: Optional[dict] = None
+    # A CORNER SHOP'S AWNING (0.219.0, factory roadmap 241): Zoo's `shop_awning`
+    # form (`shop_awning.FORMS`, the shop's canvas colour), hung over the
+    # storefront where `shop_awning.plan` says; None, no awning.
+    awning: Optional[str] = None
 
     # --- art-pass pipeline (all optional; None = fall back to the matching
     # DC_* env var, so unset == byte-identical output). See README "Modular

@@ -77,6 +77,7 @@ KIND_BY_MATERIAL = {
     "brick": "brick",
     "brick_brown": "brick_brown",
     "brick_orange": "brick_orange",
+    "canvas": "canvas",
     "carpet": "carpet",
     "concrete": "concrete",
     "drywall": "drywall",

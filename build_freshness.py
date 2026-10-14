@@ -70,6 +70,8 @@ GEOMETRY_SOURCES = (
     "themed_tscn.py",
     # which state an Empty's window is painted in rides on its slot (0.179.0)
     "empty_panes.py",
+    # where a corner block's awning hangs, a slot of its shell (0.219.0)
+    "shop_awning.py",
 )
 
 

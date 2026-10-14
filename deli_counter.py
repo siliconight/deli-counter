@@ -59,6 +59,7 @@ import interactives
 import roofs
 import floors
 import empty_panes
+import shop_awning
 import stoop
 import vault_room
 
@@ -1278,6 +1279,9 @@ class _Builder:
             # AN EMPTY'S STOOP (0.211.0): the steps up to its raised door,
             # built here because a facade runs no `_volumes` or `_stairs`.
             self._stoop()
+            # A CORNER SHOP'S AWNING (0.219.0): over its storefront, a
+            # `prop` slot Zoo dresses; nothing on any other Empty.
+            self._awning()
             # The roof slot, as a building records it, so Zoo dresses the
             # roof the shell keeps (0.175.0). A building calls this after
             # `_slab_holes_cut`; an Empty cuts no hole -- it has no stair or
@@ -2648,6 +2652,34 @@ class _Builder:
                                  col[1], col[2], self.COLLISION)
                 slab.rotation_euler = (col[3], 0.0, 0.0)
             self._record_surface(r["name"] + "_col", iron)
+
+    def _awning(self):
+        """A CORNER SHOP'S AWNING (0.219.0, factory roadmap 241; `shop_awning.py`):
+        Zoo's `shop_awning` (>= 1.108.0) over the storefront, recorded as a
+        `prop` slot in canvas whose form is the shop's colour, its greybox a
+        visual box. No collision: it hangs over a frontage nobody walks at its
+        height, and Level Factory reads an Empty's street edge off its
+        colliders. Nothing when the spec asks for none."""
+        p = shop_awning.plan(self.s)
+        if p is None:
+            return
+        mat = "canvas"
+        style = skin_style.style_for(mat, self._mat_style,
+                                     self.s.default_material)
+        c, size = p["centre"], p["size"]
+        self._box("shop_awning", c, size, self.VISUAL, role="prop")
+        self.slots.append({
+            "slot_id": "shop_awning", "role": "prop", "size_mod": "full",
+            "style": style, "material": mat, "species": "shop_awning",
+            "stock": None, "variant": 0, "form": p["form"],
+            "current_ref": "prop_greybox_01", "kit_axis": "material",
+            "wall": None, "story": None, "facing": None,
+            "transform": {"translation": [round(c[0], 4), round(c[1], 4),
+                                          round(c[2], 4)],
+                          "rot_y": 0.0, "scale": [1.0, 1.0, 1.0]},
+            "fit": {"dims": [round(v, 4) for v in size],
+                    "pivot": "center", "openings": [], "collision": "none"},
+        })
 
     # ----------------------------------------------------------------------
     # KITBASHING  --  import external models and place instances

@@ -3282,7 +3282,8 @@ def empty_midrise(name: str = "empty_midrise", width: float = 18.0,
                   floors: int = 8, wall: str = "brick", lobby: float = 0.0,
                   cornice: float = 1.2, seed: int = 1931,
                   scale_ref: bool = False, door_finish: str = None,
-                  security_door: bool = False, shop: str = None) -> dict:
+                  security_door: bool = False, shop: str = None,
+                  awning: str = None) -> dict:
     """A mid-rise apartment block Empty. `floors` storeys of windows in
     regular bays about `MIDRISE_BAY` apart across its `width`, on the front
     (S) and the back (N); at grade a lobby door in the front bay nearest
@@ -3297,7 +3298,9 @@ def empty_midrise(name: str = "empty_midrise", width: float = 18.0,
     front bay but the door's is a `SHOP_WINDOW` authored in the shop's
     state, the front door is the shop's, and the homes above keep the
     service door behind. `security_door` hangs an iron door on the front,
-    as the rowhome Empty's does."""
+    as the rowhome Empty's does. `awning` (0.219.0) hangs Zoo's
+    `shop_awning` in that form over the storefront (`shop_awning.plan`),
+    in canvas the palette then declares."""
     sh = 3.1
     depth = 15.0
     s = _facade(name, float(width), depth, int(floors), sh, wall, [
@@ -3338,6 +3341,11 @@ def empty_midrise(name: str = "empty_midrise", width: float = 18.0,
         s["door_finish"] = door_finish
     if security_door:
         s["security_door"] = True
+    # and its awning (0.219.0), in canvas, which the palette then declares
+    if awning:
+        s["awning"] = awning
+        s["materials"].append({"id": "canvas", "acoustic": "Curtain",
+                               "absorption": 0.5, "damping": 0.4})
     return s
 
 
@@ -3388,15 +3396,19 @@ EMPTY_MIDRISE_NARROW = {
 #: wall, and a corner block dealt mid-block would put the life in the middle.
 #: The door's bay is the centre's, so the shop's door stands mid-front at
 #: whichever end of a wall the block closes.
+#: AND THEIR AWNINGS (0.219.0): each in its shop's canvas, a deli's red, a
+#: bar's black, a laundromat's navy and a grocery's green.
 EMPTY_CORNERS = {
     "gs_cornershop_a": dict(width=15.0, floors=6, wall="brick", lobby=0.0, cornice=1.0,
-                            seed=1941, door_finish="black", security_door=True, shop="shop_deli"),
+                            seed=1941, door_finish="black", security_door=True, shop="shop_deli",
+                            awning="shed_red"),
     "gs_cornershop_b": dict(width=18.0, floors=8, wall="brick_orange", lobby=0.0, cornice=1.2,
-                            seed=1942, door_finish="oxblood", shop="shop_bar"),
+                            seed=1942, door_finish="oxblood", shop="shop_bar", awning="shed_black"),
     "gs_cornershop_c": dict(width=12.0, floors=5, wall="brick_brown", lobby=0.0, cornice=1.0,
-                            seed=1943, door_finish="white", shop="shop_laundry"),
+                            seed=1943, door_finish="white", shop="shop_laundry", awning="shed_navy"),
     "gs_cornershop_d": dict(width=16.5, floors=7, wall="stone_ext", lobby=0.0, cornice=1.4,
-                            seed=1944, door_finish="green", security_door=True, shop="shop_grocery"),
+                            seed=1944, door_finish="green", security_door=True, shop="shop_grocery",
+                            awning="shed_green"),
 }
 
 
