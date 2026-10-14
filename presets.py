@@ -3291,7 +3291,10 @@ def empty_midrise(name: str = "empty_midrise", width: float = 18.0,
         {"id": "glass", "acoustic": "Glass", "absorption": 0.1, "damping": 0.1},
         {"id": "wood", "acoustic": "Wood", "absorption": 0.5, "damping": 0.45},
     ], parapet_h=float(cornice), seed=int(seed))
-    bays = max(3, int(round(float(width) / MIDRISE_BAY)))
+    # Two bays at the least (0.217.0): a 6.3 m front holds two windows in the
+    # family's rhythm, where a floor of three stood them 2.1 m apart. The six
+    # have five bays or more, so the floor never bound them.
+    bays = max(2, int(round(float(width) / MIDRISE_BAY)))
     pos = [round((i + 0.5) / bays - 0.5, 4) for i in range(bays)]
     door_bay = min(range(bays), key=lambda i: abs(pos[i] - float(lobby)))
     win = {"kind": "window", "width": 1.1, "height": 1.6, "sill": 0.85,
@@ -3338,6 +3341,22 @@ EMPTY_MIDRISES = {
                          seed=1935, door_finish="oxblood"),
     "gs_midrise_f": dict(width=19.5, floors=12, wall="brick", lobby=-0.25, cornice=1.5,
                          seed=1936, door_finish="white"),
+}
+
+#: THE NARROW MID-RISES (0.217.0, roadmap 241): two- and three-bay blocks for
+#: the rooms an urban street's near side leaves between the mission's own
+#: buildings -- on urban_row_001 (cold run 9288) 12.67, 11.35, 7.33 and 6.70
+#: m, where the six's narrowest measures 15.3. 12.0, 10.0 and 6.3 m wide
+#: (12.3, 10.3 and 6.6 as built), lower than the six, under the family's
+#: prefix so the urban street draws them with the rest. A table of their own,
+#: so the six keep theirs: five to twelve storeys, no two the same height.
+EMPTY_MIDRISE_NARROW = {
+    "gs_midrise_g": dict(width=12.0, floors=6, wall="brick", lobby=0.0, cornice=1.0,
+                         seed=1937, door_finish="black"),
+    "gs_midrise_h": dict(width=10.0, floors=5, wall="brick_orange", lobby=0.0, cornice=1.0,
+                         seed=1938, door_finish="stained"),
+    "gs_midrise_i": dict(width=6.3, floors=4, wall="brick_brown", lobby=0.0, cornice=0.8,
+                         seed=1939, door_finish="green"),
 }
 
 
