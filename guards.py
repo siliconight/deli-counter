@@ -105,7 +105,8 @@ def check_ip_names(spec):
 # ---------------------------------------------------------------------------
 # STEP-RISE BUDGET (model integrity)
 # ---------------------------------------------------------------------------
-MAX_STEP_UP = 0.5        # m — the recommended player step-up budget
+# the contract's `characters.player.max_step_up_m`, asked (0.216.0; a literal 0.5)
+MAX_STEP_UP = __import__("agent_contract").max_step_up()  # m — the recommended player step-up budget
 STEP_RISE_WARN = 0.4     # m — approaching the budget; worth a heads-up
 
 # default target rise the builder aims for (mirrors spec_types default)

@@ -247,8 +247,9 @@ _SHELF_WORDS = ("shelf", "gondola", "rack", "pack_wall")
 _AISLE_ROOM_WORDS = ("sales", "retail", "shop_floor", "aisle", "market", "store",
                      "stock", "storage", "ware", "parts", "supply", "cellar", "bond")
 #: The aisle's width when `level_design` cannot be asked: the contract's
-#: `clearances.min_door_width_m`, the number `island_aisle_width` returns.
-_AISLE_MIN_FALLBACK = 1.25
+#: `clearances.min_door_width_m`, the number `island_aisle_width` returns --
+#: asked of the contract, which can always be asked (0.216.0; a literal 1.25).
+_AISLE_MIN_FALLBACK = __import__("agent_contract").min_door_width()
 #: A shelf stands on the floor; a sign hung over an aisle does not.
 _SHELF_FOOT_MAX = 0.5
 #: A merged shelf span wider than this is a FIELD of islands, not a run: the

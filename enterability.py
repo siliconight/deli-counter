@@ -32,10 +32,11 @@ Thresholds come straight from the project scale guidelines (meters):
 from __future__ import annotations
 
 # --- body-fit thresholds (m), from docs/scale_guidelines.md --------------
-MIN_PASS_WIDTH = 0.7     # below this, the default capsule can't fit at all
+# The contract's body, asked (0.216.0): two radii, and its height.
+MIN_PASS_WIDTH = 2.0 * __import__("agent_contract").body_radius()  # below this, the default capsule can't fit at all
 CLEAN_WIDTH    = 0.9     # doc's minimum doorway width; below = a tight squeeze
 MIN_PASS_HEIGHT = 1.1    # below this, you can't even crouch through
-STAND_HEIGHT   = 1.8     # at/above = walk in standing; between = crouch-only
+STAND_HEIGHT   = __import__("agent_contract").body_height()  # at/above = walk in standing; between = crouch-only
 VAULT_SILL_MAX = 1.2     # a bottom edge within this is vault-up reachable
 LOW_WINDOW_SILL = 1.0    # a window this low reads as an openable/climb entry
 

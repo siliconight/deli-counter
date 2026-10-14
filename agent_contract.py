@@ -154,6 +154,43 @@ def vault_aperture():
             "sill": 0.0}
 
 
+# THE BODY'S OTHER NUMBERS, ASKED (0.216.0). The factory's census of this
+# repo's literals found each of these spelt beside a comment naming it; the
+# walker wants one change to this file to re-size everything.
+
+def body_height():
+    """The player capsule's height, in metres (`characters.player.height_m`)."""
+    return float(contract()["characters"]["player"]["height_m"])
+
+
+def body_eye_height():
+    """Where the BODY's eye is, in metres above its feet
+    (`characters.player.eye_height_m`): the standing eye an offline sightline
+    is drawn from. Not `eye_height()`, which is the gameplay camera's
+    (`review.gameplay_camera_eye_m`) -- two fields, both 1.6 at the ratified
+    contract."""
+    return float(contract()["characters"]["player"]["eye_height_m"])
+
+
+def max_step_up():
+    """What a controller can lift itself over, in metres
+    (`characters.player.max_step_up_m`)."""
+    return float(contract()["characters"]["player"]["max_step_up_m"])
+
+
+def nav_radius():
+    """The BAKE's agent radius, in metres (`nav_bake.agent_radius_m`): the
+    fattest navigating body plus 0.05. Not a body -- `body_radius()` is."""
+    return float(contract()["nav_bake"]["agent_radius_m"])
+
+
+def door_approach():
+    """The floor a body needs in front of a door, in metres: two body radii
+    and 0.3. `layout_lint.DOOR_APPROACH_M` spelt this formula and
+    `vault_room.APPROACH` its value; both read it here since 0.216.0."""
+    return 2.0 * body_radius() + 0.3
+
+
 def body_radius():
     """The player capsule's radius, in metres.
 

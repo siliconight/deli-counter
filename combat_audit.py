@@ -50,14 +50,17 @@ import tactical                                     # noqa: E402
 import sightlines                                   # noqa: E402
 from spec_loader import spec_from_dict, load_spec   # noqa: E402
 
-WIDE_DOOR = 1.4          # >= passes two agents / a loot carry comfortably
-KIND_DEFAULT_W = {"door": 1.2, "window": 1.6, "garage": 3.5, "breach": 1.5,
-                  "vault": 1.4, "teller": 2.0, "safe_deposit": 2.0}
+# >= passes two agents / a loot carry comfortably: four of the contract's body
+# radii, asked (0.216.0; a literal 1.4, the same number)
+WIDE_DOOR = 4.0 * __import__("agent_contract").body_radius()
 
 
 def _op_width(op):
-    w = getattr(op, "width", None)
-    return w if w is not None else KIND_DEFAULT_W.get(op.kind, 1.2)
+    # The width the builder BUILDS (0.216.0): `Opening.resolved`. This kept its
+    # own copy of the defaults, and two were stale -- a width-less door at 1.2
+    # where the builder uses the contract's 1.25 (0.214.0), a width-less vault
+    # at 1.4 where it uses `vault_aperture`'s 1.3.
+    return float(op.resolved()["width"])
 CRAMP_MIN_DIM = 2.2      # a combat room narrower than this can't hold a fight
 KILLBOX_AREA = 35.0      # combat room bigger than this with no cover = flag
 COVER_MIN_H = 0.6        # >= waist high: furniture rather than a kerb

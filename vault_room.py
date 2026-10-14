@@ -579,14 +579,15 @@ PAD = 0.5
 MAX_SIDE = 9.0
 #: layout_lint.LEAF_MARGIN: a door leaf and jamb past the aperture.
 LEAF_MARGIN = 0.3
-#: `agent_contract.min_door_width_m`.
-DOOR_WIDTH = 1.25
+#: `agent_contract.min_door_width_m`, asked (0.216.0; a literal 1.25).
+DOOR_WIDTH = __import__("agent_contract").min_door_width()
 SAFE_DEPOSIT_WIDTH = 2.0
 #: `spec_types.Opening.resolved`'s breach width.
 BREACH_WIDTH = 1.5
 #: Floor a body needs in front of a door (layout_lint.DOOR_APPROACH_M:
-#: 2 x player radius + 0.3).
-APPROACH = 1.0
+#: 2 x player radius + 0.3), asked of `agent_contract.door_approach` (0.216.0;
+#: a literal 1.0).
+APPROACH = __import__("agent_contract").door_approach()
 
 _GENERATED = (re.compile(r"_r[0-9a-f]{8}_\d+(_\d+)?$"),
               re.compile(r"_shelter$"))

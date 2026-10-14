@@ -340,9 +340,10 @@ def stair_bounds_findings(spec):
 #: The boundary case is the office preset's stair core: its side doors stand
 #: exactly 1.00 m from the hole. At 1.1 all four would be findings.
 def _door_approach_m():
+    # Spelt once, in the contract's loader (0.216.0): `vault_room.APPROACH`
+    # reads the same function.
     import agent_contract
-    r = float(agent_contract.contract()["characters"]["player"]["radius_m"])
-    return 2.0 * r + 0.3
+    return agent_contract.door_approach()
 
 
 DOOR_APPROACH_M = _door_approach_m()

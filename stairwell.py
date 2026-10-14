@@ -1756,7 +1756,9 @@ def _bfs_path(adj, start, dests):
 
 _DOOR_KINDS = ("door", "garage", "breach", "vault")
 _AI_COST_ENCLOSED = 1.15     # s13 example: enclosed stairs cost AI a little more
-_AGENT_PASS_WIDTH = 0.7      # capsule pass band (docs/scale_guidelines.md)
+# capsule pass band (docs/scale_guidelines.md): two of the contract's body
+# radii, asked (0.216.0; a literal 0.7, the same number)
+_AGENT_PASS_WIDTH = 2.0 * agent_contract.body_radius()
 
 
 def _door_nodes(spec, st, served, pieces=None):

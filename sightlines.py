@@ -39,8 +39,9 @@ import floorplan as fp
 import wallruns
 
 # ---- tunables (meters) ----------------------------------------------------
-EYE = 1.6            # standing eye height (volume must cross this to block)
-SIGHT_BLOCK_H = 1.6  # a volume taller than this blocks standing sight
+# The contract's body's eye, asked (0.216.0; both were a literal 1.6).
+EYE = __import__("agent_contract").body_eye_height()  # standing eye height (volume must cross this to block)
+SIGHT_BLOCK_H = EYE  # a volume taller than this blocks standing sight
 COVER_R = 2.5        # a cover marker covers points within this radius
 CLOSE_M = 8.0        # <= close-quarters; > LONG_M = long-range
 LONG_M = 20.0

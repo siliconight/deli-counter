@@ -25,7 +25,11 @@ APPROACH = {"N": (0, 1), "S": (0, -1), "E": (1, 0), "W": (-1, 0)}
 CLIMB_STANDOFF = 0.5
 # Body clearance the through-hole provides along the approach direction:
 # standoff + capsule radius + margin. Biased: HOLE_BEHIND behind the face.
-HOLE_ALONG = 1.3
+# The radius is the contract's body's, asked (0.216.0; HOLE_ALONG was a
+# literal 1.3, the same number); the margin was never derived and is named.
+HOLE_ALONG_MARGIN = 0.45
+HOLE_ALONG = round(CLIMB_STANDOFF + __import__("agent_contract").body_radius()
+                   + HOLE_ALONG_MARGIN, 3)
 HOLE_BEHIND = 0.2
 HOLE_ACROSS_MARGIN = 0.6
 # The solid face: thin plane, slightly wider than the rails.

@@ -2372,8 +2372,9 @@ _SAME_PIECE_MAX = 4
 _PALETTE = 3
 #: Gap between members of a cluster, edge to edge (the proposal's 0.3-0.8 m).
 #: Below the 0.8 m a 0.4 m-radius body needs, so a cluster is one obstacle to
-#: the navmesh, and is cleared from everything else as one.
-_CLUSTER_GAP = (0.3, 0.8)
+#: the navmesh, and is cleared from everything else as one. The upper end is
+#: two of the contract's BAKE radii, asked (0.216.0; a literal 0.8).
+_CLUSTER_GAP = (0.3, 2.0 * __import__("agent_contract").nav_radius())
 #: A cluster's longest side; past it a cluster is a wall across the room.
 _CLUSTER_MAX_SPAN = 3.6
 #: A cluster member's height ceiling: every cluster stands mid-floor.
