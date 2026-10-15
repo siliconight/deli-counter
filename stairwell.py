@@ -994,6 +994,12 @@ def stair_guards(spec):
             #   rectangle the channel does not use. So a multi-storey
             #   switchback fills its leg's OWN run and leaves the other one
             #   end to end: `flight_run_lateral` says which half is which.
+            #
+            #   FILLED 0.221.0, the walker's call (cold run 9310's office,
+            #   2026-10-14, "fill the stairs to the ground"): a cut switchback's
+            #   leg 1 stands on this storey's floor (`flight_solid_base`), so
+            #   the channel is no passage, and the other run's stretch past
+            #   leg 1's foot gets its own back below.
             # * on the floor, always. A leg above the first stands on the slab
             #   the leg below cut, and `back_only` already refuses a back over
             #   an opening -- measured across the library, that removes every
@@ -1023,6 +1029,33 @@ def stair_guards(spec):
                         b_lo = r_lo
                     else:
                         b_hi = r_hi
+                if t_b - t_a > T and b_hi - b_lo > T:
+                    backs.append({"stair": sid, "story": s, "kind": "back",
+                                  "axis": lateral, "pos": (t_a + t_b) / 2.0,
+                                  "thick": t_b - t_a,
+                                  "lo": b_lo, "hi": b_hi})
+            # THE OTHER RUN'S BACK, WHERE ITS LEG STANDS ON THIS FLOOR (0.221.0).
+            # Leg 1 of a cut switchback stands on the lowest storey's floor
+            # (`flight_solid_base`), so the other run there is the dead end
+            # this rule fills, not 0.134.0's passage: from leg 1's foot to the
+            # rectangle's arrival edge -- the gap the walker looked through at
+            # cold run 9310's office (walker_75) -- between the side wall's
+            # inner face and the run boundary, floor to slab underside, beside
+            # the leg's own back above.
+            if (multi_sb and s == lo_s
+                    and flight_solid_base(spec, st, s + 1) == s
+                    and any(q["kind"] == "side" and q["stair"] == sid
+                            and q["story"] == s for q in raw)):
+                inner = 0.0 if narrow else fill
+                fx0, fy0, fx1, fy1 = flight_solid_rect(st, H, s + 1)
+                f_lo, f_hi = (fy0, fy1) if travel == "Y" else (fx0, fx1)
+                t_a, t_b = ((f_hi + SIDE_GAP, t_hi) if arrive_hi
+                            else (t_lo, f_lo - SIDE_GAP))
+                r_lo, r_hi = flight_run_lateral(st, s + 1)
+                if r_lo + r_hi > l_lo + l_hi:   # the next leg's run, high side
+                    b_lo, b_hi = r_lo, l_hi - inner
+                else:
+                    b_lo, b_hi = l_lo + inner, r_hi
                 if t_b - t_a > T and b_hi - b_lo > T:
                     backs.append({"stair": sid, "story": s, "kind": "back",
                                   "axis": lateral, "pos": (t_a + t_b) / 2.0,
@@ -2001,6 +2034,38 @@ def flight_solid_under(spec, st, s):
     by_style = ((st.style == "straight" and leg == 0) or
                 (st.style == "switchback" and leg < 2))
     return by_style and stair_underside(spec, st) == "solid"
+
+
+def flight_solid_base(spec, st, s):
+    """The storey whose floor the solid fill of the leg climbing storey `s`
+    stands on (0.221.0). THE rule `Builder._stairs` builds and `stair_guards`
+    fills beside, so the two cannot drift.
+
+    `flight_solid_under` fills a switchback's first two legs "to that storey's
+    floor", on the premise that only the first leg of each run stands on one.
+    With `cut_slabs`, leg 1's own storey floor is the slab its stair cut across
+    both runs (`hole_span`), so its fill hung with a level bottom a storey over
+    the floor below. The walker, at cold run 9310's office: "bottom of this
+    stair should come down all the way to the ground" (the factory's
+    `docs/findings/walk_2026-10-14/`, findings 7-9; 17 legs in 14 library
+    specs). Under leg 1's run on the stair's lowest storey nothing of the stair
+    stands but the turn plates above, so leg 1 stands on that floor -- the
+    walker's call of 2026-10-14, "fill the stairs to the ground", over the
+    walkway 0.134.0 kept open there. Unless something else opens that floor
+    under the leg's run (`slab_openings`): then it keeps its own storey rather
+    than stand on a hole. Every other leg stands on its own storey, as before.
+    """
+    lo = min(st.from_story, st.to_story)
+    if (st.style != "switchback" or single_run(st)
+            or not getattr(st, "cut_slabs", True) or s - lo != 1
+            or not flight_solid_under(spec, st, s)):
+        return s
+    x0, y0, x1, y1 = flight_solid_rect(st, spec.story_height, s)
+    for a0, b0, a1, b1 in slab_openings(spec).get(lo, ()):
+        if (min(x1, a1) - max(x0, a0) > 1e-6
+                and min(y1, b1) - max(y0, b0) > 1e-6):
+            return s
+    return lo
 
 
 def derive(spec, pieces=None):

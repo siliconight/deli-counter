@@ -1921,6 +1921,12 @@ class _Builder:
                 # Both halves live in `stairwell.flight_solid_under`, which
                 # `stair_guards` also reads to fill the back of the flight.
                 solid_under = stairwell.flight_solid_under(self.s, st, s)
+                # AND THE FLOOR IT STANDS ON (0.221.0): a cut switchback's second
+                # leg stands on the stair's lowest floor, not on the slab its own
+                # stair removed (`stairwell.flight_solid_base`; the walker, cold
+                # run 9310: "bottom of this stair should come down all the way to
+                # the ground"). Every other leg stands on its own storey, z.
+                base_z = stairwell.flight_solid_base(self.s, st, s) * H
                 # A leg that ends in a landing does not need a top tread: the
                 # landing tops out at the same z + H, spans both runs, and sits
                 # at the turn. Two plates for one surface is what made the top
@@ -1952,22 +1958,23 @@ class _Builder:
                         cy = st.y + sign * (step_d * (i + 0.5) - st.run / 2)
                         wx, wy = self._stair_pt(st, sx, cy)
                         if solid_under:
-                            # the tread as a column to the storey floor
-                            col_h = step_h * (i + 1)
+                            # the tread as a column to the floor it stands on
+                            col_h = (z - base_z) + step_h * (i + 1)
                             self._box(f"stair{si}{ch}_{s}_{i}",
-                                      (wx, wy, z + col_h / 2),
+                                      (wx, wy, base_z + col_h / 2),
                                       self._stair_sz(st, st.width, step_d,
                                                      col_h),
                                       self.VISUAL, role="stair")
                             # and solid to a body, but stopping ONE RISER
                             # below the tread, so the smooth ramp riding the
                             # nosings is still the only surface a foot meets
-                            if i >= 1:
+                            under = (z - base_z) + step_h * i
+                            if under > 1e-9:
                                 self._col_box(
                                     f"stair{si}{ch}col_under_{s}_{i}",
-                                    (wx, wy, z + step_h * i / 2),
+                                    (wx, wy, base_z + under / 2),
                                     self._stair_sz(st, st.width, step_d,
-                                                   step_h * i))
+                                                   under))
                         else:
                             self._box(f"stair{si}{ch}_{s}_{i}", (wx, wy, cz),
                                       self._stair_sz(st, st.width, step_d,

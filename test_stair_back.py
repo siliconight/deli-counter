@@ -16,6 +16,13 @@ at x 0.000..1.605, y 2.089..3.150, floor to slab underside. So the fill now
 covers the leg's own run and stops at the run boundary, and the slot behind
 a leg that ends in a TURN LANDING is a step deeper than `run / 2` says,
 because that leg is built one tread shorter.
+
+0.221.0 -- THE WALKWAY FILLED. The walker, cold run 9310's office (the
+factory's `docs/findings/walk_2026-10-14/`): the second flight's fill hung a
+storey over the walkway, whose north mouth was "a big gap", and asked, chose
+"fill the stairs to the ground". A cut switchback's leg 1 now stands on the
+lowest storey's floor (`flight_solid_base`) and the walkway's mouth gets a
+back, so the two tests below that pinned the walkway change with it.
 """
 import glob
 import os
@@ -239,17 +246,24 @@ def _runs(st, s):
     return own, other
 
 
-def test_the_walkers_stair_gets_a_back_in_its_own_run_only():
+def test_the_walkers_stair_gets_a_back_in_each_run():
     """`office_stepped`, cold run 9060. Leg 0 climbs storey 0 in the run
     x 0.000..1.600 and its top tread ends at y 2.089; the slot behind it runs
     to the rectangle's arrival edge at y 3.150 and out to the east side wall's
-    inner face at x 1.605. The run at x -1.600..0.000 is the walkway and keeps
-    every metre of it."""
+    inner face at x 1.605. Until 0.221.0 the run at x -1.600..0.000 was the
+    walkway and kept every metre of it; since, leg 1 stands on storey 0's floor
+    (`flight_solid_base`), and the stretch from its foot at y 2.350 to the
+    arrival edge is filled too, out to the west side wall's inner face."""
     sp = _load("office_stepped")
     st = sp.stairs[0]
-    backs = [p for p in S.stair_guards(sp) if p["kind"] == "back"]
-    assert [p["story"] for p in backs] == [0], backs
-    b = backs[0]
+    backs = sorted((p for p in S.stair_guards(sp) if p["kind"] == "back"),
+                   key=lambda p: p["lo"])
+    assert [p["story"] for p in backs] == [0, 0], backs
+    west, b = backs
+    wx0, wy0, wx1, wy1 = _rect(west)
+    assert abs(wx0 - -1.605) < 1e-9 and abs(wx1 - 0.0) < 1e-9, west
+    assert abs(wy0 - (st.y + st.run / 2.0 + S.SIDE_GAP)) < 1e-9, west
+    assert abs(wy1 - 3.15) < 1e-9, west
     x0, y0, x1, y1 = _rect(b)
     assert abs(x0 - 0.0) < 1e-9 and abs(x1 - 1.605) < 1e-9, b
     assert abs(y0 - (2.088889 + S.SIDE_GAP)) < 1e-6, b     # the top TREAD
@@ -262,28 +276,40 @@ def test_the_walkers_stair_gets_a_back_in_its_own_run_only():
     assert len(east) == 1 and abs(_rect(east[0])[0] - x1) < 1e-9, east
 
 
-def test_the_walkway_under_the_next_leg_keeps_both_its_mouths():
-    """The run the NEXT leg flies over carries no fill on any storey, in any
-    multi-storey switchback in the library -- that is the channel 0.134.0
-    protected and the reason this rule is per-run and not per-rectangle."""
-    n = 0
+def test_the_walkway_under_the_next_leg_is_filled_to_the_ground():
+    """0.134.0 kept the run the NEXT leg flies over open on every storey, a
+    channel open to the room at both ends. The walker, cold run 9310's office
+    (2026-10-14): the second flight should "come down all the way to the
+    ground", and asked, "fill the stairs to the ground". So in every cut
+    multi-storey switchback whose second leg the builder fills, that leg stands
+    on the stair's lowest floor (`flight_solid_base`), and the other run's
+    stretch past its foot carries a back on that storey -- unless a wall
+    already holds the line, as for the first run's back
+    (`_MULTI_REFUSED_BY_A_WALL`)."""
+    legs, backs, refused = 0, 0, set()
     for path in _library_specs():
+        name = os.path.basename(path)[:-5]
         sp = spec_loader.load_spec(path)
         guards = S.stair_guards(sp)
         for i, st in enumerate(sp.stairs or ()):
-            if st.style != "switchback" or S.single_run(st):
+            if st.style != "switchback" or S.single_run(st) or not st.cut_slabs:
                 continue
-            sid = S.stair_ident(st, i)
             lo = min(st.from_story, st.to_story)
-            hi = max(st.from_story, st.to_story)
-            for s in range(lo, hi):
-                n += 1
-                _own, other = _runs(st, s)
-                for b in [p for p in guards if p["stair"] == sid
-                          and p["story"] == s and p["kind"] == "back"]:
-                    assert min(b["hi"], other[1]) - max(b["lo"], other[0]) \
-                        < 1e-9, (path, sid, s, b, other)
-    assert n == 41, n
+            if not S.flight_solid_under(sp, st, lo + 1):
+                continue
+            legs += 1
+            assert S.flight_solid_base(sp, st, lo + 1) == lo, (path, i)
+            sid = S.stair_ident(st, i)
+            _own, other = _runs(st, lo)
+            if any(p["stair"] == sid and p["story"] == lo and p["kind"] == "back"
+                   and min(p["hi"], other[1]) - max(p["lo"], other[0]) > 1e-9
+                   for p in guards):
+                backs += 1
+            else:
+                refused.add((name, sid, lo))
+    assert legs == 17, legs
+    assert backs == 15, backs
+    assert refused == _MULTI_REFUSED_BY_A_WALL, sorted(refused)
 
 
 #: Multi-storey switchback legs that could carry a back and do not, and what
