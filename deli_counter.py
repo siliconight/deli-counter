@@ -63,6 +63,7 @@ import shop_awning
 import fire_escape_stack
 import stoop
 import vault_room
+import roof_hatch
 
 
 # ============================================================================
@@ -2933,6 +2934,16 @@ class _Builder:
                     "name": name, "type": "hatch",
                     "x": v.x, "y": v.y, "z": z,
                     "breachable": bool(v.breachable)})
+        # A LID ON EVERY ROOF HATCH (0.224.0, factory roadmap 170): one `roof_hatch`
+        # prop slot per hatch link on the roof slab, open by default, the game's to
+        # shut. The species owns its collision, so the greybox draws the slot's box
+        # for the swap to replace and puts no collider over the hole.
+        style = skin_style.style_for(roof_hatch.MATERIAL, self._mat_style,
+                                     self.s.default_material)
+        for slot, entry, c, size in roof_hatch.roof_hatches(self.s, style=style):
+            self._box(slot["slot_id"], c, size, self.VISUAL, role="prop")
+            self.slots.append(slot)
+            self.gameplay["interactives"].append(entry)
 
     def _rooms(self):
         for r in self.s.rooms:

@@ -4198,6 +4198,43 @@
       "material": "drywall",
       "breach_class": "soft_wall",
       "building": "arena_a03"
+    },
+    {
+      "id": "arena_a03:if:696c9ba6",
+      "kind": "hatch",
+      "slot_ref": "roof_hatch_2_-12",
+      "transform": {
+        "translation": [
+          2.0,
+          -12.0,
+          12.1
+        ],
+        "rot_y": 0.0
+      },
+      "states": [
+        "open",
+        "closed"
+      ],
+      "default": "open",
+      "transitions": [
+        {
+          "event": "close",
+          "from": "open",
+          "to": "closed"
+        },
+        {
+          "event": "open",
+          "from": "closed",
+          "to": "open"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "collision_per_state": {
+        "open": false,
+        "closed": true
+      },
+      "building": "arena_a03"
     }
   ],
   "stair_systems": [
@@ -5154,6 +5191,7 @@
     "ladder0_rung_1_17": "ladder",
     "ladder0_rung_1_18": "ladder",
     "ladder0_rung_1_19": "ladder",
+    "roof_hatch_2_-12": "prop",
     "rig_case_0": "prop",
     "rig_case_1": "prop",
     "counter_service_rff5e6702_1": "prop",

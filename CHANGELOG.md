@@ -1,3 +1,33 @@
+## [0.224.0] - a lid on every roof hatch
+
+**Factory roadmap 170, step 1** (`docs/findings/roof_openings_170/` there). A `hatch` vertical link on the roof
+slab cuts the slab and emits a `HATCH_<x>_<y>` marker, and nothing put a lid on the hole: 43 roof ladders in the
+library climb out through bare sky. Zoo 1.113.0 grows `roof_hatch`, a steel curb with a hinged lid; this release
+stands one on every such opening.
+
+### Added
+- **`roof_hatch.py`** (pure): `roof_hatches(spec, style)` derives, for every `hatch` link whose story is the
+  roof slab and that cuts it, one `prop` slot of species `roof_hatch` -- the hole plus `CURB` 0.08 m a side,
+  `HEIGHT` 0.2 m, centred on the link and standing on the slab's top face (`top * story_height`) -- with the
+  `hatch` interactive machine on it and its gameplay entry. `rot_for` turns the slot so the hinge side (local
+  -Y) is away from the ladder's climber: `ladder.climb_rect` reserves the body's envelope along the ladder's
+  `facing`, so that side is local +Y. A hatch with no ladder at its (x, y) faces north. A hatch below the roof
+  is a floor-to-floor opening and gets nothing.
+- **`interactives.py`: the `hatch` kind.** States `open` (default) and `closed`, both mapped to `roof_hatch`,
+  `close` / `open` transitions, reversible; `collision_per_state` open False (passable), closed True. Open is
+  the default so the ladder's `roof_hatch_exit` stays a route for every walker and the lid stands clear;
+  shutting it is the game's, as a door's is.
+- **`prop_species.SPECIES_OWNS_COLLISION`** gains `roof_hatch`: the greybox draws the slot's box for the swap
+  to replace and emits no collider over the hole (a solid box there would block the ladder); the module's own
+  `-colonly` boxes -- the curb, and the lid in each state -- are the collision.
+- `_vertical_links` emits the slot, its greybox box and the gameplay interactive after the links' own
+  markers; `test_roof_hatch.py` pins the machine, the slot, the size, the yaw, the roof-only rule and the ids.
+
+### The library
+- Rebuilt with it (`build.py --all`; the pre-commit freshness gate refused the commit until the 157 shells
+  were newer than the code), so the library's 43 roof hatches carry their lids from this release. The
+  bulkhead for the 16 stair heads is step 2.
+
 ## [0.223.0] - an open floor nobody named: layout_lint L26
 
 **The factory's roadmap 255, found tracing the walker's walk of 2026-10-14, finding 5** (the factory's

@@ -2521,6 +2521,43 @@
       "material": "drywall",
       "breach_class": "soft_wall",
       "building": "self_storage_a01"
+    },
+    {
+      "id": "self_storage_a01:if:3654e310",
+      "kind": "hatch",
+      "slot_ref": "roof_hatch_16_10",
+      "transform": {
+        "translation": [
+          16.0,
+          10.0,
+          3.3
+        ],
+        "rot_y": 180.0
+      },
+      "states": [
+        "open",
+        "closed"
+      ],
+      "default": "open",
+      "transitions": [
+        {
+          "event": "close",
+          "from": "open",
+          "to": "closed"
+        },
+        {
+          "event": "open",
+          "from": "closed",
+          "to": "open"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "collision_per_state": {
+        "open": false,
+        "closed": true
+      },
+      "building": "self_storage_a01"
     }
   ],
   "stair_systems": [],
@@ -2961,6 +2998,7 @@
     "ladder0_rung_0_8": "ladder",
     "ladder0_rung_0_9": "ladder",
     "ladder0_rung_0_10": "ladder",
+    "roof_hatch_16_10": "prop",
     "unit_row_0": "prop",
     "unit_row_1": "prop",
     "unit_row_2": "prop",

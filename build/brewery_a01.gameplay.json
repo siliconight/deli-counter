@@ -3683,6 +3683,43 @@
       "material": "drywall",
       "breach_class": "soft_wall",
       "building": "brewery_a01"
+    },
+    {
+      "id": "brewery_a01:if:91857c5f",
+      "kind": "hatch",
+      "slot_ref": "roof_hatch_2_10",
+      "transform": {
+        "translation": [
+          2.0,
+          10.0,
+          10.1
+        ],
+        "rot_y": 180.0
+      },
+      "states": [
+        "open",
+        "closed"
+      ],
+      "default": "open",
+      "transitions": [
+        {
+          "event": "close",
+          "from": "open",
+          "to": "closed"
+        },
+        {
+          "event": "open",
+          "from": "closed",
+          "to": "open"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "collision_per_state": {
+        "open": false,
+        "closed": true
+      },
+      "building": "brewery_a01"
     }
   ],
   "stair_systems": [
@@ -4520,6 +4557,7 @@
     "ladder0_rung_1_14": "ladder",
     "ladder0_rung_1_15": "ladder",
     "ladder0_rung_1_16": "ladder",
+    "roof_hatch_2_10": "prop",
     "tank_0": "prop",
     "tank_1": "prop",
     "tank_2": "prop",

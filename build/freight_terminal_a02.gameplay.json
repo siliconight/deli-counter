@@ -3819,6 +3819,43 @@
       "material": "drywall",
       "breach_class": "soft_wall",
       "building": "freight_terminal_a02"
+    },
+    {
+      "id": "freight_terminal_a02:if:6e35d43b",
+      "kind": "hatch",
+      "slot_ref": "roof_hatch_4_11",
+      "transform": {
+        "translation": [
+          4.0,
+          11.0,
+          11.1
+        ],
+        "rot_y": 180.0
+      },
+      "states": [
+        "open",
+        "closed"
+      ],
+      "default": "open",
+      "transitions": [
+        {
+          "event": "close",
+          "from": "open",
+          "to": "closed"
+        },
+        {
+          "event": "open",
+          "from": "closed",
+          "to": "open"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "collision_per_state": {
+        "open": false,
+        "closed": true
+      },
+      "building": "freight_terminal_a02"
     }
   ],
   "stair_systems": [
@@ -4704,6 +4741,7 @@
     "ladder0_rung_1_15": "ladder",
     "ladder0_rung_1_16": "ladder",
     "ladder0_rung_1_17": "ladder",
+    "roof_hatch_4_11": "prop",
     "counter_service_r83635a80_1": "prop",
     "vending_r83635a80_2": "prop",
     "cabinet_file_r83635a80_3": "prop",

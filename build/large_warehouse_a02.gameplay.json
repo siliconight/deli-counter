@@ -3777,6 +3777,43 @@
       "material": "drywall",
       "breach_class": "soft_wall",
       "building": "large_warehouse_a02"
+    },
+    {
+      "id": "large_warehouse_a02:if:0f90cc44",
+      "kind": "hatch",
+      "slot_ref": "roof_hatch_4_10",
+      "transform": {
+        "translation": [
+          4.0,
+          10.0,
+          9.1
+        ],
+        "rot_y": 180.0
+      },
+      "states": [
+        "open",
+        "closed"
+      ],
+      "default": "open",
+      "transitions": [
+        {
+          "event": "close",
+          "from": "open",
+          "to": "closed"
+        },
+        {
+          "event": "open",
+          "from": "closed",
+          "to": "open"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "collision_per_state": {
+        "open": false,
+        "closed": true
+      },
+      "building": "large_warehouse_a02"
     }
   ],
   "stair_systems": [
@@ -4650,6 +4687,7 @@
     "ladder0_rung_1_12": "ladder",
     "ladder0_rung_1_13": "ladder",
     "ladder0_rung_1_14": "ladder",
+    "roof_hatch_4_10": "prop",
     "counter_service_r83635a80_1": "prop",
     "shelf_run_r83635a80_2": "prop",
     "vending_r83635a80_3": "prop",

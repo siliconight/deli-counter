@@ -2689,6 +2689,43 @@
       "material": "drywall",
       "breach_class": "soft_wall",
       "building": "stadium_a02"
+    },
+    {
+      "id": "stadium_a02:if:0bbc74c1",
+      "kind": "hatch",
+      "slot_ref": "roof_hatch_25_8",
+      "transform": {
+        "translation": [
+          25.0,
+          8.9,
+          6.1
+        ],
+        "rot_y": 0.0
+      },
+      "states": [
+        "open",
+        "closed"
+      ],
+      "default": "open",
+      "transitions": [
+        {
+          "event": "close",
+          "from": "open",
+          "to": "closed"
+        },
+        {
+          "event": "open",
+          "from": "closed",
+          "to": "open"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "collision_per_state": {
+        "open": false,
+        "closed": true
+      },
+      "building": "stadium_a02"
     }
   ],
   "stair_systems": [],
@@ -3222,6 +3259,7 @@
     "ladder0_rung_0_17": "ladder",
     "ladder0_rung_0_18": "ladder",
     "ladder0_rung_0_19": "ladder",
+    "roof_hatch_25_8": "prop",
     "pillar_0": "prop",
     "pillar_1": "prop",
     "pillar_2": "prop",

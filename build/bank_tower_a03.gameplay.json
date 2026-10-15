@@ -2185,6 +2185,43 @@
       "material": "drywall",
       "breach_class": "soft_wall",
       "building": "bank_tower_a03"
+    },
+    {
+      "id": "bank_tower_a03:if:aca7ddd6",
+      "kind": "hatch",
+      "slot_ref": "roof_hatch_16_7",
+      "transform": {
+        "translation": [
+          16.0,
+          7.5,
+          4.3
+        ],
+        "rot_y": 0.0
+      },
+      "states": [
+        "open",
+        "closed"
+      ],
+      "default": "open",
+      "transitions": [
+        {
+          "event": "close",
+          "from": "open",
+          "to": "closed"
+        },
+        {
+          "event": "open",
+          "from": "closed",
+          "to": "open"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "collision_per_state": {
+        "open": false,
+        "closed": true
+      },
+      "building": "bank_tower_a03"
     }
   ],
   "stair_systems": [],
@@ -2605,6 +2642,7 @@
     "ladder0_rung_0_11": "ladder",
     "ladder0_rung_0_12": "ladder",
     "ladder0_rung_0_13": "ladder",
+    "roof_hatch_16_7": "prop",
     "queue_rail_0": "prop",
     "queue_rail_1": "prop",
     "queue_rail_2": "prop",

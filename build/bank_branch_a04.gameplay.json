@@ -5059,6 +5059,43 @@
       "material": "concrete",
       "breach_class": "reinforced",
       "building": "bank_branch_a04"
+    },
+    {
+      "id": "bank_branch_a04:if:22534586",
+      "kind": "hatch",
+      "slot_ref": "roof_hatch_16_12",
+      "transform": {
+        "translation": [
+          16.0,
+          12.0,
+          8.5
+        ],
+        "rot_y": 180.0
+      },
+      "states": [
+        "open",
+        "closed"
+      ],
+      "default": "open",
+      "transitions": [
+        {
+          "event": "close",
+          "from": "open",
+          "to": "closed"
+        },
+        {
+          "event": "open",
+          "from": "closed",
+          "to": "open"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "collision_per_state": {
+        "open": false,
+        "closed": true
+      },
+      "building": "bank_branch_a04"
     }
   ],
   "stair_systems": [
@@ -6429,6 +6466,7 @@
     "ladder0_rung_1_12": "ladder",
     "ladder0_rung_1_13": "ladder",
     "VAULTLEDGE_0": "floor",
+    "roof_hatch_16_12": "prop",
     "teller_counter": "prop",
     "column_w": "prop",
     "column_e": "prop",

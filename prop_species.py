@@ -287,7 +287,10 @@ PROP_SPECIES = (
 #: `vault_room`, `stairwell.stair_guards.solid_volumes` -- still sees
 #: `collision: convex` and treats the footprint as occupied, which is what a
 #: bank of screens is to a sightline and to a cover marker.
-SPECIES_OWNS_COLLISION = frozenset({"cubicle_bank"})
+#: `roof_hatch` (0.224.0, factory roadmap 170): the module is a curb AROUND a hole
+#: with a lid in two states; a solid greybox box over the hole would block the
+#: ladder that climbs out through it.
+SPECIES_OWNS_COLLISION = frozenset({"cubicle_bank", "roof_hatch"})
 
 
 def owns_collision(species):

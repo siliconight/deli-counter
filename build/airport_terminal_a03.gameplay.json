@@ -3985,6 +3985,43 @@
       "material": "drywall",
       "breach_class": "soft_wall",
       "building": "airport_terminal_a03"
+    },
+    {
+      "id": "airport_terminal_a03:if:eb97ca6d",
+      "kind": "hatch",
+      "slot_ref": "roof_hatch_2_-10",
+      "transform": {
+        "translation": [
+          2.0,
+          -10.0,
+          11.1
+        ],
+        "rot_y": 0.0
+      },
+      "states": [
+        "open",
+        "closed"
+      ],
+      "default": "open",
+      "transitions": [
+        {
+          "event": "close",
+          "from": "open",
+          "to": "closed"
+        },
+        {
+          "event": "open",
+          "from": "closed",
+          "to": "open"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "collision_per_state": {
+        "open": false,
+        "closed": true
+      },
+      "building": "airport_terminal_a03"
     }
   ],
   "stair_systems": [
@@ -4874,6 +4911,7 @@
     "ladder0_rung_1_15": "ladder",
     "ladder0_rung_1_16": "ladder",
     "ladder0_rung_1_17": "ladder",
+    "roof_hatch_2_-10": "prop",
     "seating_0": "prop",
     "seating_1": "prop",
     "seating_2": "prop",

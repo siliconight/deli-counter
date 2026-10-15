@@ -4630,6 +4630,62 @@
       }
     },
     {
+      "slot_id": "roof_hatch_-22_12",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 4,
+      "material": "metal",
+      "species": "roof_hatch",
+      "stock": null,
+      "variant": 0,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          -22.0,
+          12.0,
+          6.1
+        ],
+        "rot_y": 90.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.66,
+          1.66,
+          0.2
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "none"
+      },
+      "interactive": {
+        "id": "large_warehouse_a01:if:dae6b0e3",
+        "kind": "hatch",
+        "states": [
+          "open",
+          "closed"
+        ],
+        "default": "open",
+        "state_geometry": {
+          "open": "roof_hatch",
+          "closed": "roof_hatch"
+        },
+        "collision_per_state": {
+          "open": false,
+          "closed": true
+        }
+      }
+    },
+    {
       "slot_id": "roof_footprint",
       "role": "roof",
       "size_mod": "full",

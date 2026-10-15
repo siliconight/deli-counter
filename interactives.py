@@ -137,6 +137,24 @@ _DEFAULTS = {
         "reversible": False,
         "collision_per_state": {"intact": True, "drilled": True},
     },
+    "hatch": {
+        # a roof scuttle (factory roadmap 170): the lid on the hole a roof ladder
+        # climbs out through. OPEN IS THE DEFAULT -- the ladder's `roof_hatch_exit`
+        # is a route every walker takes, so the lid stands up out of the way until
+        # the game shuts it, as a door's leaf is the game's. Both states are
+        # `roof_hatch`: Zoo 1.113.0 draws the closed lid itself (its genome's
+        # `state_art`), flush in the curb, with its own collision over the hole.
+        "kind": "hatch",
+        "states": ["open", "closed"],
+        "default": "open",
+        "state_geometry": {"open": "roof_hatch", "closed": "roof_hatch"},
+        "transitions": [
+            {"event": "close", "from": "open", "to": "closed"},
+            {"event": "open", "from": "closed", "to": "open"},
+        ],
+        "reversible": True,
+        "collision_per_state": {"open": False, "closed": True},
+    },
 }
 
 # opening.kind -> fixture kind (the inference). A garage door is a door; a
@@ -145,7 +163,8 @@ _DEFAULTS = {
 # interactive only when the author marks it breakable.
 _KIND_TO_FIXTURE = {"door": "door", "garage": "door", "breach": "breach_wall",
                     "vault": "vault_door", "teller": "teller_window",
-                    "safe_deposit": "safe_deposit_boxes"}
+                    "safe_deposit": "safe_deposit_boxes",
+                    "hatch": "hatch"}
 
 
 def _copy_machine(spec):

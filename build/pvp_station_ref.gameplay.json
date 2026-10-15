@@ -4254,6 +4254,43 @@
         "open": false
       },
       "building": "pvp_station_ref"
+    },
+    {
+      "id": "pvp_station_ref:if:dafa511b",
+      "kind": "hatch",
+      "slot_ref": "roof_hatch_13_-9",
+      "transform": {
+        "translation": [
+          13.0,
+          -9.0,
+          7.3
+        ],
+        "rot_y": 180.0
+      },
+      "states": [
+        "open",
+        "closed"
+      ],
+      "default": "open",
+      "transitions": [
+        {
+          "event": "close",
+          "from": "open",
+          "to": "closed"
+        },
+        {
+          "event": "open",
+          "from": "closed",
+          "to": "open"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "collision_per_state": {
+        "open": false,
+        "closed": true
+      },
+      "building": "pvp_station_ref"
     }
   ],
   "stair_systems": [
@@ -5132,6 +5169,7 @@
     "ladder0_rung_1_10": "ladder",
     "ladder0_rung_1_11": "ladder",
     "VAULTLEDGE_0": "floor",
+    "roof_hatch_13_-9": "prop",
     "front_desk": "prop",
     "evidence_rack": "prop",
     "ARMORY_LOCKER": "prop",

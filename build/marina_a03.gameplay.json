@@ -1984,6 +1984,43 @@
       "material": "drywall",
       "breach_class": "soft_wall",
       "building": "marina_a03"
+    },
+    {
+      "id": "marina_a03:if:ce895a7f",
+      "kind": "hatch",
+      "slot_ref": "roof_hatch_-14_8",
+      "transform": {
+        "translation": [
+          -14.0,
+          8.0,
+          4.1
+        ],
+        "rot_y": 90.0
+      },
+      "states": [
+        "open",
+        "closed"
+      ],
+      "default": "open",
+      "transitions": [
+        {
+          "event": "close",
+          "from": "open",
+          "to": "closed"
+        },
+        {
+          "event": "open",
+          "from": "closed",
+          "to": "open"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "collision_per_state": {
+        "open": false,
+        "closed": true
+      },
+      "building": "marina_a03"
     }
   ],
   "stair_systems": [],
@@ -2382,6 +2419,7 @@
     "ladder0_rung_0_10": "ladder",
     "ladder0_rung_0_11": "ladder",
     "ladder0_rung_0_12": "ladder",
+    "roof_hatch_-14_8": "prop",
     "rack_a": "prop",
     "rack_b": "prop",
     "hull_stand": "prop",

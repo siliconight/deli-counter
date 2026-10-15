@@ -3707,6 +3707,43 @@
       "material": "drywall",
       "breach_class": "soft_wall",
       "building": "courthouse_a02"
+    },
+    {
+      "id": "courthouse_a02:if:2ad9ed7c",
+      "kind": "hatch",
+      "slot_ref": "roof_hatch_-16_12",
+      "transform": {
+        "translation": [
+          -16.0,
+          12.0,
+          10.1
+        ],
+        "rot_y": 180.0
+      },
+      "states": [
+        "open",
+        "closed"
+      ],
+      "default": "open",
+      "transitions": [
+        {
+          "event": "close",
+          "from": "open",
+          "to": "closed"
+        },
+        {
+          "event": "open",
+          "from": "closed",
+          "to": "open"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "collision_per_state": {
+        "open": false,
+        "closed": true
+      },
+      "building": "courthouse_a02"
     }
   ],
   "stair_systems": [
@@ -4559,6 +4596,7 @@
     "ladder0_rung_1_14": "ladder",
     "ladder0_rung_1_15": "ladder",
     "ladder0_rung_1_16": "ladder",
+    "roof_hatch_-16_12": "prop",
     "counter_service_rcce455f7_1": "prop",
     "chair_waiting_rcce455f7_2": "prop",
     "vending_rcce455f7_3": "prop",

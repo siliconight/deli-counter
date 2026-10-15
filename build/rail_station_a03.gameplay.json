@@ -3680,6 +3680,43 @@
       "material": "drywall",
       "breach_class": "soft_wall",
       "building": "rail_station_a03"
+    },
+    {
+      "id": "rail_station_a03:if:6643b608",
+      "kind": "hatch",
+      "slot_ref": "roof_hatch_19_-9",
+      "transform": {
+        "translation": [
+          19.0,
+          -9.0,
+          9.3
+        ],
+        "rot_y": 0.0
+      },
+      "states": [
+        "open",
+        "closed"
+      ],
+      "default": "open",
+      "transitions": [
+        {
+          "event": "close",
+          "from": "open",
+          "to": "closed"
+        },
+        {
+          "event": "open",
+          "from": "closed",
+          "to": "open"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "collision_per_state": {
+        "open": false,
+        "closed": true
+      },
+      "building": "rail_station_a03"
     }
   ],
   "stair_systems": [
@@ -4524,6 +4561,7 @@
     "ladder0_rung_1_12": "ladder",
     "ladder0_rung_1_13": "ladder",
     "ladder0_rung_1_14": "ladder",
+    "roof_hatch_19_-9": "prop",
     "bench_row_a": "prop",
     "bench_row_b": "prop",
     "counter_service_rbbb4c67c_1": "prop",

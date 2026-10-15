@@ -2815,6 +2815,43 @@
       "material": "drywall",
       "breach_class": "soft_wall",
       "building": "clinic_a02"
+    },
+    {
+      "id": "clinic_a02:if:f2d8d7c9",
+      "kind": "hatch",
+      "slot_ref": "roof_hatch_-11_-7",
+      "transform": {
+        "translation": [
+          -11.0,
+          -7.0,
+          6.9
+        ],
+        "rot_y": 90.0
+      },
+      "states": [
+        "open",
+        "closed"
+      ],
+      "default": "open",
+      "transitions": [
+        {
+          "event": "close",
+          "from": "open",
+          "to": "closed"
+        },
+        {
+          "event": "open",
+          "from": "closed",
+          "to": "open"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "collision_per_state": {
+        "open": false,
+        "closed": true
+      },
+      "building": "clinic_a02"
     }
   ],
   "stair_systems": [
@@ -3475,6 +3512,7 @@
     "ladder0_rung_1_8": "ladder",
     "ladder0_rung_1_9": "ladder",
     "ladder0_rung_1_10": "ladder",
+    "roof_hatch_-11_-7": "prop",
     "counter_service_rd2a43fd8_1": "prop",
     "payphone_rd2a43fd8_2": "prop",
     "chair_waiting_rd2a43fd8_3": "prop",

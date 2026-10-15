@@ -2203,6 +2203,43 @@
       "material": "drywall",
       "breach_class": "soft_wall",
       "building": "depot_a01"
+    },
+    {
+      "id": "depot_a01:if:cd4e37e6",
+      "kind": "hatch",
+      "slot_ref": "roof_hatch_18_9",
+      "transform": {
+        "translation": [
+          18.0,
+          9.0,
+          5.6
+        ],
+        "rot_y": 180.0
+      },
+      "states": [
+        "open",
+        "closed"
+      ],
+      "default": "open",
+      "transitions": [
+        {
+          "event": "close",
+          "from": "open",
+          "to": "closed"
+        },
+        {
+          "event": "open",
+          "from": "closed",
+          "to": "open"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "collision_per_state": {
+        "open": false,
+        "closed": true
+      },
+      "building": "depot_a01"
     }
   ],
   "stair_systems": [],
@@ -2662,6 +2699,7 @@
     "ladder0_rung_0_15": "ladder",
     "ladder0_rung_0_16": "ladder",
     "ladder0_rung_0_17": "ladder",
+    "roof_hatch_18_9": "prop",
     "sort_line": "prop",
     "pallet_a": "prop",
     "pallet_b": "prop",

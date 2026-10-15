@@ -2353,6 +2353,43 @@
       "material": "drywall",
       "breach_class": "soft_wall",
       "building": "casino_a01"
+    },
+    {
+      "id": "casino_a01:if:ec01c944",
+      "kind": "hatch",
+      "slot_ref": "roof_hatch_18_8",
+      "transform": {
+        "translation": [
+          18.0,
+          8.2,
+          4.7
+        ],
+        "rot_y": 0.0
+      },
+      "states": [
+        "open",
+        "closed"
+      ],
+      "default": "open",
+      "transitions": [
+        {
+          "event": "close",
+          "from": "open",
+          "to": "closed"
+        },
+        {
+          "event": "open",
+          "from": "closed",
+          "to": "open"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "collision_per_state": {
+        "open": false,
+        "closed": true
+      },
+      "building": "casino_a01"
     }
   ],
   "stair_systems": [],
@@ -2795,6 +2832,7 @@
     "ladder0_rung_0_12": "ladder",
     "ladder0_rung_0_13": "ladder",
     "ladder0_rung_0_14": "ladder",
+    "roof_hatch_18_8": "prop",
     "slots_0": "prop",
     "slots_1": "prop",
     "slots_2": "prop",

@@ -2905,6 +2905,43 @@
       "material": "drywall",
       "breach_class": "soft_wall",
       "building": "credit_union_a02"
+    },
+    {
+      "id": "credit_union_a02:if:4173dfb7",
+      "kind": "hatch",
+      "slot_ref": "roof_hatch_-11_-7",
+      "transform": {
+        "translation": [
+          -11.0,
+          -7.0,
+          6.9
+        ],
+        "rot_y": 90.0
+      },
+      "states": [
+        "open",
+        "closed"
+      ],
+      "default": "open",
+      "transitions": [
+        {
+          "event": "close",
+          "from": "open",
+          "to": "closed"
+        },
+        {
+          "event": "open",
+          "from": "closed",
+          "to": "open"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "collision_per_state": {
+        "open": false,
+        "closed": true
+      },
+      "building": "credit_union_a02"
     }
   ],
   "stair_systems": [
@@ -3577,6 +3614,7 @@
     "ladder0_rung_1_8": "ladder",
     "ladder0_rung_1_9": "ladder",
     "ladder0_rung_1_10": "ladder",
+    "roof_hatch_-11_-7": "prop",
     "counter_service_rcce455f7_1": "prop",
     "chair_waiting_rcce455f7_2": "prop",
     "atm_rcce455f7_3": "prop",
