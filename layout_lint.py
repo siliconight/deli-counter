@@ -967,6 +967,23 @@ def structural_findings(spec):
 WALK_KINDS = ("door", "garage", "vault")
 
 
+def _story_parts(spec, st):
+    """A storey's partitions as `tactical.open_edge` reads them, ``(axis, pos,
+    start, end)``; a partition with no start or end runs the footprint, as
+    `_opening_xy` reads it. The open-floor search's own reading (0.197.0), one
+    helper since 0.223.0 because L26 asks it too."""
+    hx, hy = spec["footprint_x"] / 2, spec["footprint_y"] / 2
+    parts = []
+    for p in spec.get("partitions", []):
+        if p.get("story", 0) != st:
+            continue
+        lo, hi = (-hy, hy) if p["axis"] == "Y" else (-hx, hx)
+        parts.append((p["axis"], p["pos"],
+                      lo if p.get("start") is None else p["start"],
+                      hi if p.get("end") is None else p["end"]))
+    return parts
+
+
 def _reach_from_ext(spec, walk_only=False):
     """Room ids with a path from an exterior entrance, plus "EXT".
 
@@ -1008,14 +1025,7 @@ def _reach_from_ext(spec, walk_only=False):
     # with no start or end runs the footprint, as `_opening_xy` reads it.
     import tactical
     for st, rs in by.items():
-        parts = []
-        for p in spec.get("partitions", []):
-            if p.get("story", 0) != st:
-                continue
-            lo, hi = (-hy, hy) if p["axis"] == "Y" else (-hx, hx)
-            parts.append((p["axis"], p["pos"],
-                          lo if p.get("start") is None else p["start"],
-                          hi if p.get("end") is None else p["end"]))
+        parts = _story_parts(spec, st)
         for i, ra in enumerate(rs):
             for rb in rs[i + 1:]:
                 if tactical.shared_open_edge(ra["bounds"], rb["bounds"], parts):
@@ -1104,6 +1114,51 @@ def walk_reach_findings(spec):
             f"-- every way in is a breach panel, a window or a drop; no door, "
             f"stair, ladder or open floor reaches it"
             for r in walk_unreachable(spec)]
+
+
+def open_floors(spec):
+    """Two rooms on one storey that tactical's rule joins as one floor -- their
+    shared edge uncovered by any partition for `tactical.OPEN_FLOOR_M` -- and
+    that neither room's `open_to` names (L26). Dicts in spec order:
+    ``{story, a, b, axis, pos, lo, hi, uncovered}``; the spec is not changed."""
+    import tactical
+    out = []
+    by = _rooms_by_story(spec)
+    for st in sorted(by):
+        rs = by[st]
+        parts = _story_parts(spec, st)
+        for i, ra in enumerate(rs):
+            for rb in rs[i + 1:]:
+                if ra["id"] == rb["id"]:
+                    continue
+                edge = tactical.open_edge(ra["bounds"], rb["bounds"], parts)
+                if edge is None:
+                    continue
+                if rb["id"] in (ra.get("open_to") or ()) or ra["id"] in (rb.get("open_to") or ()):
+                    continue
+                axis, pos, lo, hi, uncovered = edge
+                out.append({"story": st, "a": ra["id"], "b": rb["id"], "axis": axis, "pos": pos,
+                            "lo": lo, "hi": hi, "uncovered": uncovered})
+    return out
+
+
+def open_floor_findings(spec):
+    """L26 (advisory WARN, 0.223.0): an open floor nobody named. The walker's
+    walk of 2026-10-14, finding 5: the delis' basement divider stopped 7 m
+    short of each wall and the vault stood open to the utility room, and no
+    spec said so -- 59 such stretches in 31 of 446 specs then (the factory's
+    roadmap 255). Where two rooms meet along a wall line no partition covers
+    for `tactical.OPEN_FLOOR_M`, tactical joins them as one floor and the
+    engine walks it; this names each such pair unless a room's `open_to` says
+    it is meant. `open_floor_baseline.json` freezes today's for the walker to
+    sort, and test_open_floor fails on a new one. Some are lobbies flowing into
+    bullpens; this does not say which."""
+    return ["L26 open floor nobody named: '%s' and '%s' (story %s) meet along %s = %g from %g to %g "
+            "with %.2f m of it uncovered by any partition; the engine walks it as one floor -- say so "
+            "(`open_to` on either room) or build the wall"
+            % (f["a"], f["b"], f["story"], "y" if f["axis"] == "X" else "x", f["pos"], f["lo"], f["hi"],
+               f["uncovered"])
+            for f in open_floors(spec)]
 
 
 def gate(spec):
@@ -1349,6 +1404,7 @@ def lint_spec(spec, name):
               for c, m in __import__("setbacks").findings(_LintSpec(spec))]
     fails += reachability_findings(spec)    # L12 sealed/unreachable rooms (all modes)
     warns += walk_reach_findings(spec)      # L24 a room only a breach, window or drop reaches
+    warns += open_floor_findings(spec)      # L26 an open floor nobody named
     if spec.get("mode") != "pvp_heist":
         return name, fails, warns
     edges, ext_faces = graph(spec)

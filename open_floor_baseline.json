@@ -1,0 +1,106 @@
+{
+  "open_floors": {
+    "apartment_walkup_a01": [
+      "basement_vault|basement_approach",
+      "front_hall|garage_bay",
+      "front_hall|kitchen",
+      "kitchen|garage_bay",
+      "office|bedroom"
+    ],
+    "auto_shop_a01": [
+      "upper_office|upper_storage"
+    ],
+    "auto_shop_a02": [
+      "upper_office|upper_storage"
+    ],
+    "corner_deli_heist_01": [
+      "cold_storage_w|cold_storage_s",
+      "customer_floor|deli_counter",
+      "main_stack_well_b|cold_storage_n",
+      "main_stack_well_b|cold_storage_s",
+      "market_aisles|kitchen"
+    ],
+    "cr_deli": [
+      "customer_floor|deli_counter",
+      "market_aisles|kitchen"
+    ],
+    "cr_garage": [
+      "deck_0_south|deck_0_main"
+    ],
+    "cr_gas": [
+      "forecourt|sales_floor",
+      "forecourt|stockroom"
+    ],
+    "cr_pawn": [
+      "apartment|upper_storage"
+    ],
+    "deli_a01": [
+      "customer_floor|deli_counter",
+      "market_aisles|kitchen"
+    ],
+    "deli_a02": [
+      "customer_floor|deli_counter",
+      "market_aisles|kitchen"
+    ],
+    "deli_a03": [
+      "customer_floor|deli_counter",
+      "market_aisles|kitchen"
+    ],
+    "gas_street": [
+      "forecourt|sales_floor",
+      "forecourt|stockroom"
+    ],
+    "gs_auto_shop": [
+      "upper_office|upper_storage"
+    ],
+    "gs_corner_station": [
+      "forecourt|restroom",
+      "forecourt|sales_floor",
+      "forecourt|stockroom"
+    ],
+    "night_auto": [
+      "upper_office|upper_storage"
+    ],
+    "night_deli": [
+      "customer_floor|deli_counter",
+      "market_aisles|kitchen"
+    ],
+    "night_pawn": [
+      "apartment|upper_storage"
+    ],
+    "office": [
+      "exec_lobby|exec_anteroom",
+      "lobby|ground_bullpen"
+    ],
+    "office_stepped": [
+      "lobby|ground_bullpen"
+    ],
+    "parking_garage": [
+      "deck_0_south|deck_0_main"
+    ],
+    "parking_garage_a01": [
+      "deck_0_south|deck_0_main"
+    ],
+    "parking_garage_a02": [
+      "deck_0_south|deck_0_main",
+      "deck_1|deck_1_west"
+    ],
+    "pawn_shop_a01": [
+      "apartment|upper_storage"
+    ],
+    "rowhouse_raid": [
+      "basement_vault|basement_approach",
+      "front_hall|garage_bay",
+      "front_hall|kitchen",
+      "kitchen|garage_bay",
+      "office|bedroom"
+    ],
+    "setback_demo": [
+      "north_aisles|north_dock"
+    ],
+    "warehouse_a02": [
+      "north_aisles|north_dock"
+    ]
+  },
+  "reason": "Two rooms on one storey whose shared edge no partition covers for tactical.OPEN_FLOOR_M, which the engine walks as one floor, and whose spec does not say so (layout_lint L26; the factory's roadmap 255). FROZEN 2026-10-15 for the walker to sort, one pair at a time: say it is meant (`open_to` on either room) or build the wall. Not a verdict on any of them -- the walker's finding 5 of 2026-10-14 was one of these, and a lobby flowing into a bullpen is another. Re-run open_floor_baseline.py after each."
+}

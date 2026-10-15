@@ -25,6 +25,10 @@ raycasts and are intentionally deferred to the Godot side (Phase 2).
 from dataclasses import dataclass, field
 
 MIN_OPENING_WIDTH = 0.8   # m; below this a passage is too tight
+#: Two same-storey rooms whose shared edge no partition covers for this much are one
+#: continuous floor (`open_edge`, `shared_open_edge`). 0.223.0 lifted it out of four
+#: literals so layout_lint L26 names exactly the floors the engine walks.
+OPEN_FLOOR_M = 1.2
 
 
 def _rooms_by_id(spec):
@@ -67,12 +71,12 @@ def _room_at(spec, story, x, y):
 
 def shared_open_edge(a, b, parts):
     """Do two same-storey room rects touch along an edge no partition covers
-    for at least 1.2 m? Then they are one continuous floor.
+    for at least `OPEN_FLOOR_M`, 1.2 m? Then they are one continuous floor.
 
     ``a`` and ``b`` are ``[min_x, min_y, max_x, max_y]``; ``parts`` is the
     storey's partitions as ``(axis, pos, start, end)``. Two rects touch when
     an edge of one lies within 0.05 m of the other's; the shared length, less
-    every same-axis partition lying on that line, must leave 1.2 m.
+    every same-axis partition lying on that line, must leave `OPEN_FLOOR_M`.
 
     ONE RULE, TWO ASKERS (0.197.0): `build_graph` below, for open floor plans
     in the tactical graph, and `layout_lint._reach_from_ext`, for L12 and L24.
@@ -80,37 +84,39 @@ def shared_open_edge(a, b, parts):
     that open floor already joined -- deli_a01's basement utility room among
     them, whose north edge cold run 9189's bake walks across where its
     partition stops at x 12. Lifted from `build_graph`'s closure unchanged."""
+    return open_edge(a, b, parts) is not None
+
+
+def open_edge(a, b, parts):
+    """The edge two same-storey room rects meet along, where the partitions on
+    that line leave at least `OPEN_FLOOR_M` of it uncovered: ``(axis, pos, lo,
+    hi, uncovered)`` -- the line's axis ("Y" for a vertical edge at x = pos, "X"
+    for a horizontal one at y = pos), the shared span along it and the length no
+    partition covers -- or None. `shared_open_edge`'s body since 0.197.0,
+    returned so layout_lint L26 can say where (0.223.0). The vertical edges are
+    asked first, as they were."""
     ax0, ay0, ax1, ay1 = a
     bx0, by0, bx1, by1 = b
-    # vertical shared edge (a's right == b's left or vice versa)
-    for x_edge, lo, hi in ((ax1, max(ay0, by0), min(ay1, by1))
-                           if abs(ax1 - bx0) < 0.05 else (None, 0, 0),
-                           (bx1, max(ay0, by0), min(ay1, by1))
-                           if abs(bx1 - ax0) < 0.05 else (None, 0, 0)):
-        if x_edge is not None and hi - lo >= 1.2:
-            covered = 0.0
-            for axis, pos, start, end in parts:
-                if axis != "Y":
-                    continue
-                if abs(pos - x_edge) < 0.05:
-                    covered += max(0.0, min(end, hi) - max(start, lo))
-            if (hi - lo) - covered >= 1.2:
-                return True
-    # horizontal shared edge
-    for y_edge, lo, hi in ((ay1, max(ax0, bx0), min(ax1, bx1))
-                           if abs(ay1 - by0) < 0.05 else (None, 0, 0),
-                           (by1, max(ax0, bx0), min(ax1, bx1))
-                           if abs(by1 - ay0) < 0.05 else (None, 0, 0)):
-        if y_edge is not None and hi - lo >= 1.2:
-            covered = 0.0
-            for axis, pos, start, end in parts:
-                if axis != "X":
-                    continue
-                if abs(pos - y_edge) < 0.05:
-                    covered += max(0.0, min(end, hi) - max(start, lo))
-            if (hi - lo) - covered >= 1.2:
-                return True
-    return False
+    edges = []
+    if abs(ax1 - bx0) < 0.05:
+        edges.append(("Y", ax1, max(ay0, by0), min(ay1, by1)))
+    if abs(bx1 - ax0) < 0.05:
+        edges.append(("Y", bx1, max(ay0, by0), min(ay1, by1)))
+    if abs(ay1 - by0) < 0.05:
+        edges.append(("X", ay1, max(ax0, bx0), min(ax1, bx1)))
+    if abs(by1 - ay0) < 0.05:
+        edges.append(("X", by1, max(ax0, bx0), min(ax1, bx1)))
+    for axis, line, lo, hi in edges:
+        if hi - lo < OPEN_FLOOR_M:
+            continue
+        covered = 0.0
+        for p_axis, pos, start, end in parts:
+            if p_axis == axis and abs(pos - line) < 0.05:
+                covered += max(0.0, min(end, hi) - max(start, lo))
+        uncovered = (hi - lo) - covered
+        if uncovered >= OPEN_FLOOR_M:
+            return axis, line, lo, hi, uncovered
+    return None
 
 
 def build_graph(spec):
