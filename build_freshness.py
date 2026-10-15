@@ -74,6 +74,8 @@ GEOMETRY_SOURCES = (
     "shop_awning.py",
     # where a walk-up's fire escape stands, a storey a slot (0.220.0)
     "fire_escape_stack.py",
+    # the roof hatch slot and its interactive, one per hatch link on the roof (0.224.0)
+    "roof_hatch.py",
 )
 
 

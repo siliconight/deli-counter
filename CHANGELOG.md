@@ -1,3 +1,22 @@
+## [0.224.1] - the hatch is its ladder's own furniture
+
+**Cold run 9315, the first with a roof hatch, stopped at the art pass** on the circulation gate: the hatch's own
+greybox box stood 0.2 m inside `ladder:ladder_0`'s climb volume on courthouse_a02 and airport_terminal_a01
+(`circulation_check`, shell arm). It stands there by construction -- the climber comes up THROUGH the hatch --
+as a stair's guard stands at its own hole's edge, which the gate has excused since 0.191.0.
+
+### Changed
+- **`circulation.check_shell` excuses a `roof_hatch_*` prop in a ladder's climb volume** (`HATCH_PREFIX`), and
+  lists it as excused so a reader sees what was not counted; in a doorway or a stair's column it is a prop like
+  any other. The two excusals are one function now, `excused_own_furniture`, and `test_circulation.py` pins
+  it: the hatch in its ladder's volume and the guard in its stair's are excused, the same hatch in a doorway and
+  a crate in the ladder's volume are not.
+- **`roof_hatch.py` is a geometry source** (`build_freshness.GEOMETRY_SOURCES`): it emits slots, so editing it
+  demands the rebuild the freshness gate exists to demand.
+
+The placement gate's finding on the same buildings -- the open lid's footprint 0.33 m past the slot -- is Zoo
+1.113.1's.
+
 ## [0.224.0] - a lid on every roof hatch
 
 **Factory roadmap 170, step 1** (`docs/findings/roof_openings_170/` there). A `hatch` vertical link on the roof

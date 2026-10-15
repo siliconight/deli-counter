@@ -80,6 +80,15 @@ DOOR_TRIM_PEN = 0.12
 #: guard of one stair inside another's column would be excused too.
 GUARD_PREFIX = "stair_guard_"
 
+#: `roof_hatch.py` (0.224.0) stands a ``roof_hatch_{x}_{y}`` prop -- the curb and lid
+#: around a roof ladder's opening -- on the ladder's own hatch, inside its climb
+#: volume by construction: the climber comes up THROUGH it. Cold run 9315's compose
+#: read it 0.2 m inside `ladder:ladder_0` on both buildings that carry one. It is
+#: EXCUSED from ladder volumes and listed as such (0.224.1); in a doorway or a
+#: stair's column it is a prop like any other. Not linked to its own ladder, as the
+#: guard is not to its stair.
+HATCH_PREFIX = "roof_hatch_"
+
 #: Two vertices this close are one corner (metres, GLB space). A box's faces
 #: carry their own vertices for split normals and UVs, and are one part.
 WELD_M = 1e-4
@@ -280,6 +289,19 @@ def shell_prop_boxes(shell_glb, gameplay):
             if n in props]
 
 
+def excused_own_furniture(found):
+    """``(excused, conflicts)``: the conflicts that are a volume's own furniture, and the rest.
+
+    A stair's guard at its own hole's edge (`GUARD_PREFIX`) is excused from stair
+    volumes; a roof hatch's curb and lid (`HATCH_PREFIX`) from ladder volumes. Both are
+    returned, so a reader sees what was not counted. Order is `found`'s.
+    """
+    excused = [c for c in found
+               if (c["prop"].startswith(GUARD_PREFIX) and c["volume"].startswith("stair:"))
+               or (c["prop"].startswith(HATCH_PREFIX) and c["volume"].startswith("ladder:"))]
+    return excused, [c for c in found if c not in excused]
+
+
 def check_shell(shell_glb, slots_manifest, gameplay):
     """Spec-time gate: does DC's OWN greybox keep its own circulation clear?
 
@@ -308,11 +330,7 @@ def check_shell(shell_glb, slots_manifest, gameplay):
     props = shell_prop_boxes(shell_glb, gameplay)
     vols = circulation_volumes(slots_manifest, gameplay)
     found = prop_conflicts(props, vols)
-    # A stair's guard at its own hole's edge (`GUARD_PREFIX`): excused from
-    # stair volumes, and returned, so a reader sees what was not counted.
-    excused = [c for c in found if c["prop"].startswith(GUARD_PREFIX)
-               and c["volume"].startswith("stair:")]
-    conflicts = [c for c in found if c not in excused]
+    excused, conflicts = excused_own_furniture(found)
     roles = (gameplay or {}).get("surface_roles") or {}
     declared = sum(1 for r in roles.values() if r == "prop")
     blind = declared > 0 and not props

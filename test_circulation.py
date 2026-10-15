@@ -418,3 +418,34 @@ def test_a_stair_without_endpoints_keeps_the_full_column():
     assert C.stair_column(_stair(floors_served=[0, 1])) == (-1e6, 1e6)
     vols = dict(C.circulation_volumes({}, {"stair_systems": [_stair()]}))
     assert vols["stair:stair_0"][1][2] == 1e6
+
+
+# ---- a roof hatch stands in its own ladder's climb volume (0.224.1) ---------
+#
+# `roof_hatch.py` stands the curb and lid on the ladder's own hatch; the climber
+# comes up through it. Cold run 9315's compose read it 0.2 m inside
+# `ladder:ladder_0` on both buildings that carry one. Excused from LADDER
+# volumes and said to be, as the guard is from its stair's; anywhere else a
+# prop like any other.
+
+def test_a_roof_hatch_in_its_ladders_volume_is_excused_and_said():
+    found = [{"prop": "roof_hatch_13_-9", "volume": "ladder:ladder_0", "penetration": 0.2},
+             {"prop": "roof_hatch_13_-9", "volume": "doorway:w_open0", "penetration": 0.3},
+             {"prop": "crate_stack_2", "volume": "ladder:ladder_0", "penetration": 0.4},
+             {"prop": "stair_guard_back_1", "volume": "stair:s0", "penetration": 0.26},
+             {"prop": "stair_guard_back_1", "volume": "ladder:ladder_0", "penetration": 0.1}]
+    excused, conflicts = C.excused_own_furniture(found)
+    assert [(c["prop"], c["volume"]) for c in excused] == [
+        ("roof_hatch_13_-9", "ladder:ladder_0"), ("stair_guard_back_1", "stair:s0")]
+    assert [(c["prop"], c["volume"]) for c in conflicts] == [
+        ("roof_hatch_13_-9", "doorway:w_open0"), ("crate_stack_2", "ladder:ladder_0"),
+        ("stair_guard_back_1", "ladder:ladder_0")]
+
+
+def test_the_hatch_prefix_is_the_builders():
+    import roof_hatch
+    from spec_types import LevelSpec, VerticalLink
+    s = LevelSpec(name="t", n_stories=2, story_height=3.2)
+    s.vertical_links = [VerticalLink(kind="hatch", story=2, x=13.0, y=-9.0)]
+    (slot, _e, _c, _z), = roof_hatch.roof_hatches(s)
+    assert slot["slot_id"].startswith(C.HATCH_PREFIX)
