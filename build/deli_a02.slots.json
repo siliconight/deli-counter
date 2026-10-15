@@ -7,8 +7,8 @@
   "space": "spec/Blender Z-up raw coords; rot_y = degrees about up",
   "coverage": {
     "breach/generated": 8,
-    "doorway/generated": 12,
-    "wall/generated": 304,
+    "doorway/generated": 13,
+    "wall/generated": 309,
     "window/generated": 7
   },
   "slots": [
@@ -11106,7 +11106,7 @@
       "facing": "X",
       "transform": {
         "translation": [
-          -11.0,
+          -18.0,
           1.0,
           -1.8
         ],
@@ -11131,6 +11131,111 @@
     {
       "slot_id": "int_-1_4_seg1",
       "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "material": "brick",
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_-1_4",
+      "story": -1,
+      "facing": "X",
+      "transform": {
+        "translation": [
+          -16.0,
+          1.0,
+          -1.8
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.35,
+          3.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_-1_4_seg2",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "material": "brick",
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_-1_4",
+      "story": -1,
+      "facing": "X",
+      "transform": {
+        "translation": [
+          -14.0,
+          1.0,
+          -1.8
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.35,
+          3.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_-1_4_seg3",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "material": "brick",
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_-1_4",
+      "story": -1,
+      "facing": "X",
+      "transform": {
+        "translation": [
+          -12.0,
+          1.0,
+          -1.8
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.35,
+          3.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_-1_4_seg4",
+      "role": "wall",
       "size_mod": "end",
       "style": 1,
       "material": "brick",
@@ -11141,20 +11246,20 @@
       "facing": "X",
       "transform": {
         "translation": [
-          -9.5625,
+          -10.0625,
           1.0,
           -1.8
         ],
         "rot_y": 0,
         "scale": [
-          0.875,
+          1.875,
           0.35,
           3.0
         ]
       },
       "fit": {
         "dims": [
-          0.875,
+          1.875,
           0.35,
           3.0
         ],
@@ -11205,7 +11310,7 @@
         "collision": "convex"
       },
       "interactive": {
-        "id": "deli_a02:if:98cb3528",
+        "id": "deli_a02:if:6899854e",
         "kind": "door",
         "states": [
           "closed",
@@ -11219,7 +11324,7 @@
       }
     },
     {
-      "slot_id": "int_-1_4_seg2",
+      "slot_id": "int_-1_4_seg5",
       "role": "wall",
       "size_mod": "full",
       "style": 1,
@@ -11254,7 +11359,7 @@
       }
     },
     {
-      "slot_id": "int_-1_4_seg3",
+      "slot_id": "int_-1_4_seg6",
       "role": "wall",
       "size_mod": "full",
       "style": 1,
@@ -11289,7 +11394,7 @@
       }
     },
     {
-      "slot_id": "int_-1_4_seg4",
+      "slot_id": "int_-1_4_seg7",
       "role": "wall",
       "size_mod": "full",
       "style": 1,
@@ -11324,7 +11429,7 @@
       }
     },
     {
-      "slot_id": "int_-1_4_seg5",
+      "slot_id": "int_-1_4_seg8",
       "role": "wall",
       "size_mod": "full",
       "style": 1,
@@ -11359,7 +11464,7 @@
       }
     },
     {
-      "slot_id": "int_-1_4_seg6",
+      "slot_id": "int_-1_4_seg9",
       "role": "wall",
       "size_mod": "full",
       "style": 1,
@@ -11394,7 +11499,7 @@
       }
     },
     {
-      "slot_id": "int_-1_4_seg7",
+      "slot_id": "int_-1_4_seg10",
       "role": "wall",
       "size_mod": "full",
       "style": 1,
@@ -11429,7 +11534,7 @@
       }
     },
     {
-      "slot_id": "int_-1_4_seg8",
+      "slot_id": "int_-1_4_seg11",
       "role": "wall",
       "size_mod": "full",
       "style": 1,
@@ -11464,7 +11569,7 @@
       }
     },
     {
-      "slot_id": "int_-1_4_seg9",
+      "slot_id": "int_-1_4_seg12",
       "role": "wall",
       "size_mod": "end",
       "style": 1,
@@ -11540,7 +11645,7 @@
         "collision": "convex"
       },
       "interactive": {
-        "id": "deli_a02:if:9268e202",
+        "id": "deli_a02:if:38e587d5",
         "kind": "breach_wall",
         "states": [
           "intact",
@@ -11558,7 +11663,7 @@
       }
     },
     {
-      "slot_id": "int_-1_4_seg10",
+      "slot_id": "int_-1_4_seg13",
       "role": "wall",
       "size_mod": "full",
       "style": 1,
@@ -11593,7 +11698,7 @@
       }
     },
     {
-      "slot_id": "int_-1_4_seg11",
+      "slot_id": "int_-1_4_seg14",
       "role": "wall",
       "size_mod": "full",
       "style": 1,
@@ -11628,7 +11733,112 @@
       }
     },
     {
-      "slot_id": "int_-1_4_seg12",
+      "slot_id": "int_-1_4_seg15",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "material": "brick",
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_-1_4",
+      "story": -1,
+      "facing": "X",
+      "transform": {
+        "translation": [
+          12.7,
+          1.0,
+          -1.8
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.35,
+          3.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_-1_4_seg16",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "material": "brick",
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_-1_4",
+      "story": -1,
+      "facing": "X",
+      "transform": {
+        "translation": [
+          14.7,
+          1.0,
+          -1.8
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.35,
+          3.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_-1_4_seg17",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 1,
+      "material": "brick",
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_-1_4",
+      "story": -1,
+      "facing": "X",
+      "transform": {
+        "translation": [
+          16.7,
+          1.0,
+          -1.8
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.35,
+          3.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_-1_4_seg18",
       "role": "wall",
       "size_mod": "end",
       "style": 1,
@@ -11640,20 +11850,20 @@
       "facing": "X",
       "transform": {
         "translation": [
-          11.85,
+          18.35,
           1.0,
           -1.8
         ],
         "rot_y": 0,
         "scale": [
-          0.3,
+          1.3,
           0.35,
           3.0
         ]
       },
       "fit": {
         "dims": [
-          0.3,
+          1.3,
           0.35,
           3.0
         ],
@@ -11864,10 +12074,10 @@
     {
       "slot_id": "int_-1_5_seg4",
       "role": "wall",
-      "size_mod": "full",
+      "size_mod": "end",
       "style": 1,
       "material": "brick",
-      "current_ref": "wall_greybox_01",
+      "current_ref": "wallEnd_greybox_01",
       "kit_axis": "theme",
       "wall": "int_-1_5",
       "story": -1,
@@ -11875,7 +12085,42 @@
       "transform": {
         "translation": [
           1.0,
-          -5.3,
+          -5.4625,
+          -1.8
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.675,
+          0.35,
+          3.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.675,
+          0.35,
+          3.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_-1_5_open1",
+      "role": "doorway",
+      "size_mod": "full",
+      "style": 1,
+      "material": "brick",
+      "current_ref": "doorway_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_-1_5",
+      "story": -1,
+      "facing": "Y",
+      "transform": {
+        "translation": [
+          1.0,
+          -4.0,
           -1.8
         ],
         "rot_y": 90,
@@ -11887,13 +12132,33 @@
       },
       "fit": {
         "dims": [
-          2.0,
+          1.25,
           0.35,
           3.0
         ],
         "pivot": "center",
-        "openings": [],
+        "openings": [
+          {
+            "kind": "door",
+            "width": 1.25,
+            "height": 2.2,
+            "sill": 0.0
+          }
+        ],
         "collision": "convex"
+      },
+      "interactive": {
+        "id": "deli_a02:if:a01c7533",
+        "kind": "door",
+        "states": [
+          "closed",
+          "open"
+        ],
+        "default": "closed",
+        "collision_per_state": {
+          "closed": true,
+          "open": false
+        }
       }
     },
     {
@@ -11910,7 +12175,7 @@
       "transform": {
         "translation": [
           1.0,
-          -3.3,
+          -2.375,
           -1.8
         ],
         "rot_y": 90,
@@ -11945,7 +12210,7 @@
       "transform": {
         "translation": [
           1.0,
-          -1.3,
+          -0.375,
           -1.8
         ],
         "rot_y": 90,
@@ -11969,41 +12234,6 @@
     {
       "slot_id": "int_-1_5_seg7",
       "role": "wall",
-      "size_mod": "full",
-      "style": 1,
-      "material": "brick",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "int_-1_5",
-      "story": -1,
-      "facing": "Y",
-      "transform": {
-        "translation": [
-          1.0,
-          0.7,
-          -1.8
-        ],
-        "rot_y": 90,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.35,
-          3.0
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "int_-1_5_seg8",
-      "role": "wall",
       "size_mod": "end",
       "style": 1,
       "material": "brick",
@@ -12015,19 +12245,19 @@
       "transform": {
         "translation": [
           1.0,
-          2.0375,
+          1.5,
           -1.8
         ],
         "rot_y": 90,
         "scale": [
-          0.675,
+          1.75,
           0.35,
           3.0
         ]
       },
       "fit": {
         "dims": [
-          0.675,
+          1.75,
           0.35,
           3.0
         ],
@@ -12037,7 +12267,7 @@
       }
     },
     {
-      "slot_id": "int_-1_5_open1",
+      "slot_id": "int_-1_5_open2",
       "role": "doorway",
       "size_mod": "full",
       "style": 1,
@@ -12092,7 +12322,7 @@
       }
     },
     {
-      "slot_id": "int_-1_5_seg9",
+      "slot_id": "int_-1_5_seg8",
       "role": "wall",
       "size_mod": "full",
       "style": 1,
@@ -12127,7 +12357,7 @@
       }
     },
     {
-      "slot_id": "int_-1_5_seg10",
+      "slot_id": "int_-1_5_seg9",
       "role": "wall",
       "size_mod": "full",
       "style": 1,
@@ -12162,7 +12392,7 @@
       }
     },
     {
-      "slot_id": "int_-1_5_seg11",
+      "slot_id": "int_-1_5_seg10",
       "role": "wall",
       "size_mod": "full",
       "style": 1,
@@ -12197,7 +12427,7 @@
       }
     },
     {
-      "slot_id": "int_-1_5_seg12",
+      "slot_id": "int_-1_5_seg11",
       "role": "wall",
       "size_mod": "full",
       "style": 1,
@@ -12232,7 +12462,7 @@
       }
     },
     {
-      "slot_id": "int_-1_5_seg13",
+      "slot_id": "int_-1_5_seg12",
       "role": "wall",
       "size_mod": "full",
       "style": 1,
@@ -12267,7 +12497,7 @@
       }
     },
     {
-      "slot_id": "int_-1_5_seg14",
+      "slot_id": "int_-1_5_seg13",
       "role": "wall",
       "size_mod": "end",
       "style": 1,

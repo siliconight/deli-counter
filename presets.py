@@ -625,12 +625,26 @@ def corner_deli(name: str = "corner_deli_preset",
     ]
     if basement:
         parts += [
-            {"story": -1, "axis": "X", "pos": 1.0, "start": -12.0, "end": 12.0, "material": "brick_ext", "openings": [
-                {"kind": "door", "pos": -0.35, "width": DOOR_W, "tag": "basement_corridor"},
-                {"kind": "breach", "pos": 0.3, "width": 1.4, "breach_class": "reinforceable", "material": "brick_ext", "reinforceable": True, "tag": "vault_side_breach"}]},
+            # WALL TO WALL (0.222.0). This divider stood x -12..12 under rooms
+            # that meet across the whole basement: 7 m open at each end, the
+            # vault open to the utility room beside the breach that was its way
+            # in (the walker, cold run 9305: "this wall supposed to stop here and
+            # have this big opening?"; asked, "close the basement"). The door and
+            # the breach stay where 0.221.0 built them, snap(-0.35 * 24) = -8.5
+            # and snap(0.3 * 24) = 7.0 (`migrate_basement_wall.py`).
+            {"story": -1, "axis": "X", "pos": 1.0, "start": -half_x, "end": half_x, "material": "brick_ext", "openings": [
+                {"kind": "door", "pos": -8.5 / fx, "width": DOOR_W, "tag": "basement_corridor"},
+                {"kind": "breach", "pos": 7.0 / fx, "width": 1.4, "breach_class": "reinforceable", "material": "brick_ext", "reinforceable": True, "tag": "vault_side_breach"}]},
             {"story": -1, "axis": "Y", "pos": 1.0, "start": -half_y, "end": half_y, "material": "brick_ext", "openings": [
                 {"kind": "door", "pos": 0.1, "width": DOOR_W, "tag": "cold_room_door"},
-                {"kind": "breach", "pos": -0.32, "width": 1.4, "breach_class": "reinforceable", "material": "brick_ext", "reinforceable": True}]},
+                {"kind": "breach", "pos": -0.32, "width": 1.4, "breach_class": "reinforceable", "material": "brick_ext", "reinforceable": True},
+                # A WALK-IN WAY TO THE UTILITY ROOM (0.222.0). Wall to wall, the
+                # divider above leaves its two breaches the only ways in, and a room
+                # a body reaches only by breaching gets a door unless it is the
+                # objective (the walker, 2026-10-06; layout_lint L24). Asked, the
+                # walker chose the door, from the corridor (2026-10-14): midway
+                # between this wall's breach at y -9.0 and the divider at y 1.0.
+                {"kind": "door", "pos": -4.0 / fy, "width": DOOR_W, "tag": "corridor_to_utility"}]},
         ]
     spec["partitions"] = parts
 

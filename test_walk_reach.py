@@ -154,6 +154,13 @@ def test_lint_asks_tacticals_open_floor_rule(monkeypatch):
     assert _walk(_open_plan(2.0)) == ["back"]
 
 
-def test_deli_a01s_utility_room_is_open_floor():
+def test_deli_a01s_utility_room_is_walked_into():
+    """0.197.0 found it open floor: the basement divider stopped at x 12. Since
+    0.222.0 the divider runs wall to wall and the room has its own door from
+    the corridor -- the walker's call of 2026-10-14, by the rule of 2026-10-06
+    this file was written for."""
     spec = json.load(open(os.path.join(HERE, "specs", "deli_a01.json"), encoding="utf-8"))
     assert "utility_room" not in _walk(spec)
+    doors = [o for p in spec["partitions"] if p.get("story") == -1
+             for o in p.get("openings", []) if o.get("tag") == "corridor_to_utility"]
+    assert len(doors) == 1 and doors[0]["kind"] == "door", doors

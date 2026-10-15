@@ -883,6 +883,23 @@
       "building": "corner_deli_heist_01"
     },
     {
+      "wall": "int_-1_1",
+      "kind": "door",
+      "story": -1,
+      "x": 1.0,
+      "y": -4.0,
+      "z": -2.2,
+      "width": 1.25,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": "corridor_to_utility",
+      "breach_class": null,
+      "material": null,
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "corner_deli_heist_01"
+    },
+    {
       "wall": "int_0_2",
       "kind": "door",
       "story": 0,
@@ -3169,7 +3186,7 @@
       "building": "corner_deli_heist_01"
     },
     {
-      "id": "corner_deli_heist_01:if:ad3e602a",
+      "id": "corner_deli_heist_01:if:3af92df6",
       "kind": "door",
       "slot_ref": "int_-1_0_open0",
       "transform": {
@@ -3206,7 +3223,7 @@
       "building": "corner_deli_heist_01"
     },
     {
-      "id": "corner_deli_heist_01:if:29cd9937",
+      "id": "corner_deli_heist_01:if:a534016c",
       "kind": "breach_wall",
       "slot_ref": "int_-1_0_open1",
       "transform": {
@@ -3242,7 +3259,7 @@
     {
       "id": "corner_deli_heist_01:if:ef61fbd4",
       "kind": "door",
-      "slot_ref": "int_-1_1_open1",
+      "slot_ref": "int_-1_1_open2",
       "transform": {
         "translation": [
           1.0,
@@ -3308,6 +3325,43 @@
       },
       "material": "brick_ext",
       "breach_class": "reinforceable",
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "id": "corner_deli_heist_01:if:53643637",
+      "kind": "door",
+      "slot_ref": "int_-1_1_open1",
+      "transform": {
+        "translation": [
+          1.0,
+          -4.0,
+          -2.2
+        ],
+        "rot_y": 90
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "collision_per_state": {
+        "closed": true,
+        "open": false
+      },
       "building": "corner_deli_heist_01"
     },
     {

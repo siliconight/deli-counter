@@ -316,19 +316,19 @@
    "story": -1,
    "axis": "X",
    "pos": 1.0,
-   "start": -12.0,
-   "end": 12.0,
+   "start": -19.0,
+   "end": 19.0,
    "material": "brick_ext",
    "openings": [
     {
      "kind": "door",
-     "pos": -0.35,
+     "pos": -0.2236842105263158,
      "width": 1.25,
      "tag": "basement_corridor"
     },
     {
      "kind": "breach",
-     "pos": 0.3,
+     "pos": 0.18421052631578946,
      "width": 1.4,
      "breach_class": "reinforceable",
      "material": "brick_ext",
@@ -358,6 +358,12 @@
      "breach_class": "reinforceable",
      "material": "brick_ext",
      "reinforceable": true
+    },
+    {
+     "kind": "door",
+     "pos": -0.14285714285714285,
+     "width": 1.25,
+     "tag": "corridor_to_utility"
     }
    ]
   }
@@ -1880,18 +1886,6 @@
   },
   {
    "material": "wood",
-   "name": "chair_set_r365b5162_9_1",
-   "x": 14.72,
-   "y": 1.99,
-   "z": -2.85,
-   "size_x": 0.5,
-   "size_y": 0.5,
-   "size_z": 0.9,
-   "collision": "convex",
-   "rot_z": 109.0
-  },
-  {
-   "material": "wood",
    "name": "chair_set_r365b5162_9_2",
    "x": 12.71,
    "y": 2.1,
@@ -1900,7 +1894,7 @@
    "size_y": 0.5,
    "size_z": 0.9,
    "collision": "convex",
-   "rot_z": 270.0
+   "rot_z": 289.0
   },
   {
    "name": "water_heater_r0c5489cc_1",

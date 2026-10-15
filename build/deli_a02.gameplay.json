@@ -914,6 +914,23 @@
       "vaultable": false,
       "reinforceable": true,
       "building": "deli_a02"
+    },
+    {
+      "wall": "int_-1_5",
+      "kind": "door",
+      "story": -1,
+      "x": 1.0,
+      "y": -4.0,
+      "z": -2.2,
+      "width": 1.25,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": "corridor_to_utility",
+      "breach_class": null,
+      "material": null,
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "deli_a02"
     }
   ],
   "objectives": [],
@@ -3896,15 +3913,6 @@
       }
     },
     {
-      "node": "int_col_-1_4_open0_lintel",
-      "material": {
-        "id": "brick_ext",
-        "acoustic": "Concrete",
-        "absorption": 0.72,
-        "damping": 0.62
-      }
-    },
-    {
       "node": "int_col_-1_4_seg2",
       "material": {
         "id": "brick_ext",
@@ -3924,6 +3932,15 @@
     },
     {
       "node": "int_col_-1_4_seg4",
+      "material": {
+        "id": "brick_ext",
+        "acoustic": "Concrete",
+        "absorption": 0.72,
+        "damping": 0.62
+      }
+    },
+    {
+      "node": "int_col_-1_4_open0_lintel",
       "material": {
         "id": "brick_ext",
         "acoustic": "Concrete",
@@ -3977,24 +3994,6 @@
       }
     },
     {
-      "node": "int_col_-1_4_open1_lintel",
-      "material": {
-        "id": "brick_ext",
-        "acoustic": "Concrete",
-        "absorption": 0.72,
-        "damping": 0.62
-      }
-    },
-    {
-      "node": "int_col_-1_4_open1_BREACHPANEL",
-      "material": {
-        "id": "brick_ext",
-        "acoustic": "Concrete",
-        "absorption": 0.72,
-        "damping": 0.62
-      }
-    },
-    {
       "node": "int_col_-1_4_seg10",
       "material": {
         "id": "brick_ext",
@@ -4014,6 +4013,78 @@
     },
     {
       "node": "int_col_-1_4_seg12",
+      "material": {
+        "id": "brick_ext",
+        "acoustic": "Concrete",
+        "absorption": 0.72,
+        "damping": 0.62
+      }
+    },
+    {
+      "node": "int_col_-1_4_open1_lintel",
+      "material": {
+        "id": "brick_ext",
+        "acoustic": "Concrete",
+        "absorption": 0.72,
+        "damping": 0.62
+      }
+    },
+    {
+      "node": "int_col_-1_4_open1_BREACHPANEL",
+      "material": {
+        "id": "brick_ext",
+        "acoustic": "Concrete",
+        "absorption": 0.72,
+        "damping": 0.62
+      }
+    },
+    {
+      "node": "int_col_-1_4_seg13",
+      "material": {
+        "id": "brick_ext",
+        "acoustic": "Concrete",
+        "absorption": 0.72,
+        "damping": 0.62
+      }
+    },
+    {
+      "node": "int_col_-1_4_seg14",
+      "material": {
+        "id": "brick_ext",
+        "acoustic": "Concrete",
+        "absorption": 0.72,
+        "damping": 0.62
+      }
+    },
+    {
+      "node": "int_col_-1_4_seg15",
+      "material": {
+        "id": "brick_ext",
+        "acoustic": "Concrete",
+        "absorption": 0.72,
+        "damping": 0.62
+      }
+    },
+    {
+      "node": "int_col_-1_4_seg16",
+      "material": {
+        "id": "brick_ext",
+        "acoustic": "Concrete",
+        "absorption": 0.72,
+        "damping": 0.62
+      }
+    },
+    {
+      "node": "int_col_-1_4_seg17",
+      "material": {
+        "id": "brick_ext",
+        "acoustic": "Concrete",
+        "absorption": 0.72,
+        "damping": 0.62
+      }
+    },
+    {
+      "node": "int_col_-1_4_seg18",
       "material": {
         "id": "brick_ext",
         "acoustic": "Concrete",
@@ -4085,6 +4156,15 @@
       }
     },
     {
+      "node": "int_col_-1_5_open1_lintel",
+      "material": {
+        "id": "brick_ext",
+        "acoustic": "Concrete",
+        "absorption": 0.72,
+        "damping": 0.62
+      }
+    },
+    {
       "node": "int_col_-1_5_seg5",
       "material": {
         "id": "brick_ext",
@@ -4112,7 +4192,7 @@
       }
     },
     {
-      "node": "int_col_-1_5_seg8",
+      "node": "int_col_-1_5_open2_lintel",
       "material": {
         "id": "brick_ext",
         "acoustic": "Concrete",
@@ -4121,7 +4201,7 @@
       }
     },
     {
-      "node": "int_col_-1_5_open1_lintel",
+      "node": "int_col_-1_5_seg8",
       "material": {
         "id": "brick_ext",
         "acoustic": "Concrete",
@@ -4167,15 +4247,6 @@
     },
     {
       "node": "int_col_-1_5_seg13",
-      "material": {
-        "id": "brick_ext",
-        "acoustic": "Concrete",
-        "absorption": 0.72,
-        "damping": 0.62
-      }
-    },
-    {
-      "node": "int_col_-1_5_seg14",
       "material": {
         "id": "brick_ext",
         "acoustic": "Concrete",
@@ -6074,7 +6145,7 @@
       "building": "deli_a02"
     },
     {
-      "id": "deli_a02:if:98cb3528",
+      "id": "deli_a02:if:6899854e",
       "kind": "door",
       "slot_ref": "int_-1_4_open0",
       "transform": {
@@ -6111,7 +6182,7 @@
       "building": "deli_a02"
     },
     {
-      "id": "deli_a02:if:9268e202",
+      "id": "deli_a02:if:38e587d5",
       "kind": "breach_wall",
       "slot_ref": "int_-1_4_open1",
       "transform": {
@@ -6147,7 +6218,7 @@
     {
       "id": "deli_a02:if:1104ec07",
       "kind": "door",
-      "slot_ref": "int_-1_5_open1",
+      "slot_ref": "int_-1_5_open2",
       "transform": {
         "translation": [
           1.0,
@@ -6213,6 +6284,43 @@
       },
       "material": "brick_ext",
       "breach_class": "reinforceable",
+      "building": "deli_a02"
+    },
+    {
+      "id": "deli_a02:if:a01c7533",
+      "kind": "door",
+      "slot_ref": "int_-1_5_open1",
+      "transform": {
+        "translation": [
+          1.0,
+          -4.0,
+          -2.2
+        ],
+        "rot_y": 90
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "collision_per_state": {
+        "closed": true,
+        "open": false
+      },
       "building": "deli_a02"
     }
   ],
@@ -6332,8 +6440,8 @@
           "floor": -1,
           "kind": "door",
           "wall": "int_-1_4",
-          "pos": -0.3499999999999999,
-          "interactive": "deli_a02:if:98cb3528",
+          "pos": -0.2236842105263158,
+          "interactive": "deli_a02:if:6899854e",
           "default_state": "closed",
           "connects_from": "basement_corridor",
           "discharge_door": false
@@ -7476,20 +7584,26 @@
     "int_1_3_seg18": "wall",
     "int_-1_4_seg0": "wall",
     "int_-1_4_seg1": "wall",
-    "int_-1_4_open0_lintel": "doorway",
     "int_-1_4_seg2": "wall",
     "int_-1_4_seg3": "wall",
     "int_-1_4_seg4": "wall",
+    "int_-1_4_open0_lintel": "doorway",
     "int_-1_4_seg5": "wall",
     "int_-1_4_seg6": "wall",
     "int_-1_4_seg7": "wall",
     "int_-1_4_seg8": "wall",
     "int_-1_4_seg9": "wall",
-    "int_-1_4_open1_lintel": "breach",
-    "int_-1_4_open1_BREACHPANEL": "breach",
     "int_-1_4_seg10": "wall",
     "int_-1_4_seg11": "wall",
     "int_-1_4_seg12": "wall",
+    "int_-1_4_open1_lintel": "breach",
+    "int_-1_4_open1_BREACHPANEL": "breach",
+    "int_-1_4_seg13": "wall",
+    "int_-1_4_seg14": "wall",
+    "int_-1_4_seg15": "wall",
+    "int_-1_4_seg16": "wall",
+    "int_-1_4_seg17": "wall",
+    "int_-1_4_seg18": "wall",
     "int_-1_5_seg0": "wall",
     "int_-1_5_seg1": "wall",
     "int_-1_5_seg2": "wall",
@@ -7497,17 +7611,17 @@
     "int_-1_5_open0_BREACHPANEL": "breach",
     "int_-1_5_seg3": "wall",
     "int_-1_5_seg4": "wall",
+    "int_-1_5_open1_lintel": "doorway",
     "int_-1_5_seg5": "wall",
     "int_-1_5_seg6": "wall",
     "int_-1_5_seg7": "wall",
+    "int_-1_5_open2_lintel": "doorway",
     "int_-1_5_seg8": "wall",
-    "int_-1_5_open1_lintel": "doorway",
     "int_-1_5_seg9": "wall",
     "int_-1_5_seg10": "wall",
     "int_-1_5_seg11": "wall",
     "int_-1_5_seg12": "wall",
     "int_-1_5_seg13": "wall",
-    "int_-1_5_seg14": "wall",
     "stair0_-1_0": "stair",
     "stair0_-1_1": "stair",
     "stair0_-1_2": "stair",
