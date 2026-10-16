@@ -190,7 +190,39 @@
       "story": 2,
       "x": -16.0,
       "y": 10.0,
-      "breachable": null
+      "breachable": null,
+      "nav_link": {
+        "id": "museum_a03_hatch_2_-16_10_navlink",
+        "start_position": [
+          -16.0,
+          10.0,
+          10.0
+        ],
+        "end_position": [
+          -16.0,
+          10.0,
+          5.0
+        ],
+        "bidirectional": false,
+        "cost": 4.0,
+        "agent_types": [
+          "player",
+          "ai_humanoid"
+        ],
+        "required_capability": "drop",
+        "access_state": "open",
+        "reservation_state": "free",
+        "hole": [
+          [
+            -16.75,
+            9.25
+          ],
+          [
+            -15.25,
+            10.75
+          ]
+        ]
+      }
     }
   ],
   "openings": [

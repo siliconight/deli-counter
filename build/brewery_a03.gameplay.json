@@ -171,7 +171,39 @@
       "story": 1,
       "x": 14.0,
       "y": 10.0,
-      "breachable": null
+      "breachable": null,
+      "nav_link": {
+        "id": "brewery_a03_hatch_1_14_10_navlink",
+        "start_position": [
+          14.0,
+          10.0,
+          4.6
+        ],
+        "end_position": [
+          14.0,
+          10.0,
+          0.0
+        ],
+        "bidirectional": false,
+        "cost": 4.0,
+        "agent_types": [
+          "player",
+          "ai_humanoid"
+        ],
+        "required_capability": "drop",
+        "access_state": "open",
+        "reservation_state": "free",
+        "hole": [
+          [
+            13.25,
+            9.25
+          ],
+          [
+            14.75,
+            10.75
+          ]
+        ]
+      }
     }
   ],
   "openings": [

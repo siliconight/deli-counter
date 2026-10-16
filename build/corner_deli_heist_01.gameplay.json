@@ -562,7 +562,39 @@
       "story": 1,
       "x": 8.0,
       "y": -4.0,
-      "breachable": null
+      "breachable": null,
+      "nav_link": {
+        "id": "corner_deli_heist_01_floor_hole_1_8_-4_navlink",
+        "start_position": [
+          8.0,
+          -4.0,
+          3.3
+        ],
+        "end_position": [
+          8.0,
+          -4.0,
+          0.0
+        ],
+        "bidirectional": false,
+        "cost": 4.0,
+        "agent_types": [
+          "player",
+          "ai_humanoid"
+        ],
+        "required_capability": "drop",
+        "access_state": "open",
+        "reservation_state": "free",
+        "hole": [
+          [
+            6.9,
+            -5.1
+          ],
+          [
+            9.1,
+            -2.9
+          ]
+        ]
+      }
     },
     {
       "kind": "hatch",
@@ -572,7 +604,39 @@
       "story": 1,
       "x": -12.0,
       "y": 8.0,
-      "breachable": true
+      "breachable": true,
+      "nav_link": {
+        "id": "corner_deli_heist_01_hatch_1_-12_8_navlink",
+        "start_position": [
+          -12.0,
+          8.0,
+          3.3
+        ],
+        "end_position": [
+          -12.0,
+          8.0,
+          0.0
+        ],
+        "bidirectional": false,
+        "cost": 4.0,
+        "agent_types": [
+          "player",
+          "ai_humanoid"
+        ],
+        "required_capability": "drop",
+        "access_state": "open",
+        "reservation_state": "free",
+        "hole": [
+          [
+            -12.7,
+            7.3
+          ],
+          [
+            -11.3,
+            8.7
+          ]
+        ]
+      }
     }
   ],
   "openings": [

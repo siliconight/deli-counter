@@ -171,7 +171,39 @@
       "story": 1,
       "x": -14.0,
       "y": 8.0,
-      "breachable": null
+      "breachable": null,
+      "nav_link": {
+        "id": "marina_a03_hatch_1_-14_8_navlink",
+        "start_position": [
+          -14.0,
+          8.0,
+          4.0
+        ],
+        "end_position": [
+          -14.0,
+          8.0,
+          0.0
+        ],
+        "bidirectional": false,
+        "cost": 4.0,
+        "agent_types": [
+          "player",
+          "ai_humanoid"
+        ],
+        "required_capability": "drop",
+        "access_state": "open",
+        "reservation_state": "free",
+        "hole": [
+          [
+            -14.75,
+            7.25
+          ],
+          [
+            -13.25,
+            8.75
+          ]
+        ]
+      }
     }
   ],
   "openings": [

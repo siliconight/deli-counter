@@ -171,7 +171,39 @@
       "story": 1,
       "x": -22.0,
       "y": -12.0,
-      "breachable": null
+      "breachable": null,
+      "nav_link": {
+        "id": "freight_terminal_a01_hatch_1_-22_-12_navlink",
+        "start_position": [
+          -22.0,
+          -12.0,
+          6.0
+        ],
+        "end_position": [
+          -22.0,
+          -12.0,
+          0.0
+        ],
+        "bidirectional": false,
+        "cost": 4.0,
+        "agent_types": [
+          "player",
+          "ai_humanoid"
+        ],
+        "required_capability": "drop",
+        "access_state": "open",
+        "reservation_state": "free",
+        "hole": [
+          [
+            -22.75,
+            -12.75
+          ],
+          [
+            -21.25,
+            -11.25
+          ]
+        ]
+      }
     }
   ],
   "openings": [

@@ -209,7 +209,39 @@
       "story": 2,
       "x": -16.0,
       "y": 12.0,
-      "breachable": null
+      "breachable": null,
+      "nav_link": {
+        "id": "courthouse_a02_hatch_2_-16_12_navlink",
+        "start_position": [
+          -16.0,
+          12.0,
+          10.0
+        ],
+        "end_position": [
+          -16.0,
+          12.0,
+          5.0
+        ],
+        "bidirectional": false,
+        "cost": 4.0,
+        "agent_types": [
+          "player",
+          "ai_humanoid"
+        ],
+        "required_capability": "drop",
+        "access_state": "open",
+        "reservation_state": "free",
+        "hole": [
+          [
+            -16.75,
+            11.25
+          ],
+          [
+            -15.25,
+            12.75
+          ]
+        ]
+      }
     }
   ],
   "openings": [

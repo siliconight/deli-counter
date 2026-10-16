@@ -209,7 +209,39 @@
       "story": 2,
       "x": 19.0,
       "y": -9.0,
-      "breachable": null
+      "breachable": null,
+      "nav_link": {
+        "id": "rail_station_a03_hatch_2_19_-9_navlink",
+        "start_position": [
+          19.0,
+          -9.0,
+          9.2
+        ],
+        "end_position": [
+          19.0,
+          -9.0,
+          4.6
+        ],
+        "bidirectional": false,
+        "cost": 4.0,
+        "agent_types": [
+          "player",
+          "ai_humanoid"
+        ],
+        "required_capability": "drop",
+        "access_state": "open",
+        "reservation_state": "free",
+        "hole": [
+          [
+            18.25,
+            -9.75
+          ],
+          [
+            19.75,
+            -8.25
+          ]
+        ]
+      }
     }
   ],
   "openings": [

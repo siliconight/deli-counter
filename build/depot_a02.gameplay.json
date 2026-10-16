@@ -190,7 +190,39 @@
       "story": 1,
       "x": 16.0,
       "y": 8.0,
-      "breachable": null
+      "breachable": null,
+      "nav_link": {
+        "id": "depot_a02_hatch_1_16_8_navlink",
+        "start_position": [
+          16.0,
+          8.0,
+          5.0
+        ],
+        "end_position": [
+          16.0,
+          8.0,
+          0.0
+        ],
+        "bidirectional": false,
+        "cost": 4.0,
+        "agent_types": [
+          "player",
+          "ai_humanoid"
+        ],
+        "required_capability": "drop",
+        "access_state": "open",
+        "reservation_state": "free",
+        "hole": [
+          [
+            15.25,
+            7.25
+          ],
+          [
+            16.75,
+            8.75
+          ]
+        ]
+      }
     }
   ],
   "openings": [

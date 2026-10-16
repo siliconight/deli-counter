@@ -1,3 +1,31 @@
+## [0.226.0] - a declared drop carries its own off-mesh nav link
+
+**Factory roadmap 173 ("a drop is either guarded or declared, and today nothing declares one"), step 3.** A
+`floor_hole` or `hatch` vertical link is the spec saying "a body goes down here"; the builder cut the slab and
+recorded the link, and nothing downstream could tell that hole from one nobody meant. The package's
+`navigation_hints.json` carried a ladder's off-mesh link (0.172.0) and no drop's: measured on cold run 9317's
+package, 2 links, both ladders, while deli_a01 declares a floor hole and a hatch. So the AI had no edge through
+a hole a player drops through, and the drop-edge instrument that found the office's unguarded stair pit (0.225.0)
+had no declared set to read off the package -- it reads Deli Counter's build records instead, which a consumer
+of the package does not have.
+
+### Added
+- **`ladder.drop_nav_link(lid, story, x, y, size_x, size_y, story_height)`**: the one-way off-mesh link of a
+  declared drop, the same two-point shape as a ladder's `_nav_link` (so Dispatch carries it verbatim and Lot
+  moves its points into site space), starting over the cut on the storey whose floor it opens and ending on the
+  floor below, `bidirectional` false, `required_capability` "drop", `cost` `DROP_COST` (4.0, dearer than any
+  ladder: a route of last resort), and `hole`, the cut's rect as two corners, for a gate that asks which rim is
+  declared.
+- **`_vertical_links` files it on the record** as `nav_link`, for `floor_hole` / `hatch` links with a storey and
+  a position; a `stair` link, which is descriptive, carries none. The id is
+  `<spec>_<kind>_<story>_<x>_<y>_navlink`.
+- `test_drop_nav_link.py`.
+
+### Downstream
+Lot 0.125.0 moves the link's points into site space with the vertical link; Dispatch 0.5.3 reads it from both
+importers into `navigation_hints.json` `links[]`. The factory's `tools/walkable_edge.gd` sort can then take the
+declared set from the package rather than from this repo's build records.
+
 ## [0.225.0] - a switchback's top leg cuts only its own run
 
 **Cold run 9317's office, read by the drop-edge instrument (roadmap 173, the factory's

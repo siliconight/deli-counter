@@ -171,7 +171,39 @@
       "story": 1,
       "x": 13.0,
       "y": 7.2,
-      "breachable": null
+      "breachable": null,
+      "nav_link": {
+        "id": "landmark_hall_a01_hatch_1_13_7_navlink",
+        "start_position": [
+          13.0,
+          7.2,
+          5.0
+        ],
+        "end_position": [
+          13.0,
+          7.2,
+          0.0
+        ],
+        "bidirectional": false,
+        "cost": 4.0,
+        "agent_types": [
+          "player",
+          "ai_humanoid"
+        ],
+        "required_capability": "drop",
+        "access_state": "open",
+        "reservation_state": "free",
+        "hole": [
+          [
+            12.25,
+            6.45
+          ],
+          [
+            13.75,
+            7.95
+          ]
+        ]
+      }
     }
   ],
   "openings": [

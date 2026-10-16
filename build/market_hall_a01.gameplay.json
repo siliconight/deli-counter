@@ -171,7 +171,39 @@
       "story": 1,
       "x": 20.0,
       "y": 8.6,
-      "breachable": null
+      "breachable": null,
+      "nav_link": {
+        "id": "market_hall_a01_hatch_1_20_9_navlink",
+        "start_position": [
+          20.0,
+          8.6,
+          6.5
+        ],
+        "end_position": [
+          20.0,
+          8.6,
+          0.0
+        ],
+        "bidirectional": false,
+        "cost": 4.0,
+        "agent_types": [
+          "player",
+          "ai_humanoid"
+        ],
+        "required_capability": "drop",
+        "access_state": "open",
+        "reservation_state": "free",
+        "hole": [
+          [
+            19.25,
+            7.85
+          ],
+          [
+            20.75,
+            9.35
+          ]
+        ]
+      }
     }
   ],
   "openings": [

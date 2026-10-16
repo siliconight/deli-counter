@@ -257,7 +257,39 @@
       "story": 2,
       "x": 13.0,
       "y": -9.0,
-      "breachable": null
+      "breachable": null,
+      "nav_link": {
+        "id": "pvp_station_ref_hatch_2_13_-9_navlink",
+        "start_position": [
+          13.0,
+          -9.0,
+          7.2
+        ],
+        "end_position": [
+          13.0,
+          -9.0,
+          3.6
+        ],
+        "bidirectional": false,
+        "cost": 4.0,
+        "agent_types": [
+          "player",
+          "ai_humanoid"
+        ],
+        "required_capability": "drop",
+        "access_state": "open",
+        "reservation_state": "free",
+        "hole": [
+          [
+            12.25,
+            -9.75
+          ],
+          [
+            13.75,
+            -8.25
+          ]
+        ]
+      }
     },
     {
       "kind": "floor_hole",
@@ -267,7 +299,39 @@
       "story": 1,
       "x": 11.0,
       "y": 8.0,
-      "breachable": null
+      "breachable": null,
+      "nav_link": {
+        "id": "pvp_station_ref_floor_hole_1_11_8_navlink",
+        "start_position": [
+          11.0,
+          8.0,
+          3.6
+        ],
+        "end_position": [
+          11.0,
+          8.0,
+          0.0
+        ],
+        "bidirectional": false,
+        "cost": 4.0,
+        "agent_types": [
+          "player",
+          "ai_humanoid"
+        ],
+        "required_capability": "drop",
+        "access_state": "open",
+        "reservation_state": "free",
+        "hole": [
+          [
+            10.25,
+            7.25
+          ],
+          [
+            11.75,
+            8.75
+          ]
+        ]
+      }
     }
   ],
   "openings": [

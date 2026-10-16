@@ -209,7 +209,39 @@
       "story": 2,
       "x": 2.0,
       "y": -10.0,
-      "breachable": null
+      "breachable": null,
+      "nav_link": {
+        "id": "airport_terminal_a03_hatch_2_2_-10_navlink",
+        "start_position": [
+          2.0,
+          -10.0,
+          11.0
+        ],
+        "end_position": [
+          2.0,
+          -10.0,
+          5.5
+        ],
+        "bidirectional": false,
+        "cost": 4.0,
+        "agent_types": [
+          "player",
+          "ai_humanoid"
+        ],
+        "required_capability": "drop",
+        "access_state": "open",
+        "reservation_state": "free",
+        "hole": [
+          [
+            1.25,
+            -10.75
+          ],
+          [
+            2.75,
+            -9.25
+          ]
+        ]
+      }
     }
   ],
   "openings": [

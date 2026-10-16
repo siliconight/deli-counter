@@ -171,7 +171,39 @@
       "story": 1,
       "x": 22.0,
       "y": 7.5,
-      "breachable": null
+      "breachable": null,
+      "nav_link": {
+        "id": "train_yard_a01_hatch_1_22_8_navlink",
+        "start_position": [
+          22.0,
+          7.5,
+          5.0
+        ],
+        "end_position": [
+          22.0,
+          7.5,
+          0.0
+        ],
+        "bidirectional": false,
+        "cost": 4.0,
+        "agent_types": [
+          "player",
+          "ai_humanoid"
+        ],
+        "required_capability": "drop",
+        "access_state": "open",
+        "reservation_state": "free",
+        "hole": [
+          [
+            21.25,
+            6.75
+          ],
+          [
+            22.75,
+            8.25
+          ]
+        ]
+      }
     }
   ],
   "openings": [

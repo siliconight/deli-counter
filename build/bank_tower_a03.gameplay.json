@@ -171,7 +171,39 @@
       "story": 1,
       "x": 16.0,
       "y": 7.5,
-      "breachable": null
+      "breachable": null,
+      "nav_link": {
+        "id": "bank_tower_a03_hatch_1_16_8_navlink",
+        "start_position": [
+          16.0,
+          7.5,
+          4.2
+        ],
+        "end_position": [
+          16.0,
+          7.5,
+          0.0
+        ],
+        "bidirectional": false,
+        "cost": 4.0,
+        "agent_types": [
+          "player",
+          "ai_humanoid"
+        ],
+        "required_capability": "drop",
+        "access_state": "open",
+        "reservation_state": "free",
+        "hole": [
+          [
+            15.25,
+            6.75
+          ],
+          [
+            16.75,
+            8.25
+          ]
+        ]
+      }
     }
   ],
   "openings": [

@@ -2923,13 +2923,28 @@ class _Builder:
         """floor_hole / hatch links cut the slab (like slab_holes) and record
         gameplay intent. 'stair' links are descriptive only (geometry comes
         from the stairs section). All are written to gameplay.json."""
+        import ladder as _ladder
         for v in self.s.vertical_links:
-            self.gameplay["vertical_links"].append({
+            rec = {
                 "kind": v.kind, "role": v.role,
                 "from_story": v.from_story, "to_story": v.to_story,
                 "story": v.story, "x": v.x, "y": v.y,
                 "breachable": v.breachable,
-            })
+            }
+            # A DECLARED DROP CARRIES ITS OWN OFF-MESH LINK (0.226.0, factory
+            # roadmap 173). The package carried a ladder's link and no drop's,
+            # so nothing downstream could tell this hole from one nobody
+            # meant: the AI had no edge through it and a drop-edge gate had no
+            # declared set to read. The same shape as a ladder's, one-way,
+            # capability "drop", with the cut's rect (`ladder.drop_nav_link`).
+            if (v.kind in ("floor_hole", "hatch") and v.story is not None
+                    and v.x is not None and v.y is not None):
+                lid = "%s_%s_%d_%d_%d" % (self.s.name, v.kind, v.story,
+                                          round(v.x), round(v.y))
+                rec["nav_link"] = _ladder.drop_nav_link(
+                    lid, v.story, v.x, v.y, v.size_x, v.size_y,
+                    self.s.story_height)
+            self.gameplay["vertical_links"].append(rec)
             if v.kind in ("floor_hole", "hatch") and v.cut_slab \
                     and v.story is not None and v.x is not None:
                 sx = v.size_x or 1.5

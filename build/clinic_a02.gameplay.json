@@ -209,7 +209,39 @@
       "story": 2,
       "x": -11.0,
       "y": -7.0,
-      "breachable": null
+      "breachable": null,
+      "nav_link": {
+        "id": "clinic_a02_hatch_2_-11_-7_navlink",
+        "start_position": [
+          -11.0,
+          -7.0,
+          6.8
+        ],
+        "end_position": [
+          -11.0,
+          -7.0,
+          3.4
+        ],
+        "bidirectional": false,
+        "cost": 4.0,
+        "agent_types": [
+          "player",
+          "ai_humanoid"
+        ],
+        "required_capability": "drop",
+        "access_state": "open",
+        "reservation_state": "free",
+        "hole": [
+          [
+            -11.75,
+            -7.75
+          ],
+          [
+            -10.25,
+            -6.25
+          ]
+        ]
+      }
     }
   ],
   "openings": [

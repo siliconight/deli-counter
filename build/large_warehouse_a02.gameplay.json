@@ -209,7 +209,39 @@
       "story": 2,
       "x": 4.0,
       "y": 10.0,
-      "breachable": null
+      "breachable": null,
+      "nav_link": {
+        "id": "large_warehouse_a02_hatch_2_4_10_navlink",
+        "start_position": [
+          4.0,
+          10.0,
+          9.0
+        ],
+        "end_position": [
+          4.0,
+          10.0,
+          4.5
+        ],
+        "bidirectional": false,
+        "cost": 4.0,
+        "agent_types": [
+          "player",
+          "ai_humanoid"
+        ],
+        "required_capability": "drop",
+        "access_state": "open",
+        "reservation_state": "free",
+        "hole": [
+          [
+            3.25,
+            9.25
+          ],
+          [
+            4.75,
+            10.75
+          ]
+        ]
+      }
     }
   ],
   "openings": [

@@ -277,7 +277,39 @@
       "story": 2,
       "x": 16.0,
       "y": 12.0,
-      "breachable": null
+      "breachable": null,
+      "nav_link": {
+        "id": "bank_branch_a04_hatch_2_16_12_navlink",
+        "start_position": [
+          16.0,
+          12.0,
+          8.4
+        ],
+        "end_position": [
+          16.0,
+          12.0,
+          4.2
+        ],
+        "bidirectional": false,
+        "cost": 4.0,
+        "agent_types": [
+          "player",
+          "ai_humanoid"
+        ],
+        "required_capability": "drop",
+        "access_state": "open",
+        "reservation_state": "free",
+        "hole": [
+          [
+            15.25,
+            11.25
+          ],
+          [
+            16.75,
+            12.75
+          ]
+        ]
+      }
     }
   ],
   "openings": [

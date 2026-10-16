@@ -190,7 +190,39 @@
       "story": 1,
       "x": 16.0,
       "y": 10.0,
-      "breachable": null
+      "breachable": null,
+      "nav_link": {
+        "id": "self_storage_a01_hatch_1_16_10_navlink",
+        "start_position": [
+          16.0,
+          10.0,
+          3.2
+        ],
+        "end_position": [
+          16.0,
+          10.0,
+          0.0
+        ],
+        "bidirectional": false,
+        "cost": 4.0,
+        "agent_types": [
+          "player",
+          "ai_humanoid"
+        ],
+        "required_capability": "drop",
+        "access_state": "open",
+        "reservation_state": "free",
+        "hole": [
+          [
+            15.25,
+            9.25
+          ],
+          [
+            16.75,
+            10.75
+          ]
+        ]
+      }
     }
   ],
   "openings": [

@@ -706,7 +706,39 @@
       "story": 1,
       "x": 0.0,
       "y": -9.0,
-      "breachable": null
+      "breachable": null,
+      "nav_link": {
+        "id": "foundry_heist_vertical_floor_hole_1_0_-9_navlink",
+        "start_position": [
+          0.0,
+          -9.0,
+          3.4
+        ],
+        "end_position": [
+          0.0,
+          -9.0,
+          0.0
+        ],
+        "bidirectional": false,
+        "cost": 4.0,
+        "agent_types": [
+          "player",
+          "ai_humanoid"
+        ],
+        "required_capability": "drop",
+        "access_state": "open",
+        "reservation_state": "free",
+        "hole": [
+          [
+            -2.5,
+            -10.5
+          ],
+          [
+            2.5,
+            -7.5
+          ]
+        ]
+      }
     },
     {
       "kind": "hatch",
@@ -716,7 +748,39 @@
       "story": 2,
       "x": 16.0,
       "y": 10.0,
-      "breachable": true
+      "breachable": true,
+      "nav_link": {
+        "id": "foundry_heist_vertical_hatch_2_16_10_navlink",
+        "start_position": [
+          16.0,
+          10.0,
+          6.8
+        ],
+        "end_position": [
+          16.0,
+          10.0,
+          3.4
+        ],
+        "bidirectional": false,
+        "cost": 4.0,
+        "agent_types": [
+          "player",
+          "ai_humanoid"
+        ],
+        "required_capability": "drop",
+        "access_state": "open",
+        "reservation_state": "free",
+        "hole": [
+          [
+            14.9,
+            8.9
+          ],
+          [
+            17.1,
+            11.1
+          ]
+        ]
+      }
     }
   ],
   "openings": [

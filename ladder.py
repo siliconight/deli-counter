@@ -411,6 +411,10 @@ _BIDIRECTIONAL_DIRECTIONS = {"bidirectional", "deploy_then_bidirectional"}
 # vertical rung ladder; a caged/safety-rail climb costs a little more)
 _AI_COST = {"fixed_vertical": 3.0, "ship": 2.0, "alternating_tread": 2.5,
             "caged": 3.5, "safety_rail": 3.2}
+#: A declared drop's cost to a planner: dearer than any ladder, because it is
+#: one-way and the body takes a storey's fall -- a route of last resort, not a
+#: shortcut the AI prefers to a stair.
+DROP_COST = 4.0
 
 
 def _traversal_component(ld, lid, z0, z1):
@@ -446,6 +450,38 @@ def _nav_link(ld, lid, z0, z1):
         "access_state": ("locked" if getattr(ld, "access_control", None)
                          in ("locked_gate", "locked_hatch") else "open"),
         "reservation_state": "free",
+    }
+
+
+def drop_nav_link(lid, story, x, y, size_x, size_y, story_height):
+    """s17.2 for a DECLARED DROP: the one-way off-mesh link a `floor_hole` or
+    `hatch` vertical link files on itself (0.226.0, factory roadmap 173).
+
+    The link starts over the cut on the storey whose floor it opens (`story`:
+    the slab whose TOP face is that storey's floor, the same key the builder's
+    slab holes use) and ends on the floor below, the same two-point shape as
+    `_nav_link` so Dispatch carries it as it carries a ladder's and Lot moves
+    both points into site space. One-way, `required_capability` "drop": a
+    planner that cannot fall does not route through it, and one that can pays
+    `DROP_COST`. `hole` is the cut's rect on the upper floor, two corners, for
+    a gate that asks which rim a body may walk off: the declared set and the
+    AI's set are then one list.
+    """
+    sx = float(size_x or 1.5)
+    sy = float(size_y or 1.5)
+    z_top = float(story) * float(story_height)
+    z_bottom = (float(story) - 1.0) * float(story_height)
+    return {
+        "id": f"{lid}_navlink",
+        "start_position": [x, y, z_top],
+        "end_position": [x, y, z_bottom],
+        "bidirectional": False,
+        "cost": DROP_COST,
+        "agent_types": ["player", "ai_humanoid"],
+        "required_capability": "drop",
+        "access_state": "open",
+        "reservation_state": "free",
+        "hole": [[x - sx / 2.0, y - sy / 2.0], [x + sx / 2.0, y + sy / 2.0]],
     }
 
 
