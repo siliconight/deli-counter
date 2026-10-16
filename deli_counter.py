@@ -1859,6 +1859,15 @@ class _Builder:
             else:
                 h = stairwell.GUARD_HEIGHT
                 mat = "wood" if "wood" in have else None
+            # A SEAM PIECE'S UNDERSIDE FOLLOWS THE FLIGHT BELOW (0.225.0):
+            # `z_lo` lifts the box's bottom off the storey floor and the top
+            # stays at the slab underside (`stairwell._seam_pieces`).
+            if "z_lo" in g:
+                lift = max(0.0, float(g["z_lo"]) - z0)
+                z0 += lift
+                h -= lift
+                if h <= T:
+                    continue
             along, mid = g["hi"] - g["lo"], (g["lo"] + g["hi"]) / 2.0
             th = g.get("thick", T)
             if g["axis"] == "Y":
@@ -1942,8 +1951,10 @@ class _Builder:
                 clear = stairwell.WALKOFF_CLEAR   # walk-off past the landing
                 # ONE SOURCE for the cut's width and centre: a single-storey
                 # switchback cuts only the run its one leg climbs in
-                # (`stairwell.hole_span`; cold run 9050's open unused run).
-                hole_cx, hole_w = stairwell.hole_span(st)
+                # (`stairwell.hole_span`; cold run 9050's open unused run), and
+                # so does the top leg of a multi-storey one (0.225.0: cold run
+                # 9317's office, the other run's half of the cut a 6.67 m pit).
+                hole_cx, hole_w = stairwell.hole_span(st, s)
                 if st.style == "scissor":
                     flights = [(1, st.x - x_offset, "a"),
                                (-1, st.x + x_offset, "b")]

@@ -497,7 +497,7 @@ def flight_rect(st, s):
         return (px - sx / 2, py - sy / 2, px + sx / 2, py + sy / 2)
     x_off = 0.0 if st.style == "straight" else st.width / 2
     clear = WALKOFF_CLEAR                # walk-off depth past the landing
-    hole_cx, hole_w = hole_span(st)
+    hole_cx, hole_w = hole_span(st, s)
     if st.style == "scissor":
         px, py = _stair_pt(st, st.x, st.y)
         sx, sy = _stair_sz(st, hole_w, st.run + 2 * clear)
@@ -593,14 +593,35 @@ def single_run(st):
             and abs(st.to_story - st.from_story) == 1)
 
 
-def hole_span(st):
+def hole_span(st, s=None):
     """``(local centre x, width)`` of a straight / switchback / scissor stair's
     slab cut across its runs, in the stair's own unrotated frame. THE single
-    source for the builder's `_stairs` and for `flight_rect`."""
+    source for the builder's `_stairs` and for `flight_rect`.
+
+    PER LEG when `s` is given: THE TOP LEG OF A MULTI-STOREY SWITCHBACK CUTS
+    ONLY ITS OWN RUN. Cold run 9317's office, read by the drop-edge instrument
+    (the factory's docs/findings/drop_edges_173/): leg 1 arrives at storey 2 in
+    the west run; the east run holds leg 0, which tops out a storey below, and
+    the cut at storey 2 spanned both runs -- so the east half of it was a pit
+    6.67 m deep onto leg 0's foot, open on three edges (the discharge plate's
+    edge over the east run, the east rail's sideways opening, the seam between
+    the runs along the whole of leg 1): 12 unguarded edges, 1.3-6.67 m. The
+    run keeps its outer margin (`clear / 2`) and meets the other run at the
+    seam with none, so the slab covers the other run to the flight's edge and
+    `stair_guards` stands a rail at the seam on it. `single_run` is this rule
+    for a one-leg switchback (cold run 9050); this is the same rule a storey
+    up. Intermediate legs keep both runs: their turn landings bridge them.
+    """
     clear = 0.8
     x_off = 0.0 if st.style == "straight" else st.width / 2
     if single_run(st):
         return st.x + x_off, st.width + clear
+    if (s is not None and st.style == "switchback"
+            and s == max(st.from_story, st.to_story) - 1):
+        lo = min(st.from_story, st.to_story)
+        sign = 1 if ((s - lo) % 2 == 0) else -1
+        half = st.width + clear / 2.0
+        return st.x + sign * half / 2.0, half
     return st.x, st.width + 2 * x_off + clear
 
 
@@ -750,6 +771,34 @@ WALKOFF_CLEAR = 0.8
 #: `stair_guards`. A constant that is asserted rather than used is deliberate
 #: here -- the alternative is a number in a comment, which rots.
 RAIL_OPEN_MIN = 1.4
+
+
+def _seam_pieces(st, H, s, sid, travel, pos, span):
+    """The seam wall of a multi-storey switchback's top leg: ONE box, its
+    underside a body's height above the storey's floor.
+
+    The seam between the two runs has no margin, so a wall there stands over
+    the lower run's edge, and the lower flight passes under it. Measured on
+    `cbp_town_finale_midbalanced` (0.225.0), one shell of 157 and the only one
+    with a volume leaning over the run from the other side: with the wall's
+    bottom at the storey's floor the nav bake lost the lower flight 2.25 m up
+    (its lower and upper endpoints on islands of 101 and 612 polygons), and
+    with the bottom lifted a metre it connected again; the mirror stair, with
+    nothing leaning on it, passed either way. REFUTED on the same shell: an
+    underside stepped along the flight below at a body's height plus a riser
+    over it, rising only from 4 m along -- same cut, same 101 polygons, so the
+    bake's objection is not the headroom model that stepping assumed. The
+    rule shipped is the one that measured clean, derived rather than one
+    metre: the bottom at the floor plus `agent_contract.body_height` (the
+    bake's agent height), so the flight below keeps a body's headroom under
+    the wall all the way to the turn landing, where its surface is a riser
+    under the floor. The body ON the top leg is still held: the gap under the
+    wall is a body's height minus the leg's own rise, less than a body from
+    the first riser on, and at the very foot it is a doorway onto the lower
+    flight's top step, a step a review reads as a step."""
+    z_lo = s * H + agent_contract.body_height()
+    return [{"stair": sid, "story": s, "kind": "side", "axis": travel,
+             "pos": pos, "lo": span[0], "hi": span[1], "z_lo": round(z_lo, 4)}]
 
 
 def stair_guards(spec):
@@ -920,14 +969,43 @@ def stair_guards(spec):
             # the thin guard at the rectangle's edge and its slot.
             narrow = st.width < agent_contract.min_corridor_width() - 1e-9
             fill = SIDE_MARGIN - SIDE_GAP
+            # THE TOP LEG OF A MULTI-STOREY SWITCHBACK HAS A SEAM, NOT A
+            # MARGIN, on the side toward the other run: its rectangle is one
+            # run wide there (`hole_span`), so the rectangle's edge IS the
+            # flight's edge. The guard there is thin, SIDE_GAP off the treads
+            # like a narrow flight's; the side wall runs from the rectangle's
+            # far end to the turn landing the leg departs from, with no
+            # sideways opening -- the only thing beside it is the other run's
+            # air, and a body on this leg stood 1.3-5.9 m over the leg below
+            # along its whole length (cold run 9317's office, seven unguarded
+            # edges). The rail above it stands on the slab that now covers the
+            # other run, with the usual opening at the arrival end, which is
+            # over this leg's own top treads and its plate.
+            top_leg = (st.style == "switchback" and not single_run(st)
+                       and s == hi_s - 1)
+            r_lo, r_hi = flight_run_lateral(st, s)
+            land_t = None
+            if top_leg:
+                prev_end = flight_solid_end(st, H, s - 1)
+                land_t = prev_end[1] if travel == "Y" else prev_end[0]
             for side, rect_edge in ((-1, l_lo), (+1, l_hi)):
-                pos_rail = rect_edge + side * T / 2.0
-                pos_side = (pos_rail if narrow
+                seam = top_leg and abs(
+                    rect_edge - (r_lo if side < 0 else r_hi)) < 1e-6
+                pos_rail = rect_edge + side * (
+                    (SIDE_GAP + T / 2.0) if seam else T / 2.0)
+                pos_side = (pos_rail if (narrow or seam)
                             else rect_edge - side * fill / 2.0)
-                if solid and side_span[1] - side_span[0] > T:
+                s_span = side_span
+                if seam:
+                    s_span = ((land_t + SIDE_GAP, t_hi) if arrive_hi
+                              else (t_lo, land_t - SIDE_GAP))
+                if solid and seam and s_span[1] - s_span[0] > T:
+                    raw += _seam_pieces(st, H, s, sid, travel, pos_side,
+                                        s_span)
+                elif solid and s_span[1] - s_span[0] > T:
                     piece = {"stair": sid, "story": s, "kind": "side",
                              "axis": travel, "pos": pos_side,
-                             "lo": side_span[0], "hi": side_span[1]}
+                             "lo": s_span[0], "hi": s_span[1]}
                     if not narrow:
                         piece["thick"] = fill
                     raw.append(piece)

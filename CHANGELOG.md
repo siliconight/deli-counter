@@ -1,3 +1,47 @@
+## [0.225.0] - a switchback's top leg cuts only its own run
+
+**Cold run 9317's office, read by the drop-edge instrument (roadmap 173, the factory's
+`docs/findings/drop_edges_173/`):** the stair's top leg arrives at storey 2 in the west run; the east run holds
+leg 0, which tops out a storey below, and the slab cut at storey 2 spanned both runs -- so the east half of the
+cut was a pit 6.67 m deep onto leg 0's foot, open on three edges: the discharge plate's edge over the east run
+(five unguarded edges), the east rail's sideways opening (one of them), and the seam between the runs along the
+whole of leg 1 (seven, 1.3-5.9 m down onto leg 0). The guards derived for it on 0.224.1 said why: `rail` leaves
+the arrival end open across the whole reserved rectangle, which is two runs wide, and `side` stands only on the
+rectangle's outer edges, so a wall even hung over the east run's margin at storey 1 while nothing stood at the
+seam. `single_run` already stops a one-leg switchback cutting the run it does not use (cold run 9050); this is
+the same rule one storey up.
+
+### Changed
+- **`stairwell.hole_span(st, s)` is per leg**: the top leg of a multi-storey switchback cuts its own run plus
+  its outer margin, meeting the other run at the seam with no margin, so the slab covers the other run to the
+  flight's edge. `flight_rect` and the builder's `_stairs` (the cut and the discharge plate) pass `s`; an
+  intermediate leg and its turn landing keep both runs. Every other caller of `flight_rect` passed `s` already.
+- **`stairwell.stair_guards` guards the seam**: on the top leg's seam side a thin side wall (`GUARD_THICK` at
+  `SIDE_GAP` from the treads, as a narrow flight's) runs from the rectangle's far end to the turn landing the
+  leg departs from, with no sideways opening, and ITS UNDERSIDE IS A BODY'S HEIGHT ABOVE THE FLOOR
+  (`_seam_pieces`, `z_lo`; the builder's `_stair_guards` lifts the box and keeps its top at the slab
+  underside). The rail above stands at the seam on the slab that now covers the other run, with the usual
+  opening at the arrival end, which is over the leg's own top treads and plate. The wall that stood over the
+  other run's outer margin at the top storey goes with the margin.
+- `test_switchback_top_run.py`: the cut at the top storey is one run wide and meets the other run at the
+  flight's edge (two and three legs, facing N and E), an intermediate storey keeps both runs, the seam wall and
+  rail exist with those spans and that underside and nothing stands over the other run, a single-storey
+  switchback and a straight flight are unchanged. Fails on 0.224.1.
+
+### Measured
+- The seam wall's underside, on the nav gate (Godot's own bake, `nav_gate.py`), one shell of 157:
+  `cbp_town_finale_midbalanced`'s stair 0, whose lower run a console volume already leans over from the other
+  side (`STAIR_VOLUME_INVADED`). With the wall's bottom at the storey floor the bake lost the lower flight
+  2.25 m up (endpoints on islands of 101 and 612 polygons; the mirror stair, with nothing leaning on it,
+  passed); with no seam wall it connected; with the bottom lifted a metre it connected. REFUTED on the same
+  shell: an underside stepped along the flight below at a body's height plus a riser over it -- the same cut,
+  the same 101 polygons -- so the bake's objection is not that headroom model. Shipped: the bottom at the floor
+  plus the contract's body height, which passed; the gap under it is a body's height minus the leg's own rise,
+  so the top leg is held from its first riser on.
+- Before, on cold run 9317 (DC 0.224.1): the office, walked by the factory's `tools/walkable_edge.gd` seeded
+  from the crew spawn, had 59 unguarded edges, 12 of them this pit. The after is the next cold run's, in
+  roadmap 173.
+
 ## [0.224.1] - the hatch is its ladder's own furniture
 
 **Cold run 9315, the first with a roof hatch, stopped at the art pass** on the circulation gate: the hatch's own
