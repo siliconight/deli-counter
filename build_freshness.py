@@ -76,6 +76,62 @@ GEOMETRY_SOURCES = (
     "fire_escape_stack.py",
     # the roof hatch slot and its interactive, one per hatch link on the roof (0.224.0)
     "roof_hatch.py",
+    # EVERY OTHER MODULE A BUILD REACHES WHOSE OUTPUT IT WRITES (0.229.0, the
+    # factory's roadmap 259). Until 0.228.0 this tuple named 23 sources while a
+    # build reached 54 of this repo's modules, and 21 of the unlisted ones shape
+    # what a build writes -- read off their call sites, not measured one edit at
+    # a time. `test_freshness_sources.py` walks the build's imports and fails on
+    # a module in neither this tuple nor `NOT_BAKED`. Listing one that bakes
+    # nothing only asks for a rebuild nobody needed: the safe direction.
+    "agent_contract.py",    # body sizes: stair landings, door widths, the vault aperture
+    "agent_contract.json",  # ... and the numbers, the one data file a build reads
+    "ledge_cover.py",       # whether a vault ledge draws its own box (0.227.0)
+    "level_design.py",      # club rooms and the business id; lights' bar aisle
+    "material_kind.py",     # each surface's skin kind
+    "prop_species.py",      # a prop's species, long axis and collision owner
+    "rarity.py",
+    "setbacks.py",          # every storey's extent
+    "skin_style.py",
+    "stair_pitch.py",       # presets lengthen a flight and clear its walls with it
+    "stoop.py",             # an Empty's stoop (0.211.0)
+    "tactical.py",          # the room under a point and the room graph: ladders, stairs
+    "tscn_export.py",       # the shell's .tscn
+    "vault_room.py",        # a vault's slot and bearing faces
+    "zoo_export.py",
+    # the migrations presets call while they write a spec
+    "migrate_furnish_recipes.py",
+    "migrate_roller_grill.py",
+    "migrate_slush_machine.py",
+    "migrate_wall_crossing.py",
+    "migrate_window_poster.py",
+    "migrate_window_sign.py",
+)
+
+# THE MODULES A BUILD REACHES THAT ARE KEPT OUT OF `GEOMETRY_SOURCES`, each
+# with why (0.229.0, the factory's roadmap 259). `test_freshness_sources.py`
+# holds every module the build imports to one list or the other. A literal,
+# like the tuple, so a reader can parse it without importing this repo.
+NOT_BAKED = (
+    ("circulation.py", "a reader: the composer's circulation gate; layout_lint reads one prefix from it"),
+    ("zfight_gate.py", "a reader: the z-fight gate over built GLBs"),
+    ("evidence.py", "writes the validation, combat-audit and navigation reports beside a shell; "
+                    "no tool outside this repo reads them"),
+    ("combat_audit.py", "a gate evidence.py reports"),
+    ("enterability.py", "a gate evidence.py and validate.py report"),
+    ("guards.py", "a gate evidence.py and validate.py report"),
+    ("navigability.py", "a gate evidence.py and validate.py report"),
+    ("pvp_heist.py", "a gate evidence.py and validate.py report"),
+    ("sightlines.py", "an analysis evidence.py and validate.py report"),
+    ("validate.py", "the spec validator; evidence.py reports its schema check"),
+    ("polybudget.py", "an estimate validate.py prints"),
+    # NOT ONLY A READER, AND KEPT OUT BY DECISION (a call made 2026-10-19 and
+    # meant to be changed). stairwell asks its `_host_openings` and
+    # `DOOR_APPROACH_M` where a stair can stand, and stair_pitch acts on its
+    # findings, so an edit here can move a shell this gate does not see.
+    # Watched, every lint edit would demand a full rebuild, which
+    # `test_gates_that_only_read_shells_are_not_watched` refuses. Moving those
+    # names into a geometry module would watch them without watching the lint.
+    ("layout_lint.py", "a lint, kept out by decision though stairwell reads two of its names (roadmap 259)"),
 )
 
 

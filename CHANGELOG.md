@@ -1,3 +1,36 @@
+## [0.229.0] - the freshness gate watches every module a build writes with
+
+**The factory's roadmap 259.** `build_freshness.GEOMETRY_SOURCES` is this repo's commit hook's whole idea of
+what a built shell is made of, and Level Factory's library guard parses the same tuple. Measured on 0.228.0 by
+following the build's imports (AST, from build.py and deli_counter.py): a build reaches 54 of this repo's
+modules and the tuple named 23, 22 of them reached -- `ladder_place.py` is named on the build path only in
+comments. Of the 32 unlisted, 21 put their output into what a build writes, read off their call sites, and
+`agent_contract.json` was a source no tuple named. A commit changing only one of them passed the hook with
+every shell older than the code that makes it.
+
+**The call, made 2026-10-19 and meant to be changed:** 20 of the 21 and the contract are watched; `layout_lint`
+is not (below).
+
+### Changed
+- `GEOMETRY_SOURCES` gains 20 modules and `agent_contract.json`: agent_contract, ledge_cover, level_design,
+  material_kind, prop_species, rarity, setbacks, skin_style, stair_pitch, stoop, tactical, tscn_export,
+  vault_room, zoo_export, and the six migrations presets call. Still a literal.
+- No rebuild: every judged shell was built after the newest source added.
+
+### Added
+- `NOT_BAKED`, a literal: the 12 modules a build reaches that are kept out, each with why -- circulation,
+  zfight_gate, evidence and the eight gates and reports it calls, and layout_lint.
+- `test_freshness_sources.py` (5): every module a build reaches is in one list or the other; the tuple is a
+  literal naming files; no module is in both; each kept out says why; the contract is a source. Four fail on
+  0.228.0.
+
+### Not done, by decision
+- `layout_lint.py` stays unwatched, as `test_gates_that_only_read_shells_are_not_watched` holds it: a lint edit
+  must not demand a rebuild. That test's premise is refuted in its docstring. stairwell asks layout_lint's
+  `_host_openings` and `DOOR_APPROACH_M` where a stair can stand and stair_pitch acts on its findings, so an
+  edit there can move a shell unseen. Moving those names into a geometry module would watch them without
+  watching the lint.
+
 ## [0.228.0] - two video poker cabinets a store, and a filler's wall when none is free
 
 **The factory's roadmap 196, its open line.** 0.202.0 made `_wall_slots` offer a slot only where a built wall holds
