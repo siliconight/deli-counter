@@ -1,3 +1,18 @@
+## [0.231.1] - two video poker cabinets in one room are two different machines
+
+**Seen in the factory's cold run 9326 (roadmap 196).** deli_a01's two cabinets, both in the customer floor since
+0.231.0, instanced one machine twice: a fixture's variant is its name's crc32 modulo the species' count, and
+`video_poker_store_r7070a315_9` and `_10` drew the same one. Across the library, 6 of the 30 rooms holding two
+cabinets showed one machine twice -- all six delis, whose customer floors share the tag and the names.
+
+### Changed
+- `video_poker_store` is `distinct` (0.163.0's dial, which the poster runs use): `_distinct_variant` moves a
+  variant off the one its room already shows, and refuses a spot only when every variant is taken -- four here, two
+  a room at most -- so no placement moves. A call, made 2026-10-19 and meant to be changed.
+
+### Added
+- `test_cabinet_variants.py` (2, both fail on 0.231.0).
+
 ## [0.231.0] - a store's video poker cabinet may stand against the partition it backs onto
 
 **The factory's roadmap 196: the four stores 0.228.0 left short, and its other residue.** Traced on 0.230.0's

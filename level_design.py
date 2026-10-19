@@ -1493,7 +1493,10 @@ _PIECES = {p["name"]: p for p in (
            variants=4, seats=("stool", 1, 1), off_glass=True,
            rooms=("sales", "retail", "shop", "customer", "market", "showroom", "stall"),
            displaces=("cabinet_file", "vending"), most_building=2,
-           backs_on_partitions=True),
+           backs_on_partitions=True,
+           # two in one room are two machines (0.231.1): a variant is the
+           # name's crc32, and the six delis' customer floors drew one twice
+           distinct=True),
     _piece("video_poker_bar", ((0.65, 0.65, 1.75),), "wall", front=True, most=2,
            most_big=(80.0, 3), variants=4, seats=("stool", 1, 1), off_glass=True,
            rooms=("bar", "taproom", "tavern", "pub", "social", "club", "lounge", "vip",
