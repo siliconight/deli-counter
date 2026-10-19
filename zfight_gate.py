@@ -233,6 +233,31 @@ def _apply(m, p):
                  for i in range(3))
 
 
+def instance_matrix(f):
+    """The 3x4 world matrix of a `.tscn` node's ``Transform3D(...)``, its
+    twelve numbers in the order written: the basis's three ROWS, then the
+    origin (0.230.0, the factory's roadmap 177).
+
+    Godot 4.7 writes and parses the nine basis numbers as rows. Measured three
+    times: this repo off the engine on cold run 9013 (`tscn_export.
+    godot_basis` says so), Lot's `str_to_var` on 2026-09-13 (`lot/
+    site_furniture.plate_facing`), and the factory's `tools/
+    module_pose_census.py` on cold run 9324's deli_a01, where `ext_0_E_seg10`
+    stands 0.35 m through its wall and 0.6 m along it.
+
+    REFUTED, KEPT: until 0.229.0 this gate read them as COLUMNS -- the
+    transpose. A pure turn reads the same either way for a box about its own
+    centre; a turned AND non-uniformly scaled module, a wall remainder on a
+    wall that runs along Godot Z, came out with its length and thickness
+    swapped. deli_a01's east-wall end piece then shared both of partition 1's
+    side planes, 0.9 m2 each, and the gate reported them as the last two
+    z-fight pairs of cold runs 9322 to 9324: an instrument defect, no
+    geometry. Read as rows, 9324's 16 composed buildings count 0."""
+    return [[f[0], f[1], f[2], f[9]],
+            [f[3], f[4], f[5], f[10]],
+            [f[6], f[7], f[8], f[11]]]
+
+
 _EXT = re.compile(r'\[ext_resource type="PackedScene" path="res://([^"]+)" '
                   r'id="([^"]+)"\]')
 _NODE = re.compile(r'\[node name="([^"]+)"[^\]]*instance=ExtResource\('
@@ -281,9 +306,7 @@ def _scene_module_boxes(pkg_dir, tscn_name):
         xf = _XF.search(block)
         f = ([float(v) for v in xf.group(1).split(",")] if xf
              else [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0])
-        m = [[f[0], f[3], f[6], f[9]],
-             [f[1], f[4], f[7], f[10]],
-             [f[2], f[5], f[8], f[11]]]
+        m = instance_matrix(f)
         lo, hi = local
         pts = [_apply(m, (x, y, z))
                for x in (lo[0], hi[0]) for y in (lo[1], hi[1])

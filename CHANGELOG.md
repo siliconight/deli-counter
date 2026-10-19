@@ -1,3 +1,32 @@
+## [0.230.0] - the z-fight gate reads a scene's transforms as Godot does
+
+**The factory's roadmap 177, its last two pairs.** The gate built each composed module's box from its `.tscn`
+`Transform3D`, reading the nine basis numbers as columns. Godot 4.7 writes and parses them as rows, measured three
+times: by this repo on cold run 9013 (`tscn_export.godot_basis`), by Lot on 2026-09-13, and on cold run 9324's
+deli_a01 with the factory's `tools/module_pose_census.py`. A pure turn reads the same either way for a box about its
+own centre; a turned, non-uniformly scaled module does not. deli_a01's east-wall end piece `ext_0_E_seg10`, 0.6 m
+along its wall and 0.35 m through it, came out the other way round, sharing both side planes of partition 1's end
+piece: the two 0.9 m2 pairs cold runs 9322 to 9324 reported. The engine stands it as written, x 18.825..19.175 and
+z -6.300..-5.700, with no face on either plane.
+
+### Fixed
+- `instance_matrix(f)`: a node's 3x4 world matrix from the twelve numbers as written, the basis rows then the
+  origin; `_scene_module_boxes` builds every instance box with it. The column reading is kept, refuted, in its
+  docstring.
+
+### Measured
+- Cold run 9324's 16 composed buildings, the gate's own code with only the matrix differing (the factory's
+  `docs/findings/zfight_rows_177/`): 2 visible pairs read as columns, both deli_a01's junction, and 0 read as rows;
+  no pair appears under rows that columns hid. Buried pairs, reported and never gated on, move: deli_a01 213 -> 220,
+  pharmacy_a01 29 -> 27.
+
+### Added
+- `test_zfight_rows.py` (3), on the two nodes' transforms exactly as cold run 9324 wrote them; all fail on 0.229.0.
+
+No rebuild: `zfight_gate.py` is a reader, in `build_freshness.NOT_BAKED`. Other readers outside this repo hold the
+same belief -- Level Factory's `ground_contact`, and three of the factory's tools -- and are the roadmap's, not this
+release's.
+
 ## [0.229.0] - the freshness gate watches every module a build writes with
 
 **The factory's roadmap 259.** `build_freshness.GEOMETRY_SOURCES` is this repo's commit hook's whole idea of
