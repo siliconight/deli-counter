@@ -1,3 +1,30 @@
+## [0.231.0] - a store's video poker cabinet may stand against the partition it backs onto
+
+**The factory's roadmap 196: the four stores 0.228.0 left short, and its other residue.** Traced on 0.230.0's
+library, rule by rule (the factory's `patches/dc_store_cabinets/why_rule.py`), the short stores' candidates were
+refused by two rules: the 0.9 m spread off other volumes, 12 to 37 a room, and the metre-off-a-partition line
+rule, 24 to 48 a room. The line rule keeps every piece's centre 1.0 m off every partition's line, so it refuses
+every slot a held partition wall offers: a cabinet backed against one stands its centre about half a metre off it.
+That is the roadmap's "a partition is still unfurnished". The door rule (`_seed_clear_doors`) is separate.
+
+**The call, made 2026-10-19 and meant to be changed:** one dial on one piece, `backs_on_partitions`, on for
+`video_poker_store` alone. Placed against a wall, the cabinet is not asked the line rule for the one partition
+whose centreline is the room edge it backs onto; every other partition, the door rule and every other rule still
+apply. Every other wall piece keeps the metre.
+
+### Added
+- `_piece(backs_on_partitions=)`, `_seed_clear(backed_on=)`, and `_place_fixture` passing the edge, named by the
+  slot's front bearing, for a piece with the dial.
+- `test_cabinet_partitions.py` (4, three of which fail on 0.230.0), on fixtures kept beside it as the library was.
+
+### Changed
+- `test_store_cabinets.py`'s filler test asks with the dial off. The displacement path it proves is unchanged;
+  deli_a01 with the dial on needs fewer fillers.
+- The library, stripped and refurnished with `migrate_furnish_recipes.py`, as simulated beforehand
+  (`partition_sim.py` beside the census): fuel_stop_heist 0 -> 2, pharmacy_a01 1 -> 2, stop_n_go 1 -> 2,
+  pawn_shop_a01 0 -> 1, so 30 of 31 stores hold two. Nine of the fifteen fillers 0.228.0 displaced come back, five
+  file cabinets and four vending machines, because a cabinet now finds a partition first. Poster boards net +2.
+
 ## [0.230.0] - the z-fight gate reads a scene's transforms as Godot does
 
 **The factory's roadmap 177, its last two pairs.** The gate built each composed module's box from its `.tscn`

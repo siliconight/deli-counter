@@ -648,7 +648,7 @@ def _corridor_obstacles(spec, story, floor, sh):
 
 
 def _seed_clear(spec, room, px, py, placed, half=0.0, above=None,
-                below=None, over_openings=False, corridor=False):
+                below=None, over_openings=False, corridor=False, backed_on=None):
     """Candidate point clear of walls, openings, verticals, props, markers.
     `half` is the worst-case half-extent of the piece that will stand here:
     clearances are measured from the piece's EDGE, not its center -- a 2.6 m
@@ -693,7 +693,15 @@ def _seed_clear(spec, room, px, py, placed, half=0.0, above=None,
     body of something. With it, every passage round a seeded piece is a body
     wide or there is none, so a seeded piece cannot cut a floor in two.
     Opt-in, because furnish's callers stand furniture against walls on
-    purpose and answer to their own rules."""
+    purpose and answer to their own rules.
+
+    `backed_on` (0.231.0, the factory's roadmap 196), ``(axis, pos)`` of the
+    room edge a wall piece backs onto: the partition whose centreline IS that
+    edge is not asked the metre-off-a-partition rule, which refused every slot
+    a held partition wall offers -- a piece backed against one stands its
+    centre about half a metre off it. Every other partition, the door-approach
+    rule and every other rule still apply. Only a piece with
+    ``backs_on_partitions`` passes it (`_place_fixture`)."""
     story = room.get("story", 0)
     sh = _story_height(spec)
     floor = story * sh
@@ -709,6 +717,10 @@ def _seed_clear(spec, room, px, py, placed, half=0.0, above=None,
         if over_openings:
             break
         if p.get("story", 0) != story:
+            continue
+        # the partition the piece backs onto (0.231.0, `backed_on`)
+        if backed_on is not None and p["axis"] == backed_on[0] \
+                and abs(float(p["pos"]) - backed_on[1]) < 0.05:
             continue
         if p["axis"] == "Y":
             cy = max(p["start"], min(py, p["end"]))
@@ -1200,8 +1212,11 @@ def _piece(name, sizes, where, front=False, stock=None, variants=False,
            reserved_by=None, off_glass=False, backed_by=None,
            ceiling=None, under_hung=False, twin=False, wall_band=False,
            rooms=None, distinct=False, solo=False, lift_steps=None,
-           displaces=None, most_building=None):
+           displaces=None, most_building=None, backs_on_partitions=False):
     return {"name": name, "sizes": tuple(sizes), "where": where,
+            # a wall piece that may stand against the PARTITION it backs onto
+            # (0.231.0; `_seed_clear`'s `backed_on`, passed by `_place_fixture`)
+            "backs_on_partitions": backs_on_partitions,
             "front": front, "stock": stock, "variants": variants,
             "form": form, "seats": seats, "most": most, "lift": lift,
             "collision": collision, "deck": deck, "lane": lane,
@@ -1469,11 +1484,16 @@ _PIECES = {p["name"]: p for p in (
     # fixtures, so a cabinet now takes a file cabinet's slot, then a vending
     # machine's, in its own room -- passing every test of its own in it -- and a
     # building holds two, the walker's count. Both are dials, a call made
-    # 2026-10-19 and meant to be changed.
+    # 2026-10-19 and meant to be changed. And it may back onto a PARTITION
+    # (0.231.0): `_seed_clear` keeps every piece's centre a metre off every
+    # partition's line, which refused every slot a partition wall offers; the
+    # one partition behind the cabinet is not asked, every other rule is --
+    # a third dial, the same call.
     _piece("video_poker_store", ((0.65, 0.65, 1.75),), "wall", front=True, most=2,
            variants=4, seats=("stool", 1, 1), off_glass=True,
            rooms=("sales", "retail", "shop", "customer", "market", "showroom", "stall"),
-           displaces=("cabinet_file", "vending"), most_building=2),
+           displaces=("cabinet_file", "vending"), most_building=2,
+           backs_on_partitions=True),
     _piece("video_poker_bar", ((0.65, 0.65, 1.75),), "wall", front=True, most=2,
            most_big=(80.0, 3), variants=4, seats=("stool", 1, 1), off_glass=True,
            rooms=("bar", "taproom", "tavern", "pub", "social", "club", "lounge", "vip",
@@ -3695,10 +3715,19 @@ def _place_fixture(spec, room, key, k, building):
             continue
         if _over_rects(inner, qx, qy, half, half):
             continue
+        # THE EDGE A WALL PIECE BACKS ONTO (0.231.0), for a piece that may
+        # stand against a partition: the slot's front bearing names it -- N
+        # from the room's south edge, E from its west, and so on round.
+        backed_on = None
+        if p["backs_on_partitions"] and front is not None:
+            bx0, by0, bx1, by1 = room["bounds"]
+            backed_on = {0.0: ("X", by0), 180.0: ("X", by1),
+                         90.0: ("Y", bx0), 270.0: ("Y", bx1)}.get(float(front))
         if not _seed_clear(spec, room, qx, qy, [], half=half, above=above,
                            below=below,
                            over_openings=hangs_over_openings(spec, story,
-                                                             above)):
+                                                             above),
+                           backed_on=backed_on):
             continue
         # a piece with no face the room must see (`_hung_floor_slots`) is
         # not turned: `_front_turn` of None is a TypeError, not a 0

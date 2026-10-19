@@ -27,7 +27,10 @@ def _count(spec, stem):
     return sum(1 for v in spec.get("volumes") or [] if str(v.get("name", "")).startswith(stem + "_r"))
 
 
-def test_deli_a01_reaches_two_by_taking_fillers():
+def test_deli_a01_reaches_two_by_taking_fillers(monkeypatch):
+    # the displacement path, asked with the partition dial off: since 0.231.0 this cabinet may back onto a
+    # partition, and deli_a01 then needs fewer fillers (test_cabinet_partitions.py)
+    monkeypatch.setitem(L._PIECES[KEY], "backs_on_partitions", False)
     spec = _spec("deli_a01")
     assert _count(spec, KEY) == 0
     fillers = _count(spec, "cabinet_file") + _count(spec, "vending")
