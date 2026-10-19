@@ -1242,35 +1242,12 @@ def marker_room_findings(spec):
     return warns
 
 
-def _host_openings(spec, host, is_ext):
-    """(center_along, width, label) for the door-like openings on a host wall.
-
-    Center math matches `_opening_xy` (the graph's convention): exterior
-    `pos` is a centered fraction of the footprint on the wall's running
-    axis; partition `pos` is a centered fraction of the (unclamped) span.
-    Width defaults to 1.0, the same default the floorplan drawing uses.
-    """
-    hx, hy = spec["footprint_x"] / 2, spec["footprint_y"] / 2
-    out = []
-    for op in host.get("openings", []):
-        if op.get("kind", "door") not in ("door", "garage", "breach"):
-            continue
-        w = float(op.get("width") or 1.0)
-        if is_ext:
-            face = host["wall"]
-            along = op.get("pos", 0.0) * (spec["footprint_x"]
-                                          if face in ("N", "S")
-                                          else spec["footprint_y"])
-        else:
-            ax = str(host.get("axis", "X")).upper()
-            s, e = host.get("start"), host.get("end")
-            lo = -hx if ax == "X" else -hy
-            hi = hx if ax == "X" else hy
-            s = lo if s is None else s
-            e = hi if e is None else e
-            along = (s + e) / 2 + op.get("pos", 0.0) * (e - s)
-        out.append((along, w, op.get("tag") or op.get("kind", "door")))
-    return out
+# THE OPENINGS ON A HOST WALL LIVE IN `partition_bounds.host_openings`
+# (0.233.0, the factory's roadmap 259). stairwell asked this lint for them
+# while building a shell, which made the lint part of what a build is made
+# of and a lint edit a move the freshness gate could not see. One function,
+# two names: the lint's own callers read it here.
+from partition_bounds import host_openings as _host_openings  # noqa: E402
 
 
 def door_split_findings(spec):

@@ -130,12 +130,12 @@ def test_gates_that_only_read_shells_are_not_watched():
     the gate.
 
     NOT TRUE OF layout_lint, measured 2026-10-19 (0.229.0, the factory's
-    roadmap 259): stairwell asks its `_host_openings` and `DOOR_APPROACH_M`
-    where a stair can stand, and stair_pitch acts on its findings, so an edit
-    there can move a shell the gate does not see. It stays unwatched by
-    decision -- the cost above -- and `NOT_BAKED` says so beside its name;
-    moving those names into a geometry module would watch them without
-    watching the lint."""
+    roadmap 259): stairwell asked its `_host_openings` and `DOOR_APPROACH_M`
+    where a stair can stand, so an edit there could move a shell the gate did
+    not see. TRUE AGAIN SINCE 0.233.0: those are `partition_bounds.
+    host_openings` and `agent_contract.door_approach()`, both watched, and
+    stairwell imports no lint (`test_lint_out_of_the_build.py`); what furnish
+    and stair_pitch take from it shapes specs, which their hashes cover."""
     for tool in ("nav_gate.py", "zfight_gate.py", "circulation.py",
                  "check.py", "layout_lint.py"):
         assert tool not in bf.GEOMETRY_SOURCES, tool

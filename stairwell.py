@@ -1220,7 +1220,6 @@ def stair_guards(spec):
         question instead (`back_only`), on walls of both axes."""
         if p["kind"] == "back":
             return []
-        import layout_lint as _ll
         out = []
         hx, hy = spec.footprint_x / 2.0, spec.footprint_y / 2.0
         for part in getattr(spec, "partitions", ()) or ():
@@ -1231,10 +1230,10 @@ def stair_guards(spec):
                                   "width": o.width} for o in part.openings]}
             spec_dims = {"footprint_x": spec.footprint_x,
                          "footprint_y": spec.footprint_y}
-            for along, w, _label in _ll._host_openings(spec_dims, host,
-                                                        False):
+            for along, w, _label in partition_bounds.host_openings(
+                    spec_dims, host, False):
                 if abs(along - p["pos"]) < w / 2.0 + T + band(p):
-                    r = _ll.DOOR_APPROACH_M
+                    r = agent_contract.door_approach()
                     out.append((part.pos - r, part.pos + r))
         return out
 
@@ -1273,7 +1272,7 @@ def stair_guards(spec):
         * A DOOR'S APPROACH, from a wall on either axis -- a thin side guard
           only ever crossed perpendicular walls (`doorways`), but a wall
           across the slot's mouth faces straight into it. The approach is
-          `layout_lint.DOOR_APPROACH_M` either side of the wall over the
+          `agent_contract.door_approach()` either side of the wall over the
           aperture. Where a `side` of the same flight stands between the door
           and the back, over the whole overlap, the door already faces that
           wall and the back takes nothing from it (`strip_retail_a01`
@@ -1284,7 +1283,6 @@ def stair_guards(spec):
         """
         if p["kind"] != "back":
             return []
-        import layout_lint as _ll
         import ladder_geom as _lg
         own = next((o for j, o in enumerate(getattr(spec, "stairs", ()) or ())
                     if stair_ident(o, j) == p["stair"]), None)
@@ -1331,7 +1329,7 @@ def stair_guards(spec):
                 a, c = along(p, r)
                 out.append((a - T, c + T))
 
-        r_app = _ll.DOOR_APPROACH_M
+        r_app = agent_contract.door_approach()
         hx, hy = spec.footprint_x / 2.0, spec.footprint_y / 2.0
         spec_dims = {"footprint_x": spec.footprint_x,
                      "footprint_y": spec.footprint_y}
@@ -1352,7 +1350,7 @@ def stair_guards(spec):
                               {"kind": o.kind, "pos": o.pos, "width": o.width}
                               for o in w.openings]}, True))
         for ax, line, host, is_ext in hosts:
-            for c, w, _label in _ll._host_openings(spec_dims, host, is_ext):
+            for c, w, _label in partition_bounds.host_openings(spec_dims, host, is_ext):
                 zone = ((c - w / 2, line - r_app, c + w / 2, line + r_app)
                         if ax == "X" else
                         (line - r_app, c - w / 2, line + r_app, c + w / 2))

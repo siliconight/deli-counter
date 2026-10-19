@@ -158,3 +158,40 @@ def partition_overshoot(start, end, axis, footprint_x, footprint_y):
     in bounds). Positive means the wall pokes past the exterior shell."""
     b = axis_bound(axis, footprint_x, footprint_y)
     return max(0.0, max(start, end) - b, -b - min(start, end))
+
+
+def host_openings(spec, host, is_ext):
+    """(center_along, width, label) for the door-like openings on a host wall.
+
+    MOVED HERE FROM `layout_lint._host_openings` (0.233.0, the factory's
+    roadmap 259), verbatim: stairwell asks it where a stair can stand while
+    building a shell, and this module is the builder's and the lint's shared
+    source of wall-span truth, watched by `build_freshness`; the lint keeps
+    the old name as an alias.
+
+    Center math matches `_opening_xy` (the graph's convention): exterior
+    `pos` is a centered fraction of the footprint on the wall's running
+    axis; partition `pos` is a centered fraction of the (unclamped) span.
+    Width defaults to 1.0, the same default the floorplan drawing uses.
+    """
+    hx, hy = spec["footprint_x"] / 2, spec["footprint_y"] / 2
+    out = []
+    for op in host.get("openings", []):
+        if op.get("kind", "door") not in ("door", "garage", "breach"):
+            continue
+        w = float(op.get("width") or 1.0)
+        if is_ext:
+            face = host["wall"]
+            along = op.get("pos", 0.0) * (spec["footprint_x"]
+                                          if face in ("N", "S")
+                                          else spec["footprint_y"])
+        else:
+            ax = str(host.get("axis", "X")).upper()
+            s, e = host.get("start"), host.get("end")
+            lo = -hx if ax == "X" else -hy
+            hi = hx if ax == "X" else hy
+            s = lo if s is None else s
+            e = hi if e is None else e
+            along = (s + e) / 2 + op.get("pos", 0.0) * (e - s)
+        out.append((along, w, op.get("tag") or op.get("kind", "door")))
+    return out

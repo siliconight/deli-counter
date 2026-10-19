@@ -124,14 +124,14 @@ NOT_BAKED = (
     ("sightlines.py", "an analysis evidence.py and validate.py report"),
     ("validate.py", "the spec validator; evidence.py reports its schema check"),
     ("polybudget.py", "an estimate validate.py prints"),
-    # NOT ONLY A READER, AND KEPT OUT BY DECISION (a call made 2026-10-19 and
-    # meant to be changed). stairwell asks its `_host_openings` and
-    # `DOOR_APPROACH_M` where a stair can stand, and stair_pitch acts on its
-    # findings, so an edit here can move a shell this gate does not see.
-    # Watched, every lint edit would demand a full rebuild, which
-    # `test_gates_that_only_read_shells_are_not_watched` refuses. Moving those
-    # names into a geometry module would watch them without watching the lint.
-    ("layout_lint.py", "a lint, kept out by decision though stairwell reads two of its names (roadmap 259)"),
+    # A READER AGAIN (0.233.0). Until then stairwell asked it `_host_openings`
+    # and `DOOR_APPROACH_M` while building a shell (0.229.0 kept it out by
+    # decision regardless); they are `partition_bounds.host_openings` and
+    # `agent_contract.door_approach()` now, both watched. Furnish and
+    # stair_pitch read its findings when a spec is made, which the spec's own
+    # hash covers, and the evidence report calls it beside the shell.
+    ("layout_lint.py", "a lint; no build-time code reads it since 0.233.0, and what furnish and stair_pitch "
+                       "take from it shapes specs, which their own hashes cover (roadmap 259)"),
 )
 
 

@@ -1,3 +1,27 @@
+## [0.233.0] - a shell build reads nothing from the layout lint
+
+**The factory's roadmap 259, its last residue.** 0.229.0 kept `layout_lint.py` out of `build_freshness`'s sources by
+decision, so a lint edit does not demand a rebuild, though stairwell asked the lint two things while building a
+shell: `_host_openings`, the door-like openings on a host wall, and `DOOR_APPROACH_M`, the floor a body needs before
+a door. An edit to either could move a shell the gate did not see. Read off the call sites, those two were the
+lint's only build-time readers: the evidence report writes a report, and furnish and stair_pitch read its findings
+when a spec is made, which the spec's own hash covers.
+
+### Changed
+- `host_openings` moved verbatim to `partition_bounds.py`, the builder's and the lint's shared source of wall-span
+  truth, watched since it was written; layout_lint keeps `_host_openings` as an alias, so its callers read the same
+  function.
+- stairwell asks `partition_bounds.host_openings` and `agent_contract.door_approach()`, the function
+  `DOOR_APPROACH_M` was always computed from, and imports the lint nowhere.
+- `build_freshness.NOT_BAKED` says layout_lint is a reader again; the readers test's docstring records its premise
+  as true again.
+
+### Added
+- `test_lint_out_of_the_build.py` (3): two fail on 0.232.0; the third, that the contract's number is the
+  lint's, holds before and after and pins the swap stairwell makes.
+
+No geometry moves: rebuilt with `build.py --all`, every tracked build record changed its build time alone.
+
 ## [0.232.0] - every hole in a stacked shaft is declared, and its drop lands where a body would
 
 **Found by the factory's breadth sweep of 2026-10-19 (roadmap 173).** Cold run 9329, county_hospital_001's first run
