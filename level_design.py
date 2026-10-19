@@ -1199,7 +1199,8 @@ def _piece(name, sizes, where, front=False, stock=None, variants=False,
            deck=None, lane=False, most_big=None, under=None,
            reserved_by=None, off_glass=False, backed_by=None,
            ceiling=None, under_hung=False, twin=False, wall_band=False,
-           rooms=None, distinct=False, solo=False, lift_steps=None):
+           rooms=None, distinct=False, solo=False, lift_steps=None,
+           displaces=None, most_building=None):
     return {"name": name, "sizes": tuple(sizes), "where": where,
             "front": front, "stock": stock, "variants": variants,
             "form": form, "seats": seats, "most": most, "lift": lift,
@@ -1212,7 +1213,11 @@ def _piece(name, sizes, where, front=False, stock=None, variants=False,
             "distinct": distinct, "solo": solo,
             # offsets from `lift`, one taken by a placement's own name
             # (0.170.0, `_lift_step`); None hangs every one at `lift`
-            "lift_steps": tuple(lift_steps) if lift_steps else None}
+            "lift_steps": tuple(lift_steps) if lift_steps else None,
+            # a fixture with no free wall may take a filler's (0.228.0,
+            # `_displace_for`), and a building holds at most so many of it
+            "displaces": tuple(displaces) if displaces else (),
+            "most_building": most_building}
 
 
 def hung_band_bottom(spec):
@@ -1457,9 +1462,18 @@ _PIECES = {p["name"]: p for p in (
     # `_place_fixture` honours since this release). Standing, collision.
     # OFF THE GLASS (0.168.2), the walker: "set off_glass on cabinets" -- a
     # store's machine stood against the storefront window by its door.
+    # TWO A STORE, AND A FILLER'S WALL WHEN NONE IS FREE (0.228.0, the factory's
+    # roadmap 196). 0.202.0 offered a wall slot only where a built wall holds
+    # the piece and dropped every fixture no held wall took: the six delis
+    # lost 18 of their 20 cabinets. A store's walls are stood before its
+    # fixtures, so a cabinet now takes a file cabinet's slot, then a vending
+    # machine's, in its own room -- passing every test of its own in it -- and a
+    # building holds two, the walker's count. Both are dials, a call made
+    # 2026-10-19 and meant to be changed.
     _piece("video_poker_store", ((0.65, 0.65, 1.75),), "wall", front=True, most=2,
            variants=4, seats=("stool", 1, 1), off_glass=True,
-           rooms=("sales", "retail", "shop", "customer", "market", "showroom", "stall")),
+           rooms=("sales", "retail", "shop", "customer", "market", "showroom", "stall"),
+           displaces=("cabinet_file", "vending"), most_building=2),
     _piece("video_poker_bar", ((0.65, 0.65, 1.75),), "wall", front=True, most=2,
            most_big=(80.0, 3), variants=4, seats=("stool", 1, 1), off_glass=True,
            rooms=("bar", "taproom", "tavern", "pub", "social", "club", "lounge", "vip",
@@ -3773,11 +3787,16 @@ def _distinct_variant(spec, key, rtag, vol, mod):
     return True
 
 
-def place_fixtures(spec):
+def place_fixtures(spec, keys=None):
     """Every room's FIXTURES (a recipe's ``fixtures``), where a room has none
     yet: one of each, two of a piece whose ``most_big`` area the room
     reaches. Idempotent and deterministic; reads nothing but the spec.
-    Returns the number of volumes placed."""
+    Returns the number of volumes placed.
+
+    ``keys`` (0.228.0) limits the pass to those pieces, so a caller can place
+    one kind and nothing else (test_store_cabinets.py does). A piece with
+    ``most_building`` stops when the building holds that many; one with
+    ``displaces`` that finds no free wall takes a filler's (`_displace_for`)."""
     building = club_building_id(spec)
     added = 0
     for room in spec.get("rooms", []) or []:
@@ -3789,20 +3808,52 @@ def place_fixtures(spec):
         rtag = _room_tag(room)
         tokens = set(str(room.get("id", "")).lower().replace("-", "_").split("_"))
         for key in fixtures:
+            if keys is not None and key not in keys:
+                continue
             only = _PIECES[key]["rooms"]
             if only and not tokens & only:
                 continue
             if _PIECES[key]["solo"] and any(
                     str(v.get("name", "")).startswith(key + "_") for v in spec.get("volumes") or []):
                 continue
+            cap = _PIECES[key]["most_building"]
             for k in range(fixture_limit(key, area)):
                 have = sum(1 for stem, _s, _v in _room_names(spec, rtag) if stem == key)
                 if have > k:
                     continue
-                if _place_fixture(spec, room, key, k, building) is None:
+                if cap is not None and sum(
+                        1 for v in spec.get("volumes") or []
+                        if str(v.get("name", "")).startswith(key + "_r")) >= cap:
+                    break
+                got = _place_fixture(spec, room, key, k, building)
+                if got is None and _PIECES[key]["displaces"]:
+                    got = _displace_for(spec, room, key, k, building)
+                if got is None:
                     break
                 added += 1
     return added
+
+
+def _displace_for(spec, room, key, k, building):
+    """A fixture with no free wall takes a filler's (0.228.0): each of the
+    piece's ``displaces`` stems in order, that stem's pieces in this room
+    newest first, one at a time -- the filler is lifted, the fixture is
+    placed by `_place_fixture` with every test it always had, and the filler
+    is put back exactly where it was when the fixture still finds no spot.
+    Returns the fixture's volume, or None with the spec as it was."""
+    rtag = _room_tag(room)
+    for stem in _PIECES[key]["displaces"]:
+        fillers = sorted((t for t in _room_names(spec, rtag) if t[0] == stem),
+                         key=lambda t: -t[1])
+        for _stem, _seq, vol in fillers:
+            vols = spec["volumes"]
+            i = vols.index(vol)
+            vols.pop(i)
+            got = _place_fixture(spec, room, key, k, building)
+            if got is not None:
+                return got
+            vols.insert(i, vol)
+    return None
 
 
 # ---------------------------------------------------------------------------

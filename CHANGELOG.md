@@ -1,3 +1,37 @@
+## [0.228.0] - two video poker cabinets a store, and a filler's wall when none is free
+
+**The factory's roadmap 196, its open line.** 0.202.0 made `_wall_slots` offer a slot only where a built wall holds
+the piece, and dropped every fixture no held wall could take. The six delis lost 18 of their 20 video poker
+cabinets, against the walker's two a store. Across the library, 31 buildings' rooms ask for `video_poker_store`;
+16 held two, 6 one and 9 none. In deli_a01 both selling rooms are offered held wall slots, 7 and 11, and
+`_seed_clear` refuses every one: the held walls are already stood with shelf runs, vending, file cabinets and the
+service counter, and the rest are partitions, kept a metre off for their doors.
+
+**The rule, a call made 2026-10-19 and meant to be changed, as two dials on the piece:**
+- `displaces=("cabinet_file", "vending")`: a cabinet with no free wall takes a filler's slot in its own room, a file
+  cabinet first, then a vending machine, passing every test of its own and its stool's. A filler is put back when
+  the retry fails.
+- `most_building=2`: two a store, across the building's rooms. `most` stays two a room.
+
+### Added
+- `_displace_for`, and `place_fixtures(spec, keys=None)`, which places only the pieces it names.
+- `test_store_cabinets.py` (5, which fail on 0.227.0), on fixtures kept beside it as the library was before.
+
+### Changed
+- The library, stripped and refurnished with `migrate_furnish_recipes.py`: 11 specs, +18 cabinets and their 18
+  stools, 9 file cabinets and 6 vending machines displaced. 27 of the 31 stores hold two. fuel_stop_heist and
+  pawn_shop_a01 stay at none, and pharmacy_a01 and stop_n_go at one: their rooms hold no filler that a cabinet and
+  its stool fit in.
+- A store's poster boards come after its cabinets in the recipe, so they meet different walls. corner_deli_heist_01,
+  cr_deli, deli_a01 and night_deli each lose one, and convenience_store_a01 gains one; every store keeps a board.
+- Rebuilt with `build.py --all`; the suite after the rebuild: 1576 passed, 2 skipped.
+
+### Refuted, kept
+- A migration that placed the cabinets alone, `place_fixtures(spec, keys={"video_poker_store"})` over the library,
+  left it no fixed point of furnish: test_wall_backing, test_club_fixtures and test_deli_window each failed theirs.
+  A fresh furnish places the cabinet before the poster boards, and the targeted pass had placed it after. The
+  migration is the strip and refurnish every furnishing change here uses.
+
 ## [0.227.0] - a vault ledge inside furniture draws no box of its own
 
 **Found resolving factory roadmap 177's last z-fight pairs.** Two of cold run 9322's four were the office's
