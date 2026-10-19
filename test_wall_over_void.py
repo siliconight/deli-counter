@@ -139,6 +139,11 @@ def _night_pawn():
     spec = spec_loader.load_spec(os.path.join(HERE, "specs", "night_pawn.json"))
     st = spec.stairs[0]
     st.x, st.y, st.facing = 5.5, 0.5, "N"
+    # and the wall at its captured run: 0.234.0's open-floor table (the factory's
+    # roadmap 260) carried it the last metre to the exterior wall at both ends
+    p = spec.partitions[1]
+    assert (p.start, p.end) == (-8.0, 8.0), (p.start, p.end)
+    p.start, p.end = -7.0, 7.0
     return spec
 
 

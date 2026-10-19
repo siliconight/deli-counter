@@ -2025,15 +2025,6 @@
       }
     },
     {
-      "node": "int_col_1_1_open0_lintel",
-      "material": {
-        "id": "drywall",
-        "acoustic": "Drywall",
-        "absorption": 0.42,
-        "damping": 0.38
-      }
-    },
-    {
       "node": "int_col_1_1_seg6",
       "material": {
         "id": "drywall",
@@ -2052,7 +2043,52 @@
       }
     },
     {
+      "node": "int_col_1_1_open0_lintel",
+      "material": {
+        "id": "drywall",
+        "acoustic": "Drywall",
+        "absorption": 0.42,
+        "damping": 0.38
+      }
+    },
+    {
       "node": "int_col_1_1_seg8",
+      "material": {
+        "id": "drywall",
+        "acoustic": "Drywall",
+        "absorption": 0.42,
+        "damping": 0.38
+      }
+    },
+    {
+      "node": "int_col_1_1_seg9",
+      "material": {
+        "id": "drywall",
+        "acoustic": "Drywall",
+        "absorption": 0.42,
+        "damping": 0.38
+      }
+    },
+    {
+      "node": "int_col_1_1_seg10",
+      "material": {
+        "id": "drywall",
+        "acoustic": "Drywall",
+        "absorption": 0.42,
+        "damping": 0.38
+      }
+    },
+    {
+      "node": "int_col_1_1_seg11",
+      "material": {
+        "id": "drywall",
+        "acoustic": "Drywall",
+        "absorption": 0.42,
+        "damping": 0.38
+      }
+    },
+    {
+      "node": "int_col_1_1_seg12",
       "material": {
         "id": "drywall",
         "acoustic": "Drywall",
@@ -2686,7 +2722,7 @@
       "building": "auto_shop_a01"
     },
     {
-      "id": "auto_shop_a01:if:f74bf16a",
+      "id": "auto_shop_a01:if:699a3193",
       "kind": "door",
       "slot_ref": "int_1_1_open0",
       "transform": {
@@ -2879,8 +2915,8 @@
           "floor": 1,
           "kind": "door",
           "wall": "int_1_1",
-          "pos": 0.2,
-          "interactive": "auto_shop_a01:if:f74bf16a",
+          "pos": 0.1346153846153846,
+          "interactive": "auto_shop_a01:if:699a3193",
           "default_state": "closed",
           "connects_from": "upper_storage",
           "discharge_door": false
@@ -3328,10 +3364,14 @@
     "int_1_1_seg3": "wall",
     "int_1_1_seg4": "wall",
     "int_1_1_seg5": "wall",
-    "int_1_1_open0_lintel": "doorway",
     "int_1_1_seg6": "wall",
     "int_1_1_seg7": "wall",
+    "int_1_1_open0_lintel": "doorway",
     "int_1_1_seg8": "wall",
+    "int_1_1_seg9": "wall",
+    "int_1_1_seg10": "wall",
+    "int_1_1_seg11": "wall",
+    "int_1_1_seg12": "wall",
     "stair0_0_0": "stair",
     "stair0_0_1": "stair",
     "stair0_0_2": "stair",

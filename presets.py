@@ -3875,4 +3875,12 @@ def make(preset: str, enrich: bool = True, stairs_first: bool = False,
         LAST_CORE_EVICTIONS = stair_core.core_first(spec, arch)
     _finish_stairs(spec)
     _finish_ladders(spec)
+    # THE OPEN FLOORS SORTED (0.234.0, the factory's roadmap 260): every pair of
+    # rooms the walker's table names comes out one floor (`open_to`) or two rooms
+    # -- a wall, with a door where nothing walkable would join them -- as
+    # `migrate_open_floor_rules.py` left the library, and a piece the new wall
+    # runs through is trimmed back as above.
+    import open_floor_rules
+    if open_floor_rules.apply(spec):
+        migrate_wall_crossing.trim(spec)
     return spec

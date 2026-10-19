@@ -1,3 +1,66 @@
+## [0.234.0] - the walker's open-floor table: each pair of rooms one floor or two; an exterior wall covers its line; a room may name `open_to`
+
+**The factory's roadmap 260, from 255.** 0.223.0 named every open floor nobody named (layout_lint L26) and froze the
+library's 49 in `open_floor_baseline.json` for the walker to sort one pair at a time. On the review page the walker
+answered "Wall it" for every pair, unsure whether a wall would shut a room nobody could open -- "we aren't making the
+doors in level factory because we are going to have networked doors added later" -- and, told that a wall here
+carries its own openings and that every door opening already ships to gameplay as a door socket (Dispatch's
+`interactives.json`), approved in chat a table by room pair: "go ahead with the 255 table, your defaults are good".
+The 49 are 20 pairs of room ids repeated through shared recipes.
+
+### Added
+- `open_floor_rules.py`: `RULES`, one row per pair of room ids.
+  - OPEN, the floor is meant (`open_to`): customer_floor|deli_counter, front_hall|kitchen, the garage decks,
+    exec_lobby|exec_anteroom, north_aisles|north_dock -- and, the factory's call where a stair stands on the line,
+    lobby|ground_bullpen (the office's only stair at (0, 0)) and corner_deli_heist_01's stair well against its two
+    cold rooms (`main_stack` reserves y 6.05..12.65: a wall on the well's south edge runs inside the stair, L21, and
+    one on its north edge ends at the centre of `cold_n_access`, L18).
+  - WALL, the rest: each stretch of the meeting line no partition covers is closed -- an abutting partition extended
+    over it, each of its openings kept where the builder stands it, else a partition of its own in its neighbour's
+    material; an opening a new wall's end would split slides along its own wall by whole grid cells until clear
+    (L18's own prescription); then one door of the agent contract's width where nothing walkable joins the two rooms
+    any more (`DOORWAY_POLICY = "keep_pair_joined"`, a call meant to be changed; "only_if_sealed" the other), never
+    into an objective room.
+  - A WALL row that would leave a spec failing any lint rule it passed is taken back whole and named.
+- `migrate_open_floor_rules.py`: the one-shot, idempotent migration over specs/ (not the mission's `lf_*`).
+- `presets.make` applies the table to every spec it writes, and trims a piece the new wall runs through.
+- `test_open_floor_rules.py` (11). On 0.233.0 the file does not collect; with the table alone beside 0.233.0, three
+  fail -- the exterior wall, `open_to` loading and the deli preset.
+
+### Fixed
+- An exterior wall covers its line as a partition does (`tactical.exterior_parts` and `exterior_sides`; layout_lint's
+  `_story_parts` and `_exterior_sides`, read with `LevelSpec`'s defaults). The gas stations' forecourts are outdoor
+  rooms that meet the shop along y -11, where the front wall stands with its doors and windows; read with partitions
+  alone, L26 named seven such pairs and the tactical graph held four edges through a wall with no door in it. On the
+  library's 128 specs with rooms: L26 49 -> 42 by this alone, graph edges 1,362 -> 1,358, L12 and L24 unchanged.
+- `Room` takes `open_to`. The schema has admitted it since 0.223.0, but `spec_loader`'s `Room(**r)` refused any spec
+  naming it: every spec the table opens would have failed to load into the builder.
+- `build_graph`'s docstring said it returned "(adjacency, info)"; it returns the adjacency.
+
+### Library
+- Migrated, 23 specs: 20 pairs given `open_to`; 24 stretches closed by running a partition on to its wall -- the
+  rowhouse, the walk-up, the auto shops' and the pawn shops' upper floors -- and 7 partitions added: a kitchen wall
+  in each of the six delis (x 7, y -14..6, a door at y -4), each deli's stockroom gate slid 0.5 m west to clear its
+  end, and corner_deli_heist_01's cold rooms walled apart (x -16.8, a piece of its own, since running its neighbour
+  on would have slid `cold_w_access` 0.125 m on the grid; a door at y 3.625). Nine doors in all, `kitchen_to_garage_bay`
+  in the rowhouse and the walk-up among them; none into rowhouse_raid's vault, the objective.
+- 0 open floors nobody named in 159 built specs; L12 0; L24 one room more, rowhouse_raid's basement vault -- the
+  objective, behind a reinforced door and a breach -- kept by the walker's rule (`walk_reach_baseline.json`); no new
+  lint FAIL in any migrated spec; the tactical graph loses only the four forecourt edges.
+- Refurnished (`migrate_furnish_recipes.py`): three specs move, by the new doors -- deli_a02's kitchen work tables
+  and cartons, a pallet in front of corner_deli_heist_01's new cold-room door (dropped), apartment_walkup_a01's garage
+  cartons and chairs; 16 pieces out, 14 in. The untouched library refurnished changes nothing, the control.
+  CATALOG.md regenerated.
+
+### Changed
+- L26's message offers the table.
+- `open_floor_rules.py` is a geometry source (`build_freshness`), with the migrations presets call while they write a
+  spec.
+- Tests: test_open_floor's warning test takes its open floor back out of rowhouse_raid; test_wall_over_void pins
+  night_pawn's wall at its captured run as it pins the stair; test_stair_back's library counts 34/17/15 -> 33/16/14,
+  the cold-room wall standing where `main_stack`'s storey -1 side guard stood (x -16.6, y 6.05..6.25), the leg's
+  back kept.
+
 ## [0.233.0] - a shell build reads nothing from the layout lint
 
 **The factory's roadmap 259, its last residue.** 0.229.0 kept `layout_lint.py` out of `build_freshness`'s sources by

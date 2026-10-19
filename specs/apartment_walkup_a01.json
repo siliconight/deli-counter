@@ -123,20 +123,26 @@
    "story": 0,
    "axis": "X",
    "pos": 0.0,
-   "start": -9,
-   "end": 9,
+   "start": -11.0,
+   "end": 11,
    "material": "drywall",
    "openings": [
     {
      "kind": "door",
-     "pos": -0.25,
+     "pos": -0.20454545454545456,
      "width": 1.25
     },
     {
      "kind": "breach",
-     "pos": 0.35,
+     "pos": 0.29545454545454547,
      "breach_class": "soft_wall",
      "material": "drywall"
+    },
+    {
+     "kind": "door",
+     "pos": 0.45454545454545453,
+     "width": 1.25,
+     "tag": "kitchen_to_garage_bay"
     }
    ]
   },
@@ -144,8 +150,8 @@
    "story": 1,
    "axis": "Y",
    "pos": 2.5,
-   "start": -8,
-   "end": 8,
+   "start": -9.0,
+   "end": 9,
    "openings": [
     {
      "kind": "door",
@@ -158,19 +164,19 @@
    "story": -1,
    "axis": "Y",
    "pos": 2.0,
-   "start": -7,
-   "end": 7,
+   "start": -7.0,
+   "end": 9,
    "openings": [
     {
      "kind": "breach",
-     "pos": 0.0,
+     "pos": -0.0625,
      "breach_class": "reinforceable",
      "material": "brick",
      "reinforceable": true
     },
     {
      "kind": "door",
-     "pos": -0.35,
+     "pos": -0.375,
      "width": 1.25,
      "tag": "vault_gate",
      "reinforceable": true
@@ -213,7 +219,10 @@
     0
    ],
    "role": "public_entry",
-   "combat_range": "medium"
+   "combat_range": "medium",
+   "open_to": [
+    "kitchen"
+   ]
   },
   {
    "id": "kitchen",
@@ -864,23 +873,23 @@
   },
   {
    "name": "safe_floor_r365b5162_2",
-   "x": 2.94,
-   "y": 8.39,
-   "z": -2.7,
-   "size_x": 0.9,
-   "size_y": 0.9,
-   "size_z": 1.0,
+   "x": 4.79,
+   "y": 8.54,
+   "z": -2.8,
+   "size_x": 0.6,
+   "size_y": 0.6,
+   "size_z": 0.8,
    "collision": "convex",
    "material": "metal"
   },
   {
    "name": "shelf_run_r365b5162_3",
-   "x": 6.64,
-   "y": 8.54,
-   "z": -2.25,
-   "size_x": 2.6,
-   "size_y": 0.6,
-   "size_z": 1.9,
+   "x": 7.14,
+   "y": 8.59,
+   "z": -2.3,
+   "size_x": 1.2,
+   "size_y": 0.5,
+   "size_z": 1.8,
    "collision": "convex",
    "material": "wood"
   },
@@ -889,8 +898,8 @@
    "x": 9.04,
    "y": 2.64,
    "z": -2.82,
-   "size_x": 0.9,
-   "size_y": 2.0,
+   "size_x": 2.0,
+   "size_y": 0.9,
    "size_z": 0.76,
    "collision": "convex",
    "material": "wood",
@@ -899,52 +908,52 @@
   {
    "material": "wood",
    "name": "chair_set_r365b5162_4_1",
-   "x": 8.14,
-   "y": 2.63,
+   "x": 8.92,
+   "y": 3.85,
    "z": -2.75,
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
    "collision": "convex",
-   "rot_z": 250.6
-  },
-  {
-   "material": "wood",
-   "name": "chair_set_r365b5162_4_2",
-   "x": 10.04,
-   "y": 2.5,
-   "z": -2.75,
-   "size_x": 0.5,
-   "size_y": 0.5,
-   "size_z": 0.9,
-   "collision": "convex",
-   "rot_z": 72.2
+   "rot_z": 12.9
   },
   {
    "name": "cartons_r365b5162_5",
-   "x": 4.85,
-   "y": 2.8,
-   "z": -2.5,
-   "size_x": 1.2,
-   "size_y": 0.8,
-   "size_z": 1.4,
+   "x": 3.74,
+   "y": 3.75,
+   "z": -2.75,
+   "size_x": 0.4,
+   "size_y": 0.5,
+   "size_z": 0.9,
    "collision": "convex",
    "material": "wood",
    "variant": 2
   },
   {
    "name": "cartons_r365b5162_6",
-   "x": 4.85,
-   "y": 4.49,
+   "x": 4.72,
+   "y": 3.75,
+   "z": -2.75,
+   "size_x": 0.4,
+   "size_y": 0.5,
+   "size_z": 0.9,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "cartons_r365b5162_7",
+   "x": 5.77,
+   "y": 3.75,
    "z": -2.5,
    "size_x": 0.8,
    "size_y": 1.2,
    "size_z": 1.4,
    "collision": "convex",
-   "material": "wood"
+   "material": "wood",
+   "variant": 2
   },
   {
-   "name": "table_count_r365b5162_7",
+   "name": "table_count_r365b5162_8",
    "x": 3.24,
    "y": -2.0,
    "z": -2.82,
@@ -954,29 +963,16 @@
    "collision": "convex",
    "material": "wood",
    "stock": "vault",
-   "variant": 2
-  },
-  {
-   "name": "cartons_r365b5162_8",
-   "x": 6.94,
-   "y": 5.93,
-   "z": -2.75,
-   "size_x": 0.5,
-   "size_y": 0.4,
-   "size_z": 0.9,
-   "collision": "convex",
-   "material": "wood",
-   "rot_z": 180.0,
    "variant": 3
   },
   {
    "name": "cartons_r365b5162_9",
-   "x": 8.35,
-   "y": 5.93,
-   "z": -2.5,
-   "size_x": 1.2,
-   "size_y": 0.8,
-   "size_z": 1.4,
+   "x": 3.41,
+   "y": 6.57,
+   "z": -2.75,
+   "size_x": 0.5,
+   "size_y": 0.4,
+   "size_z": 0.9,
    "collision": "convex",
    "material": "wood",
    "rot_z": 180.0,

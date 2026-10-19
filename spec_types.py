@@ -445,6 +445,12 @@ class Room:
     material: Optional[str] = None
     floor_material: Optional[str] = None
     ceiling_material: Optional[str] = None
+    # The rooms, by id, this one is meant to run into as one floor: a shared edge
+    # no wall covers is then a design, not a defect (layout_lint L26). The schema
+    # has admitted it since 0.223.0; this class since 0.234.0, when the library
+    # first used it -- until then `spec_loader`'s `Room(**r)` refused any spec that
+    # named it (the factory's roadmap 260).
+    open_to: list[str] = field(default_factory=list)
 
 
 @dataclass

@@ -315,7 +315,7 @@
    "openings": [
     {
      "kind": "garage",
-     "pos": 0.15,
+     "pos": 0.13157894736842105,
      "width": 2.4,
      "height": 2.5,
      "tag": "stockroom_gate"
@@ -421,6 +421,38 @@
      "pos": 0.0,
      "width": 1.25,
      "tag": "cold_w_access"
+    }
+   ]
+  },
+  {
+   "story": -1,
+   "axis": "Y",
+   "pos": -16.8,
+   "start": 1.0,
+   "end": 6.25,
+   "material": "brick_ext",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.25,
+     "tag": "cold_storage_w_to_cold_storage_s"
+    }
+   ]
+  },
+  {
+   "story": 0,
+   "axis": "Y",
+   "pos": 7.0,
+   "start": -14.0,
+   "end": 6.0,
+   "material": "drywall",
+   "openings": [
+    {
+     "kind": "door",
+     "pos": 0.0,
+     "width": 1.25,
+     "tag": "market_aisles_to_kitchen"
     }
    ]
   }
@@ -1732,19 +1764,7 @@
   },
   {
    "name": "shelf_run_re813089c_1",
-   "x": -18.52,
-   "y": 5.06,
-   "z": -2.35,
-   "size_x": 0.6,
-   "size_y": 2.6,
-   "size_z": 1.9,
-   "collision": "convex",
-   "material": "wood",
-   "rot_z": 180.0
-  },
-  {
-   "name": "shelf_run_re813089c_2",
-   "x": -17.8,
+   "x": -17.85,
    "y": 13.56,
    "z": -2.4,
    "size_x": 1.2,
@@ -1752,6 +1772,18 @@
    "size_z": 1.8,
    "collision": "convex",
    "material": "wood"
+  },
+  {
+   "name": "shelf_run_re813089c_2",
+   "x": -18.57,
+   "y": 10.92,
+   "z": -2.4,
+   "size_x": 0.5,
+   "size_y": 1.2,
+   "size_z": 1.8,
+   "collision": "convex",
+   "material": "wood",
+   "rot_z": 180.0
   },
   {
    "name": "shelf_run_r1baa79d4_1",
@@ -1856,17 +1888,6 @@
    "collision": "convex",
    "material": "wood",
    "rot_z": 180.0
-  },
-  {
-   "name": "pallets_ref7ecc85_1",
-   "x": -15.14,
-   "y": 3.49,
-   "z": -2.95,
-   "size_x": 1.0,
-   "size_y": 1.0,
-   "size_z": 0.7,
-   "collision": "convex",
-   "material": "wood"
   },
   {
    "name": "safe_floor_r365b5162_1",
@@ -2230,7 +2251,11 @@
     -13.2,
     12.95
    ],
-   "role": "stairwell"
+   "role": "stairwell",
+   "open_to": [
+    "cold_storage_n",
+    "cold_storage_s"
+   ]
   },
   {
    "id": "customer_floor",
@@ -2242,7 +2267,10 @@
     -3.0
    ],
    "role": "public_entry",
-   "combat_range": "medium"
+   "combat_range": "medium",
+   "open_to": [
+    "deli_counter"
+   ]
   },
   {
    "id": "deli_counter",

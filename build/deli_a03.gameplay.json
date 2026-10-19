@@ -762,7 +762,7 @@
       "wall": "int_0_1",
       "kind": "garage",
       "story": 0,
-      "x": 5.5,
+      "x": 5.0,
       "y": 6.0,
       "z": 1.25,
       "width": 2.4,
@@ -956,6 +956,23 @@
       "height": 2.2,
       "sill": 0.0,
       "tag": "corridor_to_utility",
+      "breach_class": null,
+      "material": null,
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "deli_a03"
+    },
+    {
+      "wall": "int_0_6",
+      "kind": "door",
+      "story": 0,
+      "x": 7.0,
+      "y": -4.0,
+      "z": 1.1,
+      "width": 1.25,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": "market_aisles_to_kitchen",
       "breach_class": null,
       "material": null,
       "vaultable": false,
@@ -4267,6 +4284,105 @@
       }
     },
     {
+      "node": "int_col_0_6_seg0",
+      "material": {
+        "id": "drywall",
+        "acoustic": "Drywall",
+        "absorption": 0.42,
+        "damping": 0.38
+      }
+    },
+    {
+      "node": "int_col_0_6_seg1",
+      "material": {
+        "id": "drywall",
+        "acoustic": "Drywall",
+        "absorption": 0.42,
+        "damping": 0.38
+      }
+    },
+    {
+      "node": "int_col_0_6_seg2",
+      "material": {
+        "id": "drywall",
+        "acoustic": "Drywall",
+        "absorption": 0.42,
+        "damping": 0.38
+      }
+    },
+    {
+      "node": "int_col_0_6_seg3",
+      "material": {
+        "id": "drywall",
+        "acoustic": "Drywall",
+        "absorption": 0.42,
+        "damping": 0.38
+      }
+    },
+    {
+      "node": "int_col_0_6_seg4",
+      "material": {
+        "id": "drywall",
+        "acoustic": "Drywall",
+        "absorption": 0.42,
+        "damping": 0.38
+      }
+    },
+    {
+      "node": "int_col_0_6_open0_lintel",
+      "material": {
+        "id": "drywall",
+        "acoustic": "Drywall",
+        "absorption": 0.42,
+        "damping": 0.38
+      }
+    },
+    {
+      "node": "int_col_0_6_seg5",
+      "material": {
+        "id": "drywall",
+        "acoustic": "Drywall",
+        "absorption": 0.42,
+        "damping": 0.38
+      }
+    },
+    {
+      "node": "int_col_0_6_seg6",
+      "material": {
+        "id": "drywall",
+        "acoustic": "Drywall",
+        "absorption": 0.42,
+        "damping": 0.38
+      }
+    },
+    {
+      "node": "int_col_0_6_seg7",
+      "material": {
+        "id": "drywall",
+        "acoustic": "Drywall",
+        "absorption": 0.42,
+        "damping": 0.38
+      }
+    },
+    {
+      "node": "int_col_0_6_seg8",
+      "material": {
+        "id": "drywall",
+        "acoustic": "Drywall",
+        "absorption": 0.42,
+        "damping": 0.38
+      }
+    },
+    {
+      "node": "int_col_0_6_seg9",
+      "material": {
+        "id": "drywall",
+        "acoustic": "Drywall",
+        "absorption": 0.42,
+        "damping": 0.38
+      }
+    },
+    {
       "node": "VAULTLEDGE_0-convcolonly",
       "material": {
         "id": "wood",
@@ -5769,12 +5885,12 @@
       "building": "deli_a03"
     },
     {
-      "id": "deli_a03:if:1c16e9d6",
+      "id": "deli_a03:if:715dbf05",
       "kind": "door",
       "slot_ref": "int_0_1_open1",
       "transform": {
         "translation": [
-          5.5,
+          5.0,
           6.0,
           1.25
         ],
@@ -6172,6 +6288,43 @@
           1.0,
           -4.0,
           -2.2
+        ],
+        "rot_y": 90
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "collision_per_state": {
+        "closed": true,
+        "open": false
+      },
+      "building": "deli_a03"
+    },
+    {
+      "id": "deli_a03:if:29869db2",
+      "kind": "door",
+      "slot_ref": "int_0_6_open0",
+      "transform": {
+        "translation": [
+          7.0,
+          -4.0,
+          1.1
         ],
         "rot_y": 90
       },
@@ -7481,6 +7634,17 @@
     "int_-1_5_seg11": "wall",
     "int_-1_5_seg12": "wall",
     "int_-1_5_seg13": "wall",
+    "int_0_6_seg0": "wall",
+    "int_0_6_seg1": "wall",
+    "int_0_6_seg2": "wall",
+    "int_0_6_seg3": "wall",
+    "int_0_6_seg4": "wall",
+    "int_0_6_open0_lintel": "doorway",
+    "int_0_6_seg5": "wall",
+    "int_0_6_seg6": "wall",
+    "int_0_6_seg7": "wall",
+    "int_0_6_seg8": "wall",
+    "int_0_6_seg9": "wall",
     "stair0_-1_0": "stair",
     "stair0_-1_1": "stair",
     "stair0_-1_2": "stair",

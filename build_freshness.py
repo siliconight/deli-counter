@@ -105,6 +105,9 @@ GEOMETRY_SOURCES = (
     "migrate_wall_crossing.py",
     "migrate_window_poster.py",
     "migrate_window_sign.py",
+    # the walker's open-floor table, which presets.make applies to every spec it
+    # writes (0.234.0, the factory's roadmap 260)
+    "open_floor_rules.py",
 )
 
 # THE MODULES A BUILD REACHES THAT ARE KEPT OUT OF `GEOMETRY_SOURCES`, each

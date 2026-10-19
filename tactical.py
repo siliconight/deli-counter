@@ -119,9 +119,45 @@ def open_edge(a, b, parts):
     return None
 
 
+def exterior_parts(extent, sides):
+    """The exterior walls standing on a storey's extent edges, as `open_edge`
+    reads partitions: ``(axis, pos, start, end)`` for each of `sides` ("N",
+    "S", "E", "W") on `extent` ``(x0, y0, x1, y1)``, the storey's wall
+    centrelines (`setbacks.storey_extent`).
+
+    AN EXTERIOR WALL COVERS ITS LINE AS A PARTITION DOES (0.234.0, the
+    factory's roadmap 260). The gas stations' forecourts are outdoor rooms
+    reaching past the footprint, and they meet the shop along y -11, where
+    the front wall stands with its two doors and two windows; read with
+    partitions alone, the open-floor rule named seven such pairs as floors
+    the engine walks, and the engine walks the doors. Which sides stand is
+    each caller's to say from its own shape of spec: `exterior_sides` for a
+    `LevelSpec`, `layout_lint._exterior_sides` for a dict."""
+    x0, y0, x1, y1 = extent
+    runs = {"N": ("X", y1, x0, x1), "S": ("X", y0, x0, x1),
+            "E": ("Y", x1, y0, y1), "W": ("Y", x0, y0, y1)}
+    return [runs[s] for s in ("N", "S", "E", "W") if s in sides]
+
+
+def exterior_sides(spec, story):
+    """``(extent, sides)`` of `story`'s exterior walls as the builder stands
+    them (`Builder._exterior`): every side under `auto_exterior`, else the
+    sides `ext_walls` lists, on every storey from the basement to
+    `n_stories`; no sides on any other storey."""
+    import setbacks
+    base = -1 if spec.has_basement else 0
+    if not base <= story < spec.n_stories:
+        return (0.0, 0.0, 0.0, 0.0), ()
+    listed = {(w.wall, w.story) for w in spec.ext_walls}
+    sides = tuple(s for s in ("N", "S", "E", "W")
+                  if spec.auto_exterior or (s, story) in listed)
+    return setbacks.storey_extent(spec, story), sides
+
+
 def build_graph(spec):
     """Nodes = room ids. Edges from interior openings (same story, between two
-    rooms) and vertical links (between stories). Returns (adjacency, info)."""
+    rooms) and vertical links (between stories). Returns the adjacency,
+    room id -> set of room ids; until 0.234.0 this said "(adjacency, info)"."""
     adj = {r.id: set() for r in spec.rooms}
 
     # interior openings connect two rooms on the same story
@@ -190,7 +226,8 @@ def build_graph(spec):
     def _shared_open_edge(ra, rb):
         return shared_open_edge(ra.bounds, rb.bounds,
                                 [(p.axis, p.pos, p.start, p.end)
-                                 for p in spec.partitions if p.story == ra.story])
+                                 for p in spec.partitions if p.story == ra.story]
+                                + exterior_parts(*exterior_sides(spec, ra.story)))
 
     room_list = list(spec.rooms)
     for i, ra in enumerate(room_list):

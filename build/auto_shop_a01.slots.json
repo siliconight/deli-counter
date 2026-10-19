@@ -8,7 +8,7 @@
   "coverage": {
     "breach/generated": 2,
     "doorway/generated": 7,
-    "wall/generated": 121,
+    "wall/generated": 125,
     "window/generated": 6
   },
   "slots": [
@@ -4645,7 +4645,7 @@
       "facing": "X",
       "transform": {
         "translation": [
-          -8.0,
+          -12.0,
           2.0,
           5.25
         ],
@@ -4680,7 +4680,7 @@
       "facing": "X",
       "transform": {
         "translation": [
-          -6.0,
+          -10.0,
           2.0,
           5.25
         ],
@@ -4715,7 +4715,7 @@
       "facing": "X",
       "transform": {
         "translation": [
-          -4.0,
+          -8.0,
           2.0,
           5.25
         ],
@@ -4750,7 +4750,7 @@
       "facing": "X",
       "transform": {
         "translation": [
-          -2.0,
+          -6.0,
           2.0,
           5.25
         ],
@@ -4785,7 +4785,7 @@
       "facing": "X",
       "transform": {
         "translation": [
-          0.0,
+          -4.0,
           2.0,
           5.25
         ],
@@ -4809,6 +4809,76 @@
     },
     {
       "slot_id": "int_1_1_seg5",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 3,
+      "material": "drywall",
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_1_1",
+      "story": 1,
+      "facing": "X",
+      "transform": {
+        "translation": [
+          -2.0,
+          2.0,
+          5.25
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_1_1_seg6",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 3,
+      "material": "drywall",
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_1_1",
+      "story": 1,
+      "facing": "X",
+      "transform": {
+        "translation": [
+          0.0,
+          2.0,
+          5.25
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_1_1_seg7",
       "role": "wall",
       "size_mod": "end",
       "style": 3,
@@ -4884,7 +4954,7 @@
         "collision": "convex"
       },
       "interactive": {
-        "id": "auto_shop_a01:if:f74bf16a",
+        "id": "auto_shop_a01:if:699a3193",
         "kind": "door",
         "states": [
           "closed",
@@ -4898,7 +4968,7 @@
       }
     },
     {
-      "slot_id": "int_1_1_seg6",
+      "slot_id": "int_1_1_seg8",
       "role": "wall",
       "size_mod": "full",
       "style": 3,
@@ -4933,7 +5003,7 @@
       }
     },
     {
-      "slot_id": "int_1_1_seg7",
+      "slot_id": "int_1_1_seg9",
       "role": "wall",
       "size_mod": "full",
       "style": 3,
@@ -4968,7 +5038,77 @@
       }
     },
     {
-      "slot_id": "int_1_1_seg8",
+      "slot_id": "int_1_1_seg10",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 3,
+      "material": "drywall",
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_1_1",
+      "story": 1,
+      "facing": "X",
+      "transform": {
+        "translation": [
+          9.2,
+          2.0,
+          5.25
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_1_1_seg11",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 3,
+      "material": "drywall",
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_1_1",
+      "story": 1,
+      "facing": "X",
+      "transform": {
+        "translation": [
+          11.2,
+          2.0,
+          5.25
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_1_1_seg12",
       "role": "wall",
       "size_mod": "end",
       "style": 3,
@@ -4980,7 +5120,7 @@
       "facing": "X",
       "transform": {
         "translation": [
-          8.6,
+          12.6,
           2.0,
           5.25
         ],

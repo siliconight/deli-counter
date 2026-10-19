@@ -24,7 +24,9 @@ REASON = ("Two rooms on one storey whose shared edge no partition covers for tac
           "255). FROZEN 2026-10-15 for the walker to sort, one pair at a time: say it is meant (`open_to` on "
           "either room) or build the wall. Not a verdict on any of them -- the walker's finding 5 of 2026-10-14 "
           "was one of these, and a lobby flowing into a bullpen is another. Re-run open_floor_baseline.py after "
-          "each.")
+          "each. SORTED 2026-10-19 (0.234.0, the factory's roadmap 260): the walker's table by room pair, "
+          "open_floor_rules.RULES, applied by migrate_open_floor_rules.py, emptied it; a new pair waits here for a "
+          "row.")
 
 
 def main():

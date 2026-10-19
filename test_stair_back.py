@@ -326,9 +326,15 @@ _MULTI_REFUSED_BY_A_WALL = {
 
 
 def test_every_multi_storey_switchback_leg_is_accounted_for():
-    """34 legs can carry a back: 17 leg 0s and 17 leg 1s. A leg 1 stands on
+    """33 legs can carry a back: 16 leg 0s and 17 leg 1s. A leg 1 stands on
     the slab leg 0 cut, and `back_only` refuses a back over an opening, so
-    all 17 go. Of the 17 leg 0s, 15 carry one and 2 are refused by a wall."""
+    all 17 go. Of the 16 leg 0s, 14 carry one and 2 are refused by a wall.
+
+    34, 17 and 15 until 0.234.0, whose open-floor table (the factory's roadmap
+    260) walled corner_deli_heist_01's cold rooms apart along x -16.8: that
+    wall now stands where `main_stack`'s storey -1 side guard stood (x -16.6,
+    y 6.05..6.25), so the leg has no side guard to count it by -- and keeps
+    its back."""
     cand, got, refused = 0, 0, set()
     legs = {0: 0, 1: 0}
     for path in _library_specs():
@@ -354,8 +360,8 @@ def test_every_multi_storey_switchback_leg_is_accounted_for():
                     got += 1
                 elif s - lo == 0:
                     refused.add((name, sid, s))
-    assert cand == 34 and legs == {0: 17, 1: 17}, (cand, legs)
-    assert got == 15, got
+    assert cand == 33 and legs == {0: 16, 1: 17}, (cand, legs)
+    assert got == 14, got
     assert refused == _MULTI_REFUSED_BY_A_WALL, sorted(refused)
 
 

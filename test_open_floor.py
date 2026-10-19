@@ -78,9 +78,12 @@ def test_one_threshold_for_tactical_and_the_lint(monkeypatch):
 
 
 def test_lint_reports_it_as_a_warning_not_a_failure():
+    # the library has no open floor nobody named since 0.234.0's table (the factory's roadmap 260): take one back
     spec = json.load(open(os.path.join(HERE, "specs", "rowhouse_raid.json"), encoding="utf-8"))
+    hall = [r for r in spec["rooms"] if r["id"] == "front_hall"][0]
+    assert hall.pop("open_to") == ["kitchen"]
     _name, fails, warns = layout_lint.lint_spec(spec, "rowhouse_raid")
-    assert any(w.startswith("L26 ") and "'garage_bay'" in w for w in warns), warns
+    assert any(w.startswith("L26 ") and "'kitchen'" in w for w in warns), warns
     assert not any(f.startswith("L26 ") for f in fails)
 
 

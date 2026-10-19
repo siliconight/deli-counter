@@ -489,6 +489,23 @@
       "building": "apartment_walkup_a01"
     },
     {
+      "wall": "int_0_0",
+      "kind": "door",
+      "story": 0,
+      "x": 10.0,
+      "y": 0.0,
+      "z": 1.1,
+      "width": 1.25,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": "kitchen_to_garage_bay",
+      "breach_class": null,
+      "material": null,
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "apartment_walkup_a01"
+    },
+    {
       "wall": "int_1_1",
       "kind": "door",
       "story": 1,
@@ -2014,7 +2031,7 @@
       }
     },
     {
-      "node": "int_col_0_0_open0_lintel",
+      "node": "int_col_0_0_seg2",
       "material": {
         "id": "drywall",
         "acoustic": "Drywall",
@@ -2023,7 +2040,7 @@
       }
     },
     {
-      "node": "int_col_0_0_seg2",
+      "node": "int_col_0_0_open0_lintel",
       "material": {
         "id": "drywall",
         "acoustic": "Drywall",
@@ -2068,6 +2085,15 @@
       }
     },
     {
+      "node": "int_col_0_0_seg7",
+      "material": {
+        "id": "drywall",
+        "acoustic": "Drywall",
+        "absorption": null,
+        "damping": null
+      }
+    },
+    {
       "node": "int_col_0_0_open1_lintel",
       "material": {
         "id": "drywall",
@@ -2086,7 +2112,34 @@
       }
     },
     {
-      "node": "int_col_0_0_seg7",
+      "node": "int_col_0_0_seg8",
+      "material": {
+        "id": "drywall",
+        "acoustic": "Drywall",
+        "absorption": null,
+        "damping": null
+      }
+    },
+    {
+      "node": "int_col_0_0_seg9",
+      "material": {
+        "id": "drywall",
+        "acoustic": "Drywall",
+        "absorption": null,
+        "damping": null
+      }
+    },
+    {
+      "node": "int_col_0_0_open2_lintel",
+      "material": {
+        "id": "drywall",
+        "acoustic": "Drywall",
+        "absorption": null,
+        "damping": null
+      }
+    },
+    {
+      "node": "int_col_0_0_seg10",
       "material": {
         "id": "drywall",
         "acoustic": "Drywall",
@@ -2131,7 +2184,7 @@
       }
     },
     {
-      "node": "int_col_1_1_open0_lintel",
+      "node": "int_col_1_1_seg4",
       "material": {
         "id": "brick_ext",
         "acoustic": "Concrete",
@@ -2140,7 +2193,7 @@
       }
     },
     {
-      "node": "int_col_1_1_seg4",
+      "node": "int_col_1_1_open0_lintel",
       "material": {
         "id": "brick_ext",
         "acoustic": "Concrete",
@@ -2168,6 +2221,24 @@
     },
     {
       "node": "int_col_1_1_seg7",
+      "material": {
+        "id": "brick_ext",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "int_col_1_1_seg8",
+      "material": {
+        "id": "brick_ext",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "int_col_1_1_seg9",
       "material": {
         "id": "brick_ext",
         "acoustic": "Concrete",
@@ -2258,6 +2329,15 @@
     },
     {
       "node": "int_col_-1_2_seg6",
+      "material": {
+        "id": "brick_ext",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "int_col_-1_2_seg7",
       "material": {
         "id": "brick_ext",
         "acoustic": "Concrete",
@@ -2725,15 +2805,6 @@
       }
     },
     {
-      "node": "chair_set_r365b5162_4_2_col",
-      "material": {
-        "id": "wood",
-        "acoustic": "Wood",
-        "absorption": null,
-        "damping": null
-      }
-    },
-    {
       "node": "cartons_r365b5162_5_col",
       "material": {
         "id": "wood",
@@ -2752,7 +2823,7 @@
       }
     },
     {
-      "node": "table_count_r365b5162_7_col",
+      "node": "cartons_r365b5162_7_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -2761,7 +2832,7 @@
       }
     },
     {
-      "node": "cartons_r365b5162_8_col",
+      "node": "table_count_r365b5162_8_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -3049,7 +3120,7 @@
       "building": "apartment_walkup_a01"
     },
     {
-      "id": "apartment_walkup_a01:if:0ae89ff2",
+      "id": "apartment_walkup_a01:if:a3868c92",
       "kind": "door",
       "slot_ref": "int_0_0_open0",
       "transform": {
@@ -3086,7 +3157,7 @@
       "building": "apartment_walkup_a01"
     },
     {
-      "id": "apartment_walkup_a01:if:a3167797",
+      "id": "apartment_walkup_a01:if:bee1f736",
       "kind": "breach_wall",
       "slot_ref": "int_0_0_open1",
       "transform": {
@@ -3117,6 +3188,43 @@
       },
       "material": "drywall",
       "breach_class": "soft_wall",
+      "building": "apartment_walkup_a01"
+    },
+    {
+      "id": "apartment_walkup_a01:if:bf9b8fb4",
+      "kind": "door",
+      "slot_ref": "int_0_0_open2",
+      "transform": {
+        "translation": [
+          10.0,
+          0.0,
+          1.1
+        ],
+        "rot_y": 0
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "collision_per_state": {
+        "closed": true,
+        "open": false
+      },
       "building": "apartment_walkup_a01"
     },
     {
@@ -3157,7 +3265,7 @@
       "building": "apartment_walkup_a01"
     },
     {
-      "id": "apartment_walkup_a01:if:9573d5a0",
+      "id": "apartment_walkup_a01:if:eaab7619",
       "kind": "breach_wall",
       "slot_ref": "int_-1_2_open1",
       "transform": {
@@ -3191,7 +3299,7 @@
       "building": "apartment_walkup_a01"
     },
     {
-      "id": "apartment_walkup_a01:if:db1ad320",
+      "id": "apartment_walkup_a01:if:977d08ea",
       "kind": "door",
       "slot_ref": "int_-1_2_open0",
       "transform": {
@@ -3344,8 +3452,8 @@
           "floor": -1,
           "kind": "breach",
           "wall": "int_-1_2",
-          "pos": 0.0,
-          "interactive": "apartment_walkup_a01:if:9573d5a0",
+          "pos": -0.0625,
+          "interactive": "apartment_walkup_a01:if:eaab7619",
           "default_state": "intact",
           "connects_from": "basement_vault",
           "discharge_door": false
@@ -3354,8 +3462,8 @@
           "floor": -1,
           "kind": "door",
           "wall": "int_-1_2",
-          "pos": -0.35,
-          "interactive": "apartment_walkup_a01:if:db1ad320",
+          "pos": -0.375,
+          "interactive": "apartment_walkup_a01:if:977d08ea",
           "default_state": "closed",
           "connects_from": "basement_vault",
           "discharge_door": false
@@ -3364,8 +3472,8 @@
           "floor": 0,
           "kind": "door",
           "wall": "int_0_0",
-          "pos": -0.25,
-          "interactive": "apartment_walkup_a01:if:0ae89ff2",
+          "pos": -0.20454545454545456,
+          "interactive": "apartment_walkup_a01:if:a3868c92",
           "default_state": "closed",
           "connects_from": "garage_bay",
           "discharge_door": false
@@ -3511,9 +3619,19 @@
           "floor": 0,
           "kind": "breach",
           "wall": "int_0_0",
-          "pos": 0.35,
-          "interactive": "apartment_walkup_a01:if:a3167797",
+          "pos": 0.29545454545454547,
+          "interactive": "apartment_walkup_a01:if:bee1f736",
           "default_state": "intact",
+          "connects_from": "garage_bay",
+          "discharge_door": false
+        },
+        {
+          "floor": 0,
+          "kind": "door",
+          "wall": "int_0_0",
+          "pos": 0.45454545454545453,
+          "interactive": "apartment_walkup_a01:if:bf9b8fb4",
+          "default_state": "closed",
           "connects_from": "garage_bay",
           "discharge_door": false
         },
@@ -4012,24 +4130,30 @@
     "ext_1_W_seg8": "wall",
     "int_0_0_seg0": "wall",
     "int_0_0_seg1": "wall",
-    "int_0_0_open0_lintel": "doorway",
     "int_0_0_seg2": "wall",
+    "int_0_0_open0_lintel": "doorway",
     "int_0_0_seg3": "wall",
     "int_0_0_seg4": "wall",
     "int_0_0_seg5": "wall",
     "int_0_0_seg6": "wall",
+    "int_0_0_seg7": "wall",
     "int_0_0_open1_lintel": "breach",
     "int_0_0_open1_BREACHPANEL": "breach",
-    "int_0_0_seg7": "wall",
+    "int_0_0_seg8": "wall",
+    "int_0_0_seg9": "wall",
+    "int_0_0_open2_lintel": "doorway",
+    "int_0_0_seg10": "wall",
     "int_1_1_seg0": "wall",
     "int_1_1_seg1": "wall",
     "int_1_1_seg2": "wall",
     "int_1_1_seg3": "wall",
-    "int_1_1_open0_lintel": "doorway",
     "int_1_1_seg4": "wall",
+    "int_1_1_open0_lintel": "doorway",
     "int_1_1_seg5": "wall",
     "int_1_1_seg6": "wall",
     "int_1_1_seg7": "wall",
+    "int_1_1_seg8": "wall",
+    "int_1_1_seg9": "wall",
     "int_-1_2_seg0": "wall",
     "int_-1_2_open0_lintel": "doorway",
     "int_-1_2_seg1": "wall",
@@ -4040,6 +4164,7 @@
     "int_-1_2_seg4": "wall",
     "int_-1_2_seg5": "wall",
     "int_-1_2_seg6": "wall",
+    "int_-1_2_seg7": "wall",
     "stair0_-1_0": "stair",
     "stair0_-1_1": "stair",
     "stair0_-1_2": "stair",
@@ -4139,11 +4264,10 @@
     "shelf_run_r365b5162_3": "prop",
     "table_count_r365b5162_4": "prop",
     "chair_set_r365b5162_4_1": "prop",
-    "chair_set_r365b5162_4_2": "prop",
     "cartons_r365b5162_5": "prop",
     "cartons_r365b5162_6": "prop",
-    "table_count_r365b5162_7": "prop",
-    "cartons_r365b5162_8": "prop",
+    "cartons_r365b5162_7": "prop",
+    "table_count_r365b5162_8": "prop",
     "cartons_r365b5162_9": "prop",
     "vending_r1075959c_1": "prop",
     "vending_r1075959c_2": "prop",

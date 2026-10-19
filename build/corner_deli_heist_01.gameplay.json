@@ -1001,7 +1001,7 @@
       "wall": "int_0_3",
       "kind": "garage",
       "story": 0,
-      "x": 5.5,
+      "x": 5.0,
       "y": 6.0,
       "z": 1.25,
       "width": 2.4,
@@ -1178,6 +1178,40 @@
       "height": 2.2,
       "sill": 0.0,
       "tag": "cold_w_access",
+      "breach_class": null,
+      "material": null,
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "wall": "int_-1_8",
+      "kind": "door",
+      "story": -1,
+      "x": -16.8,
+      "y": 3.625,
+      "z": -2.2,
+      "width": 1.25,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": "cold_storage_w_to_cold_storage_s",
+      "breach_class": null,
+      "material": null,
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "wall": "int_0_9",
+      "kind": "door",
+      "story": 0,
+      "x": 7.0,
+      "y": -4.0,
+      "z": 1.1,
+      "width": 1.25,
+      "height": 2.2,
+      "sill": 0.0,
+      "tag": "market_aisles_to_kitchen",
       "breach_class": null,
       "material": null,
       "vaultable": false,
@@ -1609,6 +1643,24 @@
         "acoustic": "Concrete",
         "absorption": 0.72,
         "damping": 0.62
+      }
+    },
+    {
+      "node": "int_col_-1_8",
+      "material": {
+        "id": "brick_ext",
+        "acoustic": "Concrete",
+        "absorption": 0.72,
+        "damping": 0.62
+      }
+    },
+    {
+      "node": "int_col_0_9",
+      "material": {
+        "id": "drywall",
+        "acoustic": "Drywall",
+        "absorption": 0.42,
+        "damping": 0.38
       }
     },
     {
@@ -2638,15 +2690,6 @@
       }
     },
     {
-      "node": "pallets_ref7ecc85_1_col",
-      "material": {
-        "id": "wood",
-        "acoustic": "Wood",
-        "absorption": 0.35,
-        "damping": 0.3
-      }
-    },
-    {
       "node": "safe_floor_r365b5162_1_col",
       "material": {
         "id": "metal",
@@ -2881,12 +2924,12 @@
       }
     },
     {
-      "node": "stair_guard_side_0_col",
+      "node": "stair_guard_rail_0_col",
       "material": {
-        "id": "brick_ext",
-        "acoustic": "Concrete",
-        "absorption": 0.72,
-        "damping": 0.62
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": 0.35,
+        "damping": 0.3
       }
     },
     {
@@ -2908,16 +2951,7 @@
       }
     },
     {
-      "node": "stair_guard_rail_3_col",
-      "material": {
-        "id": "wood",
-        "acoustic": "Wood",
-        "absorption": 0.35,
-        "damping": 0.3
-      }
-    },
-    {
-      "node": "stair_guard_side_4_col",
+      "node": "stair_guard_side_3_col",
       "material": {
         "id": "brick_ext",
         "acoustic": "Concrete",
@@ -2926,7 +2960,7 @@
       }
     },
     {
-      "node": "stair_guard_rail_5_col",
+      "node": "stair_guard_rail_4_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -2935,12 +2969,21 @@
       }
     },
     {
-      "node": "stair_guard_side_6_col",
+      "node": "stair_guard_side_5_col",
       "material": {
         "id": "brick_ext",
         "acoustic": "Concrete",
         "absorption": 0.72,
         "damping": 0.62
+      }
+    },
+    {
+      "node": "stair_guard_rail_6_col",
+      "material": {
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": 0.35,
+        "damping": 0.3
       }
     },
     {
@@ -2953,16 +2996,7 @@
       }
     },
     {
-      "node": "stair_guard_rail_8_col",
-      "material": {
-        "id": "wood",
-        "acoustic": "Wood",
-        "absorption": 0.35,
-        "damping": 0.3
-      }
-    },
-    {
-      "node": "stair_guard_side_9_col",
+      "node": "stair_guard_side_8_col",
       "material": {
         "id": "brick_ext",
         "acoustic": "Concrete",
@@ -2971,7 +3005,7 @@
       }
     },
     {
-      "node": "stair_guard_rail_10_col",
+      "node": "stair_guard_rail_9_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -2980,12 +3014,21 @@
       }
     },
     {
-      "node": "stair_guard_side_11_col",
+      "node": "stair_guard_side_10_col",
       "material": {
         "id": "brick_ext",
         "acoustic": "Concrete",
         "absorption": 0.72,
         "damping": 0.62
+      }
+    },
+    {
+      "node": "stair_guard_rail_11_col",
+      "material": {
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": 0.35,
+        "damping": 0.3
       }
     },
     {
@@ -2998,16 +3041,7 @@
       }
     },
     {
-      "node": "stair_guard_rail_13_col",
-      "material": {
-        "id": "wood",
-        "acoustic": "Wood",
-        "absorption": 0.35,
-        "damping": 0.3
-      }
-    },
-    {
-      "node": "stair_guard_back_14_col",
+      "node": "stair_guard_back_13_col",
       "material": {
         "id": "brick_ext",
         "acoustic": "Concrete",
@@ -3016,7 +3050,7 @@
       }
     },
     {
-      "node": "stair_guard_back_15_col",
+      "node": "stair_guard_back_14_col",
       "material": {
         "id": "brick_ext",
         "acoustic": "Concrete",
@@ -3527,12 +3561,12 @@
       "building": "corner_deli_heist_01"
     },
     {
-      "id": "corner_deli_heist_01:if:064e5357",
+      "id": "corner_deli_heist_01:if:34c70366",
       "kind": "door",
       "slot_ref": "int_0_3_open1",
       "transform": {
         "translation": [
-          5.5,
+          5.0,
           6.0,
           1.25
         ],
@@ -3899,6 +3933,80 @@
           -16.8,
           9.6,
           -2.2
+        ],
+        "rot_y": 90
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "collision_per_state": {
+        "closed": true,
+        "open": false
+      },
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "id": "corner_deli_heist_01:if:e7da6a86",
+      "kind": "door",
+      "slot_ref": "int_-1_8_open0",
+      "transform": {
+        "translation": [
+          -16.8,
+          3.625,
+          -2.2
+        ],
+        "rot_y": 90
+      },
+      "states": [
+        "closed",
+        "open"
+      ],
+      "default": "closed",
+      "transitions": [
+        {
+          "event": "toggle",
+          "from": "closed",
+          "to": "open"
+        },
+        {
+          "event": "toggle",
+          "from": "open",
+          "to": "closed"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "collision_per_state": {
+        "closed": true,
+        "open": false
+      },
+      "building": "corner_deli_heist_01"
+    },
+    {
+      "id": "corner_deli_heist_01:if:099a9767",
+      "kind": "door",
+      "slot_ref": "int_0_9_open0",
+      "transform": {
+        "translation": [
+          7.0,
+          -4.0,
+          1.1
         ],
         "rot_y": 90
       },
@@ -4553,6 +4661,8 @@
     "int_1_5": "wall",
     "int_-1_6": "wall",
     "int_-1_7": "wall",
+    "int_-1_8": "wall",
+    "int_0_9": "wall",
     "stair0_-1_0": "stair",
     "stair0_-1_1": "stair",
     "stair0_-1_2": "stair",
@@ -4746,7 +4856,6 @@
     "cartons_r1baa79d4_7": "prop",
     "cartons_r1baa79d4_8": "prop",
     "pallets_r1baa79d4_9": "prop",
-    "pallets_ref7ecc85_1": "prop",
     "safe_floor_r365b5162_1": "prop",
     "safe_floor_r365b5162_2": "prop",
     "cabinet_locker_r365b5162_3": "prop",
@@ -4775,22 +4884,21 @@
     "poster_wall_store_r7070a315_11": "prop",
     "poster_wall_store_r2f2d413e_9": "prop",
     "cigarettes_rb0f5945e_11": "prop",
-    "stair_guard_side_0": "prop",
+    "stair_guard_rail_0": "prop",
     "stair_guard_rail_1": "prop",
     "stair_guard_rail_2": "prop",
-    "stair_guard_rail_3": "prop",
-    "stair_guard_side_4": "prop",
-    "stair_guard_rail_5": "prop",
-    "stair_guard_side_6": "prop",
+    "stair_guard_side_3": "prop",
+    "stair_guard_rail_4": "prop",
+    "stair_guard_side_5": "prop",
+    "stair_guard_rail_6": "prop",
     "stair_guard_rail_7": "prop",
-    "stair_guard_rail_8": "prop",
-    "stair_guard_side_9": "prop",
-    "stair_guard_rail_10": "prop",
-    "stair_guard_side_11": "prop",
+    "stair_guard_side_8": "prop",
+    "stair_guard_rail_9": "prop",
+    "stair_guard_side_10": "prop",
+    "stair_guard_rail_11": "prop",
     "stair_guard_rail_12": "prop",
-    "stair_guard_rail_13": "prop",
+    "stair_guard_back_13": "prop",
     "stair_guard_back_14": "prop",
-    "stair_guard_back_15": "prop",
     "parapet_N_t0_0": "wall",
     "parapet_N_t0_1": "wall",
     "parapet_N_t0_2": "wall",

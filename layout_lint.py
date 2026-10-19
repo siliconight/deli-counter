@@ -971,7 +971,10 @@ def _story_parts(spec, st):
     """A storey's partitions as `tactical.open_edge` reads them, ``(axis, pos,
     start, end)``; a partition with no start or end runs the footprint, as
     `_opening_xy` reads it. The open-floor search's own reading (0.197.0), one
-    helper since 0.223.0 because L26 asks it too."""
+    helper since 0.223.0 because L26 asks it too. Since 0.234.0 the storey's
+    exterior walls follow the partitions: a wall covers its line whichever
+    kind it is (`tactical.exterior_parts`)."""
+    import tactical
     hx, hy = spec["footprint_x"] / 2, spec["footprint_y"] / 2
     parts = []
     for p in spec.get("partitions", []):
@@ -981,7 +984,24 @@ def _story_parts(spec, st):
         parts.append((p["axis"], p["pos"],
                       lo if p.get("start") is None else p["start"],
                       hi if p.get("end") is None else p["end"]))
-    return parts
+    return parts + tactical.exterior_parts(*_exterior_sides(spec, st))
+
+
+def _exterior_sides(spec, st):
+    """``(extent, sides)`` of storey `st`'s exterior walls as the builder
+    stands them, read off a spec DICT with `LevelSpec`'s defaults
+    (`_spec_value`, so a spec that omits `auto_exterior` gets the walls the
+    builder gives it): `tactical.exterior_sides`' question, asked of the dict
+    `built_walls` reads."""
+    import setbacks
+    base = -1 if _spec_value(spec, "has_basement") else 0
+    if not base <= st < int(_spec_value(spec, "n_stories")):
+        return (0.0, 0.0, 0.0, 0.0), ()
+    listed = {(str(w.get("wall")), int(w.get("story", 0) or 0))
+              for w in spec.get("ext_walls") or []}
+    auto = bool(_spec_value(spec, "auto_exterior"))
+    sides = tuple(s for s in ("N", "S", "E", "W") if auto or (s, st) in listed)
+    return setbacks.storey_extent(_LintSpec(spec), st), sides
 
 
 def _reach_from_ext(spec, walk_only=False):
@@ -1154,8 +1174,8 @@ def open_floor_findings(spec):
     sort, and test_open_floor fails on a new one. Some are lobbies flowing into
     bullpens; this does not say which."""
     return ["L26 open floor nobody named: '%s' and '%s' (story %s) meet along %s = %g from %g to %g "
-            "with %.2f m of it uncovered by any partition; the engine walks it as one floor -- say so "
-            "(`open_to` on either room) or build the wall"
+            "with %.2f m of it uncovered by any wall; the engine walks it as one floor -- say so "
+            "(`open_to` on either room), build the wall, or give the pair a row in open_floor_rules.RULES"
             % (f["a"], f["b"], f["story"], "y" if f["axis"] == "X" else "x", f["pos"], f["lo"], f["hi"],
                f["uncovered"])
             for f in open_floors(spec)]
