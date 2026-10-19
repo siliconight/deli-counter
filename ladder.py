@@ -453,7 +453,28 @@ def _nav_link(ld, lid, z0, z1):
     }
 
 
-def drop_nav_link(lid, story, x, y, size_x, size_y, story_height):
+def drop_landing(story, x, y, holes):
+    """The storey a body dropped through a cut in storey ``story``'s floor at
+    (``x``, ``y``) lands on (0.232.0, the factory's roadmap 173): the floor
+    below, unless that floor is cut under the same point too, in which case it
+    falls on through -- a stacked shaft lands on the first floor below it that
+    is not cut there, the ground floor's slab never being. ``holes`` are the
+    building's slab cuts, each with ``story``, ``x``, ``y``, ``size_x`` and
+    ``size_y`` (a `SlabHole` or a dict)."""
+    def _get(h, k, default=None):
+        return h.get(k, default) if isinstance(h, dict) else getattr(h, k, default)
+
+    land = int(story) - 1
+    while land > 0 and any(
+            int(_get(h, "story", -1)) == land
+            and abs(float(_get(h, "x", 1e9)) - float(x)) < float(_get(h, "size_x", 0.0) or 0.0) / 2.0
+            and abs(float(_get(h, "y", 1e9)) - float(y)) < float(_get(h, "size_y", 0.0) or 0.0) / 2.0
+            for h in holes or ()):
+        land -= 1
+    return max(0, land)
+
+
+def drop_nav_link(lid, story, x, y, size_x, size_y, story_height, land_story=None):
     """s17.2 for a DECLARED DROP: the one-way off-mesh link a `floor_hole` or
     `hatch` vertical link files on itself (0.226.0, factory roadmap 173).
 
@@ -466,11 +487,16 @@ def drop_nav_link(lid, story, x, y, size_x, size_y, story_height):
     `DROP_COST`. `hole` is the cut's rect on the upper floor, two corners, for
     a gate that asks which rim a body may walk off: the declared set and the
     AI's set are then one list.
+
+    ``land_story`` (0.232.0): where the body lands, `drop_landing`'s answer.
+    Over a stacked shaft the floor below is cut too, and a link ending there
+    ends in mid-air. Absent, the floor below, as before.
     """
     sx = float(size_x or 1.5)
     sy = float(size_y or 1.5)
     z_top = float(story) * float(story_height)
-    z_bottom = (float(story) - 1.0) * float(story_height)
+    land = (float(story) - 1.0) if land_story is None else float(land_story)
+    z_bottom = land * float(story_height)
     return {
         "id": f"{lid}_navlink",
         "start_position": [x, y, z_top],

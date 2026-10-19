@@ -1106,7 +1106,15 @@ def hospital(name: str = "hospital_preset",
     spec["vertical_links"] = [
         {"kind": "stair", "from_story": 0, "to_story": top, "role": "main_route"},
         {"kind": "stair", "from_story": 0, "to_story": top, "role": "emergency_route"},
-        {"kind": "floor_hole", "story": 1, "x": 0.0, "y": 12.0, "size_x": 2.6, "size_y": 2.6, "role": "elevator_shaft_horde_channel"},
+    ] + [
+        # EVERY HOLE IN THE SHAFT DECLARED (0.232.0, the factory's roadmap
+        # 173): only storey 1's was, and a three-storey build's storey-2 rim
+        # fell 7.2 m with nothing declaring it -- cold run 9329's export
+        # refused it. One `floor_hole` a stacked hole, each landing through
+        # the cuts below it (`ladder.drop_landing`).
+        {"kind": "floor_hole", "story": st, "x": 0.0, "y": 12.0, "size_x": 2.6, "size_y": 2.6,
+         "role": "elevator_shaft_horde_channel"}
+        for st in range(1, floors)
     ]
     spec["parapets"] = [{"story": floors, "height": 1.1, "thick": 0.3}]
 

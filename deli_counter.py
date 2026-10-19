@@ -2951,9 +2951,14 @@ class _Builder:
                     and v.x is not None and v.y is not None):
                 lid = "%s_%s_%d_%d_%d" % (self.s.name, v.kind, v.story,
                                           round(v.x), round(v.y))
+                # landing through every storey cut under the drop (0.232.0):
+                # a stacked shaft's upper link ended in mid-air over the cut
+                # below it (`ladder.drop_landing`)
                 rec["nav_link"] = _ladder.drop_nav_link(
                     lid, v.story, v.x, v.y, v.size_x, v.size_y,
-                    self.s.story_height)
+                    self.s.story_height,
+                    land_story=_ladder.drop_landing(v.story, v.x, v.y,
+                                                    self.s.slab_holes))
             self.gameplay["vertical_links"].append(rec)
             if v.kind in ("floor_hole", "hatch") and v.cut_slab \
                     and v.story is not None and v.x is not None:

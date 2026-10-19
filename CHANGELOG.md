@@ -1,3 +1,26 @@
+## [0.232.0] - every hole in a stacked shaft is declared, and its drop lands where a body would
+
+**Found by the factory's breadth sweep of 2026-10-19 (roadmap 173).** Cold run 9329, county_hospital_001's first run
+since Level Factory's drop-edge gate shipped, stopped at the export with 0 interventions: `UNDECLARED_DROP_INDOORS:
+20 unguarded edge(s)`. All 20 are one rim, the storey-2 slab round the hospital's elevator shaft, 7.2 m above the
+ground floor. `presets.hospital` stacks the shaft's holes on every storey from 1 to the top -- "a vertical
+horde-spawn channel" -- and declared only storey 1's. The gate keys a declared rim on its storey as well as its
+rect, so the storey-1 link did not cover storey 2, rightly.
+
+### Fixed
+- `presets.hospital` declares a `floor_hole` for every hole it stacks.
+- A declared drop lands where a body would. `drop_nav_link` ended every link on the floor below, which over a stacked
+  shaft is cut too: the upper link ended in mid-air. `ladder.drop_landing(story, x, y, holes)` falls through every
+  storey cut under the drop to the first that is not, and `_vertical_links` passes it as `land_story`. A drop over an
+  uncut floor lands on the floor below, as before.
+
+### Added
+- `test_hospital_shaft.py` (5, all fail on 0.231.1).
+
+### Not changed
+- Three library atriums cut holes no link declares -- bank, cbp_town_finale_midbalanced_schemafixed, final_stand --
+  large guarded voids, not a shaft; the gate's guarded class is theirs.
+
 ## [0.231.1] - two video poker cabinets in one room are two different machines
 
 **Seen in the factory's cold run 9326 (roadmap 196).** deli_a01's two cabinets, both in the customer floor since
