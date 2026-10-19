@@ -54,6 +54,7 @@ import ladder_geom
 import stairwell
 import skin_style
 import prop_species
+import ledge_cover
 from rarity import resolve_rarity
 import interactives
 import roofs
@@ -2361,7 +2362,16 @@ class _Builder:
             else:
                 size = (vl.thick, vl.length, vl.height)
             name = f"VAULTLEDGE_{vi}"
-            self._box(name, (vl.x, vl.y, z), size, self.VISUAL, role="floor")
+            # A LEDGE INSIDE FURNITURE IS THE FURNITURE'S VAULT TAG (0.227.0,
+            # `ledge_cover`): at least half inside a visible volume -- a register
+            # counter, a reception desk -- it draws no box of its own, because the
+            # volume is its look; drawn, it stood a second box inside the first and
+            # z-fought it. The collision and the tag stay, so the vault does.
+            frac, under = ledge_cover.cover((vl.x, vl.y, z), size, self.s.volumes)
+            if frac < ledge_cover.HIDDEN_BY:
+                self._box(name, (vl.x, vl.y, z), size, self.VISUAL, role="floor")
+            else:
+                print(f"[deli_counter] {name} draws no box: {frac:.0%} of it inside {under}, which is its look")
             self._col_box(name, (vl.x, vl.y, z), size)
             self._record_surface(name + self.col_suffix["convex"], vl.material)
 

@@ -1,3 +1,24 @@
+## [0.227.0] - a vault ledge inside furniture draws no box of its own
+
+**Found resolving factory roadmap 177's last z-fight pairs.** Two of cold run 9322's four were the office's
+`base:VAULTLEDGE_0 / reception_desk`. The office preset stands its 5 m vault ledge in its 5 m reception desk on
+purpose -- the desk is the obstacle a body vaults, and the ledge its tag -- but the ledge also drew its own box,
+1.1 m tall inside a desk 1.0 m tall: a 0.2 m strip 10 cm proud of the desk top along its length, z-fighting the
+desk's ends. Across the spec library: 228 ledges; 111 clear of every volume, 98 crossing one in part, and 19 at
+least half inside one (14 wholly in a register counter, 5 mostly in a reception desk).
+
+**The rule, a call made 2026-10-19 and meant to be changed:** a ledge at least `ledge_cover.HIDDEN_BY` (0.5) inside
+one visible volume draws no visual box. Its collision and VAULTLEDGE tag stay, so the vault, the grades and the nav
+bake see the same solid; only the duplicate look goes. A ledge crossing furniture in part keeps its box.
+
+### Added
+- `ledge_cover.py`: `HIDDEN_BY` and `cover(center, size, volumes)`, the share of a box inside the one visible
+  volume covering most of it.
+- `test_ledge_cover.py` (6, which fail to import on 0.226.0).
+
+### Changed
+- `_vault_ledges` asks `ledge_cover` before it draws, and says which ledge it left to its furniture.
+
 ## [0.226.0] - a declared drop carries its own off-mesh nav link
 
 **Factory roadmap 173 ("a drop is either guarded or declared, and today nothing declares one"), step 3.** A
