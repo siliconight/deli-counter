@@ -1,3 +1,39 @@
+## [0.237.0] - a hole in a floor is an optional route: left out on request, and the deli family keeps a variant without one
+
+**The factory's roadmap 269.** The walker, 2026-10-20: "stairs and ladders should be the primary way to get between
+floors in this game...with the holes in floors being somewhat rare...but still at our disposal to use if
+needed/desired to add some more ways to navigate levels". Measured first (the factory's
+`docs/findings/hole_frequency/`, a level-by-level replay of Level Factory's own lot draw): across the 24 staged lot
+missions 54 of 288 levels carried a hole a player sees, and they bunched where a family that always carries one
+anchors the mission -- every restaurant_row_001 and urban_row_001 level had the deli's cut drop, because both of the
+deli variants a themed lot can draw (deli_a01, deli_a03) carry it -- and every single-building level whose preset
+authors one (deli_001's cut and hatch; county_hospital_001's elevator shafts, bare). Level Factory decides per level
+whether one is wanted; this release gives it the two things it needs from here.
+
+### Added
+- `hole_causes.without_holes(spec)`: leaves out, in place, every drop a player would see -- `is_drop`, unless it
+  opens into a stair's own well (`cause_for` says `stair`: nothing of it shows) -- and the authored `slab_holes`
+  whose plan overlaps a removed drop's hole on ANY storey, because a recipe authors the slab hole beside the link
+  and an atrium or a shaft cuts every storey its one link passes; a slab hole left behind is an undeclared drop. A
+  roof hatch, a stair and a ladder are untouched. Returns what it removed.
+- `presets.make(..., holes=None)`: `False` builds the recipe without them, right after the recipe returns and before
+  every other pass, so cover, stairs and furniture are placed in a floor that never had the hole. None and True build
+  what the recipe authored, as always. The five presets that author one: police_station (the armory's floor hatch),
+  corner_deli (the hideout's cut drop), compound (the atrium), hospital (the elevator shafts), casino_tower (the
+  count room's skylight).
+- `new_level.py --holes on|off`, passed through to it.
+- `migrate_hole_free_variants.py`: the variants in `HOLE_FREE` lose their holes and are refurnished, so each stays a
+  fixed point of furnish. **A call, made 2026-10-20 and meant to be changed: deli_a01**, because deli_a03 keeps the
+  drop the factory's cold runs 9340 and 9341 proved and priced. Run once: deli_a01 lost its 2.2 m drop at (8.5, -4)
+  and the slab hole under it; its hatch into the stair's well stays; the refurnish moved nothing.
+
+### Tests
+- `test_optional_holes.py` (10; every one fails on 0.236.1): the drop and the slab holes under it on every storey go
+  and another slab hole stays; a hatch into a stair's well stays (deli_a03); each of the five presets builds without
+  its holes when asked and with them otherwise, `holes=True` equal to the recipe; a preset with no hole is unchanged;
+  the deli family keeps a variant without the drop and one with it; the migration is done and idempotent.
+- `test_hole_causes.py`'s library test: deli_a01 no longer dresses a hole (20 drop links in 12 specs).
+
 ## [0.236.1] - a hole's greybox is a ring round it, never a box over it
 
 **The factory's roadmap 265, its first cold run.** Cold run 9340 (restaurant_row_001 on 0.236.0 and Zoo 1.114.0, 0

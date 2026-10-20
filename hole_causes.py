@@ -153,6 +153,31 @@ def drop_links(spec):
     return [v for v in spec.get("vertical_links") or [] if is_drop(spec, v)]
 
 
+def without_holes(spec):
+    """Leave out every hole in a floor a player would see, in place: ``(links, slab_holes)`` removed.
+
+    A HOLE IS AN OPTIONAL ROUTE (0.237.0, the factory's roadmap 269). The walker, 2026-10-20: "stairs and ladders
+    should be the primary way to get between floors in this game...with the holes in floors being somewhat rare...but
+    still at our disposal". A drop (`is_drop`) goes, unless it opens into a stair's own well (`cause_for` says
+    `stair`: nothing of it shows, and the stair is the route there anyway). So do the authored ``slab_holes`` whose
+    plan overlaps a removed drop's hole on ANY storey -- a recipe authors the slab hole beside the link, and an
+    atrium or a shaft cuts every storey it passes through while its link names one; left behind, a slab hole is an
+    undeclared drop. A roof hatch is not a hole in a floor (`is_drop`), and a stair or a ladder is not touched."""
+    links, keep = [], []
+    for v in spec.get("vertical_links") or []:
+        (links if is_drop(spec, v) and cause_for(spec, v) != STAIR else keep).append(v)
+    if not links:
+        return [], []
+    spec["vertical_links"] = keep
+    rects = [_rect(v) for v in links]
+    holes, left = [], []
+    for h in spec.get("slab_holes") or []:
+        (holes if any(_overlaps(_rect(h), r) for r in rects) else left).append(h)
+    if "slab_holes" in spec:
+        spec["slab_holes"] = left
+    return links, holes
+
+
 def _stair_cuts(spec, story):
     """The plan rects the stairs cut in storey `story`'s floor: `stairwell.slab_openings` of the
     stairs alone, read as layout_lint reads a dict's stairs."""

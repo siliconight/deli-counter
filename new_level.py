@@ -82,6 +82,10 @@ def main():
                     help="override the recipe's authored seed; varies stair "
                          "extras and seeded cover, so the same preset yields a "
                          "different building (see stair_regression.py)")
+    ap.add_argument("--holes", choices=("on", "off"), default=None,
+                    help="off builds the recipe without the holes in its floors a player "
+                         "would see (an optional route; the stairs and ladders stay); "
+                         "on, or unset, builds what the recipe authored")
     ap.add_argument("--list", action="store_true", help="list available presets and exit")
     ap.add_argument("--force", action="store_true", help="overwrite if the spec exists")
     args = ap.parse_args()
@@ -116,6 +120,8 @@ def main():
 
     if args.seed is not None:
         kwargs["seed"] = args.seed
+    if args.holes is not None:
+        kwargs["holes"] = args.holes == "on"
 
     try:
         spec = presets.make(args.preset, **kwargs)

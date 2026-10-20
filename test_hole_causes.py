@@ -303,7 +303,8 @@ def test_a_hole_in_a_stairs_well_is_the_stairs_and_nothing_stands_round_it():
 
 
 def test_the_library_dresses_every_drop_but_foundrys_catwalk():
-    """0.235.0's library: 21 drop links in 12 specs. The six delis' hideout floors (concrete) cut through to their
+    """0.235.0's library: 21 drop links in 12 specs -- 20 in 12 since 0.237.0, deli_a01's cut left out (below). The
+    six delis' hideout floors (concrete) cut through to their
     kitchens; the two walk-ups' bedroom floors broken over their kitchens, on tile; eight hatches, and four holes in a
     stair's well with nothing round them (deli_a01-a03's drop to the stair, rowhouse_raid's hatch); foundry's 5 x 3 m
     catwalk drop onto its south machine floor caused by nothing, named by L28."""
@@ -320,7 +321,9 @@ def test_the_library_dresses_every_drop_but_foundrys_catwalk():
     deli = cut + [("roof_hatch", "floor", None)]
     broken = [("hole_edge", "broken", None), ("hole_spoil", "broken", "tile")]
     hatch = [("roof_hatch", "floor", None)]
-    assert got == {"corner_deli_heist_01": deli, "cr_deli": deli, "deli_a01": cut, "deli_a02": cut,
+    # deli_a01 carries no drop since 0.237.0 (`migrate_hole_free_variants.py`): the deli family keeps one
+    # variant a themed lot can draw without a hole (test_optional_holes.py).
+    assert got == {"corner_deli_heist_01": deli, "cr_deli": deli, "deli_a02": cut,
                    "deli_a03": cut, "night_deli": deli, "apartment_walkup_a01": broken + hatch,
                    "rowhouse_raid": broken, "07_police_station": hatch, "pvp_station_ref": hatch,
                    "warehouse_a02": hatch, "foundry_heist_vertical": hatch}

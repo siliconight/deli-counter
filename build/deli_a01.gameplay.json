@@ -435,49 +435,6 @@
       "breachable": null
     },
     {
-      "kind": "floor_hole",
-      "role": "vertical_attack_angle",
-      "from_story": null,
-      "to_story": null,
-      "story": 1,
-      "x": 8.5,
-      "y": -4.0,
-      "breachable": null,
-      "cause": "cut",
-      "nav_link": {
-        "id": "deli_a01_floor_hole_1_8_-4_navlink",
-        "start_position": [
-          8.5,
-          -4.0,
-          3.3
-        ],
-        "end_position": [
-          8.5,
-          -4.0,
-          0.0
-        ],
-        "bidirectional": false,
-        "cost": 4.0,
-        "agent_types": [
-          "player",
-          "ai_humanoid"
-        ],
-        "required_capability": "drop",
-        "access_state": "open",
-        "reservation_state": "free",
-        "hole": [
-          [
-            7.4,
-            -5.1
-          ],
-          [
-            9.6,
-            -2.9
-          ]
-        ]
-      }
-    },
-    {
       "kind": "hatch",
       "role": "roof_drop_to_stair",
       "from_story": null,
@@ -7953,12 +7910,6 @@
     "ladder1_rung_-1_10": "ladder",
     "VAULTLEDGE_0": "floor",
     "VAULTLEDGE_1": "floor",
-    "hole_edge_1_85_-40_n": "prop",
-    "hole_edge_1_85_-40_s": "prop",
-    "hole_edge_1_85_-40_e": "prop",
-    "hole_edge_1_85_-40_w": "prop",
-    "hole_spoil_1_85_-40": "prop",
-    "hole_kit_1_85_-40": "prop",
     "front_register_counter": "prop",
     "deli_case_cover": "prop",
     "aisle_shelf_01": "prop",

@@ -3818,7 +3818,7 @@ def _finish_ladders(spec: dict) -> None:
 
 def make(preset: str, enrich: bool = True, stairs_first: bool = False,
          archetype: Optional[str] = None, seed: Optional[int] = None,
-         **kwargs) -> dict:
+         holes: Optional[bool] = None, **kwargs) -> dict:
     """Build a preset spec. By default the finished spec is run through
     level_design.enrich() so every building comes out with readable cover
     cadence and callout landmarks (better by construction), and every stair
@@ -3843,11 +3843,23 @@ def make(preset: str, enrich: bool = True, stairs_first: bool = False,
     extras on spec.seed and enrich seeds cover on it per room, so a seed
     written into the finished spec changes the number the builder reports and
     nothing about the geometry. stair_regression.generate() injects at exactly
-    this point and proves the result across 100 seeds per preset."""
+    this point and proves the result across 100 seeds per preset.
+
+    `holes=False` builds the recipe without the holes in its floors a player
+    would see (0.237.0, the factory's roadmap 269; `hole_causes.without_holes`):
+    stairs and ladders are the way between floors, and a hole is an optional
+    route Level Factory asks for on some levels. None, and True, build what the
+    recipe authored."""
     if preset not in REGISTRY:
         raise KeyError(f"unknown preset '{preset}'. "
                        f"available: {', '.join(sorted(REGISTRY))}")
     spec = REGISTRY[preset](**kwargs)
+    # A HOLE IS AN OPTIONAL ROUTE (0.237.0): left out here, before every pass
+    # below, so the cover, the stairs and the furniture are placed in a floor
+    # that never had it.
+    if holes is False:
+        import hole_causes
+        hole_causes.without_holes(spec)
     # NO PIECE THROUGH A WALL (0.199.0): a piece a recipe authors through one
     # of its own walls is trimmed back to the side it stands on --
     # `corner_deli`'s case came 0.825 m out into the market aisles and the
