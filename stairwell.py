@@ -641,19 +641,93 @@ def stair_footprints(spec):
     return out
 
 
-def ramp_hole(rp):
-    """``(cx, cy, size_x, size_y)`` of the slab cut a ramp makes at its TOP.
+#: A ramp's landing past its head, metres along the ascent: as deep as the
+#: ramp is wide, as a stair's landing is as deep as its flight
+#: (agent_contract's stair_landing_derivation), and never under the 60 in IBC
+#: 2018 section 1012.6.3 asks of a ramp landing (0.241.0).
+RAMP_LANDING_MIN = 1.524
+#: What a ramp's cut and landing take either side of the ramp, metres: the
+#: 0.2 m every ramp cut has carried since it was spelled inline.
+RAMP_CUT_SIDE = 0.2
 
-    THE SINGLE SOURCE for a shape `Builder._ramps` used to spell inline. Note
-    the centre is offset half a run along the ascent axis -- the cut is at the
-    head of the climb, not over the ramp's middle -- which is why the hole and
-    the FOOTPRINT below are different rectangles and neither substitutes for
-    the other.
+
+def _ramp_ascent(rp):
+    """``(t_low, t_head, lateral centre)`` on the ramp's ascent axis. The box
+    `Builder._ramps` builds is CENTRED on (x, y) and climbs toward +axis, so
+    its foot is half a run behind the centre and its head half a run ahead."""
+    t = rp.y if rp.axis == "Y" else rp.x
+    return t - rp.run / 2.0, t + rp.run / 2.0, (rp.x if rp.axis == "Y" else rp.y)
+
+
+def ramp_cut_span(rp):
+    """``(t_mid, t_head)`` on the ascent axis: where the slab over a ramp is
+    open -- from the ramp's middle, where its cut has always begun, to its
+    HEAD, where the ramp meets the floor it climbs to, and never past it.
+
+    NOT YET WHERE A BODY NEEDS IT. Measured on the nine library ramps (the
+    factory's docs/findings/ramp_cut_241/): where the cut begins, the clearance
+    between the slab's underside and the ramp's top face is 1.04 to 1.55 m,
+    under a body's 1.8 m, so a body walking up meets the slab's edge. The agent
+    contract's `min_headroom_m` would open each cut 1.4 to 3.2 m further down
+    its ramp -- under furniture that furnish lays without reading a ramp's cut
+    -- so that waits on furnish learning ramps (the factory's roadmap)."""
+    t_low, t_head, _lat = _ramp_ascent(rp)
+    return (t_low + t_head) / 2.0, t_head
+
+
+def _ramp_rect(rp, a, b):
+    """The plan rect from ``a`` to ``b`` on the ascent axis, the ramp's width
+    plus `RAMP_CUT_SIDE` either side across it, as (cx, cy, size_x, size_y)."""
+    _lo, _hi, lat = _ramp_ascent(rp)
+    along, across = (a + b) / 2.0, rp.width + 2 * RAMP_CUT_SIDE
+    if rp.axis == "Y":
+        return (lat, along, across, b - a)
+    return (along, lat, b - a, across)
+
+
+def ramp_hole(rp):
+    """``(cx, cy, size_x, size_y)`` of the slab cut a ramp makes, on the storey
+    it climbs to: across the ramp's width and `RAMP_CUT_SIDE` either side,
+    along its ascent over `ramp_cut_span`.
+
+    THE SINGLE SOURCE for a shape `Builder._ramps` used to spell inline -- and
+    the hole and the FOOTPRINT below are still different rectangles, neither a
+    substitute for the other.
+
+    REDRAWN IN 0.241.0, found by the factory's install test 10. Until then the
+    cut was the ramp's footprint shifted half a run along +Y (along X, not
+    shifted at all), described here as "at the head of the climb". The box it
+    was cut for is centred on (x, y), so a Y ramp's cut ran from the ramp's
+    middle to half a run PAST its head: every library ramp left the floor it
+    climbs to open over nothing for 5 to 8 m beyond its top, and Level
+    Factory's drop-edge gate refused the 33 edges round seed 9205's
+    parking_garage in a stranger's first `make`, a 3 m fall at most of them.
+    The cut now stops at the head; `stair_guards` rails it, and `ramp_landing`
+    keeps walls off the floor past it.
     """
-    return (rp.x,
-            rp.y + (rp.run / 2 if rp.axis == "Y" else 0),
-            rp.width + 0.4 if rp.axis == "Y" else rp.run,
-            rp.run if rp.axis == "Y" else rp.width + 0.4)
+    t_mid, t_head = ramp_cut_span(rp)
+    return _ramp_rect(rp, t_mid, t_head)
+
+
+def ramp_landing(rp):
+    """``(x0, y0, x1, y1)`` on the storey a ramp climbs to: the floor past its
+    head, as deep as `RAMP_LANDING_MIN` or the ramp's width, whichever is more,
+    and as wide as its cut. Not a hole -- the floor a body or a car arrives on
+    -- so it is a WALL VOID only (`wall_voids`): no partition stands across a
+    ramp's head (0.241.0). Two library walls did, clipped only by the old cut
+    running past the head: `foundry_heist_vertical`'s `int_0_4` on the head
+    itself and `parking_garage_a02`'s wall 1 m past ramp 0's.
+
+    IT REACHES BACK OVER THE CUT'S LAST `RAMP_CUT_SIDE`, the margin the cut
+    takes beside the ramp. `partition_bounds.hole_cuts` decides by a wall's
+    centreline, strictly inside, so a landing begun AT the head left
+    `int_0_4` -- its centreline on the head -- standing across the arrival
+    (found by `test_ramp_cut.py` before it shipped). A wall whose centreline
+    lies in that 0.2 m was over the cut already."""
+    _lo, t_head, _lat = _ramp_ascent(rp)
+    cx, cy, sx, sy = _ramp_rect(rp, t_head - RAMP_CUT_SIDE,
+                                t_head + max(rp.width, RAMP_LANDING_MIN))
+    return (cx - sx / 2, cy - sy / 2, cx + sx / 2, cy + sy / 2)
 
 
 def ramp_footprint_rect(rp):
@@ -721,6 +795,7 @@ def wall_voids(spec):
             cx, cy, sx, sy = ramp_hole(rp)
             out.setdefault(rp.to_story, []).append(
                 (cx - sx / 2, cy - sy / 2, cx + sx / 2, cy + sy / 2))
+            out[rp.to_story].append(ramp_landing(rp))
         fp = ramp_footprint_rect(rp)
         for s in range(lo, hi):
             out.setdefault(s, []).append(fp)
@@ -844,6 +919,12 @@ def stair_guards(spec):
     of the same stair already occupies that line, so no two solids share a
     face. Spirals and L-shaped stairs build their own geometry and are not
     covered here.
+
+    A RAMP'S CUT IS RAILED AS A FLIGHT'S HOLE IS (0.241.0): ``rail`` pieces
+    along both long edges of `ramp_hole` and across its entry end, its head
+    left open, ``stair`` naming the ramp (``ramp_<n>``) and ``material`` the
+    palette's painted steel -- a garage's guardrail, not a stair's wood. They
+    take every trim a stair's rail takes.
 
     A piece: ``{"stair", "story", "kind", "axis", "pos", "lo", "hi"}`` --
     ``axis`` is the guard's RUNNING axis (a Y guard runs along y at x = pos),
@@ -1142,6 +1223,30 @@ def stair_guards(spec):
     # AFTER every side and rail, so each of those keeps its index -- and so
     # its builder name (`stair_guard_side_7` is what the walker's overlay read)
     raw += backs
+    # A RAMP'S RAILS COME LAST OF ALL (0.241.0), for the same reason: every
+    # stair's piece keeps its index and its name. On the storey whose slab the
+    # cut opens, `T / 2` outside it, as a flight's: both long edges from the
+    # cut's entry edge to the ramp's head, and the entry end between them.
+    mats = {m.id for m in (getattr(spec, "materials", None) or ())}
+    rail_mat = next((m for m in ("metal_painted", "metal") if m in mats), None)
+    for i, rp in enumerate(getattr(spec, "ramps", ()) or ()):
+        if not (getattr(rp, "cut_slabs", True) and rp.to_story > rp.from_story):
+            continue
+        cx, cy, sx, sy = ramp_hole(rp)
+        x0, y0, x1, y1 = cx - sx / 2, cy - sy / 2, cx + sx / 2, cy + sy / 2
+        if rp.axis == "Y":
+            pieces = (("Y", x0 - T / 2.0, y0, y1), ("Y", x1 + T / 2.0, y0, y1),
+                      ("X", y0 - T / 2.0, x0 - T, x1 + T))
+        else:
+            pieces = (("X", y0 - T / 2.0, x0, x1), ("X", y1 + T / 2.0, x0, x1),
+                      ("Y", x0 - T / 2.0, y0 - T, y1 + T))
+        for axis, pos, lo, hi in pieces:
+            piece = {"stair": "ramp_%d" % i, "story": rp.to_story,
+                     "kind": "rail", "axis": axis, "pos": pos, "lo": lo,
+                     "hi": hi}
+            if rail_mat:
+                piece["material"] = rail_mat
+            raw.append(piece)
 
     def band(p):
         """Half-depth a piece reaches across its line BEYOND a thin guard's.

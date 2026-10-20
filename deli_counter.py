@@ -1860,7 +1860,8 @@ class _Builder:
                 mat = None
             else:
                 h = stairwell.GUARD_HEIGHT
-                mat = "wood" if "wood" in have else None
+                # a piece may name its own (0.241.0: a ramp's rail is steel)
+                mat = g.get("material") or ("wood" if "wood" in have else None)
             # A SEAM PIECE'S UNDERSIDE FOLLOWS THE FLIGHT BELOW (0.225.0):
             # `z_lo` lifts the box's bottom off the storey floor and the top
             # stays at the slab underside (`stairwell._seam_pieces`).

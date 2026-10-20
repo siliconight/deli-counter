@@ -1,3 +1,46 @@
+## [0.241.0] - a ramp's cut stops at its head, railed, with a landing past it
+
+**Found by the factory's install test 10** (roadmap 202): a stranger's first `make` picked seed 9205, whose lot
+stands a parking_garage, and Level Factory's drop-edge gate refused the export on 33 edges round the garage's ramp.
+`stairwell.ramp_hole` cut the storey a ramp climbs to from the ramp's middle to half a run PAST its head -- the box
+`Builder._ramps` builds is centred on the ramp's (x, y) -- so the cut's far half stood open over nothing, 5 m beyond
+the top of the garage's ramp (24 of the edges, most of them a 3 m fall to the ground floor), and the cut's other edges
+dropped 0.75 to 1.2 m onto the ramp unguarded (9). Every library ramp did the same: nine ramps in six specs, 5 to 8 m
+past their heads (the factory's `docs/findings/ramp_cut_241/`).
+
+### Changed
+- `stairwell.ramp_hole`: the cut runs from the ramp's middle -- where it always began -- to its head, and never past
+  it; across the ramp's width and `RAMP_CUT_SIDE` (0.2 m) either side, as before. `ramp_cut_span` says where. Along X
+  the same rule: the old cut covered an X ramp's whole footprint (no library ramp runs along X).
+- `stairwell.stair_guards` rails a ramp's cut as it rails a flight's hole: `GUARD_HEIGHT` rails along both long edges
+  and across the entry end, `GUARD_THICK / 2` outside the cut, on the storey whose slab it opens; the head stays open,
+  the way off. They come after every stair's pieces, so every existing guard keeps its index and its name
+  (`stair_guard_rail_<k>`), and they take every trim a stair's rail takes -- furniture on the line, a wall holding it.
+  Painted steel where the palette has it (`metal_painted`, else `metal`), a garage's guardrail rather than a stair's
+  wood: the builder takes a piece's own `material` before its wood-where-the-palette-has-it default.
+- `stairwell.ramp_landing`: a wall void past a ramp's head, as deep as the ramp is wide or the 60 in that IBC 2018
+  section 1012.6.3 asks of a ramp landing, whichever is more, and reaching back over the cut's last `RAMP_CUT_SIDE` --
+  floor, not a hole -- so no partition stands across a ramp's arrival. Two library walls did, clipped only by the old
+  cut running past the head: foundry_heist_vertical's `int_0_4`, its centreline on the head, and parking_garage_a02's
+  wall at y 6, 1 m past ramp 0's. A landing begun at the head left `int_0_4` standing --
+  `partition_bounds.hole_cuts` decides by a wall's centreline, strictly inside -- found by the new tests before it
+  shipped.
+
+### Not changed, and why
+- WHERE THE CUT BEGINS. Where each cut begins, the clearance between the slab's underside and the ramp's top face is
+  1.04 to 1.55 m on the nine library ramps, under a body's 1.8 m, so a body walking up meets the slab's edge. The agent
+  contract's `min_headroom_m` would open each cut 1.4 to 3.2 m further down its ramp, under furniture that furnish
+  lays without reading a ramp's cut (foundry_heist_vertical's forklift and pallets, cbp_town's chairs), so it waits on
+  furnish learning ramps -- the factory's roadmap, open.
+- A RAMP'S OWN SIDES. The drop from a ramp to the floor beside it is reported by Level Factory's gate as a thing's
+  top, not refused; walls or rails along them would change the garages' ground floors, and are the walker's call.
+
+### Tests
+- `test_ramp_cut.py`, 6 new; 5 fail on 0.240.0 -- the cut ending 5 to 8 m past the head, nothing railing it, the
+  garages' three rails missing, no `ramp_landing`, the builder ignoring a piece's material -- and the sixth, the
+  library's nine cut ramps, is the floor under them.
+- `test_wall_over_void.py`: the ramp's cut no longer described as "offset half a run".
+
 ## [0.240.0] - a roof AC unit is an hvac unit and a club bar is a counter: two boxes get the word they lacked
 
 **The factory's roadmap 267, its one-word mappings first.** Read against the walker's asset wishlist, 1,486 of the

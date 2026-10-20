@@ -286,10 +286,10 @@ def test_the_plan_draws_no_wall_across_the_void():
 
 def test_wall_voids_carries_a_ramps_cut_and_its_footprint():
     """A ramp cuts the slab at its TOP and occupies the air of every storey it
-    climbs through, and those are DIFFERENT rectangles -- the cut is offset
-    half a run along the ascent axis. cbp_town's `int_0_1` stands in the
-    footprint and in no cut, so a rule written from cuts alone leaves a wall
-    across a ramp."""
+    climbs through, and those are DIFFERENT rectangles -- the cut runs from the
+    ramp's middle to its head (0.241.0; it ran half a run past the head before,
+    `test_ramp_cut.py`). cbp_town's `int_0_1` stands in the footprint and in no
+    cut, so a rule written from cuts alone leaves a wall across a ramp."""
     spec = spec_loader.load_spec(
         os.path.join(HERE, "specs", "foundry_heist_vertical.json"))
     rp = spec.ramps[0]
