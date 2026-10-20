@@ -1,3 +1,47 @@
+## [0.235.0] - a wall may not stand under a hole in its ceiling (layout_lint L27); the open-floor table slides a hole off a wall it stands
+
+**The factory's roadmap 260.** 0.234.0's table walled the six delis' kitchens from their market aisles along x 7
+(`market_aisles|kitchen`, WALL), and their 2.2 m "vertical attack angle" drop at (8, -4) -- a `slab_holes` entry and a
+floor_hole link, one hole -- spans x 6.9..9.1: the new wall's centreline 0.1 m inside the hole's edge, its new door
+under the hole, the wall's 0.35 m top showing in it. Seen in the factory's cold run 9338 (restaurant_row_001, deli_a03)
+in frames of the hole from the kitchen and from above, and by Level Factory's drop-edge gate as 7 fewer unguarded
+edges, its column probe reading the wall's top as floor. Nothing here asked it: L21 asks a wall against a STAIR's hole,
+and `partition_bounds.hole_cuts` a wall over a hole in its own floor (roadmap 114).
+
+### Added
+- layout_lint L27 (advisory WARN): a wall under a hole in its ceiling. `ceiling_holes` reads every authored hole the
+  builder cuts -- `slab_holes`, and the floor_hole and hatch links that cut the slab, read as `_vertical_links` reads
+  them; a hole authored in both lists is one hole carrying both -- and `ceiling_hole_walls` names each partition, as
+  `built_walls` stands it, that reaches into one in its own ceiling: how far its thickness reaches past the hole's edge
+  and along how much of its run. Touching the edge (`CEILING_HOLE_TOL_M`, `STALE_TOL_M`'s 0.02 m) is the hole's
+  enclosure, not a wall under it. Built walls, not authored ones: a wall over a hole in its own floor is cut there
+  first, and two storey-1 walls of final_stand's and cbp_town_finale's atriums that a census of raw partitions counted
+  stand nowhere under the hole above.
+- `open_floor_rules._clear_holes`: a hole a WALL row's new wall would stand under slides across the wall, whole grid
+  cells, toward the side holding its centre, until it opens into the one room below that holds its centre and no wall
+  stands under it -- the hole moves, not the wall (L21's rule for a stair) -- every ref with it. It stays over the same
+  rooms above and below, off every other hole and stair walk, and moves no wall of the storey above; else the pair is
+  taken back whole, as for a lint FAIL. `apply` also slides a hole off a standing wall whose two sides are a WALL row's
+  pair, so running the migration again converges a library walled before the rule; a wall the table does not own
+  keeps its hole, and L27 names it.
+
+### Library
+- `migrate_open_floor_rules.py`, run again: the six delis' drops slid +0.5 m in x, to (8.5, -4) -- x 7.4..9.6, in the
+  kitchen, 0.225 m clear of the wall's face -- slab hole and link together.
+- Refurnished (`migrate_furnish_recipes.py`): corner_deli_heist_01, cr_deli and night_deli move, their storey-1 dining
+  table having stood within furnish's 0.3 m of the slid hole -- in each, 6 pieces moved and one chair out; deli_a01,
+  deli_a02 and deli_a03 move none. The rest of the library refurnished changes nothing.
+- L27 on the library: the six delis' walls gone; three walls that stood under a hole before the table, named and not
+  moved -- final_stand's ground-floor wall at y -3 under its atrium (0.30 m into it, along 10 m),
+  cbp_town_finale_midbalanced_schemafixed's at y 10 (0.30 m, 28 m), and bank's at x 4, its centreline on its atrium's
+  edge (0.15 m, 6 m). No lint FAIL before or after in any of the six.
+
+### Changed
+- `migrate_open_floor_rules.py`'s docstring says what running it again does.
+- Tests: test_ceiling_holes.py (9). All 9 fail on 0.234.0; with L27 alone beside 0.234.0's table, the 5 that ask the
+  table fail -- the hole left over the wall it lays and over one standing, the pair not refused, the library's six
+  delis and a preset deli carrying the drop over the kitchen wall.
+
 ## [0.234.0] - the walker's open-floor table: each pair of rooms one floor or two; an exterior wall covers its line; a room may name `open_to`
 
 **The factory's roadmap 260, from 255.** 0.223.0 named every open floor nobody named (layout_lint L26) and froze the

@@ -1181,6 +1181,111 @@ def open_floor_findings(spec):
             for f in open_floors(spec)]
 
 
+#: A wall reaching less than this into a hole, or along less than this of
+#: one, touches its edge: a hole's enclosure, flush with the wall's face, is
+#: not under it (L27). The same "touch at an edge" as `STALE_TOL_M`.
+CEILING_HOLE_TOL_M = STALE_TOL_M
+
+
+def ceiling_holes(spec):
+    """``{slab storey: [(rect, refs)]}``: every AUTHORED hole the builder
+    cuts, filed under the storey whose floor it opens (`floors.room_voids`'
+    key, and `stairwell.slab_openings`'). Each `slab_holes` entry, and each
+    `vertical_links` floor_hole or hatch that cuts the slab, read as
+    `Builder._vertical_links` reads it (`size_x or 1.5`). ``rect`` is
+    ``(x0, y0, x1, y1)`` in the spec's frame; ``refs`` are the spec's own
+    dicts that carry it. A hole authored in both lists -- the delis' drop is
+    a `slab_holes` entry and a floor_hole link -- is ONE hole with two refs,
+    so a caller that moves it moves both. A stair's cut is not here: a wall
+    against a stair's hole is L21's."""
+    out = {}
+
+    def add(story, x, y, sx, sy, ref):
+        rect = (round(x - sx / 2.0, 6), round(y - sy / 2.0, 6),
+                round(x + sx / 2.0, 6), round(y + sy / 2.0, 6))
+        holes = out.setdefault(int(story), [])
+        for r, refs in holes:
+            if r == rect:
+                refs.append(ref)
+                return
+        holes.append((rect, [ref]))
+
+    for h in spec.get("slab_holes") or []:
+        add(h.get("story", 0) or 0, float(h["x"]), float(h["y"]),
+            float(h["size_x"]), float(h["size_y"]), h)
+    for v in spec.get("vertical_links") or []:
+        if (v.get("kind") in ("floor_hole", "hatch") and v.get("cut_slab", True)
+                and v.get("story") is not None and v.get("x") is not None):
+            add(v["story"], float(v["x"]), float(v["y"]),
+                float(v.get("size_x") or 1.5), float(v.get("size_y") or 1.5), v)
+    return out
+
+
+def ceiling_hole_walls(spec):
+    """L27's measure: every built partition standing under an authored hole
+    in its own ceiling -- the floor of the storey above -- as
+    ``[{"wall", "index", "story", "axis", "pos", "into", "along", "hole",
+    "refs"}]``. ``into`` is how far the wall's thickness reaches in past the
+    hole's edge, so how wide its top shows in the hole; ``along`` how much of
+    its built run does. Both must pass `CEILING_HOLE_TOL_M`. Walls as
+    `built_walls` stands them; ``index`` is the partition's in the spec."""
+    holes = ceiling_holes(spec)
+    if not holes:
+        return []
+    out = []
+    for label, story, n, plane, half, spans in built_walls(spec):
+        if not label.startswith("int_"):
+            continue
+        for rect, refs in holes.get(story + 1, []):
+            a0, a1, b0, b1 = ((rect[0], rect[2], rect[1], rect[3]) if n == 0
+                              else (rect[1], rect[3], rect[0], rect[2]))
+            into = min(plane + half, a1) - max(plane - half, a0)
+            if into <= CEILING_HOLE_TOL_M:
+                continue
+            along = sum(max(0.0, min(s1, b1) - max(s0, b0)) for s0, s1 in spans)
+            if along <= CEILING_HOLE_TOL_M:
+                continue
+            out.append({"wall": label, "index": int(label.rsplit("_", 1)[1]),
+                        "story": story, "axis": "Y" if n == 0 else "X",
+                        "pos": plane, "into": round(into, 4),
+                        "along": round(along, 4), "hole": rect, "refs": refs})
+    return out
+
+
+def ceiling_hole_findings(spec):
+    """L27 (advisory WARN, 0.235.0): a wall standing under a hole in its own
+    ceiling, its top showing in the hole and its doorway, if it has one there,
+    opening under a drop. THE CAPTURED CASE: the walker's open-floor table
+    (0.234.0, the factory's roadmap 260) walled the delis' kitchen from their
+    market aisles along x 7, and their 2.2 m "vertical attack angle" drop at
+    (8, -4) spans x 6.9..9.1 -- the wall's centreline 0.1 m inside the
+    hole's edge, its new door under the hole. Seen in cold run 9338's frames
+    of deli_a03, and by Level Factory's drop-edge gate as 7 fewer unguarded
+    edges: its column probe read the wall's 0.35 m top as floor. Nothing
+    asked it: L21 asks a wall against a STAIR's hole, and `hole_cuts` a wall
+    over a hole in its own floor (roadmap 114). Measured on 0.234.0's 159
+    tracked specs (the 130 with partitions): those six delis, and three walls
+    that stood under a hole before the table, named here and not moved --
+    the ground-floor walls under the atriums of final_stand (0.30 m into it
+    along 10 m) and cbp_town_finale_midbalanced_schemafixed (0.30 m, 28 m),
+    and bank's at x 4, its centreline on its atrium's edge (0.15 m, 6 m).
+    BUILT walls, not authored ones: a partition over a hole in its own floor
+    is cut there first, and two storey-1 walls of those atriums that a census
+    of raw partitions counted stand nowhere under the hole above.
+
+    Move the hole, not the wall: the rooms are the plan and the wall is
+    their boundary (L21's rule for a stair). `open_floor_rules` slides a
+    hole off a wall its table stands."""
+    return ["L27 wall under a hole in its ceiling: the story %d %s-partition "
+            "at pos=%g (%s) stands %.2f m into the hole (%.2f, %.2f)-(%.2f, "
+            "%.2f) in the floor of story %d along %.2f m of its run, its top "
+            "showing in the hole -- move the hole clear of the wall, not the "
+            "wall" % (w["story"], w["axis"], w["pos"], w["wall"], w["into"],
+                      w["hole"][0], w["hole"][1], w["hole"][2], w["hole"][3],
+                      w["story"] + 1, w["along"])
+            for w in ceiling_hole_walls(spec)]
+
+
 def gate(spec):
     """evidence.py entry point: (errors, warnings, summary). Runs the full lint
     (structural coherence for all modes + pvp_heist guard rails)."""
@@ -1402,6 +1507,7 @@ def lint_spec(spec, name):
     fails += reachability_findings(spec)    # L12 sealed/unreachable rooms (all modes)
     warns += walk_reach_findings(spec)      # L24 a room only a breach, window or drop reaches
     warns += open_floor_findings(spec)      # L26 an open floor nobody named
+    warns += ceiling_hole_findings(spec)    # L27 a wall under a hole in its ceiling
     if spec.get("mode") != "pvp_heist":
         return name, fails, warns
     edges, ext_faces = graph(spec)

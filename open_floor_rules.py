@@ -29,16 +29,25 @@ WHAT A ROW DOES (`apply`):
         the run's middle); otherwise a partition is added for the stretch alone, in the material of the storey's
         partitions. An opening on a crossing wall that a new wall's end would split (layout_lint L18) slides along
         its own wall, whole grid cells away, until the end clears it -- L18's own prescription -- or the pair is
+        refused. A hole in the ceiling the new wall would stand under (layout_lint L27, 0.235.0) slides across the
+        wall, whole grid cells, toward the side holding its centre, until the wall's thickness clears it and the
+        hole opens into one room below -- the rooms are the plan, so the hole moves, not the wall -- or the pair is
         refused. Then, under DOORWAY_POLICY, one door, as wide as the agent contract's, in the longest stretch
         closed: "keep_pair_joined" (the default) when nothing walkable joins the two rooms any more, so no way the
         open floor gave is lost; "only_if_sealed" only when L12 or L24 would otherwise newly name one of them. Never
         into an objective room (the walker, 2026-10-06: a room reachable only by breaching gets a door unless it is
-        the objective). A WALL row that would leave the spec failing any lint rule it passed is taken back whole,
-        and the pair is named as refused.
+        the objective). A WALL row that would leave the spec failing any lint rule it passed, or with a wall under
+        a hole it could not slide, is taken back whole, and the pair is named as refused.
 A pair with no row is left alone, and L26 keeps naming it. A spec already sorted is left alone: `apply` twice is
 `apply` once. A partition is extended only when every opening it carries is built where it was: the grid places an
 opening at `snap(pos * run)` from the run's middle, so a longer run can slide a door by half a cell (measured on
 corner_deli_heist_01's `cold_w_access`, 0.125 m), and the stretch then gets a partition of its own.
+
+A WALL ROW'S WALL ALREADY STANDING (0.235.0). 0.234.0 walled the six delis' kitchens from their market aisles along
+x 7, under their 2.2 m drop at (8, -4) -- the wall's centreline 0.1 m inside the hole's edge, its new door under the
+hole, seen in the factory's cold run 9338. `apply` therefore also slides a hole off any standing wall whose two sides
+are a WALL row's pair, so the library converges by running the migration again; a wall the table does not own keeps
+its hole, and L27 names it.
 """
 import copy
 
@@ -300,6 +309,84 @@ def _clear_apertures(spec, term):
     return moved, stuck
 
 
+def _within(rect, bounds, tol):
+    return (rect[0] >= bounds[0] - tol and rect[1] >= bounds[1] - tol
+            and rect[2] <= bounds[2] + tol and rect[3] <= bounds[3] + tol)
+
+
+def _overlaps(r, q, tol):
+    return min(r[2], q[2]) - max(r[0], q[0]) > tol and min(r[3], q[3]) - max(r[1], q[1]) > tol
+
+
+def _same(r, q):
+    return all(abs(u - v) < 1e-6 for u, v in zip(r, q))
+
+
+def _hole_name(refs):
+    """``slab hole + floor_hole vertical_attack_angle``: what carries a hole, as the spec says it."""
+    return " + ".join("%s %s" % (r["kind"], r.get("role") or "") if r.get("kind") else "slab hole"
+                      for r in refs).replace("  ", " ").strip()
+
+
+def _clear_holes(spec, p):
+    """Slide each authored hole in the ceiling over wall `p` that the wall stands under (layout_lint L27) across the
+    wall, whole grid cells, toward the side holding the hole's centre, until it opens into the one room below that
+    holds its centre and no wall stands under it: L21's rule for a stair, "move the stair, not the wall", said of a
+    hole -- the rooms are the plan. Every ref the hole carries moves with it (the delis' drop is a `slab_holes` entry
+    and a floor_hole link: one hole). It stays over the same rooms above and below its centre, clear of every other
+    hole on its slab and of every stair's walk above and below, and moves no wall of the storey above (the builder
+    cuts a wall over a hole in its floor), or it does not move. ``[what slid]`` and ``[what could not]``."""
+    parts = spec.get("partitions") or []
+    idx = next((i for i, q in enumerate(parts) if q is p), None)
+    if idx is None:
+        return [], []
+    grid, tol = _grid(spec), layout_lint.CEILING_HOLE_TOL_M
+    st = int(p.get("story", 0) or 0)
+    by_story = layout_lint._rooms_by_story(spec)
+    walls_above = [w for w in layout_lint.built_walls(spec) if w[1] == st + 1]
+    moved, stuck = [], []
+    for w in layout_lint.ceiling_hole_walls(spec):
+        if w["index"] != idx:
+            continue
+        rect, refs = w["hole"], w["refs"]
+        key, a = ("x", 0) if w["axis"] == "Y" else ("y", 1)     # the hole slides across the wall
+        cx, cy = (rect[0] + rect[2]) / 2.0, (rect[1] + rect[3]) / 2.0
+        below = layout_lint._room_at(by_story.get(st, []), cx, cy)
+        above = layout_lint._room_at(by_story.get(st + 1, []), cx, cy)
+        away = 1.0 if (rect[a] + rect[a + 2]) / 2.0 >= w["pos"] else -1.0
+        start = {id(r): float(r[key]) for r in refs}
+        done = False
+        for k in range(1, 7):                  # at most 3 m, on the builder's grid
+            d = away * k * grid
+            new = list(rect)
+            new[a] += d
+            new[a + 2] += d
+            nx, ny = (new[0] + new[2]) / 2.0, (new[1] + new[3]) / 2.0
+            if (layout_lint._room_at(by_story.get(st, []), nx, ny) is not below
+                    or layout_lint._room_at(by_story.get(st + 1, []), nx, ny) is not above):
+                break                          # into other rooms
+            if below is None or not _within(new, below["bounds"], tol):
+                continue                       # still over the wall's line
+            for r in refs:
+                r[key] = round(start[id(r)] + d, 6)
+            holes, walks = layout_lint.stair_space(spec)
+            others = ([q for q in holes.get(st + 1, []) if not _same(q, new)]
+                      + [q for q, _r in layout_lint.ceiling_holes(spec).get(st + 1, []) if not _same(q, new)]
+                      + walks.get(st + 1, []) + walks.get(st, []))
+            if (not any(_same(x["hole"], new) for x in layout_lint.ceiling_hole_walls(spec))
+                    and not any(_overlaps(new, q, tol) for q in others)
+                    and [x for x in layout_lint.built_walls(spec) if x[1] == st + 1] == walls_above):
+                moved.append("the %s (%g, %g) in the floor of story %d slid %+.2f m in %s, off the wall at %s %g "
+                             "(L27)" % (_hole_name(refs), cx, cy, st + 1, d, key, key, w["pos"]))
+                done = True
+                break
+            for r in refs:
+                r[key] = start[id(r)]
+        if not done:
+            stuck.append("the %s (%g, %g) in the floor of story %d" % (_hole_name(refs), cx, cy, st + 1))
+    return moved, stuck
+
+
 def _fail_codes(spec):
     """How many of each layout_lint FAIL `spec` carries, by rule: ``{"L18": 1, ...}``."""
     _name, fails, _warns = layout_lint.lint_spec(spec, spec.get("name", "?"))
@@ -314,8 +401,10 @@ def apply(spec, policy=None):
     """Sort `spec`'s open floors by `RULES`, in place. ``[what changed]``, empty when nothing did.
 
     A WALL row is applied to one pair at a time, and taken back whole when it would leave the spec failing a lint
-    rule it passed -- a wall through a stair's reservation (L21), say, or a doorway it could not clear (L18) -- so the
-    table never writes a wall the builder or the lint refuses; the pair is named as refused and L26 keeps naming it."""
+    rule it passed -- a wall through a stair's reservation (L21), say, or a doorway it could not clear (L18) -- or
+    with a wall under a hole it could not slide (L27), so the table never writes a wall the builder or the lint
+    refuses; the pair is named as refused and L26 keeps naming it. Then a hole over a WALL pair's standing wall is
+    slid off it (see the docstring: the library's six delis, walled before the hole rule)."""
     policy = policy or DOORWAY_POLICY
     if policy not in POLICIES:
         raise ValueError("doorway policy %r, not one of %s" % (policy, ", ".join(POLICIES)))
@@ -335,16 +424,34 @@ def apply(spec, policy=None):
         if not _stretches(spec, st, f["axis"], f["pos"], f["lo"], f["hi"]):
             continue
         before, fails_before = copy.deepcopy(spec), _fail_codes(spec)
+        under_before = len(layout_lint.ceiling_hole_walls(spec))
         lines = _close(spec, f, a, b, st, policy, named_before)
         fails_after = _fail_codes(spec)
         worse = sorted(k for k, n in fails_after.items() if n > fails_before.get(k, 0))
-        if worse:
+        under = len(layout_lint.ceiling_hole_walls(spec)) > under_before
+        if worse or under:
             spec.clear()
             spec.update(before)
-            said.append("%s|%s (story %d): REFUSED -- closing it would fail %s; left open, and L26 names it"
-                        % (a, b, st, ", ".join(worse)))
+            why = (["fail " + ", ".join(worse)] if worse else []) + (
+                ["stand a wall under a hole it could not slide (L27)"] if under else [])
+            said.append("%s|%s (story %d): REFUSED -- closing it would %s; left open, and L26 names it"
+                        % (a, b, st, " and ".join(why)))
             continue
         said.extend(lines)
+    parts, seen = spec.get("partitions") or [], set()
+    for w in layout_lint.ceiling_hole_walls(spec):
+        if w["index"] in seen:
+            continue
+        seen.add(w["index"])
+        p, h = parts[w["index"]], w["hole"]
+        lo, hi = sorted(_ends(spec, p))
+        b0, b1 = (h[1], h[3]) if w["axis"] == "Y" else (h[0], h[2])
+        sides = _sides(spec, p, (max(lo, b0) + min(hi, b1)) / 2.0)
+        if None in sides or rule(*sides) != WALL:
+            continue                           # not a wall the table asked for: L27 names it
+        slid, stuck = _clear_holes(spec, p)
+        said.extend("%s|%s: %s" % (sides[0], sides[1], x) for x in slid)
+        said.extend("%s|%s: %s could not slide off its wall; L27 names it" % (sides[0], sides[1], x) for x in stuck)
     return said
 
 
@@ -380,6 +487,8 @@ def _close(spec, f, a, b, st, policy, named_before):
         closed.append((g1 - g0, g0, g1, p))
     for _n, _g0, _g1, p in closed:
         slid, _stuck = _clear_apertures(spec, p)
+        said.extend("%s|%s: %s" % (a, b, x) for x in slid)
+        slid, _stuck = _clear_holes(spec, p)
         said.extend("%s|%s: %s" % (a, b, x) for x in slid)
     if not closed:
         return said

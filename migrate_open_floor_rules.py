@@ -11,6 +11,9 @@ MEASURED FIRST (the factory's docs/findings/open_floor_table_260/pairs.py): 49 o
 room ids. Seven met along a footprint's own edge, where the exterior wall stands -- the gas stations' forecourts --
 and 0.234.0's reading of exterior walls (`tactical.exterior_parts`) leaves 42 here.
 
+RUN AGAIN BY 0.235.0: `apply` slides a hole off a standing wall whose two sides are a WALL row's pair (layout_lint L27),
+and this moved the six delis' drops 0.5 m east, off the kitchen wall 0.234.0 had stood under them.
+
 The mission's own `lf_*` shells are not touched: they are built every run, from the generator, not the library.
 Change the table and run this again: a pair already sorted the old way is not unsorted by it -- an OPEN row turned
 WALL finds no open floor to close while `open_to` names it; take that out of the spec first.
