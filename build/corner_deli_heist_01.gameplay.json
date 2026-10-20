@@ -563,6 +563,7 @@
       "x": 8.5,
       "y": -4.0,
       "breachable": null,
+      "cause": "cut",
       "nav_link": {
         "id": "corner_deli_heist_01_floor_hole_1_8_-4_navlink",
         "start_position": [
@@ -605,6 +606,7 @@
       "x": -12.0,
       "y": 8.0,
       "breachable": true,
+      "cause": "hatch",
       "nav_link": {
         "id": "corner_deli_heist_01_hatch_1_-12_8_navlink",
         "start_position": [
@@ -4025,6 +4027,43 @@
         "open": false
       },
       "building": "corner_deli_heist_01"
+    },
+    {
+      "id": "corner_deli_heist_01:if:7ea6ec66",
+      "kind": "hatch",
+      "slot_ref": "floor_hatch_1_-120_80",
+      "transform": {
+        "translation": [
+          -12.0,
+          8.0,
+          3.331
+        ],
+        "rot_y": 180.0
+      },
+      "states": [
+        "open",
+        "closed"
+      ],
+      "default": "open",
+      "transitions": [
+        {
+          "event": "close",
+          "from": "open",
+          "to": "closed"
+        },
+        {
+          "event": "open",
+          "from": "closed",
+          "to": "open"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "collision_per_state": {
+        "open": false,
+        "closed": true
+      },
+      "building": "corner_deli_heist_01"
     }
   ],
   "stair_systems": [
@@ -4733,6 +4772,10 @@
     "ladder0_rung_1_10": "ladder",
     "VAULTLEDGE_0": "floor",
     "VAULTLEDGE_1": "floor",
+    "hole_edge_1_85_-40": "prop",
+    "hole_spoil_1_85_-40": "prop",
+    "hole_kit_1_85_-40": "prop",
+    "floor_hatch_1_-120_80": "prop",
     "front_register_counter": "prop",
     "deli_case_cover": "prop",
     "aisle_shelf_01": "prop",

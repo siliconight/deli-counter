@@ -290,7 +290,12 @@ PROP_SPECIES = (
 #: `roof_hatch` (0.224.0, factory roadmap 170): the module is a curb AROUND a hole
 #: with a lid in two states; a solid greybox box over the hole would block the
 #: ladder that climbs out through it.
-SPECIES_OWNS_COLLISION = frozenset({"cubicle_bank", "roof_hatch"})
+#: `hole_edge`, `hole_spoil` and `hole_kit` (0.236.0, the factory's roadmap 265):
+#: what stands round a drop's hole and where it lands (`hole_causes.py`). The
+#: edge and the spoil have no collision at all -- a box over the edge would close
+#: the drop -- and the kit's module carries its own.
+SPECIES_OWNS_COLLISION = frozenset({"cubicle_bank", "roof_hatch",
+                                    "hole_edge", "hole_spoil", "hole_kit"})
 
 
 def owns_collision(species):

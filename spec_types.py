@@ -470,6 +470,11 @@ class VerticalLink:
     breachable: Optional[bool] = None      # hatch
     cut_slab: bool = True                  # floor_hole/hatch punch the slab
     meta: Optional[dict] = None            # arbitrary extra data -> gameplay.json
+    # WHY A DROP'S HOLE IS THERE (0.236.0, the factory's roadmap 265): "cut" (a
+    # crew broke through), "broken" (the floor gave way) or "hatch" (a built
+    # floor hatch). None -> a hatch link's kind, else `hole_causes.RULES` by
+    # the rooms above and below; a hole none of them covers is layout_lint L28.
+    cause: Optional[str] = None
 
 
 @dataclass

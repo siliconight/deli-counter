@@ -1,3 +1,63 @@
+## [0.236.0] - every hole in a floor has a cause, and what stands round it says so (`hole_causes.py`, layout_lint L28)
+
+**The factory's roadmap 265.** The walker, 2026-10-19, asked why the levels have holes in their floors -- the drop
+routes this repo cuts square through a slab -- and chose to keep the routes and give each a reason to exist: "if we
+have holes it should be clear to the player that they are there, but also some reason other than a perfectly cut
+square (what is diegetic but a signal to the human playing the game)". Needs Zoo 1.114.0, whose `hole_edge`,
+`hole_spoil` and `hole_kit` and `roof_hatch`'s `floor` form build what this release asks for.
+
+### Added
+- `hole_causes.py` (pure, a geometry source). A drop -- a `floor_hole` link, or a `hatch` link below the roof, that
+  cuts the slab -- has a CAUSE: its link's own `cause`; else `stair` when its hole opens into a stair's well
+  (`stair_share`: there is no floor there to dress); else `hatch` for a hatch link; else a row of `RULES` by the rooms
+  above and below its centre -- the factory's calls of 2026-10-19 under the walker's direction, meant to be changed:
+  the hideout over a deli's kitchen `cut` (a crew broke through), a bedroom over a kitchen `broken` (the floor gave
+  way), an armory over a garage and a warehouse mezzanine over its floor `hatch`. What stands round it, each a `prop`
+  slot Zoo builds:
+  - `cut` and `broken`: a `hole_edge` round the cut (`BAND` 0.30 m past it a side, from `TOP` 0.012 m above the
+    visible floor to `HANG` 0.30 m under the ceiling below), its form the cause plus `_slab` where the room above has
+    a `concrete` floor and `_plaster` where the room below has a plaster or drywall ceiling; a `hole_spoil` on the
+    floor the drop lands on (`ladder.drop_landing`), the hole and 0.25 m a side, cut back from every piece, stair and
+    other hole there, its stock the finish of the floor above (`carpet`, `tile`, else `none`), one a place where a
+    stacked shaft's drops land together; and for `cut`, the crew's `hole_kit` (1.4 x 0.7 x 0.7 m) beside the hole,
+    its near edge 0.35 m off it, turned to face it, on the side reaching furthest into the room above that keeps off
+    every piece, stair, other hole, door approach (`DOOR_APPROACH_M`) and ladder.
+  - `hatch`: `roof_hatch` in its `floor` form -- a 3 cm frame 0.08 m outside the hole, its lid standing open on the
+    side nearest a wall of the room above among those clear of stairs and door approaches -- with the `hatch`
+    interactive, open by default so the drop stays a route.
+  A slot outside its species' sizes (`GENOME_DIMS`, Zoo's genomes mirrored) is left out and the build log says so:
+  Zoo builds such a slot as the plain box at its size (`kit._species_fit`), which over a hole would cover it. The
+  edge and the spoil are visual only and the kit and the hatch own their collision, so the slab's cut stays the
+  collider and the drop's route. The contract's numbers are `zoo_keeper.core.hole_forms`' and change with them.
+- `VerticalLink.cause` and the schema's `cause` (`cut`, `broken`, `hatch`); gameplay.json's `vertical_links` record
+  says every drop's cause, `stair` included, None where nothing names one.
+- `_vertical_links` stands the slots and records the hatch interactives, after the roof hatches.
+- layout_lint L28: a FAIL for a link naming a cause that is not one; an advisory WARN for a hole that ships as a bare
+  cut, or part of one -- no cause, a cause whose edge or hatch is outside its species' sizes, or a hole only partly
+  in a stair's well.
+- `prop_species.SPECIES_OWNS_COLLISION` gains `hole_edge`, `hole_spoil` and `hole_kit`.
+
+### Library
+- 21 drop links in 12 specs, 30 slots. `cut` 6: the six delis' hideout over their kitchen, `cut_slab` (a concrete
+  floor over a drop ceiling) -- the edge 2.8 m square, the spoil 2.655 x 2.7 m, cut back at the kitchen wall 0.225 m
+  off the hole, and the kit south of the hole. `broken` 2: rowhouse_raid's and apartment_walkup_a01's bedroom over
+  their kitchen, the spoil on `tile` (1.7 x 1.83 and 2.29 x 1.83 m). `hatch` 8: corner_deli_heist_01's, cr_deli's
+  and night_deli's drop to the stairwell, apartment_walkup_a01's office over its garage bay and foundry's skylight
+  room over its archive by kind; 07_police_station's and pvp_station_ref's armory over the garage and
+  warehouse_a02's mezzanine by `RULES`. `stair` 4: deli_a01-a03's drop to the stairwell, cut wholly inside
+  `deli_stair_up`'s well, and rowhouse_raid's hatch, 70 % in its stair's -- a floor hatch built round either first
+  stood over the stair, and `circulation.check_shell` read its frame 0.03 m inside the stair's column on all four.
+  Uncaused 1: foundry_heist_vertical's 5 x 3 m drop from catwalk_south onto south_machine, which L28 names.
+- layout_lint over the library: 0 FAIL before and after; 395 WARN on 0.235.0, 397 now -- L28's two, foundry's
+  uncaused drop and rowhouse_raid's hatch running past its stair's well.
+- `circulation.check_shell` on the twelve built with 0.235.0 and with this release: no new conflict in any;
+  foundry_heist_vertical's 2 and warehouse_a02's 1 are 0.235.0's.
+
+### Tests
+- test_hole_causes.py (17). The file does not collect on 0.235.0; with `hole_causes.py` alone beside 0.235.0's tree,
+  the 8 that ask the rest of the release fail -- L28, the schema and the dataclass, the species' collision, the
+  library's stair wells.
+
 ## [0.235.0] - a wall may not stand under a hole in its ceiling (layout_lint L27); the open-floor table slides a hole off a wall it stands
 
 **The factory's roadmap 260.** 0.234.0's table walled the six delis' kitchens from their market aisles along x 7

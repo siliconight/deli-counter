@@ -300,6 +300,7 @@
       "x": 14.0,
       "y": -8.0,
       "breachable": null,
+      "cause": "hatch",
       "nav_link": {
         "id": "warehouse_a02_floor_hole_1_14_-8_navlink",
         "start_position": [
@@ -3747,6 +3748,43 @@
         "closed": true
       },
       "building": "warehouse_a02"
+    },
+    {
+      "id": "warehouse_a02:if:37c2e3f8",
+      "kind": "hatch",
+      "slot_ref": "floor_hatch_1_140_-80",
+      "transform": {
+        "translation": [
+          14.0,
+          -8.0,
+          4.031
+        ],
+        "rot_y": 0.0
+      },
+      "states": [
+        "open",
+        "closed"
+      ],
+      "default": "open",
+      "transitions": [
+        {
+          "event": "close",
+          "from": "open",
+          "to": "closed"
+        },
+        {
+          "event": "open",
+          "from": "closed",
+          "to": "open"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "collision_per_state": {
+        "open": false,
+        "closed": true
+      },
+      "building": "warehouse_a02"
     }
   ],
   "stair_systems": [
@@ -4545,6 +4583,7 @@
     "ladder0_rung_1_11": "ladder",
     "ladder0_rung_1_12": "ladder",
     "roof_hatch_2_10": "prop",
+    "floor_hatch_1_140_-80": "prop",
     "rack_long_a": "prop",
     "rack_long_b": "prop",
     "forklift_bay": "prop",

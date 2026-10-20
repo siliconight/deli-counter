@@ -65,6 +65,7 @@ import fire_escape_stack
 import stoop
 import vault_room
 import roof_hatch
+import hole_causes
 
 
 # ============================================================================
@@ -2933,14 +2934,23 @@ class _Builder:
         """floor_hole / hatch links cut the slab (like slab_holes) and record
         gameplay intent. 'stair' links are descriptive only (geometry comes
         from the stairs section). All are written to gameplay.json."""
+        import dataclasses
         import ladder as _ladder
-        for v in self.s.vertical_links:
+        # the spec as the dict `hole_causes` and layout_lint read; taken before
+        # this pass appends its links' cuts to `slab_holes`, which changes no
+        # answer (`hole_causes._cuts` adds every drop's own)
+        spec_d = dataclasses.asdict(self.s)
+        for v, vd in zip(self.s.vertical_links, spec_d["vertical_links"]):
             rec = {
                 "kind": v.kind, "role": v.role,
                 "from_story": v.from_story, "to_story": v.to_story,
                 "story": v.story, "x": v.x, "y": v.y,
                 "breachable": v.breachable,
             }
+            # WHY A DROP'S HOLE IS THERE (0.236.0, the factory's roadmap 265):
+            # its cause, None when nothing names one (layout_lint L28)
+            if hole_causes.is_drop(spec_d, vd):
+                rec["cause"] = hole_causes.cause_for(spec_d, vd)
             # A DECLARED DROP CARRIES ITS OWN OFF-MESH LINK (0.226.0, factory
             # roadmap 173). The package carried a ladder's link and no drop's,
             # so nothing downstream could tell this hole from one nobody
@@ -2985,6 +2995,21 @@ class _Builder:
             self._box(slot["slot_id"], c, size, self.VISUAL, role="prop")
             self.slots.append(slot)
             self.gameplay["interactives"].append(entry)
+        # A CAUSE ROUND EVERY HOLE IN A FLOOR (0.236.0, the factory's roadmap
+        # 265): a drop a crew cut, a floor that gave way or a built hatch, each
+        # dressed by `prop` slots Zoo builds (`hole_causes.py`). The edge and
+        # the spoil are visual only and the kit and the hatch own their
+        # collision, so the slab's cut stays the collider and the drop's route.
+        hole_slots, notes = hole_causes.hole_slots(
+            spec_d, lambda m: skin_style.style_for(m, self._mat_style,
+                                                   self.s.default_material))
+        for slot, entry, c, size in hole_slots:
+            self._box(slot["slot_id"], c, size, self.VISUAL, role="prop")
+            self.slots.append(slot)
+            if entry is not None:
+                self.gameplay["interactives"].append(entry)
+        for note in notes:
+            print(f"[deli_counter] hole_causes: {note}")
 
     def _rooms(self):
         for r in self.s.rooms:

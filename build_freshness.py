@@ -76,6 +76,8 @@ GEOMETRY_SOURCES = (
     "fire_escape_stack.py",
     # the roof hatch slot and its interactive, one per hatch link on the roof (0.224.0)
     "roof_hatch.py",
+    # a drop hole's cause and the slots round it -- edge, spoil, kit, floor hatch (0.236.0)
+    "hole_causes.py",
     # EVERY OTHER MODULE A BUILD REACHES WHOSE OUTPUT IT WRITES (0.229.0, the
     # factory's roadmap 259). Until 0.228.0 this tuple named 23 sources while a
     # build reached 54 of this repo's modules, and 21 of the unlisted ones shape

@@ -707,6 +707,7 @@
       "x": 0.0,
       "y": -9.0,
       "breachable": null,
+      "cause": null,
       "nav_link": {
         "id": "foundry_heist_vertical_floor_hole_1_0_-9_navlink",
         "start_position": [
@@ -749,6 +750,7 @@
       "x": 16.0,
       "y": 10.0,
       "breachable": true,
+      "cause": "hatch",
       "nav_link": {
         "id": "foundry_heist_vertical_hatch_2_16_10_navlink",
         "start_position": [
@@ -4584,6 +4586,43 @@
         "open": false
       },
       "building": "foundry_heist_vertical"
+    },
+    {
+      "id": "foundry_heist_vertical:if:ba419f88",
+      "kind": "hatch",
+      "slot_ref": "floor_hatch_2_160_100",
+      "transform": {
+        "translation": [
+          16.0,
+          10.0,
+          6.831
+        ],
+        "rot_y": 270.0
+      },
+      "states": [
+        "open",
+        "closed"
+      ],
+      "default": "open",
+      "transitions": [
+        {
+          "event": "close",
+          "from": "open",
+          "to": "closed"
+        },
+        {
+          "event": "open",
+          "from": "closed",
+          "to": "open"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "collision_per_state": {
+        "open": false,
+        "closed": true
+      },
+      "building": "foundry_heist_vertical"
     }
   ],
   "stair_systems": [
@@ -6134,6 +6173,7 @@
     "VAULTLEDGE_1": "floor",
     "VAULTLEDGE_2": "floor",
     "VAULTLEDGE_3": "floor",
+    "floor_hatch_2_160_100": "prop",
     "vault_safe_block": "prop",
     "basement_generator_cover": "prop",
     "sewer_pipe_run_west": "prop",

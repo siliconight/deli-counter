@@ -1070,6 +1070,14 @@
           },
           "meta": {
             "type": "object"
+          },
+          "cause": {
+            "enum": [
+              "cut",
+              "broken",
+              "hatch",
+              null
+            ]
           }
         }
       }

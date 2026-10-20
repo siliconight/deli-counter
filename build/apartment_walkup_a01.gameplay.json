@@ -258,6 +258,7 @@
       "x": 4.0,
       "y": -3.0,
       "breachable": null,
+      "cause": "broken",
       "nav_link": {
         "id": "apartment_walkup_a01_floor_hole_1_4_-3_navlink",
         "start_position": [
@@ -300,6 +301,7 @@
       "x": -6.0,
       "y": 5.0,
       "breachable": true,
+      "cause": "hatch",
       "nav_link": {
         "id": "apartment_walkup_a01_hatch_1_-6_5_navlink",
         "start_position": [
@@ -3334,6 +3336,43 @@
         "open": false
       },
       "building": "apartment_walkup_a01"
+    },
+    {
+      "id": "apartment_walkup_a01:if:35ee3d4a",
+      "kind": "hatch",
+      "slot_ref": "floor_hatch_1_-60_50",
+      "transform": {
+        "translation": [
+          -6.0,
+          5.0,
+          3.231
+        ],
+        "rot_y": 180.0
+      },
+      "states": [
+        "open",
+        "closed"
+      ],
+      "default": "open",
+      "transitions": [
+        {
+          "event": "close",
+          "from": "open",
+          "to": "closed"
+        },
+        {
+          "event": "open",
+          "from": "closed",
+          "to": "open"
+        }
+      ],
+      "source": "inferred",
+      "reversible": true,
+      "collision_per_state": {
+        "open": false,
+        "closed": true
+      },
+      "building": "apartment_walkup_a01"
     }
   ],
   "stair_systems": [
@@ -4214,6 +4253,9 @@
     "ladder0ext_rung_0_10": "ladder",
     "FIREESCAPE_REAR_FIRE_ESCAPE_1": "floor",
     "FIREESCAPE_REAR_FIRE_ESCAPE_1_RAIL": "floor",
+    "hole_edge_1_40_-30": "prop",
+    "hole_spoil_1_40_-30": "prop",
+    "floor_hatch_1_-60_50": "prop",
     "kitchen_counter_cover": "prop",
     "counter_service_r235f1253_1": "prop",
     "cabinet_file_r235f1253_2": "prop",

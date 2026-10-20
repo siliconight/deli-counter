@@ -1286,6 +1286,50 @@ def ceiling_hole_findings(spec):
             for w in ceiling_hole_walls(spec)]
 
 
+def hole_cause_findings(spec):
+    """L28 (0.236.0, the factory's roadmap 265): ``(fails, warns)`` for the
+    holes in floors a body drops through -- the `floor_hole` links, and the
+    `hatch` links below the roof, that cut the slab. The walker asked why the
+    levels have holes in their floors and chose to give each one a reason to
+    exist; `hole_causes.py` dresses a hole by its cause, and this names the
+    ones it cannot: an advisory WARN for a hole no cause covers (no `cause` on
+    the link, not a hatch, no `hole_causes.RULES` row for its rooms -- it
+    ships a bare square cut), whose cause's edge or hatch is outside its
+    species' sizes (Zoo would build a box there, so none is asked for), or
+    that reaches only partly into a stair's well (a hole wholly in one is the
+    stair's, and nothing is built round it); a FAIL for a link naming a cause
+    that is not one, which the build would refuse. Measured on 0.235.0's
+    library: 21 drop links in 12 specs, one uncaused --
+    foundry_heist_vertical's 5 x 3 m `drop_angle` from catwalk_south onto
+    south_machine -- none too big, and one partly in a well: rowhouse_raid's
+    office-to-garage hatch, 70 % in its stair's."""
+    import hole_causes
+    bad, none, bare, past = hole_causes.uncaused(spec)
+    fails = ["L28 a hole in a floor names cause %r, not one of %s: the story %d "
+             "%s at (%g, %g), %s over %s"
+             % (cause, ", ".join(hole_causes.CAUSES), v["story"],
+                v.get("kind"), v["x"], v["y"], up, dn)
+             for v, up, dn, cause in bad]
+    warns = ["L28 a hole in a floor with no cause: the story %d %s at (%g, %g), "
+             "%s over %s, ships as a bare cut -- give the link a `cause` (%s) or "
+             "the pair a row in hole_causes.RULES"
+             % (v["story"], v.get("kind"), v["x"], v["y"], up, dn,
+                ", ".join(hole_causes.CAUSES))
+             for v, up, dn, _none in none]
+    warns += ["L28 a hole in a floor too big to dress: the story %d %s at (%g, %g), "
+              "%s over %s, would need a %s %s m, outside its sizes, and ships as a "
+              "bare cut -- make the hole smaller or the species bigger"
+              % (v["story"], v.get("kind"), v["x"], v["y"], up, dn, species,
+                 " x ".join("%g" % round(q, 3) for q in dims))
+              for v, up, dn, (species, dims) in bare]
+    warns += ["L28 a hole in a floor runs past a stair's well: the story %d %s at "
+              "(%g, %g), %s over %s, is %.0f%% in the well and the rest a bare cut "
+              "in the floor beside it -- keep the hole inside the well or clear of it"
+              % (v["story"], v.get("kind"), v["x"], v["y"], up, dn, 100.0 * share)
+              for v, up, dn, share in past]
+    return fails, warns
+
+
 def gate(spec):
     """evidence.py entry point: (errors, warnings, summary). Runs the full lint
     (structural coherence for all modes + pvp_heist guard rails)."""
@@ -1508,6 +1552,9 @@ def lint_spec(spec, name):
     warns += walk_reach_findings(spec)      # L24 a room only a breach, window or drop reaches
     warns += open_floor_findings(spec)      # L26 an open floor nobody named
     warns += ceiling_hole_findings(spec)    # L27 a wall under a hole in its ceiling
+    lf28, lw28 = hole_cause_findings(spec)  # L28 a hole in a floor with no cause
+    fails += lf28
+    warns += lw28
     if spec.get("mode") != "pvp_heist":
         return name, fails, warns
     edges, ext_faces = graph(spec)
