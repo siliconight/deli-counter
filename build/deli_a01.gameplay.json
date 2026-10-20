@@ -705,7 +705,7 @@
       "kind": "window",
       "story": 1,
       "x": 19.0,
-      "y": 5.5,
+      "y": 7.0,
       "z": 5.0,
       "width": 1.2,
       "height": 1.4,
@@ -3088,6 +3088,15 @@
       }
     },
     {
+      "node": "ext_col_1_E_seg10",
+      "material": {
+        "id": "brick_ext",
+        "acoustic": "Concrete",
+        "absorption": 0.72,
+        "damping": 0.62
+      }
+    },
+    {
       "node": "ext_col_1_E_open0_lintel",
       "material": {
         "id": "brick_ext",
@@ -3115,15 +3124,6 @@
       }
     },
     {
-      "node": "ext_col_1_E_seg10",
-      "material": {
-        "id": "brick_ext",
-        "acoustic": "Concrete",
-        "absorption": 0.72,
-        "damping": 0.62
-      }
-    },
-    {
       "node": "ext_col_1_E_seg11",
       "material": {
         "id": "brick_ext",
@@ -3143,6 +3143,15 @@
     },
     {
       "node": "ext_col_1_E_seg13",
+      "material": {
+        "id": "brick_ext",
+        "acoustic": "Concrete",
+        "absorption": 0.72,
+        "damping": 0.62
+      }
+    },
+    {
+      "node": "ext_col_1_E_seg14",
       "material": {
         "id": "brick_ext",
         "acoustic": "Concrete",
@@ -5212,12 +5221,12 @@
       }
     },
     {
-      "node": "barrel_drum_rf91f207b_6_col",
+      "node": "shelf_run_rf91f207b_6_col",
       "material": {
-        "id": "metal",
-        "acoustic": "Metal",
-        "absorption": 0.18,
-        "damping": 0.16
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": 0.35,
+        "damping": 0.3
       }
     },
     {
@@ -5239,12 +5248,12 @@
       }
     },
     {
-      "node": "barrel_drum_rf91f207b_9_col",
+      "node": "cartons_rf91f207b_9_col",
       "material": {
-        "id": "metal",
-        "acoustic": "Metal",
-        "absorption": 0.18,
-        "damping": 0.16
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": 0.35,
+        "damping": 0.3
       }
     },
     {
@@ -7684,13 +7693,14 @@
     "ext_1_E_seg7": "wall",
     "ext_1_E_seg8": "wall",
     "ext_1_E_seg9": "wall",
+    "ext_1_E_seg10": "wall",
     "ext_1_E_open0_lintel": "window",
     "ext_1_E_open0_sill": "window",
     "ext_1_E_open0_pane": "window",
-    "ext_1_E_seg10": "wall",
     "ext_1_E_seg11": "wall",
     "ext_1_E_seg12": "wall",
     "ext_1_E_seg13": "wall",
+    "ext_1_E_seg14": "wall",
     "ext_1_W_seg0": "wall",
     "ext_1_W_seg1": "wall",
     "ext_1_W_seg2": "wall",
@@ -7995,10 +8005,10 @@
     "cabinet_panel_rf91f207b_3": "prop",
     "shelf_run_rf91f207b_4": "prop",
     "cabinet_panel_rf91f207b_5": "prop",
-    "barrel_drum_rf91f207b_6": "prop",
+    "shelf_run_rf91f207b_6": "prop",
     "barrel_drum_rf91f207b_7": "prop",
     "cartons_rf91f207b_8": "prop",
-    "barrel_drum_rf91f207b_9": "prop",
+    "cartons_rf91f207b_9": "prop",
     "counter_service_rb0f5945e_1": "prop",
     "chair_waiting_rb0f5945e_2": "prop",
     "vending_rb0f5945e_3": "prop",

@@ -24,6 +24,7 @@ import migrate_window_poster
 import migrate_window_sign
 import stoop as stoop_geom
 import fire_escape_stack
+import facade_plan
 import agent_contract
 
 #: THE CONTRACT'S DOOR (0.214.0, factory roadmap 197): every walkable door a
@@ -3138,7 +3139,8 @@ def empty_rowhome(name: str = "empty_rowhome", width: float = 6.0,
         {"id": "glass", "acoustic": "Glass", "absorption": 0.1, "damping": 0.1},
         {"id": "wood", "acoustic": "Wood", "absorption": 0.5, "damping": 0.45},
     ], parapet_h=float(cornice), seed=int(seed))
-    bay = 0.22 if width >= 6.0 else 0.2
+    # the house's two bays: its row (`facade_plan.ROWS["rowhome"]`, 0.238.0)
+    bay = facade_plan.bay_positions("rowhome", width)[1]
     door = -bay if door_side == "W" else bay
     win = {"kind": "window", "width": 0.95, "height": 1.6, "sill": 0.85,
            "material": "glass"}
@@ -3291,8 +3293,9 @@ for _args in EMPTY_ROWHOMES.values():
 #: The window bay of a mid-rise front, one window a bay. CHOSEN, not read: the
 #: comps give no dimension, and a little over 3 m reads as an apartment's
 #: rooms. `empty_midrise` rounds the bays to the width, so the spacing lands
-#: within a few tenths of this.
-MIDRISE_BAY = 3.2
+#: within a few tenths of this. Its row's since 0.238.0
+#: (`facade_plan.ROWS["midrise"]`), which owns the number.
+MIDRISE_BAY = facade_plan.ROWS["midrise"]["bay_m"]
 #: A CORNER SHOP'S WINDOW (0.218.0, roadmap 241): a bay less a pier either
 #: side, from a low bulkhead to the front door's head, so the storefront reads
 #: as one run of glass with the shop's door in it. CHOSEN, not read: 2.4 m of
@@ -3336,10 +3339,11 @@ def empty_midrise(name: str = "empty_midrise", width: float = 18.0,
     ], parapet_h=float(cornice), seed=int(seed))
     # Two bays at the least (0.217.0): a 6.3 m front holds two windows in the
     # family's rhythm, where a floor of three stood them 2.1 m apart. The six
-    # have five bays or more, so the floor never bound them.
-    bays = max(2, int(round(float(width) / MIDRISE_BAY)))
-    pos = [round((i + 0.5) / bays - 0.5, 4) for i in range(bays)]
-    door_bay = min(range(bays), key=lambda i: abs(pos[i] - float(lobby)))
+    # have five bays or more, so the floor never bound them. The bays are the
+    # row's (`facade_plan.ROWS["midrise"]`, 0.238.0), the door in the one
+    # nearest `lobby`.
+    pos = facade_plan.bay_positions("midrise", width)
+    door_bay = facade_plan.nearest(pos, lobby)
     win = {"kind": "window", "width": 1.1, "height": 1.6, "sill": 0.85,
            "material": "glass"}
     ext = []
@@ -3849,7 +3853,12 @@ def make(preset: str, enrich: bool = True, stairs_first: bool = False,
     would see (0.237.0, the factory's roadmap 269; `hole_causes.without_holes`):
     stairs and ladders are the way between floors, and a hole is an optional
     route Level Factory asks for on some levels. None, and True, build what the
-    recipe authored."""
+    recipe authored.
+
+    Every face is composed as the library's are (0.238.0, the factory's
+    roadmap 79; `facade_plan.stack_mirrored`): the upper storeys' untagged
+    windows stand over the openings below them, in mirrored pairs, within a
+    bay. An Empty is composed by its own row and left as its recipe wrote it."""
     if preset not in REGISTRY:
         raise KeyError(f"unknown preset '{preset}'. "
                        f"available: {', '.join(sorted(REGISTRY))}")
@@ -3860,6 +3869,10 @@ def make(preset: str, enrich: bool = True, stairs_first: bool = False,
     if holes is False:
         import hole_causes
         hole_causes.without_holes(spec)
+    # A FACE IS COMPOSED (0.238.0, the factory's roadmap 79): here, before
+    # every pass below, so the cover and the furniture are laid round the
+    # windows that are built.
+    facade_plan.stack_mirrored(spec)
     # NO PIECE THROUGH A WALL (0.199.0): a piece a recipe authors through one
     # of its own walls is trimmed back to the side it stands on --
     # `corner_deli`'s case came 0.825 m out into the market aisles and the

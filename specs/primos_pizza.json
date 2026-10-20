@@ -52,6 +52,12 @@
    "acoustic": "Wood",
    "absorption": 0.22,
    "damping": 0.18
+  },
+  {
+   "id": "metal_bare",
+   "acoustic": "Metal",
+   "absorption": 0.2,
+   "damping": 0.15
   }
  ],
  "auto_exterior": true,
@@ -256,14 +262,14 @@
    "openings": [
     {
      "kind": "window",
-     "pos": -0.3,
+     "pos": -0.4,
      "width": 1.8,
      "sill": 0.9,
      "vaultable": true
     },
     {
      "kind": "window",
-     "pos": -0.05,
+     "pos": 0.025,
      "width": 1.8,
      "sill": 0.9,
      "vaultable": true
@@ -282,7 +288,7 @@
    "openings": [
     {
      "kind": "window",
-     "pos": -0.21,
+     "pos": -0.285714,
      "width": 1.4,
      "sill": 0.9,
      "vaultable": true
@@ -884,51 +890,42 @@
    "rot_z": 180.0
   },
   {
-   "name": "table_dining_rf7ffeb16_1",
-   "x": -0.74,
-   "y": -2.07,
-   "z": 3.57,
-   "size_x": 0.9,
-   "size_y": 1.6,
-   "size_z": 0.74,
+   "name": "counter_bar_rf7ffeb16_1",
+   "x": -3.52,
+   "y": -6.44,
+   "z": 3.74,
+   "size_x": 3.0,
+   "size_y": 0.8,
+   "size_z": 1.08,
    "collision": "convex",
-   "material": "wood"
+   "material": "wood",
+   "rot_z": 180.0,
+   "stock": "bar",
+   "variant": 3
+  },
+  {
+   "material": "wood",
+   "name": "chair_set_rf7ffeb16_1_1",
+   "x": -4.27,
+   "y": -5.59,
+   "z": 3.65,
+   "size_x": 0.5,
+   "size_y": 0.5,
+   "size_z": 0.9,
+   "collision": "convex",
+   "rot_z": 18.8
   },
   {
    "material": "wood",
    "name": "chair_set_rf7ffeb16_1_2",
-   "x": -1.64,
-   "y": -2.21,
+   "x": -2.77,
+   "y": -5.59,
    "z": 3.65,
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
    "collision": "convex",
-   "rot_z": 270.0
-  },
-  {
-   "material": "wood",
-   "name": "chair_set_rf7ffeb16_1_3",
-   "x": -0.85,
-   "y": -3.64,
-   "z": 3.65,
-   "size_x": 0.5,
-   "size_y": 0.5,
-   "size_z": 0.9,
-   "collision": "convex",
-   "rot_z": 180.0
-  },
-  {
-   "material": "wood",
-   "name": "chair_set_rf7ffeb16_1_4",
-   "x": -0.74,
-   "y": -0.72,
-   "z": 3.65,
-   "size_x": 0.5,
-   "size_y": 0.5,
-   "size_z": 0.9,
-   "collision": "convex",
-   "rot_z": 17.3
+   "rot_z": 18.4
   },
   {
    "name": "table_count_r1c92a876_1",
@@ -1269,16 +1266,42 @@
   },
   {
    "name": "poster_wall_bar_rf7ffeb16_3",
-   "x": -9.84,
-   "y": -5.62,
+   "x": -3.1,
+   "y": -6.83,
    "z": 4.95,
-   "size_x": 0.01,
-   "size_y": 1.8,
+   "size_x": 1.2,
+   "size_y": 0.01,
    "size_z": 0.5,
    "collision": "none",
    "material": "paper",
    "rot_z": 180.0,
    "form": "bar"
+  },
+  {
+   "name": "video_poker_bar_rf7ffeb16_4",
+   "x": -9.52,
+   "y": -1.83,
+   "z": 4.075,
+   "size_x": 0.65,
+   "size_y": 0.65,
+   "size_z": 1.75,
+   "collision": "convex",
+   "material": "metal_painted",
+   "rot_z": 270.0,
+   "variant": 2
+  },
+  {
+   "name": "bar_stool_rf7ffeb16_4_1",
+   "x": -8.86,
+   "y": -1.83,
+   "z": 3.58,
+   "size_x": 0.42,
+   "size_y": 0.42,
+   "size_z": 0.76,
+   "collision": "convex",
+   "material": "metal_bare",
+   "rot_z": 90.0,
+   "variant": 1
   },
   {
    "name": "cigarettes_rb0f5945e_7",

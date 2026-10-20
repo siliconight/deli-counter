@@ -3513,6 +3513,41 @@
     {
       "slot_id": "ext_1_S_seg2",
       "role": "wall",
+      "size_mod": "full",
+      "style": 3,
+      "material": "glass",
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_S",
+      "story": 1,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          -12.85,
+          -14.0,
+          6.75
+        ],
+        "rot_y": 180,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          4.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_1_S_seg3",
+      "role": "wall",
       "size_mod": "end",
       "style": 3,
       "material": "glass",
@@ -3523,7 +3558,7 @@
       "facing": "S",
       "transform": {
         "translation": [
-          -13.075,
+          -11.075,
           -14.0,
           6.75
         ],
@@ -3558,7 +3593,7 @@
       "facing": "S",
       "transform": {
         "translation": [
-          -11.0,
+          -9.0,
           -14.0,
           6.75
         ],
@@ -3584,41 +3619,6 @@
             "sill": 0.9
           }
         ],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "ext_1_S_seg3",
-      "role": "wall",
-      "size_mod": "full",
-      "style": 3,
-      "material": "glass",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "ext_1_S",
-      "story": 1,
-      "facing": "S",
-      "transform": {
-        "translation": [
-          -8.7,
-          -14.0,
-          6.75
-        ],
-        "rot_y": 180,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          4.3
-        ],
-        "pivot": "center",
-        "openings": [],
         "collision": "convex"
       }
     },
@@ -3870,41 +3870,6 @@
     {
       "slot_id": "ext_1_S_seg11",
       "role": "wall",
-      "size_mod": "full",
-      "style": 3,
-      "material": "glass",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "ext_1_S",
-      "story": 1,
-      "facing": "S",
-      "transform": {
-        "translation": [
-          7.3,
-          -14.0,
-          6.75
-        ],
-        "rot_y": 180,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          4.3
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "ext_1_S_seg12",
-      "role": "wall",
       "size_mod": "end",
       "style": 3,
       "material": "glass",
@@ -3915,7 +3880,7 @@
       "facing": "S",
       "transform": {
         "translation": [
-          9.0,
+          7.0,
           -14.0,
           6.75
         ],
@@ -3950,7 +3915,7 @@
       "facing": "S",
       "transform": {
         "translation": [
-          11.0,
+          9.0,
           -14.0,
           6.75
         ],
@@ -3976,6 +3941,41 @@
             "sill": 0.9
           }
         ],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "ext_1_S_seg12",
+      "role": "wall",
+      "size_mod": "full",
+      "style": 3,
+      "material": "glass",
+      "current_ref": "wall_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_S",
+      "story": 1,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          11.3,
+          -14.0,
+          6.75
+        ],
+        "rot_y": 180,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.0,
+          0.3,
+          4.3
+        ],
+        "pivot": "center",
+        "openings": [],
         "collision": "convex"
       }
     },
@@ -8914,7 +8914,7 @@
       "facing": null,
       "transform": {
         "translation": [
-          14.83,
+          13.51,
           -13.54,
           5.125
         ],
@@ -8992,11 +8992,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          17.54,
-          -5.45,
+          -17.54,
+          -7.2,
           5.05
         ],
-        "rot_y": 90.0,
+        "rot_y": 270.0,
         "scale": [
           1.0,
           1.0,
@@ -9070,11 +9070,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          -6.2,
-          -13.59,
-          5.5
+          -17.59,
+          -2.01,
+          5.55
         ],
-        "rot_y": 180.0,
+        "rot_y": 270.0,
         "scale": [
           1.0,
           1.0,
@@ -9083,9 +9083,9 @@
       },
       "fit": {
         "dims": [
-          1.2,
+          2.0,
           0.5,
-          1.8
+          1.9
         ],
         "pivot": "center",
         "openings": [],
@@ -9109,11 +9109,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          -17.54,
-          -1.99,
+          17.54,
+          -6.97,
           5.05
         ],
-        "rot_y": 270.0,
+        "rot_y": 90.0,
         "scale": [
           1.0,
           1.0,
@@ -9148,11 +9148,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          -17.59,
-          -4.46,
+          -13.71,
+          -13.59,
           5.3
         ],
-        "rot_y": 270.0,
+        "rot_y": 180.0,
         "scale": [
           1.0,
           1.0,

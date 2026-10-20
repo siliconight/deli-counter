@@ -450,7 +450,7 @@
       "wall": "ext_1_S",
       "kind": "window",
       "story": 1,
-      "x": -5.0,
+      "x": -4.0,
       "y": -9.0,
       "z": 5.3,
       "width": 1.3,
@@ -479,7 +479,7 @@
       "wall": "ext_1_S",
       "kind": "window",
       "story": 1,
-      "x": 6.5,
+      "x": 9.0,
       "y": -9.0,
       "z": 5.3,
       "width": 1.3,
@@ -1449,6 +1449,15 @@
       }
     },
     {
+      "node": "ext_col_1_S_seg4",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
       "node": "ext_col_1_S_open0_lintel",
       "material": {
         "id": "concrete",
@@ -1468,15 +1477,6 @@
     },
     {
       "node": "ext_col_1_S_open0_pane",
-      "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
-      }
-    },
-    {
-      "node": "ext_col_1_S_seg4",
       "material": {
         "id": "concrete",
         "acoustic": "Concrete",
@@ -1530,6 +1530,15 @@
       }
     },
     {
+      "node": "ext_col_1_S_seg10",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
       "node": "ext_col_1_S_open1_lintel",
       "material": {
         "id": "concrete",
@@ -1549,15 +1558,6 @@
     },
     {
       "node": "ext_col_1_S_open1_pane",
-      "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
-      }
-    },
-    {
-      "node": "ext_col_1_S_seg10",
       "material": {
         "id": "concrete",
         "acoustic": "Concrete",
@@ -2358,7 +2358,7 @@
       }
     },
     {
-      "node": "cartons_rde4c5b55_5_col",
+      "node": "pallets_rde4c5b55_5_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -2367,7 +2367,7 @@
       }
     },
     {
-      "node": "cartons_rde4c5b55_6_col",
+      "node": "pallets_rde4c5b55_6_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -3300,19 +3300,19 @@
     "ext_1_S_seg1": "wall",
     "ext_1_S_seg2": "wall",
     "ext_1_S_seg3": "wall",
+    "ext_1_S_seg4": "wall",
     "ext_1_S_open0_lintel": "window",
     "ext_1_S_open0_sill": "window",
     "ext_1_S_open0_pane": "window",
-    "ext_1_S_seg4": "wall",
     "ext_1_S_seg5": "wall",
     "ext_1_S_seg6": "wall",
     "ext_1_S_seg7": "wall",
     "ext_1_S_seg8": "wall",
     "ext_1_S_seg9": "wall",
+    "ext_1_S_seg10": "wall",
     "ext_1_S_open1_lintel": "window",
     "ext_1_S_open1_sill": "window",
     "ext_1_S_open1_pane": "window",
-    "ext_1_S_seg10": "wall",
     "ext_1_S_seg11": "wall",
     "ext_1_S_seg12": "wall",
     "ext_1_S_seg13": "wall",
@@ -3434,8 +3434,8 @@
     "cabinet_supply_rde4c5b55_2": "prop",
     "cabinet_file_rde4c5b55_3": "prop",
     "shelf_run_rde4c5b55_4": "prop",
-    "cartons_rde4c5b55_5": "prop",
-    "cartons_rde4c5b55_6": "prop",
+    "pallets_rde4c5b55_5": "prop",
+    "pallets_rde4c5b55_6": "prop",
     "stair_guard_side_0": "prop",
     "stair_guard_rail_1": "prop",
     "stair_guard_side_2": "prop",

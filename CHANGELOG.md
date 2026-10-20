@@ -1,3 +1,52 @@
+## [0.238.0] - a face's upper storeys stand over the openings below them: the facade planner's first rows
+
+**The factory's roadmap 79** (its `docs/proposals/FACADE_PLANNER.md`, steps 1 and 3). Measured first (the factory's
+`docs/findings/facade_census_79/`, off the built slots of the 102 buildings a themed lot can draw): of the 169
+first-storey openings in the 52 multi-storey buildings, 28 stood over a ground-floor opening, where the Empties --
+whose presets lay every storey on one list of bays -- read 92.9 %. The upper storeys had been authored mirrored about
+each face's centre (167 of 177 openings) and the ground floors for the rooms behind them (135 of 321), and nothing
+asked the two to meet: `_exterior` emits each side of each storey on its own, and `_emit_wall_run` is handed one run
+with its openings already placed.
+
+### Added
+- `facade_plan.py`, where a face is decided: the module a preset or a migration asks before an opening is placed.
+  `ROWS`, each naming its source -- `rowhome` (two bays, a fixed fraction off the front's centre) and `midrise`
+  (round(width / 3.2) equal bays, at least two) -- moved here from inline in `presets.empty_rowhome` and
+  `presets.empty_midrise`, their output unchanged to the byte: every Empty spec is still its preset's own output.
+  `bay_positions(row, width)`, `nearest(positions, toward)`; `presets.MIDRISE_BAY` reads the row.
+- `facade_plan.stack_mirrored(spec)`: an untagged upper-storey window moves onto an opening of the storey below as
+  it now stands -- a mirrored pair only together, onto a mirrored pair; a window on the centre line only onto an
+  opening on it; any other onto the nearest -- each within `REACH`, the mid-rise row's 3.2 m bay. A target that
+  would leave the run, come within `MIN_PIER` (0.3 m) of another opening or stand over a partition's junction with
+  the wall is turned down and the next one tried. Held where they stand: a window a drape hangs over, the windows
+  on a wall a fire escape serves, a setback storey's face, and a window whose mirrored partner stays. Every
+  ground-floor opening, door, breach, garage, vault and tagged window stays where gameplay put it, and an Empty is
+  its row's and untouched.
+- `presets.make` runs it on every spec it writes, after the holes pass and before every other, so cover and
+  furniture are laid round the windows that are built: corner_deli's first-storey east window moves from 5.5 to
+  7.0 m, over the ground floor's; auto_shop, compound, hospital and twin move theirs.
+- `migrate_facade_stack.py`: the library through it, each changed spec refurnished
+  (`migrate_furnish_recipes.migrate`), so it stays a fixed point of furnish. Run once: 69 windows in 32 specs, a
+  median 2.0 m and at most 3.0. The 22 of them in the themed pool, 46 windows, are the ones the factory's
+  `docs/findings/facade_census_79/predict.py` priced, building by building. 4 held: two under a drape, two on a fire
+  escape's wall. The refurnish moved 279 volumes and laid 283 in 31 of the 32 (bank's moved nothing): upper-storey
+  cabinets, chairs, shelves and cartons laid round the moved windows. strip_retail_a01's upstairs room lost its video
+  poker machine, and primos_pizza's gained one.
+- `facade_plan.py` is a geometry source (`build_freshness.GEOMETRY_SOURCES`).
+
+### Corrected
+- 0.237.0's entry says 54 of 288 levels across 24 staged lot missions carried a hole a player sees. The census counts
+  54 of 300 across 25 (the factory's `docs/findings/hole_frequency/`); the 288 was a count made by eye.
+
+### Tests
+- `test_facade_plan.py` (23; 22 fail on 0.237.0, the Empties' guard holding on both): deli_a01's east window and
+  bank_branch_a04's front read from the specs alone; the corner_deli preset writes the composed face; the library is
+  migrated and the migration idempotent; the Empties are their rows'; the two rows reproduce the presets' bays; a
+  pair moves together onto a mirrored pair, stays when the ground floor offers none, and never past a bay; the
+  ground floor and tagged windows stay; a window alone takes the nearest opening below; a window whose mirror stays
+  stays with it; a partition junction turns a target down; a drape and a fire escape hold their windows; an Empty is
+  not touched.
+
 ## [0.237.0] - a hole in a floor is an optional route: left out on request, and the deli family keeps a variant without one
 
 **The factory's roadmap 269.** The walker, 2026-10-20: "stairs and ladders should be the primary way to get between

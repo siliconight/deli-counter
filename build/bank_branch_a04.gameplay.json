@@ -453,7 +453,7 @@
       "wall": "ext_1_S",
       "kind": "window",
       "story": 1,
-      "x": -10.0,
+      "x": -12.0,
       "y": -15.0,
       "z": 6.1,
       "width": 1.6,
@@ -470,7 +470,7 @@
       "wall": "ext_1_S",
       "kind": "window",
       "story": 1,
-      "x": 10.0,
+      "x": 12.0,
       "y": -15.0,
       "z": 6.1,
       "width": 1.6,
@@ -2395,15 +2395,6 @@
       }
     },
     {
-      "node": "ext_col_1_S_seg4",
-      "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
-      }
-    },
-    {
       "node": "ext_col_1_S_open0_lintel",
       "material": {
         "id": "concrete",
@@ -2423,6 +2414,15 @@
     },
     {
       "node": "ext_col_1_S_open0_pane",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "ext_col_1_S_seg4",
       "material": {
         "id": "concrete",
         "acoustic": "Concrete",
@@ -2521,6 +2521,15 @@
       }
     },
     {
+      "node": "ext_col_1_S_seg15",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
       "node": "ext_col_1_S_open1_lintel",
       "material": {
         "id": "concrete",
@@ -2540,15 +2549,6 @@
     },
     {
       "node": "ext_col_1_S_open1_pane",
-      "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
-      }
-    },
-    {
-      "node": "ext_col_1_S_seg15",
       "material": {
         "id": "concrete",
         "acoustic": "Concrete",
@@ -4042,7 +4042,7 @@
       }
     },
     {
-      "node": "dust_sheet_rcf8480dc_15_col",
+      "node": "cartons_rcf8480dc_15_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -6287,10 +6287,10 @@
     "ext_1_S_seg1": "wall",
     "ext_1_S_seg2": "wall",
     "ext_1_S_seg3": "wall",
-    "ext_1_S_seg4": "wall",
     "ext_1_S_open0_lintel": "window",
     "ext_1_S_open0_sill": "window",
     "ext_1_S_open0_pane": "window",
+    "ext_1_S_seg4": "wall",
     "ext_1_S_seg5": "wall",
     "ext_1_S_seg6": "wall",
     "ext_1_S_seg7": "wall",
@@ -6301,10 +6301,10 @@
     "ext_1_S_seg12": "wall",
     "ext_1_S_seg13": "wall",
     "ext_1_S_seg14": "wall",
+    "ext_1_S_seg15": "wall",
     "ext_1_S_open1_lintel": "window",
     "ext_1_S_open1_sill": "window",
     "ext_1_S_open1_pane": "window",
-    "ext_1_S_seg15": "wall",
     "ext_1_S_seg16": "wall",
     "ext_1_S_seg17": "wall",
     "ext_1_S_seg18": "wall",
@@ -6553,7 +6553,7 @@
     "shelf_run_rcf8480dc_12": "prop",
     "chair_waiting_rcf8480dc_13": "prop",
     "cabinet_file_rcf8480dc_14": "prop",
-    "dust_sheet_rcf8480dc_15": "prop",
+    "cartons_rcf8480dc_15": "prop",
     "desk_rc915bb0a_1": "prop",
     "chair_set_rc915bb0a_1_1": "prop",
     "cabinet_file_rc915bb0a_2": "prop",

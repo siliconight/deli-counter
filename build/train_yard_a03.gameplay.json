@@ -385,7 +385,7 @@
       "wall": "ext_1_S",
       "kind": "window",
       "story": 1,
-      "x": -14.5,
+      "x": -12.0,
       "y": -13.0,
       "z": 6.6,
       "width": 2.6,
@@ -402,7 +402,7 @@
       "wall": "ext_1_S",
       "kind": "window",
       "story": 1,
-      "x": 14.5,
+      "x": 12.0,
       "y": -13.0,
       "z": 6.6,
       "width": 2.6,
@@ -1667,6 +1667,15 @@
       }
     },
     {
+      "node": "ext_col_1_S_seg5",
+      "material": {
+        "id": "glass",
+        "acoustic": "Glass",
+        "absorption": 0.1,
+        "damping": 0.05
+      }
+    },
+    {
       "node": "ext_col_1_S_open0_lintel",
       "material": {
         "id": "glass",
@@ -1686,15 +1695,6 @@
     },
     {
       "node": "ext_col_1_S_open0_pane",
-      "material": {
-        "id": "glass",
-        "acoustic": "Glass",
-        "absorption": 0.1,
-        "damping": 0.05
-      }
-    },
-    {
-      "node": "ext_col_1_S_seg5",
       "material": {
         "id": "glass",
         "acoustic": "Glass",
@@ -1802,24 +1802,6 @@
       }
     },
     {
-      "node": "ext_col_1_S_seg17",
-      "material": {
-        "id": "glass",
-        "acoustic": "Glass",
-        "absorption": 0.1,
-        "damping": 0.05
-      }
-    },
-    {
-      "node": "ext_col_1_S_seg18",
-      "material": {
-        "id": "glass",
-        "acoustic": "Glass",
-        "absorption": 0.1,
-        "damping": 0.05
-      }
-    },
-    {
       "node": "ext_col_1_S_open1_lintel",
       "material": {
         "id": "glass",
@@ -1839,6 +1821,24 @@
     },
     {
       "node": "ext_col_1_S_open1_pane",
+      "material": {
+        "id": "glass",
+        "acoustic": "Glass",
+        "absorption": 0.1,
+        "damping": 0.05
+      }
+    },
+    {
+      "node": "ext_col_1_S_seg17",
+      "material": {
+        "id": "glass",
+        "acoustic": "Glass",
+        "absorption": 0.1,
+        "damping": 0.05
+      }
+    },
+    {
+      "node": "ext_col_1_S_seg18",
       "material": {
         "id": "glass",
         "acoustic": "Glass",
@@ -1893,15 +1893,6 @@
     },
     {
       "node": "ext_col_1_S_seg24",
-      "material": {
-        "id": "glass",
-        "acoustic": "Glass",
-        "absorption": 0.1,
-        "damping": 0.05
-      }
-    },
-    {
-      "node": "ext_col_1_S_seg25",
       "material": {
         "id": "glass",
         "acoustic": "Glass",
@@ -3116,7 +3107,7 @@
       }
     },
     {
-      "node": "dust_sheet_r24a6c917_16_col",
+      "node": "cartons_r24a6c917_16_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -4604,10 +4595,10 @@
     "ext_1_S_seg2": "wall",
     "ext_1_S_seg3": "wall",
     "ext_1_S_seg4": "wall",
+    "ext_1_S_seg5": "wall",
     "ext_1_S_open0_lintel": "window",
     "ext_1_S_open0_sill": "window",
     "ext_1_S_open0_pane": "window",
-    "ext_1_S_seg5": "wall",
     "ext_1_S_seg6": "wall",
     "ext_1_S_seg7": "wall",
     "ext_1_S_seg8": "wall",
@@ -4619,18 +4610,17 @@
     "ext_1_S_seg14": "wall",
     "ext_1_S_seg15": "wall",
     "ext_1_S_seg16": "wall",
-    "ext_1_S_seg17": "wall",
-    "ext_1_S_seg18": "wall",
     "ext_1_S_open1_lintel": "window",
     "ext_1_S_open1_sill": "window",
     "ext_1_S_open1_pane": "window",
+    "ext_1_S_seg17": "wall",
+    "ext_1_S_seg18": "wall",
     "ext_1_S_seg19": "wall",
     "ext_1_S_seg20": "wall",
     "ext_1_S_seg21": "wall",
     "ext_1_S_seg22": "wall",
     "ext_1_S_seg23": "wall",
     "ext_1_S_seg24": "wall",
-    "ext_1_S_seg25": "wall",
     "ext_1_E_seg0": "wall",
     "ext_1_E_seg1": "wall",
     "ext_1_E_seg2": "wall",
@@ -4811,7 +4801,7 @@
     "cabinet_file_r24a6c917_13": "prop",
     "chair_waiting_r24a6c917_14": "prop",
     "dust_sheet_r24a6c917_15": "prop",
-    "dust_sheet_r24a6c917_16": "prop",
+    "cartons_r24a6c917_16": "prop",
     "dust_sheet_r61b0ed83_1": "prop",
     "dust_sheet_r61b0ed83_2": "prop",
     "dust_sheet_r61b0ed83_3": "prop",
