@@ -233,6 +233,37 @@ def test_the_ten_library_cubicles_are_the_whole_re_route():
     assert {h[5] for h in hits} == {"drywall"}, hits
 
 
+def test_the_one_word_mappings_re_route_exactly_their_library_volumes():
+    """Roadmap 267 (0.240.0): `roof_ac` to `hvac_unit` and `club_bar` to `counter`, each a box until then for want
+    of a word. Every library volume the two words reach, measured, with its size -- each inside its species' genome
+    (hvac_unit 1.2-4.0 x 0.8-3.0 x 0.7-1.5, counter 0.8-12 x 0.5-2.0 x 0.85-1.2, long side first). FAILS ON 0.239.0:
+    both route to None."""
+    import glob
+    import json
+    here = os.path.dirname(os.path.abspath(__file__))
+    hits = []
+    for path in sorted(glob.glob(os.path.join(here, "specs", "*.json"))):
+        if os.path.basename(path).startswith("lf_"):
+            continue
+        with open(path, encoding="utf-8") as fh:
+            spec = json.load(fh)
+        for v in spec.get("volumes") or []:
+            name = (v.get("name") or "").lower()
+            if "roof_ac" in name or "club_bar" in name:
+                hits.append((os.path.basename(path)[:-5], v["name"], prop_species.species_for_name(name),
+                             sorted((float(v["size_x"]), float(v["size_y"])), reverse=True) + [float(v["size_z"])]))
+    assert sorted((h[0], h[1], h[2]) for h in hits) == [
+        ("bank", "roof_ac", "hvac_unit"),
+        ("foundry_heist_vertical", "roof_ac_block_a", "hvac_unit"),
+        ("foundry_heist_vertical", "roof_ac_block_b", "hvac_unit"),
+        ("primos_pizza", "club_bar", "counter"),
+        ("strip_retail_a01", "club_bar", "counter"),
+    ], hits
+    ranges = {"hvac_unit": ((1.2, 4.0), (0.8, 3.0), (0.7, 1.5)), "counter": ((0.8, 12.0), (0.5, 2.0), (0.85, 1.2))}
+    for _spec, _name, species, dims in hits:
+        assert all(lo <= v <= hi for v, (lo, hi) in zip(dims, ranges[species])), (species, dims)
+
+
 def test_a_species_that_owns_its_collision_gets_no_greybox_box(dc):
     """The composer keeps the greybox COLLIDER and drops its visual, so for a
     volume that is mostly aisle the box is the only thing a body meets.

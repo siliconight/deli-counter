@@ -1,3 +1,33 @@
+## [0.240.0] - a roof AC unit is an hvac unit and a club bar is a counter: two boxes get the word they lacked
+
+**The factory's roadmap 267, its one-word mappings first.** Read against the walker's asset wishlist, 1,486 of the
+library's prop slots named no species and Zoo built each as a plain box (the factory's
+`docs/findings/asset_wishlist_2026-10-19/box_slots.py`); a few of them name a species Zoo already has, for want of a
+word in `PROP_SPECIES`. Each candidate was checked before it was added: every library volume the new word would
+claim, and whether the species' genome holds those volumes' dims in the slot's own orientation, which is how Zoo's
+`_species_fit` asks.
+
+### Changed
+- `PROP_SPECIES`: `roof_ac` joins the `hvac_unit` row. It claims 3 volumes, the bank's `roof_ac` and the foundry's
+  `roof_ac_block_a` / `_b` (3.0 to 4.0 x 2.0 x 1.2 to 1.4 m), all inside the genome.
+- `club_bar` joins the `counter` row. It claims 2 volumes, primos_pizza's and strip_retail_a01's 2.8 x 0.8 x 1.15 m
+  serving bar (`bar_` wanted the underscore). Not `back_bar`, which the roadmap first named: that species is the
+  shelving behind a bar, 1.8 m and up.
+
+### Not changed, and why
+- `container` -> `cargo_container`: freight_terminal_a01's four 6.0 x 2.4 x 2.6 m containers would be recorded long
+  side first, as every hinted volume is (`long_axis_first`). Zoo's container is long in DEPTH (width 2.3 to 2.5), and
+  `_species_fit` asks in the slot's own orientation, so all four would be built as the box, "would fit turned 90
+  degrees". That needs a rule for species that are long in depth, and the composer infers the same turn from a
+  slot's extents, so it is its own change.
+- `barrier` -> `jersey_barrier`: arena_a02's four 3.0 x 0.8 x 1.2 m barriers are a crowd's, not a road's. That is
+  the walker's call, not a word's.
+
+### Tests
+- `test_prop_species.py`: `test_the_one_word_mappings_re_route_exactly_their_library_volumes`, every library volume
+  the two words reach, with its species and its dims inside the genome. It fails on 0.239.0, where both route to
+  None.
+
 ## [0.239.0] - a roof hatch stands over its ladder's cut: the hole, the curb and the lid are one rectangle
 
 **The factory's roadmap 170.** The walker's look review, 2026-10-19, on the roof hatch: "the hole of the ladder

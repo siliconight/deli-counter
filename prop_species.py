@@ -227,14 +227,26 @@ PROP_SPECIES = (
     # THE VIDEO-POKER CABINET (Zoo 1.39.0; placed 0.168.0). Above the
     # counter row, whose `bar_` would claim every `video_poker_bar_*`.
     (("video_poker",), "video_poker"),
+    # A CLUB'S BAR IS A COUNTER (0.240.0, the factory's roadmap 267): two
+    # `club_bar` volumes, 2.8 x 0.8 x 1.15, the serving counter of a pizza
+    # parlour's and a strip mall's bar, built as boxes for want of a word --
+    # `bar_` wants the underscore after it. Not `back_bar`, which the
+    # roadmap first named: that species is the shelving behind a bar, 1.8 m
+    # and up, and these stand 1.15.
     (("counter", "reception", "station", "island", "cage", "bar_",
-      "workbench", "tool_bench"), "counter"),
+      "club_bar", "workbench", "tool_bench"), "counter"),
     (("desk",), "desk"),
     (("cabinet", "locker"), "filing_cabinet"),
     (("shelf", "shelving", "rack", "stock"), "shelving"),
     (("vending",), "vending_machine"),
     (("atm",), "atm"),
-    (("hvac", "roof_unit"), "hvac_unit"),
+    # A ROOF AC UNIT IS AN HVAC UNIT (0.240.0, roadmap 267): three
+    # `roof_ac` volumes (the bank's, and the foundry's `roof_ac_block_a` and
+    # `_b`), 3.0-4.0 x 2.0 x 1.2-1.4, inside `hvac_unit`'s genome. The word
+    # would also claim a `roof_access_...`; none exists, and
+    # `test_the_one_word_mappings_re_route_exactly_their_library_volumes`
+    # lists what it claims.
+    (("hvac", "roof_unit", "roof_ac"), "hvac_unit"),
     (("furnace", "boiler", "water_heater", "heater"), "furnace"),
     (("tank",), "water_tank"),
     (("dust_sheet", "sheeted", "draped", "covered_"), "dust_sheet"),
