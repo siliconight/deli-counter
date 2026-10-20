@@ -2957,6 +2957,14 @@ class _Builder:
             # meant: the AI had no edge through it and a drop-edge gate had no
             # declared set to read. The same shape as a ladder's, one-way,
             # capability "drop", with the cut's rect (`ladder.drop_nav_link`).
+            # A ROOF HATCH'S HOLE HOLDS ITS LADDER'S (0.239.0, factory roadmap
+            # 170): cut, filed and lidded at `roof_hatch.opening`, one
+            # rectangle -- the square centred on the ladder's own cut, which
+            # had run 0.35 m past the curb. Every other drop is where its link is.
+            hx, hy, hsx, hsy = v.x, v.y, v.size_x, v.size_y
+            if (v.kind == "hatch" and v.story is not None and v.x is not None
+                    and v.y is not None and int(v.story) >= int(self.s.n_stories)):
+                hx, hy, hsx, hsy = roof_hatch.opening(self.s, v)
             if (v.kind in ("floor_hole", "hatch") and v.story is not None
                     and v.x is not None and v.y is not None):
                 lid = "%s_%s_%d_%d_%d" % (self.s.name, v.kind, v.story,
@@ -2965,17 +2973,17 @@ class _Builder:
                 # a stacked shaft's upper link ended in mid-air over the cut
                 # below it (`ladder.drop_landing`)
                 rec["nav_link"] = _ladder.drop_nav_link(
-                    lid, v.story, v.x, v.y, v.size_x, v.size_y,
+                    lid, v.story, hx, hy, hsx, hsy,
                     self.s.story_height,
-                    land_story=_ladder.drop_landing(v.story, v.x, v.y,
+                    land_story=_ladder.drop_landing(v.story, hx, hy,
                                                     self.s.slab_holes))
             self.gameplay["vertical_links"].append(rec)
             if v.kind in ("floor_hole", "hatch") and v.cut_slab \
                     and v.story is not None and v.x is not None:
-                sx = v.size_x or 1.5
-                sy = v.size_y or 1.5
+                sx = hsx or 1.5
+                sy = hsy or 1.5
                 self.s.slab_holes.append(SlabHole(
-                    story=v.story, x=v.x, y=v.y, size_x=sx, size_y=sy))
+                    story=v.story, x=hx, y=hy, size_x=sx, size_y=sy))
             # a hatch is a breachable marker too
             if v.kind == "hatch" and v.x is not None:
                 z = (v.story or 0) * self.s.story_height

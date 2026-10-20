@@ -1,3 +1,35 @@
+## [0.239.0] - a roof hatch stands over its ladder's cut: the hole, the curb and the lid are one rectangle
+
+**The factory's roadmap 170.** The walker's look review, 2026-10-19, on the roof hatch: "the hole of the ladder
+opening doesn't match the lid...they should match". Read off the built slots: a roof ladder cuts its own hole,
+`ladder_geom.through_hole` -- the body's envelope, 1.1 x 1.3 m, set 0.45 m toward the side the climber stands on --
+and `_vertical_links` cut the hatch's 1.5 m square centred on the ladder's face. The roof took both cuts, so its
+opening ran 0.35 m past the square on the climber's side, and 0.27 m past the curb that 0.224.0 sized to the
+square. All 46 roof hatch links in the library have a ladder, and every one ran out by the same 0.35 m. The 20
+hatches below the roof have no ladder, and nothing changes for them.
+
+### Fixed
+- `roof_hatch.opening(spec, link)`: the hole a roof hatch covers. It is the link's square, centred on the cuts of
+  the ladders at the link that reach its storey, where it holds them -- the 1.5 m square holds the ladder's 1.1 x
+  1.3. Where the square cannot hold them it is the box round both. With no such ladder it is the square where the
+  link stands, as before.
+- `_vertical_links` cuts a roof hatch's slab hole at `opening`, and files its drop link's points and its `hole`
+  there. `roof_hatches` stands the slot over it: the curb's world footprint is the opening plus `CURB` a side, and a
+  quarter-turned slot carries those sides swapped as its own (w, d), as `hole_causes._local` does. Every roof hatch
+  in the library today is square, so no Zoo module changes. The hatch moves 0.45 m toward its climber, and its
+  `HATCH_` marker and its ids stay keyed on the link.
+
+### Tests
+- `test_roof_hatch.py`:
+  - the first test's slot now stands at the ladder's cut, (13.0, -9.45), where it stood at the link;
+  - the ladder's cut lies inside the opening, and the opening is the curb's inside, for a ladder facing each of N, E,
+    S and W;
+  - with no ladder, the hatch stands on its link;
+  - a square too small for the cut grows round both, and a quarter turn swaps the slot's sides;
+  - in the built library, every roof hatch's curb holds every hole the roof is cut with under it. 39 built hatches;
+    on 0.238.0's build every one fails, with the ladder's cut out past the curb.
+- 8 of the file's 12 fail on 0.238.0.
+
 ## [0.238.0] - a face's upper storeys stand over the openings below them: the facade planner's first rows
 
 **The factory's roadmap 79** (its `docs/proposals/FACADE_PLANNER.md`, steps 1 and 3). Measured first (the factory's

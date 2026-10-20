@@ -8,7 +8,16 @@ reads as a hatch somebody built and the game can shut it.
 
 WHAT IT EMITS. A `prop` slot centred on the link, sized to the hole plus the curb (`CURB` a side) and
 `HEIGHT` tall, standing on the roof slab's top face (`top * story_height`, where `_slabs` puts that
-face). The slot carries the `hatch` machine from `interactives.py` -- `open` is the default, so the
+face).
+
+THE HOLE IS THE HATCH'S (0.239.0; the walker's look review, 2026-10-19: "the hole of the ladder opening
+doesn't match the lid...they should match"). A roof ladder cuts its own hole, `ladder_geom.through_hole`, the
+body's envelope biased onto the approach side; the hatch's square was centred on the ladder's face, so the two
+cuts made one opening that ran 0.35 m past the curb on the climber's side -- every one of the library's 46 roof
+hatches, each with a ladder (`docs/findings/roof_openings_170/`, the factory's). `opening` puts the hatch's square
+over the ladders' cuts it serves, centred on them, so the cut, the curb and the lid are one rectangle. The square
+keeps its size where it holds them -- 1.5 m holds the ladder's 1.1 x 1.3 -- and grows to hold both where it
+does not. `deli_counter._vertical_links` cuts the slab and files the drop link at `opening` too. The slot carries the `hatch` machine from `interactives.py` -- `open` is the default, so the
 ladder's `roof_hatch_exit` stays a route for every walker and the lid stands up out of the way;
 `closed` is the game's to drive. The species owns its collision (`prop_species.SPECIES_OWNS_COLLISION`):
 the greybox draws the slot's box for the swap to replace and emits no solid collider over the hole.
@@ -22,6 +31,7 @@ with no ladder at its (x, y) faces north. Checked in frames, not assumed: see th
 from __future__ import annotations
 
 import interactives
+import ladder_geom
 
 SPECIES = "roof_hatch"
 CURB = 0.08          # m; the curb stands this far outside the hole's edge, each side
@@ -39,6 +49,31 @@ def rot_for(spec, link):
     return 0
 
 
+def opening(spec, link):
+    """``(cx, cy, size_x, size_y)``: the roof slab's hole at a hatch link, in the spec's frame.
+
+    The link's own square (`size_x` / `size_y`, `DEFAULT_HOLE` unsized) and the through-hole of every ladder at
+    the link's (x, y) that cuts the slab the link is on. With no such ladder it is the link's square where the
+    link stands, as before 0.239.0. With them, the square centred on the ladders' cuts when it holds them, and
+    the box round both where it does not."""
+    sx = float(link.size_x or DEFAULT_HOLE)
+    sy = float(link.size_y or DEFAULT_HOLE)
+    x, y = float(link.x), float(link.y)
+    cuts = [ladder_geom.hole_rect(ld.x, ld.y, ld.width, ld.facing)
+            for ld in getattr(spec, "ladders", None) or []
+            if abs(float(ld.x) - x) < 1e-6 and abs(float(ld.y) - y) < 1e-6
+            and getattr(ld, "cut_slabs", True) and int(ld.to_story) == int(link.story)]
+    if not cuts:
+        return x, y, sx, sy
+    x0, y0 = min(c[0] for c in cuts), min(c[1] for c in cuts)
+    x1, y1 = max(c[2] for c in cuts), max(c[3] for c in cuts)
+    if x1 - x0 <= sx + 1e-9 and y1 - y0 <= sy + 1e-9:
+        return (x0 + x1) / 2.0, (y0 + y1) / 2.0, sx, sy
+    x0, y0 = min(x0, x - sx / 2.0), min(y0, y - sy / 2.0)
+    x1, y1 = max(x1, x + sx / 2.0), max(y1, y + sy / 2.0)
+    return (x0 + x1) / 2.0, (y0 + y1) / 2.0, x1 - x0, y1 - y0
+
+
 def roof_hatches(spec, style=1):
     """[(slot, gameplay_interactive, box_center, box_size)] for every hatch link on the roof slab.
 
@@ -53,14 +88,17 @@ def roof_hatches(spec, style=1):
             continue
         if int(v.story) < top or not getattr(v, "cut_slab", True):
             continue
-        sx = float(v.size_x or DEFAULT_HOLE)
-        sy = float(v.size_y or DEFAULT_HOLE)
-        w, d = sx + 2 * CURB, sy + 2 * CURB
+        cx, cy, sx, sy = opening(spec, v)
         z_top = top * h_story
-        center = (float(v.x), float(v.y), z_top + HEIGHT / 2.0)
-        size = (w, d, HEIGHT)
+        center = (cx, cy, z_top + HEIGHT / 2.0)
         slot_id = f"roof_hatch_{int(v.x)}_{int(v.y)}"
         rot = rot_for(spec, v)
+        # the curb's world footprint, and the slot's own (w, d) under its turn: a hatch turned a quarter has
+        # them swapped (`hole_causes._local`); a square one, every hatch in the library today, either way
+        w, d = sx + 2 * CURB, sy + 2 * CURB
+        size = (w, d, HEIGHT)
+        if int(rot) % 180:
+            w, d = d, w
         machine = interactives.derive_interactive(spec.name, slot_id, int(v.story), "hatch", 0.0)
         slot = {
             "slot_id": slot_id, "role": "prop", "size_mod": "full",
