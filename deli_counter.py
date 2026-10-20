@@ -3000,11 +3000,14 @@ class _Builder:
         # dressed by `prop` slots Zoo builds (`hole_causes.py`). The edge and
         # the spoil are visual only and the kit and the hatch own their
         # collision, so the slab's cut stays the collider and the drop's route.
+        # The edge's and the hatch's greybox is a ring round the hole (0.236.1):
+        # the walk test bakes its navmesh from visual meshes too.
         hole_slots, notes = hole_causes.hole_slots(
             spec_d, lambda m: skin_style.style_for(m, self._mat_style,
                                                    self.s.default_material))
-        for slot, entry, c, size in hole_slots:
-            self._box(slot["slot_id"], c, size, self.VISUAL, role="prop")
+        for slot, entry, boxes in hole_slots:
+            for name, c, size in boxes:
+                self._box(name, c, size, self.VISUAL, role="prop")
             self.slots.append(slot)
             if entry is not None:
                 self.gameplay["interactives"].append(entry)

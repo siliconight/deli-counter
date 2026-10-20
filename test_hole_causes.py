@@ -57,8 +57,15 @@ def _crate(x, y, story, size=1.0):
 
 
 def _slots(spec):
+    """{species: (slot, gameplay entry, greybox box center, greybox footprint)}, the greybox's union of boxes."""
     slots, notes = HC.hole_slots(spec, lambda material: 1)
-    return {s["species"]: (s, e, c, size) for s, e, c, size in slots}, notes
+    out = {}
+    for s, e, boxes in slots:
+        lo = [min(c[i] - z[i] / 2.0 for _n, c, z in boxes) for i in range(3)]
+        hi = [max(c[i] + z[i] / 2.0 for _n, c, z in boxes) for i in range(3)]
+        out[s["species"]] = (s, e, tuple((a + b) / 2.0 for a, b in zip(lo, hi)),
+                             tuple(b - a for a, b in zip(lo, hi)))
+    return out, notes
 
 
 def test_a_cut_hole_gets_its_edge_its_spoil_and_the_crews_kit():
@@ -213,6 +220,36 @@ def test_a_hole_too_big_for_its_edge_or_hatch_gets_neither_and_l28_says_so():
     assert not HC.fits("hole_spoil", (7.01, 2.0, 0.1)) and not HC.fits("hole_edge", (2.8, 2.8, 1.41))
 
 
+def test_nothing_of_a_holes_greybox_stands_over_the_hole():
+    """Cold run 9340: the walk test bakes its navmesh from the greybox lot's visual meshes, and 0.236.0 drew the
+    edge as one box over the hole -- the bake took it for floor and every walker on both of deli_a03's candidates was
+    sent into the hole (WALKTEST_WALKER_STUCK 0 -> 8). The edge and the floor hatch now draw a ring round it."""
+    for spec in (_house(), _house(link={"kind": "hatch", "story": 1, "x": -5.0, "y": 0.0}),
+                 json.load(open(os.path.join(HERE, "specs", "deli_a03.json"), encoding="utf-8"))):
+        slots, _n = HC.hole_slots(spec, lambda material: 1)
+        sh = float(spec.get("story_height") or SH)
+        thick = float(spec.get("floor_thick") or 0.3)
+        # each hole's rect, and the heights of the slab it is cut in, skins and all
+        holes = [(HC._rect(v), int(v["story"]) * sh - thick - HC.SKIN, int(v["story"]) * sh + HC.SKIN + 0.05)
+                 for v in HC.drop_links(spec)]
+        assert slots
+        for slot, _e, boxes in slots:
+            for name, c, z in boxes:
+                assert name == slot["slot_id"] or name.startswith(slot["slot_id"] + "_")
+                box = (c[0] - z[0] / 2.0, c[1] - z[1] / 2.0, c[0] + z[0] / 2.0, c[1] + z[1] / 2.0)
+                for h, z0, z1 in holes:
+                    if c[2] + z[2] / 2.0 < z0 or c[2] - z[2] / 2.0 > z1:
+                        continue                       # a spoil on the floor below is not over the hole
+                    inside = (min(box[2], h[2]) - max(box[0], h[0]), min(box[3], h[3]) - max(box[1], h[1]))
+                    assert inside[0] < 1e-6 or inside[1] < 1e-6, (slot["slot_id"], name, box, h)
+    edge, _e, center, size = _slots(_house())[0]["hole_edge"]
+    # the ring's union is still the slot's footprint, which the placement gate and the composer's fit read
+    assert size == pytest.approx(tuple(edge["fit"]["dims"]))
+    assert center == pytest.approx(tuple(edge["transform"]["translation"]))
+    (_slot, _e, boxes), = [x for x in HC.hole_slots(_house(), lambda m: 1)[0] if x[0]["species"] == "hole_edge"]
+    assert sorted(n[len("hole_edge_1_-50_0"):] for n, _c, _z in boxes) == ["_e", "_n", "_s", "_w"]
+
+
 def test_a_slots_variant_is_its_names_and_its_stem_is_zoos():
     s = _house()
     by, _n = _slots(s)
@@ -253,7 +290,7 @@ def test_a_hole_in_a_stairs_well_is_the_stairs_and_nothing_stands_round_it():
     (hatch,) = [v for v in HC.drop_links(deli) if v["kind"] == "hatch"]
     assert HC.stair_share(deli, hatch) == pytest.approx(1.0)
     assert HC.cause_for(deli, hatch) == HC.STAIR
-    assert [s["species"] for s, _e, _c, _z in HC.hole_slots(deli, lambda m: 1)[0]] == [
+    assert [s["species"] for s, _e, _b in HC.hole_slots(deli, lambda m: 1)[0]] == [
         "hole_edge", "hole_spoil", "hole_kit"]
     assert layout_lint.hole_cause_findings(deli) == ([], [])
     row = json.load(open(os.path.join(HERE, "specs", "rowhouse_raid.json"), encoding="utf-8"))
@@ -278,7 +315,7 @@ def test_the_library_dresses_every_drop_but_foundrys_catwalk():
         slots, notes = HC.hole_slots(spec, lambda material: 1)
         assert notes == [], (p, notes)
         if slots:
-            got[os.path.basename(p)[:-5]] = sorted((s["species"], s["form"], s["stock"]) for s, _e, _c, _z in slots)
+            got[os.path.basename(p)[:-5]] = sorted((s["species"], s["form"], s["stock"]) for s, _e, _b in slots)
     cut = [("hole_edge", "cut_slab", None), ("hole_kit", "cut", None), ("hole_spoil", "cut_slab", "none")]
     deli = cut + [("roof_hatch", "floor", None)]
     broken = [("hole_edge", "broken", None), ("hole_spoil", "broken", "tile")]

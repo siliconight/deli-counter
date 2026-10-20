@@ -446,11 +446,30 @@ def _local(world, rot):
     return (world[1], world[0]) if int(rot) % 180 else (world[0], world[1])
 
 
+def _ring(sid, hole, z, band, height):
+    """The greybox of a slot that stands ROUND a hole: four boxes `band` wide outside the hole's rect, named
+    ``<sid>_n`` / ``_s`` / ``_e`` / ``_w`` so each is the slot's own node (`themed_tscn.owns_node`) -- their union is
+    the slot's footprint, which the placement gate and the composer's fit read, and nothing is drawn over the hole.
+
+    A GREYBOX IS A DRAWING OF THE SPACE, and the walk test reads it: Lot bakes its walk navmeshes from visual meshes
+    too (`geometry_parsed_geometry_type = 2`), on the candidate's greybox lot. Cold run 9340 (restaurant_row_001,
+    Deli Counter 0.236.0) drew the edge as one box over the hole, its top 12 mm above the floor; the bake took it
+    for floor, and all four walkers on both of deli_a03's candidates were sent to a target inside the hole and
+    stuck in its corner against the slab's cut (WALKTEST_WALKER_STUCK 0 -> 8)."""
+    sx, sy = hole[2] - hole[0], hole[3] - hole[1]
+    x, y = (hole[0] + hole[2]) / 2.0, (hole[1] + hole[3]) / 2.0
+    return [("%s_n" % sid, (x, hole[3] + band / 2.0, z), (sx + 2.0 * band, band, height)),
+            ("%s_s" % sid, (x, hole[1] - band / 2.0, z), (sx + 2.0 * band, band, height)),
+            ("%s_e" % sid, (hole[2] + band / 2.0, y, z), (band, sy, height)),
+            ("%s_w" % sid, (hole[0] - band / 2.0, y, z), (band, sy, height))]
+
+
 def hole_slots(spec, style_for):
     """``(slots, notes)`` for every caused drop hole in a spec dict.
 
-    ``slots`` is ``[(slot, gameplay_interactive or None, box_center, box_size)]``, as
-    `roof_hatch.roof_hatches` returns: the box is the greybox's, world-axis aligned.
+    ``slots`` is ``[(slot, gameplay_interactive or None, boxes)]``, ``boxes`` the greybox's
+    ``[(node name, center, size)]``, world-axis aligned: the spoil's and the kit's one box, the
+    edge's and the floor hatch's a ring round the hole (`_ring`), so nothing is drawn over it.
     `style_for(material)` is the builder's skin style for a material. ``notes`` says what was left
     out and why -- a spoil with no floor clear for it, a kit with no side, a slot outside its
     species' sizes (`fits`) -- for the build log."""
@@ -490,7 +509,7 @@ def hole_slots(spec, style_for):
                 machine, sid,
                 {"translation": [round(c, 3) for c in center], "rot_y": float(rot)},
                 building=spec.get("name"))
-            slots.append((slot, entry, center, (world[0], world[1], HATCH_FRAME)))
+            slots.append((slot, entry, _ring(sid, hole, center[2], HATCH_CURB, HATCH_FRAME)))
             continue
         form = form_for(spec, link, cause)
         # the edge, round the cut, its top TOP above the visible floor
@@ -500,7 +519,7 @@ def hole_slots(spec, style_for):
             sid = "hole_edge_%s" % tag
             slots.append((_slot(spec, sid, "hole_edge", "wood", style_for("wood"), form, None,
                                 _variant(spec, sid), center, (w, d, h_edge), 0),
-                          None, center, (w, d, h_edge)))
+                          None, _ring(sid, hole, center[2], BAND, h_edge)))
         # the spoil, on the floor the drop lands on -- one a place: a stacked shaft's drops land
         # on one floor, and two spoils there would share it face for face
         land = _ladder.drop_landing(story, x, y, cuts)
@@ -517,7 +536,7 @@ def hole_slots(spec, style_for):
             slots.append((_slot(spec, sid, "hole_spoil", "wood", style_for("wood"), form,
                                 _finish(spec, link), _variant(spec, sid), center,
                                 (w, d, SPOIL_H), 0),
-                          None, center, (w, d, SPOIL_H)))
+                          None, [(sid, center, (w, d, SPOIL_H))]))
         if cause != "cut":
             continue
         # the crew's kit beside the hole, its local +Y toward it
@@ -530,7 +549,7 @@ def hole_slots(spec, style_for):
         center = (kx, ky, zf - SKIRT + KIT[2] / 2.0)
         slots.append((_slot(spec, sid, "hole_kit", "plastic", style_for("plastic"), "cut", None,
                             _variant(spec, sid), center, KIT, _ROT[_OPPOSITE[side]]),
-                      None, center, (box[2] - box[0], box[3] - box[1], KIT[2])))
+                      None, [(sid, center, (box[2] - box[0], box[3] - box[1], KIT[2]))]))
     return slots, notes
 
 

@@ -1,3 +1,24 @@
+## [0.236.1] - a hole's greybox is a ring round it, never a box over it
+
+**The factory's roadmap 265, its first cold run.** Cold run 9340 (restaurant_row_001 on 0.236.0 and Zoo 1.114.0, 0
+interventions) read 8 new findings, every one WALKTEST_WALKER_STUCK: all four walkers on both of deli_a03's candidates
+were sent to a target inside the deli's drop and stuck in its corner, pressing on the slab's cut faces. 0.236.0 drew
+the greybox of a `hole_edge` -- and of a floor hatch -- as one box over the hole, its top 12 mm above the floor; Lot
+bakes the walk test's navmesh from the candidate's greybox lot with visual meshes in it (`geometry_parsed_geometry_type
+= 2`), so the bake took the box for floor and laid a path and a target across the hole that no collider holds up.
+
+### Fixed
+- `hole_causes._ring`: an edge's and a floor hatch's greybox are four boxes outside the hole's rect -- `BAND` and
+  `HATCH_CURB` wide -- named `<slot_id>_n` / `_s` / `_e` / `_w`, so each is the slot's own node: their union is the
+  slot's footprint, which the placement gate and the composer's fit read, and nothing stands over the hole. The spoil
+  and the kit keep their one box each. `hole_slots` returns `(slot, entry, boxes)`; `_vertical_links` draws them.
+- Measured over the library (the factory's `docs/findings/hole_causes_265/greybox_over_holes.py`): on 0.236.0 all 16
+  dressed holes had greybox over their whole area, 56.76 m2 in all; now none.
+
+### Tests
+- test_hole_causes.py: `test_nothing_of_a_holes_greybox_stands_over_the_hole` (18 in the file). On 0.236.0 the file
+  fails 13: the new test, and 12 that read `hole_slots`' new shape.
+
 ## [0.236.0] - every hole in a floor has a cause, and what stands round it says so (`hole_causes.py`, layout_lint L28)
 
 **The factory's roadmap 265.** The walker, 2026-10-19, asked why the levels have holes in their floors -- the drop
