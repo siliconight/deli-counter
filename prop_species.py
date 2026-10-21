@@ -247,6 +247,16 @@ PROP_SPECIES = (
     # `test_the_one_word_mappings_re_route_exactly_their_library_volumes`
     # lists what it claims.
     (("hvac", "roof_unit", "roof_ac"), "hvac_unit"),
+    # A CROWD BARRIER (0.242.0, the factory's roadmap 267): arena_a02's four
+    # `barrier` volumes, 3.0 x 0.8 x 1.2, plain boxes until now. The walker's
+    # look review of 2026-10-20: "Crowd rails (a new model)" -- Zoo 1.118.0's
+    # steel `crowd_barrier`, not the concrete `jersey_barrier` 0.240.0 left
+    # for that call. The word claims exactly those four volumes, which are
+    # written in the species' own kind (`metal_bare`, the dartboard's rule in
+    # `level_design._PROP_MATERIALS`), and no earlier keyword claims a
+    # `barrier_<n>` -- `bar_` wants its underscore
+    # (`test_barrier_routes_to_the_crowd_barrier_in_its_own_kind`).
+    (("barrier",), "crowd_barrier"),
     (("furnace", "boiler", "water_heater", "heater"), "furnace"),
     (("tank",), "water_tank"),
     (("dust_sheet", "sheeted", "draped", "covered_"), "dust_sheet"),

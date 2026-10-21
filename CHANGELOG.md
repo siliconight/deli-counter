@@ -1,3 +1,38 @@
+## [0.242.0] - arena_a02's barriers are crowd rails: the word `barrier` routes to Zoo's steel crowd_barrier
+
+**The factory's roadmap 267, the walker's look review of 2026-10-20**: arena_a02's four barriers -- 3.0 x 0.8 x 1.2 m
+volumes Zoo built as plain boxes -- are to be "Crowd rails (a new model)", not the concrete jersey barrier 0.240.0
+left for that call. Zoo 1.118.0 draws the steel barricade, `crowd_barrier`.
+
+### Changed
+- `PROP_SPECIES`: a `barrier` row routes to `crowd_barrier`. It claims exactly arena_a02's four volumes, each inside
+  the genome long side first (3.0 x 0.8 x 1.2 in 1.8-3.2 x 0.45-0.9 x 0.95-1.25), and no earlier keyword claims a
+  `barrier_<n>`.
+- `specs/arena_a02.json`: the four volumes' material `metal` -> `metal_bare`, the species' own kind. Zoo's kit keeps a
+  slot's known kind its genome does not offer (`dna.resolve_module_plan`), so `metal` would have built the `_mmetal`
+  module in the theme's metal pack instead of the galvanised grey -- the dartboard's rule, which
+  `level_design._PROP_MATERIALS` applies to every piece it places.
+- `specs/arena_a02.json` DECLARES `metal_bare`, with the acoustics every spec that uses it gives it (Metal, absorption
+  0.2, damping 0.15), and declares it LAST, after the four finish materials it now declares itself in the finish
+  palette's order and values (`floors.FINISH_PALETTE`: carpet, tile, ceiling_tile, plaster), so every other material
+  keeps its style number and `metal_bare` is style 10. Two cuts were wrong first, both found in the rebuilt records
+  (the factory's `patches/dc_crowd_barrier/`): renaming the volumes' kind alone left it undeclared -- "UNRESOLVED
+  MATERIALS in 'arena_a02': metal_bare x4", four surfaces with no acoustics (`record_moves.out.txt`); declaring it
+  after `metal` moved 50 slots' styles, because styles are the palette's order and the finish palette is appended
+  after the authored list (`record_moves_declared_after_metal_REFUTED.out.txt`).
+
+### Not changed, and why
+- The four volumes' collider, the convex 3.0 x 0.8 x 1.2 box the composer keeps in the greybox: the barriers keep the
+  cover and the pathing they had. A barricade you can see through still stops a shot as the box did; whether a shot
+  should pass between its pickets is the gameplay layer's (a collider that stops bodies and not shots), and stays the
+  walker's call.
+- `level_design`'s cover tagger still reads `barrier` as a cover name (`_COVER_NAME_HINTS`), for the same reason.
+
+### Tests
+- `test_prop_species.py`: `test_barrier_routes_to_the_crowd_barrier_in_its_own_kind`, every library volume the word
+  reaches, with its species, its kind and its dims inside the genome. It fails on 0.241.0, where `barrier` routes to
+  None and the four are `metal`.
+
 ## [0.241.0] - a ramp's cut stops at its head, railed, with a landing past it
 
 **Found by the factory's install test 10** (roadmap 202): a stranger's first `make` picked seed 9205, whose lot
