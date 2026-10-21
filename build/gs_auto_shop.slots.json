@@ -6527,14 +6527,14 @@
       }
     },
     {
-      "slot_id": "cartons_r27d8e619_7",
+      "slot_id": "desk_r27d8e619_7",
       "role": "prop",
       "size_mod": "full",
       "style": 5,
       "material": "wood",
-      "species": "carton_stack",
-      "stock": null,
-      "variant": 1,
+      "species": "desk",
+      "stock": "office",
+      "variant": 3,
       "form": null,
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -6543,9 +6543,9 @@
       "facing": null,
       "transform": {
         "translation": [
-          0.3,
+          1.27,
           4.07,
-          4.05
+          3.975
         ],
         "rot_y": 0.0,
         "scale": [
@@ -6556,9 +6556,9 @@
       },
       "fit": {
         "dims": [
-          0.5,
-          0.4,
-          0.9
+          1.6,
+          0.8,
+          0.75
         ],
         "pivot": "center",
         "openings": [],
@@ -6566,12 +6566,12 @@
       }
     },
     {
-      "slot_id": "cartons_r27d8e619_8",
+      "slot_id": "chair_set_r27d8e619_7_1",
       "role": "prop",
       "size_mod": "full",
       "style": 5,
       "material": "wood",
-      "species": "carton_stack",
+      "species": "chair",
       "stock": null,
       "variant": 0,
       "form": null,
@@ -6582,11 +6582,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          1.43,
-          4.07,
+          1.27,
+          3.35,
           4.05
         ],
-        "rot_y": 0.0,
+        "rot_y": 190.7,
         "scale": [
           1.0,
           1.0,
@@ -6596,7 +6596,85 @@
       "fit": {
         "dims": [
           0.5,
-          0.4,
+          0.5,
+          0.9
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "desk_r27d8e619_8",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 5,
+      "material": "wood",
+      "species": "desk",
+      "stock": "office",
+      "variant": 2,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          1.8,
+          6.45,
+          3.98
+        ],
+        "rot_y": 270.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.8,
+          0.9,
+          0.76
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "chair_set_r27d8e619_8_1",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 5,
+      "material": "wood",
+      "species": "chair",
+      "stock": null,
+      "variant": 0,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          2.68,
+          6.45,
+          4.05
+        ],
+        "rot_y": 90.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.5,
+          0.5,
           0.9
         ],
         "pivot": "center",
@@ -6621,11 +6699,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          2.3,
-          4.07,
-          3.9
+          -2.26,
+          4.4,
+          4.3
         ],
-        "rot_y": 270.0,
+        "rot_y": 180.0,
         "scale": [
           1.0,
           1.0,
@@ -6634,9 +6712,9 @@
       },
       "fit": {
         "dims": [
-          0.6,
-          0.4,
-          0.6
+          1.2,
+          0.8,
+          1.4
         ],
         "pivot": "center",
         "openings": [],

@@ -1,3 +1,71 @@
+## [0.251.0] - a room holding an objective or loot marker keeps its dressing off its routes
+
+**The factory's roadmap 288, and the note 289 left.** The factory's census of what furnishing costs a route
+(`docs/findings/furnish_route_cost/` at the factory root) has an arm, since 0.250.0 shipped, that strips only
+furnish's dressing, so it reads the walker's guide's own measure: what the dressing costs a route over the functional
+build, flagged past 10 % (its section 14). Over the library at 0.250.0 eight routes were, and seven of them were one
+route in an objective room, its door to its marker: funeral_home_a02's records_office 4.3 -> 5.5 m, courthouse_a02's
+records_room, apartment_walkup_a03's garage_cage and four more, each lengthened by one to four carton piles, pallets
+or dust sheets. The rooms are 97 to 240 m2 and stand 3.0 to 7.3 % under furniture; the route is short because the
+marker stands near the door.
+
+### Changed
+- **`reserves_routes(spec, room, building)` says what keeps off a room's routes**: `"all"`, every floor piece furnish
+  stands -- a shop floor that stands rows, as 0.250.0 shipped it; `"dressing"`, its clusters only -- a room holding an
+  objective or loot marker (`holds_route_marker`, new), whatever its kind; `""`, nothing reserved. furnish asks it of
+  every room, not only a shop floor's; its rows, floor pieces and chairs keep off the routes where it says `"all"`,
+  its clusters wherever it says either.
+- **The shelter pass keeps off a room's reserved routes where it can.** `seed_cover` stands its shelter piece on a
+  clear spot off the routes the room reserves if one is, else on any clear spot as before: a crate stack in a route a
+  dressing pile was moved off would undo it, and a room must not lose its shelter for it. Its draws happen only on a
+  placement, so the second pass is 0.250.0's to the draw. A bare room's cover keeps off the routes outright.
+- **`agent_contract.json`'s `sightlines` note** no longer says Lot carries the old 1.2 m crossing, which Lot has not
+  since roadmap 131: it names what derives the crossing now -- Lot's copies, held to Laser Tag's by Level Factory's
+  `check_sight_drift`, and Level Factory's advisory, from the body each run fields (Level Factory 0.230.0) -- and that
+  nothing in the factory carries 1.2 any more (searched first). No number in the file moved.
+- **The library refurnished and sheltered**: 51 rooms in 50 specs, every one holding a marker, and no other room (the
+  factory's `patches/dc_marker_routes/rooms_moved.out.txt`). Furnish's pieces 8,434 -> 8,428 and one shelter piece
+  more, twin_a01's front_right_1, standing off its route; a moved room's floor share -2.6 to +2.0 points, 50 of the 51
+  under the walker's 12 % before and after. The worst: clinic_a01's dispensary, about 5 -> 2.4 %, whose carton cluster
+  stands as one group and fits nowhere off its routes, and auto_shop_a01's parts_back 8.5 -> 6.9 %, a 26 x 5 m room
+  whose routes loop round most of its floor.
+
+### Measured, kept
+- **The census over the 50 specs**, 217 rooms and 1,000 pairs, 0.250.0 against this (the factory's
+  `patches/dc_marker_routes/census_changed.out.txt`, `pairs_compare.out.txt`): the dressing's detours over 10 % 7 in 7
+  rooms -> 0, the worst 1.270 -> 1.052, the routes it narrows to single file 37 -> 5; all of furnishing's over 10 % 18
+  in 16 rooms -> 12 in 11, the worst 1.270 -> 1.224; narrowed to single file 80 -> 51; two abreast after furnishing
+  742 -> 771; none closed. Pair by pair none crossed over 10 % in either measure, and the extra metres walked summed
+  over every pair 90.9 -> 87.0 for all of furnishing, 17.0 -> 9.9 for the dressing; 31 pairs regained two abreast, and
+  two lost it, both in market_hall_a01's deposit_cage, where working furniture now stands in the route.
+- **What dressing-only leaves.** Working furniture is not asked to keep off a marker room's routes, and where the
+  refurnish moved it there it stands: funeral_home_a02's records_office's door-to-marker route is 1.154 of its
+  authored length where it was 1.270, now for a desk. Plan views of four rooms before and after
+  (`patches/dc_marker_routes/plan_*.png`).
+- **The combat audit over the library** (`audit_compare.out.txt`): every code's count unchanged -- COVER_ALL_LOW 8,
+  OBJ_NARROW 10, OBJ_AT_DOOR 52 -- and two messages moved, a sightline 17.1 -> 17.0 m and landmark_hall_a01's
+  artifact_room counting five low pieces where it counted six.
+- REFUTED: every floor piece kept off a marker room's routes, as a corner store's are. 47 rooms moved, 45 of them
+  under the walker's 12 % already, and lost 45 pieces; twin_a01's front_right_1 lost both its pieces and the shelter
+  they gave, and the shelter pass, then asking no route, wanted a crate stack there.
+- REFUTED: the shelter piece kept strictly off the routes. The pawn_shop preset's safe_room had no clear spot left and
+  stood no shelter, its tallest piece 1.20 m against the 1.30 m crossing, and `test_cover_breaks_sightlines`' two
+  corpus tests failed on it: a room both sides see over everything in cannot be fought in, and the walker's first ask
+  is the fight as much as the route.
+
+### Tests
+- **test_marker_room_routes.py** (new, 5): a room says what keeps off its routes; no dressing stands on a marker
+  room's routes, over the library; the shelter pass, given a route through the spot it would choose, stands its piece
+  elsewhere where there is an elsewhere (apartment_walkup_a02's safe_flat) and keeps it there where there is not
+  (twin_a01's front_right_1); the library's shelter pieces stand off the routes of the rooms that reserve them. On
+  0.250.0 two fail on behaviour -- dressing stands on marker rooms' routes, the crate on the planted route -- one on
+  the new signature, and the two guards pass there.
+- **test_reserved_routes.py**: `test_a_floor_that_stands_rows_or_a_room_holding_a_marker_asks_for_its_routes`, which
+  was `test_only_a_floor_that_stands_rows_asks_for_its_routes`: furnishing office and deli_a03 asks for the market
+  aisles' routes and those of the two rooms holding a marker, office's exec_suite and the deli's apartment_hideout. On
+  0.250.0 it fails on behaviour, the market aisles alone; the file's other five pass there (the factory's
+  `patches/dc_marker_routes/prove_tests_on_0250.out.txt`).
+
 ## [0.250.0] - a corner store's selling floor reserves its routes before its rows are laid
 
 **The factory's roadmap 288.** The walker, 2026-10-21: rooms neither crowded nor barren, and above all "free

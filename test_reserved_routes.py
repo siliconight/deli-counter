@@ -123,9 +123,10 @@ def test_nothing_furnish_stood_on_a_corner_floor_stands_on_its_routes():
                 (name, v["name"])
 
 
-def test_only_a_floor_that_stands_rows_asks_for_its_routes(monkeypatch):
-    """The recipe's `protect_routes`, set where a shop floor stands rows: furnishing deli_a03 and office from bare
-    asks for one room's routes, the deli's market aisles, and every other room furnishes as it did."""
+def test_a_floor_that_stands_rows_or_a_room_holding_a_marker_asks_for_its_routes(monkeypatch):
+    """The recipe's `protect_routes`, set where `reserves_routes` says: furnishing office and deli_a03 from bare asks
+    for the routes of the deli's market aisles, a shop floor that stands rows, and of the two rooms holding an
+    objective or loot marker (0.251.0) -- office's exec_suite and the deli's apartment_hideout -- and of no other."""
     calls = []
     real = L.protected_routes
 
@@ -136,4 +137,4 @@ def test_only_a_floor_that_stands_rows_asks_for_its_routes(monkeypatch):
     monkeypatch.setattr(L, "protected_routes", counting)
     for name in ("office", "deli_a03"):
         L.furnish(_stripped(_load(name)))
-    assert calls == ["market_aisles"], calls
+    assert calls == ["exec_suite", "market_aisles", "apartment_hideout"], calls

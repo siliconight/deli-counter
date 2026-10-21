@@ -1057,6 +1057,12 @@ def seed_cover(spec):
         rng.shuffle(cands)
         placed = []
         sh = _story_height(spec)
+        # THE ROOM'S RESERVED ROUTES, kept clear of cover too (0.251.0, the
+        # factory's roadmap 288): what furnish keeps off them a crate stack
+        # should not stand in, and the guide puts movement before cover --
+        # but not before a room having any: see the shelter piece below.
+        routes = (protected_routes(unfurnished(spec), room)
+                  if reserves_routes(spec, room, building) else [])
 
         # THE SHELTER PIECE FIRST, and only when the room has none. A room
         # full of 0.9 m crates used to be "covered" and skipped entirely, so
@@ -1081,26 +1087,41 @@ def seed_cover(spec):
             if _SEED_SHELTER_DEFAULT not in choices:
                 choices.append(_SEED_SHELTER_DEFAULT)
             s_z = shelter_height()
-            for s_name, s_x, s_y in choices:
-                s_half = max(s_x, s_y) / 2.0
-                stood = False
-                for (px, py) in cands:
-                    if not _seed_clear(spec, room, px, py, placed, half=s_half,
-                                       corridor=True):
-                        continue
-                    sx, sy = (s_y, s_x) if rng.random() < 0.5 else (s_x, s_y)
-                    spec.setdefault("volumes", []).append({
-                        "name": f"{s_name}_{room['id']}_shelter",
-                        "x": round(px, 2), "y": round(py, 2),
-                        "z": round(room.get("story", 0) * sh + s_z / 2, 3),
-                        "size_x": sx, "size_y": sy, "size_z": round(s_z, 3),
-                        "collision": "convex",
-                        "material": _prop_material(spec, s_name),
-                    })
-                    placed.append((px, py))
-                    added += 1
-                    stood = True
-                    break
+            # OFF THE ROOM'S RESERVED ROUTES FIRST, THEN ANYWHERE CLEAR
+            # (0.251.0): a route a dressing pile was moved off should not get
+            # a crate stack, and a room must not lose its shelter for it --
+            # kept strictly off, the pawn_shop preset's safe_room had no clear
+            # spot left and both sides saw over everything in it. The draws
+            # happen only on a placement, so the second pass is 0.250.0's.
+            stood = False
+            for keep_off in ((True, False) if routes else (False,)):
+                for s_name, s_x, s_y in choices:
+                    s_half = max(s_x, s_y) / 2.0
+                    for (px, py) in cands:
+                        if not _seed_clear(spec, room, px, py, placed,
+                                           half=s_half, corridor=True):
+                            continue
+                        if keep_off and on_protected_route(
+                                routes, px, py, 2 * s_half, 2 * s_half):
+                            continue
+                        sx, sy = ((s_y, s_x) if rng.random() < 0.5
+                                  else (s_x, s_y))
+                        spec.setdefault("volumes", []).append({
+                            "name": f"{s_name}_{room['id']}_shelter",
+                            "x": round(px, 2), "y": round(py, 2),
+                            "z": round(room.get("story", 0) * sh
+                                       + s_z / 2, 3),
+                            "size_x": sx, "size_y": sy,
+                            "size_z": round(s_z, 3),
+                            "collision": "convex",
+                            "material": _prop_material(spec, s_name),
+                        })
+                        placed.append((px, py))
+                        added += 1
+                        stood = True
+                        break
+                    if stood:
+                        break
                 if stood:
                     break
             # A room where nothing fits keeps its finding rather than getting
@@ -1114,6 +1135,9 @@ def seed_cover(spec):
                 break
             if not _seed_clear(spec, room, px, py, placed, half=arch_half,
                                corridor=True):
+                continue
+            if routes and on_protected_route(routes, px, py, 2 * arch_half,
+                                             2 * arch_half):
                 continue
             name, sx, sy, sz = arch[len(placed) % len(arch)]
             if rng.random() < 0.5:
@@ -3772,11 +3796,37 @@ def unfurnished(spec):
     return dict(spec, volumes=[v for v in spec.get("volumes") or [] if not wrote(v)])
 
 
-def reserves_routes(room, building):
-    """Does this room reserve its routes before it is furnished (`protected_routes`)?
-    A shop floor that stands rows -- a corner store's (`_shop_rows`) -- since
-    0.250.0, the floors the factory's census found the rows cost most."""
-    return _room_kind(room, building) == "shop_floor" and bool(_shop_rows(room, building))
+def holds_route_marker(spec, room):
+    """Does an objective or loot marker stand in `room`, on its storey -- an
+    endpoint `room_route_endpoints` gives a route to?"""
+    x0, y0, x1, y1 = room["bounds"]
+    sh = _story_height(spec)
+    floor = room.get("story", 0) * sh
+    return any(m.get("type") in _ROUTE_MARKERS and x0 <= m.get("x", 1e9) <= x1
+               and y0 <= m.get("y", 1e9) <= y1 and marker_on_storey(m, floor, sh)
+               for m in spec.get("markers") or [])
+
+
+def reserves_routes(spec, room, building):
+    """What keeps off this room's routes (`protected_routes`) when it is
+    furnished: ``"all"``, every floor piece furnish stands; ``"dressing"``, its
+    clusters only; ``""``, nothing -- the room reserves no route.
+
+    ``"all"`` on a shop floor that stands rows -- a corner store's
+    (`_shop_rows`) -- since 0.250.0, the floors the factory's census found the
+    rows cost most. ``"dressing"`` since 0.251.0 in a room holding an objective
+    or loot marker (`holds_route_marker`), whatever its kind: over the library
+    the census's dressing detours -- a route the dressing makes more than the
+    guide's 10 % longer than the room's functional build -- were eight, and
+    seven of them one route in such a room, its door to its marker, 10 to 27 %
+    longer for one to four carton piles, pallets or dust sheets
+    (funeral_home_a02's records_office 4.3 -> 5.5 m). DRESSING ONLY, because
+    those rooms were already under the walker's band: kept off by every floor
+    piece, 47 of them -- 45 under 12 % of their floor before -- lost 45 pieces,
+    and twin_a01's front_right_1 both of its own and the shelter they gave."""
+    if _room_kind(room, building) == "shop_floor" and _shop_rows(room, building):
+        return "all"
+    return "dressing" if holds_route_marker(spec, room) else ""
 
 
 def _seg_box_gap(a, b, box):
@@ -5573,13 +5623,16 @@ def furnish(spec):
             recipe = dict(recipe, anchors=_card_shop_anchors(room, building),
                           floor=_card_shop_floor(room, building))
         elif kind == "shop_floor":
-            # A FLOOR THAT STANDS ROWS RESERVES ITS ROUTES FIRST (0.250.0, the
-            # factory's roadmap 288): the census of what furnishing costs a
-            # route found the corner stores' rows the most of it -- 16 of
-            # their 85 door-to-door routes grown over 10 %, 44 narrowed from
-            # two abreast to single file.
-            recipe = dict(recipe, rows=_shop_rows(room, building),
-                          protect_routes=reserves_routes(room, building))
+            recipe = dict(recipe, rows=_shop_rows(room, building))
+        # A ROOM RESERVES ITS ROUTES FIRST where `reserves_routes` says, and
+        # says what keeps off them (the factory's roadmap 288): every floor
+        # piece on a floor that stands rows since 0.250.0 -- the census of
+        # what furnishing costs a route found the corner stores' rows the most
+        # of it, 16 of their 85 door-to-door routes grown over 10 %, 44
+        # narrowed from two abreast to single file -- and the clusters in a
+        # room holding an objective or loot marker since 0.251.0, whose
+        # door-to-marker route was the dressing's longest detour.
+        recipe = dict(recipe, protect_routes=reserves_routes(spec, room, building))
         have = _room_volume_count(spec, room)
         want = max(0, _furnish_target(area, recipe.get("per_area")) - have)
         if recipe.get("cap") is not None:
@@ -5605,6 +5658,8 @@ def furnish(spec):
         # piece placed below that stands on the floor keeps off them.
         routes = (protected_routes(unfurnished(spec), room)
                   if recipe.get("protect_routes") else [])
+        # every floor piece keeps off them, or only the clusters (0.251.0)
+        keep_all = recipe.get("protect_routes") == "all"
         placed = []
         per_size = collections.Counter()
         per_name = collections.Counter()
@@ -5725,8 +5780,8 @@ def furnish(spec):
                     continue
                 if _over_rects(inner, cx, cy, seat_half, seat_half):
                     continue
-                if routes and on_protected_route(routes, cx, cy, 2 * seat_half,
-                                                 2 * seat_half):
+                if routes and keep_all and on_protected_route(
+                        routes, cx, cy, 2 * seat_half, 2 * seat_half):
                     continue
                 # THE CHAIR PASSES THE SAME CLEARANCE AS EVERY OTHER PIECE,
                 # minus its own host and its own set, which it must stand
@@ -5863,7 +5918,8 @@ def furnish(spec):
                         half = max(sx, sy) / 2.0
                     if _over_rects(inner, qx, qy, half, half):
                         continue
-                    if routes and not hung and p["where"] != "wall" and \
+                    if routes and keep_all and not hung and \
+                            p["where"] != "wall" and \
                             on_protected_route(routes, qx, qy, sx, sy):
                         continue
                     # THE CONTRACT'S AISLE, and only an island is asked for
@@ -5941,7 +5997,8 @@ def furnish(spec):
                 w, d, h = size
                 if h is None:
                     h = to_ceiling_height(spec, p, clear_h)
-                rows = _row_slots(spec, room, w, d, hosts, routes)
+                rows = _row_slots(spec, room, w, d, hosts,
+                                  routes if keep_all else None)
                 got = sum(len(r) for r in rows) * w * d
                 if best is None or got > best[0] + 1e-9:
                     best = (got, (w, d, h), rows)

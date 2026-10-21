@@ -6499,12 +6499,12 @@
       }
     },
     {
-      "slot_id": "pallets_r499afdf7_2",
+      "slot_id": "cartons_r499afdf7_2",
       "role": "prop",
       "size_mod": "full",
       "style": 13,
       "material": "wood",
-      "species": "pallet_stack",
+      "species": "carton_stack",
       "stock": null,
       "variant": 0,
       "form": null,
@@ -6515,11 +6515,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          0.65,
-          4.56,
-          0.475
+          -1.21,
+          6.96,
+          0.3
         ],
-        "rot_y": 270.0,
+        "rot_y": 0.0,
         "scale": [
           1.0,
           1.0,
@@ -6528,9 +6528,9 @@
       },
       "fit": {
         "dims": [
-          1.2,
-          1.0,
-          0.95
+          0.6,
+          0.4,
+          0.6
         ],
         "pivot": "center",
         "openings": [],
@@ -6554,11 +6554,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          0.65,
-          6.25,
-          0.3
+          0.06,
+          6.96,
+          0.5
         ],
-        "rot_y": 270.0,
+        "rot_y": 0.0,
         "scale": [
           1.0,
           1.0,
@@ -6567,9 +6567,87 @@
       },
       "fit": {
         "dims": [
+          0.9,
           0.6,
+          1.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "cartons_r499afdf7_4",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 13,
+      "material": "wood",
+      "species": "carton_stack",
+      "stock": null,
+      "variant": 1,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          -1.26,
+          8.34,
+          0.45
+        ],
+        "rot_y": 0.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.5,
           0.4,
-          0.6
+          0.9
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "pallets_r499afdf7_5",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 13,
+      "material": "wood",
+      "species": "pallet_stack",
+      "stock": null,
+      "variant": 0,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          -0.11,
+          8.34,
+          0.475
+        ],
+        "rot_y": 180.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.2,
+          1.0,
+          0.95
         ],
         "pivot": "center",
         "openings": [],
@@ -6687,84 +6765,6 @@
           1.2,
           0.5,
           1.8
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "milk_crates_r6af9550a_4",
-      "role": "prop",
-      "size_mod": "full",
-      "style": 8,
-      "material": "plastic",
-      "species": "milk_crate_stack",
-      "stock": null,
-      "variant": 0,
-      "form": null,
-      "current_ref": "prop_greybox_01",
-      "kit_axis": "material",
-      "wall": null,
-      "story": null,
-      "facing": null,
-      "transform": {
-        "translation": [
-          10.85,
-          2.75,
-          0.33
-        ],
-        "rot_y": 180.0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          0.35,
-          0.35,
-          0.66
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "milk_crates_r6af9550a_5",
-      "role": "prop",
-      "size_mod": "full",
-      "style": 8,
-      "material": "plastic",
-      "species": "milk_crate_stack",
-      "stock": null,
-      "variant": 0,
-      "form": null,
-      "current_ref": "prop_greybox_01",
-      "kit_axis": "material",
-      "wall": null,
-      "story": null,
-      "facing": null,
-      "transform": {
-        "translation": [
-          11.81,
-          2.75,
-          0.5
-        ],
-        "rot_y": 0.0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          0.7,
-          0.7,
-          1.0
         ],
         "pivot": "center",
         "openings": [],
