@@ -15,6 +15,14 @@ family) or as bare shelving with nothing on it (`aisle_shelf_N`, 7.0 x 0.7 x
 ONLY IN A STORE: a spec is a store when it carries a `register_counter`
 (Deli Counter 0.146.0's service counter) -- because the supermarkets also
 name aisles `aisle_N` and a supermarket aisle is not a snack aisle.
+
+A DELI IS A STORE (0.247.0, the factory's roadmap 148): its counter is a
+`front_register_counter`, which the rule above did not read, so the six
+delis' market aisles kept their `aisle_shelf_01` and `_02` -- bare shelving
+1.0 x 6.0 x 1.6 m, binders and boxes on it -- among the snack gondolas
+furnish now lays in rows beside them (`level_design.is_corner_store_floor`).
+Measured before it ran: those twelve are the only volumes the wider rule
+renames, and no deli spec refers to one by name outside its volume list.
 MEASURED before it ran: no store spec refers to an aisle volume by name
 anywhere outside its volume list, so the rename breaks no reference.
 
@@ -33,12 +41,20 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 _AISLE = re.compile(r"(?:aisle|aisle_shelf)_(\d+)")
+#: The counters that make a spec a store: a convenience store's and a gas
+#: station's, and a deli's (0.247.0).
+REGISTERS = ("register_counter", "front_register_counter")
+
+
+def is_store(names):
+    """Do these volume names carry a store's register counter?"""
+    return any(n in REGISTERS for n in names)
 
 
 def renames(spec):
     """``[(old, new)]`` for this spec, or ``[]`` when it is not a store."""
     names = [v.get("name", "") for v in spec.get("volumes") or []]
-    if "register_counter" not in names:
+    if not is_store(names):
         return []
     taken = set(names)
     out = []

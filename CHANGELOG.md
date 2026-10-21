@@ -1,3 +1,71 @@
+## [0.247.0] - a corner store's selling floor stands its aisle gondolas in rows
+
+**The factory's roadmap 148.** The look review of 2026-10-19 found the rooms "Too sparse", and deli_a03's market
+aisles were the first of its seven frames: 300 m2 with 5.7 % of the floor under anything standing -- two authored aisle
+shelves, a counter, a cabinet, cartons and a bin. More pieces was measured first and is not what this does: furnish's
+target without its 160 to 400 m2 plateau would write 63 % more pieces across the library (7,777 -> 12,665) and move
+that room from 5.7 to 6.8 %, because what it adds is cartons and cabinets. What a room is known by stands in rows.
+
+### Added
+- **`gondola_aisle`** (`_PIECES`): Zoo's `snack_gondola` (1.13.0), both long faces shopped in one module, 2.4, 3.6
+  and 4.8 m long, 0.9 to 1.0 m deep, 1.40 to 1.45 m tall -- over `cover_break_height` (1.30) and under
+  `shelter_height` (1.60), so a row is cover a body crouches behind and an eye sees over, which is furnish's rule for
+  anything it stands mid-floor. In `metal_painted`, the species' own kind, so Zoo's stem carries no `_m`. Capped at
+  16 a room like every island ("an uncapped island is a maze") -- a guard the rows stay under, not their rule: the
+  most any library floor stands is 12.
+- **`is_corner_store_floor(room, building)`**: a building whose id names a deli, a convenience store, a gas station,
+  a fuel stop, a bodega or a stop, and a room whose id names its selling floor (`market`, `aisles`, `aisle`,
+  `sales`). Not a supermarket, on `migrate_store_gondolas`'s own line -- "a supermarket aisle is not a snack aisle"
+  -- nor a pharmacy; `gs_corner_station` names neither `gas` nor `fuel` and keeps its authored aisles alone. Each is
+  a word away. The room keeps its kind, `shop_floor`, so fixtures, posters, ATMs and lights read it as they did.
+- **Rows** (`_row_slots`, `_row_clear`, the plan's `rows` item): after a room's wall run and before its floor sets
+  and clusters, gondolas of one length down the room's long axis -- or, when the room has its own island (a standing
+  volume of an island's shape clear of every wall face), along it, at its depth and on its line -- each an aisle
+  (`island_aisle_width`, the contract's 1.25 m) from every wall's FACE, partition, stair reserve and standing volume,
+  and asked furnish's other rules down its length; each row packed along past anything that refuses a slot; whole
+  rows laid from the middle out until `room_floor_share` reaches the recipe's `rows_share` (0.25) or nothing more
+  clears. The length is the palette's that covers the most floor.
+- **`room_floor_share(spec, room)`**: the share of a room's floor under standing furniture -- footprints clipped to
+  the room, feet on its floor (a 46 x 46 m forecourt slab whose top is a sales floor is not furniture).
+
+### Changed
+- **A deli is a store** to `migrate_store_gondolas.py` (`REGISTERS`, `is_store`): its counter is a
+  `front_register_counter`, so the six delis' authored `aisle_shelf_01` and `_02` -- shelving, 1.0 x 6.0 x 1.6 m,
+  binders and boxes on it -- are `gondola_aisle_01` and `_02`, as every store's aisles have been since 0.149.0, and
+  `presets.corner_deli` writes them so. Those twelve are the only volumes the wider rule renames.
+- **The library refurnished**: its 14 corner store floors stand 126 gondolas -- nine in each deli's market aisles,
+  twelve on each of the four 22 x 22 m gas station floors, eight on each convenience store's, four on gas_station_a02's
+  and fuel_stop_heist's -- and their floor share goes from 5.4 to 13.4 % to 19.2 to 23.1 %. deli_a03's market aisles:
+  5.7 -> 19.7 %, nine 4.8 m gondolas in five rows, two of them continuing its own aisles' lines. No other room in the
+  library moves.
+
+### Measured, kept
+- REFUTED: the rows first took `_island_slots`'s grid, an aisle off the room's BOUNDS, and every one of deli_a03's
+  market-aisle slots beside a wall was refused: a bound is a wall's centre line, and at its 0.36 m walls the floor
+  between such a slot and the wall's face was 1.07 m. The rows measure from the faces.
+- REFUTED: an even grid stood its columns 1.1 m off deli_a03's authored aisles, which refused 12 of its 30 slots; and
+  the gas stations' square floors ran the rows ACROSS their authored 10 m aisles. A room's own island sets the rows'
+  axis, depth and line.
+- The first 1.45 m gondola counted in deli_a03's apartment upstairs and cost it nine pieces: 0.246.0's defect, fixed
+  there first.
+- NOT CHANGED, and measured: the card shop's single island keeps `_island_slots`'s bound. On card_shop_a01 its twin
+  island stands 1.12 m from a partition's face, under the 1.25 m aisle its docstring claims and over the corridor's
+  1.10; moving it would refurnish a room the walker has passed.
+
+### Tests
+- **test_corner_store_rows.py** (new, 9): the piece routes to `snack_gondola` in its own kind, capped like every island; every size is cover
+  and never shelter; which floors are a corner store's; the library's fourteen stand rows, one way and one length a
+  room, and no other room holds one; every gondola an aisle from every other and from every wall's face, and no
+  standing piece within furnish's 0.9 m (re-derived from rectangles in the test, not `_row_clear` asked again); no
+  gondola within an aisle of a door's centre; deli_a03's rows on its own aisles' lines; every floor at 19 % or more;
+  a deli is a store to the migration. On 0.246.0 eight fail -- four on behaviour (the material reads `wood`, the
+  library holds no rows, the delis' aisles are unrenamed, the store count), four for a piece or function that does
+  not exist yet -- and the aisle and door tests pass vacuously, with no gondola to ask.
+- **test_store_gondolas.py**: 15 stores, six of them delis, and no `aisle_N` or `aisle_shelf_N` left in any.
+- **test_furnish.py**: `_ZOO_RANGES` carries `snack_gondola`, held to its genome by `test_the_ranges_are_zoo_s`;
+  `test_the_only_mid_floor_shelter_is_a_declared_island` asks the rows too -- the shop floor is their one giver, a
+  corner store's floor the one room given them, their piece capped and under shelter.
+
 ## [0.246.0] - a room counts only what stands on its own storey
 
 **The factory's roadmap 148**, whose look review of 2026-10-19 found the rooms "Too sparse". Laying the rows that item

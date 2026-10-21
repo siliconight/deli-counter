@@ -1767,6 +1767,35 @@ _PIECES = {p["name"]: p for p in (
                                 (1.2, 0.5, None)), "island", front=True,
            variants=True, most=2, twin=True,
            ceiling=PACK_WALL_CEILING, under_hung=True),
+    # THE CORNER STORE'S AISLE GONDOLA (0.247.0, the factory's roadmap 148):
+    # Zoo's `snack_gondola` (1.13.0), the island the convenience stores'
+    # authored `gondola_aisle_N` already build as -- chips on one long face,
+    # snack cakes, candy and lunch kits on the other. A corner store's
+    # selling floor lays it in ROWS (`is_corner_store_floor`, `_shop_rows`),
+    # never one at a time, so it is never a host in any recipe's plan.
+    #
+    # `most` IS A GUARD, NOT THE RULE: every island is capped, because "an
+    # uncapped island is a maze" (`test_the_only_mid_floor_shelter_is_a_
+    # declared_island`). What bounds a room's rows is its `rows_share` and
+    # the aisle round every gondola; 16 is a third over the most any library
+    # floor stood when this was written (12, the four 22 x 22 m gas station
+    # floors), so a room that reaches it is a room to go and look at.
+    #
+    # NOT `twin`: unlike `pack_wall`, the species shops BOTH long faces in
+    # one module ("both long faces are shopped", its genome), so one volume
+    # is the island and its depth is both faces'.
+    #
+    # BELOW SHELTER, ABOVE COVER, on purpose and asked of the contract by
+    # `test_corner_store_rows`: 1.40-1.45 m against `cover_break_height` 1.30 and
+    # `shelter_height` 1.60. Furnish's rule is that nothing it stands
+    # mid-floor reaches shelter height (`furnish`'s docstring); a row of
+    # these is cover a body crouches behind and an eye at 1.60 m sees over,
+    # which is what keeps an aisle a lane rather than a maze. A real store's
+    # island is 54 to 72 inches; this is the 54. The convenience stores'
+    # authored aisles are 1.6 to 1.8 and stay theirs.
+    _piece("gondola_aisle", ((3.6, 0.9, 1.4), (4.8, 1.0, 1.45),
+                             (2.4, 0.9, 1.4)), "island", front=True,
+           variants=True, most=16),
     # THE PENNANTS, along the TOP of the wall -- `under`, not `lift`: the
     # batten is screwed under the ceiling, so its height is the storey's.
     # No collision: 2.9 m up at a 3.4 m storey, and Zoo's genome declares
@@ -2284,10 +2313,16 @@ _RECIPES = {
              "floor": ("table_dining",),
              "clusters": ((("litter_bin",), 1, 1),),
              "fixtures": ("cigarettes",)},
+    # A corner store's selling floor is this recipe and ROWS of aisle
+    # gondolas (0.247.0, `_shop_rows`), laid until the floor's share under
+    # standing furniture reaches `rows_share` (`room_floor_share`). Any other
+    # shop floor -- a pawn shop, a warehouse floor, an arena's event floor --
+    # gets none.
     "shop_floor": {"anchors": ("counter_service",),
                    "wall": ("shelf_run", "shelf_run", "cabinet_file",
                             "vending"),
                    "floor": (),
+                   "rows": (), "rows_share": 0.25,
                    "clusters": ((("cartons",), 2, 3), (("litter_bin",), 1, 1)),
                    "fixtures": ("atm_store", "video_poker_store", "poster_wall_store")},
     "garage": {"anchors": ("workbench",),
@@ -2400,6 +2435,50 @@ def _card_shop_floor(room, building):
     if is_card_play_room(room, building):
         return ()
     return _RECIPES["card_shop"]["floor"]
+
+
+#: THE CORNER STORE'S SELLING FLOOR (0.247.0, the factory's roadmap 148),
+#: read on the card shop's terms: a building whose id names a deli, a
+#: convenience store or a gas station, and a room whose id names its selling
+#: floor. The walker's look review of
+#: 2026-10-19 on deli_a03's market aisles, among six other rooms: "Too
+#: sparse". Measured before this: that room is 300 m2 with 5.7 % of its
+#: floor under anything standing -- two authored aisle shelves, a counter, a
+#: cabinet, cartons and a bin -- where the convenience stores' authored
+#: sales floors are 11 to 12 %.
+#:
+#: WHY THE BUILDING'S WORDS. `shop_floor` claims every room whose id says
+#: `floor`, `aisle` or `market`: arenas' event floors, warehouses' main
+#: floors, a self-storage building's aisles. Snack gondolas belong in none
+#: of them, so the room's words alone cannot decide it.
+#:
+#: NOT A SUPERMARKET, on `migrate_store_gondolas`'s own line: "a supermarket
+#: aisle is not a snack aisle", and no species draws the cans and boxes one
+#: is. Nor a pharmacy. `gs_corner_station` says neither `gas` nor `fuel` and
+#: keeps its authored aisles alone. Each is a word away if that is wrong.
+_CORNER_STORE_IDS = frozenset(("deli", "convenience", "gas", "fuel", "bodega",
+                               "stop"))
+#: ...and the selling floor's own words. Not `customer`: a deli's
+#: `customer_floor` is the queue in front of its counter.
+_CORNER_STORE_FLOOR_TOKENS = frozenset(("market", "aisles", "aisle", "sales"))
+
+
+def is_corner_store_floor(room, building):
+    """Is `room` the selling floor of a corner store? The one rule, as
+    `is_card_shop_room` is the card shop's."""
+    import re
+    ids = set(re.split(r"[^a-z0-9]+", str(building or "").lower()))
+    if not ids & _CORNER_STORE_IDS:
+        return False
+    tokens = set(str(room.get("id", "")).lower().replace("-", "_").split("_"))
+    return bool(tokens & _CORNER_STORE_FLOOR_TOKENS)
+
+
+def _shop_rows(room, building):
+    """The shop floor's ROWS for one room, as `_card_shop_floor` is the card
+    shop's floor run: aisle gondolas on a corner store's selling floor,
+    nothing on any other."""
+    return ("gondola_aisle",) if is_corner_store_floor(room, building) else ()
 
 #: At most this many of one (piece, size) in a room: past it a room reads as
 #: one mesh repeated, which is the other half of "boring".
@@ -2523,6 +2602,9 @@ _PROP_MATERIALS = (
     (("hanging_banner",), "cloth"),
     (("ceiling_hanger",), "paper"),
     (("aisle_sign",), "wood"),
+    # the aisle gondola, in `snack_gondola`'s one kind (0.247.0); no row
+    # above holds a word `gondola_aisle` contains
+    (("gondola_aisle",), "metal_painted"),
 )
 _PROP_MATERIAL_DEFAULT = "wood"
 _PROP_ACOUSTIC = {"wood": ("Wood", 0.35, 0.3), "metal": ("Metal", 0.2, 0.15),
@@ -3254,6 +3336,204 @@ def _island_aisle_clear(spec, room, px, py, sx, sy, aisle):
     return True
 
 
+def room_floor_share(spec, room):
+    """The share of `room`'s floor under STANDING furniture, 0 to 1: every
+    volume with collision whose foot is on the room's floor, its plan
+    footprint clipped to the room's bounds, over the room's area.
+
+    ON THE FLOOR, NOT ON THE STOREY. gas_station_a02's sales floor holds the
+    centre of its 46 x 46 m `forecourt_pad`, whose top IS the floor, and
+    asked by storey -- `_room_volume_count`'s test -- the room read 780 %
+    covered. A hung piece, a sign and a drape stand on no floor and carry no
+    collision; a stage's invisible deck (`visual: false`) is counted for the
+    stage, which has none. A volume's plan extents are its `size_x` and
+    `size_y` as written, so a chair turned off square counts unturned.
+    """
+    x0, y0, x1, y1 = room["bounds"]
+    area = max(0.0, x1 - x0) * max(0.0, y1 - y0)
+    if area <= 0.0:
+        return 0.0
+    floor = room.get("story", 0) * _story_height(spec)
+    foot = 0.0
+    for v in spec.get("volumes", []):
+        if v.get("collision") == "none":
+            continue
+        vz, vh = float(v.get("z", 0.0)), float(v.get("size_z", 0.0))
+        if abs(vz - vh / 2.0 - floor) > 0.05:
+            continue
+        vx, vy = float(v.get("x", 0.0)), float(v.get("y", 0.0))
+        hx, hy = float(v.get("size_x", 0.0)) / 2.0, float(v.get("size_y", 0.0)) / 2.0
+        w = min(x1, vx + hx) - max(x0, vx - hx)
+        d = min(y1, vy + hy) - max(y0, vy - hy)
+        if w > 0.0 and d > 0.0:
+            foot += w * d
+    return foot / area
+
+
+def _row_clear(spec, room, px, py, sx, sy, hosts, obstacles=None):
+    """May an island `sx` by `sy`, centred (px, py), stand in a ROW?
+
+    Two questions. FIRST, THE AISLE, asked of the rectangle itself: at least
+    `island_aisle_width` clear of every wall, partition, stair reserve and
+    standing volume on the storey (`_corridor_obstacles`, `_box_gap`), so a
+    body walks every side of it -- `_island_aisle_clear` asks only volumes,
+    and a partition inside a room is a wall a row must keep an aisle from
+    too. SECOND, everything else `_seed_clear` holds a piece to -- a
+    stair's radius, an authored floor hole, a ladder, an objective, a door's
+    approach, a vault leaf's swing, the spread from the room's hosts --
+    asked of squares of the island's short side, stepped down its long axis
+    no further apart than that side, which cover it.
+
+    WHY NOT `half = max(sx, sy) / 2`, which is how `_host` asks a single
+    island. A 4.8 m gondola asked as a 4.8 m square is refused within
+    0.9 + 2.4 m of any volume across its 1 m width, so a second row could
+    never stand an aisle from the first. `hosts` are the room's pieces that
+    are not rows: the 2.2 m spread is a rule between hosts, and the aisle,
+    not the spread, is what keeps one row from the next. `obstacles` is
+    `_corridor_obstacles` for the room's storey, when the caller has it.
+    """
+    aisle = island_aisle_width()
+    if obstacles is None:
+        story = room.get("story", 0)
+        sh = _story_height(spec)
+        obstacles = _corridor_obstacles(spec, story, story * sh, sh)
+    box = (px - sx / 2.0, py - sy / 2.0, px + sx / 2.0, py + sy / 2.0)
+    if any(_box_gap(box, r) < aisle - 1e-9 for r in obstacles):
+        return False
+    short, long_ = min(sx, sy), max(sx, sy)
+    n = max(1, int(math.ceil(long_ / short - 1e-9)))
+    step = (long_ - short) / (n - 1) if n > 1 else 0.0
+    for i in range(n):
+        t = -long_ / 2.0 + short / 2.0 + i * step
+        cx, cy = (px + t, py) if sx >= sy else (px, py + t)
+        if not _seed_clear(spec, room, cx, cy, hosts, half=short / 2.0):
+            return False
+    return True
+
+
+#: How far a row's next island slides along it past a slot that refuses one.
+_ROW_SLIDE = 0.25
+#: A standing volume the rows take their axis, depth and phase from
+#: (`_row_slots`): an island's depth and height, as `snack_gondola`'s genome
+#: has them, longer than it is deep, and standing clear of every wall face
+#: by `_seed_clear`'s own 0.9 m -- so a shelf run against a wall is not one.
+_ROW_OWN_DEPTH = (0.6, 1.5)
+_ROW_OWN_MIN_H = 1.2
+_ROW_OWN_OFF_WALL = 0.9
+
+
+def _row_slots(spec, room, w, d, hosts):
+    """Where ROWS of islands `w` long and `d` deep stand on `room`'s floor:
+    ``[[(x, y, sx, sy), ...], ...]``, one list a row, rows ordered from the
+    room's centre line out. Every slot is clear (`_row_clear`) of everything
+    standing now, and an aisle from every other slot, by construction.
+
+    THE ROOM'S OWN ISLAND DECIDES, when it has one: a standing volume of an
+    island's shape (`_ROW_OWN_DEPTH`, `_ROW_OWN_MIN_H`, longer than deep)
+    clear of every wall face (`_ROW_OWN_OFF_WALL`), the one nearest the
+    room's middle. The rows run its way, take its depth for `d`, and stand
+    on its line (below). MEASURED before this: gas_station's sales floor is
+    22 x 22 m, its long axis a tie the rule broke towards x, and the rows ran
+    ACROSS its two authored 10 m aisles, which run in y; stop_n_go's rows
+    stood 0.9 m gondolas in line with its authored 0.7 m ones, a 0.1 m jog
+    each side where they met. The height stays the palette's, below shelter
+    (`gondola_aisle`'s note), where the convenience stores' authored aisles
+    are 1.6 to 1.8 m.
+
+    Without one, DOWN THE LONG AXIS, as `_island_slots` lays a single island:
+    an aisle runs the room rather than across it.
+
+    INSIDE THE WALLS' FACES. A room's bound is a wall's centre line and its
+    face is half the wall inside it, so an aisle measured off the bound is
+    1.07 m of floor at deli_a03's 0.36 m walls: asked of the face, every one
+    of its market aisles' slots on a wall was refused (12 of 18). The card
+    shop's single island keeps the bound, as it was.
+
+    ACROSS: rows a pitch apart of `island_aisle_width` plus the deeper of the
+    island and the room's OWN island, an aisle in from the faces. Phased ON
+    the room's own island when it has one -- a standing volume in the band,
+    long the rows' way, `_ROW_OWN_DEPTH` deep and `_ROW_OWN_MIN_H` or taller,
+    deli_a03's two authored aisle shelves 4.5 m apart -- so the rows continue
+    its aisle rather than standing between it and the next. MEASURED on that
+    room before this: the grid spread evenly put its columns 1.1 m off both
+    shelves and they refused 12 of its 30 slots at 2.4 m. Without one, the
+    rows are spread evenly across the band.
+
+    ALONG: each row packed from where n islands and their aisles would sit
+    centred, an island where one clears and an aisle after it, sliding on
+    `_ROW_SLIDE` past anything that refuses one -- a room's own island, a
+    counter end, a door's approach -- so a row holds what fits round them.
+    """
+    aisle = island_aisle_width()
+    face = float(spec.get("wall_thick", 0.3)) / 2.0
+    x0, y0, x1, y1 = room["bounds"]
+    cx0, cy0, cx1, cy1 = x0 + face, y0 + face, x1 - face, y1 - face
+    story = room.get("story", 0)
+    sh = _story_height(spec)
+    floor = story * sh
+    own = []
+    for v in spec.get("volumes", []):
+        if v.get("collision") == "none":
+            continue
+        vz, vh = float(v.get("z", 0.0)), float(v.get("size_z", 0.0))
+        if abs(vz - vh / 2.0 - floor) > 0.05 or vh < _ROW_OWN_MIN_H:
+            continue
+        vx, vy = float(v.get("x", 0.0)), float(v.get("y", 0.0))
+        vsx, vsy = float(v.get("size_x", 0.0)), float(v.get("size_y", 0.0))
+        lng, dep = max(vsx, vsy), min(vsx, vsy)
+        if not (_ROW_OWN_DEPTH[0] <= dep <= _ROW_OWN_DEPTH[1] and lng > dep):
+            continue
+        if min(vx - vsx / 2.0 - cx0, cx1 - vx - vsx / 2.0,
+               vy - vsy / 2.0 - cy0, cy1 - vy - vsy / 2.0) < _ROW_OWN_OFF_WALL:
+            continue
+        own.append((round(abs(vx - (cx0 + cx1) / 2.0)
+                          + abs(vy - (cy0 + cy1) / 2.0), 6), vx, vy,
+                    vsx >= vsy, dep))
+    if own:
+        _dist, ox, oy, along_x, d = min(own)
+    else:
+        along_x = (x1 - x0) >= (y1 - y0)
+    a0, a1, b0, b1 = (cx0, cx1, cy0, cy1) if along_x else (cy0, cy1, cx0, cx1)
+    pitch = aisle + d
+    lo, hi = b0 + aisle + d / 2.0, b1 - aisle - d / 2.0
+    if lo > hi + 1e-9:
+        return []
+    if own:
+        c = oy if along_x else ox
+        cs = [c + k * pitch
+              for k in range(int(math.floor((lo - c) / pitch - 1e-9)),
+                             int(math.ceil((hi - c) / pitch + 1e-9)) + 1)
+              if lo - 1e-9 <= c + k * pitch <= hi + 1e-9]
+    else:
+        n = int((hi - lo) / pitch + 1e-9) + 1
+        cs = [lo + (hi - lo) * (i / (n - 1) if n > 1 else 0.5) for i in range(n)]
+    mid = (b0 + b1) / 2.0
+    cs.sort(key=lambda c: (round(abs(c - mid), 6), c))
+    span = (a1 - aisle) - (a0 + aisle)
+    if span < w - 1e-9:
+        return []
+    n_along = int((span + aisle) / (w + aisle) + 1e-9)
+    start = a0 + aisle + (span - (n_along * w + (n_along - 1) * aisle)) / 2.0
+    inner = _nested_rects(spec, room)
+    obstacles = _corridor_obstacles(spec, story, floor, sh)
+    rows = []
+    for c in cs:
+        row, s = [], start
+        while s + w <= a1 - aisle + 1e-9:
+            m = s + w / 2.0
+            px, py = (m, c) if along_x else (c, m)
+            sx, sy = (w, d) if along_x else (d, w)
+            if (not _over_rects(inner, px, py, sx / 2.0, sy / 2.0)
+                    and _row_clear(spec, room, px, py, sx, sy, hosts, obstacles)):
+                row.append((px, py, sx, sy))
+                s += w + aisle
+            else:
+                s += _ROW_SLIDE
+        if row:
+            rows.append(row)
+    return rows
+
+
 def _island(key, make, spec, px, py, w, d, h, front, twin=False):
     """Write an island's units and return how many were written.
 
@@ -3412,6 +3692,12 @@ def _furnish_plan(recipe, clusters, want, rng):
     n_wall = min(rest, int(round(want / 2.0))) if wall else 0
     items += [("host", wall[i % len(wall)]) for i in range(n_wall)]
     rest -= n_wall
+    # ROWS AFTER THE WALL RUN AND BEFORE THE FLOOR (0.247.0): a row keeps an
+    # aisle from every piece standing when it is laid, so the wall run stands
+    # first and keeps its walls, and the floor sets and clusters take what
+    # the rows leave. A row is outside the count: it is the room's floor, and
+    # how much of it there is is the recipe's `rows_share`, not `want`.
+    items += [("rows", key) for key in recipe.get("rows") or ()]
     turn = 0
     # Clusters in TURN, from a seeded start: drawn at random, a wine cellar
     # with five pieces to spare took barrels three times and never its
@@ -4819,6 +5105,8 @@ def furnish(spec):
         elif kind == "card_shop":
             recipe = dict(recipe, anchors=_card_shop_anchors(room, building),
                           floor=_card_shop_floor(room, building))
+        elif kind == "shop_floor":
+            recipe = dict(recipe, rows=_shop_rows(room, building))
         have = _room_volume_count(spec, room)
         want = max(0, _furnish_target(area, recipe.get("per_area")) - have)
         if recipe.get("cap") is not None:
@@ -5140,6 +5428,59 @@ def furnish(spec):
                     return True
             return False
 
+        def _rows(key):
+            """Lay ROWS of one island down the room's long axis until the
+            room's floor share (`room_floor_share`) reaches the recipe's
+            `rows_share`, or no slot is left that clears. Returns islands
+            placed.
+
+            ONE LENGTH A ROOM, the palette's that covers the most floor
+            (`_row_slots` asked at each; a tie keeps the palette's order): a
+            store's aisles are one gondola length, and deli_a03's market
+            aisles hold 18 islands at 2.4 m where they hold 5 at 4.8.
+            `_SAME_PIECE_MAX` does not apply -- a row IS one mesh repeated,
+            and the species' four variants are what vary it.
+
+            WHOLE ROWS, FROM THE MIDDLE OUT (`_row_slots`'s order): every
+            island of a row is laid before the share is asked again, so the
+            floor never stops half way down an aisle. The only draw from
+            `rng` is each island's facing, and only in a room with rows, so
+            every other room furnishes as it did."""
+            nonlocal added
+            p = _PIECES[key]
+            goal = float(recipe.get("rows_share") or 0.0)
+            if room_floor_share(spec, room) >= goal:
+                return 0
+            hosts = list(placed)
+            best = None
+            for size in _palette(spec, key):
+                w, d, h = size
+                if h is None:
+                    h = to_ceiling_height(spec, p, clear_h)
+                rows = _row_slots(spec, room, w, d, hosts)
+                got = sum(len(r) for r in rows) * w * d
+                if best is None or got > best[0] + 1e-9:
+                    best = (got, (w, d, h), rows)
+            _got, (w, _d, h), rows = best
+            n = 0
+            for row in rows:
+                if room_floor_share(spec, room) >= goal:
+                    break
+                # a whole row or none: the cap is a guard (the piece's note)
+                if len(row) > p["most"] - per_name[key]:
+                    break
+                for qx, qy, sx, sy in row:
+                    # the slot's own dims say which way its row runs and how
+                    # deep it is: the room's own island may have set both
+                    fronts = (0.0, 180.0) if sx >= sy else (90.0, 270.0)
+                    added += _island(key, _volume, spec, qx, qy, w,
+                                     min(sx, sy), h, rng.choice(fronts),
+                                     twin=p["twin"])
+                    placed.append((qx, qy))
+                    per_name[key] += 1
+                    n += 1
+            return n
+
         def _cluster(pool, n):
             """Place 2-4 small pieces as one group. Returns pieces placed."""
             nonlocal added
@@ -5209,6 +5550,8 @@ def furnish(spec):
         for item in _furnish_plan(recipe, clusters, want, rng):
             if item[0] == "host":
                 short += 0 if _host(item[1]) else 1
+            elif item[0] == "rows":
+                _rows(item[1])
             else:
                 short += item[2] - _cluster(item[1], item[2])
         # A PIECE THAT FITS NOWHERE LEAVES ITS SHARE TO THE FLOOR. Wall runs

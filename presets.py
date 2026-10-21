@@ -678,8 +678,9 @@ def corner_deli(name: str = "corner_deli_preset",
     vols = [
         {"name": "front_register_counter", "x": -12.0, "y": -7.0, "z": 0.55, "size_x": 6.0, "size_y": 0.9, "size_z": 1.1, "collision": "convex", "material": "wood"},
         {"name": "deli_case_cover", "x": -10.5, "y": -1.2, "z": 0.65, "size_x": 7.0, "size_y": 1.1, "size_z": 1.3, "collision": "convex", "material": "glass"},
-        {"name": "aisle_shelf_01", "x": -2.0, "y": -9.5, "z": 0.8, "size_x": 1.0, "size_y": 6.0, "size_z": 1.6, "collision": "convex", "material": "metal"},
-        {"name": "aisle_shelf_02", "x": 2.5, "y": -9.5, "z": 0.8, "size_x": 1.0, "size_y": 6.0, "size_z": 1.6, "collision": "convex", "material": "metal"},
+        # a deli's two aisles are snack gondolas, as every store's are (0.247.0, `migrate_store_gondolas`)
+        {"name": "gondola_aisle_01", "x": -2.0, "y": -9.5, "z": 0.8, "size_x": 1.0, "size_y": 6.0, "size_z": 1.6, "collision": "convex", "material": "metal"},
+        {"name": "gondola_aisle_02", "x": 2.5, "y": -9.5, "z": 0.8, "size_x": 1.0, "size_y": 6.0, "size_z": 1.6, "collision": "convex", "material": "metal"},
         {"name": "kitchen_prep_table", "x": 12.0, "y": -4.5, "z": 0.45, "size_x": 4.0, "size_y": 1.2, "size_z": 0.9, "collision": "convex", "material": "metal"},
         {"name": "loading_pallet_stack", "x": 12.0, "y": 10.0, "z": 0.75, "size_x": 4.5, "size_y": 2.5, "size_z": 1.5, "collision": "convex", "material": "wood"},
         {"name": "stockroom_rack_01", "x": 2.0, "y": 10.5, "z": 1.0, "size_x": 1.0, "size_y": 5.5, "size_z": 2.0, "collision": "convex", "material": "metal"},

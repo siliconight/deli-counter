@@ -527,7 +527,7 @@
    "material": "glass"
   },
   {
-   "name": "aisle_shelf_01",
+   "name": "gondola_aisle_01",
    "x": -2.0,
    "y": -9.5,
    "z": 0.8,
@@ -538,7 +538,7 @@
    "material": "metal"
   },
   {
-   "name": "aisle_shelf_02",
+   "name": "gondola_aisle_02",
    "x": 2.5,
    "y": -9.5,
    "z": 0.8,
@@ -874,9 +874,156 @@
    "rot_z": 180.0
   },
   {
-   "name": "cartons_r2f2d413e_3",
-   "x": -4.55,
+   "name": "gondola_aisle_r2f2d413e_3",
+   "x": 0.25,
+   "y": -10.05,
+   "z": 0.725,
+   "size_x": 1.0,
+   "size_y": 4.8,
+   "size_z": 1.45,
+   "collision": "convex",
+   "material": "metal_painted",
+   "rot_z": 180.0,
+   "variant": 3
+  },
+  {
+   "name": "gondola_aisle_r2f2d413e_4",
+   "x": 0.25,
+   "y": -4.0,
+   "z": 0.725,
+   "size_x": 1.0,
+   "size_y": 4.8,
+   "size_z": 1.45,
+   "collision": "convex",
+   "material": "metal_painted",
+   "rot_z": 180.0
+  },
+  {
+   "name": "gondola_aisle_r2f2d413e_5",
+   "x": 0.25,
+   "y": 2.05,
+   "z": 0.725,
+   "size_x": 1.0,
+   "size_y": 4.8,
+   "size_z": 1.45,
+   "collision": "convex",
+   "material": "metal_painted",
+   "variant": 2
+  },
+  {
+   "name": "gondola_aisle_r2f2d413e_6",
+   "x": -2.0,
+   "y": -2.8,
+   "z": 0.725,
+   "size_x": 1.0,
+   "size_y": 4.8,
+   "size_z": 1.45,
+   "collision": "convex",
+   "material": "metal_painted",
+   "rot_z": 180.0
+  },
+  {
+   "name": "gondola_aisle_r2f2d413e_7",
+   "x": 2.5,
+   "y": -2.8,
+   "z": 0.725,
+   "size_x": 1.0,
+   "size_y": 4.8,
+   "size_z": 1.45,
+   "collision": "convex",
+   "material": "metal_painted",
+   "rot_z": 180.0,
+   "variant": 2
+  },
+  {
+   "name": "gondola_aisle_r2f2d413e_8",
+   "x": -4.25,
+   "y": -9.3,
+   "z": 0.725,
+   "size_x": 1.0,
+   "size_y": 4.8,
+   "size_z": 1.45,
+   "collision": "convex",
+   "material": "metal_painted",
+   "variant": 3
+  },
+  {
+   "name": "gondola_aisle_r2f2d413e_9",
+   "x": -4.25,
+   "y": -3.25,
+   "z": 0.725,
+   "size_x": 1.0,
+   "size_y": 4.8,
+   "size_z": 1.45,
+   "collision": "convex",
+   "material": "metal_painted",
+   "rot_z": 180.0,
+   "variant": 1
+  },
+  {
+   "name": "gondola_aisle_r2f2d413e_10",
+   "x": 4.75,
+   "y": -9.3,
+   "z": 0.725,
+   "size_x": 1.0,
+   "size_y": 4.8,
+   "size_z": 1.45,
+   "collision": "convex",
+   "material": "metal_painted",
+   "rot_z": 180.0,
+   "variant": 2
+  },
+  {
+   "name": "gondola_aisle_r2f2d413e_11",
+   "x": 4.75,
+   "y": -3.25,
+   "z": 0.725,
+   "size_x": 1.0,
+   "size_y": 4.8,
+   "size_z": 1.45,
+   "collision": "convex",
+   "material": "metal_painted",
+   "rot_z": 180.0
+  },
+  {
+   "name": "cartons_r2f2d413e_12",
+   "x": -4.2,
    "y": 3.03,
+   "z": 0.7,
+   "size_x": 1.2,
+   "size_y": 0.8,
+   "size_z": 1.4,
+   "collision": "convex",
+   "material": "wood",
+   "variant": 1
+  },
+  {
+   "name": "cartons_r2f2d413e_13",
+   "x": -2.8,
+   "y": 3.03,
+   "z": 0.7,
+   "size_x": 0.8,
+   "size_y": 1.2,
+   "size_z": 1.4,
+   "collision": "convex",
+   "material": "wood",
+   "variant": 3
+  },
+  {
+   "name": "litter_bin_r2f2d413e_14",
+   "x": -6.46,
+   "y": -6.37,
+   "z": 0.425,
+   "size_x": 0.5,
+   "size_y": 0.5,
+   "size_z": 0.85,
+   "collision": "convex",
+   "material": "metal"
+  },
+  {
+   "name": "cartons_r2f2d413e_15",
+   "x": 2.79,
+   "y": 2.69,
    "z": 0.7,
    "size_x": 0.8,
    "size_y": 1.2,
@@ -887,46 +1034,20 @@
    "variant": 2
   },
   {
-   "name": "cartons_r2f2d413e_4",
-   "x": -2.86,
-   "y": 3.03,
-   "z": 0.7,
-   "size_x": 1.2,
-   "size_y": 0.8,
-   "size_z": 1.4,
+   "name": "cartons_r2f2d413e_16",
+   "x": 4.05,
+   "y": 2.69,
+   "z": 0.3,
+   "size_x": 0.4,
+   "size_y": 0.6,
+   "size_z": 0.6,
    "collision": "convex",
-   "material": "wood",
-   "variant": 1
+   "material": "wood"
   },
   {
-   "name": "cartons_r2f2d413e_5",
-   "x": -2.88,
-   "y": -0.58,
-   "z": 0.45,
-   "size_x": 0.5,
-   "size_y": 0.4,
-   "size_z": 0.9,
-   "collision": "convex",
-   "material": "wood",
-   "variant": 3
-  },
-  {
-   "name": "cartons_r2f2d413e_6",
-   "x": -1.43,
-   "y": -0.58,
-   "z": 0.7,
-   "size_x": 1.2,
-   "size_y": 0.8,
-   "size_z": 1.4,
-   "collision": "convex",
-   "material": "wood",
-   "rot_z": 180.0,
-   "variant": 1
-  },
-  {
-   "name": "cartons_r2f2d413e_7",
-   "x": -0.02,
-   "y": -0.58,
+   "name": "cartons_r2f2d413e_17",
+   "x": 4.93,
+   "y": 2.69,
    "z": 0.45,
    "size_x": 0.4,
    "size_y": 0.5,
@@ -934,18 +1055,7 @@
    "collision": "convex",
    "material": "wood",
    "rot_z": 180.0,
-   "variant": 3
-  },
-  {
-   "name": "litter_bin_r2f2d413e_8",
-   "x": 0.85,
-   "y": 2.0,
-   "z": 0.5,
-   "size_x": 0.6,
-   "size_y": 0.6,
-   "size_z": 1.0,
-   "collision": "convex",
-   "material": "metal"
+   "variant": 2
   },
   {
    "name": "grill_reaa3ce34_1",
@@ -2074,7 +2184,7 @@
    "variant": 3
   },
   {
-   "name": "poster_wall_store_r2f2d413e_9",
+   "name": "poster_wall_store_r2f2d413e_18",
    "x": -4.87,
    "y": -13.81,
    "z": 1.5,
@@ -2084,8 +2194,7 @@
    "collision": "none",
    "material": "paper",
    "rot_z": 180.0,
-   "form": "store",
-   "variant": 1
+   "form": "store"
   },
   {
    "name": "cigarettes_rb0f5945e_7",

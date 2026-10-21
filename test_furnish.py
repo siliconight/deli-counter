@@ -141,8 +141,18 @@ def test_the_only_mid_floor_shelter_is_a_declared_island():
     # third rule in CLAUDE.md's verification section.
     naming = {k for k, r in level_design._RECIPES.items()
               if (islands & set(r["anchors"])) | (islands & set(r["wall"]))
-              | (islands & set(r["floor"]))}
+              | (islands & set(r["floor"])) | (islands & set(r.get("rows") or ()))}
     assert naming == {"card_shop"}, naming
+    # ...and the one giver of ROWS (0.247.0) is the shop floor's, per room:
+    # a corner store's selling floor gets the aisle gondola and every other
+    # room nothing. Its piece is capped above and stands under shelter.
+    rows = {k for k, r in level_design._RECIPES.items() if "rows" in r}
+    assert rows == {"shop_floor"}, rows
+    given = level_design._shop_rows({"id": "market_aisles"}, "deli_a03")
+    assert given == ("gondola_aisle",) and set(given) <= islands
+    assert level_design._shop_rows({"id": "sales_floor"}, "supermarket_a01") == ()
+    for w, d, h in level_design._PIECES["gondola_aisle"]["sizes"]:
+        assert h < level_design.shelter_height(), (w, d, h)
 
 
 def test_every_name_it_writes_routes_to_a_species_zoo_builds():
@@ -302,6 +312,8 @@ _ZOO_RANGES = {
     "poster_wall": ((0.3, 8.0), (0.004, 0.02), (0.25, 1.6)),
     # the cold-storage walk-in's milk crates (Zoo 1.14.0, grown for 0.149.0)
     "milk_crate_stack": ((0.3, 0.8), (0.3, 0.8), (0.3, 1.4)),
+    # a corner store's aisle gondola (Zoo 1.13.0; laid in rows, 0.247.0)
+    "snack_gondola": ((1.2, 14.0), (0.6, 1.5), (1.2, 2.2)),
 }
 ZOO = os.environ.get("DC_ZOO_ROOT") or os.path.join(
     os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "zoo")
