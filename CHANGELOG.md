@@ -1,3 +1,42 @@
+## [0.253.0] - the enemy's body is the NPC's, and the NPC's is the player's until it says otherwise
+
+**The factory's roadmap 292.** `agent_contract.json` said the enemy's eye twice -- `characters.npc_standard`, whose
+NPCs "share player metrics until a distinct class ships", and `sightlines.enemy_sight_height_m` -- with nothing to say
+which governed, and the NPC block restated the player's radius and height, which nothing read. Level Factory's seam
+wrote the player's body into every Laser Tag run and left the enemy's eye at Laser Tag's 1.6; Level Factory 0.231.0
+reads this block for it.
+
+### Changed
+- **The bodies decide the sight heights.** `npc_body()` (new) is `npc_standard`'s stated metrics over the player's.
+  `sight_heights()` (new) gives the two eyes -- the player's and the NPC body's -- and checks the `sightlines` copies
+  against them, refusing one that disagrees ("one body, one eye"), as `cover_break_height` already refused an aim
+  copy. `cover_break_height()` and `shelter_height()` ask it.
+- **`npc_standard` states no metric of its own.** Its restated radius and height are gone; its `shares_note` says what
+  governs and why, and `sightlines.sight_heights_are` that the copies are the bodies'.
+- **No copy of a body-derived sightline number is merged into a contract that omits it.** `_DEFAULTS["sightlines"]` is
+  empty. A contract stating only its body -- a 2.05 m player with its chest at 1.15 m and no `sightlines` block -- was
+  refused, "one body, one aim point", for disagreeing with the 1.0 m aim copy the module had merged in;
+  `cover_break_height_m` was already kept out for that reason. `_player()` fills a partial player block field by field
+  from its ratified fallback, for the eyes.
+
+### Measured, kept
+- **Lot 0.126.1 ships first.** Lot's contract fallback mirrored the NPC's two numbers, and Lot 0.126.0's guard, run
+  against this contract, counts 19 shared keys against its floor of 21 and fails (the factory's
+  `patches/lot_npc_fallback/suite_clone_vs_base.out.txt`).
+- **The shells are rebuilt; no number of a body or a clearance moves.** `build_freshness.py` watches
+  `agent_contract.py` and `agent_contract.json`, so the library is rebuilt. The shipped contract's change is the NPC
+  block's two restated numbers and two notes; the player, the bake, the clearances and the sightline copies stand as
+  they were, and at them `sight_heights()` is (1.6, 1.6) and the crossing 1.3 m.
+
+### Tests
+- **test_npc_body.py** (new, 4): a studio states its body once and the crossing follows it -- 1.5 m for a 2.05 m body,
+  shelter at 1.85 m; the NPC is the player until it says otherwise; a sight height that disagrees with its body is
+  refused; the shipped NPC states no metric of its own. On 0.252.0 the first fails on behaviour ("one body, one aim
+  point") and so does the last (the restated radius and height); the other two fail on the new names (the factory's
+  `patches/dc_npc_body/prove_tests_on_0252.out.txt`).
+- **test_cover_breaks_sightlines.py**: the four fixtures that stated sight heights without the body that has them
+  state it now -- the eye, and for an enemy that differs, `npc_standard`'s. On 0.252.0 the file passes.
+
 ## [0.252.0] - a piece that seats somebody stands with its chair
 
 **The factory's roadmap 284.** Measured on 0.251.0's library (the factory's `patches/dc_table_chairs/seats.out.txt`):

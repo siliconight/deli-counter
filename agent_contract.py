@@ -49,19 +49,18 @@ _DEFAULTS = {
                  "cell_size_m": 0.1, "cell_height_m": 0.15},
     "clearances": {"min_door_width_m": 1.25, "min_corridor_width_m": 1.1,
                    "min_headroom_m": 2.0},
-    # Read `sightlines.derivation` before touching these. They are the
-    # firefight's geometry, not a body's, and they are measured off Laser Tag
-    # rather than chosen here.
-    #
-    # `cover_break_height_m` is deliberately ABSENT. The contract stores it
-    # so a reader of the file can see the answer without doing the algebra,
-    # but a copy here would be merged into every contract that omits it --
-    # so a studio setting its own sight heights would inherit OUR crossing,
-    # and `cover_break_height` would then refuse its own correct derivation
-    # for disagreeing with a number the studio never wrote. The three heights
-    # are the contract; the fourth is a result.
-    "sightlines": {"crew_sight_height_m": 1.6, "enemy_sight_height_m": 1.6,
-                   "aim_height_m": 1.0},
+    # EMPTY ON PURPOSE (0.253.0, the factory's roadmap 292). Every number in
+    # `sightlines` is a copy of a body's -- the two eyes and the aim point,
+    # checked against `characters` by `sight_heights` and
+    # `cover_break_height` -- or a result, the crossing. A copy here would be
+    # merged into every contract that omits it, so a studio stating only its
+    # body would inherit OUR copies and be refused for disagreeing with
+    # numbers it never wrote: `cover_break_height_m` was kept out for that
+    # reason, and until 0.253.0 the three heights were not, so a 2.05 m body
+    # with no `sightlines` block of its own read "one body, one aim point"
+    # against the 1.0 m it had not stated. The bodies' fallbacks above stand
+    # in for a missing contract.
+    "sightlines": {},
     "qa": {"arrive_dist_m": 1.5, "stuck_seconds": 4.0, "snap_max_m": 2.0,
            "walker_capsule_radius_m": 0.35, "walker_capsule_height_m": 1.8},
     "review": {"character_reference_height_m": 1.8,
@@ -252,6 +251,67 @@ def chest_height():
     return chest
 
 
+def _player():
+    """`characters.player`, field by field over its ratified fallback.
+
+    `contract()` merges a section at a time, so a contract stating part of the
+    player's block replaces the whole of it. The bodies' eyes are read through
+    this, so a block that leaves the eye out degrades to the ratified one
+    rather than raising -- the rule this module keeps for a missing file."""
+    body = dict(_DEFAULTS["characters"]["player"])
+    body.update(contract()["characters"].get("player") or {})
+    return body
+
+
+def npc_body():
+    """The enemy's body: `characters.npc_standard`'s stated metrics over the
+    player's (0.253.0, the factory's roadmap 292).
+
+    The contract's NPCs share the player's metrics until a distinct class
+    ships, so a metric that block does not state IS the player's, and a studio
+    stating its player once has stated its enemies. The block states none
+    today. Level Factory writes the enemy's eye by the same rule into every
+    Laser Tag run (its 0.231.0), and Laser Tag builds every enemy from the
+    crew's body (its 0.26.0). A value the block states is the NPC's own; one
+    that is not a number is not a metric and is skipped.
+    """
+    body = _player()
+    npc = contract()["characters"].get("npc_standard") or {}
+    body.update({key: value for key, value in npc.items()
+                 if isinstance(value, (int, float))
+                 and not isinstance(value, bool)})
+    return body
+
+
+def sight_heights():
+    """The two eyes of a firefight, ``(crew, enemy)``, in metres: each the
+    body's own -- the player's eye and the NPC body's.
+
+    `sightlines` carries both as `crew_sight_height_m` and
+    `enemy_sight_height_m`, for the reason it carries the aim point: the
+    crossing needs every number in one place. A value carried twice is a value
+    that rots, so the bodies decide and a copy the contract states is checked
+    against its body. Until 0.253.0 the copies decided, and the enemy's eye
+    was said twice -- by `npc_standard` sharing the player's metrics, and by
+    `sightlines` -- with nothing to say which governed (the factory's roadmap
+    292). A copy the contract leaves out is not checked: nothing fills it in.
+    """
+    crew = float(_player()["eye_height_m"])
+    enemy = float(npc_body()["eye_height_m"])
+    s = contract()["sightlines"]
+    for key, eye, whose in (
+            ("crew_sight_height_m", crew, "characters.player.eye_height_m"),
+            ("enemy_sight_height_m", enemy,
+             "the enemy's eye (characters.npc_standard's, else the "
+             "player's)")):
+        stored = s.get(key)
+        if stored is not None and abs(float(stored) - eye) > 1e-6:
+            raise ValueError(
+                "sightlines.%s is %s and %s is %.3f -- one body, one eye"
+                % (key, stored, whose, eye))
+    return crew, enemy
+
+
 def shelter_height():
     """The shortest solid that breaks a mutual sightline ANYWHERE along it.
 
@@ -276,9 +336,7 @@ def shelter_height():
         h=1.50  ->  t in [0.17, 0.83]   width 0.67
         h=1.60  ->  t in [0.00, 1.00]   width 1.00   this
     """
-    s = contract()["sightlines"]
-    return max(float(s["crew_sight_height_m"]),
-               float(s["enemy_sight_height_m"]))
+    return max(sight_heights())
 
 
 def cover_break_height():
@@ -297,8 +355,8 @@ def cover_break_height():
     raises rather than being quietly preferred.
     """
     s = contract()["sightlines"]
-    a = float(s["crew_sight_height_m"])
-    b = float(s["enemy_sight_height_m"])
+    # the two eyes are the bodies' too, each copy checked (0.253.0)
+    a, b = sight_heights()
     # THE BODY'S, not this block's. `aim_height_m` is carried in `sightlines`
     # too, because the crossing needs all three numbers in one place -- but a
     # value carried twice is a value that rots, so the body decides and the

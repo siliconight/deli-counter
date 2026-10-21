@@ -42,9 +42,14 @@ def _reload_contract(monkeypatch, path):
 # ---- the derivation ---------------------------------------------------------
 
 def test_the_break_height_is_derived_not_stored(tmp_path, monkeypatch):
-    """THE POINT OF THE ITEM. Move the evaluator's sight heights and the
-    height at which cover works moves with them, with no constant to edit."""
-    body = {"sightlines": {"crew_sight_height_m": 1.8,
+    """THE POINT OF THE ITEM. Move the bodies' eyes and the height at which
+    cover works moves with them, with no constant to edit. Since 0.253.0 the
+    eyes are the bodies' (`sight_heights`), so the fixture states the body and
+    its copies agree with it."""
+    body = {"characters": {"player": {"radius_m": 0.35, "height_m": 2.0,
+                                      "eye_height_m": 1.8,
+                                      "chest_height_m": 1.0}},
+            "sightlines": {"crew_sight_height_m": 1.8,
                            "enemy_sight_height_m": 1.8,
                            "aim_height_m": 1.0}}
     path = tmp_path / "agent_contract.json"
@@ -77,9 +82,13 @@ def test_a_stored_value_that_drifted_is_refused(tmp_path, monkeypatch):
     """The failure mode this replaces is silence: a hand-edited height that
     no longer follows from the heights above it, still being returned."""
     path = tmp_path / "agent_contract.json"
-    path.write_text(json.dumps({"sightlines": {
-        "crew_sight_height_m": 1.4, "enemy_sight_height_m": 1.5,
-        "aim_height_m": 1.0, "cover_break_height_m": 0.6}}), encoding="utf-8")
+    path.write_text(json.dumps({
+        "characters": {"player": {"radius_m": 0.35, "height_m": 1.8,
+                                  "eye_height_m": 1.4, "chest_height_m": 1.0},
+                       "npc_standard": {"eye_height_m": 1.5}},
+        "sightlines": {"crew_sight_height_m": 1.4, "enemy_sight_height_m": 1.5,
+                       "aim_height_m": 1.0, "cover_break_height_m": 0.6}}),
+        encoding="utf-8")
     _reload_contract(monkeypatch, path)
     with pytest.raises(ValueError, match="re-derive"):
         AC.cover_break_height()
@@ -94,7 +103,8 @@ def test_lines_that_never_cross_are_refused(tmp_path, monkeypatch):
     path = tmp_path / "agent_contract.json"
     path.write_text(json.dumps({
         "characters": {"player": {"radius_m": 0.35, "height_m": 2.4,
-                                  "chest_height_m": 1.5}},
+                                  "eye_height_m": 1.4, "chest_height_m": 1.5},
+                       "npc_standard": {"eye_height_m": 1.5}},
         "sightlines": {"crew_sight_height_m": 1.4,
                        "enemy_sight_height_m": 1.5,
                        "aim_height_m": 1.5}}), encoding="utf-8")
@@ -112,6 +122,7 @@ def test_the_aim_point_is_a_property_of_the_body(tmp_path, monkeypatch):
     path = tmp_path / "agent_contract.json"
     path.write_text(json.dumps({
         "characters": {"player": {"radius_m": 0.45, "height_m": 2.05,
+                                  "eye_height_m": 1.85,
                                   "chest_height_m": 1.13}},
         "sightlines": {"crew_sight_height_m": 1.85,
                        "enemy_sight_height_m": 1.85,
