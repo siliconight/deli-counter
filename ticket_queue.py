@@ -1,4 +1,4 @@
-"""ticket_queue.py -- a box office sells through a ticket window, and its queue stands in front of it (pure, no bpy).
+"""ticket_queue.py -- a queue stands in front of where tickets are sold and tellers serve (pure, no bpy).
 
 The factory's roadmap 267. The walker, 2026-10-20, asked what arena_a02's four steel barricades on its event floor were
 for, and answered "queue lanes to the box office"; then "stanchion or stanchions are likley more common for banks and
@@ -6,10 +6,9 @@ indoor common areas", "metal barriers are for outdoor concerts or riot protectio
 stanchion", and a photo -- black posts on round bases, flat black belts taut at waist height, lanes switching back in
 front of a desk. Zoo 1.119.0 draws one straight run of those stanchions, `stanchion_run`; this lays a queue of them.
 
-THE RULE (`queue_box_offices`, run by `level_design.enrich` before cover and furniture, and by
-`migrate_ticket_queue.py` over the library). A room whose id names a box office or a ticket office (`is_box_office`)
-and that shares an interior wall with a public room (`is_public`: the role `public_entry`, or a lobby or a hall by its
-words) gets:
+THE RULE (`lay_queues`, run by `level_design.enrich` before cover and furniture, and by `migrate_ticket_queue.py` over
+the library). A room whose id names a box office or a ticket office (`is_box_office`) and that shares an interior wall
+with a public room (`is_public`: the role `public_entry`, or a lobby or a hall by its words) gets:
 
   * A TICKET WINDOW in that wall -- a `window` opening tagged `ticket_window`, `WINDOW_W` wide over a counter's sill,
     sealed (no `breakable`: a pane that shot out would be a firing line into the room behind it), on the builder's
@@ -19,6 +18,14 @@ words) gets:
     switches back: in at the end away from the window, out of the last lane at the window's end into the floor in front
     of the window. Nothing closes a lane's open end; a run is one straight slot (Zoo's species), and a corner post two
     runs shared would stand two posts in one place.
+
+A BANK'S TELLER LINE gets the same queue (`queue_teller_lines`, 0.244.0, the factory's roadmap 275; the walker:
+"stanchion or stanchions are likley more common for banks and indoor common areas"): `level_design._teller_lines`'
+counter is the frontage instead of a wall, its public side the one `level_design._public_side` reads off the room's
+street doors, and the queue lets out anywhere along the counter, a customer walking on to whichever window is free --
+so the floor in front of the counter is a door's approach and a corridor behind it (`teller_service_depth`). Its runs
+are `stanchion_run_t<q>_<k>`. One fitting (`_fit`) serves both: what differs is the frontage, where a queue may let
+out, and the floor in front.
 
 EVERY CLEARANCE IS THE CONTRACT'S (`agent_contract`):
   * a lane is a corridor to the nav bake, so its clear floor between two lines' slots is `stair_flight_width()` -- the
@@ -34,9 +41,9 @@ a 14 in base, a 38 in post. Retyped because Deli Counter builds without Zoo besi
 to the genome when the zoo repo is found next to this one, as `test_vault_room.py` pins the vault door's.
 
 WHAT IT DOES NOT DO, said so it is not read as an oversight: a box office on an EXTERIOR wall -- a theatre's window on
-the street -- is the street's queue, and the street is Lot's; this reports it and lays nothing. A bank's teller line
-takes a queue the same way and does not get one yet (the factory's roadmap). A queue that cannot fit two lanes clear
-of all of the above is not laid, and the report says why.
+the street -- is the street's queue, and the street is Lot's; this reports it and lays nothing. The bank towers' teller
+DESKS are islands, not a line (`level_design._TELLER_NAMES`), and get none. A queue that cannot fit two lanes clear of
+all of the above is not laid, and the report says why.
 """
 from __future__ import annotations
 
@@ -97,6 +104,13 @@ def service_depth():
 def line_min():
     """The shortest line beside its turn: as long as the lanes are wide, or a lane reads as a pen."""
     return pitch()
+
+
+def teller_service_depth():
+    """The floor in front of a teller line, from the counter's face to the first line's slot: a door's approach for
+    the customer at a window, and a corridor behind them for the next one walking along the counter to a free
+    window."""
+    return agent_contract.door_approach() + agent_contract.min_corridor_width()
 
 
 def is_box_office(room):
@@ -194,13 +208,14 @@ def _rect(ax, line, face, side, u0, u1, v0, v1):
     return (min(x0, x1), min(y0, y1), max(x0, x1), max(y0, y1))
 
 
-def _keepouts(spec, story, wall_index, room_rect):
+def _keepouts(spec, story, wall_index, room_rect, exclude_volume=None):
     """What a queue on `story` keeps `min_corridor_width()` from, as plan boxes with a name: walls but the queue's
     own, walkable openings' approaches, standing volumes, stairs, holes, vaults' swings; and the points it keeps the
     same distance from: ladders, and markers on the floor. ONLY WHAT IS IN THE PUBLIC ROOM: each box clipped to
     `room_rect` and dropped when nothing of it is left, each point dropped outside it -- the office's furniture and the
     walls standing on the office's side of the shared wall are behind that wall, and a cabinet 0.6 m behind it would
-    otherwise have refused every queue in front of it."""
+    otherwise have refused every queue in front of it. `exclude_volume` is the volume whose face the queue stands
+    against -- a teller line's counter -- as `wall_index` is the wall's."""
     import level_design
     import vault_room
     sh = level_design._story_height(spec)
@@ -227,6 +242,8 @@ def _keepouts(spec, story, wall_index, room_rect):
     for v in spec.get("volumes") or []:
         vz, vh = float(v.get("z", 0.0)), float(v.get("size_z", 0.0))
         if not level_design._on_storey(vz, vh, floor, sh) or level_design._hung(v, floor):
+            continue
+        if exclude_volume is not None and v.get("name") == exclude_volume:
             continue
         ax_, ay_ = float(v.get("size_x", 1)) / 2.0, float(v.get("size_y", 1)) / 2.0
         boxes.append(("volume %s" % v.get("name"), (v["x"] - ax_, v["y"] - ay_, v["x"] + ax_, v["y"] + ay_)))
@@ -288,12 +305,13 @@ def _clash(rect, line_boxes, boxes, points, room_rect):
     return None
 
 
-def _lines(ua, ub, window_high, lanes):
-    """Each line's span along the wall and its offset from the wall's face (to the slot's centre): ``[(u0, u1, v)]``.
-    Line 0 is nearest the wall, and stops a turn short at the window's end -- the way out to the window -- and the
-    lines after it stop short at alternate ends."""
+def _lines(ua, ub, window_high, lanes, service):
+    """Each line's span along the frontage and its offset from the frontage's face (to the slot's centre):
+    ``[(u0, u1, v)]``. Line 0 is nearest the frontage, `service` off it, and stops a turn short at the exit's end --
+    the way out -- and the lines after it stop short at alternate ends. `window_high`: the exit is at the span's high
+    end."""
     turn = lane_clear()
-    v0 = service_depth() + RUN_DEPTH / 2.0
+    v0 = service + RUN_DEPTH / 2.0
     out = []
     for k in range(lanes + 1):
         short_at_window = (k % 2 == 0)
@@ -305,13 +323,72 @@ def _lines(ua, ub, window_high, lanes):
     return out
 
 
+def _grown(room_rect, ax, line, face, side):
+    """`room_rect` stretched, on the frontage's side only, to the frontage's public face: a counter standing on the
+    edge of the room in front of it (bank_branch_a04's, 0.05 m over the grand lobby's edge) puts the queue's first edge
+    a hair outside that room, and the queue is still in front of the counter."""
+    x0, y0, x1, y1 = room_rect
+    f = line + side * face
+    if ax == "X":
+        return (x0, min(y0, f), x1, y1) if side > 0 else (x0, y0, x1, max(y1, f))
+    return (min(x0, f), y0, x1, y1) if side > 0 else (x0, y0, max(x1, f), y1)
+
+
+def _fit(spec, story, ax, line, face, side, room, exits, service, mid, exclude_wall=None, exclude_volume=None):
+    """The best queue in front of one frontage, or the reason there is none: ``{"ok", "why", ...}``.
+
+    The frontage runs along `ax` on the line `line`, its public face `face` off that line toward `side`, into `room`.
+    `exits` are where along it a queue may let out -- the centre of the turn its last lane leaves by -- and `service`
+    the floor in front of the frontage before the first line. Every exit, at either end of the queue, three lanes then
+    two, as long as `MAX_SPAN` then shorter by `SPAN_STEP`, down to a line of `line_min()` beside its turn: the first
+    span that clears everything (`_keepouts`, `_clash`). Preferred: more lanes, then a longer queue, then an exit
+    nearer `mid`, then the lower exit."""
+    rx0, ry0, rx1, ry1 = room["bounds"]
+    room_rect = (rx0, ry0, rx1, ry1)
+    bounds = _grown(room_rect, ax, line, face, side)
+    boxes, points = _keepouts(spec, story, exclude_wall, room_rect, exclude_volume)
+    turn = lane_clear()
+    best, best_key, last_why = None, None, "nothing fits"
+    for eu in exits:
+        for window_high in (True, False):
+            for lanes in LANES:
+                depth = service + RUN_DEPTH + lanes * pitch()
+                span = MAX_SPAN
+                while span >= turn + line_min() - 1e-9:
+                    ub = eu + turn / 2.0 if window_high else eu - turn / 2.0 + span
+                    ua = ub - span
+                    rect = _rect(ax, line, face, side, ua, ub, 0.0, depth)
+                    line_boxes = [_rect(ax, line, face, side, u0, u1, v - RUN_DEPTH / 2.0, v + RUN_DEPTH / 2.0)
+                                  for (u0, u1, v) in _lines(ua, ub, window_high, lanes, service)]
+                    why = _clash(rect, line_boxes, boxes, points, bounds)
+                    if why is None:
+                        key = (lanes, round(span, 6), -abs(eu - mid), -eu)
+                        if best_key is None or key > best_key:
+                            best_key = key
+                            best = {"ok": True, "why": "", "room": room, "side": side, "exit_u": eu,
+                                    "window_high": window_high, "lanes": lanes, "span": (ua, ub), "depth": depth,
+                                    "rect": rect, "key": key}
+                        break
+                    last_why = why
+                    span = round(span - SPAN_STEP, 6)
+    if best is None:
+        return {"ok": False, "why": last_why}
+    ua, ub = best["span"]
+    best["lines"] = []
+    for (u0, u1, v) in _lines(ua, ub, best["window_high"], best["lanes"], service):
+        cx, cy = _world(ax, line, face, side, (u0 + u1) / 2.0, v)
+        length = u1 - u0
+        best["lines"].append({"x": cx, "y": cy, "length": length,
+                              "size": (length, RUN_DEPTH) if ax == "X" else (RUN_DEPTH, length)})
+    return best
+
+
 def plan(spec, office):
     """The best ticket window and queue for `office`, or the reason there is none: ``{"ok", "why", ...}``.
 
-    Every window centre the builder's grid allows on each shared wall, the window at either end of the queue, three
-    lanes then two, the queue as long as `MAX_SPAN` then shorter by `SPAN_STEP`, down to a line of `line_min()` beside
-    its turn: the first that clears everything (`_keepouts`, `_clash`) inside the public room. Preferred: more lanes, then a
-    longer queue, then a window nearer the middle of the office's wall, then the lower window centre."""
+    The window's places are every centre the builder's grid allows on each wall the office shares with a public room,
+    a jamb clear of the wall's openings and of any wall ending on it; the queue lets out at the window (`_fit`).
+    Preferred across walls as `_fit` prefers, the window nearer the middle of the office's wall."""
     import vault_room
     story = int(office.get("story", 0) or 0)
     walls = _shared_walls(spec, office)
@@ -320,21 +397,17 @@ def plan(spec, office):
     t = float(spec.get("wall_thick", 0.3) or 0.3)
     face = t / 2.0
     g = vault_room._grid(spec)
-    turn = lane_clear()
-    cw = agent_contract.min_corridor_width()
-    best, best_key, last_why = None, None, "nothing fits"
+    best, last_why = None, "nothing fits"
     for (wall, room, side) in walls:
         wi, p, ax, line, lo, hi = wall
         ox0, oy0, ox1, oy1 = office["bounds"]
         rx0, ry0, rx1, ry1 = room["bounds"]
-        room_rect = (rx0, ry0, rx1, ry1)
         o_lo, o_hi = (ox0, ox1) if ax == "X" else (oy0, oy1)
         r_lo, r_hi = (rx0, rx1) if ax == "X" else (ry0, ry1)
         # the window: in the run the office, the public room and the wall all share, a jamb off its ends
         s_lo, s_hi = max(o_lo, r_lo, lo), min(o_hi, r_hi, hi)
         seg_lo, seg_hi = s_lo + face + JAMB + WINDOW_W / 2.0, s_hi - face - JAMB - WINDOW_W / 2.0
         mid = (s_lo + s_hi) / 2.0
-        boxes, points = _keepouts(spec, story, wi, room_rect)
         # the openings already in this wall: the window keeps a jamb from each, and from a wall ending on it
         spans = []
         for e in vault_room.wall_openings(spec, kinds=("door", "window", "garage", "breach", "vault", "teller",
@@ -348,44 +421,73 @@ def plan(spec, office):
         centre = (lo + hi) / 2.0
         k_lo = math.ceil((seg_lo - centre) / g - 1e-9)
         k_hi = math.floor((seg_hi - centre) / g + 1e-9)
+        exits = []
         for kk in range(k_lo, k_hi + 1):
             wc = centre + kk * g
-            w0, w1 = wc - WINDOW_W / 2.0, wc + WINDOW_W / 2.0
-            if any(a - JAMB < w1 and w0 < b + JAMB for a, b in spans):
+            if any(a - JAMB < wc + WINDOW_W / 2.0 and wc - WINDOW_W / 2.0 < b + JAMB for a, b in spans):
                 last_why = "no place on the wall clears its openings and the walls ending on it"
                 continue
-            for window_high in (True, False):
-                for lanes in LANES:
-                    depth = service_depth() + RUN_DEPTH + lanes * pitch()
-                    span = MAX_SPAN
-                    while span >= turn + line_min() - 1e-9:
-                        ub = wc + turn / 2.0 if window_high else wc - turn / 2.0 + span
-                        ua = ub - span
-                        rect = _rect(ax, line, face, side, ua, ub, 0.0, depth)
-                        line_boxes = [_rect(ax, line, face, side, u0, u1, v - RUN_DEPTH / 2.0, v + RUN_DEPTH / 2.0)
-                                      for (u0, u1, v) in _lines(ua, ub, window_high, lanes)]
-                        why = _clash(rect, line_boxes, boxes, points, room_rect)
-                        if why is None:
-                            key = (lanes, round(span, 6), -abs(wc - mid), -wc)
-                            if best_key is None or key > best_key:
-                                best_key = key
-                                best = {"ok": True, "why": "", "wall": wall, "room": room, "side": side,
-                                        "window_u": wc, "window_high": window_high, "lanes": lanes,
-                                        "span": (ua, ub), "depth": depth, "rect": rect}
-                            break
-                        last_why = why
-                        span = round(span - SPAN_STEP, 6)
-    if best is None:
-        return {"ok": False, "why": last_why}
-    wi, p, ax, line, lo, hi = best["wall"]
-    ua, ub = best["span"]
-    best["lines"] = []
-    for (u0, u1, v) in _lines(ua, ub, best["window_high"], best["lanes"]):
-        cx, cy = _world(ax, line, face, best["side"], (u0 + u1) / 2.0, v)
-        length = u1 - u0
-        best["lines"].append({"x": cx, "y": cy, "length": length,
-                              "size": (length, RUN_DEPTH) if ax == "X" else (RUN_DEPTH, length)})
+            exits.append(wc)
+        if not exits:
+            continue
+        got = _fit(spec, story, ax, line, face, side, room, exits, service_depth(), mid, exclude_wall=wi)
+        if not got["ok"]:
+            last_why = got["why"]
+            continue
+        if best is None or got["key"] > best["key"]:
+            got["wall"] = wall
+            got["window_u"] = got["exit_u"]
+            best = got
+    return best if best is not None else {"ok": False, "why": last_why}
+
+
+def _host_room(spec, story, x, y):
+    """The smallest room on `story` holding (x, y) that is not a teller line's staff side."""
+    best, area = None, None
+    for r in spec.get("rooms") or []:
+        if int(r.get("story", 0) or 0) != story or not r.get("bounds"):
+            continue
+        if str(r.get("id", "")).startswith("teller_staff"):
+            continue
+        x0, y0, x1, y1 = r["bounds"]
+        if x0 - 1e-6 <= x <= x1 + 1e-6 and y0 - 1e-6 <= y <= y1 + 1e-6:
+            a = (x1 - x0) * (y1 - y0)
+            if area is None or a < area:
+                best, area = r, a
     return best
+
+
+def plan_teller(spec, volume, story, axis):
+    """The best queue in front of one teller line, or the reason there is none: ``{"ok", "why", ...}``.
+
+    The counter's public side is the one `level_design._public_side` reads off the room's street doors -- the rule
+    `enclose_teller_lines` walls the other side by -- and the queue stands in the room in front of its public face,
+    letting out on a 0.5 m grid along the counter wherever the turn it leaves by faces it (`_fit`), nearest the
+    middle preferred."""
+    import level_design
+    centre = volume["y"] if axis == "X" else volume["x"]
+    along = volume["x"] if axis == "X" else volume["y"]
+    length = volume["size_x"] if axis == "X" else volume["size_y"]
+    thick = volume["size_y"] if axis == "X" else volume["size_x"]
+    host = _host_room(spec, story, volume["x"], volume["y"])
+    if host is None:
+        return {"ok": False, "why": "no room holds the teller line"}
+    public = level_design._public_side(spec, story, host, axis, centre)
+    if public is None:
+        return {"ok": False, "why": "no exterior door says which side of the counter is public"}
+    off = centre + public * (thick / 2.0 + 0.2)
+    room = _host_room(spec, story, *((along, off) if axis == "X" else (off, along)))
+    if room is None:
+        return {"ok": False, "why": "no room in front of the counter"}
+    turn = lane_clear()
+    c0, c1 = along - length / 2.0, along + length / 2.0
+    k_lo = math.ceil((c0 + turn / 2.0 - along) / 0.5 - 1e-9)
+    k_hi = math.floor((c1 - turn / 2.0 - along) / 0.5 + 1e-9)
+    exits = [along + k * 0.5 for k in range(k_lo, k_hi + 1)]
+    if not exits:
+        return {"ok": False, "why": "the counter is shorter than a turn"}
+    return _fit(spec, story, axis, centre, thick / 2.0, public, room, exits, teller_service_depth(), along,
+                exclude_volume=volume["name"])
 
 
 def _declare_material(spec):
@@ -449,3 +551,45 @@ def queue_box_offices(spec):
             got["lanes"], got["span"][1] - got["span"][0], office.get("id"), got["room"].get("id"))
         q += 1
     return report
+
+
+def queue_teller_lines(spec):
+    """Give every teller line a queue on its public side (0.244.0, the factory's roadmap 275). Idempotent: a spec that
+    already has a `stanchion_run_t*` volume is left alone. Returns ``[report]``, one per teller line:
+    ``{"room", "queued": bool, "why", "lanes", "runs"}`` -- `room` the teller line's volume."""
+    import level_design
+    report = []
+    if any(str(v.get("name", "")).startswith("stanchion_run_t") for v in spec.get("volumes") or []):
+        return report
+    if not spec.get("footprint_x") or not spec.get("footprint_y") or not spec.get("rooms"):
+        return report
+    sh = level_design._story_height(spec)
+    q = 0
+    for (v, story, axis) in level_design._teller_lines(spec):
+        entry = {"room": v.get("name"), "queued": False, "why": "", "lanes": 0, "runs": []}
+        report.append(entry)
+        got = plan_teller(spec, v, story, axis)
+        if not got["ok"]:
+            entry["why"] = got["why"]
+            continue
+        floor = story * sh
+        for k, ln in enumerate(got["lines"]):
+            name = "stanchion_run_t%d_%d" % (q, k)
+            spec.setdefault("volumes", []).append({
+                "name": name, "x": round(ln["x"], 3), "y": round(ln["y"], 3),
+                "z": round(floor + RUN_HEIGHT / 2.0, 3),
+                "size_x": round(ln["size"][0], 3), "size_y": round(ln["size"][1], 3), "size_z": RUN_HEIGHT,
+                "collision": "convex", "material": RUN_MATERIAL})
+            entry["runs"].append(name)
+        _declare_material(spec)
+        entry["queued"] = True
+        entry["lanes"] = got["lanes"]
+        entry["why"] = "%d lanes, %.1f m along %s in %s" % (got["lanes"], got["span"][1] - got["span"][0],
+                                                          v.get("name"), got["room"].get("id"))
+        q += 1
+    return report
+
+
+def lay_queues(spec):
+    """Every queue this module lays, box offices then teller lines: ``[report]``."""
+    return queue_box_offices(spec) + queue_teller_lines(spec)

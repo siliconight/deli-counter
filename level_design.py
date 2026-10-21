@@ -2813,6 +2813,17 @@ def _room_kind(room, building=None):
     return "fallback"
 
 
+def _holds_queue(spec, room):
+    """Does a stanchion run of `ticket_queue`'s stand in `room`, on its storey?"""
+    x0, y0, x1, y1 = room["bounds"]
+    sh = _story_height(spec)
+    floor = room.get("story", 0) * sh
+    return any(str(v.get("name", "")).startswith("stanchion_run_")
+               and x0 <= v.get("x", 1e9) <= x1 and y0 <= v.get("y", 1e9) <= y1
+               and _on_storey(float(v.get("z", 0.0)), float(v.get("size_z", 0.0)), floor, sh)
+               for v in spec.get("volumes") or [])
+
+
 def _room_volume_count(spec, room):
     """Volumes standing in this room on its own storey -- what is already
     there, so an authored room is topped up rather than doubled.
@@ -2858,6 +2869,14 @@ def _room_volume_count(spec, room):
         # 683 across the library, count toward the target today, and such a
         # rule would refurnish the library.
         if _is_drape(v):
+            continue
+        # A QUEUE IS THE ROOM'S CIRCULATION, NOT ITS FURNITURE (0.244.0, the
+        # factory's roadmap 275): counted, a bank lobby's four stanchion runs
+        # cost it four pieces -- bank_job's payphone, bank_branch_a03's and
+        # credit_union_a01's ATMs -- the queue displacing what a lobby is
+        # known by. The queue keeps its own floor: furnish holds a piece off
+        # each run (`_seed_clear`'s margin), and a lane is narrower than two.
+        if str(v.get("name", "")).startswith("stanchion_run_"):
             continue
         if abs(v.get("z", 0) - (story * sh + v.get("size_z", 0) / 2)) < sh:
             n += 1
@@ -4796,6 +4815,12 @@ def furnish(spec):
         rng = random.Random(f"{base_seed}:{room['id']}:furnish")
         story = room.get("story", 0)
         clusters = list(recipe["clusters"])
+        # A ROOM WITH A QUEUE HAS NO LONE QUEUE POSTS (0.244.0, the factory's
+        # roadmap 275): a lobby's cluster of `stanchion` posts stood for the
+        # queue `ticket_queue` now lays, belts and all, and three posts
+        # beside its runs would read as a queue somebody never finished.
+        if _holds_queue(spec, room):
+            clusters = [c for c in clusters if "stanchion" not in c[0]]
         if story < 0 and kind not in ("basement", "vault", "corridor",
                                       "wine_cellar"):
             clusters.append(_BASEMENT_CLUSTER)
@@ -5229,11 +5254,13 @@ def enrich(spec):
         # boxes and the swing of its door (`vault_room.enclose_vaults`).
         "vaults_enclosed": sum(r["enclosed"] for r in
                                __import__("vault_room").enclose_vaults(spec)),
-        # A BOX OFFICE'S QUEUE, laid before anything is placed for the same
-        # reason (0.243.0, `ticket_queue.queue_box_offices`): cover and
-        # furniture clear its lines and its window.
+        # A BOX OFFICE'S QUEUE AND A TELLER LINE'S, laid before anything is
+        # placed for the same reason (0.243.0 and 0.244.0,
+        # `ticket_queue.lay_queues`): cover and furniture clear their lines and
+        # the box office's window. After the teller line's enclosure, whose
+        # walls a teller line's queue keeps clear of.
         "queues_laid": sum(r["queued"] for r in
-                           __import__("ticket_queue").queue_box_offices(spec)),
+                           __import__("ticket_queue").lay_queues(spec)),
         "cover_seeded": seed_cover(spec),
         "furnished": furnish(spec),
         "cover_added": cover_from_volumes(spec),

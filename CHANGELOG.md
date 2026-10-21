@@ -1,3 +1,58 @@
+## [0.244.0] - a bank's teller line gets a queue, and a queue is not furniture
+
+**The factory's roadmap 275, the walker, 2026-10-20**: "stanchion or stanchions are likley more common for banks and
+indoor common areas". 0.243.0 laid a box office's queue in Zoo 1.119.0's retractable-belt stanchions; this lays a
+teller line's the same way, as generator logic.
+
+### Added
+- **`ticket_queue.queue_teller_lines`** (and `plan_teller`): a teller line (`level_design._teller_lines`) gets a queue
+  on its public side -- the side `level_design._public_side` reads off the room's street doors, the one
+  `enclose_teller_lines` does not wall -- in the room in front of the counter: three lanes or two of stanchion runs
+  parallel to it, `stanchion_run_t<q>_<k>`, letting out on a 0.5 m grid along the counter wherever the turn it leaves
+  by faces the counter, nearest the middle preferred; a customer walks on to whichever window is free. The floor in
+  front of a counter is `teller_service_depth()`, a door's approach for the customer at a window and a corridor
+  behind them. Every other clearance is the box office's.
+- **One fitting for both**, `ticket_queue._fit`: what differs is the frontage (a wall's face or a counter's), where a
+  queue may let out (the window, or anywhere along the counter) and the floor in front. A counter on the edge of the
+  room in front of it may stand a hair outside that room (`_grown`). The box office's queue is unchanged: re-planned
+  from 0.242.0's arena_a02, the same runs and window to the millimetre.
+- **`ticket_queue.lay_queues`**, both; `level_design.enrich` lays it after the teller line's enclosure, whose walls a
+  teller line's queue keeps clear of, and before cover and furniture.
+
+### Changed
+- **`migrate_ticket_queue.migrate`** fits a library spec's queues with its furnished pieces set aside, carries them
+  in, and refurnishes (`migrate_furnish_recipes.migrate`) -- the order `enrich` gives a generated building. Run on
+  0.242.0's arena_a02, it writes 0.243.0's arena_a02 to the byte (the factory's
+  `patches/dc_teller_queue/arena_either_way.out.txt`), so the two ways of fitting agree on the one queue they share.
+- **A queue is the room's circulation, not its furniture.** `level_design._room_volume_count` leaves stanchion runs
+  out: counted, each bank lobby's four runs cost it four pieces, among them bank_job's payphone and sofa and
+  bank_branch_a03's and credit_union_a01's ATMs. The queue keeps its own floor without being counted -- furnish
+  holds a piece 0.9 m off each run, and a lane is narrower than two of those.
+- **A room with a queue has no lone queue posts**: furnish drops a lobby's cluster of `stanchion` posts where
+  `ticket_queue` has laid the queue they stood for.
+- **The library.** bank_branch_a02, bank_branch_a03, bank_job and credit_union_a01 are queued -- three lanes each,
+  5.2 to 5.6 m along their counters -- and refurnished: their lobbies keep every piece they had but the lone posts
+  (and, in bank_branch_a03's, a waiting chair), and take litter bins and low tables in their place. bank_branch_a04
+  is left, and says why: its counter stands
+  against the grand lobby's concrete wall, its public face 0.1 m into partition 0, so no queue stands in front of it.
+  arena_a02 is refurnished, its runs no longer counted: four more cartons and a file cabinet on its event floor, a
+  litter bin fewer.
+- **Not this change's rule, and recorded.** bank_branch_a03's upstairs offices re-drew too -- five pieces more, the
+  teller staff room a carton fewer -- because `_room_volume_count`'s storey filter, `abs(z - (story * sh + h / 2)) <
+  sh`, sits exactly at its threshold for a piece standing on the floor below, and float rounding counted seven of
+  the lobby's pieces in the offices above, three of them the lone posts this removes
+  (`patches/dc_teller_queue/storey_filter_floats_0243.out.txt` at the factory root, the factory's roadmap 277).
+
+### Tests
+- `test_ticket_queue.py`: the teller numbers are the contract's; each queued library bank's four lines stand parallel
+  to its counter a teller line's floor off its face, a lane apart, switching back, letting out where the counter is;
+  nothing else stands inside a bank's queue and every line keeps a corridor from every other standing volume on its
+  storey, every walkable opening's approach and every wall; bank_branch_a04 is left with its reason; the bank preset
+  gets its queue once, nothing furnished inside it; furnish does not count a queue; the queued lobbies keep their
+  ATMs and bank_job its payphone and sofa; no room holding a queue has a lone post; the library is a fixed point of
+  both rules and of the migration. The checks that read volumes compare a storey's own -- a first draft read a
+  basement's tables as standing in a ground-floor queue. They fail on 0.243.0, which queues no teller line.
+
 ## [0.243.0] - a box office sells through a ticket window, and its queue switches back in front of it
 
 **The factory's roadmap 267, the walker, 2026-10-20.** Asked what arena_a02's four steel barricades on its event floor

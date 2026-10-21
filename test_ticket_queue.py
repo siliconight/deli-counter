@@ -1,7 +1,10 @@
-"""A box office's ticket window and the queue in front of it (0.243.0, the factory's roadmap 267; `ticket_queue.py`).
+"""A box office's ticket window and the queue in front of it (0.243.0, the factory's roadmap 267), and a bank teller
+line's queue (0.244.0, roadmap 275; `ticket_queue.py`).
 
 The walker, 2026-10-20: "queue lanes to the box office", in retractable-belt stanchions -- "metal barriers are for
-outdoor concerts or riot protection from police". Every test here fails on 0.242.0, which has no `ticket_queue`.
+outdoor concerts or riot protection from police" -- and "stanchion or stanchions are likley more common for banks and
+indoor common areas". Every test here fails on 0.242.0, which has no `ticket_queue`; the teller-line tests fail on
+0.243.0, which queues no teller line.
 
 THE CROSS-REPO PINS run when Zoo is found: `$DC_ZOO_ROOT`, else `../zoo`, as `test_vault_room.py`'s do.
 """
@@ -61,6 +64,17 @@ def _runs(spec):
 def _box(v):
     return (v["x"] - v["size_x"] / 2.0, v["y"] - v["size_y"] / 2.0, v["x"] + v["size_x"] / 2.0,
             v["y"] + v["size_y"] / 2.0)
+
+
+def _standing(spec, story):
+    """The volumes standing on `story`'s floor, as `ticket_queue._keepouts` reads them: on that storey
+    (`level_design._on_storey`) and not hung over it (`level_design._hung`). A plan rectangle is not a storey -- the
+    first draft of the bank checks below read a basement's tables as standing in a ground-floor queue."""
+    sh = level_design._story_height(spec)
+    floor = story * sh
+    return [o for o in spec.get("volumes") or []
+            if level_design._on_storey(float(o["z"]), float(o["size_z"]), floor, sh)
+            and not level_design._hung(o, floor)]
 
 
 def _ticket_window(spec):
@@ -180,7 +194,7 @@ def test_arena_a02s_queue_stands_clear_of_everything():
     rect = (min(_box(v)[0] for v in runs), min(_box(v)[1] for v in runs),
             max(_box(v)[2] for v in runs), 5.9 - 0.15)
     floor_room = [r for r in spec["rooms"] if r["id"] == "event_floor"][0]["bounds"]
-    others = [v for v in spec["volumes"] if v not in runs and v["z"] - v["size_z"] / 2.0 < 2.0]
+    others = [v for v in _standing(spec, 0) if v not in runs]
     for v in others:
         b = _box(v)
         assert not (b[0] < rect[2] and rect[0] < b[2] and b[1] < rect[3] and rect[1] < b[3]), v["name"]
@@ -217,20 +231,27 @@ def test_arena_a02_keeps_no_steel_barricade_and_declares_the_stanchions_kind_las
 
 
 def test_the_library_is_a_fixed_point_of_the_rule():
-    """Re-run over every library spec, the rule changes nothing: arena_a02 already has its queue, and no other spec
-    has a box office."""
+    """Re-run over every library spec, both rules change nothing -- through the migration too, which sets furniture
+    aside, fits and refurnishes: arena_a02 already has its box office's queue, four banks their teller lines', and the
+    fifth teller line cannot hold one."""
     import glob
-    offices = []
+    import migrate_ticket_queue
+    offices, queued = [], []
     for path in sorted(glob.glob(os.path.join(HERE, "specs", "*.json"))):
         if os.path.basename(path).startswith("lf_"):
             continue
         with open(path, encoding="utf-8") as fh:
             spec = json.load(fh)
         before = json.dumps(spec, sort_keys=True)
-        tq.queue_box_offices(spec)
+        tq.lay_queues(spec)
+        assert json.dumps(spec, sort_keys=True) == before, path
+        migrate_ticket_queue.migrate(spec)
         assert json.dumps(spec, sort_keys=True) == before, path
         offices += [(os.path.basename(path), r["id"]) for r in spec.get("rooms") or [] if tq.is_box_office(r)]
+        if any(v["name"].startswith("stanchion_run_t") for v in spec.get("volumes") or []):
+            queued.append(os.path.basename(path)[:-5])
     assert offices == [("arena_a02.json", "box_office")]
+    assert queued == ["bank_branch_a02", "bank_branch_a03", "bank_job", "credit_union_a01"], queued
 
 
 # ---------------------------------------------------------------- the rule, on a building made for it
@@ -329,3 +350,164 @@ def test_the_builder_writes_each_line_as_the_species_with_no_box(dc):
     for x in slots.values():
         assert x["species"] == "stanchion_run" and x["fit"]["collision"] == "none", x
         assert x["fit"]["dims"] == [4.8, tq.RUN_DEPTH, tq.RUN_HEIGHT], x["fit"]
+
+
+# ---------------------------------------------------------------- a bank's teller line (0.244.0, roadmap 275)
+
+TELLER_BANKS = ("bank_branch_a02", "bank_branch_a03", "bank_job", "credit_union_a01")
+
+
+def _spec(name):
+    with open(os.path.join(HERE, "specs", name + ".json"), encoding="utf-8") as fh:
+        return json.load(fh)
+
+
+def test_the_teller_numbers_are_the_contracts():
+    """The floor in front of a counter: a door's approach for the customer at a window and a corridor behind them for
+    the next walking along the counter to a free one."""
+    assert tq.teller_service_depth() == agent_contract.door_approach() + agent_contract.min_corridor_width()
+    assert prop_species.species_for_name("stanchion_run_t0_3") == "stanchion_run"
+    assert level_design._prop_material({"materials": []}, "stanchion_run_t0_0") == tq.RUN_MATERIAL
+
+
+@pytest.mark.parametrize("name", TELLER_BANKS)
+def test_a_library_bank_queues_in_front_of_its_counter(name):
+    """Four lines parallel to the counter on its public side, the first a teller line's floor off the counter's face,
+    each a lane's clear floor from the next, stopping a turn short at alternate ends; the last lane lets out where the
+    counter is, so the customer leaving it faces a window. Measured from the spec."""
+    spec = _spec(name)
+    ((v, story, axis),) = level_design._teller_lines(spec)
+    assert axis == "X"
+    runs = [r for r in spec["volumes"] if r["name"].startswith("stanchion_run_t0_")]
+    assert sorted(r["name"] for r in runs) == ["stanchion_run_t0_%d" % k for k in range(4)]
+    public = level_design._public_side(spec, story, tq._host_room(spec, story, v["x"], v["y"]), axis, v["y"])
+    face = v["y"] + public * v["size_y"] / 2.0
+    runs.sort(key=lambda r: abs(r["y"] - face))
+    assert all(r["material"] == tq.RUN_MATERIAL and r["size_y"] == tq.RUN_DEPTH for r in runs)
+    near = _box(runs[0])
+    assert math.isclose(abs((near[3] if public < 0 else near[1]) - face), tq.teller_service_depth(), abs_tol=1e-3)
+    for a, b in zip(runs, runs[1:]):
+        assert math.isclose(abs(a["y"] - b["y"]), tq.pitch(), abs_tol=1e-3)
+    lo = min(_box(r)[0] for r in runs)
+    hi = max(_box(r)[2] for r in runs)
+    exit_low = _box(runs[0])[0] > lo + 1e-6
+    for k, r in enumerate(runs):
+        short_low = _box(r)[0] > lo + 1e-6
+        assert short_low == ((k % 2 == 0) == exit_low), (name, k)
+    gap = (lo, lo + tq.lane_clear()) if exit_low else (hi - tq.lane_clear(), hi)
+    assert v["x"] - v["size_x"] / 2.0 - 1e-6 <= gap[0] and gap[1] <= v["x"] + v["size_x"] / 2.0 + 1e-6, (name, gap)
+
+
+@pytest.mark.parametrize("name", TELLER_BANKS)
+def test_a_library_banks_queue_stands_clear_of_everything(name):
+    """Nothing else stands inside the queue, counter face to last line, and every line keeps `min_corridor_width()`
+    from every other standing volume in the room, every walkable opening's approach and every wall but the counter."""
+    spec = _spec(name)
+    ((v, story, axis),) = level_design._teller_lines(spec)
+    cw = agent_contract.min_corridor_width()
+    runs = [r for r in spec["volumes"] if r["name"].startswith("stanchion_run_t0_")]
+    host = tq._host_room(spec, story, v["x"], v["y"])
+    public = level_design._public_side(spec, story, host, axis, v["y"])
+    face = v["y"] + public * v["size_y"] / 2.0
+    ys = [_box(r)[1] for r in runs] + [_box(r)[3] for r in runs]
+    rect = (min(_box(r)[0] for r in runs), min(ys + [face]), max(_box(r)[2] for r in runs), max(ys + [face]))
+    room = tq._host_room(spec, story, v["x"], face + public * 0.2)["bounds"]
+    for o in _standing(spec, story):
+        if o in runs or o is v:
+            continue
+        b = _box(o)
+        assert not (b[0] < rect[2] - 1e-9 and rect[0] < b[2] - 1e-9 and b[1] < rect[3] - 1e-9
+                    and rect[1] < b[3] - 1e-9), (name, o["name"])
+        if room[0] <= o["x"] <= room[2] and room[1] <= o["y"] <= room[3]:
+            for r in runs:
+                assert level_design._box_gap(_box(r), b) >= cw - 1e-9, (name, r["name"], o["name"])
+    da = agent_contract.door_approach()
+    for e in vault_room.wall_openings(spec, kinds=("door", "garage", "breach", "vault")):
+        if e["story"] != story:
+            continue
+        hw, d = tq._opening_width(e["op"]) / 2.0, 0.15 + da
+        ap = ((e["along"] - hw, e["line"] - d, e["along"] + hw, e["line"] + d) if e["axis"] == "X"
+              else (e["line"] - d, e["along"] - hw, e["line"] + d, e["along"] + hw))
+        c = (max(ap[0], room[0]), max(ap[1], room[1]), min(ap[2], room[2]), min(ap[3], room[3]))
+        if c[2] - c[0] <= 1e-6 or c[3] - c[1] <= 1e-6:
+            continue
+        for r in runs:
+            assert level_design._box_gap(_box(r), c) >= cw - 1e-9, (name, r["name"], e["op"])
+    hx, hy = spec["footprint_x"] / 2.0, spec["footprint_y"] / 2.0
+    for r in runs:
+        b = _box(r)
+        assert min(b[0] + hx, hx - b[2], b[1] + hy, hy - b[3]) - 0.15 >= cw - 1e-9, (name, r["name"])
+
+
+def test_a_counter_against_a_wall_is_left_with_its_reason():
+    """bank_branch_a04's counter stands against the lobby's concrete wall, its public face 0.1 m into partition 0:
+    no queue stands in front of it, and the rule says why rather than laying one in a wall."""
+    spec = _spec("bank_branch_a04")
+    assert not _runs(spec) and not [r for r in spec["volumes"] if r["name"].startswith("stanchion_run_t")]
+    ((v, story, axis),) = level_design._teller_lines(spec)
+    got = tq.plan_teller(spec, v, story, axis)
+    assert not got["ok"] and got["why"] == "partition 0 inside the queue", got
+
+
+def test_a_bank_made_by_the_preset_gets_its_queue():
+    """`presets.make` enriches, and `enrich` lays a teller line's queue after its enclosure and before its cover and
+    furniture: the preset's bank carries one, and nothing it furnished stands inside it."""
+    import presets
+    d = presets.make("bank")
+    runs = [r for r in d["volumes"] if r["name"].startswith("stanchion_run_t0_")]
+    assert len(runs) in (3, 4), [r["name"] for r in runs]
+    ((v, story, axis),) = level_design._teller_lines(d)
+    public = level_design._public_side(d, story, tq._host_room(d, story, v["x"], v["y"]), axis, v["y"])
+    face = v["y"] + public * v["size_y"] / 2.0
+    ys = [_box(r)[1] for r in runs] + [_box(r)[3] for r in runs]
+    rect = (min(_box(r)[0] for r in runs), min(ys + [face]), max(_box(r)[2] for r in runs), max(ys + [face]))
+    for o in _standing(d, story):
+        if o in runs or o is v:
+            continue
+        b = _box(o)
+        assert not (b[0] < rect[2] - 1e-9 and rect[0] < b[2] - 1e-9 and b[1] < rect[3] - 1e-9
+                    and rect[1] < b[3] - 1e-9), o["name"]
+    # and once is enough
+    before = json.dumps(d, sort_keys=True)
+    assert tq.lay_queues(d) == [] and json.dumps(d, sort_keys=True) == before
+
+
+# ---------------------------------------------------------------- a queue is not furniture (0.244.0)
+
+def test_furnish_does_not_count_a_queue_as_furniture():
+    """`level_design._room_volume_count` leaves stanchion runs out: counted, a bank lobby's four runs cost it four
+    pieces, and the ones it lost were bank_job's payphone and bank_branch_a03's and credit_union_a01's ATMs."""
+    spec = _spec("bank_job")
+    lobby = [r for r in spec["rooms"] if r["id"] == "lobby"][0]
+    without = dict(spec, volumes=[v for v in spec["volumes"] if not v["name"].startswith("stanchion_run_")])
+    assert len([v for v in spec["volumes"] if v["name"].startswith("stanchion_run_t")]) == 4
+    assert level_design._room_volume_count(spec, lobby) == level_design._room_volume_count(without, lobby)
+
+
+@pytest.mark.parametrize("name, kinds", [("bank_job", ("payphone", "atm", "sofa")),
+                                         ("bank_branch_a03", ("atm",)), ("credit_union_a01", ("atm",))])
+def test_a_queued_lobby_keeps_what_a_lobby_is_known_by(name, kinds):
+    spec = _spec(name)
+    stems = [v["name"].split("_r")[0] for v in spec["volumes"]]
+    assert all(k in stems for k in kinds), (name, kinds, sorted(set(stems)))
+
+
+def test_a_room_with_a_queue_has_no_lone_queue_posts():
+    """A lobby's cluster of lone `stanchion` posts stood for a queue; where `ticket_queue` lays one, furnish places
+    none -- in every library spec, and in a theatre made for it."""
+    import glob
+    import re
+    rooms_with_queues = 0
+    for path in sorted(glob.glob(os.path.join(HERE, "specs", "*.json"))):
+        if os.path.basename(path).startswith("lf_"):
+            continue
+        with open(path, encoding="utf-8") as fh:
+            spec = json.load(fh)
+        for room in spec.get("rooms") or []:
+            if not room.get("bounds") or not level_design._holds_queue(spec, room):
+                continue
+            rooms_with_queues += 1
+            tag = level_design._room_tag(room)
+            posts = [v["name"] for v in spec["volumes"] if re.match(r"^stanchion_%s_\d+$" % tag, v["name"])]
+            assert posts == [], (os.path.basename(path), room["id"], posts)
+    assert rooms_with_queues == 5, rooms_with_queues
