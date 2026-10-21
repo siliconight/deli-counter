@@ -1,3 +1,38 @@
+## [0.255.0] - the exploded axonometric draws a stair as its treads
+
+**The factory's roadmap 293, its next step.** The walker, 2026-10-21, of 0.254.0's drawing: "draw the stairs as treads
+next". 0.254.0 drew a stair as its footprint, an ascent line and dashed alignment columns: where a stair goes, not
+what it is.
+
+### Changed
+- **A flight is drawn as its treads and turn landings**: every walking surface `stairwell.ascent_surfaces` says the
+  builder builds -- the headroom gate's copy of `Builder._stairs`, held to it by `test_headroom.py`, so the drawing
+  and that gate read one stair -- on the storey the flight climbs from, at its true rise. A leg the builder fills
+  solid (`flight_solid_under`) stands its treads to that floor; one open beneath draws them one riser thick; a
+  switchback's turn landing is one riser thick, as `Builder._stairs` stands it, where the first draft stood it as a
+  column 3.6 m tall at the head of office's stair. Tread sides are drawn without seams, so a flight's side reads as
+  one stepped stringer and only the nosings are edged. Full height, not cut at the plan cut: the stair is what joins
+  the storeys.
+- **The ascent line is a leader**, dashed, from a flight's head across the exploded gap to its landing on the storey
+  above; the alignment columns stay.
+- **Each tread and landing carries what it is drawn**: `data-tread` or `data-landing` (`<stair>:<storey>: <k>`),
+  `data-top` (the surface's world height), `data-at` and `data-rise` (metres from its base to its top).
+
+### Tests
+- **test_axonometric.py**, three more: a flight is drawn as the treads the builder builds -- every surface of every
+  stair in office and deli_a03, at its own height and place, and nothing else, office's turn landing among them; a
+  landing is a plate and a solid flight stands on its floor (office's landing one riser, each of its first leg's
+  treads standing on storey 0's floor); a stair moved moves its treads. On 0.254.0 the three fail on behaviour and the
+  file's other eight pass (the factory's `patches/dc_axo_treads/prove_tests_on_0254.out.txt`).
+
+### Measured, kept
+- Frames of office -- whole and its stair, cropped -- deli_a03 and cbp_town_finale (the factory's
+  `patches/dc_axo_treads/axo_*.png`, `svg_png.py` and `crop_svg.py`).
+- **Left** (the factory's roadmap 293): ramps, platforms and fire escapes in either drawing; a solid leg's fill drawn
+  to its own storey's floor where the builder carries a cut switchback's second leg down to the stair's lowest
+  (`flight_solid_base`) -- in an exploded drawing that floor is a gap away; where a reviewer finds the drawing beside
+  a level.
+
 ## [0.254.0] - an exploded axonometric of every building, with architectural cutaways
 
 **The factory's roadmap 293.** The walker, 2026-10-21: "add this to the roadmap to make our floorplan tool better and

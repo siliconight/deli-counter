@@ -16,6 +16,12 @@ partition in the pieces `partition_bounds` builds it in, each opening remapped -
 where a wall stands and where its doors are. Slab holes come from `stairwell.slab_openings` (authored holes and the
 cut each stair makes) and the floor holes and hatches of `vertical_links`; stairs from `stairwell`.
 
+THE STAIRS ARE THEIR TREADS (0.255.0). Each flight is drawn as the treads and turn landings
+`stairwell.ascent_surfaces` says the builder builds -- the headroom gate's copy of `Builder._stairs`, held to it by
+`test_headroom.py` -- on the storey the flight climbs from, at its true rise: solid to that floor where the builder
+fills the leg (`flight_solid_under`), one riser thick where it does not, a turn landing one riser thick as the
+builder stands it. A leader carries each flight's head across the exploded gap to its landing above.
+
 Deterministic SVG strings: no Pillow, no Blender, no generative model.
 
 Entry points:
@@ -46,6 +52,7 @@ WALL_FACE = {"south": "#d9dfe5", "west": "#c4ccd5"}
 FURN_TOP, FURN_FACE = "#eef1f4", {"south": "#d9dee4", "west": "#cbd2d9"}
 GLASS = "#cfe3f3"
 CONNECT = FP.STAIR_COLOR
+TREAD_TOP, TREAD_FACE = "#efe6f6", {"south": "#d8c6e8", "west": "#c4acd9"}
 
 
 class _Proj:
@@ -89,13 +96,14 @@ def storey_offsets(spec, stories, proj, gap=None):
 # ---------------------------------------------------------------------------
 
 class _Box:
-    """An axis-aligned solid in world metres, drawn as the faces the camera sees."""
-    __slots__ = ("x0", "y0", "x1", "y1", "z0", "z1", "top", "faces", "data")
+    """An axis-aligned solid in world metres, drawn as the faces the camera sees. A SEAMLESS box strokes its side
+    faces in their own fill, so a run of them -- a flight's treads -- reads as one solid."""
+    __slots__ = ("x0", "y0", "x1", "y1", "z0", "z1", "top", "faces", "data", "seamless")
 
-    def __init__(self, x0, y0, x1, y1, z0, z1, top, faces, data=""):
+    def __init__(self, x0, y0, x1, y1, z0, z1, top, faces, data="", seamless=False):
         self.x0, self.y0, self.x1, self.y1 = min(x0, x1), min(y0, y1), max(x0, x1), max(y0, y1)
         self.z0, self.z1 = z0, z1
-        self.top, self.faces, self.data = top, faces, data
+        self.top, self.faces, self.data, self.seamless = top, faces, data, seamless
 
 
 def _behind(a, b):
@@ -196,19 +204,22 @@ class _Canvas:
 def _faces(cv, b):
     """The vertical faces of ``b`` the camera sees, as polygons."""
     p = cv.proj
+
+    def face(pts, fill):
+        return cv.poly(pts, fill, stroke=fill) if b.seamless else cv.poly(pts, fill)
     parts = []
     if p.faces_camera(0.0, -1.0):
-        parts.append(cv.poly([(b.x0, b.y0, b.z0), (b.x1, b.y0, b.z0), (b.x1, b.y0, b.z1), (b.x0, b.y0, b.z1)],
-                             b.faces["south"]))
+        parts.append(face([(b.x0, b.y0, b.z0), (b.x1, b.y0, b.z0), (b.x1, b.y0, b.z1), (b.x0, b.y0, b.z1)],
+                          b.faces["south"]))
     if p.faces_camera(0.0, 1.0):
-        parts.append(cv.poly([(b.x0, b.y1, b.z0), (b.x1, b.y1, b.z0), (b.x1, b.y1, b.z1), (b.x0, b.y1, b.z1)],
-                             b.faces["south"]))
+        parts.append(face([(b.x0, b.y1, b.z0), (b.x1, b.y1, b.z0), (b.x1, b.y1, b.z1), (b.x0, b.y1, b.z1)],
+                          b.faces["south"]))
     if p.faces_camera(-1.0, 0.0):
-        parts.append(cv.poly([(b.x0, b.y0, b.z0), (b.x0, b.y1, b.z0), (b.x0, b.y1, b.z1), (b.x0, b.y0, b.z1)],
-                             b.faces["west"]))
+        parts.append(face([(b.x0, b.y0, b.z0), (b.x0, b.y1, b.z0), (b.x0, b.y1, b.z1), (b.x0, b.y0, b.z1)],
+                          b.faces["west"]))
     if p.faces_camera(1.0, 0.0):
-        parts.append(cv.poly([(b.x1, b.y0, b.z0), (b.x1, b.y1, b.z0), (b.x1, b.y1, b.z1), (b.x1, b.y0, b.z1)],
-                             b.faces["west"]))
+        parts.append(face([(b.x1, b.y0, b.z0), (b.x1, b.y1, b.z0), (b.x1, b.y1, b.z1), (b.x1, b.y0, b.z1)],
+                          b.faces["west"]))
     return parts
 
 
@@ -403,6 +414,29 @@ def render_axonometric(spec, azimuth=AZIMUTH_DEG, elevation=ELEVATION_DEG, cut=P
                 continue
             boxes.append(_Box(v.x - v.size_x / 2, v.y - v.size_y / 2, v.x + v.size_x / 2, v.y + v.size_y / 2,
                               z0, z1, FURN_TOP, FURN_FACE, ' data-object="%s"' % FP._esc(v.name)))
+        # the stairs, tread by tread: what the builder builds (`stairwell.ascent_surfaces`, the headroom gate's
+        # model of the same stair), each flight on the storey it climbs from. Solid to that floor where the builder
+        # fills it (`flight_solid_under`), one riser thick where the flight is open beneath; a turn landing is a
+        # plate. Full height, not cut: a stair is what joins the storeys, and the cut would leave a stub.
+        for i, st in enumerate(getattr(spec, "stairs", []) or []):
+            surfaces = [u for u in _sw.ascent_surfaces(spec, st) if u[0] == s]
+            if not surfaces:
+                continue
+            sid = FP._esc(_sw.stair_ident(st, i))
+            riser = sh / _sw._step_count(st, sh)
+            solid = _sw.flight_solid_under(spec, st, s)
+            # a leg that ends in a turn landing ends with it (`ascent_surfaces`), and the builder stands a landing
+            # one riser deep: only the treads are filled to the floor
+            landing = (len(surfaces) - 1 if st.style == "switchback"
+                       and s < max(st.from_story, st.to_story) - 1 else None)
+            for k, (_s, tx, ty, ztop, ssx, ssy) in enumerate(surfaces):
+                rel = ztop - s * sh
+                z1 = z + rel
+                z0 = z if (solid and k != landing) else max(z, z1 - riser)
+                what = "data-landing" if k == landing else "data-tread"
+                boxes.append(_Box(tx - ssx / 2, ty - ssy / 2, tx + ssx / 2, ty + ssy / 2, z0, z1, TREAD_TOP,
+                                  TREAD_FACE, ' %s="%s:%d:%d" data-top="%.3f" data-at="%.3f,%.3f" data-rise="%.3f"'
+                                  % (what, sid, s, k, ztop, tx, ty, z1 - z0), seamless=True))
         grp += thresholds
         grp += [_box_svg(cv, b) for b in _ordered(boxes, proj)]
         # ---- markers on their storey, riding its offset ----
@@ -443,10 +477,15 @@ def render_axonometric(spec, azimuth=AZIMUTH_DEG, elevation=ELEVATION_DEG, cut=P
             grp = ['<g data-stair="%s" data-from="%d" data-to="%d">' % (sid, a, b)]
             for cx, cy in ((fr[0], fr[1]), (fr[2], fr[1]), (fr[0], fr[3]), (fr[2], fr[3])):
                 grp.append(cv.line((cx, cy, drawn[a]), (cx, cy, drawn[b]), CONNECT, 0.8, dash="3 3"))
-            if lows and ups:
-                (lx, ly), (ux, uy) = lows[0]["point"], ups[0]["point"]
-                grp.append(cv.line((lx, ly, drawn[a]), (ux, uy, drawn[b]), CONNECT, 2.0))
-                (x2, y2), (xa, ya) = cv.pt(ux, uy, drawn[b]), cv.pt(lx, ly, drawn[a])
+            heads = [u for u in _sw.ascent_surfaces(spec, st) if u[0] == a]
+            if heads and ups:
+                # THE FLIGHT'S HEAD TO THE FLOOR IT REACHES: the treads climb a storey height on their own floor, and
+                # this carries the last of them across the exploded gap to the landing on the storey above
+                _s, hx, hy, hz, _w, _d = max(heads, key=lambda u: u[3])
+                (ux, uy) = ups[0]["point"]
+                lx, ly, la = hx, hy, drawn[a] + (hz - a * sh)
+                grp.append(cv.line((lx, ly, la), (ux, uy, drawn[b]), CONNECT, 1.6, dash="5 3"))
+                (x2, y2), (xa, ya) = cv.pt(ux, uy, drawn[b]), cv.pt(lx, ly, la)
                 ang = math.atan2(y2 - ya, x2 - xa)
                 for da in (2.6, -2.6):
                     grp.append('<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="%s" stroke-width="2"/>'
