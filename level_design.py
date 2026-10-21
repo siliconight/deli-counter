@@ -2152,6 +2152,35 @@ def is_card_play_room(room, building):
     tokens = set(str(room.get("id", "")).lower().replace("-", "_").split("_"))
     return bool(tokens & _CARD_PLAY_TOKENS)
 
+
+def is_office_floor(room, building):
+    """Is `room` an OFFICE BUILDING'S open floor? (0.248.0, the factory's
+    roadmap 281.) Read on the card shop's terms: a building whose id says
+    `office`, and a room the word table would make a shop floor by the one
+    word `floor` and nothing ahead of it.
+
+    `floor` is a shop-floor word -- "a shop floor is shelving and stock" --
+    so the office preset's open storey over the bullpen, `floor_1` (816 m2
+    in office and office_stepped), was furnished by the shop floor's recipe:
+    on office's a service counter, three vending machines, two filing
+    cabinets, four shelf runs, four cartons and four litter bins, on
+    office_stepped's five litter bins and nine cartons, and cold run 9369's
+    frame of it shows the bins standing mid-floor. Fifteen library rooms are
+    shop floors by `floor` alone; the other thirteen are a warehouse's, a
+    depot's, a foundry's, a brewery's and an arena's, which this does not
+    move.
+    """
+    import re
+    ids = set(re.split(r"[^a-z0-9]+", str(building or "").lower()))
+    if "office" not in ids:
+        return False
+    tokens = set(str(room.get("id", "")).lower().replace("-", "_").split("_"))
+    for kind, words in _ROOM_KINDS:
+        hit = tokens.intersection(words)
+        if hit:
+            return kind == "shop_floor" and hit == {"floor"}
+    return False
+
 #: What each kind is made of (the proposal's table). `anchors` are placed
 #: first, one or two of them; about half the target is the `wall` run; the
 #: rest alternates `floor` sets and `clusters` of ``(pool, least, most)``.
@@ -2864,10 +2893,12 @@ def dress_club_rooms(spec):
 
 
 def _room_kind(room, building=None):
-    """The furnishing KIND of a room: a strip club's club rooms and a card
-    shop's selling rooms first (`is_strip_club_room` / `is_card_shop_room`,
-    which need the building's id), then its id's whole tokens, then below
-    grade a basement, then its role, then ``fallback``.
+    """The furnishing KIND of a room: a strip club's club rooms, a card
+    shop's selling rooms, a video store's and an office building's open
+    floors first (`is_strip_club_room`, `is_card_shop_room`,
+    `video_store_room_kind`, `is_office_floor`, which need the building's
+    id), then its id's whole tokens, then below grade a basement, then its
+    role, then ``fallback``.
 
     The two building rules cannot both fire -- one asks for `strip_club` in
     the building's id and the other for `card_shop` -- so their order here
@@ -2879,6 +2910,8 @@ def _room_kind(room, building=None):
     video = video_store_room_kind(room, building)       # 0.171.0
     if video:
         return video
+    if is_office_floor(room, building):                  # 0.248.0
+        return "office"
     tokens = set(str(room.get("id", "")).lower().replace("-", "_").split("_"))
     for kind, words in _ROOM_KINDS:
         if tokens.intersection(words):

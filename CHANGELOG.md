@@ -1,3 +1,30 @@
+## [0.248.0] - an office building's open floor is an office
+
+**The factory's roadmap 281.** `floor` is a shop-floor word in `_ROOM_KINDS` -- "a shop floor is shelving and stock"
+-- so the office preset's open storey over the bullpen, `floor_1` (816 m2 in office and office_stepped), was furnished
+by the shop floor's recipe. 0.246.0's count fix let it reach its target, and cold run 9369's frame of office's showed
+litter bins standing mid-floor among carton stacks.
+
+### Added
+- **`is_office_floor(room, building)`**, read in `_room_kind` after the strip club's, the card shop's and the video
+  store's rules and on their terms: a building whose id says `office`, and a room the word table would make a shop
+  floor by the word `floor` alone. A room that names a stronger kind keeps it (`ground_bullpen` is an office,
+  `lobby` a lobby), and `floor` beside a real shop word is a shop floor still.
+
+### Changed
+- **The library refurnished**: office's `floor_1` goes from a service counter, three vending machines, two filing
+  cabinets, four shelf runs, four cartons and four litter bins to four desks and their chairs, three shelf runs, six
+  filing cabinets and five cartons; office_stepped's from five litter bins and nine cartons to six desks and their
+  chairs and ten cartons. No other room in the library moves. The library's other thirteen rooms that are shop floors
+  by `floor` alone -- an arena's event floors, a brewery's, a depot's, a foundry's, a freight terminal's and the
+  warehouses' floors, a supermarket's mezzanine -- keep their kind; each is a question of its own.
+
+### Tests
+- **test_office_floor_kind.py** (new, 4): an office building's floor_N is an office; the other thirteen bare floors
+  keep their kind; the rule asks `floor` alone; the library's two office floors hold desks and no shop stock. On
+  0.247.0 two fail on behaviour -- `floor_1` reads `shop_floor`, and the library's office floors hold litter bins and
+  no desk -- and two are guards whose kind halves hold there, failing only on the new function's name.
+
 ## [0.247.0] - a corner store's selling floor stands its aisle gondolas in rows
 
 **The factory's roadmap 148.** The look review of 2026-10-19 found the rooms "Too sparse", and deli_a03's market
