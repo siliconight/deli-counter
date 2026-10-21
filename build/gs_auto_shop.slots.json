@@ -6543,11 +6543,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          4.57,
-          5.11,
+          0.3,
+          4.07,
           4.05
         ],
-        "rot_y": 270.0,
+        "rot_y": 0.0,
         "scale": [
           1.0,
           1.0,
@@ -6559,6 +6559,84 @@
           0.5,
           0.4,
           0.9
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "cartons_r27d8e619_8",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 5,
+      "material": "wood",
+      "species": "carton_stack",
+      "stock": null,
+      "variant": 0,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          1.43,
+          4.07,
+          4.05
+        ],
+        "rot_y": 0.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.5,
+          0.4,
+          0.9
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "cartons_r27d8e619_9",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 5,
+      "material": "wood",
+      "species": "carton_stack",
+      "stock": null,
+      "variant": 2,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          2.3,
+          4.07,
+          3.9
+        ],
+        "rot_y": 270.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.6,
+          0.4,
+          0.6
         ],
         "pivot": "center",
         "openings": [],
@@ -6761,13 +6839,13 @@
       }
     },
     {
-      "slot_id": "cartons_rde4c5b55_6",
+      "slot_id": "cabinet_supply_rde4c5b55_6",
       "role": "prop",
       "size_mod": "full",
       "style": 5,
       "material": "wood",
-      "species": "carton_stack",
-      "stock": null,
+      "species": "filing_cabinet",
+      "stock": "storage",
       "variant": 0,
       "form": null,
       "current_ref": "prop_greybox_01",
@@ -6777,11 +6855,50 @@
       "facing": null,
       "transform": {
         "translation": [
-          9.13,
-          -4.82,
+          12.54,
+          -8.15,
+          4.3
+        ],
+        "rot_y": 90.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.9,
+          0.6,
+          1.4
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "cartons_rde4c5b55_7",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 5,
+      "material": "wood",
+      "species": "carton_stack",
+      "stock": null,
+      "variant": 2,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          9.05,
+          -6.08,
           4.05
         ],
-        "rot_y": 180.0,
+        "rot_y": 0.0,
         "scale": [
           1.0,
           1.0,
@@ -6800,14 +6917,14 @@
       }
     },
     {
-      "slot_id": "pallets_rde4c5b55_7",
+      "slot_id": "cartons_rde4c5b55_8",
       "role": "prop",
       "size_mod": "full",
       "style": 5,
       "material": "wood",
-      "species": "pallet_stack",
+      "species": "carton_stack",
       "stock": null,
-      "variant": 0,
+      "variant": 3,
       "form": null,
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -6816,11 +6933,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          9.13,
-          -3.53,
-          3.95
+          10.11,
+          -6.08,
+          4.3
         ],
-        "rot_y": 180.0,
+        "rot_y": 270.0,
         "scale": [
           1.0,
           1.0,
@@ -6829,9 +6946,9 @@
       },
       "fit": {
         "dims": [
-          1.0,
-          1.0,
-          0.7
+          1.2,
+          0.8,
+          1.4
         ],
         "pivot": "center",
         "openings": [],
@@ -6839,7 +6956,7 @@
       }
     },
     {
-      "slot_id": "pallets_rde4c5b55_8",
+      "slot_id": "pallets_rde4c5b55_9",
       "role": "prop",
       "size_mod": "full",
       "style": 5,
@@ -6855,9 +6972,48 @@
       "facing": null,
       "transform": {
         "translation": [
-          9.13,
-          -2.17,
-          3.95
+          10.38,
+          0.11,
+          4.3
+        ],
+        "rot_y": 270.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.2,
+          1.0,
+          1.4
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "cartons_rde4c5b55_10",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 5,
+      "material": "wood",
+      "species": "carton_stack",
+      "stock": null,
+      "variant": 1,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          6.96,
+          -7.77,
+          4.05
         ],
         "rot_y": 0.0,
         "scale": [
@@ -6868,9 +7024,9 @@
       },
       "fit": {
         "dims": [
-          1.0,
-          1.0,
-          0.7
+          0.5,
+          0.4,
+          0.9
         ],
         "pivot": "center",
         "openings": [],

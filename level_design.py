@@ -2878,7 +2878,20 @@ def _room_volume_count(spec, room):
         # each run (`_seed_clear`'s margin), and a lane is narrower than two.
         if str(v.get("name", "")).startswith("stanchion_run_"):
             continue
-        if abs(v.get("z", 0) - (story * sh + v.get("size_z", 0) / 2)) < sh:
+        # ON THIS STOREY BY ITS FOOT (0.246.0, the factory's roadmap 148).
+        # The test was `abs(z - (floor + size_z / 2)) < sh`: a foot anywhere
+        # between the storeys below and above, both ends open. A piece
+        # standing on either of those floors is EXACTLY `sh` from this one,
+        # so whether it counted here was float rounding -- at sh 3.3 a 1.45 m
+        # piece is 3.2999999999999994 off and counted, a 1.40 m one is 3.3
+        # and did not. MEASURED over the library before this changed: 740
+        # volumes in 195 rooms of 55 specs inside that window, chair sets,
+        # shelves, cartons and filing cabinets above all, each one a piece
+        # the room it was counted in then went without -- a sparser room for
+        # every piece furnished on the floor over it or under it. A foot on
+        # this storey's floor, to `_on_storey`'s slab tolerance, up to the
+        # next storey's.
+        if story * sh - 0.05 <= bottom < (story + 1) * sh - 0.05:
             n += 1
     return n
 

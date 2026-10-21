@@ -1857,12 +1857,12 @@
   },
   {
    "name": "counter_service_r201bcbff_1",
-   "x": 20.49,
-   "y": 2.0,
-   "z": 0.5,
-   "size_x": 0.7,
-   "size_y": 1.6,
-   "size_z": 1.0,
+   "x": 20.44,
+   "y": 2.03,
+   "z": 0.525,
+   "size_x": 0.8,
+   "size_y": 3.0,
+   "size_z": 1.05,
    "collision": "convex",
    "material": "wood"
   },
@@ -1912,41 +1912,61 @@
    "material": "wood"
   },
   {
-   "name": "litter_bin_r201bcbff_6",
+   "name": "cabinet_file_r201bcbff_6",
+   "x": 20.59,
+   "y": -1.6,
+   "z": 0.65,
+   "size_x": 0.5,
+   "size_y": 0.6,
+   "size_z": 1.3,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "litter_bin_r201bcbff_7",
    "x": 17.53,
    "y": 6.08,
-   "z": 0.5,
-   "size_x": 0.6,
-   "size_y": 0.6,
-   "size_z": 1.0,
+   "z": 0.425,
+   "size_x": 0.5,
+   "size_y": 0.5,
+   "size_z": 0.85,
    "collision": "convex",
    "material": "metal",
    "rot_z": 180.0
   },
   {
-   "name": "cartons_r201bcbff_7",
-   "x": 9.4,
+   "name": "cartons_r201bcbff_8",
+   "x": 9.21,
+   "y": -1.98,
+   "z": 0.7,
+   "size_x": 0.8,
+   "size_y": 1.2,
+   "size_z": 1.4,
+   "collision": "convex",
+   "material": "wood",
+   "variant": 2
+  },
+  {
+   "name": "cartons_r201bcbff_9",
+   "x": 10.46,
    "y": -1.98,
    "z": 0.3,
    "size_x": 0.6,
    "size_y": 0.4,
    "size_z": 0.6,
    "collision": "convex",
-   "material": "wood",
-   "rot_z": 180.0,
-   "variant": 3
+   "material": "wood"
   },
   {
-   "name": "cartons_r201bcbff_8",
-   "x": 10.27,
-   "y": -1.98,
-   "z": 0.3,
-   "size_x": 0.4,
-   "size_y": 0.6,
-   "size_z": 0.6,
+   "name": "litter_bin_r201bcbff_10",
+   "x": 12.46,
+   "y": 5.98,
+   "z": 0.425,
+   "size_x": 0.5,
+   "size_y": 0.5,
+   "size_z": 0.85,
    "collision": "convex",
-   "material": "wood",
-   "variant": 2
+   "material": "metal"
   },
   {
    "name": "cabinet_file_r6ad66fa2_1",
@@ -2032,22 +2052,34 @@
    "rot_z": 180.0
   },
   {
-   "name": "desk_r80710f2e_5",
+   "name": "shelf_run_r80710f2e_5",
+   "x": -8.03,
+   "y": 14.59,
+   "z": 4.35,
+   "size_x": 2.0,
+   "size_y": 0.5,
+   "size_z": 1.9,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "desk_r80710f2e_6",
    "x": -8.74,
    "y": 8.8,
-   "z": 3.775,
-   "size_x": 0.7,
-   "size_y": 1.4,
-   "size_z": 0.75,
+   "z": 3.78,
+   "size_x": 0.9,
+   "size_y": 1.8,
+   "size_z": 0.76,
    "collision": "convex",
    "material": "wood",
    "rot_z": 180.0,
-   "stock": "office"
+   "stock": "office",
+   "variant": 2
   },
   {
    "material": "wood",
-   "name": "chair_set_r80710f2e_5_1",
-   "x": -8.04,
+   "name": "chair_set_r80710f2e_6_1",
+   "x": -7.87,
    "y": 8.8,
    "z": 3.85,
    "size_x": 0.5,
@@ -2057,15 +2089,41 @@
    "rot_z": 90.0
   },
   {
-   "name": "cartons_r80710f2e_6",
-   "x": -11.29,
-   "y": 8.17,
+   "name": "cartons_r80710f2e_7",
+   "x": -15.97,
+   "y": -0.64,
    "z": 3.85,
    "size_x": 0.4,
    "size_y": 0.5,
    "size_z": 0.9,
    "collision": "convex",
-   "material": "wood"
+   "material": "wood",
+   "variant": 2
+  },
+  {
+   "name": "cartons_r80710f2e_8",
+   "x": -15.97,
+   "y": 0.48,
+   "z": 3.85,
+   "size_x": 0.4,
+   "size_y": 0.5,
+   "size_z": 0.9,
+   "collision": "convex",
+   "material": "wood",
+   "rot_z": 180.0,
+   "variant": 3
+  },
+  {
+   "name": "cartons_r80710f2e_9",
+   "x": -15.97,
+   "y": 1.63,
+   "z": 3.7,
+   "size_x": 0.6,
+   "size_y": 0.4,
+   "size_z": 0.6,
+   "collision": "convex",
+   "material": "wood",
+   "variant": 1
   },
   {
    "name": "cabinet_file_rd340bcc5_1",
@@ -2124,8 +2182,55 @@
    "stock": "storage"
   },
   {
-   "name": "cartons_r42ba8700_4",
-   "x": 10.31,
+   "name": "shelf_run_r42ba8700_4",
+   "x": 20.54,
+   "y": -2.86,
+   "z": 4.45,
+   "size_x": 0.6,
+   "size_y": 2.4,
+   "size_z": 2.1,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "cabinet_file_r42ba8700_5",
+   "x": 6.66,
+   "y": 14.54,
+   "z": 3.925,
+   "size_x": 0.9,
+   "size_y": 0.6,
+   "size_z": 1.05,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "cartons_r42ba8700_6",
+   "x": 9.33,
+   "y": 2.78,
+   "z": 4.1,
+   "size_x": 0.8,
+   "size_y": 1.2,
+   "size_z": 1.4,
+   "collision": "convex",
+   "material": "wood",
+   "rot_z": 180.0,
+   "variant": 3
+  },
+  {
+   "name": "cartons_r42ba8700_7",
+   "x": 10.48,
+   "y": 2.78,
+   "z": 4.1,
+   "size_x": 0.8,
+   "size_y": 1.2,
+   "size_z": 1.4,
+   "collision": "convex",
+   "material": "wood",
+   "variant": 1
+  },
+  {
+   "name": "cartons_r42ba8700_8",
+   "x": 11.49,
    "y": 2.78,
    "z": 3.7,
    "size_x": 0.4,
@@ -2133,7 +2238,7 @@
    "size_z": 0.6,
    "collision": "convex",
    "material": "wood",
-   "variant": 3
+   "rot_z": 180.0
   },
   {
    "name": "cartons_r09ae8025_1",
@@ -2328,6 +2433,41 @@
    "rot_z": 180.0
   },
   {
+   "name": "cabinet_file_r9491c593_8",
+   "x": -19.29,
+   "y": 14.54,
+   "z": 7.325,
+   "size_x": 0.9,
+   "size_y": 0.6,
+   "size_z": 1.05,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "chair_waiting_r9491c593_9",
+   "x": -20.54,
+   "y": 8.07,
+   "z": 7.25,
+   "size_x": 0.6,
+   "size_y": 1.8,
+   "size_z": 0.9,
+   "collision": "convex",
+   "material": "wood",
+   "rot_z": 180.0
+  },
+  {
+   "name": "cartons_r9491c593_10",
+   "x": -10.71,
+   "y": 4.89,
+   "z": 7.5,
+   "size_x": 0.8,
+   "size_y": 1.2,
+   "size_z": 1.4,
+   "collision": "convex",
+   "material": "wood",
+   "variant": 3
+  },
+  {
    "name": "water_heater_r9f21a8cd_1",
    "x": 9.55,
    "y": -14.59,
@@ -2498,6 +2638,28 @@
    "size_x": 0.6,
    "size_y": 0.5,
    "size_z": 1.3,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "shelf_run_rf4a213d3_8",
+   "x": 9.59,
+   "y": 14.54,
+   "z": 7.85,
+   "size_x": 2.4,
+   "size_y": 0.6,
+   "size_z": 2.1,
+   "collision": "convex",
+   "material": "wood"
+  },
+  {
+   "name": "chair_waiting_rf4a213d3_9",
+   "x": 19.72,
+   "y": 14.54,
+   "z": 7.25,
+   "size_x": 1.8,
+   "size_y": 0.6,
+   "size_z": 0.9,
    "collision": "convex",
    "material": "wood"
   },

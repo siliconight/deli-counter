@@ -1,3 +1,39 @@
+## [0.246.0] - a room counts only what stands on its own storey
+
+**The factory's roadmap 148**, whose look review of 2026-10-19 found the rooms "Too sparse". Laying the rows that item
+asked for next, deli_a03's apartment upstairs lost nine of its twelve pieces to gondolas standing on the floor below
+it, and the cause was older than the rows: `level_design._room_volume_count` -- what a room already holds, so furnish
+tops it up rather than doubling it -- asked `abs(z - (floor + size_z / 2)) < sh`, a foot anywhere between the storey
+below's floor and the storey above's with both ends open. A piece standing on either of those floors is EXACTLY `sh`
+from this one, so whether it counted was float rounding.
+
+### Fixed
+- **`_room_volume_count` asks a volume's foot**: on this storey's floor to `_on_storey`'s slab tolerance (0.05 m), up
+  to the next storey's. Measured over the library before the change: 740 volumes in 195 rooms of 55 specs inside the
+  old window -- chair sets, shelves, cartons and filing cabinets above all -- each a piece the room it was counted in
+  then went without, so a room furnished sparser for every piece on the floor over it or under it. At sh 3.3 a 1.45 m
+  piece standing one storey down was 3.2999999999999994 off and counted, a 1.40 m one 3.3 and not. The same spelling
+  counted a slab sunk under the floor -- gas_station_a02's 46 x 46 m `forecourt_pad`, whose top is its sales floor --
+  and a raised piece in the room a storey over it.
+
+### Changed
+- **The library refurnished** (`migrate_furnish_recipes.py`): 44 specs and 109 rooms move, and furnish's pieces in
+  those rooms go 1,034 -> 1,432 -- office 239 -> 364 in 27 rooms, fallback 162 -> 249 in 21, vault 74 -> 104, hall
+  100 -> 132, mechanical 71 -> 92, storage 66 -> 91, shop floor 72 -> 94, club 52 -> 79, strip club 80 -> 93,
+  apartment 64 -> 69, garage 12 -> 16, basement 17 -> 20, locker 0 -> 2, lobby 16 -> 17, kitchen 9 -> 10. Two rooms
+  hold fewer: cbp_town_finale_midbalanced_schemafixed's home_plate_overlook 15 -> 12 and strip_club_a02's count_room
+  13 -> 12, where the larger target re-drew the room's plan and more of it found no clear floor. Every other room in
+  the library furnishes as it did, and the library is a fixed point of furnish again.
+
+### Tests
+- **test_room_count_storey.py** (new, 6): pieces at every height from 0.30 to 2.40 m standing on the floor below are
+  not counted upstairs, nor ones on the floor above downstairs; a slab sunk under the floor is not furniture; a raised
+  piece counts on its own storey only; the window is real at sh 3.3 (the control: 1.45 m inside it, 1.40 m not); and
+  the whole library is a fixed point of furnish. Three fail on 0.245.0 -- five of the 43 heights counted upstairs, the
+  slab counted, the raised piece counted a storey up -- and the library test fails with this rule on 0.245.0's
+  specs. The floor-above sweep holds on both: at sh 3.3 none of its heights falls in the window from that side, so it
+  guards the rule rather than proving the change.
+
 ## [0.245.0] - a shipping container is the cargo container, recorded short side first
 
 **The factory's roadmap 267**, its last named word: freight_terminal_a01's four `container` volumes, 6.0 x 2.4 x 2.6,

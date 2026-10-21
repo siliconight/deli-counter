@@ -6168,6 +6168,45 @@
       }
     },
     {
+      "slot_id": "shelf_run_r48016798_3",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 13,
+      "material": "wood",
+      "species": "shelving",
+      "stock": null,
+      "variant": 0,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          0.75,
+          -10.59,
+          0.9
+        ],
+        "rot_y": 180.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.2,
+          0.5,
+          1.8
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
       "slot_id": "grill_rae0246ea_1",
       "role": "prop",
       "size_mod": "full",
@@ -6753,14 +6792,14 @@
       }
     },
     {
-      "slot_id": "atm_store_r48016798_3",
+      "slot_id": "atm_store_r48016798_4",
       "role": "prop",
       "size_mod": "full",
       "style": 5,
       "material": "metal",
       "species": "atm",
       "stock": null,
-      "variant": 0,
+      "variant": 3,
       "form": null,
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -6792,84 +6831,6 @@
       }
     },
     {
-      "slot_id": "video_poker_store_r48016798_4",
-      "role": "prop",
-      "size_mod": "full",
-      "style": 9,
-      "material": "metal_painted",
-      "species": "video_poker",
-      "stock": null,
-      "variant": 1,
-      "form": null,
-      "current_ref": "prop_greybox_01",
-      "kit_axis": "material",
-      "wall": null,
-      "story": null,
-      "facing": null,
-      "transform": {
-        "translation": [
-          -15.52,
-          -9.16,
-          0.875
-        ],
-        "rot_y": 270.0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          0.65,
-          0.65,
-          1.75
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "bar_stool_r48016798_4_1",
-      "role": "prop",
-      "size_mod": "full",
-      "style": 11,
-      "material": "metal_bare",
-      "species": "bar_stool",
-      "stock": null,
-      "variant": 1,
-      "form": null,
-      "current_ref": "prop_greybox_01",
-      "kit_axis": "material",
-      "wall": null,
-      "story": null,
-      "facing": null,
-      "transform": {
-        "translation": [
-          -14.86,
-          -9.16,
-          0.38
-        ],
-        "rot_y": 90.0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          0.42,
-          0.42,
-          0.76
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
       "slot_id": "video_poker_store_r48016798_5",
       "role": "prop",
       "size_mod": "full",
@@ -6886,11 +6847,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          2.9,
-          0.52,
+          -15.52,
+          -9.16,
           0.875
         ],
-        "rot_y": 0.0,
+        "rot_y": 270.0,
         "scale": [
           1.0,
           1.0,
@@ -6925,6 +6886,84 @@
       "facing": null,
       "transform": {
         "translation": [
+          -14.86,
+          -9.16,
+          0.38
+        ],
+        "rot_y": 90.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.42,
+          0.42,
+          0.76
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "video_poker_store_r48016798_6",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 9,
+      "material": "metal_painted",
+      "species": "video_poker",
+      "stock": null,
+      "variant": 1,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          2.9,
+          0.52,
+          0.875
+        ],
+        "rot_y": 0.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.65,
+          0.65,
+          1.75
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "bar_stool_r48016798_6_1",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 11,
+      "material": "metal_bare",
+      "species": "bar_stool",
+      "stock": null,
+      "variant": 3,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
           2.9,
           -0.14,
           0.38
@@ -6948,14 +6987,14 @@
       }
     },
     {
-      "slot_id": "poster_wall_store_r48016798_6",
+      "slot_id": "poster_wall_store_r48016798_7",
       "role": "prop",
       "size_mod": "full",
       "style": 10,
       "material": "paper",
       "species": "poster_wall",
       "stock": null,
-      "variant": 2,
+      "variant": 0,
       "form": "store",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",

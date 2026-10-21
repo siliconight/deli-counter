@@ -577,19 +577,20 @@
   },
   {
    "name": "stanchion_re64a30a2_12",
-   "x": -3.66,
-   "y": -4.89,
+   "x": -3.05,
+   "y": -5.32,
    "z": 0.5,
    "size_x": 0.35,
    "size_y": 0.35,
    "size_z": 1.0,
    "collision": "convex",
-   "material": "metal"
+   "material": "metal",
+   "rot_z": 180.0
   },
   {
    "name": "stanchion_re64a30a2_13",
-   "x": -2.63,
-   "y": -4.89,
+   "x": -3.05,
+   "y": -4.61,
    "z": 0.5,
    "size_x": 0.35,
    "size_y": 0.35,
@@ -599,8 +600,20 @@
   },
   {
    "name": "stanchion_re64a30a2_14",
-   "x": -1.79,
-   "y": -4.89,
+   "x": -2.39,
+   "y": -5.32,
+   "z": 0.5,
+   "size_x": 0.35,
+   "size_y": 0.35,
+   "size_z": 1.0,
+   "collision": "convex",
+   "material": "metal",
+   "rot_z": 180.0
+  },
+  {
+   "name": "stanchion_re64a30a2_15",
+   "x": -2.39,
+   "y": -4.46,
    "z": 0.5,
    "size_x": 0.35,
    "size_y": 0.35,
@@ -609,7 +622,7 @@
    "material": "metal"
   },
   {
-   "name": "table_low_re64a30a2_15",
+   "name": "table_low_re64a30a2_16",
    "x": 17.09,
    "y": -0.37,
    "z": 0.225,
@@ -1149,101 +1162,116 @@
    "material": "wood"
   },
   {
-   "name": "desk_rc915bb0a_9",
+   "name": "cabinet_file_rc915bb0a_9",
+   "x": -19.59,
+   "y": 1.0,
+   "z": 4.85,
+   "size_x": 0.5,
+   "size_y": 0.6,
+   "size_z": 1.3,
+   "collision": "convex",
+   "material": "wood",
+   "rot_z": 180.0
+  },
+  {
+   "name": "desk_rc915bb0a_10",
    "x": -16.07,
    "y": 1.29,
    "z": 4.575,
-   "size_x": 0.7,
-   "size_y": 1.4,
+   "size_x": 0.8,
+   "size_y": 1.6,
    "size_z": 0.75,
    "collision": "convex",
    "material": "wood",
-   "stock": "office"
+   "stock": "office",
+   "variant": 2
   },
   {
    "material": "wood",
-   "name": "chair_set_rc915bb0a_9_1",
-   "x": -16.88,
+   "name": "chair_set_rc915bb0a_10_1",
+   "x": -16.99,
    "y": 1.29,
    "z": 4.65,
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
    "collision": "convex",
-   "rot_z": 270.0
+   "rot_z": 290.0
   },
   {
-   "name": "cartons_rc915bb0a_10",
-   "x": -4.07,
-   "y": 6.79,
+   "name": "cartons_rc915bb0a_11",
+   "x": -4.72,
+   "y": 7.33,
    "z": 4.7,
    "size_x": 0.6,
    "size_y": 0.9,
    "size_z": 1.0,
    "collision": "convex",
    "material": "wood",
-   "variant": 2
+   "rot_z": 180.0
   },
   {
-   "name": "cartons_rc915bb0a_11",
-   "x": -4.07,
-   "y": 8.02,
-   "z": 4.5,
-   "size_x": 0.4,
-   "size_y": 0.6,
-   "size_z": 0.6,
-   "collision": "convex",
-   "material": "wood"
-  },
-  {
-   "name": "desk_rc915bb0a_12",
-   "x": 4.83,
-   "y": 8.97,
-   "z": 4.58,
-   "size_x": 0.9,
-   "size_y": 1.8,
-   "size_z": 0.76,
+   "name": "cartons_rc915bb0a_12",
+   "x": -3.43,
+   "y": 7.33,
+   "z": 4.7,
+   "size_x": 0.6,
+   "size_y": 0.9,
+   "size_z": 1.0,
    "collision": "convex",
    "material": "wood",
    "rot_z": 180.0,
-   "stock": "office",
    "variant": 2
   },
   {
+   "name": "desk_rc915bb0a_13",
+   "x": 4.83,
+   "y": 8.97,
+   "z": 4.575,
+   "size_x": 0.8,
+   "size_y": 1.6,
+   "size_z": 0.75,
+   "collision": "convex",
    "material": "wood",
-   "name": "chair_set_rc915bb0a_12_1",
-   "x": 5.64,
+   "rot_z": 180.0,
+   "stock": "office"
+  },
+  {
+   "material": "wood",
+   "name": "chair_set_rc915bb0a_13_1",
+   "x": 5.6,
    "y": 8.97,
    "z": 4.65,
    "size_x": 0.5,
    "size_y": 0.5,
    "size_z": 0.9,
    "collision": "convex",
-   "rot_z": 90.0
-  },
-  {
-   "name": "cartons_rc915bb0a_13",
-   "x": 13.88,
-   "y": 7.54,
-   "z": 4.8,
-   "size_x": 1.2,
-   "size_y": 1.6,
-   "size_z": 1.2,
-   "collision": "convex",
-   "material": "wood"
+   "rot_z": 79.3
   },
   {
    "name": "cartons_rc915bb0a_14",
-   "x": 15.17,
-   "y": 7.54,
-   "z": 4.5,
-   "size_x": 0.4,
+   "x": 14.33,
+   "y": 6.91,
+   "z": 4.7,
+   "size_x": 0.9,
    "size_y": 0.6,
-   "size_z": 0.6,
+   "size_z": 1.0,
    "collision": "convex",
    "material": "wood",
    "rot_z": 180.0,
    "variant": 3
+  },
+  {
+   "name": "cartons_rc915bb0a_15",
+   "x": 14.33,
+   "y": 8.16,
+   "z": 4.7,
+   "size_x": 0.9,
+   "size_y": 0.6,
+   "size_z": 1.0,
+   "collision": "convex",
+   "material": "wood",
+   "variant": 1
   },
   {
    "name": "safe_floor_r8f124671_1",
@@ -1665,7 +1693,7 @@
    "rot_z": 0.0
   },
   {
-   "name": "cigarettes_re64a30a2_16",
+   "name": "cigarettes_re64a30a2_17",
    "x": 2.84,
    "y": -14.6,
    "z": 0.775,
@@ -1675,7 +1703,7 @@
    "collision": "convex",
    "material": "metal_painted",
    "rot_z": 180.0,
-   "variant": 1
+   "variant": 3
   }
  ],
  "vault_ledges": [
