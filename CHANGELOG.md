@@ -1,3 +1,60 @@
+## [0.254.0] - an exploded axonometric of every building, with architectural cutaways
+
+**The factory's roadmap 293.** The walker, 2026-10-21: "add this to the roadmap to make our floorplan tool better and
+acheive that Exploded axonometric view, with architectural cutaways" -- the guide is the factory's
+`docs/reference/Floor_Plan_to_3D_Layout_and_Automap_Guide.md`, its section 6. `floorplan.py` drew each storey flat,
+and nothing drew how a building's storeys stack: where a stair lands, what an atrium opens onto, which rooms stand
+over which.
+
+### Added
+- **`axonometric.py`**: `render_axonometric(spec)` and `write_axonometric(spec, outdir)` draw every storey of a
+  building at once, seen from above and to the south-west at true-isometric elevation. Each storey is a slab raised by
+  a display offset over its true floor; walls stand to the plan cut, 1.2 m, their cut faces dark; a door is a gap with
+  its threshold; a window under the cut keeps its sill wall and its glass; furniture stands to the cut; roofs and
+  ceilings are left off. Every hole in a storey's slab -- authored, a stair's cut, a floor hole or hatch -- is masked
+  open, the slab's thickness drawn on its far edges. Stairs are joined to the storey they climb to by an ascent line
+  and dashed alignment columns; ladders and the holes that open onto the floor below are drawn between storeys;
+  markers stand on their storey; rooms are labelled; a legend runs along the foot. Offline and deterministic SVG
+  strings -- no Pillow, no Blender, no generative model -- the whole library drawn in under a second.
+- **The offset is the drawing's alone.** A storey's group carries `data-elevation`, `story * story_height`, beside
+  `data-offset`; the spec is read, never written. The gap is derived, not chosen: the least rise that keeps each
+  slab's drawing clear of the next, plus 2 m.
+- **`validate.py` writes `<name>.axo.svg`** beside the plans in `build/floorplans/`, so the commit gate draws every
+  building's.
+
+### Changed
+- **One layout, two drawings.** The plan's wall arithmetic is data both read: `floorplan.wall_split` (a wall's
+  segments and gaps) and `floorplan.storey_walls` (every wall a storey stands, as the builder stands it -- the
+  exterior on the storey's extent, a partition in its built pieces, its openings remapped). Refactored first and held
+  to the plan as drawn: all 288 plans of the 159 specs byte for byte as before (the factory's
+  `patches/dc_axonometric/plans_identical_step1.out.txt`).
+- **A partition is drawn at the thickness it is built at**, `wall_thick`, where the plan drew a fixed 0.15 m; `PART_T`
+  is gone. 242 of the 288 plans move, exactly those with a partition on their storey
+  (`plans_identical_step2a.out.txt`).
+- **The plan's header calls the storey height floor to floor**, where it said "clg"; every plan's header line moves
+  (`plans_identical_step2b.out.txt`).
+- **`build_freshness.py` files `floorplan.py` and `axonometric.py` as drawings** (`NOT_BAKED`). A build reaches the
+  plan only through `pvp_heist.py` and `sightlines.py`, both kept out already, asking it a marker's storey, and
+  nothing either drawing says is in a shell -- so a change to a drawing no longer reads every shell as older than the
+  code that makes it.
+
+### Tests
+- **test_axonometric.py** (new, 8): the offset is the drawing's alone -- every storey at its true elevation, the
+  lowest at no offset and each higher one higher, the spec unwritten; every library building draws every storey; the
+  drawing is deterministic; a doorway moved moves its gap in both drawings; a stair moved moves its flight and its
+  column; an atrium stays open, its storey's slab cut and no other; two markers one above the other land on their own
+  floors; the axonometric stands a partition at its built thickness. On 0.253.0 the file cannot import the module it
+  tests.
+- **test_plan_matches_build.py** (new, 2): a partition drawn at its built thickness, and the storey height called
+  floor to floor, both asked of the rendered plan; both fail on 0.253.0 on what the plan draws (the factory's
+  `patches/dc_axonometric/prove_tests_on_0253.out.txt`).
+
+### Measured, kept
+- Frames of `deli_a03`, `office` and `cbp_town_finale` (the factory's `patches/dc_axonometric/axo_*.png`, rasterized
+  by `svg_png.py`).
+- **Left** (the factory's roadmap 293): ramps, platforms and fire escapes in either drawing; stairs drawn as treads
+  rather than an ascent line; where a reviewer finds the drawing beside a level.
+
 ## [0.253.0] - the enemy's body is the NPC's, and the NPC's is the player's until it says otherwise
 
 **The factory's roadmap 292.** `agent_contract.json` said the enemy's eye twice -- `characters.npc_standard`, whose

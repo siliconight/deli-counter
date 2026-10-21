@@ -34,7 +34,6 @@ PADDING = 40          # px around the building
 PX_PER_M = 12         # scale: pixels per meter
 WALL_W = 3            # (legacy) exterior wall stroke width
 PART_W = 2            # (legacy) partition stroke width
-PART_T = 0.15         # interior partition thickness (m) for poché fill
 
 from dataclasses import replace as _replace
 INK = "#1f2933"       # poché wall fill
@@ -201,18 +200,18 @@ def _opening_symbol(tx, acc, op, aP, bP, nrm, w, t=0.0):
               f'{tx.x(bx):.1f} {tx.y(by):.1f}"/></g>')
 
 
-def _wall_and_openings(tx, walls_acc, opens_acc, p0, p1, axis, openings,
-                       t_m, interior_sign):
-    """Split a wall p0->p1 (axis 'x' varies x, 'y' varies y) into drawn
-    segments skipping openings, appending poché band rects (thickness t_m, in
-    metres) to walls_acc and typed opening symbols to opens_acc. Extent is
-    CLAMPED to the footprint."""
+def wall_split(p0, p1, axis, openings, bound):
+    """``(fixed, lo, hi, segments, gaps)`` of a wall p0->p1 (axis 'x' varies
+    x, 'y' varies y), in world metres: the run CLAMPED to ``bound`` (half the
+    footprint on its axis), each opening a gap ``(lo, hi, opening, centre,
+    width)`` at ``mid + pos * span``, sorted by where it starts, and the wall
+    the segments between. The one arithmetic the plan draws its walls by and
+    the axonometric stands them by (0.254.0, the factory's roadmap 293)."""
     lo0 = p0[0] if axis == "x" else p0[1]
     hi0 = p1[0] if axis == "x" else p1[1]
     fixed = p0[1] if axis == "x" else p0[0]
     span = hi0 - lo0
     mid = (hi0 + lo0) / 2
-    bound = tx.hx if axis == "x" else tx.hy
     lo, hi = max(lo0, -bound), min(hi0, bound)
     gaps = []
     for op in openings:
@@ -234,6 +233,17 @@ def _wall_and_openings(tx, walls_acc, opens_acc, p0, p1, axis, openings,
         cur = max(cur, ghi)
     if cur < hi:
         segs.append((cur, hi))
+    return fixed, lo, hi, segs, gaps
+
+
+def _wall_and_openings(tx, walls_acc, opens_acc, p0, p1, axis, openings,
+                       t_m, interior_sign):
+    """Split a wall p0->p1 (axis 'x' varies x, 'y' varies y) into drawn
+    segments skipping openings, appending poché band rects (thickness t_m, in
+    metres) to walls_acc and typed opening symbols to opens_acc. Extent is
+    CLAMPED to the footprint (`wall_split`)."""
+    bound = tx.hx if axis == "x" else tx.hy
+    fixed, lo, hi, segs, gaps = wall_split(p0, p1, axis, openings, bound)
     for a, b in segs:
         walls_acc.append(_band_rect(tx, a, b, fixed, axis, t_m))
     for glo, ghi, op, c, w in gaps:
@@ -244,6 +254,90 @@ def _wall_and_openings(tx, walls_acc, opens_acc, p0, p1, axis, openings,
         else:
             aP, bP, nrm = (fixed, glo), (fixed, ghi), (float(interior_sign), 0.0)
         _opening_symbol(tx, opens_acc, op, aP, bP, nrm, w, t_m)
+
+
+def storey_walls(spec, story):
+    """Every wall the builder stands on ``story``, in the order the plan draws
+    them, as dicts: ``p0``, ``p1``, ``axis`` ('x' runs along x), its
+    ``openings``, its thickness ``t``, ``exterior``, ``isign`` (the interior
+    side) and ``name`` (the builder's: ``ext_<story>_<side>``, a partition's
+    piece by `partition_bounds.piece_name`). Data, so the plan and the
+    axonometric (`axonometric.py`) read one layout (0.254.0, the factory's
+    roadmap 293).
+
+    PER-STOREY EXTENT (roadmap 116). A stepped storey's exterior stands on
+    its own inset line, so drawing the base footprint here would put the
+    plan and the geometry back into disagreement -- the thing the partition
+    work in 0.106.0 had just finished fixing.
+
+    A PARTITION IS DRAWN IN PIECES, because it is BUILT in pieces (roadmap
+    114): clipped against the slab holes it stands over and the flights it
+    stands in. `wall_split` has always clamped the drawn extent to the
+    footprint, so the plan already agreed with the builder about the
+    envelope -- it just did not know about the voids, and drew a wall ruled
+    straight across its own OPEN-TO-BELOW hatch.
+
+    The pieces come from `partition_bounds`, the same call `_partitions`
+    makes, and each is drawn in ITS OWN frame with its openings remapped --
+    so a doorway keeps its world position and one that fell in a removed
+    part is not drawn at all, exactly as it is not built.
+    """
+    try:
+        import setbacks as _sb
+        _ex0, _ey0, _ex1, _ey1 = _sb.storey_extent(spec, story)
+    except Exception:
+        hx, hy = spec.footprint_x / 2, spec.footprint_y / 2
+        _ex0, _ey0, _ex1, _ey1 = -hx, -hy, hx, hy
+    sides = {"S": ((_ex0, _ey0), (_ex1, _ey0), "x", +1),
+             "N": ((_ex0, _ey1), (_ex1, _ey1), "x", -1),
+             "W": ((_ex0, _ey0), (_ex0, _ey1), "y", +1),
+             "E": ((_ex1, _ey0), (_ex1, _ey1), "y", -1)}
+    wall_t = getattr(spec, "wall_thick", 0.3) or 0.3
+    out = []
+    ewalls = {}
+    for w in getattr(spec, "ext_walls", []) or []:
+        if w.story == story:
+            ewalls.setdefault(w.wall, []).append(w)
+    for side, (p0, p1, axis, isign) in sides.items():
+        wlist = ewalls.get(side, [])
+        ops = [o for w in wlist for o in w.openings]
+        out.append({"p0": p0, "p1": p1, "axis": axis, "openings": ops,
+                    "t": wall_t, "exterior": True, "isign": isign,
+                    "name": "ext_%s_%s" % (story, side)})
+    try:
+        import stairwell as _sw
+        _voids = _sw.wall_voids(spec)
+    except Exception:
+        _voids = {}                     # a plan still draws without the cuts
+    import partition_bounds as _pb
+    for i, p in enumerate(getattr(spec, "partitions", []) or []):
+        if p.story != story:
+            continue
+        raw_lo = min(p.start, p.end)
+        raw_hi = max(p.start, p.end)
+        isign = -1 if (getattr(p, "pos", 0) or 0) > 0 else 1
+        spans = _pb.partition_spans(
+            p.start, p.end, p.axis, p.pos, spec.footprint_x, spec.footprint_y,
+            _voids.get(p.story, ()), min_span=wall_t)
+        for k, (plo, phi) in enumerate(spans):
+            if plo != raw_lo or phi != raw_hi:
+                ops = []
+                for op in getattr(p, "openings", []) or []:
+                    npos = _pb.remap_opening(op.pos, raw_lo, raw_hi, plo, phi)
+                    if npos is not None:
+                        ops.append(_replace(op, pos=npos))
+            else:
+                ops = getattr(p, "openings", [])
+            if p.axis == "X":
+                p0, p1, axis = (plo, p.pos), (phi, p.pos), "x"
+            else:
+                p0, p1, axis = (p.pos, plo), (p.pos, phi), "y"
+            # at the thickness it is BUILT at (0.254.0): `_partitions` stands
+            # a partition at `wall_thick`, and the plan drew a fixed 0.15 m
+            out.append({"p0": p0, "p1": p1, "axis": axis, "openings": ops,
+                        "t": wall_t, "exterior": False, "isign": isign,
+                        "name": _pb.piece_name("int_%s_%s" % (story, i), k)})
+    return out
 
 
 # ---------------------------------------------------------------------------
@@ -486,71 +580,13 @@ def render_story(spec, story):
     voids.append('</g>')
     out += voids
 
-    # ---- walls + openings ----
+    # ---- walls + openings: every wall the builder stands, as it stands it
+    # (`storey_walls`) ----
     walls, opens = [], []
-    # PER-STOREY EXTENT (roadmap 116). A stepped storey's exterior stands on
-    # its own inset line, so drawing the base footprint here would put the
-    # plan and the geometry back into disagreement -- the thing the partition
-    # work in 0.106.0 had just finished fixing.
-    try:
-        import setbacks as _sb
-        _ex0, _ey0, _ex1, _ey1 = _sb.storey_extent(spec, story)
-    except Exception:
-        _ex0, _ey0, _ex1, _ey1 = -tx.hx, -tx.hy, tx.hx, tx.hy
-    sides = {"S": ((_ex0, _ey0), (_ex1, _ey0), "x", +1),
-             "N": ((_ex0, _ey1), (_ex1, _ey1), "x", -1),
-             "W": ((_ex0, _ey0), (_ex0, _ey1), "y", +1),
-             "E": ((_ex1, _ey0), (_ex1, _ey1), "y", -1)}
-    wall_t = getattr(spec, "wall_thick", 0.3) or 0.3
-    ewalls = {}
-    for w in getattr(spec, "ext_walls", []) or []:
-        if w.story == story:
-            ewalls.setdefault(w.wall, []).append(w)
-    for side, (p0, p1, axis, isign) in sides.items():
-        wlist = ewalls.get(side, [])
-        ops = [o for w in wlist for o in w.openings]
-        _wall_and_openings(tx, walls, opens, p0, p1, axis, ops, wall_t, isign)
-    # A PARTITION IS DRAWN IN PIECES, because it is BUILT in pieces (roadmap
-    # 114): clipped against the slab holes it stands over and the flights it
-    # stands in. `_wall_and_openings` has always clamped the drawn extent to
-    # the footprint, so the plan already agreed with the builder about the
-    # envelope -- it just did not know about the voids, and drew a wall ruled
-    # straight across its own OPEN-TO-BELOW hatch.
-    #
-    # The pieces come from `partition_bounds`, the same call `_partitions`
-    # makes, and each is drawn in ITS OWN frame with its openings remapped --
-    # so a doorway keeps its world position and one that fell in a removed
-    # part is not drawn at all, exactly as it is not built.
-    try:
-        import stairwell as _sw
-        _voids = _sw.wall_voids(spec)
-    except Exception:
-        _voids = {}                     # a plan still draws without the cuts
-    import partition_bounds as _pb
-    for p in getattr(spec, "partitions", []) or []:
-        if p.story != story:
-            continue
-        raw_lo = min(p.start, p.end)
-        raw_hi = max(p.start, p.end)
-        isign = -1 if (getattr(p, "pos", 0) or 0) > 0 else 1
-        spans = _pb.partition_spans(
-            p.start, p.end, p.axis, p.pos, spec.footprint_x, spec.footprint_y,
-            _voids.get(p.story, ()), min_span=wall_t)
-        for k, (plo, phi) in enumerate(spans):
-            if plo != raw_lo or phi != raw_hi:
-                ops = []
-                for op in getattr(p, "openings", []) or []:
-                    npos = _pb.remap_opening(op.pos, raw_lo, raw_hi, plo, phi)
-                    if npos is not None:
-                        ops.append(_replace(op, pos=npos))
-            else:
-                ops = getattr(p, "openings", [])
-            if p.axis == "X":
-                p0, p1, axis = (plo, p.pos), (phi, p.pos), "x"
-            else:
-                p0, p1, axis = (p.pos, plo), (p.pos, phi), "y"
-            _wall_and_openings(tx, walls, opens, p0, p1, axis, ops,
-                               PART_T, isign)
+    for piece in storey_walls(spec, story):
+        _wall_and_openings(tx, walls, opens, piece["p0"], piece["p1"],
+                           piece["axis"], piece["openings"], piece["t"],
+                           piece["isign"])
     out += ['<g id="walls">'] + walls + ['</g>']
     out += ['<g id="openings">'] + opens + ['</g>']
 
@@ -602,7 +638,7 @@ def render_story(spec, story):
     elev = story * sh
     ann.append(
         f'<text x="{PADDING}" y="37" font-size="10" fill="#7b8794">'
-        f'elevation {elev:.2f} m · {sh:.1f} m clg · deterministic render, no generative model</text>')
+        f'elevation {elev:.2f} m · {sh:.1f} m floor to floor · deterministic render, no generative model</text>')
     ann.append(
         f'<text x="{tx.x(0):.0f}" y="{PADDING - 6}" font-size="9" fill="#90a0ad" '
         f'text-anchor="middle">◄ {spec.footprint_x:.0f} m ►</text>')

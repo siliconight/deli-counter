@@ -254,6 +254,15 @@ def validate_file(path):
     except Exception as ex:
         print(f"  FLOORPLAN: skipped ({ex})")
 
+    # the exploded axonometric, every storey at once, beside the plans
+    # (0.254.0, the factory's roadmap 293): the same layout the plan reads
+    try:
+        import axonometric
+        apath = axonometric.write_axonometric(spec, os.path.join(HERE, "build", "floorplans"))
+        print(f"  axonometric: {os.path.basename(apath)} -> build/floorplans/")
+    except Exception as ex:
+        print(f"  AXONOMETRIC: skipped ({ex})")
+
     # sightlines (tactical geometry intel — death lanes, exposure, cover,
     # intent mismatch; a GUIDE to better buildings, never a gate)
     try:

@@ -51,7 +51,6 @@ GEOMETRY_SOURCES = (
     "stairwell.py",         # stair geometry + ramp_foot_extension
     "stair_core.py",
     "stair_place.py",
-    "floorplan.py",
     "floors.py",
     "lights.py",            # the light manifest is a build output (0.116.0)
     "wallruns.py",
@@ -139,6 +138,15 @@ NOT_BAKED = (
     # hash covers, and the evidence report calls it beside the shell.
     ("layout_lint.py", "a lint; no build-time code reads it since 0.233.0, and what furnish and stair_pitch "
                        "take from it shapes specs, which their own hashes cover (roadmap 259)"),
+    # DRAWINGS (0.254.0, the factory's roadmap 293). floorplan.py stood among
+    # the geometry sources, so a change to the plan read every shell as older
+    # than the code that makes it. A build reaches it only through
+    # pvp_heist.py and sightlines.py, both kept out above, asking it a
+    # marker's storey; what it draws is the plan validate.py writes into the
+    # ignored build/floorplans/, and nothing it says is in a shell.
+    ("floorplan.py", "a drawing: the plan validate.py writes; pvp_heist and sightlines, both kept out, ask it a "
+                     "marker's storey (0.254.0)"),
+    ("axonometric.py", "a drawing: the exploded axonometric validate.py writes beside the plans (0.254.0)"),
 )
 
 
