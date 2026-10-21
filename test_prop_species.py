@@ -264,45 +264,21 @@ def test_the_one_word_mappings_re_route_exactly_their_library_volumes():
         assert all(lo <= v <= hi for v, (lo, hi) in zip(dims, ranges[species])), (species, dims)
 
 
-def test_barrier_routes_to_the_crowd_barrier_in_its_own_kind():
-    """Roadmap 267 (0.242.0): the walker's look review of 2026-10-20 on arena_a02's four barriers, boxes until then:
-    "Crowd rails (a new model)" -- Zoo 1.118.0's `crowd_barrier`, 1.8-3.2 x 0.45-0.9 x 0.95-1.25 long side first. The
-    word claims exactly those four volumes, each inside the genome, and each is written in the species' own kind,
-    `metal_bare`: Zoo's kit keeps a slot's known kind its genome does not offer, so `metal` would have built the
-    `_mmetal` module in the theme's metal pack (the dartboard's rule, `level_design._PROP_MATERIALS`). FAILS ON
-    0.241.0: `barrier` routes to None and the four are `metal`."""
-    import glob
+def test_barrier_routes_to_the_crowd_barrier_and_none_stands_in_the_arena():
+    """Roadmap 267. 0.242.0 routed `barrier` to Zoo 1.118.0's steel `crowd_barrier` for arena_a02's four barriers --
+    the walker's look review: "Crowd rails (a new model)" -- in the species' own kind, `metal_bare`, declared last in
+    arena_a02's palette. Asked what they were for, the walker chose "queue lanes to the box office", and: "metal
+    barriers are for outdoor concerts or riot protection from police". The steel barricade is the outdoors'; 0.243.0
+    takes the four off the event floor with `metal_bare`, which they alone wore, and `ticket_queue` lays the box
+    office's queue in retractable-belt stanchions instead (`test_ticket_queue.py`). The word still routes to the
+    barricade, for whatever names one next. FAILS ON 0.242.0: arena_a02 carries the four."""
     import json
+    assert prop_species.species_for_name("barrier_0") == "crowd_barrier"
     here = os.path.dirname(os.path.abspath(__file__))
-    hits = []
-    for path in sorted(glob.glob(os.path.join(here, "specs", "*.json"))):
-        if os.path.basename(path).startswith("lf_"):
-            continue
-        with open(path, encoding="utf-8") as fh:
-            spec = json.load(fh)
-        for v in spec.get("volumes") or []:
-            name = (v.get("name") or "").lower()
-            if "barrier" in name:
-                hits.append((os.path.basename(path)[:-5], v["name"], prop_species.species_for_name(name),
-                             v.get("material"),
-                             sorted((float(v["size_x"]), float(v["size_y"])), reverse=True) + [float(v["size_z"])]))
-    assert [(h[0], h[1], h[2], h[3]) for h in hits] == [
-        ("arena_a02", "barrier_%d" % n, "crowd_barrier", "metal_bare") for n in range(4)], hits
-    for *_rest, dims in hits:
-        assert all(lo <= v <= hi for v, (lo, hi) in zip(dims, ((1.8, 3.2), (0.45, 0.9), (0.95, 1.25)))), dims
-    # and the spec DECLARES that kind -- an undeclared one builds "UNRESOLVED", its surfaces' acoustics None and its
-    # skin style the building's default (`deli_counter._material`) -- LAST, after the finish palette it declares
-    # itself: styles are the palette's 1-based order and `floors.ensure_finish_palette` appends the finish materials
-    # after the authored list, so a material declared anywhere earlier moves every finish style (50 slots of
-    # arena_a02 when it went after `metal`). The four finish entries are the palette's own.
-    import floors
     with open(os.path.join(here, "specs", "arena_a02.json"), encoding="utf-8") as fh:
-        declared = json.load(fh)["materials"]
-    assert [m["id"] for m in declared] == ["concrete", "drywall", "glass", "metal", "wood", "carpet", "tile",
-                                           "ceiling_tile", "plaster", "metal_bare"]
-    finish = {m["id"]: m for m in floors.FINISH_PALETTE}
-    assert declared[5:9] == [finish[k] for k in ("carpet", "tile", "ceiling_tile", "plaster")]
-    assert declared[9] == {"id": "metal_bare", "acoustic": "Metal", "absorption": 0.2, "damping": 0.15}
+        spec = json.load(fh)
+    assert not [v["name"] for v in spec["volumes"] if "barrier" in v["name"].lower()]
+    assert "metal_bare" not in [m["id"] for m in spec["materials"]]
 
 
 def test_a_species_that_owns_its_collision_gets_no_greybox_box(dc):

@@ -2456,6 +2456,9 @@ def _room_tag(room):
 #: chrome, not a wood post; a sign's backer and a TV's housing are painted
 #: sheet (delco_1997's plastic pack is red-orange and not tintable).
 _PROP_MATERIALS = (
+    # a queue's stanchion runs are black powder coat, their species' own kind
+    # (0.243.0): above the row below, whose `stanchion` every run's name holds
+    (("stanchion_run",), "metal_painted"),
     (("safe", "tank", "locker", "panel", "hvac", "vault", "roof_ac", "ac_unit",
       "condenser", "generator", "dumpster", "furnace", "heater", "grill",
       "vending", "atm", "payphone", "stanchion", "litter_bin", "drum"),
@@ -5226,6 +5229,11 @@ def enrich(spec):
         # boxes and the swing of its door (`vault_room.enclose_vaults`).
         "vaults_enclosed": sum(r["enclosed"] for r in
                                __import__("vault_room").enclose_vaults(spec)),
+        # A BOX OFFICE'S QUEUE, laid before anything is placed for the same
+        # reason (0.243.0, `ticket_queue.queue_box_offices`): cover and
+        # furniture clear its lines and its window.
+        "queues_laid": sum(r["queued"] for r in
+                           __import__("ticket_queue").queue_box_offices(spec)),
         "cover_seeded": seed_cover(spec),
         "furnished": furnish(spec),
         "cover_added": cover_from_volumes(spec),

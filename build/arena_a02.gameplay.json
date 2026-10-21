@@ -395,6 +395,23 @@
       "building": "arena_a02"
     },
     {
+      "wall": "int_0_0",
+      "kind": "window",
+      "story": 0,
+      "x": -15.5,
+      "y": 5.9,
+      "z": 1.55,
+      "width": 1.2,
+      "height": 1.1,
+      "sill": 1.0,
+      "tag": "ticket_window",
+      "breach_class": null,
+      "material": "glass",
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "arena_a02"
+    },
+    {
       "wall": "int_0_1",
       "kind": "door",
       "story": 0,
@@ -488,10 +505,10 @@
       "damping": 0.4
     },
     {
-      "id": "metal_bare",
+      "id": "metal_painted",
       "acoustic": "Metal",
-      "absorption": 0.2,
-      "damping": 0.15
+      "absorption": 0.25,
+      "damping": 0.2
     }
   ],
   "surfaces": [
@@ -1423,6 +1440,33 @@
       }
     },
     {
+      "node": "int_col_0_0_open1_lintel",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "int_col_0_0_open1_sill",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "int_col_0_0_open1_pane",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
       "node": "int_col_0_0_seg5",
       "material": {
         "id": "metal",
@@ -1486,7 +1530,7 @@
       }
     },
     {
-      "node": "int_col_0_0_open1_lintel",
+      "node": "int_col_0_0_open2_lintel",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -1567,7 +1611,7 @@
       }
     },
     {
-      "node": "int_col_0_0_open2_lintel",
+      "node": "int_col_0_0_open3_lintel",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
@@ -1681,42 +1725,6 @@
         "acoustic": "Metal",
         "absorption": 0.5,
         "damping": 0.3
-      }
-    },
-    {
-      "node": "barrier_0_col",
-      "material": {
-        "id": "metal_bare",
-        "acoustic": "Metal",
-        "absorption": 0.2,
-        "damping": 0.15
-      }
-    },
-    {
-      "node": "barrier_1_col",
-      "material": {
-        "id": "metal_bare",
-        "acoustic": "Metal",
-        "absorption": 0.2,
-        "damping": 0.15
-      }
-    },
-    {
-      "node": "barrier_2_col",
-      "material": {
-        "id": "metal_bare",
-        "acoustic": "Metal",
-        "absorption": 0.2,
-        "damping": 0.15
-      }
-    },
-    {
-      "node": "barrier_3_col",
-      "material": {
-        "id": "metal_bare",
-        "acoustic": "Metal",
-        "absorption": 0.2,
-        "damping": 0.15
       }
     },
     {
@@ -2394,7 +2402,7 @@
     {
       "id": "arena_a02:if:f352c339",
       "kind": "door",
-      "slot_ref": "int_0_0_open1",
+      "slot_ref": "int_0_0_open2",
       "transform": {
         "translation": [
           0.0,
@@ -2431,7 +2439,7 @@
     {
       "id": "arena_a02:if:aab36dad",
       "kind": "door",
-      "slot_ref": "int_0_0_open2",
+      "slot_ref": "int_0_0_open3",
       "transform": {
         "translation": [
           17.5,
@@ -3014,6 +3022,9 @@
     "int_0_0_seg3": "wall",
     "int_0_0_open0_lintel": "doorway",
     "int_0_0_seg4": "wall",
+    "int_0_0_open1_lintel": "window",
+    "int_0_0_open1_sill": "window",
+    "int_0_0_open1_pane": "window",
     "int_0_0_seg5": "wall",
     "int_0_0_seg6": "wall",
     "int_0_0_seg7": "wall",
@@ -3021,7 +3032,7 @@
     "int_0_0_seg9": "wall",
     "int_0_0_seg10": "wall",
     "int_0_0_seg11": "wall",
-    "int_0_0_open1_lintel": "doorway",
+    "int_0_0_open2_lintel": "doorway",
     "int_0_0_seg12": "wall",
     "int_0_0_seg13": "wall",
     "int_0_0_seg14": "wall",
@@ -3030,7 +3041,7 @@
     "int_0_0_seg17": "wall",
     "int_0_0_seg18": "wall",
     "int_0_0_seg19": "wall",
-    "int_0_0_open2_lintel": "doorway",
+    "int_0_0_open3_lintel": "doorway",
     "int_0_0_seg20": "wall",
     "int_0_0_seg21": "wall",
     "int_0_0_seg22": "wall",
@@ -3064,10 +3075,10 @@
     "ladder0_rung_0_16": "ladder",
     "ladder0_rung_0_17": "ladder",
     "roof_hatch_21_8": "prop",
-    "barrier_0": "prop",
-    "barrier_1": "prop",
-    "barrier_2": "prop",
-    "barrier_3": "prop",
+    "stanchion_run_0_0": "prop",
+    "stanchion_run_0_1": "prop",
+    "stanchion_run_0_2": "prop",
+    "stanchion_run_0_3": "prop",
     "counter_service_rff5e6702_1": "prop",
     "shelf_run_rff5e6702_2": "prop",
     "cabinet_file_rff5e6702_3": "prop",

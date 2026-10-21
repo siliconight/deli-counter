@@ -282,6 +282,12 @@ PROP_SPECIES = (
     (("barrel", "drum"), "water_barrel"),
     (("litter_bin", "trash_can"), "litter_bin"),
     (("grill", "griddle"), "flat_top_grill"),
+    # A QUEUE'S LINES (0.243.0, the factory's roadmap 267): one straight run of
+    # retractable-belt stanchions a slot, Zoo 1.119.0's `stanchion_run`, which
+    # `ticket_queue` lays in front of a box office's window. Above `stanchion`,
+    # whose keyword every `stanchion_run_*` name contains; a lone post is still
+    # the single `queue_stanchion`.
+    (("stanchion_run",), "stanchion_run"),
     (("stanchion",), "queue_stanchion"),
     (("payphone",), "payphone"),
 )
@@ -316,8 +322,15 @@ PROP_SPECIES = (
 #: what stands round a drop's hole and where it lands (`hole_causes.py`). The
 #: edge and the spoil have no collision at all -- a box over the edge would close
 #: the drop -- and the kit's module carries its own.
+#: `stanchion_run` (0.243.0, the factory's roadmap 267): a queue's line is posts
+#: and a belt at waist height, and its module's collider is exactly those -- a
+#: body cannot pass, a shot over or under the belt does. A box the slot's size
+#: would be a 0.97 m wall a crouching body hides behind, cover the belt is not;
+#: and the greybox the nav gate grades then has no collider there at all, which
+#: is the more permissive of the two mistakes.
 SPECIES_OWNS_COLLISION = frozenset({"cubicle_bank", "roof_hatch",
-                                    "hole_edge", "hole_spoil", "hole_kit"})
+                                    "hole_edge", "hole_spoil", "hole_kit",
+                                    "stanchion_run"})
 
 
 def owns_collision(species):

@@ -64,10 +64,10 @@
    "damping": 0.4
   },
   {
-   "id": "metal_bare",
+   "id": "metal_painted",
    "acoustic": "Metal",
-   "absorption": 0.2,
-   "damping": 0.15
+   "absorption": 0.25,
+   "damping": 0.2
   }
  ],
  "ext_walls": [
@@ -176,6 +176,15 @@
      "kind": "door",
      "pos": 0.35,
      "width": 1.8
+    },
+    {
+     "kind": "window",
+     "pos": -0.31,
+     "width": 1.2,
+     "height": 1.1,
+     "sill": 1.0,
+     "vaultable": false,
+     "tag": "ticket_window"
     }
    ]
   },
@@ -277,48 +286,48 @@
  ],
  "volumes": [
   {
-   "name": "barrier_0",
-   "x": -15.0,
-   "y": -6.0,
-   "z": 0.6,
-   "size_x": 3.0,
-   "size_y": 0.8,
-   "size_z": 1.2,
+   "name": "stanchion_run_0_0",
+   "x": -12.5,
+   "y": 4.572,
+   "z": 0.485,
+   "size_x": 4.8,
+   "size_y": 0.356,
+   "size_z": 0.97,
    "collision": "convex",
-   "material": "metal_bare"
+   "material": "metal_painted"
   },
   {
-   "name": "barrier_1",
-   "x": -5.0,
-   "y": -6.0,
-   "z": 0.6,
-   "size_x": 3.0,
-   "size_y": 0.8,
-   "size_z": 1.2,
+   "name": "stanchion_run_0_1",
+   "x": -13.7,
+   "y": 3.016,
+   "z": 0.485,
+   "size_x": 4.8,
+   "size_y": 0.356,
+   "size_z": 0.97,
    "collision": "convex",
-   "material": "metal_bare"
+   "material": "metal_painted"
   },
   {
-   "name": "barrier_2",
-   "x": 5.0,
-   "y": -6.0,
-   "z": 0.6,
-   "size_x": 3.0,
-   "size_y": 0.8,
-   "size_z": 1.2,
+   "name": "stanchion_run_0_2",
+   "x": -12.5,
+   "y": 1.46,
+   "z": 0.485,
+   "size_x": 4.8,
+   "size_y": 0.356,
+   "size_z": 0.97,
    "collision": "convex",
-   "material": "metal_bare"
+   "material": "metal_painted"
   },
   {
-   "name": "barrier_3",
-   "x": 15.0,
-   "y": -6.0,
-   "z": 0.6,
-   "size_x": 3.0,
-   "size_y": 0.8,
-   "size_z": 1.2,
+   "name": "stanchion_run_0_3",
+   "x": -13.7,
+   "y": -0.096,
+   "z": 0.485,
+   "size_x": 4.8,
+   "size_y": 0.356,
+   "size_z": 0.97,
    "collision": "convex",
-   "material": "metal_bare"
+   "material": "metal_painted"
   },
   {
    "name": "counter_service_rff5e6702_1",
@@ -487,8 +496,8 @@
   },
   {
    "name": "cartons_rff5e6702_15",
-   "x": -6.18,
-   "y": -3.73,
+   "x": 3.73,
+   "y": -6.41,
    "z": 0.6,
    "size_x": 1.2,
    "size_y": 1.6,
@@ -498,8 +507,8 @@
   },
   {
    "name": "cartons_rff5e6702_16",
-   "x": -6.18,
-   "y": -2.31,
+   "x": 3.73,
+   "y": -4.99,
    "z": 0.5,
    "size_x": 0.9,
    "size_y": 0.6,
@@ -511,8 +520,8 @@
   },
   {
    "name": "cartons_rff5e6702_17",
-   "x": -6.18,
-   "y": -1.18,
+   "x": 3.73,
+   "y": -3.86,
    "z": 0.3,
    "size_x": 0.6,
    "size_y": 0.4,
@@ -533,8 +542,8 @@
   },
   {
    "name": "cartons_rff5e6702_19",
-   "x": 15.71,
-   "y": -12.41,
+   "x": -6.18,
+   "y": -3.39,
    "z": 0.6,
    "size_x": 1.6,
    "size_y": 1.2,
@@ -546,8 +555,8 @@
   },
   {
    "name": "cartons_rff5e6702_20",
-   "x": 15.71,
-   "y": -10.84,
+   "x": -6.18,
+   "y": -1.82,
    "z": 0.5,
    "size_x": 0.9,
    "size_y": 0.6,
@@ -558,8 +567,8 @@
   },
   {
    "name": "litter_bin_rff5e6702_21",
-   "x": 0.63,
-   "y": -12.14,
+   "x": 15.71,
+   "y": -11.77,
    "z": 0.425,
    "size_x": 0.5,
    "size_y": 0.5,
@@ -570,8 +579,8 @@
   },
   {
    "name": "cartons_rff5e6702_22",
-   "x": -8.6,
-   "y": 2.26,
+   "x": 0.63,
+   "y": -12.94,
    "z": 0.3,
    "size_x": 0.4,
    "size_y": 0.6,
@@ -582,8 +591,8 @@
   },
   {
    "name": "cartons_rff5e6702_23",
-   "x": -8.6,
-   "y": 3.7,
+   "x": 0.63,
+   "y": -11.49,
    "z": 0.5,
    "size_x": 0.6,
    "size_y": 0.9,
@@ -594,8 +603,8 @@
   },
   {
    "name": "litter_bin_rff5e6702_24",
-   "x": -13.12,
-   "y": -12.81,
+   "x": -8.6,
+   "y": 3.06,
    "z": 0.5,
    "size_x": 0.6,
    "size_y": 0.6,
@@ -606,8 +615,8 @@
   },
   {
    "name": "litter_bin_rff5e6702_25",
-   "x": -9.43,
-   "y": -5.76,
+   "x": -13.12,
+   "y": -12.81,
    "z": 0.5,
    "size_x": 0.6,
    "size_y": 0.6,

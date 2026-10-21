@@ -1,3 +1,70 @@
+## [0.243.0] - a box office sells through a ticket window, and its queue switches back in front of it
+
+**The factory's roadmap 267, the walker, 2026-10-20.** Asked what arena_a02's four steel barricades on its event floor
+were for, the walker chose "queue lanes to the box office"; then "stanchion or stanchions are likley more common for
+banks and indoor common areas", "metal barriers are for outdoor concerts or riot protection from police", "retractable
+belt stanchion", and a photo of a queue lined with them. Zoo 1.119.0 draws one straight run of those stanchions,
+`stanchion_run`. This lays a box office's queue of them, as generator logic, and takes the barricades indoors away.
+
+### Added
+- **`ticket_queue.py`**, pure. A room whose id names a box office or a ticket office (`is_box_office`: `box` with
+  `office`, `ticket`, `tickets`, `ticketing`, `boxoffice`) that shares an interior wall with a public room (the role
+  `public_entry`, or a lobby or a hall by its words) gets:
+  - **a ticket window** in that wall: a `window` opening tagged `ticket_window`, 1.2 m wide over a 1.0 m sill, 1.1 m
+    tall, sealed -- not `breakable`, since a pane that shot out would be a firing line into the room behind it -- on
+    the builder's grid, so it is cut where its queue was laid, and a jamb clear of the wall's openings and of any wall
+    ending on it;
+  - **a queue** in front of it, on the public side: three lanes or two between lines of stanchion runs parallel to the
+    wall, one `stanchion_run_<q>_<k>` volume a line, each line stopping a turn short at alternate ends, so the queue
+    switches back -- in at the end away from the window, out of the last lane at the window's end onto the floor in
+    front of the window.
+  Every clearance is the body contract's: a lane's clear floor and a turn are `stair_flight_width()` (a corridor and
+  one bake cell, a lane being a corridor to the bake); the floor in front of the window is `door_approach()`; nothing
+  stands inside the queue, and every line keeps `min_corridor_width()` from every wall but its own, every standing
+  volume, every walkable opening's approach, every stair, hole and vault swing. `plan` tries every window place the
+  grid allows, at either end, three lanes then two, as long as 6 m and shorter in 0.1 m steps to a line as long as the
+  lanes are wide, and keeps the most lanes, then the longest, then the window nearest the middle of the office's wall.
+  A box office whose only outside wall is the street's is the street's queue, and Lot's; this reports it and lays
+  nothing. `RUN_DEPTH`, `RUN_HEIGHT` and the kind are Zoo's genome's, retyped and pinned by a test when the zoo repo is
+  beside this one, as the vault door's are.
+- **`level_design.enrich`** lays the queue after the teller line and the vault and before cover and furniture
+  (`queues_laid`), so a generated building's cover and furniture clear its lines and its window.
+- **`migrate_ticket_queue.py`**: the library's box offices get the same answer, fitted round what is already there.
+- **`PROP_SPECIES`**: `stanchion_run` routes to the species, above `stanchion`, whose single post a lone
+  `stanchion_*` still is; `SPECIES_OWNS_COLLISION` holds it -- the module's collider is the posts and the belt line, and
+  a box the slot's size would be a 0.97 m wall a crouching body hides behind, cover a belt is not.
+  `level_design._PROP_MATERIALS`: a run is `metal_painted`, its species' own kind.
+
+### Changed
+- **`specs/arena_a02.json`**, the library's one box office:
+  - the four steel barricades 0.242.0 routed to Zoo's `crowd_barrier` (`barrier_0` to `_3`, 3.0 x 0.8 x 1.2 m across
+    the event floor) are gone -- the walker: the steel barricade is for outdoor concerts and police lines -- and
+    `metal_bare`, which they alone wore, with them;
+  - `migrate_ticket_queue` laid the box office's queue: the window in the partition at y 5.9 at x -15.5, between the
+    box office's secure door and its east wall, and three lanes, 6.0 m along the event floor's north wall eastward from
+    the window, four lines of 4.8 m; `metal_painted` declared last, after the finish palette, style 10;
+  - **refurnished** (`migrate_furnish_recipes.migrate`, arena_a02 alone), because the library is a fixed point of
+    furnish and a piece removed or added moves what furnish places round it: ten of the event floor's furnished pieces
+    -- cartons and litter bins -- stand elsewhere, none inside the queue. The rest of the library is untouched.
+- `combat_audit --rules auto` reads arena_a02 the same before and after: 0 HIGH, 1 MED, 4 INFO, the box office's
+  sightline 12.7 m. The barricades were 1.2 m, under the contract's 1.3 m cover-break height, so no sightline they cut
+  opens; the event floor's cover-like pieces go 21 -> 17.
+
+### Tests
+- `test_ticket_queue.py` (new): the words that name a box office; every number the contract's; the stanchion numbers
+  Zoo's genome's; a run is the species and owns its collision, and a lone post is still the single stanchion;
+  arena_a02 sells through one window in the box office's wall, on the grid and clear of its door; its queue switches
+  back to the window, a lane's clear floor apart; nothing stands inside it and every line keeps a corridor from every
+  volume, opening approach and wall, measured from the spec; no steel barricade and `metal_painted` last; the library
+  is a fixed point of the rule; a theatre built for it gets three lanes and its window, once; declaring the kind moves
+  no style; no public neighbour and a wall full of doors each leave it unlaid with a reason; `enrich` lays it before
+  cover and furniture and nothing stands in it; the builder writes each line as the species with no greybox box.
+  It cannot import on 0.242.0.
+- `test_prop_species.py`: `test_barrier_routes_to_the_crowd_barrier_and_none_stands_in_the_arena` replaces 0.242.0's
+  barrier test -- the word still routes to the barricade; arena_a02 carries none and no `metal_bare`. It fails on
+  0.242.0.
+- `test_cover_breaks_sightlines.py`: `enrich`'s report carries `queues_laid`.
+
 ## [0.242.0] - arena_a02's barriers are crowd rails: the word `barrier` routes to Zoo's steel crowd_barrier
 
 **The factory's roadmap 267, the walker's look review of 2026-10-20**: arena_a02's four barriers -- 3.0 x 0.8 x 1.2 m
