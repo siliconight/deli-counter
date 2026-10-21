@@ -257,6 +257,17 @@ PROP_SPECIES = (
     # `barrier_<n>` -- `bar_` wants its underscore
     # (`test_barrier_routes_to_the_crowd_barrier_in_its_own_kind`).
     (("barrier",), "crowd_barrier"),
+    # A SHIPPING CONTAINER (0.245.0, the factory's roadmap 267): the freight
+    # terminal's four `container` volumes, 6.0 x 2.4 x 2.6, plain boxes until
+    # now. Zoo's `cargo_container` is long in DEPTH, so they fit its genome
+    # only recorded short side first (`DEPTH_LONG`), and they are written in
+    # its own kind, `metal_painted`. `cargo` is not a keyword: the library's
+    # two `cargo_cover` volumes (harbor_score, marina_a01) are 4.0 x 4.0 x 2.0
+    # of wooden cargo, which the genome's 2.3-2.5 m width cannot build either
+    # way round. No earlier keyword claims a `container_<n>`, and the word
+    # claims exactly those four
+    # (`test_container_routes_to_the_cargo_container_long_in_depth`).
+    (("container",), "cargo_container"),
     (("furnace", "boiler", "water_heater", "heater"), "furnace"),
     (("tank",), "water_tank"),
     (("dust_sheet", "sheeted", "draped", "covered_"), "dust_sheet"),
@@ -347,9 +358,24 @@ def species_for_name(name):
     return None
 
 
-def long_axis_first(size):
+#: Species whose module is long in DEPTH, not width: the genome's whole depth
+#: range lies above its whole width range, so no slot recorded long side
+#: first can fit one. Measured over Zoo's genomes 2026-10-21: ten are --
+#: boots, box_truck, cargo_container, cheesesteak, cruiser, jersey_barrier,
+#: security_camera, simple_car, step_van, utility_pole -- and this table
+#: routes one, `cargo_container` (0.245.0): the freight terminal's
+#: containers, authored 6.0 x 2.4, failed its 2.3-2.5 m width recorded 6.0
+#: wide and fit it recorded 2.4 wide and 6.0 deep. `test_depth_long.py`
+#: holds the set to the genomes: every routed species of that shape is here,
+#: and nothing else is.
+DEPTH_LONG = frozenset({"cargo_container"})
+
+
+def long_axis_first(size, species=None):
     """``(dims, rot_y)`` for a hinted volume: its long horizontal side as the
-    module WIDTH, turned 90 degrees when that side is y.
+    module WIDTH, turned 90 degrees when that side is y -- or, for a species
+    long in depth (`DEPTH_LONG`), as the module DEPTH, turned 90 degrees when
+    that side is x.
 
     A recipe builds width along its local x, and Deli Counter authors an
     aisle shelf as 1.0 x 6.0 (deep along y) as readily as 6.0 x 1.0.
@@ -359,8 +385,31 @@ def long_axis_first(size):
     HERE, once, at emission, and the composer's `_fit_rotation` finds the
     same 90 from the extents. Only hinted volumes are turned -- an unhinted
     box's slot stays byte for byte what it was.
+
+    A DEPTH-LONG SPECIES (0.245.0) asks the same question of the other axis:
+    a recipe builds depth along its local y, so a container authored
+    6.0 x 2.4 (long in x) is recorded 2.4 x 6.0 and turned 90, and one
+    authored 2.4 x 6.0 is recorded as it stands. Without `species`, and for
+    every species not in `DEPTH_LONG`, this is the long-side-first rule
+    exactly as it was.
     """
     sx, sy, sz = (float(size[0]), float(size[1]), float(size[2]))
-    if sy > sx + 1e-9:
+    if (sx > sy + 1e-9) if species in DEPTH_LONG else (sy > sx + 1e-9):
         return [sy, sx, sz], 90.0
     return [sx, sy, sz], 0.0
+
+
+def recorded_turn(name, sx, sy):
+    """The degrees, 0 or 90, that `deli_counter` adds to a volume's slot
+    rotation for its long side (`long_axis_first`), by the volume's NAME and
+    footprint; 0 for an unhinted volume, which is never turned.
+
+    The one answer for everything that reads a module's front off a spec
+    volume -- `level_design._front_turn`, `lights._front_bearing` -- so a
+    depth-long species cannot be recorded one way and faced another. Each
+    spelled the long-side-first rule out for itself until 0.245.0, which
+    was right for every species but the depth-long ones."""
+    species = species_for_name(name)
+    if species is None:
+        return 0.0
+    return long_axis_first((sx, sy, 0.0), species)[1]

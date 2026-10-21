@@ -3312,17 +3312,17 @@ def _front_turn(name, sx, sy, front):
     compass bearing `front`, given how the slot will be RECORDED.
 
     `deli_counter` records a hinted volume long side first and adds 90 when
-    that side is y (`prop_species.long_axis_first`), and a slot's rotation
-    turns the module's +Y onto its bearing, so the front points at
-    ``long_turn + rot_z + 180``. A SQUARE piece is never turned, and
-    `_wall_slots`'s own rotation assumes it was: until 0.131.0 a 1.2 x 1.2
-    water tank on an east or west wall faced along the wall, not into the
-    room. This asks the same question the emitter asks instead.
+    that side is y (`prop_species.long_axis_first`; a depth-long species when
+    it is x, 0.245.0), and a slot's rotation turns the module's +Y onto its
+    bearing, so the front points at ``long_turn + rot_z + 180``. A SQUARE
+    piece is never turned, and `_wall_slots`'s own rotation assumes it was:
+    until 0.131.0 a 1.2 x 1.2 water tank on an east or west wall faced along
+    the wall, not into the room. This asks the emitter's own question,
+    `prop_species.recorded_turn`, instead.
     """
     import prop_species
-    turned = (prop_species.species_for_name(name) is not None
-              and sy > sx + 1e-9)
-    return round((front + 180.0 - (90.0 if turned else 0.0)) % 360.0, 4)
+    turn = prop_species.recorded_turn(name, sx, sy)
+    return round((front + 180.0 - turn) % 360.0, 4)
 
 
 def _nested_rects(spec, room):

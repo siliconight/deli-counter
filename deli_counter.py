@@ -2552,11 +2552,13 @@ class _Builder:
                 # when the species fits these dims, else the box. None = a
                 # box is fine (crates, columns). A hinted volume is recorded
                 # with its LONG side as the width, turned 90 when that side
-                # is y (`prop_species.long_axis_first`); the greybox box
-                # itself is drawn axis-aligned above and is symmetric, so
-                # nothing it collides with moves.
+                # is y (`prop_species.long_axis_first`) -- as the depth, for a
+                # species long in depth (`prop_species.DEPTH_LONG`, 0.245.0);
+                # the greybox box itself is drawn axis-aligned above and is
+                # symmetric, so nothing it collides with moves.
                 slot_dims, slot_rot = ((list(size), 0.0) if species is None
-                                       else prop_species.long_axis_first(size))
+                                       else prop_species.long_axis_first(
+                                           size, species))
                 # A VOLUME CAN BE TURNED (`Volume.rot_z`): a chair facing its
                 # table. Added to the long-axis turn, so a volume that has
                 # none emits exactly the rotation it always did.

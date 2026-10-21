@@ -448,12 +448,15 @@ def _club_colour(start, i):
 def _front_bearing(v):
     """The compass bearing (N 0, E 90) a hinted volume's module front points
     at, by the rule the slot is recorded with: long side first, +90 when
-    that side is y (`prop_species.long_axis_first`), then `rot_z`; the
-    front is the module's -Y, so + 180. The same arithmetic as
-    `level_design._front_turn`, asked the other way round."""
-    turned = float(v.get("size_y", 0.0)) > float(v.get("size_x", 0.0)) + 1e-9
-    return ((90.0 if turned else 0.0) + float(v.get("rot_z", 0.0) or 0.0)
-            + 180.0) % 360.0
+    that side is y (`prop_species.long_axis_first`; a depth-long species when
+    it is x, 0.245.0), then `rot_z`; the front is the module's -Y, so + 180.
+    The same arithmetic as `level_design._front_turn`, asked the other way
+    round, and the turn is the emitter's own (`prop_species.recorded_turn`)."""
+    import prop_species
+    turn = prop_species.recorded_turn(str(v.get("name", "")),
+                                      float(v.get("size_x", 0.0)),
+                                      float(v.get("size_y", 0.0)))
+    return (turn + float(v.get("rot_z", 0.0) or 0.0) + 180.0) % 360.0
 
 
 def _bearing_to_rot_y(bearing):

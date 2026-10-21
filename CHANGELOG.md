@@ -1,3 +1,65 @@
+## [0.245.0] - a shipping container is the cargo container, recorded short side first
+
+**The factory's roadmap 267**, its last named word: freight_terminal_a01's four `container` volumes, 6.0 x 2.4 x 2.6,
+built as plain boxes -- Zoo planned them `prop_delco_1997_04_w600_d240_h260_mmetal` -- though Zoo has drawn the ISO
+container since 0.82.0 and Lot stands it as cover and in its backdrop yards. 0.240.0 found why a word alone could not
+route them:
+Deli Counter records every hinted volume long side first, as the module's width, and `cargo_container` is long in
+DEPTH (2.3-2.5 m wide, 2.9-13.8 m deep), so a container recorded 6.0 wide fails its genome however it is named.
+
+### Added
+- **`prop_species.DEPTH_LONG`**: the species whose genome's whole depth range lies above its whole width range, so no
+  slot recorded long side first can fit one. Measured over Zoo's genomes: ten are (boots, box_truck, cargo_container,
+  cheesesteak, cruiser, jersey_barrier, security_camera, simple_car, step_van, utility_pole), and the table routes
+  one, `cargo_container`. Held to the genomes by a test, not chosen.
+- **`long_axis_first(size, species=None)`**: a depth-long species is recorded with its long side as the module's
+  depth, turned 90 when that side is x -- the four containers are recorded 2.4 x 6.0 x 2.6 at 90 and Zoo plans them
+  `prop_cargo_container_delco_1997_06_w240_d600_h260`, no fallback, no `_m`. Without a species, and for every
+  species not in the set, the rule is the one it was.
+- **`prop_species.recorded_turn(name, sx, sy)`**: the 0 or 90 degrees the emitter adds for a volume's long side, by
+  its name. `level_design._front_turn` and `lights._front_bearing` each spelled the long-side-first rule out for
+  themselves, right for every species but a depth-long one; both ask this now, so a depth-long piece cannot be
+  recorded one way and faced another. For every other volume in the library the answer is the one they spelled.
+- **`container` routes to `cargo_container`** (`PROP_SPECIES`). It claims exactly freight_terminal_a01's four. `cargo`
+  is not a keyword: the library's two `cargo_cover` volumes (harbor_score, marina_a01) are 4.0 x 4.0 x 2.0 of wooden
+  cargo, which the genome's width cannot build either way round.
+
+### Changed
+- **freight_terminal_a01's containers are written in `metal_painted`**, the species' own kind -- its genome's default
+  and every style's -- for the dartboard's reason in `level_design._PROP_MATERIALS`: in `metal`, a kind Zoo knows,
+  the stem would carry `_mmetal` and the container would build as bare steel. `metal_painted` was already declared
+  (the cigarette machine's); `metal` stays, worn by eleven other volumes and two partitions and the spec's default.
+  The spec is still a fixed point of furnish. Their four colliders' surfaces take `metal_painted`'s acoustics with
+  it -- absorption 0.25 and damping 0.2, where `metal`'s were 0.5 and 0.3, both `Metal` -- which is the gameplay
+  record's whole change.
+- **The composer needed nothing.** `themed_tscn._fit_rotation` scores each turn by the module's placed footprint
+  against the greybox slot's and tries the slot's own first, so a 2.4 x 6.0 module recorded at 90 lands on the 6.0 x
+  2.4 box at 90. Roadmap 267's note asked for "the composer that mirrors it"; the composer derives the turn from
+  extents and mirrors nothing.
+
+### Costs, and what the cheaper container would buy
+- **A container is nine draws where the box was one.** Zoo's recipe gives each colour its own material, all of one
+  kind -- paint (the frame and doors share it), rib flank, rib valley, hardware, apertures, markings, plate,
+  warning, rust and, on a patched box, patch -- and the shipped `prop_cargo_container_delco_01_w244_d606_h259.glb`
+  (the factory's cold run 9279) reads 9 visual meshes on 9 materials, 3,296 triangles with its collider. Zoo's own
+  `geometry.tint_wear_by` calls it "the cargo container's pattern the draw-call rule forbids". Level Factory merges
+  a building's static pieces per material in 6 m cells of the room they stand in (its 0.223.0), and the four
+  containers stand 9 m apart in `cross_dock`, one to a cell: up to 36 submissions where the four boxes added at most
+  four, when all four are in view -- at 3.47 us a draw, the slope of the factory's cold run 9062 measurement (1,730
+  draws 9.49 ms, 6,376 draws 25.59 ms), about 0.1 ms.
+  AN ESTIMATE, NOT A PRICE: the package's own count is the factory's next record. The cheaper container -- its
+  colours in the `Wear` vertex colour, as the coffee island and the service counter carry theirs, one or two
+  submissions -- is a Zoo change for every container Lot places too, and waits on whether cover modules draw vertex
+  colour, which the recipe says they did not in walk 9052.
+
+### Tests
+- `test_depth_long.py` (new, 5): the word routes the four and not the cargo covers; a depth-long species is recorded
+  short side first and turned only when long in x, every other species unchanged; the four library containers in
+  `metal_painted`, recorded inside the genome; `DEPTH_LONG` is exactly the routed species of that shape in Zoo's
+  genomes (skipped, not passed, without them); the emitter's container slot -- species, dims, turn, its greybox
+  collider kept; and both front readers ask the emitter's turn, which for every other library volume is the rule
+  they spelled. All five fail on 0.244.0.
+
 ## [0.244.0] - a bank's teller line gets a queue, and a queue is not furniture
 
 **The factory's roadmap 275, the walker, 2026-10-20**: "stanchion or stanchions are likley more common for banks and

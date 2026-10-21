@@ -520,11 +520,10 @@ _GEN = re.compile(r"^(?P<stem>[a-z_]+?)_(?P<tag>r[0-9a-f]{8})_\d+$")
 def _front_bearing(v):
     """The compass bearing a volume's module front points at, by the rule
     `deli_counter` records the slot with: long side first, +90 when that
-    side is y (`prop_species.long_axis_first`), then `rot_z`; the front is
-    the module's -Y, so bearing + 180."""
-    turned = (prop_species.species_for_name(v["name"]) is not None
-              and v["size_y"] > v["size_x"] + 1e-9)
-    return ((90.0 if turned else 0.0) + float(v.get("rot_z", 0.0)) + 180.0) % 360.0
+    side is y (`prop_species.long_axis_first`; a depth-long species when it
+    is x), then `rot_z`; the front is the module's -Y, so bearing + 180."""
+    turn = prop_species.recorded_turn(v["name"], v["size_x"], v["size_y"])
+    return (turn + float(v.get("rot_z", 0.0)) + 180.0) % 360.0
 
 
 def _faces_room(v, room):
