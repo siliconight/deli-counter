@@ -3875,6 +3875,160 @@ def on_protected_route(routes, px, py, sx, sy):
     return False
 
 
+#: The disc round a door's (or an open edge's) route endpoint that `room_necks`
+#: counts as clear: the aperture is the door-width checks' question, and a wall
+#: either side of a door would otherwise cap every neck at the endpoint's own half
+#: metre. Clearance is measured to `_NECK_CAP` and no further. Both are the
+#: factory's census's (`docs/findings/furnish_route_cost/route_cost.py`,
+#: `DOOR_ZONE` and `CAP`), so the two read one neck.
+_NECK_DOOR_ZONE = 1.0
+_NECK_CAP = 2.0
+_NECK_STEPS = ((-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1))
+
+
+def room_necks(spec, room):
+    """``{(p, q): metres}``: the widest-path NECK between every two of `room`'s
+    route endpoints (`room_route_endpoints`, by index, p < q) -- the largest
+    clearance c such that the two are joined through cells of clearance at least
+    c. A body passes where c reaches its radius; two abreast where 2c reaches
+    `two_abreast_width()`. A pair that never joins is absent (0.256.0, the
+    factory's roadmap 284).
+
+    THE FACTORY'S CENSUS OF WHAT FURNISHING COSTS A ROUTE, ASKED OF ONE ROOM, so
+    what furnish guards and what the census reports are one measure: cells of the
+    bake's size (`nav_bake.cell_size_m`), shifted off round coordinates; clearance
+    from each cell's centre to the storey's walls and partitions, each stair's
+    body on the storeys it climbs through, the authored slab holes on the storey
+    and every standing collision volume, capped at `_NECK_CAP`; each endpoint
+    snapped to the nearest cell a body fits within `_ROUTE_SNAP`, a door's
+    approach disc (`_NECK_DOOR_ZONE`) counted open; then a union-find over the
+    cells taken in falling clearance, eight-connected, a pair's neck the level
+    at which it first joins."""
+    import agent_contract
+    import numpy as np
+    import stairwell
+    from spec_types import Stairwell
+    eps = room_route_endpoints(spec, room)
+    if len(eps) < 2:
+        return {}
+    cell = float(agent_contract.contract()["nav_bake"]["cell_size_m"])
+    r = agent_contract.body_radius()
+    x0, y0, x1, y1 = room["bounds"]
+    story = room.get("story", 0)
+    sh = _story_height(spec)
+    floor = story * sh
+    xs = np.arange(x0 + _ROUTE_OFFSET[0] + cell / 2.0, x1, cell)
+    ys = np.arange(y0 + _ROUTE_OFFSET[1] + cell / 2.0, y1, cell)
+    if len(xs) < 2 or len(ys) < 2:
+        return {}
+    boxes = list(_corridor_obstacles(dict(spec, volumes=[], stairs=[]), story,
+                                     floor, sh))
+    for s in spec.get("stairs") or []:
+        try:
+            st = Stairwell(**{k: s[k] for k in _STAIR_FIELDS if k in s})
+        except TypeError:
+            continue
+        if min(st.from_story, st.to_story) <= story < max(st.from_story,
+                                                           st.to_story):
+            boxes.append(tuple(stairwell.footprint_rect(st)))
+    for h in spec.get("slab_holes") or []:
+        if int(h.get("story", 0) or 0) == story:
+            boxes.append((h["x"] - h["size_x"] / 2.0, h["y"] - h["size_y"] / 2.0,
+                          h["x"] + h["size_x"] / 2.0, h["y"] + h["size_y"] / 2.0))
+    for v in spec.get("volumes") or []:
+        if v.get("collision") == "none":
+            continue
+        vz, vh = float(v.get("z", 0.0)), float(v.get("size_z", 0.0))
+        if not _on_storey(vz, vh, floor, sh) or _hung(v, floor):
+            continue
+        ax = float(v.get("size_x", 1)) / 2.0
+        ay = float(v.get("size_y", 1)) / 2.0
+        boxes.append((v["x"] - ax, v["y"] - ay, v["x"] + ax, v["y"] + ay))
+    X, Y = np.meshgrid(xs, ys)
+    c = np.full(X.shape, _NECK_CAP)
+    for bx0, by0, bx1, by1 in boxes:
+        if bx1 < xs[0] - _NECK_CAP or bx0 > xs[-1] + _NECK_CAP or \
+                by1 < ys[0] - _NECK_CAP or by0 > ys[-1] + _NECK_CAP:
+            continue
+        dx = np.maximum(np.maximum(bx0 - X, 0.0), X - bx1)
+        dy = np.maximum(np.maximum(by0 - Y, 0.0), Y - by1)
+        np.minimum(c, np.hypot(dx, dy), out=c)
+    H, W = c.shape
+    cc = c.copy()
+    member = {}
+    names = []
+    for p, (kind, _label, ex, ey) in enumerate(eps):
+        reach = _ROUTE_SNAP.get(kind, 0.6)
+        j0, i0 = int(round((ex - xs[0]) / cell)), int(round((ey - ys[0]) / cell))
+        k = int(math.ceil(reach / cell))
+        best = None
+        for i in range(max(0, i0 - k), min(H, i0 + k + 1)):
+            for j in range(max(0, j0 - k), min(W, j0 + k + 1)):
+                if c[i, j] >= r:
+                    dd = math.hypot(xs[j] - ex, ys[i] - ey)
+                    if dd <= reach and (best is None or dd < best[0]):
+                        best = (dd, i, j)
+        if best is None:
+            continue
+        names.append(p)
+        if kind in ("door", "open"):
+            disc = np.hypot(X - xs[best[2]], Y - ys[best[1]]) <= _NECK_DOOR_ZONE
+            idx = np.flatnonzero(disc & (c > 0))
+        else:
+            idx = np.array([best[1] * W + best[2]])
+        cc.flat[idx] = np.inf
+        for n in idx.tolist():
+            member.setdefault(n, set()).add(p)
+    flat = cc.ravel()
+    order = np.argsort(-flat, kind="stable")
+    parent = list(range(H * W))
+    sets = {}
+    active = bytearray(H * W)
+    out = {}
+    want = len(names) * (len(names) - 1) // 2
+
+    def find(a):
+        while parent[a] != a:
+            parent[a] = parent[parent[a]]
+            a = parent[a]
+        return a
+
+    for n in order.tolist():
+        level = flat[n]
+        if level <= 0 or len(out) >= want:
+            break
+        active[n] = 1
+        sets[n] = set(member.get(n, ()))
+        i, j = divmod(n, W)
+        for di, dj in _NECK_STEPS:
+            a, b = i + di, j + dj
+            if not (0 <= a < H and 0 <= b < W) or not active[a * W + b]:
+                continue
+            ra, rb = find(n), find(a * W + b)
+            if ra == rb:
+                continue
+            sa, sb = sets[ra], sets[rb]
+            for p in sa:
+                for q in sb:
+                    if p != q and (min(p, q), max(p, q)) not in out:
+                        out[(min(p, q), max(p, q))] = min(float(level), _NECK_CAP)
+            if len(sa) < len(sb):
+                ra, rb, sa, sb = rb, ra, sb, sa
+            parent[rb] = ra
+            sa |= sb
+            sets[ra] = sa
+            del sets[rb]
+    return out
+
+
+def _narrows(before, after):
+    """Did `after` take width from a pair of a room's route endpoints and leave it
+    under two abreast, or part a pair `before` joined (`room_necks`)?"""
+    two = two_abreast_width() / 2.0
+    return any(q not in after or (after[q] < b - 1e-9 and after[q] < two)
+               for q, b in before.items())
+
+
 def _row_clear(spec, room, px, py, sx, sy, hosts, obstacles=None, routes=None):
     """May an island `sx` by `sy`, centred (px, py), stand in a ROW?
 
@@ -5710,7 +5864,7 @@ def furnish(spec):
             }
 
         def _seats(host, centre, how, lo, hi, extra=(), draws=None,
-                   rescue=False):
+                   rescue=False, keep_off=None):
             """A host's chairs, each through the same clearance as every
             other piece minus the host and its own set, facing the host.
             `centre` is the host's UNROUNDED centre, the one in `placed`:
@@ -5729,7 +5883,9 @@ def furnish(spec):
             given. `rescue` seats a host the room left with none (0.252.0):
             one chair, tucked and then pushed in -- every side of a table,
             half under it; a desk's front, half under its knee space; a
-            stool against a counter's front."""
+            stool against a counter's front. `keep_off` are the routes the
+            chairs keep off in place of the room's reserved ones: a moved
+            host's (0.256.0, `_move`)."""
             draws = draws or rng
             n = draws.randint(lo, hi)
             if n <= 0:
@@ -5811,9 +5967,12 @@ def furnish(spec):
                 if _over_rects(inner, cx, cy, seat_half, seat_half):
                     continue
                 # a rescued chair is a new obstacle: it keeps off any route
-                # the room reserves, as the room's dressing does (0.252.0)
-                if routes and (keep_all or rescue) and on_protected_route(
-                        routes, cx, cy, 2 * seat_half, 2 * seat_half):
+                # the room reserves, as the room's dressing does (0.252.0),
+                # and a moved host's off the routes it keeps off (0.256.0)
+                keep = keep_off if keep_off is not None else (
+                    routes if (keep_all or rescue) else ())
+                if keep and on_protected_route(
+                        keep, cx, cy, 2 * seat_half, 2 * seat_half):
                     continue
                 # THE CHAIR PASSES THE SAME CLEARANCE AS EVERY OTHER PIECE,
                 # minus its own host and its own set, which it must stand
@@ -5874,6 +6033,89 @@ def furnish(spec):
                 siblings.append(chair)
                 n_set += 1
             return n_set
+
+        move_routes = []
+
+        def _move(host, centre, how, hseq, key, size):
+            """Stand a host no chair fits beside where one does, and return
+            its chairs; 0 when no spot takes it, and it goes (0.256.0, the
+            factory's roadmap 284 -- the walker, of a desk with no room for
+            its chair: moved, not removed). 0.252.0 took away 25 such hosts,
+            24 desks and a dining table, every one a floor piece; a host of
+            any other kind still goes.
+
+            THE NEAREST SPOT FIRST, on the room's candidate grid
+            (`floor_cands`), each asked what `_host` asked it -- off the
+            nested rooms, `_seed_clear` with the spread from every other
+            piece -- and faced as `_host` faces it: a front away from the
+            room's middle, a host without one on its own footprint. Its chair
+            is seated as above, from a stream keyed by the new spot. No draw
+            is taken from the room's stream.
+
+            A HOST PUT BACK IS A NEW OBSTACLE, so it and its chair keep off
+            the room's routes: the reserved ones, or, where the recipe
+            reserves none, the routes `protected_routes` asks of the room
+            here, once. And it NARROWS NO PAIR: seated at a spot, it may take
+            no width from any two of the room's route endpoints that it leaves
+            under two abreast, nor part two that were joined (`room_necks`,
+            `_narrows`). Measured without that (the factory's
+            patches/dc_desk_move/arms_A.json): 19 hosts moved, and nine pairs
+            went from two abreast to single file in two rooms --
+            landmark_hall_a01's curator_band and train_yard_a01's
+            dispatch_office -- each desk off the routes, standing where the
+            widest way ran; keeping off a route keeps its length, not its
+            width."""
+            p = _PIECES[key]
+            if p["where"] != "floor":
+                return 0
+            if not move_routes:
+                move_routes.append(routes or protected_routes(
+                    unfurnished(spec), room))
+            ways = move_routes[0]
+            w, d, h = size
+            half = max(w, d) / 2.0
+            hx, hy = centre
+            if centre in placed:
+                placed.remove(centre)
+            before = room_necks(spec, room)
+            for qx, qy in sorted(floor_cands,
+                                 key=lambda q: math.hypot(q[0] - hx,
+                                                          q[1] - hy)):
+                if p["front"]:
+                    dx, dy = qx - rcx, qy - rcy
+                    front = ((90.0 if dx > 0 else 270.0)
+                             if abs(dx) > abs(dy) else
+                             (0.0 if dy > 0 else 180.0))
+                    sx, sy = (w, d) if front in (0.0, 180.0) else (d, w)
+                else:
+                    front = None
+                    sx, sy = host["size_x"], host["size_y"]
+                if _over_rects(inner, qx, qy, half, half):
+                    continue
+                if on_protected_route(ways, qx, qy, sx, sy):
+                    continue
+                if not _seed_clear(spec, room, qx, qy, placed, half=half):
+                    continue
+                rot = (_front_turn(key, sx, sy, front)
+                       if front is not None else 0.0)
+                vol = _volume(key, qx, qy, sx, sy, h, rot, seq_no=hseq)
+                deck = _deck(key, vol)
+                mark = len(spec["volumes"])
+                spec["volumes"] += [vol] + ([deck] if deck else [])
+                vol["_front"], vol["_seq"] = front, hseq
+                got = _seats(vol, (qx, qy), how, 1, 1,
+                             extra=(deck,) if deck else (),
+                             draws=random.Random("%s:%s:%.2f:%.2f:seat" % (
+                                 base_seed, vol["name"].rsplit("_", 1)[0],
+                                 qx, qy)),
+                             rescue=True, keep_off=ways)
+                del vol["_front"], vol["_seq"]
+                if got and not _narrows(before, room_necks(spec, room)):
+                    placed.append((qx, qy))
+                    return got
+                # the host, its deck and the chairs `_seats` stood, in order
+                del spec["volumes"][mark:]
+            return 0
 
         def _host(key):
             """Place one piece that stands alone. True when it stood."""
@@ -5999,7 +6241,8 @@ def furnish(spec):
                         added += got
                         if not got and p["must_seat"]:
                             chairless.append((vol, (qx, qy), how, front,
-                                              vol["_seq"], deck))
+                                              vol["_seq"], deck, key,
+                                              (w, d, h)))
                         del vol["_front"], vol["_seq"]
                     return True
             return False
@@ -6152,12 +6395,16 @@ def furnish(spec):
         # desks and 4 of 46 cocktail tables stood so. Seated LAST, when the
         # room is furnished, so nothing else furnish drew in the room moves:
         # one chair, from the host's own stream, tucked and then pushed in,
-        # off any route the room reserves. A host no chair fits beside goes.
+        # off any route the room reserves. A host no chair fits beside MOVES
+        # to the nearest spot where one does (0.256.0, `_move`), and goes
+        # only when no spot takes it.
         # Measured and refuted (the factory's patches/dc_table_chairs/):
-        # such a host moved to its next spot, with every host's chairs from
-        # its own stream and a dining table drawing one to four -- the
-        # library re-drawn, three more routes closed to the bake.
-        for vol, (hx, hy), how, front, hseq, deck in chairless:
+        # such a host moved WHEN IT WAS PLACED, to its next spot, with every
+        # host's chairs from its own stream and a dining table drawing one
+        # to four -- the library re-drawn, three more routes closed to the
+        # bake. Moved last, every piece the room's recipe drew stands where
+        # it stood.
+        for vol, (hx, hy), how, front, hseq, deck, key, size in chairless:
             vol["_front"], vol["_seq"] = front, hseq
             got = _seats(vol, (hx, hy), how, 1, 1,
                          extra=(deck,) if deck else (),
@@ -6171,7 +6418,8 @@ def furnish(spec):
                 continue
             spec["volumes"] = [v for v in spec["volumes"]
                                if v is not vol and v is not deck]
-            added -= 1
+            got = _move(vol, (hx, hy), how, hseq, key, size)
+            added += got if got else -1
     # THE BACK BARS BEFORE THE FIXTURES, because this pass MOVES counters
     # (0.137.0) and a dartboard's throwing lane is measured against where
     # the furniture actually stands. Both read only the spec, so a room

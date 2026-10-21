@@ -1,3 +1,57 @@
+## [0.256.0] - a host no chair fits beside is moved where one does
+
+**The factory's roadmap 284.** 0.252.0 seats a host the room left chairless and takes away one no chair fits beside:
+25 hosts, 24 desks and a dining table. Asked whether such a desk should be moved instead of removed, the walker,
+2026-10-21: "yes".
+
+### Changed
+- **A host no chair fits beside moves** (`_move`), still LAST, when the room is furnished, so every piece the room's
+  recipe drew stands where it stood and no draw is taken from the room's stream: to the nearest spot on the room's
+  candidate grid where it clears as `_host` placed it (off the nested rooms, `_seed_clear` with the spread from every
+  other piece), faced as `_host` faces it, and seated as the rescue seats one, from a stream keyed by the new spot. It
+  and its chair keep off the room's routes -- the reserved ones, or where the recipe reserves none, the routes
+  `protected_routes` asks of the room for the move -- and it narrows no pair (below). A floor piece only, as all 25
+  were; a host no spot takes still goes.
+- **A moved host narrows no route.** Seated at a spot, it may take no width from any two of the room's route endpoints
+  that it leaves under two abreast, nor part two that were joined (`_narrows`). Keeping off a route keeps its length,
+  not its width: without this, the 19 hosts the move stood narrowed nine pairs from two abreast to single file, in two
+  rooms -- landmark_hall_a01's curator_band (six) and train_yard_a01's dispatch_office (three) -- each desk off the
+  routes and standing where the widest way ran.
+- **`room_necks(spec, room)`, new**: the widest-path neck between every two of a room's route endpoints -- the
+  factory's census of what furnishing costs a route (its `docs/findings/furnish_route_cost/route_cost.py`) asked of
+  one room, at the bake's cell, with its obstacles, its endpoint snapping, its open door-approach disc and its
+  union-find, so what furnish guards and what the census reports are one measure. Read against the census before it
+  shipped: 187 pairs in 64 rooms of twelve specs this change leaves alone, every neck the same to the millimetre.
+- `_seats` takes `keep_off`, the routes a moved host's chairs keep off in place of the room's reserved ones.
+- **The library refurnished**: 18 hosts back in 17 specs -- 17 desks (239 -> 256) and museum_a01's dining table (254
+  -> 255) -- each with its chair; seven still go, every spot on their rooms' 25-spot grids refused (9 to 19 on a
+  route, 6 to 14 by `_seed_clear`, the rest by the chair or, twice in train_yard_a01's dispatch_office, by the guard):
+  airport_terminal_a01's customs_office two, bank_branch_a04's security_office, bank_job's security_room,
+  supermarket_a02's manager_suite, train_yard_a01's dispatch_office two.
+
+### Tests
+- **test_seated_hosts.py**: "seating a chairless host moves nothing the room drew" lets a host the rescue moves stand
+  elsewhere -- only a host, and only one chairless without the rescue; a new test, office's exec_suite and
+  landmark_hall_a01's curator_band each move their desk, in its room, with its chair, both off the room's routes,
+  narrowing no pair -- failing on 0.255.0 on behaviour (no host moves there).
+- **test_room_necks.py**, new: an open room's neck, the gap a box leaves, a pair the box parts; `_narrows` counting
+  only width lost under two abreast. Both fail on 0.255.0 on the missing name (the factory's
+  `patches/dc_desk_move/prove_tests_on_0255.out.txt`).
+
+### Measured, kept
+- **The census over the library**, each arm refurnished and sheltered in memory against 0.255.0's (the factory's
+  `patches/dc_desk_move/arms.py`, its control reproducing the census pair for pair): routes over 10 % 26 -> 26, closed
+  to the bake 5 -> 5, narrowed to single file 151 -> 151, p99 1.107, max 1.308; ten pairs lost width and every one is
+  still two abreast, the narrowest now curator_band's at 1.053 m of clearance against two abreast's 0.95. The floor
+  share of the 17 rooms a host came back to: 1.9 to 7.5 %, each up 0.2 to 2.1 points.
+- **The arms before the guard**: off the routes only, 19 back and the nine narrowings above; then anywhere `_host`
+  itself would stand it, 21 back and the same nine; then its chair's routes relaxed too, 24 back, the same nine and
+  one pair over 10 % (dispatch_office's secure_door to its objective, 5.60 -> 6.85 m).
+- **Refuted and kept**: the arms' first run counted a host as moved or gone only where it stood in the shipped
+  library, and the 25 stand in neither -- "gone 0, moved 0" for every arm, only its host counts seeing them;
+  test_room_necks's first draft asked an open room for the clearance cap and read 1.598, the wall a door stands in
+  just past its open disc.
+
 ## [0.255.0] - the exploded axonometric draws a stair as its treads
 
 **The factory's roadmap 293, its next step.** The walker, 2026-10-21, of 0.254.0's drawing: "draw the stairs as treads
