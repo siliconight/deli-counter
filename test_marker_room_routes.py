@@ -146,9 +146,14 @@ def test_a_room_with_no_spot_off_its_routes_keeps_its_shelter(monkeypatch):
     assert [(v["x"], v["y"]) for v in kept] == [(free[0]["x"], free[0]["y"])], kept
 
 
-def test_the_library_is_sheltered_off_its_routes():
-    """Every shelter piece in a room that reserves its routes stands off them -- the pieces of earlier versions too,
-    which no pass moves."""
+def test_a_shelter_piece_on_a_route_is_the_pass_s_fallback():
+    """A shelter piece in a room that reserves its routes stands off them, unless the room has no clear spot off them
+    -- then the pass stands it anywhere clear rather than leave a room both sides see over everything in. So every
+    shelter piece the library stands on its room's routes must be the pass's own choice now: taken out, the pass puts
+    it back on the same spot, which it would not if a spot off the routes were clear. Asked of the pieces of earlier
+    versions too, which no pass moves. Until 0.252.0 this asked that none stood on a route, which the fallback breaks
+    legitimately: landmark_hall_a01's artifact_room, once 0.252.0 took away a dining table whose chair fitted only on
+    the room's routes, had a clear spot only on them -- at 0.252.0 the one such piece in the library."""
     on = []
     for name, d in _library():
         b = L.club_building_id(d)
@@ -161,6 +166,13 @@ def test_the_library_is_sheltered_off_its_routes():
                 continue
             bare = bare or L.unfurnished(copy.deepcopy(d))
             routes = L.protected_routes(bare, room)
-            on += [(name, v["name"]) for v in mine
-                   if L.on_protected_route(routes, v["x"], v["y"], v["size_x"] - 0.01, v["size_y"] - 0.01)]
+            for v in mine:
+                if not L.on_protected_route(routes, v["x"], v["y"], v["size_x"] - 0.01, v["size_y"] - 0.01):
+                    continue
+                again = copy.deepcopy(d)
+                again["volumes"] = [w for w in again["volumes"] if w["name"] != v["name"]]
+                L.seed_cover(again)
+                back = [(w["x"], w["y"]) for w in again["volumes"] if w["name"] == v["name"]]
+                if back != [(v["x"], v["y"])]:
+                    on.append((name, v["name"], (v["x"], v["y"]), back))
     assert not on, on

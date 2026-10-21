@@ -1,3 +1,73 @@
+## [0.252.0] - a piece that seats somebody stands with its chair
+
+**The factory's roadmap 284.** Measured on 0.251.0's library (the factory's `patches/dc_table_chairs/seats.out.txt`):
+255 dining tables, 51 with no chair, because their recipe seats `randint(0, 4)` and clearance refused the rest; 41 of
+263 desks with no chair, though a desk seats one, because the desk stood whether or not its chair cleared; 4 of 46
+cocktail tables likewise. The walker's guide (`docs/reference/Lived_In_Levels_Clear_Navigation_4P_PVE_1999_PA.md` at
+the factory root, section 8) builds a room's clusters from what belongs together; a table with no chair is half of
+one.
+
+### Changed
+- **A host the room left with no chair is seated last.** `_host` notes a piece that must seat somebody -- one whose
+  seats ask one or more, or that says so (`must_seat`, new on `_piece`: a dining table, whose draw stays none to four)
+  -- when its chairs came to none; when the room is furnished, `_seats` seats it with `rescue`: one chair, from the
+  host's own stream, tucked and then pushed in -- every side of a table, half under it; a desk's front, half under its
+  knee space; a stool against a counter's front -- and kept off any route the room reserves. A host no chair fits
+  beside goes. Seated last, so nothing else furnish drew in the room moves.
+- **`_seats` takes its stream** (`draws`, the room's unless given) and a `rescue` flag; without them it draws what it
+  drew, in the order it drew it.
+- **The library refurnished and sheltered**: 77 rooms in 55 specs (the factory's `rooms_moved.out.txt`). Dining tables
+  255 -> 254, 50 seated and one taken away; desks 263 -> 239, 17 seated and 24 taken away; cocktail tables 4 seated
+  (`seats.out.txt`). Every host taken away is attributed (`gone_hosts.out.txt`): 14 of the 25 in rooms holding a
+  marker, 11 in rooms that reserve no route, none with a chair before. Eight of them -- seven desks and the dining
+  table, all in rooms holding a marker -- went only because a rescued chair keeps off the room's routes: with that
+  check off, the same library takes away the other seventeen and seats these (`no_route_check.out.txt`). Furnish's
+  pieces, by `rooms_moved.py`'s count, 8,428 -> 8,474; a moved room's floor share -3.0 to +1.1 points, 76 of the 77
+  under the walker's 12 % before and after; the offices' mean 5.3 -> 4.8 % for the desks that went.
+- **76 of the 77 rooms moved by the rescue alone** (`moved_why.out.txt`). The 77th, landmark_hall_a01's artifact_room,
+  re-drew in the shelter pass (`artifact_steps.out.txt`): the rescue took away its chairless dining table, whose chair
+  fitted only on the room's routes; the shelter pass, which had found no clear spot in the room at 0.251.0, stood a
+  tall crate on floor the table freed -- on a route, its fallback, no spot off them being clear -- and, as in every
+  spec it adds to, refurnished the spec, furnish counting the crate among what the room holds: the room's counter 2.2
+  -> 1.6 m, both its tables seated.
+
+### Measured, kept
+- **The census over the 55 specs**, 1,011 pairs, 0.251.0 against this (`census_changed.out.txt`,
+  `pairs_compare.out.txt`): routes over 10 % 15 -> 13 -- three came back under, one crossed over, landmark_hall_a01's
+  artifact_room from its secure door to its crew marker 1.076 -> 1.115; the extra metres walked, summed over every
+  pair, 93.5 -> 90.2; the dressing's detours 0 -> 0; closed to the body 0 -> 0 and to the bake 0 -> 0; narrowed to
+  single file 68 -> 69 -- six pairs lost two abreast, five of them the artifact room's (1.95 -> 1.47 m at the
+  narrowest), and five regained it.
+- **The combat audit** (`audit_compare.out.txt`): COVER_ALL_LOW 8 -> 7 and SIGHT_INTENT 503 -> 502, both
+  landmark_hall_a01's artifact_room -- sheltered now, and no longer reading medium where it is authored close (an 8.5
+  m sightline at 0.251.0); the same re-draw narrowed its five routes above. Every other code's count unchanged; two
+  findings re-worded for a piece more in their rooms.
+- REFUTED, kept (`*_first_built.out.txt`, `variants.py`, `variants_*.json`): the shape first built -- every host's
+  chairs drawn from its own stream, a host with no chair undone and its next spot tried, a table trying every side, a
+  dining table drawing one to four. It seated every host and re-drew the library: 265 rooms in 119 specs, routes over
+  10 % library-wide 28 -> 40, three more closed to the bake, narrowed 150 -> 176, and four tests that pass on 0.251.0
+  failed -- two club-fixture tests, a strip-club preset test and the library shelter test. Run feature by feature
+  against a control that reproduced 0.251.0's census exactly: the re-draw alone 28 -> 34 and +13 narrowed, on this
+  draw -- choosing among draws by their census would be seed-shopping, not a fix; the undo rule and the one-to-four
+  draw together the other six and the three closures, which no variant separated; tucking every chair, or trying every
+  side for the first chair only, moved none of it below 39.
+- **What is left.** A host's regular chairs still spend the room's stream, so a piece placed before a table re-draws
+  its chairs; drawing them from the host's own stream re-draws the library once, which the census priced above. The 24
+  desks taken away leave offices barer, the marker rooms most: office's exec_suite keeps one piece of its two (7.2 ->
+  5.4 %), train_yard_a01's dispatch_office 7.0 -> 4.0 %, airport_terminal_a01's customs_office 7.2 -> 4.5 %.
+
+### Tests
+- **test_seated_hosts.py** (new, 3): a dining table must seat one and its draw is unchanged; every piece that must
+  seat stands with its chair, over the library; seating a chairless host moves nothing else furnish drew, the rescue
+  on against off in train_yard_a01, office and airport_terminal_a01. On 0.251.0 two fail on behaviour -- the library's
+  chairless desks, a rescue that does nothing -- and one on the new field's name.
+- **test_marker_room_routes.py**: `test_the_library_is_sheltered_off_its_routes`, which asked that no shelter piece
+  stand on its room's routes, is `test_a_shelter_piece_on_a_route_is_the_pass_s_fallback`: one that does must be the
+  pass's own choice, put back on the same spot when taken out. The shelter pass stands its piece anywhere clear when
+  no spot off the routes is (0.251.0), and landmark_hall_a01's artifact_room is such a room now, its crate the one
+  shelter piece in the library on its room's routes. On 0.251.0 the changed file passes (the factory's
+  `patches/dc_table_chairs/prove_tests_on_0251.out.txt`).
+
 ## [0.251.0] - a room holding an objective or loot marker keeps its dressing off its routes
 
 **The factory's roadmap 288, and the note 289 left.** The factory's census of what furnishing costs a route

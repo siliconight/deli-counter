@@ -1295,7 +1295,8 @@ def _piece(name, sizes, where, front=False, stock=None, variants=False,
            reserved_by=None, off_glass=False, backed_by=None,
            ceiling=None, under_hung=False, twin=False, wall_band=False,
            rooms=None, distinct=False, solo=False, lift_steps=None,
-           displaces=None, most_building=None, backs_on_partitions=False):
+           displaces=None, most_building=None, backs_on_partitions=False,
+           must_seat=False):
     return {"name": name, "sizes": tuple(sizes), "where": where,
             # a wall piece that may stand against the PARTITION it backs onto
             # (0.231.0; `_seed_clear`'s `backed_on`, passed by `_place_fixture`)
@@ -1315,7 +1316,11 @@ def _piece(name, sizes, where, front=False, stock=None, variants=False,
             # a fixture with no free wall may take a filler's (0.228.0,
             # `_displace_for`), and a building holds at most so many of it
             "displaces": tuple(displaces) if displaces else (),
-            "most_building": most_building}
+            "most_building": most_building,
+            # a host that stands only with a chair (0.252.0, the factory's
+            # roadmap 284): every piece whose seats ask one or more, and a
+            # piece that says so of a draw that may come to none
+            "must_seat": must_seat or bool(seats and seats[1] >= 1)}
 
 
 def hung_band_bottom(spec):
@@ -1600,8 +1605,11 @@ _PIECES = {p["name"]: p for p in (
            "floor", front=True, stock="office", variants=True,
            seats=("desk", 1, 1)),
     _piece("table_low", ((1.0, 0.6, 0.45), (1.2, 0.6, 0.45)), "floor"),
+    # a dining table seats one at least (0.252.0, the factory's roadmap 284):
+    # its draw stays none to four, and a table it seats none is seated after
     _piece("table_dining", ((1.2, 0.8, 0.74), (0.9, 0.9, 0.74),
-                            (1.6, 0.9, 0.74)), "floor", seats=("table", 0, 4)),
+                            (1.6, 0.9, 0.74)), "floor", seats=("table", 0, 4),
+           must_seat=True),
     _piece("table_tasting", ((1.2, 0.8, 0.9), (1.0, 1.0, 0.9)), "floor",
            seats=("table", 2, 2)),
     _piece("table_work", ((1.6, 0.8, 0.9), (1.2, 0.7, 0.9)), "floor"),
@@ -5664,6 +5672,7 @@ def furnish(spec):
         per_size = collections.Counter()
         per_name = collections.Counter()
         seq = [0]
+        chairless = []
         floor_cands = []
         # the candidate grid scales with the room: a fixed 5 x 5 capped every
         # hall at 25 floor positions before clearance removed any of them
@@ -5700,7 +5709,8 @@ def furnish(spec):
                 "material": vol["material"],
             }
 
-        def _seats(host, centre, how, lo, hi, extra=()):
+        def _seats(host, centre, how, lo, hi, extra=(), draws=None,
+                   rescue=False):
             """A host's chairs, each through the same clearance as every
             other piece minus the host and its own set, facing the host.
             `centre` is the host's UNROUNDED centre, the one in `placed`:
@@ -5713,8 +5723,15 @@ def furnish(spec):
             `stool` (bar stools: along a counter's front when the host has
             one, else RINGED round it -- the bar stage). `extra` are volumes
             that belong to the host (its deck collider) and are no more in a
-            seat's way than the host is."""
-            n = rng.randint(lo, hi)
+            seat's way than the host is.
+
+            `draws` is the stream the chairs are drawn from, the room's unless
+            given. `rescue` seats a host the room left with none (0.252.0):
+            one chair, tucked and then pushed in -- every side of a table,
+            half under it; a desk's front, half under its knee space; a
+            stool against a counter's front."""
+            draws = draws or rng
+            n = draws.randint(lo, hi)
             if n <= 0:
                 return 0
             px, py = centre
@@ -5730,8 +5747,15 @@ def furnish(spec):
                 depth = sy if uy else sx
                 length = sx if uy else sy
                 out = depth / 2.0 + seat_d / 2.0 + (
-                    rng.uniform(0.05, 0.3) if how == "desk" else 0.2)
-                if how == "desk":
+                    draws.uniform(0.05, 0.3) if how == "desk" else 0.2)
+                if rescue:
+                    # tucked, then pushed in: half under a desk's knee
+                    # space, a stool against a counter's front
+                    pushed = depth / 2.0 + (0.0 if how == "desk"
+                                            else seat_d / 2.0)
+                    spots += [(px + ux * o, py + uy * o)
+                              for o in (out, pushed)]
+                elif how == "desk":
                     spots.append((px + ux * out, py + uy * out))
                 else:
                     step = length / n
@@ -5745,7 +5769,7 @@ def furnish(spec):
                 out = seat_d / 2.0 + 0.15
                 hx, hy = sx / 2.0 + out, sy / 2.0 + out
                 per = 4.0 * (hx + hy)
-                phase = rng.random() * per
+                phase = draws.random() * per
                 for i in range(n):
                     t = (phase + i * per / n) % per
                     if t < 2 * hx:
@@ -5760,27 +5784,35 @@ def furnish(spec):
                 along_x = sx >= sy
                 long_sides = [(0, -1), (0, 1)] if along_x else [(-1, 0), (1, 0)]
                 ends = [(-1, 0), (1, 0)] if along_x else [(0, -1), (0, 1)]
-                rng.shuffle(long_sides)
-                rng.shuffle(ends)
-                for ex, ey in (long_sides + ends)[:n]:
+                draws.shuffle(long_sides)
+                draws.shuffle(ends)
+                for ex, ey in (long_sides + ends if rescue
+                               else (long_sides + ends)[:n]):
                     # SOME ARE PULLED OUT: a chair left where somebody got up
-                    gap = 0.2 + (rng.uniform(0.1, 0.35) if rng.random() < 0.4
-                                 else 0.0)
+                    # -- but a rescued chair is tucked, then pushed half under
+                    gaps = ((0.2, -seat_d / 2.0) if rescue else (
+                        0.2 + (draws.uniform(0.1, 0.35) if draws.random() < 0.4
+                               else 0.0),))
                     side = sx if ey else sy
-                    lat = rng.uniform(-1.0, 1.0) * max(0.0, min(0.15,
+                    lat = draws.uniform(-1.0, 1.0) * max(0.0, min(0.15,
                                                                 (side - seat_w) / 2))
-                    spots.append((px + ex * (sx / 2 + seat_d / 2 + gap) + (lat if ey else 0.0),
-                                  py + ey * (sy / 2 + seat_d / 2 + gap) + (lat if ex else 0.0)))
+                    for gap in gaps:
+                        spots.append((px + ex * (sx / 2 + seat_d / 2 + gap) + (lat if ey else 0.0),
+                                      py + ey * (sy / 2 + seat_d / 2 + gap) + (lat if ex else 0.0)))
             n_set = 0
             siblings = []
             seat_half = max(seat_w, seat_d) / 2.0
             edge = 0.15 + seat_half
             for j, (cx, cy) in enumerate(spots):
+                if n_set >= n:
+                    break
                 if not (x0 + edge < cx < x1 - edge and y0 + edge < cy < y1 - edge):
                     continue
                 if _over_rects(inner, cx, cy, seat_half, seat_half):
                     continue
-                if routes and keep_all and on_protected_route(
+                # a rescued chair is a new obstacle: it keeps off any route
+                # the room reserves, as the room's dressing does (0.252.0)
+                if routes and (keep_all or rescue) and on_protected_route(
                         routes, cx, cy, 2 * seat_half, 2 * seat_half):
                     continue
                 # THE CHAIR PASSES THE SAME CLEARANCE AS EVERY OTHER PIECE,
@@ -5821,9 +5853,9 @@ def furnish(spec):
                     rot = float(int(round(face / 90.0)) * 90 % 360)
                 # ...and SOME ARE TURNED a little off square. The composer
                 # keeps a turn inside its quarter (`themed_tscn._fit_rotation`).
-                if not ring and rng.random() < 0.5:
-                    rot = round((rot + rng.choice((-1.0, 1.0)) *
-                                 rng.uniform(*_SEAT_TURN)) % 360.0, 1)
+                if not ring and draws.random() < 0.5:
+                    rot = round((rot + draws.choice((-1.0, 1.0)) *
+                                 draws.uniform(*_SEAT_TURN)) % 360.0, 1)
                 if seat_key:
                     chair = _volume(seat_key, cx, cy, seat_w, seat_d, seat_h,
                                     rot, seq_no=f"{host['_seq']}_{j + 1}")
@@ -5962,8 +5994,12 @@ def furnish(spec):
                         how, lo, hi = p["seats"]
                         vol["_front"] = front
                         vol["_seq"] = seq[0]
-                        added += _seats(vol, (qx, qy), how, lo, hi,
-                                        extra=(deck,) if deck else ())
+                        got = _seats(vol, (qx, qy), how, lo, hi,
+                                     extra=(deck,) if deck else ())
+                        added += got
+                        if not got and p["must_seat"]:
+                            chairless.append((vol, (qx, qy), how, front,
+                                              vol["_seq"], deck))
                         del vol["_front"], vol["_seq"]
                     return True
             return False
@@ -6110,6 +6146,32 @@ def furnish(spec):
             else:
                 pool, lo, hi = rng.choice(clusters)
                 short -= _cluster(pool, max(1, min(short, hi)))
+        # A PIECE THAT SEATS SOMEBODY STANDS WITH ITS CHAIR (0.252.0, the
+        # factory's roadmap 284): a table or a desk with no chair is a
+        # cluster missing its reason, and 51 of 255 dining tables, 41 of 263
+        # desks and 4 of 46 cocktail tables stood so. Seated LAST, when the
+        # room is furnished, so nothing else furnish drew in the room moves:
+        # one chair, from the host's own stream, tucked and then pushed in,
+        # off any route the room reserves. A host no chair fits beside goes.
+        # Measured and refuted (the factory's patches/dc_table_chairs/):
+        # such a host moved to its next spot, with every host's chairs from
+        # its own stream and a dining table drawing one to four -- the
+        # library re-drawn, three more routes closed to the bake.
+        for vol, (hx, hy), how, front, hseq, deck in chairless:
+            vol["_front"], vol["_seq"] = front, hseq
+            got = _seats(vol, (hx, hy), how, 1, 1,
+                         extra=(deck,) if deck else (),
+                         draws=random.Random("%s:%s:%.2f:%.2f:seat" % (
+                             base_seed, vol["name"].rsplit("_", 1)[0],
+                             hx, hy)),
+                         rescue=True)
+            del vol["_front"], vol["_seq"]
+            if got:
+                added += got
+                continue
+            spec["volumes"] = [v for v in spec["volumes"]
+                               if v is not vol and v is not deck]
+            added -= 1
     # THE BACK BARS BEFORE THE FIXTURES, because this pass MOVES counters
     # (0.137.0) and a dartboard's throwing lane is measured against where
     # the furniture actually stands. Both read only the spec, so a room
