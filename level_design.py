@@ -384,10 +384,15 @@ def _room_has_cover(spec, room):
         # one number.
         if v.get("size_z", 0) < _COVER_MIN_Z or min(v.get("size_x", 0), v.get("size_y", 0)) < 0.3:
             continue
-        if x0 <= v["x"] <= x1 and y0 <= v["y"] <= y1 and                 abs(v.get("z", 0) - (room.get("story", 0) * sh + v.get("size_z", 0) / 2)) < sh:
+        # on this storey by its foot (0.249.0, `stands_on_storey`)
+        if x0 <= v["x"] <= x1 and y0 <= v["y"] <= y1 and stands_on_storey(
+                float(v.get("z", 0)), float(v.get("size_z", 0)),
+                room.get("story", 0) * sh, sh):
             return True
     for m in spec.get("markers", []):
-        if m.get("type") in ("cover_low", "cover_high") and                 x0 <= m.get("x", 1e9) <= x1 and y0 <= m.get("y", 1e9) <= y1:
+        if m.get("type") in ("cover_low", "cover_high") and \
+                x0 <= m.get("x", 1e9) <= x1 and y0 <= m.get("y", 1e9) <= y1 and \
+                marker_on_storey(m, room.get("story", 0) * sh, sh):
             return True
     return False
 
@@ -412,10 +417,15 @@ def _room_has_shelter(spec, room):
     for v in spec.get("volumes", []):
         if v.get("size_z", 0) < _COVER_HIGH_Z or min(v.get("size_x", 0), v.get("size_y", 0)) < 0.3:
             continue
-        if x0 <= v["x"] <= x1 and y0 <= v["y"] <= y1 and                 abs(v.get("z", 0) - (room.get("story", 0) * sh + v.get("size_z", 0) / 2)) < sh:
+        # on this storey by its foot (0.249.0, `stands_on_storey`)
+        if x0 <= v["x"] <= x1 and y0 <= v["y"] <= y1 and stands_on_storey(
+                float(v.get("z", 0)), float(v.get("size_z", 0)),
+                room.get("story", 0) * sh, sh):
             return True
     for m in spec.get("markers", []):
-        if m.get("type") == "cover_high" and                 x0 <= m.get("x", 1e9) <= x1 and y0 <= m.get("y", 1e9) <= y1:
+        if m.get("type") == "cover_high" and \
+                x0 <= m.get("x", 1e9) <= x1 and y0 <= m.get("y", 1e9) <= y1 and \
+                marker_on_storey(m, room.get("story", 0) * sh, sh):
             return True
     return False
 
@@ -477,6 +487,38 @@ def _on_storey(vz, vh, floor, sh):
     floor is at `floor`? A slab-thick tolerance either side, so a piece
     standing on the floor and one hanging under the ceiling both count."""
     return vz + vh / 2.0 > floor + 0.05 and vz - vh / 2.0 < floor + sh - 0.05
+
+
+def stands_on_storey(vz, vh, floor, sh):
+    """Does a volume centred at `vz`, `vh` tall, STAND on the storey whose
+    floor is at `floor` -- its foot on that floor, to `_on_storey`'s slab
+    tolerance, up to just under the next storey's? (0.249.0, the factory's
+    roadmap 283.)
+
+    THE ONE TEST FOR "WHAT IS IN THIS ROOM". Four places asked it four ways:
+    furnish's count, which 0.246.0 made this; `_room_has_cover` and
+    `_room_has_shelter`, `abs(z - (floor + h / 2)) < sh`, which leaves a
+    piece standing on the floor above or below EXACTLY `sh` away for float
+    rounding to decide; and `combat_audit._cover_in_room`,
+    `abs(z - floor) < sh` on the CENTRE, which counts everything standing on
+    the floor below as cover in the room over it -- measured: a 1 m crate on
+    the ground floor was cover upstairs. `_on_storey` asks a different
+    question -- does a volume REACH into a storey, as a stair or a tall piece
+    from below does -- and stays as it is."""
+    bottom = vz - vh / 2.0
+    return floor - 0.05 <= bottom < floor + sh - 0.05
+
+
+def marker_on_storey(m, floor, sh):
+    """Is a marker on the storey whose floor is at `floor`? A marker's `z` is
+    the floor it stands on (0.249.0). Before this no shelter check asked, so
+    a cover marker on the ground floor counted in the room over it. A marker
+    with no `z` cannot be placed and keeps counting, as every one did; the
+    library's 269 cover markers all carry one."""
+    z = m.get("z") if isinstance(m, dict) else getattr(m, "z", None)
+    if z is None:
+        return True
+    return floor - 0.05 <= float(z) < floor + sh - 0.05
 
 
 def opening_head(spec, story):
@@ -1025,25 +1067,42 @@ def seed_cover(spec):
         # not short of life -- it is short of somewhere to fight from. A room
         # that has neither gets this and then its furniture below.
         if needs_shelter:
-            s_name, s_x, s_y = _seed_shelter(room)
+            # THE ROOM'S OWN SHELTER PIECE FIRST, THEN THE SMALLEST (0.249.0,
+            # the factory's roadmap 283). The piece is chosen by the room's
+            # words, and a room's words do not know its stair: the rowhome
+            # preset's `back_0`, 8 x 11 m with a flight up its middle, chose a
+            # 2.6 m shelf run, which the stair, its landings and the door
+            # approach refused at every one of 36 candidates -- where the
+            # default 1.1 m crate stack stands at four. It read sheltered
+            # until 0.249.0 only because a 1.9 m piece on the floor above was
+            # counted in it. The random draws happen only on a placement, so
+            # a room whose own piece fits furnishes exactly as before.
+            choices = [_seed_shelter(room)]
+            if _SEED_SHELTER_DEFAULT not in choices:
+                choices.append(_SEED_SHELTER_DEFAULT)
             s_z = shelter_height()
-            s_half = max(s_x, s_y) / 2.0
-            for (px, py) in cands:
-                if not _seed_clear(spec, room, px, py, placed, half=s_half,
-                                   corridor=True):
-                    continue
-                sx, sy = (s_y, s_x) if rng.random() < 0.5 else (s_x, s_y)
-                spec.setdefault("volumes", []).append({
-                    "name": f"{s_name}_{room['id']}_shelter",
-                    "x": round(px, 2), "y": round(py, 2),
-                    "z": round(room.get("story", 0) * sh + s_z / 2, 3),
-                    "size_x": sx, "size_y": sy, "size_z": round(s_z, 3),
-                    "collision": "convex",
-                    "material": _prop_material(spec, s_name),
-                })
-                placed.append((px, py))
-                added += 1
-                break
+            for s_name, s_x, s_y in choices:
+                s_half = max(s_x, s_y) / 2.0
+                stood = False
+                for (px, py) in cands:
+                    if not _seed_clear(spec, room, px, py, placed, half=s_half,
+                                       corridor=True):
+                        continue
+                    sx, sy = (s_y, s_x) if rng.random() < 0.5 else (s_x, s_y)
+                    spec.setdefault("volumes", []).append({
+                        "name": f"{s_name}_{room['id']}_shelter",
+                        "x": round(px, 2), "y": round(py, 2),
+                        "z": round(room.get("story", 0) * sh + s_z / 2, 3),
+                        "size_x": sx, "size_y": sy, "size_z": round(s_z, 3),
+                        "collision": "convex",
+                        "material": _prop_material(spec, s_name),
+                    })
+                    placed.append((px, py))
+                    added += 1
+                    stood = True
+                    break
+                if stood:
+                    break
             # A room where nothing fits keeps its finding rather than getting
             # a piece jammed into a doorway. `combat_audit` still reports it,
             # which is the honest outcome: the geometry has no room for
@@ -3006,7 +3065,8 @@ def _room_volume_count(spec, room):
         # every piece furnished on the floor over it or under it. A foot on
         # this storey's floor, to `_on_storey`'s slab tolerance, up to the
         # next storey's.
-        if story * sh - 0.05 <= bottom < (story + 1) * sh - 0.05:
+        if stands_on_storey(float(v.get("z", 0)), float(v.get("size_z", 0)),
+                            story * sh, sh):
             n += 1
     return n
 

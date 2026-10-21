@@ -1,3 +1,81 @@
+## [0.249.0] - a room holds what stands on its storey, and the shelter pass runs over the library
+
+**The factory's roadmap 283.** 0.246.0 made furnish's count ask a volume's FOOT, because `abs(z - (floor + size_z /
+2)) < sh` put a piece on the floor above or below exactly `sh` away and let float rounding decide. Three more places
+asked the question their own ways. `_room_has_cover` and `_room_has_shelter` -- which decide whether `seed_cover`
+stands shelter in a combat room -- kept that window and asked no storey of a cover marker.
+`combat_audit._cover_in_room` asked `abs(z - floor) < sh` of a volume's CENTRE, which counts everything standing on
+the floor below as cover in the room over it (a 1 m crate on the ground floor was cover upstairs), and no storey of a
+marker either. Attributing every room the change fills found the second defect behind the first: nothing ran the
+shelter pass over the library.
+`enrich` runs in `presets.make`, `build.py` builds a library spec's JSON as it stands, and the shelter guarantee was
+tested on presets alone; a library room was sheltered when furnish happened to stand a tall piece in it, and a
+refurnish could take that away with nothing to notice.
+
+### Added
+- **`stands_on_storey(vz, vh, floor, sh)`**: does a volume STAND on the storey whose floor is at `floor` -- its foot
+  on that floor, to `_on_storey`'s slab tolerance, up to just under the next storey's. The one test for "what is in
+  this room", asked now by furnish's count (`_room_volume_count`, whose 0.246.0 spelling it is), `_room_has_cover`,
+  `_room_has_shelter` and `combat_audit._cover_in_room`. `_on_storey` asks whether a volume REACHES into a storey, as
+  a stair or a tall piece from below does, and stays as it is.
+- **`marker_on_storey(m, floor, sh)`**: a marker's `z` is the floor it stands on. One with no `z` keeps counting on
+  every storey, as every marker did; none of the library's 269 cover markers lacks one, and a test keeps it so.
+- **`migrate_shelter.py`**: runs the shelter pass over the library and refurnishes any spec it adds to -- furnish
+  counts what a room holds, and a shelter piece is one more -- so the library stays a fixed point of both. `--check`
+  reports, and exits 1 when a room would be filled. It is the remedy the new library test names.
+
+### Changed
+- **The shelter pass tries the room's own piece, then the smallest.** The piece is chosen by the room's words, and a
+  room's words do not know its stair: the rowhome preset's `back_0`, 8 x 11 m with a flight up its middle, chooses a
+  2.6 m shelf run, which the stair, its landings and the door approach refuse at every one of its 36 candidates, where
+  the default 1.1 m crate stack stands at four. It read sheltered until now only because a 1.9 m piece on the floor
+  above was counted in it. The random draws happen only on a placement, so a room whose own piece fits seeds exactly
+  as before.
+- **COVER_ALL_LOW quotes the tallest piece on the room's own storey**, the storey its count asks: it could name one on
+  another floor -- a piece breaking the sightline the finding says nothing in the room breaks. `combat_audit` imports
+  `level_design` for the shared test.
+- **The library: eleven shelter pieces at `shelter_height()` (1.60 m) in eleven combat rooms of nine specs** -- eight
+  1.1 m crate stacks, two kiosks, one shelf run -- each attributed (the factory's `patches/dc_storey_shelter/`,
+  `storey_attrib.out.txt` and `shelter_history_old.out.txt`):
+  - three read sheltered only by something on another storey: final_stand's `stair_core` by a `cover_high` marker two
+    storeys up (z 7.6), rowhouse_raid's `kitchen` by a 1.80 m shelf run on the floor above (its foot at 3.20),
+    twin_a01's `front_left_1` by a `cover_high` marker on the ground floor under it;
+  - three were sheltered by furnish's own lockers and shelf runs until a refurnish moved them: rail_station_a02's
+    `vault_approach` (0.204.0), rowhouse_raid's `basement_vault` (0.234.0), warehouse_a01's `back_corridor` (0.131.0);
+  - five were never sheltered in any committed version, by either test: cbp_town_finale_midbalanced_schemafixed's
+    `main_concourse` and `club_ring_overlook`, freight_terminal_a02's `gantry_control`, parking_garage_a02's
+    `attendant_booth`, primos_pizza's `rear_hall`.
+
+  The nine specs are refurnished and only those eleven rooms move (`shelter_rooms_diff.out.txt`): the piece stands
+  and the room's furnish draws again around it. Most move a piece or two. Three lose some: cbp's `club_ring_overlook`
+  27 -> 15 pieces -- it draws 3 chairs for its 8 tables where 0.248.0 drew 15 for 9, since a dining table draws 0 to 4
+  (`seats=("table", 0, 4)`) -- primos_pizza's `rear_hall` 5 -> 3, a dining table and its two chairs, and
+  rowhouse_raid's `basement_vault` 10 -> 9.
+
+### Measured, kept
+- **The audit's findings over the library**, asked of the specs that ship: COVER_ALL_LOW 12 -> 8; KILLBOX,
+  C_NAKED_ROOM and H_NO_HOLDOUT 0 -> 0. Seven of the twelve are rooms this fills, which the audit had been reporting
+  and nothing had acted on. Asked by the foot the audit sees seven more, furnished low over tall pieces on the floor
+  below; four are filled here and three stay. The eight left, each attributed: seven where neither the room's own
+  piece nor the crate stack clears at any of the 36 candidates (apartment_walkup_a01's `kitchen`, cbp's
+  `home_plate_overlook`, deli_a02's `stairwell`, fuel_stop_heist's and gas_station_a02's `back_hall`,
+  landmark_hall_a01's `artifact_room`, pawn_shop_a02's `upper_flat`), and stop_n_go's `back_hall`, 27 m2, under
+  `_SEED_MIN_AREA`. A room where nothing fits keeps its finding rather than getting a crate in a doorway, as before.
+- **The library's dining tables**: 257, of which 50 stand with no chair (19 %) and 65 with one; `seats=("table", 0,
+  4)` is uniform before clearance refuses any. Not this change's question: the factory's roadmap 284.
+
+### Tests
+- **test_storey_shelter.py** (new, 9): a piece stands on the storey its foot is on; a marker on the floor its `z`
+  names; every library cover marker names its floor; the producer shelters a room from neither another storey's piece
+  nor its marker; the audit does not count the floor below as cover upstairs; COVER_ALL_LOW quotes a piece on its own
+  storey; a room whose own shelter fits nowhere gets the smallest; the library is a fixed point of the shelter pass.
+  On 0.248.0 six fail on behaviour -- the producer counts a tall piece one storey down at 1.45 m and a `cover_high`
+  marker on the floor below; the audit counts a crate and a marker on the floor below as cover upstairs (2 against
+  0); a room furnished low over a tall shelf below draws no COVER_ALL_LOW; the rowhome's `back_0` stands no shelter
+  piece; the library owes eight rooms (0.248.0's own pass, which still reads the three leak rooms sheltered) -- two
+  fail on the new helpers' names, and one, the cover markers' floors, is a guard that holds there (the factory's
+  `patches/dc_storey_shelter/prove_tests_on_0248.out.txt`).
+
 ## [0.248.0] - an office building's open floor is an office
 
 **The factory's roadmap 281.** `floor` is a shop-floor word in `_ROOM_KINDS` -- "a shop floor is shelving and stock"

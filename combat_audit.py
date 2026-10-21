@@ -48,6 +48,7 @@ sys.path.insert(0, HERE)
 import presets as presets_mod                       # noqa: E402
 import tactical                                     # noqa: E402
 import sightlines                                   # noqa: E402
+import level_design                                 # noqa: E402
 from spec_loader import spec_from_dict, load_spec   # noqa: E402
 
 # >= passes two agents / a loot carry comfortably: four of the contract's body
@@ -276,21 +277,27 @@ def _cover_in_room(spec, r, min_h=COVER_MIN_H):
     `level_design._COVER_HIGH_Z` IS the break height, so a `cover_high`
     marker means precisely "a solid here breaks the line".
     """
+    # ON THIS STOREY, the producer's own test (0.249.0, the factory's roadmap
+    # 283): `level_design.stands_on_storey` and `marker_on_storey`. This was
+    # `abs(z - floor) < sh` on a volume's CENTRE, which counted everything
+    # standing on the floor below as cover in the room over it, and no
+    # storey test at all on a marker -- an audit and a producer disagreeing
+    # about what is in a room is two instruments for one question.
+    floor, sh = r.story * spec.story_height, spec.story_height
     n = 0
     for v in spec.volumes:
         if v.size_z < min_h or min(v.size_x, v.size_y) < 0.3:
             continue
         x0, y0, x1, y1 = r.bounds
-        if x0 <= v.x <= x1 and y0 <= v.y <= y1:
-            base = getattr(v, "z", 0.0)
-            if abs(base - r.story * spec.story_height) < spec.story_height:
-                n += 1
+        if x0 <= v.x <= x1 and y0 <= v.y <= y1 and level_design.stands_on_storey(
+                float(getattr(v, "z", 0.0)), float(v.size_z), floor, sh):
+            n += 1
     kinds = (("cover_high",) if min_h > COVER_MIN_H
              else ("cover_low", "cover_high"))
     for m in spec.markers:
         if getattr(m, "type", "") in kinds:
             x0, y0, x1, y1 = r.bounds
-            if x0 <= m.x <= x1 and y0 <= m.y <= y1:
+            if x0 <= m.x <= x1 and y0 <= m.y <= y1 and level_design.marker_on_storey(m, floor, sh):
                 n += 1
     return n
 
@@ -867,12 +874,20 @@ def audit(spec, name=None, rules=None):
             # shelter out of it. Nothing in THIS toolchain crouches, so the
             # evaluator sees a bare room -- and that is the gap being
             # reported, not a verdict on the shipped game.
+            # The storey `_cover_in_room` counted (0.249.0): without it the
+            # tallest quoted could stand on another floor, and the line
+            # would name a piece that breaks the sightline it says nothing
+            # in the room breaks.
+            floor, sh = r.story * spec.story_height, spec.story_height
             tallest = max(
                 [v.size_z for v in spec.volumes
                  if v.size_z >= COVER_MIN_H
                  and min(v.size_x, v.size_y) >= 0.3
                  and r.bounds[0] <= v.x <= r.bounds[2]
-                 and r.bounds[1] <= v.y <= r.bounds[3]] or [0.0])
+                 and r.bounds[1] <= v.y <= r.bounds[3]
+                 and level_design.stands_on_storey(
+                     float(getattr(v, "z", 0.0)), float(v.size_z), floor, sh)]
+                or [0.0])
             F(("MED", "COVER_ALL_LOW",
                f"room '{r.id}' has {furniture} piece(s) of cover and not one "
                f"of them breaks a sightline: the tallest is {tallest:.2f} m "
