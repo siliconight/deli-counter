@@ -592,7 +592,7 @@
   {
    "name": "gondola_aisle_r48016798_4",
    "x": -5.15,
-   "y": -6.05,
+   "y": -1.8,
    "z": 0.725,
    "size_x": 0.9,
    "size_y": 4.8,
@@ -605,7 +605,7 @@
   {
    "name": "gondola_aisle_r48016798_5",
    "x": -5.15,
-   "y": 0.0,
+   "y": 4.25,
    "z": 0.725,
    "size_x": 0.9,
    "size_y": 4.8,
@@ -615,8 +615,8 @@
   },
   {
    "name": "gondola_aisle_r48016798_6",
-   "x": -5.15,
-   "y": 6.05,
+   "x": -0.85,
+   "y": -1.8,
    "z": 0.725,
    "size_x": 0.9,
    "size_y": 4.8,
@@ -628,7 +628,7 @@
   {
    "name": "gondola_aisle_r48016798_7",
    "x": -0.85,
-   "y": -2.55,
+   "y": 4.25,
    "z": 0.725,
    "size_x": 0.9,
    "size_y": 4.8,
@@ -639,8 +639,8 @@
   },
   {
    "name": "gondola_aisle_r48016798_8",
-   "x": -0.85,
-   "y": 3.5,
+   "x": 1.3,
+   "y": -1.8,
    "z": 0.725,
    "size_x": 0.9,
    "size_y": 4.8,
@@ -652,7 +652,7 @@
   {
    "name": "gondola_aisle_r48016798_9",
    "x": 1.3,
-   "y": -2.3,
+   "y": 4.25,
    "z": 0.725,
    "size_x": 0.9,
    "size_y": 4.8,
@@ -663,8 +663,8 @@
   },
   {
    "name": "gondola_aisle_r48016798_10",
-   "x": 1.3,
-   "y": 3.75,
+   "x": -11.6,
+   "y": -1.8,
    "z": 0.725,
    "size_x": 0.9,
    "size_y": 4.8,
@@ -676,7 +676,7 @@
   {
    "name": "gondola_aisle_r48016798_11",
    "x": -11.6,
-   "y": -2.8,
+   "y": 4.25,
    "z": 0.725,
    "size_x": 0.9,
    "size_y": 4.8,
@@ -687,8 +687,8 @@
   },
   {
    "name": "gondola_aisle_r48016798_12",
-   "x": -11.6,
-   "y": 3.25,
+   "x": 3.45,
+   "y": -1.8,
    "z": 0.725,
    "size_x": 0.9,
    "size_y": 4.8,
@@ -699,8 +699,8 @@
   },
   {
    "name": "gondola_aisle_r48016798_13",
-   "x": 3.45,
-   "y": -2.3,
+   "x": -13.75,
+   "y": -1.8,
    "z": 0.725,
    "size_x": 0.9,
    "size_y": 4.8,
@@ -712,7 +712,7 @@
   {
    "name": "gondola_aisle_r48016798_14",
    "x": -13.75,
-   "y": -2.8,
+   "y": 4.25,
    "z": 0.725,
    "size_x": 0.9,
    "size_y": 4.8,
@@ -723,40 +723,28 @@
    "variant": 1
   },
   {
-   "name": "gondola_aisle_r48016798_15",
-   "x": -13.75,
-   "y": 3.25,
-   "z": 0.725,
+   "name": "cartons_r48016798_15",
+   "x": 0.26,
+   "y": 7.97,
+   "z": 0.5,
    "size_x": 0.9,
-   "size_y": 4.8,
-   "size_z": 1.45,
+   "size_y": 0.6,
+   "size_z": 1.0,
    "collision": "convex",
-   "material": "metal_painted",
-   "variant": 3
+   "material": "wood"
   },
   {
    "name": "cartons_r48016798_16",
-   "x": -11.96,
-   "y": 7.43,
-   "z": 0.45,
-   "size_x": 0.4,
-   "size_y": 0.5,
-   "size_z": 0.9,
-   "collision": "convex",
-   "material": "wood",
-   "variant": 2
-  },
-  {
-   "name": "cartons_r48016798_17",
-   "x": -11.96,
-   "y": 8.37,
+   "x": 0.26,
+   "y": 8.96,
    "z": 0.45,
    "size_x": 0.5,
    "size_y": 0.4,
    "size_z": 0.9,
    "collision": "convex",
    "material": "wood",
-   "rot_z": 180.0
+   "rot_z": 180.0,
+   "variant": 2
   },
   {
    "name": "shelf_run_r499afdf7_1",
@@ -864,7 +852,7 @@
    "variant": 1
   },
   {
-   "name": "atm_store_r48016798_18",
+   "name": "atm_store_r48016798_17",
    "x": 1.55,
    "y": 10.56,
    "z": 0.725,
@@ -872,12 +860,35 @@
    "size_y": 0.55,
    "size_z": 1.45,
    "collision": "convex",
-   "material": "metal",
-   "variant": 1
+   "material": "metal"
+  },
+  {
+   "name": "video_poker_store_r48016798_18",
+   "x": -1.76,
+   "y": 10.52,
+   "z": 0.875,
+   "size_x": 0.65,
+   "size_y": 0.65,
+   "size_z": 1.75,
+   "collision": "convex",
+   "material": "metal_painted",
+   "variant": 2
+  },
+  {
+   "name": "bar_stool_r48016798_18_1",
+   "x": -1.76,
+   "y": 9.86,
+   "z": 0.38,
+   "size_x": 0.42,
+   "size_y": 0.42,
+   "size_z": 0.76,
+   "collision": "convex",
+   "material": "metal_bare",
+   "rot_z": 180.0
   },
   {
    "name": "video_poker_store_r48016798_19",
-   "x": -1.76,
+   "x": -7.3,
    "y": 10.52,
    "z": 0.875,
    "size_x": 0.65,
@@ -888,7 +899,7 @@
   },
   {
    "name": "bar_stool_r48016798_19_1",
-   "x": -1.76,
+   "x": -7.3,
    "y": 9.86,
    "z": 0.38,
    "size_x": 0.42,
@@ -900,33 +911,21 @@
    "variant": 3
   },
   {
-   "name": "video_poker_store_r48016798_20",
-   "x": -7.3,
-   "y": 10.52,
-   "z": 0.875,
-   "size_x": 0.65,
-   "size_y": 0.65,
-   "size_z": 1.75,
-   "collision": "convex",
-   "material": "metal_painted",
+   "name": "poster_wall_store_r48016798_20",
+   "x": -13.58,
+   "y": 10.84,
+   "z": 1.4,
+   "size_x": 1.6,
+   "size_y": 0.01,
+   "size_z": 0.6,
+   "collision": "none",
+   "material": "paper",
+   "form": "store",
    "variant": 3
-  },
-  {
-   "name": "bar_stool_r48016798_20_1",
-   "x": -7.3,
-   "y": 9.86,
-   "z": 0.38,
-   "size_x": 0.42,
-   "size_y": 0.42,
-   "size_z": 0.76,
-   "collision": "convex",
-   "material": "metal_bare",
-   "rot_z": 180.0,
-   "variant": 2
   },
   {
    "name": "poster_wall_store_r48016798_21",
-   "x": -13.58,
+   "x": -4.38,
    "y": 10.84,
    "z": 1.4,
    "size_x": 1.6,
@@ -939,19 +938,6 @@
   },
   {
    "name": "poster_wall_store_r48016798_22",
-   "x": -4.38,
-   "y": 10.84,
-   "z": 1.4,
-   "size_x": 1.6,
-   "size_y": 0.01,
-   "size_z": 0.6,
-   "collision": "none",
-   "material": "paper",
-   "form": "store",
-   "variant": 3
-  },
-  {
-   "name": "poster_wall_store_r48016798_23",
    "x": -15.84,
    "y": -5.06,
    "z": 1.6,
@@ -962,7 +948,7 @@
    "material": "paper",
    "rot_z": 180.0,
    "form": "store",
-   "variant": 1
+   "variant": 3
   }
  ],
  "rooms": [

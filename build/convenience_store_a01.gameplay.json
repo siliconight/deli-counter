@@ -1367,15 +1367,6 @@
       }
     },
     {
-      "node": "cartons_r48016798_12_col",
-      "material": {
-        "id": "wood",
-        "acoustic": "Wood",
-        "absorption": null,
-        "damping": null
-      }
-    },
-    {
       "node": "shelf_run_r499afdf7_1_col",
       "material": {
         "id": "wood",
@@ -1403,9 +1394,27 @@
       }
     },
     {
-      "node": "atm_store_r48016798_13_col",
+      "node": "atm_store_r48016798_12_col",
       "material": {
         "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.2,
+        "damping": 0.15
+      }
+    },
+    {
+      "node": "video_poker_store_r48016798_13_col",
+      "material": {
+        "id": "metal_painted",
+        "acoustic": "Metal",
+        "absorption": 0.25,
+        "damping": 0.2
+      }
+    },
+    {
+      "node": "bar_stool_r48016798_13_1_col",
+      "material": {
+        "id": "metal_bare",
         "acoustic": "Metal",
         "absorption": 0.2,
         "damping": 0.15
@@ -1422,24 +1431,6 @@
     },
     {
       "node": "bar_stool_r48016798_14_1_col",
-      "material": {
-        "id": "metal_bare",
-        "acoustic": "Metal",
-        "absorption": 0.2,
-        "damping": 0.15
-      }
-    },
-    {
-      "node": "video_poker_store_r48016798_15_col",
-      "material": {
-        "id": "metal_painted",
-        "acoustic": "Metal",
-        "absorption": 0.25,
-        "damping": 0.2
-      }
-    },
-    {
-      "node": "bar_stool_r48016798_15_1_col",
       "material": {
         "id": "metal_bare",
         "acoustic": "Metal",
@@ -1970,15 +1961,14 @@
     "gondola_aisle_r48016798_9": "prop",
     "gondola_aisle_r48016798_10": "prop",
     "gondola_aisle_r48016798_11": "prop",
-    "cartons_r48016798_12": "prop",
     "shelf_run_r499afdf7_1": "prop",
     "counter_service_rd0389b71_1": "prop",
     "vending_rd0389b71_2": "prop",
-    "atm_store_r48016798_13": "prop",
+    "atm_store_r48016798_12": "prop",
+    "video_poker_store_r48016798_13": "prop",
+    "bar_stool_r48016798_13_1": "prop",
     "video_poker_store_r48016798_14": "prop",
     "bar_stool_r48016798_14_1": "prop",
-    "video_poker_store_r48016798_15": "prop",
-    "bar_stool_r48016798_15_1": "prop",
-    "poster_wall_store_r48016798_16": "prop"
+    "poster_wall_store_r48016798_15": "prop"
   }
 }

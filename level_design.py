@@ -3463,7 +3463,361 @@ def room_floor_share(spec, room):
     return foot / area
 
 
-def _row_clear(spec, room, px, py, sx, sy, hosts, obstacles=None):
+#: TWO ABREAST (0.250.0, the factory's roadmap 288). The guide the walker filed on
+#: 2026-10-21 (`docs/reference/Lived_In_Levels_Clear_Navigation_4P_PVE_1999_PA.md` at the
+#: factory root, section 5) gives the clear width n bodies need side by side as
+#: n x body + 2 x wall margin + (n - 1) x gap, with its own margins -- 0.15 m off a wall,
+#: 0.20 m between players -- which it calls a prototype's, proven in no controller. The
+#: body is the contract's, so a bigger body widens this with everything else.
+_ABREAST_WALL_MARGIN = 0.15
+_ABREAST_GAP = 0.20
+
+
+def two_abreast_width():
+    """The clear width two bodies pass side by side: 2 x 2r + 2 x 0.15 + 0.20, r the
+    contract's body radius -- 1.90 m. The guide's formula and margins (see above)."""
+    import agent_contract
+    r = agent_contract.body_radius()
+    return round(2 * 2 * r + 2 * _ABREAST_WALL_MARGIN + _ABREAST_GAP, 4)
+
+
+#: What a route through a room starts and ends at (`room_route_endpoints`): the
+#: walkable openings -- a vault's leaf is walked through when it is open -- and
+#: the markers a crew walks to.
+_ROUTE_DOOR_KINDS = ("door", "garage", "vault")
+_ROUTE_MARKERS = ("objective", "loot")
+#: A body's centre this far inside a door's wall face, where a route through the
+#: door begins; a marker's route may begin this far from the marker.
+_ROUTE_DOOR_IN = 0.5
+_ROUTE_SNAP = {"door": 0.6, "open": 0.6, "objective": 1.0, "loot": 1.0}
+#: The grid the routes are found on, metres, set off round coordinates so no cell
+#: centre sits on a seam (the factory's LF 0.219.0 lattice).
+_ROUTE_CELL = 0.25
+_ROUTE_OFFSET = (0.0031, 0.0023)
+#: How much longer than the room allowed it a pair's way along the reserved
+#: routes may be: the guide's dressing traversal flag, 10 % (its section 14).
+_ROUTE_STRETCH = 1.10
+#: What a turn costs a reserved route, in cells (`protected_routes`): enough that
+#: a route runs straight down an aisle and crosses a row square.
+_ROUTE_TURN = 4.0
+
+
+def room_route_endpoints(spec, room):
+    """Where routes through `room` begin and end: ``[(kind, label, x, y)]``.
+
+    A body's centre `_ROUTE_DOOR_IN` inside each walkable door's wall face (a door,
+    a garage door, a vault's leaf; partition and exterior, placed by
+    `partition_bounds.host_openings`, the builder's own arithmetic); the middle of
+    each edge the room is open to with no partition on it; and each objective and
+    loot marker standing in it. The factory's
+    `docs/findings/furnish_route_cost/route_cost.py` measures routes between the
+    same points (0.250.0, the factory's roadmap 288)."""
+    import partition_bounds
+    near = 0.05
+    x0, y0, x1, y1 = room["bounds"]
+    story = room.get("story", 0)
+    sh = _story_height(spec)
+    t = float(spec.get("wall_thick", 0.3))
+    hx, hy = spec["footprint_x"] / 2.0, spec["footprint_y"] / 2.0
+    inset = t / 2.0 + _ROUTE_DOOR_IN
+
+    def walkable(host):
+        return dict(host, openings=[dict(op, kind="door")
+                                    for op in host.get("openings") or []
+                                    if op.get("kind", "door") in _ROUTE_DOOR_KINDS])
+
+    out = []
+    for p in spec.get("partitions") or []:
+        if p.get("story", 0) != story:
+            continue
+        for along, _w, label in partition_bounds.host_openings(spec, walkable(p), False):
+            if str(p.get("axis", "X")).upper() == "Y":
+                if not (y0 - near <= along <= y1 + near):
+                    continue
+                if abs(p["pos"] - x0) < near:
+                    out.append(("door", label, x0 + inset, along))
+                elif abs(p["pos"] - x1) < near:
+                    out.append(("door", label, x1 - inset, along))
+            else:
+                if not (x0 - near <= along <= x1 + near):
+                    continue
+                if abs(p["pos"] - y0) < near:
+                    out.append(("door", label, along, y0 + inset))
+                elif abs(p["pos"] - y1) < near:
+                    out.append(("door", label, along, y1 - inset))
+    for w in spec.get("ext_walls") or []:
+        if w.get("story", 0) != story:
+            continue
+        face = w.get("wall")
+        for along, _w, label in partition_bounds.host_openings(spec, walkable(w), True):
+            if face == "N" and abs(y1 - hy) < near and x0 - near <= along <= x1 + near:
+                out.append(("door", label, along, hy - inset))
+            elif face == "S" and abs(y0 + hy) < near and x0 - near <= along <= x1 + near:
+                out.append(("door", label, along, -hy + inset))
+            elif face == "E" and abs(x1 - hx) < near and y0 - near <= along <= y1 + near:
+                out.append(("door", label, hx - inset, along))
+            elif face == "W" and abs(x0 + hx) < near and y0 - near <= along <= y1 + near:
+                out.append(("door", label, -hx + inset, along))
+    rooms = {r["id"]: r for r in spec.get("rooms") or []}
+    joined = set(room.get("open_to") or [])
+    joined |= {r["id"] for r in rooms.values() if room["id"] in (r.get("open_to") or [])}
+    for rid in sorted(joined):
+        n = rooms.get(rid)
+        if n is None or n.get("story", 0) != story:
+            continue
+        a0, b0, a1, b1 = n["bounds"]
+        for axis, line, other, lo, hi, inward in (
+                ("Y", x1, a0, max(y0, b0), min(y1, b1), -1), ("Y", x0, a1, max(y0, b0), min(y1, b1), 1),
+                ("X", y1, b0, max(x0, a0), min(x1, a1), -1), ("X", y0, b1, max(x0, a0), min(x1, a1), 1)):
+            if abs(other - line) >= near or hi - lo < 1.0:
+                continue
+            if any(p.get("story", 0) == story and str(p.get("axis", "X")).upper() == axis
+                   and abs(p["pos"] - line) < near for p in spec.get("partitions") or []):
+                continue
+            mid = (lo + hi) / 2.0
+            out.append(("open", rid, line + inward * _ROUTE_DOOR_IN, mid) if axis == "Y"
+                       else ("open", rid, mid, line + inward * _ROUTE_DOOR_IN))
+    for m in spec.get("markers") or []:
+        if m.get("type") in _ROUTE_MARKERS and x0 <= m.get("x", 1e9) <= x1 \
+                and y0 <= m.get("y", 1e9) <= y1 and marker_on_storey(m, story * sh, sh):
+            out.append((m["type"], m.get("id") or m["type"], float(m["x"]), float(m["y"])))
+    return out
+
+
+def _simplify(points, eps):
+    """Ramer-Douglas-Peucker: the polyline's corners, no point more than `eps` off it."""
+    if len(points) < 3:
+        return list(points)
+    (ax, ay), (bx, by) = points[0], points[-1]
+    dx, dy = bx - ax, by - ay
+    norm = math.hypot(dx, dy)
+    best, k = -1.0, 0
+    for i in range(1, len(points) - 1):
+        px, py = points[i]
+        d = (abs(dy * px - dx * py + bx * ay - by * ax) / norm if norm > 1e-12
+             else math.hypot(px - ax, py - ay))
+        if d > best:
+            best, k = d, i
+    if best <= eps:
+        return [points[0], points[-1]]
+    return _simplify(points[:k + 1], eps)[:-1] + _simplify(points[k:], eps)
+
+
+def protected_routes(spec, room):
+    """The routes a room's furniture keeps clear: ``[(points, half_width)]``, each a
+    polyline in plan between two of the room's endpoints (`room_route_endpoints`).
+
+    RESERVED BEFORE ANYTHING IS PLACED (0.250.0, the factory's roadmap 288): the
+    guide's section 3, and its builder's third step -- "reserve circulation,
+    interactions, combat movement, and important sightlines" before large fixtures
+    and clusters. Asked of the room as it stands when furnish reaches it -- its
+    walls, stairs, authored pieces and the shelter pass's piece, none of furnish's
+    own -- on a `_ROUTE_CELL` grid inside the room's bounds, with the obstacles a
+    seeded piece keeps its corridor from (`_corridor_obstacles`, less what has no
+    collision).
+
+    Between every pair of endpoints, a SQUARE route for a body
+    (`agent_contract.body_radius()` clear of everything): four directions, a turn
+    costing `_ROUTE_TURN` cells, so a route runs along the room's axes -- down an
+    aisle, across a row square -- as a shop's circulation does. REFUTED, KEPT: the
+    first draft reserved the shortest route on eight directions, the diagonal an
+    empty floor allows, and its corridors cut a store's rows into scattered short
+    gondolas -- deli_a03's market aisles from 19.7 to 11.0 % of their floor,
+    convenience_store_a01's eight gondolas to two, six of the fourteen corner-store
+    floors under the walker's 12 % (the factory's patches/dc_reserved_routes/).
+
+    Then a GREEDY SPANNER over those routes: shortest first, a pair's own route
+    reserved only when the routes reserved so far, walked endpoint to endpoint, are
+    more than `_ROUTE_STRETCH` times as long -- so every pair keeps a reserved way
+    within the guide's 10 % of its own square route, and no more floor is reserved
+    than that takes. REFUTED, KEPT: a minimum spanning tree, which joins every
+    endpoint and bounds no pair -- on gas_station's sales floor it joined all five
+    reachable endpoints along the shop front, so its stock door to its west service
+    door, the route the census had flagged, went by the front; over the corner
+    stores' specs it left 10 pairs over 10 %, the spanner 4.
+
+    The corridor's half width is half `two_abreast_width()`: a piece placed after
+    keeps that far off the route, so two bodies pass wherever the room already let
+    them -- measured against the contract's aisle as the half width, the same floor
+    share and 54 routes narrowed to single file against 62.
+
+    WHAT KEEPS OFF THEM: furnish's rows, floor pieces, clusters and chairs. A wall
+    piece is not asked -- it stands in the wall's zone, in no walking line -- and
+    neither is the fixtures pass (`place_fixtures`), whose pieces are wall fixtures
+    and the seat in front of one, on the same terms. MEASURED BOTH WAYS: asked,
+    convenience_store_a01 and stop_n_go each lost both video poker cabinets and
+    their stools (the walker's PA skill games) to the route along their north
+    wall between their two north doors; not asked, a stool stands 0.27 m off that
+    route's line and the census reads the floor's worst pair at 1.096, inside the
+    guide's 10 %. Every pass asks for a room's routes on one floor, `unfurnished`,
+    so they are the same whichever asks and in whatever order rooms are
+    furnished."""
+    import heapq
+    import agent_contract
+    import numpy as np
+    eps = room_route_endpoints(spec, room)
+    if len(eps) < 2:
+        return []
+    r = agent_contract.body_radius()
+    x0, y0, x1, y1 = room["bounds"]
+    story = room.get("story", 0)
+    sh = _story_height(spec)
+    floor = story * sh
+    standing = dict(spec, volumes=[v for v in spec.get("volumes") or []
+                                   if v.get("collision") != "none"])
+    boxes = _corridor_obstacles(standing, story, floor, sh)
+    xs = np.arange(x0 + _ROUTE_OFFSET[0] + _ROUTE_CELL / 2.0, x1, _ROUTE_CELL)
+    ys = np.arange(y0 + _ROUTE_OFFSET[1] + _ROUTE_CELL / 2.0, y1, _ROUTE_CELL)
+    if len(xs) < 2 or len(ys) < 2:
+        return []
+    X, Y = np.meshgrid(xs, ys)
+    clear = np.full(X.shape, 10.0)
+    for bx0, by0, bx1, by1 in boxes:
+        if bx1 < x0 - 2 or bx0 > x1 + 2 or by1 < y0 - 2 or by0 > y1 + 2:
+            continue
+        dx = np.maximum(np.maximum(bx0 - X, 0.0), X - bx1)
+        dy = np.maximum(np.maximum(by0 - Y, 0.0), Y - by1)
+        np.minimum(clear, np.hypot(dx, dy), out=clear)
+    free = clear >= r
+    H, W = free.shape
+
+    def snap(kind, x, y):
+        reach = _ROUTE_SNAP.get(kind, 0.6)
+        k = int(math.ceil(reach / _ROUTE_CELL))
+        j0 = int(round((x - xs[0]) / _ROUTE_CELL))
+        i0 = int(round((y - ys[0]) / _ROUTE_CELL))
+        best = None
+        for i in range(i0 - k, i0 + k + 1):
+            for j in range(j0 - k, j0 + k + 1):
+                if 0 <= i < H and 0 <= j < W and free[i, j]:
+                    d = math.hypot(xs[j] - x, ys[i] - y)
+                    if d <= reach and (best is None or d < best[0]):
+                        best = (d, i, j)
+        return None if best is None else (best[1], best[2])
+
+    cells = [snap(k, x, y) for k, _l, x, y in eps]
+    steps = [(-1, 0, 1.0), (1, 0, 1.0), (0, -1, 1.0), (0, 1, 1.0)]
+    paths = {}
+    for a, start in enumerate(cells):
+        if start is None:
+            continue
+        targets = {c: b for b, c in enumerate(cells) if c is not None and b > a}
+        if not targets:
+            continue
+        # a state is a cell and the step that reached it, so a turn can cost
+        s0 = (start[0], start[1], -1)
+        dist, prev, best = {s0: 0.0}, {}, {}
+        heap = [(0.0, s0)]
+        while heap and len(best) < len(targets):
+            dd, cur = heapq.heappop(heap)
+            if dd > dist.get(cur, 1e18):
+                continue
+            i, j, came = cur
+            if (i, j) in targets and (i, j) not in best:
+                best[(i, j)] = cur
+            for k, (di, dj, w) in enumerate(steps):
+                ni, nj = i + di, j + dj
+                if not (0 <= ni < H and 0 <= nj < W and free[ni, nj]):
+                    continue
+                nd = dd + w + (_ROUTE_TURN if came not in (-1, k) else 0.0)
+                nxt = (ni, nj, k)
+                if nd < dist.get(nxt, 1e18):
+                    dist[nxt] = nd
+                    prev[nxt] = cur
+                    heapq.heappush(heap, (nd, nxt))
+        for c, b in targets.items():
+            if c not in best:
+                continue
+            end = best[c]
+            walk, cur = [end], end
+            while cur != s0:
+                cur = prev[cur]
+                walk.append(cur)
+            pts = [(float(xs[j]), float(ys[i])) for i, j, _k in reversed(walk)]
+            length = sum(math.hypot(q[0] - p_[0], q[1] - p_[1]) for p_, q in zip(pts, pts[1:]))
+            paths[(a, b)] = (length, pts)
+    n = len(eps)
+    inf = float("inf")
+    net = [[0.0 if i == j else inf for j in range(n)] for i in range(n)]
+    half = two_abreast_width() / 2.0
+    out = []
+    for (a, b), (length, pts) in sorted(paths.items(), key=lambda kv: (kv[1][0], kv[0])):
+        if net[a][b] <= _ROUTE_STRETCH * length + 1e-9:
+            continue
+        out.append((_simplify(pts, _ROUTE_CELL / 2.0), half))
+        # the walk along reserved routes, endpoint to endpoint, with this one in
+        for i in range(n):
+            for j in range(n):
+                via = min(net[i][a] + length + net[b][j], net[i][b] + length + net[a][j])
+                if via < net[i][j]:
+                    net[i][j] = via
+    return out
+
+
+def unfurnished(spec):
+    """The spec less every volume furnish and the fixtures pass wrote -- a stem
+    they place and the tag of one of its rooms, `migrate_furnish_recipes`'s own
+    test -- which is the floor `protected_routes` is asked of, so a room's
+    reserved routes are the same whichever pass asks and in whatever order its
+    rooms are furnished: the authored pieces and the shelter pass's stay."""
+    import re
+    tags = {_room_tag(r) for r in spec.get("rooms") or []}
+    stems = set(_PIECES) | set(_LEGACY_STEMS) | set(_COLLIDER_STEMS) | {"chair_set"}
+    made = re.compile(r"^(?P<stem>[a-z_]+?)_(?P<tag>r[0-9a-f]{8})_\d+(_\d+)?$")
+
+    def wrote(v):
+        m = made.match(str(v.get("name") or ""))
+        return bool(m and m.group("tag") in tags and m.group("stem") in stems)
+
+    return dict(spec, volumes=[v for v in spec.get("volumes") or [] if not wrote(v)])
+
+
+def reserves_routes(room, building):
+    """Does this room reserve its routes before it is furnished (`protected_routes`)?
+    A shop floor that stands rows -- a corner store's (`_shop_rows`) -- since
+    0.250.0, the floors the factory's census found the rows cost most."""
+    return _room_kind(room, building) == "shop_floor" and bool(_shop_rows(room, building))
+
+
+def _seg_box_gap(a, b, box):
+    """Clear plan distance between the segment a-b and an (x0, y0, x1, y1) box: 0
+    when they touch."""
+    (ax, ay), (bx, by) = a, b
+    bx0, by0, bx1, by1 = box
+    if (bx0 <= ax <= bx1 and by0 <= ay <= by1) or (bx0 <= bx <= bx1 and by0 <= by <= by1):
+        return 0.0
+    # the segment crossing an edge of the box
+    for (cx, cy), (dx, dy) in (((bx0, by0), (bx1, by0)), ((bx1, by0), (bx1, by1)),
+                               ((bx1, by1), (bx0, by1)), ((bx0, by1), (bx0, by0))):
+        den = (bx - ax) * (dy - cy) - (by - ay) * (dx - cx)
+        if abs(den) > 1e-12:
+            s = ((cx - ax) * (dy - cy) - (cy - ay) * (dx - cx)) / den
+            u = ((cx - ax) * (by - ay) - (cy - ay) * (bx - ax)) / den
+            if 0.0 <= s <= 1.0 and 0.0 <= u <= 1.0:
+                return 0.0
+
+    def pt_seg(px, py):
+        vx, vy = bx - ax, by - ay
+        n2 = vx * vx + vy * vy
+        k = 0.0 if n2 < 1e-12 else max(0.0, min(1.0, ((px - ax) * vx + (py - ay) * vy) / n2))
+        return math.hypot(px - ax - k * vx, py - ay - k * vy)
+
+    return min(_box_gap((ax, ay, ax, ay), box), _box_gap((bx, by, bx, by), box),
+               pt_seg(bx0, by0), pt_seg(bx1, by0), pt_seg(bx1, by1), pt_seg(bx0, by1))
+
+
+def on_protected_route(routes, px, py, sx, sy):
+    """Does a piece `sx` by `sy` centred (px, py) stand within a protected route's
+    half width (`protected_routes`)?"""
+    box = (px - sx / 2.0, py - sy / 2.0, px + sx / 2.0, py + sy / 2.0)
+    for pts, half in routes or ():
+        for a, b in zip(pts, pts[1:]):
+            if _seg_box_gap(a, b, box) < half - 1e-9:
+                return True
+    return False
+
+
+def _row_clear(spec, room, px, py, sx, sy, hosts, obstacles=None, routes=None):
     """May an island `sx` by `sy`, centred (px, py), stand in a ROW?
 
     Two questions. FIRST, THE AISLE, asked of the rectangle itself: at least
@@ -3493,6 +3847,10 @@ def _row_clear(spec, room, px, py, sx, sy, hosts, obstacles=None):
     box = (px - sx / 2.0, py - sy / 2.0, px + sx / 2.0, py + sy / 2.0)
     if any(_box_gap(box, r) < aisle - 1e-9 for r in obstacles):
         return False
+    # ...and off a route the room reserved before anything was placed (0.250.0,
+    # `protected_routes`), when its recipe reserves them
+    if routes and on_protected_route(routes, px, py, sx, sy):
+        return False
     short, long_ = min(sx, sy), max(sx, sy)
     n = max(1, int(math.ceil(long_ / short - 1e-9)))
     step = (long_ - short) / (n - 1) if n > 1 else 0.0
@@ -3506,6 +3864,18 @@ def _row_clear(spec, room, px, py, sx, sy, hosts, obstacles=None):
 
 #: How far a row's next island slides along it past a slot that refuses one.
 _ROW_SLIDE = 0.25
+#: THE WRITER'S CENTIMETRE (0.250.0). `_make_volume` writes a position to 0.01 m,
+#: so an island placed between centimetres is written up to half of one off where
+#: its aisle was measured, and two neighbours down a row a whole centimetre nearer
+#: each other. Down a row each island is centred ON the centimetre, rounded away
+#: from the last, and the next starts an aisle past its written end, so the gap
+#: written is the gap measured. MEASURED: once the reserved routes moved its
+#: packing onto slides, fuel_stop_heist's two gondolas meant to be an aisle apart
+#: were written 1.24 m apart (`test_corner_store_rows`). REFUTED, KEPT: building
+#: the rows a centimetre wider apart instead moved their pitch off a room's own
+#: aisles -- deli_a03's, 4.5 m apart, two pitches of 1.25 + 1.0 -- and its third
+#: row onto its second authored aisle.
+_ROW_WRITE_Q = 0.01
 #: A standing volume the rows take their axis, depth and phase from
 #: (`_row_slots`): an island's depth and height, as `snack_gondola`'s genome
 #: has them, longer than it is deep, and standing clear of every wall face
@@ -3515,7 +3885,7 @@ _ROW_OWN_MIN_H = 1.2
 _ROW_OWN_OFF_WALL = 0.9
 
 
-def _row_slots(spec, room, w, d, hosts):
+def _row_slots(spec, room, w, d, hosts, routes=None):
     """Where ROWS of islands `w` long and `d` deep stand on `room`'s floor:
     ``[[(x, y, sx, sy), ...], ...]``, one list a row, rows ordered from the
     room's centre line out. Every slot is clear (`_row_clear`) of everything
@@ -3612,14 +3982,18 @@ def _row_slots(spec, room, w, d, hosts):
     rows = []
     for c in cs:
         row, s = [], start
-        while s + w <= a1 - aisle + 1e-9:
-            m = s + w / 2.0
+        while True:
+            # centred on the writer's centimetre, never before `s`
+            m = round(math.ceil((s + w / 2.0) / _ROW_WRITE_Q - 1e-9) * _ROW_WRITE_Q, 2)
+            if m + w / 2.0 > a1 - aisle + 1e-9:
+                break
             px, py = (m, c) if along_x else (c, m)
             sx, sy = (w, d) if along_x else (d, w)
             if (not _over_rects(inner, px, py, sx / 2.0, sy / 2.0)
-                    and _row_clear(spec, room, px, py, sx, sy, hosts, obstacles)):
+                    and _row_clear(spec, room, px, py, sx, sy, hosts, obstacles,
+                                   routes)):
                 row.append((px, py, sx, sy))
-                s += w + aisle
+                s = m + w / 2.0 + aisle
             else:
                 s += _ROW_SLIDE
         if row:
@@ -5199,7 +5573,13 @@ def furnish(spec):
             recipe = dict(recipe, anchors=_card_shop_anchors(room, building),
                           floor=_card_shop_floor(room, building))
         elif kind == "shop_floor":
-            recipe = dict(recipe, rows=_shop_rows(room, building))
+            # A FLOOR THAT STANDS ROWS RESERVES ITS ROUTES FIRST (0.250.0, the
+            # factory's roadmap 288): the census of what furnishing costs a
+            # route found the corner stores' rows the most of it -- 16 of
+            # their 85 door-to-door routes grown over 10 %, 44 narrowed from
+            # two abreast to single file.
+            recipe = dict(recipe, rows=_shop_rows(room, building),
+                          protect_routes=reserves_routes(room, building))
         have = _room_volume_count(spec, room)
         want = max(0, _furnish_target(area, recipe.get("per_area")) - have)
         if recipe.get("cap") is not None:
@@ -5220,6 +5600,11 @@ def furnish(spec):
             clusters.append(_BASEMENT_CLUSTER)
         rcx, rcy = (x0 + x1) / 2.0, (y0 + y1) / 2.0
         inner = _nested_rects(spec, room)
+        # THE ROUTES BEFORE THE PIECES (0.250.0, `protected_routes`), asked of
+        # the room as furnish finds it, when the recipe reserves them; every
+        # piece placed below that stands on the floor keeps off them.
+        routes = (protected_routes(unfurnished(spec), room)
+                  if recipe.get("protect_routes") else [])
         placed = []
         per_size = collections.Counter()
         per_name = collections.Counter()
@@ -5339,6 +5724,9 @@ def furnish(spec):
                 if not (x0 + edge < cx < x1 - edge and y0 + edge < cy < y1 - edge):
                     continue
                 if _over_rects(inner, cx, cy, seat_half, seat_half):
+                    continue
+                if routes and on_protected_route(routes, cx, cy, 2 * seat_half,
+                                                 2 * seat_half):
                     continue
                 # THE CHAIR PASSES THE SAME CLEARANCE AS EVERY OTHER PIECE,
                 # minus its own host and its own set, which it must stand
@@ -5475,6 +5863,9 @@ def furnish(spec):
                         half = max(sx, sy) / 2.0
                     if _over_rects(inner, qx, qy, half, half):
                         continue
+                    if routes and not hung and p["where"] != "wall" and \
+                            on_protected_route(routes, qx, qy, sx, sy):
+                        continue
                     # THE CONTRACT'S AISLE, and only an island is asked for
                     # it: `_seed_clear` below keeps 0.9 m from a volume's
                     # edge, which is under `min_corridor_width_m` and is the
@@ -5550,7 +5941,7 @@ def furnish(spec):
                 w, d, h = size
                 if h is None:
                     h = to_ceiling_height(spec, p, clear_h)
-                rows = _row_slots(spec, room, w, d, hosts)
+                rows = _row_slots(spec, room, w, d, hosts, routes)
                 got = sum(len(r) for r in rows) * w * d
                 if best is None or got > best[0] + 1e-9:
                     best = (got, (w, d, h), rows)
@@ -5625,6 +6016,8 @@ def furnish(spec):
                         and y0 + 1.0 <= cy - bd / 2.0 and cy + bd / 2.0 <= y1 - 1.0):
                     continue
                 if _over_rects(inner, cx, cy, bw / 2.0, bd / 2.0):
+                    continue
+                if routes and on_protected_route(routes, cx, cy, bw, bd):
                     continue
                 if not _seed_clear(spec, room, cx, cy, placed, half=half):
                     continue

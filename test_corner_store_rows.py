@@ -202,10 +202,13 @@ def test_the_rows_continue_a_room_s_own_aisles():
 
 def test_the_rows_fill_the_floor():
     """A regression detector, not a target: measured when 0.247.0 was written, every corner store floor stood 19.2
-    to 23.1 % of its floor under furniture after its rows, from 5.4 to 13.4 % before them."""
+    to 23.1 % of its floor under furniture after its rows, from 5.4 to 13.4 % before them. Since 0.250.0 reserves a
+    floor's routes before its rows (`protected_routes`), 17.2 to 22.1 % -- and the walker's band, 2026-10-21, is
+    12 to 25 %: rooms neither crowded nor barren."""
     for name, rid in CORNER_FLOORS.items():
         d = _spec(name)
-        assert L.room_floor_share(d, _room(d, rid)) >= 0.19, name
+        share = L.room_floor_share(d, _room(d, rid))
+        assert 0.17 <= share <= 0.25, (name, share)
 
 
 def test_a_deli_is_a_store_to_the_gondola_migration():

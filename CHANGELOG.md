@@ -1,3 +1,75 @@
+## [0.250.0] - a corner store's selling floor reserves its routes before its rows are laid
+
+**The factory's roadmap 288.** The walker, 2026-10-21: rooms neither crowded nor barren, and above all "free
+navigation and fun gun fights". The factory's census of what furnishing costs a route -- per room, between every pair
+of its doors and markers, the shortest body route and the widest-path bottleneck, with and without what furnish stood
+(the factory's `docs/findings/furnish_route_cost/`) -- found the corner stores' rows, 0.247.0's, the most of it: of
+their 85 routes, 16 grown over the 10 % the walker's guide flags and 44 narrowed from two abreast to single file. The
+guide, filed the same day (`docs/reference/Lived_In_Levels_Clear_Navigation_4P_PVE_1999_PA.md` at the factory root),
+answers it in its section 3 and its builder's third step: reserve circulation before placing.
+
+### Added
+- **`protected_routes(spec, room)`**: the routes a room's furniture keeps clear, reserved before anything is placed.
+  Square routes between the room's doors and markers for the contract's body, on a 0.25 m grid, a turn costing four
+  cells, so a route runs down an aisle and across a row square as a shop's circulation does; then a greedy spanner at
+  the guide's 10 % (`_ROUTE_STRETCH`): every pair keeps a reserved way within 10 % of its own square route, and no
+  more floor is reserved than that takes. Each corridor's half width is half `two_abreast_width()`.
+- **`two_abreast_width()`**: the guide's formula for bodies side by side, n x 2r + 2 x 0.15 + (n - 1) x 0.20, at n = 2
+  on the contract's body: 1.90 m. The margins are the guide's, which it calls a prototype's.
+- **`room_route_endpoints(spec, room)`**: a body's centre half a metre inside each walkable door (door, garage, a
+  vault's leaf, placed by `partition_bounds.host_openings`, the builder's arithmetic), the middle of each open edge,
+  and each objective and loot marker. The factory's census measures between the same points.
+- **`reserves_routes(room, building)`**: which rooms reserve them -- a shop floor that stands rows, a corner
+  store's -- one rule, read by furnish's recipe flag (`protect_routes`).
+- **`unfurnished(spec)`**: the floor every pass asks for a room's routes on -- the spec less what furnish and the
+  fixtures pass wrote, `migrate_furnish_recipes`'s own strip -- so the routes are the same whichever asks and in
+  whatever order the rooms are furnished.
+- **`on_protected_route`**: furnish's rows, floor pieces, clusters and chairs keep off them. A wall piece is not
+  asked, and neither is the fixtures pass: a wall fixture and the seat in front of it stand in the wall's zone.
+
+### Changed
+- **Down a row, every island stands on the writer's centimetre.** `_make_volume` writes a position to 0.01 m, so an
+  island placed between centimetres can be written up to half of one off where its aisle was measured. Each island is
+  centred on the centimetre, rounded away from the last, and the next starts an aisle past its written end. Measured:
+  once the routes moved its packing onto slides, fuel_stop_heist's two gondolas meant to be an aisle apart were
+  written 1.24 m apart (`test_corner_store_rows`).
+- **The library refurnished**: the fourteen corner-store selling floors and no other room (the factory's
+  `patches/dc_reserved_routes/routes_rooms_diff.out.txt`). Their floor share from 19.2-23.1 % to 17.2-22.1 %, every
+  one inside the walker's band of 12 to 25 %; their generated gondola units from 126 to 115. The delis' market aisles
+  stand two banks of gondolas with one straight cross-aisle between them, the gas stations' rows two aligned banks
+  with their front clear; the convenience stores keep their video poker cabinets.
+
+### Measured, kept
+- **The census over the fourteen specs**, every room of them, 0.249.0 against this (the factory's
+  `patches/dc_reserved_routes/census_0249_corner.out.txt` and `census_0250_corner.out.txt`): routes grown over 10 %
+  from 20 in 13 rooms to 4 in 3, none on a corner floor -- the four are back offices and back halls, which reserve
+  nothing, and the corner floors' worst pair is 1.096; p90 1.079 -> 1.059, p99 1.143 -> 1.119; routes narrowed from
+  two abreast to single file 70 -> 54; routes two abreast after furnishing 129 -> 145; none closed to a body.
+- REFUTED: the shortest route on eight directions, the diagonal an empty floor allows. Its corridors cut a store's
+  rows into scattered short gondolas -- deli_a03's market aisles from 19.7 to 11.0 % of their floor,
+  convenience_store_a01's eight gondola units to two, six of the fourteen floors under the walker's 12 %.
+- REFUTED: a minimum spanning tree over the routes, which joins every endpoint and bounds no pair -- on square routes
+  it left 10 pairs over 10 % where the spanner leaves 4. Also measured and not taken: the contract's aisle as the
+  corridor's half width (the same share, 62 routes narrowed where two abreast leaves 54), and a stretch of 1.25 (the
+  same routes reserved).
+- REFUTED: the fixtures pass asked too. convenience_store_a01 and stop_n_go each lost both video poker cabinets and
+  their stools -- the walker's PA skill games -- to the route along their north wall between their two north doors;
+  not asked, a stool stands 0.27 m off that route's line and the floor's worst pair reads 1.096.
+- REFUTED: the rows built a centimetre wider apart instead. It moved their pitch off a room's own aisles --
+  deli_a03's, 4.5 m apart, two pitches of 1.25 + 1.0 -- and its third row onto its second authored aisle.
+- **What the census cannot say.** It measures the rows against an empty floor, and in the guide's terms a store's
+  rows are its functional build, not its dressing; the guide's 10 % is a flag on dressing. The routes a corner floor
+  still walks longer than an empty floor would let it are an aisle layout's, which a shop has.
+
+### Tests
+- **test_reserved_routes.py** (new, 6): every pass reserves on the floor the refurnish starts from; two abreast is the
+  guide's formula on the contract's body; route endpoints stand inside the doors the builder cuts; reserved routes run
+  square; nothing furnish stood on a corner floor stands on its routes; only a floor that stands rows asks for its
+  routes. On 0.249.0 all six fail on the new functions' names: what they guard is the census above, not a behaviour
+  0.249.0 had (the factory's `patches/dc_reserved_routes/prove_tests_on_0249.out.txt`).
+- **test_corner_store_rows.py**: `test_the_rows_fill_the_floor` asks for 17 to 25 % where it asked for at least 19 %,
+  its docstring saying what it guards and the walker's band; on 0.249.0 the changed file passes, all nine.
+
 ## [0.249.0] - a room holds what stands on its storey, and the shelter pass runs over the library
 
 **The factory's roadmap 283.** 0.246.0 made furnish's count ask a volume's FOOT, because `abs(z - (floor + size_z /
