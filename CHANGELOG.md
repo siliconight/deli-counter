@@ -1,3 +1,35 @@
+## [0.259.0] - the scout model: a building a player turns all the way round
+
+**The factory's roadmap 295.** The walker, of 0.258.0's scout view: "its ok for now, but i want to make it look more
+polished and artistic so it could ship to players....They can scout out the buildings and rotate the schemas in a 360
+degree way".
+
+### Added
+- **`scout_model.py`**: the scout view's signals as a model -- each storey's slab with its holes cut through and
+  rimmed, its walls to the plan cut with a dark cap on the cut, a window as glass from its sill to the cut, a door as
+  a strip across the floor in the entry colour where it lets you in from outside, every stair as the treads the
+  builder builds, every ladder as its rails and rungs; no furniture, rooms or markers. Read from the layout the
+  drawings read (`floorplan.storey_walls`/`wall_split`, `axonometric._slab_holes`, `stairwell`, `setbacks`).
+  `build_glb(spec, palette=)` returns deterministic GLB bytes: a node and a mesh a storey at its true elevation
+  (`extras.storey`, `extras.elevation`), so a viewer lifts the storeys apart; one material, every colour in
+  `COLOR_0` as normalised bytes -- one draw a storey. Across the library's 132 buildings with an inside: median 1,312
+  triangles, the largest cbp_town_finale_midbalanced 5,628 (386 KB); all 132 built in 1.4 s.
+- **Three palettes, the walker's to pick** (`PALETTES`): a night blueprint, an architect's card model, a heist
+  dossier; `DEFAULT_PALETTE` is the blueprint until they do. Every role a player reads by colour -- a door in from
+  outside, an inside door, a window, a stair, a ladder, a hole in a floor -- has its own in each.
+- **A package carries it**: `package_drawings` writes `drawings/scout.glb` with the keep `.import` -- a game reads it
+  with `GLTFDocument` when its screen opens, so no level pays to import it -- and names it in `drawings.json` under
+  `scout_model` (null for a facade).
+
+### Tests
+- `test_scout_model.py` (new): THE TEST THAT MATTERS -- the model and the scout drawing agree, storey by storey, on
+  every door and window (five buildings, over 40 openings); a node and a mesh a storey at its true elevation, one
+  material, colour as normalised bytes; the doors in from outside, and only they, in the entry colour; every read role
+  its own colour in every palette (the first draft gave a hole's rim the entry's red, and the agreement test caught
+  it: deli_a03's upper floor counted 17 doors against the drawing's 5); deterministic, and every library building
+  builds, the largest under 8,000 triangles -- a regression detector, not a frame cost. `test_package_drawings.py`
+  asks for `scout.glb`, its keep `.import` and the record's `scout_model`.
+
 ## [0.258.0] - the scout view: a building drawn with only what a body finds its way by
 
 **The factory's roadmap 296.** The walker judged 0.257.0's exploded axonometric on a review page (2026-10-22): one

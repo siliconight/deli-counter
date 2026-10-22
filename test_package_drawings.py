@@ -39,6 +39,10 @@ def test_a_building_package_carries_its_drawings(tmp_path):
     spec = spec_loader.load_spec(_spec("deli_a03"))
     d = tmp_path / "drawings"
     assert rec["spec"] == spec.name and rec["axonometric"] == "axonometric.svg" and rec["scout"] == "scout.svg"
+    assert rec["scout_model"] == "scout.glb"
+    import scout_model as SM
+    assert (d / "scout.glb").read_bytes() == SM.build_glb(spec)
+    assert (d / "scout.glb.import").read_text(encoding="utf-8") == PB.KEEP_IMPORT
     assert [(p["storey"], p["file"]) for p in rec["plans"]] == [(-1, "floorB1.svg"), (0, "floor0.svg"),
                                                                  (1, "floor1.svg")]
     assert (d / "axonometric.svg").read_text(encoding="utf-8") == AX.render_axonometric(spec)
@@ -57,9 +61,9 @@ def test_a_facade_gets_its_reason_and_no_drawing(tmp_path):
     why it carries none."""
     rec = PB.package_drawings(_spec("gs_facade_rowhome"), str(tmp_path))
     d = tmp_path / "drawings"
-    assert rec["axonometric"] is None and rec["scout"] is None and rec["plans"] == []
+    assert rec["axonometric"] is None and rec["scout"] is None and rec["scout_model"] is None and rec["plans"] == []
     assert "facade" in rec["none_because"]
-    assert not list(d.glob("*.svg")) and not list(d.glob("*.import"))
+    assert not list(d.glob("*.svg")) and not list(d.glob("*.glb")) and not list(d.glob("*.import"))
     assert json.loads((d / "drawings.json").read_text(encoding="utf-8")) == rec
 
 

@@ -584,19 +584,23 @@ def package_drawings(spec_path, out_dir):
     basement ``floorB<depth>`` (the plan writer names every basement ``floorB``, so a second one would overwrite the
     first; none in the library has two, read 2026-10-21) -- and since 0.258.0 its scout view, ``scout.svg``
     (`render_axonometric(scout=True)`: only what a body finds its way by, the walker's "simpler but carry all of the
-    signals needed") -- each with a ``.import`` that keeps it as the file it is (`KEEP_IMPORT`), and
-    ``drawings.json`` naming them. A FACADE gets the record and no drawing: a street wall with no
+    signals needed") -- and since 0.259.0 its scout model, ``scout.glb`` (`scout_model.build_glb`: those signals
+    as a model a player turns all the way round, one mesh a storey; the factory's roadmap 295) -- each with a
+    ``.import`` that keeps it as the file it is (`KEEP_IMPORT`: a game reads the model with `GLTFDocument` when its
+    screen opens, so no level pays to import it), and ``drawings.json`` naming them. A FACADE gets the record and no drawing: a street wall with no
     interior, never entered, whose drawing is an empty walled box. Drawn from the spec when the package is composed,
     so a package never carries a drawing older than the building it stands. Returns the record."""
     import axonometric
     import floorplan
+    import scout_model
     import spec_loader
     spec = spec_loader.load_spec(spec_path)
     ddir = os.path.join(out_dir, "drawings")
     os.makedirs(ddir, exist_ok=True)
     record = {"schema": "deli_counter.drawings.v1", "spec": spec.name, "axonometric": None, "scout": None,
-              "plans": []}
+              "scout_model": None, "plans": []}
     files = {}
+    blobs = {}
     if getattr(spec, "facade", False):
         record["none_because"] = ("a facade: a street wall with no interior, never entered, whose drawing is an "
                                   "empty walled box")
@@ -605,6 +609,8 @@ def package_drawings(spec_path, out_dir):
         record["axonometric"] = "axonometric.svg"
         files["scout.svg"] = axonometric.render_axonometric(spec, scout=True)
         record["scout"] = "scout.svg"
+        blobs["scout.glb"] = scout_model.build_glb(spec)
+        record["scout_model"] = "scout.glb"
         for st in floorplan.stories_in(spec):
             name = "floor%s.svg" % (("B%d" % -st) if st < 0 else st)
             files[name] = floorplan.render_story(spec, st)
@@ -612,6 +618,10 @@ def package_drawings(spec_path, out_dir):
     for name, text in files.items():
         with open(os.path.join(ddir, name), "w", encoding="utf-8", newline="\n") as f:
             f.write(text)
+    for name, data in blobs.items():
+        with open(os.path.join(ddir, name), "wb") as f:
+            f.write(data)
+    for name in list(files) + list(blobs):
         with open(os.path.join(ddir, name + ".import"), "w", encoding="utf-8", newline="\n") as f:
             f.write(KEEP_IMPORT)
     with open(os.path.join(ddir, "drawings.json"), "w", encoding="utf-8", newline="\n") as f:
