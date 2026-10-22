@@ -1,3 +1,35 @@
+## [0.258.0] - the scout view: a building drawn with only what a body finds its way by
+
+**The factory's roadmap 296.** The walker judged 0.257.0's exploded axonometric on a review page (2026-10-22): one
+storey of pharmacy_a01 "Looks right"; deli_a03 and office "Needs work" -- "we need to find a way to be simple and not
+noisy visually. assume that in game, a player could rotate it as well to" -- and what players should see, "simpler but
+carry all of the signals needed". On the two busy buildings the furniture, the room names and the dashed lines between
+the storeys crowded the structure the drawing exists to show.
+
+### Added
+- **`render_axonometric(spec, scout=True)`**: the same storeys, offsets and cut, with every wall, door and window,
+  every stair as its treads, every ladder and every hole in a floor -- and none of the furniture, room fills and
+  names, markers, or dashed lines. What joins the storeys stays a signal: each flight keeps one solid leader from its
+  head to the storey it reaches, each hole one line down to the floor it opens onto, a ladder its one line. A door's
+  threshold is drawn heavier (3.4 against 2.2). Its legend leaves out furniture; its title says "scout view". On the
+  review page's three buildings it draws deli_a03 in 595 elements against 1,422, office in 520 against 1,003,
+  pharmacy_a01 in 135 against 310. Which signals a player needs is the walker's to settle; this is the proposed set.
+- **A package carries it**: `package_drawings` writes `drawings/scout.svg` beside the axonometric, kept like it
+  (`KEEP_IMPORT`), and names it in `drawings.json` under `scout` (null for a facade).
+
+### Unchanged
+- **The full drawing, to the byte**: every one of the 458 specs in the working checkout -- its ignored `lf_*`
+  per-candidate specs included -- renders its axonometric the same on 0.257.0 and 0.258.0
+  (the factory's `patches/dc_scout_view/prove.out.txt`).
+
+### Tests
+- `test_scout_view.py` (new): the scout view keeps every wall piece, opening (with its kind and place), tread and
+  landing (with its height), ladder and hole the full drawing carries, and adds none -- the test that matters,
+  "simpler" not meaning less to find your way by; it leaves out furniture, rooms, markers and every dashed line, the
+  full drawing of the same building carrying them; each flight and hole keeps one line; it is deterministic and holds
+  its text. `test_package_drawings.py` asks for `scout.svg` and the record's `scout`. All six fail on 0.257.0, on the
+  new name (`render_axonometric()` takes no `scout`; the record has no `scout`).
+
 ## [0.257.0] - a building's package carries its drawings
 
 **The factory's roadmap 296.** The walker, of roadmap 293's exploded axonometric, asked where it is seen: "both" -- a

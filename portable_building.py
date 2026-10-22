@@ -582,8 +582,10 @@ def package_drawings(spec_path, out_dir):
     """A building's drawings, into ``<out_dir>/drawings/`` (0.257.0, the factory's roadmap 296): its exploded
     axonometric (`axonometric.render_axonometric`) and a plan a storey (`floorplan.render_story`) -- ``floor<n>``, a
     basement ``floorB<depth>`` (the plan writer names every basement ``floorB``, so a second one would overwrite the
-    first; none in the library has two, read 2026-10-21) -- each with a ``.import`` that keeps it as the file it is
-    (`KEEP_IMPORT`), and ``drawings.json`` naming them. A FACADE gets the record and no drawing: a street wall with no
+    first; none in the library has two, read 2026-10-21) -- and since 0.258.0 its scout view, ``scout.svg``
+    (`render_axonometric(scout=True)`: only what a body finds its way by, the walker's "simpler but carry all of the
+    signals needed") -- each with a ``.import`` that keeps it as the file it is (`KEEP_IMPORT`), and
+    ``drawings.json`` naming them. A FACADE gets the record and no drawing: a street wall with no
     interior, never entered, whose drawing is an empty walled box. Drawn from the spec when the package is composed,
     so a package never carries a drawing older than the building it stands. Returns the record."""
     import axonometric
@@ -592,7 +594,8 @@ def package_drawings(spec_path, out_dir):
     spec = spec_loader.load_spec(spec_path)
     ddir = os.path.join(out_dir, "drawings")
     os.makedirs(ddir, exist_ok=True)
-    record = {"schema": "deli_counter.drawings.v1", "spec": spec.name, "axonometric": None, "plans": []}
+    record = {"schema": "deli_counter.drawings.v1", "spec": spec.name, "axonometric": None, "scout": None,
+              "plans": []}
     files = {}
     if getattr(spec, "facade", False):
         record["none_because"] = ("a facade: a street wall with no interior, never entered, whose drawing is an "
@@ -600,6 +603,8 @@ def package_drawings(spec_path, out_dir):
     else:
         files["axonometric.svg"] = axonometric.render_axonometric(spec)
         record["axonometric"] = "axonometric.svg"
+        files["scout.svg"] = axonometric.render_axonometric(spec, scout=True)
+        record["scout"] = "scout.svg"
         for st in floorplan.stories_in(spec):
             name = "floor%s.svg" % (("B%d" % -st) if st < 0 else st)
             files[name] = floorplan.render_story(spec, st)

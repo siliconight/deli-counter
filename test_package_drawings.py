@@ -38,14 +38,15 @@ def test_a_building_package_carries_its_drawings(tmp_path):
     rec = PB.package_drawings(_spec("deli_a03"), str(tmp_path))
     spec = spec_loader.load_spec(_spec("deli_a03"))
     d = tmp_path / "drawings"
-    assert rec["spec"] == spec.name and rec["axonometric"] == "axonometric.svg"
+    assert rec["spec"] == spec.name and rec["axonometric"] == "axonometric.svg" and rec["scout"] == "scout.svg"
     assert [(p["storey"], p["file"]) for p in rec["plans"]] == [(-1, "floorB1.svg"), (0, "floor0.svg"),
                                                                  (1, "floor1.svg")]
     assert (d / "axonometric.svg").read_text(encoding="utf-8") == AX.render_axonometric(spec)
+    assert (d / "scout.svg").read_text(encoding="utf-8") == AX.render_axonometric(spec, scout=True)
     for p in rec["plans"]:
         assert (d / p["file"]).read_text(encoding="utf-8") == FP.render_story(spec, p["storey"])
     svgs = sorted(f.name for f in d.glob("*.svg"))
-    assert svgs == sorted(["axonometric.svg"] + [p["file"] for p in rec["plans"]])
+    assert svgs == sorted(["axonometric.svg", "scout.svg"] + [p["file"] for p in rec["plans"]])
     for f in svgs:
         assert (d / (f + ".import")).read_text(encoding="utf-8") == PB.KEEP_IMPORT
     assert json.loads((d / "drawings.json").read_text(encoding="utf-8")) == rec
@@ -56,7 +57,8 @@ def test_a_facade_gets_its_reason_and_no_drawing(tmp_path):
     why it carries none."""
     rec = PB.package_drawings(_spec("gs_facade_rowhome"), str(tmp_path))
     d = tmp_path / "drawings"
-    assert rec["axonometric"] is None and rec["plans"] == [] and "facade" in rec["none_because"]
+    assert rec["axonometric"] is None and rec["scout"] is None and rec["plans"] == []
+    assert "facade" in rec["none_because"]
     assert not list(d.glob("*.svg")) and not list(d.glob("*.import"))
     assert json.loads((d / "drawings.json").read_text(encoding="utf-8")) == rec
 

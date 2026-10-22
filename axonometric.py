@@ -22,6 +22,13 @@ THE STAIRS ARE THEIR TREADS (0.255.0). Each flight is drawn as the treads and tu
 fills the leg (`flight_solid_under`), one riser thick where it does not, a turn landing one riser thick as the
 builder stands it. A leader carries each flight's head across the exploded gap to its landing above.
 
+THE SCOUT VIEW (0.258.0, the factory's roadmap 296). The walker, of this drawing on two busy buildings: "we need
+to find a way to be simple and not noisy visually", and what a player should see is "simpler but carry all of the
+signals needed". `scout=True` draws the same storeys, cut and offset the same way, with only what a body finds its
+way by: walls, doors and windows, stairs as their treads, ladders, and the holes in a floor. Furniture, room names
+and role tints, markers, and the dashed lines that join the storeys are left out -- a flight's treads already rise
+to the hole they reach, and a ladder keeps its one solid line.
+
 Deterministic SVG strings: no Pillow, no Blender, no generative model.
 
 Entry points:
@@ -268,10 +275,13 @@ CHAR_EM, CHAR_EM_BOLD = 0.56, 0.62
 #: The legend along a drawing's foot: a swatch and its word, each step 12 + 6 a character + 14 px.
 LEGEND = ((FP.INK, "wall, cut"), ("#3e4c59", "door"), ("#2f80c8", "window"), (FP.STAIR_COLOR, "stair"),
           (FP.LADDER_COLOR, "ladder"), (FP.VOID_COLOR, "open to below"), ("#c3ccd6", "furniture"))
+#: The scout view's legend: what it draws, and nothing it leaves out.
+SCOUT_LEGEND = tuple(e for e in LEGEND if e[1] != "furniture")
 
 
-def render_axonometric(spec, azimuth=AZIMUTH_DEG, elevation=ELEVATION_DEG, cut=PLAN_CUT_M, gap=None):
-    """One SVG string: every storey of ``spec``, exploded, cut and seen from the south-west."""
+def render_axonometric(spec, azimuth=AZIMUTH_DEG, elevation=ELEVATION_DEG, cut=PLAN_CUT_M, gap=None, scout=False):
+    """One SVG string: every storey of ``spec``, exploded, cut and seen from the south-west. ``scout``: only what a
+    body finds its way by (the module's docstring)."""
     import stairwell as _sw
     proj = _Proj(azimuth, elevation)
     sh = FP._story_height(spec)
@@ -292,26 +302,30 @@ def render_axonometric(spec, azimuth=AZIMUTH_DEG, elevation=ELEVATION_DEG, cut=P
         x0, y0, x1, y1 = extent[s]
         pts += [(x, y, z) for x in (x0 - 1, x1 + 1) for y in (y0 - 1, y1 + 1)
                 for z in (drawn[s] - floor_t, drawn[s] + cut)]
-    for m in getattr(spec, "markers", []) or []:
+    for m in ([] if scout else getattr(spec, "markers", []) or []):
         s = FP._marker_story(spec, m)
         if s in drawn:
             pts.append((getattr(m, "x", 0.0), getattr(m, "y", 0.0), drawn[s]))
     cv = _Canvas(proj, pts)
     W, H = cv.w, cv.h
-    title = "%s — exploded axonometric" % spec.name
+    title = "%s — %s" % (spec.name, "scout view" if scout else "exploded axonometric")
     lines = ("each storey drawn %.1f m higher than the one below over its %.1f m floor to floor; the elevations are "
              "not moved" % (g, sh),
              "walls cut at %.1f m · seen from the south-west · deterministic render, no generative model" % cut)
+    if scout:
+        lines = ("storeys lifted apart · walls cut at %.1f m · seen from the south-west" % cut,)
+    legend = SCOUT_LEGEND if scout else LEGEND
     # THE TEXT SETS A FLOOR UNDER THE WIDTH (0.257.0, the factory's roadmap 296): the canvas was the drawing's extent
     # alone, and on a small building -- a facade, 275 px -- the title, the two lines under it and the legend ran off
     # its right edge, in a drawing a level now carries. Each is measured as it is written below.
     W = max(W, PADDING + len(title) * 15 * CHAR_EM_BOLD + PADDING,
             PADDING + max(len(t) for t in lines) * 9.5 * CHAR_EM + PADDING,
-            PADDING + sum(12 + len(t) * 6.0 + 14 for _c, t in LEGEND) - 14 + PADDING)
+            PADDING + sum(12 + len(t) * 6.0 + 14 for _c, t in legend) - 14 + PADDING)
 
     out = ['<svg xmlns="http://www.w3.org/2000/svg" width="%.0f" height="%.0f" viewBox="0 0 %.0f %.0f" '
-           'font-family="Inter,Segoe UI,sans-serif" data-view="exploded-axonometric" data-azimuth="%g" '
-           'data-elevation-angle="%.3f" data-cut="%g" data-gap="%.3f">' % (W, H, W, H, azimuth, elevation, cut, g),
+           'font-family="Inter,Segoe UI,sans-serif" data-view="%s" data-azimuth="%g" '
+           'data-elevation-angle="%.3f" data-cut="%g" data-gap="%.3f">'
+           % (W, H, W, H, "scout" if scout else "exploded-axonometric", azimuth, elevation, cut, g),
            '<rect width="%.0f" height="%.0f" fill="#ffffff"/>' % (W, H)]
     defs = ["<defs>"]
     body = []
@@ -334,7 +348,7 @@ def render_axonometric(spec, azimuth=AZIMUTH_DEG, elevation=ELEVATION_DEG, cut=P
         defs.append("</mask>")
         top = ['<g mask="url(#%s)">' % mask_id,
                cv.poly(_rect_pts((x0, y0, x1, y1), z), SLAB_TOP, stroke="#7b8794", width=0.8)]
-        for r in getattr(spec, "rooms", []) or []:
+        for r in ([] if scout else getattr(spec, "rooms", []) or []):
             if r.story != s:
                 continue
             role = getattr(r, "role", "") or ""
@@ -358,9 +372,10 @@ def render_axonometric(spec, azimuth=AZIMUTH_DEG, elevation=ELEVATION_DEG, cut=P
                                    SLAB_SIDE, width=0.5))
             color = FP.VOID_COLOR if kind != "stair" else FP.STAIR_COLOR
             grp.append(cv.poly(_rect_pts(r, z), "none", stroke=color, width=1.0,
-                               extra=' stroke-dasharray="3 2" data-void="%s"' % FP._esc(kind)))
+                               extra='%s data-void="%s"' % ("" if scout else ' stroke-dasharray="3 2"',
+                                                             FP._esc(kind))))
         # stairs and ladders, outlined on every storey they serve
-        for i, st in enumerate(getattr(spec, "stairs", []) or []):
+        for i, st in enumerate([] if scout else getattr(spec, "stairs", []) or []):
             if s in _sw.floors_served(spec, st):
                 grp.append(cv.poly(_rect_pts(_sw.footprint_rect(st), z + 0.01), "none", stroke=FP.STAIR_COLOR,
                                    width=1.0, extra=' stroke-dasharray="4 3" data-stair="%s"'
@@ -416,10 +431,10 @@ def render_axonometric(spec, azimuth=AZIMUTH_DEG, elevation=ELEVATION_DEG, cut=P
                         a3, b3 = (fixed, glo, z + 0.005), (fixed, ghi, z + 0.005)
                     color = FP.OPEN_COLOR.get("door" if kind in ("vault", "teller", "safe_deposit") else kind,
                                               "#3e4c59")
-                    thresholds.append(cv.line(a3, b3, color, 2.2,
+                    thresholds.append(cv.line(a3, b3, color, 3.4 if scout else 2.2,
                                               extra=' data-opening="%s" data-kind="%s" data-at="%.3f,%.3f"'
                                               % (otag, kind, at[0], at[1])))
-        for v in getattr(spec, "volumes", []) or []:
+        for v in ([] if scout else getattr(spec, "volumes", []) or []):
             if not getattr(v, "visual", True):
                 continue
             vz = getattr(v, "z", 0.0) or 0.0
@@ -458,7 +473,7 @@ def render_axonometric(spec, azimuth=AZIMUTH_DEG, elevation=ELEVATION_DEG, cut=P
         grp += thresholds
         grp += [_box_svg(cv, b) for b in _ordered(boxes, proj)]
         # ---- markers on their storey, riding its offset ----
-        for m in getattr(spec, "markers", []) or []:
+        for m in ([] if scout else getattr(spec, "markers", []) or []):
             if FP._marker_story(spec, m) != s:
                 continue
             color, glyph = FP.MARKER_STYLE.get(m.type, FP.DEFAULT_MARKER)
@@ -493,7 +508,8 @@ def render_axonometric(spec, azimuth=AZIMUTH_DEG, elevation=ELEVATION_DEG, cut=P
         fr = _sw.footprint_rect(st)
         for a, b in zip(served, served[1:]):
             grp = ['<g data-stair="%s" data-from="%d" data-to="%d">' % (sid, a, b)]
-            for cx, cy in ((fr[0], fr[1]), (fr[2], fr[1]), (fr[0], fr[3]), (fr[2], fr[3])):
+            # the scout view keeps one line a flight -- its head to where it lands -- and drops the corner posts
+            for cx, cy in (() if scout else ((fr[0], fr[1]), (fr[2], fr[1]), (fr[0], fr[3]), (fr[2], fr[3]))):
                 grp.append(cv.line((cx, cy, drawn[a]), (cx, cy, drawn[b]), CONNECT, 0.8, dash="3 3"))
             heads = [u for u in _sw.ascent_surfaces(spec, st) if u[0] == a]
             if heads and ups:
@@ -502,7 +518,7 @@ def render_axonometric(spec, azimuth=AZIMUTH_DEG, elevation=ELEVATION_DEG, cut=P
                 _s, hx, hy, hz, _w, _d = max(heads, key=lambda u: u[3])
                 (ux, uy) = ups[0]["point"]
                 lx, ly, la = hx, hy, drawn[a] + (hz - a * sh)
-                grp.append(cv.line((lx, ly, la), (ux, uy, drawn[b]), CONNECT, 1.6, dash="5 3"))
+                grp.append(cv.line((lx, ly, la), (ux, uy, drawn[b]), CONNECT, 1.6, dash=None if scout else "5 3"))
                 (x2, y2), (xa, ya) = cv.pt(ux, uy, drawn[b]), cv.pt(lx, ly, la)
                 ang = math.atan2(y2 - ya, x2 - xa)
                 for da in (2.6, -2.6):
@@ -523,6 +539,11 @@ def render_axonometric(spec, azimuth=AZIMUTH_DEG, elevation=ELEVATION_DEG, cut=P
         for r, kind in rects:
             if kind == "stair":
                 continue
+            if scout:
+                # one line from the hole's centre to the floor it opens onto
+                cx, cy = (r[0] + r[2]) / 2, (r[1] + r[3]) / 2
+                conn.append(cv.line((cx, cy, drawn[s]), (cx, cy, drawn[s - 1]), FP.VOID_COLOR, 1.2))
+                continue
             for cx, cy in ((r[0], r[1]), (r[2], r[1]), (r[0], r[3]), (r[2], r[3])):
                 conn.append(cv.line((cx, cy, drawn[s]), (cx, cy, drawn[s - 1]), FP.VOID_COLOR, 0.8, dash="2 3"))
     conn.append("</g>")
@@ -536,7 +557,7 @@ def render_axonometric(spec, azimuth=AZIMUTH_DEG, elevation=ELEVATION_DEG, cut=P
     # the legend, along the foot
     lx, ly = PADDING, H - 14
     leg = ['<g id="legend">']
-    for color, txt in LEGEND:
+    for color, txt in legend:
         leg.append('<text x="%.0f" y="%.0f" font-size="10" fill="%s" font-weight="700">■</text>' % (lx, ly, color))
         leg.append('<text x="%.0f" y="%.0f" font-size="9.5" fill="#52606d">%s</text>' % (lx + 12, ly, txt))
         lx += 12 + len(txt) * 6.0 + 14
