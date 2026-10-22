@@ -211,3 +211,22 @@ def test_a_stair_moved_moves_its_treads():
     assert a, "no tread drawn: the check would ask nothing"
     assert set(a) == set(b)
     assert all(abs(b[k][2] - a[k][2] - 2.0) < 1e-6 and b[k][3] == a[k][3] for k in a)
+
+
+def test_every_line_of_text_fits_its_canvas():
+    """A drawing a level carries holds its own words (0.257.0, the factory's roadmap 296). On 0.256.0 a facade's canvas
+    was 275 px and its title, the lines under it and the legend ran off its edge. Each line's width is taken as the
+    drawing estimates it (`CHAR_EM`, `CHAR_EM_BOLD`) and the legend's last word from its own steps; every one ends
+    inside the canvas, on a facade, a midrise and two full buildings."""
+    for name in ("gs_facade_rowhome", "gs_midrise_a", "office", "deli_a03"):
+        svg = AX.render_axonometric(_load(name))
+        width = float(re.search(r'<svg [^>]*width="([\d.]+)"', svg).group(1))
+        # the legend first, by its own steps: no estimate of a glyph is asked of it
+        legend = re.findall(r'<text x="([\d.]+)" y="[\d.]+" font-size="9.5" fill="#52606d">([^<]*)</text>', svg)
+        assert legend, name
+        x, word = legend[-1]
+        assert float(x) + len(word) * 6.0 <= width, (name, word, x, width)
+        for size, bold, text in re.findall(r'<text x="40" y="(?:24|38|50)" font-size="([\d.]+)"( font-weight="700")?'
+                                           r'[^>]*>([^<]*)</text>', svg):
+            em = AX.CHAR_EM_BOLD if bold else AX.CHAR_EM
+            assert AX.PADDING + len(text) * float(size) * em <= width + 1e-6, (name, text, width)

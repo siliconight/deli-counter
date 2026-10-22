@@ -262,6 +262,14 @@ def _storey_title(s):
     return "Basement" if s < 0 else ("Ground floor" if s == 0 else "Floor %d" % s)
 
 
+#: A character's width at its font size, for the text a drawing must hold (0.257.0): Inter and Segoe UI average under
+#: these, a bold face a little wider -- the facade whose title ran off its canvas read about 0.58 em bold.
+CHAR_EM, CHAR_EM_BOLD = 0.56, 0.62
+#: The legend along a drawing's foot: a swatch and its word, each step 12 + 6 a character + 14 px.
+LEGEND = ((FP.INK, "wall, cut"), ("#3e4c59", "door"), ("#2f80c8", "window"), (FP.STAIR_COLOR, "stair"),
+          (FP.LADDER_COLOR, "ladder"), (FP.VOID_COLOR, "open to below"), ("#c3ccd6", "furniture"))
+
+
 def render_axonometric(spec, azimuth=AZIMUTH_DEG, elevation=ELEVATION_DEG, cut=PLAN_CUT_M, gap=None):
     """One SVG string: every storey of ``spec``, exploded, cut and seen from the south-west."""
     import stairwell as _sw
@@ -290,6 +298,16 @@ def render_axonometric(spec, azimuth=AZIMUTH_DEG, elevation=ELEVATION_DEG, cut=P
             pts.append((getattr(m, "x", 0.0), getattr(m, "y", 0.0), drawn[s]))
     cv = _Canvas(proj, pts)
     W, H = cv.w, cv.h
+    title = "%s — exploded axonometric" % spec.name
+    lines = ("each storey drawn %.1f m higher than the one below over its %.1f m floor to floor; the elevations are "
+             "not moved" % (g, sh),
+             "walls cut at %.1f m · seen from the south-west · deterministic render, no generative model" % cut)
+    # THE TEXT SETS A FLOOR UNDER THE WIDTH (0.257.0, the factory's roadmap 296): the canvas was the drawing's extent
+    # alone, and on a small building -- a facade, 275 px -- the title, the two lines under it and the legend ran off
+    # its right edge, in a drawing a level now carries. Each is measured as it is written below.
+    W = max(W, PADDING + len(title) * 15 * CHAR_EM_BOLD + PADDING,
+            PADDING + max(len(t) for t in lines) * 9.5 * CHAR_EM + PADDING,
+            PADDING + sum(12 + len(t) * 6.0 + 14 for _c, t in LEGEND) - 14 + PADDING)
 
     out = ['<svg xmlns="http://www.w3.org/2000/svg" width="%.0f" height="%.0f" viewBox="0 0 %.0f %.0f" '
            'font-family="Inter,Segoe UI,sans-serif" data-view="exploded-axonometric" data-azimuth="%g" '
@@ -511,17 +529,14 @@ def render_axonometric(spec, azimuth=AZIMUTH_DEG, elevation=ELEVATION_DEG, cut=P
 
     defs.append("</defs>")
     out += defs + body + conn
-    out.append('<text x="%d" y="24" font-size="15" font-weight="700" fill="#1f2933">%s — exploded axonometric'
-               '</text>' % (PADDING, FP._esc(spec.name)))
-    out.append('<text x="%d" y="38" font-size="9.5" fill="#7b8794">each storey drawn %.1f m higher than the one '
-               'below over its %.1f m floor to floor; the elevations are not moved</text>' % (PADDING, g, sh))
-    out.append('<text x="%d" y="50" font-size="9.5" fill="#7b8794">walls cut at %.1f m · seen from the south-west · '
-               'deterministic render, no generative model</text>' % (PADDING, cut))
+    out.append('<text x="%d" y="24" font-size="15" font-weight="700" fill="#1f2933">%s</text>'
+               % (PADDING, FP._esc(title)))
+    for y, line in zip((38, 50), lines):
+        out.append('<text x="%d" y="%d" font-size="9.5" fill="#7b8794">%s</text>' % (PADDING, y, FP._esc(line)))
     # the legend, along the foot
     lx, ly = PADDING, H - 14
     leg = ['<g id="legend">']
-    for color, txt in ((FP.INK, "wall, cut"), ("#3e4c59", "door"), ("#2f80c8", "window"), (FP.STAIR_COLOR, "stair"),
-                       (FP.LADDER_COLOR, "ladder"), (FP.VOID_COLOR, "open to below"), ("#c3ccd6", "furniture")):
+    for color, txt in LEGEND:
         leg.append('<text x="%.0f" y="%.0f" font-size="10" fill="%s" font-weight="700">■</text>' % (lx, ly, color))
         leg.append('<text x="%.0f" y="%.0f" font-size="9.5" fill="#52606d">%s</text>' % (lx + 12, ly, txt))
         lx += 12 + len(txt) * 6.0 + 14

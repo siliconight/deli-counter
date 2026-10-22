@@ -1,3 +1,51 @@
+## [0.257.0] - a building's package carries its drawings
+
+**The factory's roadmap 296.** The walker, of roadmap 293's exploded axonometric, asked where it is seen: "both" -- a
+review page and a level's export -- "It could even get into the game where the players can 'scope out' the level and
+see the buildings the level assembles". A building's files reach a level only through
+`portable_building.build_package` (Level Factory's presentation compose, then its export's copy into `lot/<id>/`), and
+no drawing went that way: the plans and the axonometric were written only into the ignored `build/floorplans/`, by
+`validate.py`.
+
+### Added
+- **`build_package(..., spec_path=)`**: named the spec the building was built from, the package draws it into
+  `drawings/` (`package_drawings`) -- the exploded axonometric and a plan a storey (`floor<n>`, a basement
+  `floorB<depth>`), each beside a `.import` that keeps it as the file it is (`KEEP_IMPORT`), and `drawings.json`
+  naming them -- and records it in its manifest under `drawings`. Drawn from the spec when the package is composed, so
+  a package never carries a drawing older than its building. Named no spec, a package is what it was. `--spec` on the
+  command line.
+- **A facade gets the record and the reason, no drawing**: a street wall with no interior, never entered, whose
+  axonometric is an empty walled box (gs_facade_rowhome and gs_midrise_a drawn and read, 2026-10-21).
+- **How a drawing ships, measured on Godot 4.7, headless** (the factory's `patches/dc_drawings/keep_probe.py`): left
+  to the default import, deli_a03's axonometric becomes a 136,248-byte texture in every level that carries it, for a
+  screen no game has built yet; with the keep `.import` beside it none is made, the `.import` comes back as written,
+  and a game still reads the file with `FileAccess` and draws it with `Image.load_svg_from_string` (674 x 1197, no
+  error), at the size its own screen wants.
+
+### Fixed
+- **An axonometric's canvas holds its own text.** The canvas was the drawing's extent alone, and on a small building
+  -- a facade, 275 px -- the title, the two lines under it and the legend ran off its right edge: the facade's last
+  legend word began at 466 px. The widest of them now sets a floor under the width, each measured as it is written
+  (`CHAR_EM`, `CHAR_EM_BOLD`; the legend, `LEGEND`, by its own steps); a drawing wide enough before is drawn as
+  before.
+
+### Tests
+- **test_package_drawings.py**, new, four: the keep `.import` is the one Godot left as written; deli_a03's package
+  carries its axonometric and three plans, each its renderer's drawing of the spec, each beside a keep `.import`,
+  named in `drawings.json`; a facade's carries the reason and no drawing; `build_package` draws when named a spec and
+  draws nothing when not. On 0.256.0 all four fail on the missing names.
+- **test_axonometric.py**, one more: every line of text fits its canvas, on a facade, a midrise, office and deli_a03
+  -- the legend first, by its own steps, so on 0.256.0 it fails on behaviour (the facade's legend ends past its 275
+  px) and not on a name (the factory's `patches/dc_drawings/prove_tests_on_0256.out.txt`).
+
+### Measured, kept
+- **Left** (the factory's roadmap 296): Level Factory naming the spec of each building it composes, and an index of a
+  level's buildings at its package's root; a review page built from a cold run's package; the in-game screen, which is
+  the game's.
+- **Seen while reading**: `floorplan.write_floorplans` names every basement `floorB`, so a building with two would
+  write one plan over the other; none in the library has two (read 2026-10-21), and a package names its plans by
+  depth.
+
 ## [0.256.0] - a host no chair fits beside is moved where one does
 
 **The factory's roadmap 284.** 0.252.0 seats a host the room left chairless and takes away one no chair fits beside:

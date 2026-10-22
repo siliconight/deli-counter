@@ -569,9 +569,55 @@ def combine_circulation(arms):
     return out
 
 
+#: How a package's drawing reaches Godot: as the file it is, never imported (0.257.0, the factory's roadmap 296).
+#: MEASURED on Godot 4.7, headless (the factory's patches/dc_drawings/): an SVG left to the default import becomes
+#: a texture -- deli_a03's exploded axonometric a 136 KB `.ctex` at 674 x 1197 -- in every level that carries it,
+#: for a screen no game has built yet; one with this `.import` beside it makes none, the `.import` left as written,
+#: and a game still reads the file with `FileAccess` and draws it with `Image.load_svg_from_string` (674 x 1197, no
+#: error) at the size its own screen wants.
+KEEP_IMPORT = '[remap]\n\nimporter="keep"\n'
+
+
+def package_drawings(spec_path, out_dir):
+    """A building's drawings, into ``<out_dir>/drawings/`` (0.257.0, the factory's roadmap 296): its exploded
+    axonometric (`axonometric.render_axonometric`) and a plan a storey (`floorplan.render_story`) -- ``floor<n>``, a
+    basement ``floorB<depth>`` (the plan writer names every basement ``floorB``, so a second one would overwrite the
+    first; none in the library has two, read 2026-10-21) -- each with a ``.import`` that keeps it as the file it is
+    (`KEEP_IMPORT`), and ``drawings.json`` naming them. A FACADE gets the record and no drawing: a street wall with no
+    interior, never entered, whose drawing is an empty walled box. Drawn from the spec when the package is composed,
+    so a package never carries a drawing older than the building it stands. Returns the record."""
+    import axonometric
+    import floorplan
+    import spec_loader
+    spec = spec_loader.load_spec(spec_path)
+    ddir = os.path.join(out_dir, "drawings")
+    os.makedirs(ddir, exist_ok=True)
+    record = {"schema": "deli_counter.drawings.v1", "spec": spec.name, "axonometric": None, "plans": []}
+    files = {}
+    if getattr(spec, "facade", False):
+        record["none_because"] = ("a facade: a street wall with no interior, never entered, whose drawing is an "
+                                  "empty walled box")
+    else:
+        files["axonometric.svg"] = axonometric.render_axonometric(spec)
+        record["axonometric"] = "axonometric.svg"
+        for st in floorplan.stories_in(spec):
+            name = "floor%s.svg" % (("B%d" % -st) if st < 0 else st)
+            files[name] = floorplan.render_story(spec, st)
+            record["plans"].append({"storey": st, "file": name})
+    for name, text in files.items():
+        with open(os.path.join(ddir, name), "w", encoding="utf-8", newline="\n") as f:
+            f.write(text)
+        with open(os.path.join(ddir, name + ".import"), "w", encoding="utf-8", newline="\n") as f:
+            f.write(KEEP_IMPORT)
+    with open(os.path.join(ddir, "drawings.json"), "w", encoding="utf-8", newline="\n") as f:
+        f.write(json.dumps(record, indent=2, sort_keys=True) + "\n")
+    return record
+
+
 def build_package(slots_path, gameplay_path, module_dir, out_dir, *,
                   theme, style=1, building_id=None, greybox_glb=None,
-                  dressing_glb=None, fixtures_glb=None, roofprops_glb=None):
+                  dressing_glb=None, fixtures_glb=None, roofprops_glb=None,
+                  spec_path=None):
     if os.path.exists(out_dir):
         shutil.rmtree(out_dir)
     art = os.path.join(out_dir, "art", "zoo")
@@ -690,6 +736,11 @@ def build_package(slots_path, gameplay_path, module_dir, out_dir, *,
         "glTF `uri`; both ship, and `portable_resource_manifest.json` records "
         "how many of the second kind there are.\n")
 
+    # 4b. THE BUILDING'S DRAWINGS (0.257.0, the factory's roadmap 296), when the caller names the spec the building
+    # was built from: this package is the one route a building's files take into a level (Level Factory's
+    # presentation compose, then its export's copy into `lot/<id>/`), so a level carries drawings of what it stands.
+    drawings = package_drawings(spec_path, out_dir) if spec_path else None
+
     # 5. closure self-check (the portability contract, statically) + instancing
     # summary (the VRAM story: distinct GLBs = distinct Godot Mesh resources;
     # each extra slot is one MeshInstance3D sharing that mesh -- see the DC
@@ -805,6 +856,7 @@ def build_package(slots_path, gameplay_path, module_dir, out_dir, *,
         "circulation_check": circ,      # props-vs-ladders/doorways/stairs gate
         "instancing": instancing,
         "closure": report,
+        "drawings": drawings,           # drawings/, when the spec was named
     }
     open(os.path.join(out_dir, "portable_resource_manifest.json"), "w",
          encoding="utf-8").write(json.dumps(manifest, indent=2, sort_keys=True))
@@ -862,10 +914,13 @@ if __name__ == "__main__":
                     help="deli greybox .glb -> stripped to a floors+collision "
                          "base so the building is walkable (recommended)")
     ap.add_argument("--out", required=True, help="output package dir")
+    ap.add_argument("--spec", default="",
+                    help="the spec the building was built from -> its drawings into drawings/")
     a = ap.parse_args()
     man = build_package(a.slots, a.gameplay, a.modules, a.out,
                         theme=a.theme, style=a.style,
-                        greybox_glb=(a.greybox or None))
+                        greybox_glb=(a.greybox or None),
+                        spec_path=(a.spec or None))
     c = man["closure"]
     ins = man["instancing"]
     print(f"[portable] {man['building_id']} ({man['theme']}): "
