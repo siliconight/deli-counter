@@ -46,10 +46,13 @@ def test_a_node_and_a_mesh_a_storey_at_its_true_elevation_with_one_material():
         g = _gltf(SM.build_glb(spec))
         sh = FP._story_height(spec)
         stories = FP.stories_in(spec)
-        assert [n["extras"]["storey"] for n in g["nodes"]] == stories, name
-        for n in g["nodes"]:
+        floors = [n for n in g["nodes"] if not n["extras"].get("points")]
+        assert [n["extras"]["storey"] for n in floors] == stories, name
+        for n in floors:
             assert abs(n["translation"][1] - n["extras"]["storey"] * sh) < 1e-6, (name, n["name"])
-        assert len(g["materials"]) == 1 and len(g["meshes"]) == len(stories), name
+        # a mesh a storey, and one more on each storey with points of interest (0.260.0)
+        with_points = len({p["storey"] for p in g["scenes"][0]["extras"]["points"]})
+        assert len(g["materials"]) == 1 and len(g["meshes"]) == len(stories) + with_points, name
         for m in g["meshes"]:
             (prim,) = m["primitives"]
             col = g["accessors"][prim["attributes"]["COLOR_0"]]
@@ -102,6 +105,33 @@ def test_every_role_a_player_reads_has_its_own_colour():
         cols = [pal[r] for r in SM.ROLES_READ]
         assert len(set(cols)) == len(cols), name
         assert set(SM.PALETTES[name]) == set(SM.PALETTES[SM.DEFAULT_PALETTE]), name
+
+
+def test_the_score_and_every_prop_of_interest_is_in_the_model():
+    """The walker: "buildings should show the 'score' location and key props of interest". Every objective marker
+    is a score beacon on its storey, every safe, ATM, loot and camera marker a point; the scene names each one, and
+    each storey's points are a node of their own under it."""
+    seen = {}
+    for name in NAMES + ("bank_branch_a02", "apartment_walkup_a01"):
+        spec = _load(name)
+        want = [(m.type, FP._marker_story(spec, m)) for m in spec.markers
+                if m.type in ("objective", "loot", "camera_socket")]
+        want += [(v.name.split("_")[0], None) for v in spec.volumes
+                 if v.name.split("_")[0] in ("safe", "atm") and getattr(v, "visual", True)]
+        g = _gltf(SM.build_glb(spec))
+        pts = g["scenes"][0]["extras"]["points"]
+        assert len(pts) == len(want), (name, len(pts), len(want))
+        scores = [p for p in pts if p["label"] == "SCORE"]
+        assert len(scores) == sum(1 for t, _s in want if t == "objective"), name
+        for (t, s), p in zip([w for w in want if w[1] is not None], pts):
+            assert p["storey"] == s, (name, t, p)
+        kids = {n["name"]: n for n in g["nodes"]}
+        for s in {p["storey"] for p in pts}:
+            parent = kids["storey_%d" % s]
+            assert [g["nodes"][c]["name"] for c in parent["children"]] == ["storey_%d_points" % s], name
+        for p in pts:
+            seen[p["label"]] = seen.get(p["label"], 0) + 1
+    assert seen.get("SCORE", 0) >= 5 and seen.get("SAFE", 0) >= 3, seen    # the control: there is something to show
 
 
 def test_doors_in_from_outside_wear_the_entry_colour():

@@ -1,3 +1,26 @@
+## [0.260.0] - the scout model in the handheld's colours, with the score and the props worth knowing about
+
+**The factory's roadmap 295.** The walker, on the first frames: it "should roughly be in the style of a 1990s palm
+pilot...but with a little more backlight and color (so a blend of what was and what could be that makes it more
+legible)", and "buildings should show the 'score' location and key props of interest".
+
+### Added
+- **The `palm` palette, the default**: a handheld's grey-green LCD floors, ink walls with a darker cut, and lit
+  accents for what a player hunts for -- the entry, the stairs, a ladder, a hole, a window, and now the score and the
+  props of interest, every one its own colour (`ROLES_READ`). The three palettes before it stay, for comparison.
+- **The score and the props of interest** (`POINTS_OF_INTEREST`, `points`): a beacon -- plinth, mast, a block on
+  top, 3.0 m -- at every `objective` marker, and a lit block at every `loot` and `camera_socket` marker, safe and
+  ATM. Each storey's are a mesh of their own, `storey_<n>_points`, a child of the storey so they ride it when a viewer
+  lifts the storeys apart, and the scene's `extras.points` names every one: kind, label, storey, and where it stands
+  in the model's frame. Across the library's buildings with an inside: 131 scores, 139 cameras, 131 safes, 69 ATMs,
+  13 loot. Spawns are not drawn: they are the gameplay layer's, and provisional.
+
+### Tests
+- `test_scout_model.py`: every objective marker is a score on its storey and every safe, ATM, loot and camera a
+  point, named in the scene, each storey's under it (five buildings, the control at least five scores and three
+  safes); a mesh a storey and one more on each storey with points; the score and the props of interest their own
+  colours in every palette.
+
 ## [0.259.0] - the scout model: a building a player turns all the way round
 
 **The factory's roadmap 295.** The walker, of 0.258.0's scout view: "its ok for now, but i want to make it look more

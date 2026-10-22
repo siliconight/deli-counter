@@ -9,6 +9,13 @@ door as a strip across the floor -- the entry colour where it lets you in from o
 the builder builds (`stairwell.ascent_surfaces`), every ladder as its rails and rungs. No furniture, rooms or
 markers, as the scout view.
 
+THE SCORE AND WHAT IS WORTH KNOWING (0.260.0). The walker: "buildings should show the 'score' location and key props
+of interest". Each storey carries a second mesh, ``points``, apart from its structure so a viewer can light or pulse it
+on its own: a beacon -- plinth, mast, a block on top -- at every `objective` marker (the score), and at every `loot`
+marker, `camera_socket` marker, safe and ATM a lit block where it stands (`POINTS_OF_INTEREST`). The scene's
+``extras.points`` lists every one -- kind, label, storey, and where it stands in the model's frame -- so a viewer can
+name them. Spawns are not drawn: they are the gameplay layer's, and provisional.
+
 ONE LAYOUT. Walls come from `floorplan.storey_walls` and `wall_split`, holes from `axonometric._slab_holes`, stairs
 from `stairwell`, a storey's outline from `setbacks.storey_extent` -- the readers the plan, the axonometric and the
 scout view use -- so the model and the drawings cannot disagree about where anything stands.
@@ -40,25 +47,36 @@ THRESH = 0.08
 #: A hole's rim, so an opening in a floor reads from below as well as above.
 RIM = 0.06
 
-#: Colours as they show on screen (sRGB 0-1). The walker picks one (2026-10-22, three put to them). Every role a
+#: Colours as they show on screen (sRGB 0-1). The walker's direction (2026-10-22): "roughly be in the style of a
+#: 1990s palm pilot...but with a little more backlight and color" -- `palm`, the default since 0.260.0; the three
+#: before it were put to them first. Every role a
 #: player reads by colour has its own: the first draft gave a hole's rim the entry's red, so an opening in a floor
 #: read as a way in (`test_every_role_a_player_reads_has_its_own_colour`).
-ROLES_READ = ("glass", "door", "entry", "tread", "ladder", "hole_rim")
+ROLES_READ = ("glass", "door", "entry", "tread", "ladder", "hole_rim", "score", "poi")
 PALETTES = {
+    # a 1990s handheld's LCD, backlit: grey-green floors, ink walls, a few lit accents for what a player hunts for
+    "palm": {"slab": (0.47, 0.58, 0.45), "slab_side": (0.30, 0.38, 0.29), "wall": (0.16, 0.21, 0.16),
+             "cap": (0.06, 0.09, 0.06), "glass": (0.45, 0.85, 0.95), "door": (0.30, 0.40, 0.29),
+             "entry": (1.00, 0.55, 0.20), "tread": (1.00, 0.85, 0.35), "ladder": (0.55, 1.00, 0.75),
+             "hole_rim": (1.00, 0.40, 0.70), "score": (1.00, 0.22, 0.22), "poi": (0.80, 0.55, 1.00),
+             "background": (0.56, 0.68, 0.53)},
     "blueprint": {"slab": (0.10, 0.20, 0.38), "slab_side": (0.07, 0.14, 0.28), "wall": (0.62, 0.82, 0.95),
                   "cap": (0.95, 0.98, 1.00), "glass": (0.35, 0.95, 0.95), "door": (0.85, 0.92, 1.00),
                   "entry": (1.00, 0.45, 0.25), "tread": (1.00, 0.75, 0.25), "ladder": (0.40, 1.00, 0.70),
-                  "hole_rim": (1.00, 0.30, 0.65), "background": (0.03, 0.06, 0.12)},
+                  "hole_rim": (1.00, 0.30, 0.65), "score": (1.00, 0.20, 0.30), "poi": (0.75, 0.55, 1.00),
+                  "background": (0.03, 0.06, 0.12)},
     "model": {"slab": (0.70, 0.68, 0.64), "slab_side": (0.50, 0.48, 0.45), "wall": (0.95, 0.94, 0.91),
               "cap": (0.16, 0.17, 0.19), "glass": (0.55, 0.74, 0.86), "door": (0.30, 0.33, 0.37),
               "entry": (0.80, 0.22, 0.18), "tread": (0.78, 0.60, 0.30), "ladder": (0.15, 0.55, 0.55),
-              "hole_rim": (0.55, 0.25, 0.60), "background": (0.13, 0.14, 0.16)},
+              "hole_rim": (0.55, 0.25, 0.60), "score": (0.85, 0.10, 0.45), "poi": (0.20, 0.45, 0.80),
+              "background": (0.13, 0.14, 0.16)},
     "dossier": {"slab": (0.90, 0.87, 0.78), "slab_side": (0.70, 0.66, 0.56), "wall": (0.30, 0.29, 0.27),
                 "cap": (0.12, 0.11, 0.10), "glass": (0.60, 0.66, 0.66), "door": (0.45, 0.42, 0.38),
                 "entry": (0.75, 0.10, 0.10), "tread": (0.55, 0.50, 0.42), "ladder": (0.25, 0.45, 0.30),
-                "hole_rim": (0.20, 0.30, 0.55), "background": (0.82, 0.79, 0.70)},
+                "hole_rim": (0.20, 0.30, 0.55), "score": (0.95, 0.35, 0.05), "poi": (0.45, 0.20, 0.55),
+                "background": (0.82, 0.79, 0.70)},
 }
-DEFAULT_PALETTE = "blueprint"
+DEFAULT_PALETTE = "palm"
 
 
 def _linear(c):
@@ -207,6 +225,63 @@ def _storeys(spec, pal):
     return out
 
 
+#: What a scout is shown besides the structure: the score (an `objective` marker) and the props worth knowing
+#: about. Markers by type, volumes by the kind their name begins with. Label is what a viewer names it.
+POINTS_OF_INTEREST = {
+    ("marker", "objective"): ("score", "SCORE"),
+    ("marker", "loot"): ("poi", "LOOT"),
+    ("marker", "camera_socket"): ("poi", "CAMERA"),
+    ("volume", "safe"): ("poi", "SAFE"),
+    ("volume", "atm"): ("poi", "ATM"),
+}
+#: A score beacon: plinth, mast and a block on top, standing over the floor so it reads from any side.
+BEACON_H = 3.0
+
+
+def points(spec):
+    """Every point of interest, in spec metres: [{kind, label, storey, x, y, z (over its storey's floor), size}],
+    markers first then volumes, each in spec order."""
+    sh = FP._story_height(spec)
+    stories = set(FP.stories_in(spec))
+    out = []
+    for m in getattr(spec, "markers", []) or []:
+        hit = POINTS_OF_INTEREST.get(("marker", m.type))
+        s = FP._marker_story(spec, m)
+        if hit and s in stories:
+            out.append({"kind": hit[0], "label": hit[1], "storey": s, "x": m.x, "y": m.y,
+                        "z": max(0.0, (getattr(m, "z", 0.0) or 0.0) - s * sh), "size": None})
+    for v in getattr(spec, "volumes", []) or []:
+        hit = POINTS_OF_INTEREST.get(("volume", str(v.name).split("_")[0]))
+        if not hit or not getattr(v, "visual", True):
+            continue
+        base = (getattr(v, "z", 0.0) or 0.0) - v.size_z / 2
+        s = next((k for k in sorted(stories) if k * sh - 0.6 <= base < (k + 1) * sh - 0.6), None)
+        if s is None:
+            continue
+        out.append({"kind": hit[0], "label": hit[1], "storey": s, "x": v.x, "y": v.y,
+                    "z": max(0.0, base - s * sh), "size": (v.size_x, v.size_y, v.size_z)})
+    return out
+
+
+def _point_meshes(spec, pal):
+    """{storey: _Mesh} of the points of interest on it."""
+    out = {}
+    for p in points(spec):
+        m = out.setdefault(p["storey"], _Mesh())
+        x, y, z = p["x"], p["y"], p["z"]
+        col = pal[p["kind"]]
+        if p["kind"] == "score":
+            m.box(x - 0.45, y - 0.45, z, x + 0.45, y + 0.45, z + 0.10, col)
+            m.box(x - 0.10, y - 0.10, z + 0.10, x + 0.10, y + 0.10, z + BEACON_H - 0.7, col)
+            m.box(x - 0.40, y - 0.40, z + BEACON_H - 0.7, x + 0.40, y + 0.40, z + BEACON_H, col)
+        elif p["size"]:
+            sx, sy, sz = p["size"]
+            m.box(x - sx / 2, y - sy / 2, z, x + sx / 2, y + sy / 2, z + min(sz, 1.6), col)
+        else:
+            m.box(x - 0.2, y - 0.2, z, x + 0.2, y + 0.2, z + 0.4, col)
+    return out
+
+
 def model_stats(spec, palette=DEFAULT_PALETTE):
     """{storey: triangles}."""
     return {s: len(m.idx) // 3 for s, m in _storeys(spec, PALETTES[palette]).items()}
@@ -214,7 +289,9 @@ def model_stats(spec, palette=DEFAULT_PALETTE):
 
 def build_glb(spec, palette=DEFAULT_PALETTE):
     """The scout model as GLB bytes: a node and a mesh a storey (``storey_<n>``, at its true elevation, with
-    ``extras.storey`` and ``extras.elevation``), one material, colour as normalised bytes in ``COLOR_0``."""
+    ``extras.storey`` and ``extras.elevation``), and under it, where the storey has any, its points of interest
+    (``storey_<n>_points``, a mesh of their own); one material, colour as normalised bytes in ``COLOR_0``; the
+    scene's ``extras.points`` naming every point, its ``at`` in the model's frame (x, y up, z south)."""
     pal = PALETTES[palette]
     sh = FP._story_height(spec)
     bin_ = bytearray()
@@ -230,9 +307,7 @@ def build_glb(spec, palette=DEFAULT_PALETTE):
         accs.append(a)
         return len(accs) - 1
 
-    for s, m in sorted(_storeys(spec, pal).items()):
-        if not m.idx:
-            continue
+    def mesh(name, m):
         p = add(b"".join(struct.pack("<3f", *v) for v in m.pos), 34962, 5126, "VEC3", len(m.pos),
                 {"min": [min(v[i] for v in m.pos) for i in range(3)],
                  "max": [max(v[i] for v in m.pos) for i in range(3)]})
@@ -240,15 +315,33 @@ def build_glb(spec, palette=DEFAULT_PALETTE):
         c = add(b"".join(struct.pack("<4B", *v) for v in m.col), 34962, 5121, "VEC4", len(m.col),
                 {"normalized": True})
         i = add(b"".join(struct.pack("<I", v) for v in m.idx), 34963, 5125, "SCALAR", len(m.idx))
-        meshes.append({"name": "storey_%d" % s, "primitives": [
+        meshes.append({"name": name, "primitives": [
             {"attributes": {"POSITION": p, "NORMAL": n, "COLOR_0": c}, "indices": i, "material": 0}]})
-        nodes.append({"name": "storey_%d" % s, "mesh": len(meshes) - 1,
-                      "translation": [0.0, round(s * sh, 6), 0.0],
-                      "extras": {"storey": s, "elevation": round(s * sh, 6)}})
+        return len(meshes) - 1
+
+    pts = _point_meshes(spec, pal)
+    for s, m in sorted(_storeys(spec, pal).items()):
+        if not m.idx:
+            continue
+        if s in pts:
+            nodes.append({"name": "storey_%d_points" % s, "mesh": mesh("storey_%d_points" % s, pts[s]),
+                          "extras": {"storey": s, "points": True}})
+        node = {"name": "storey_%d" % s, "mesh": mesh("storey_%d" % s, m),
+                "translation": [0.0, round(s * sh, 6), 0.0],
+                "extras": {"storey": s, "elevation": round(s * sh, 6)}}
+        if s in pts:
+            node["children"] = [len(nodes) - 1]
+        nodes.append(node)
     gltf = {"asset": {"version": "2.0", "generator": "deli_counter scout_model"},
-            "scene": 0, "scenes": [{"name": spec.name, "nodes": list(range(len(nodes))),
+            "scene": 0, "scenes": [{"name": spec.name,
+                                    "nodes": [k for k, n in enumerate(nodes) if not n["extras"].get("points")],
                                     "extras": {"palette": palette,
-                                               "background": list(pal["background"])}}],
+                                               "background": list(pal["background"]),
+                                               "points": [{"kind": p["kind"], "label": p["label"],
+                                                           "storey": p["storey"],
+                                                           "at": [round(p["x"], 3), round(p["storey"] * sh + p["z"], 3),
+                                                                  round(-p["y"], 3)]}
+                                                          for p in points(spec)]}}],
             "nodes": nodes, "meshes": meshes,
             "materials": [{"name": "scout", "pbrMetallicRoughness": {
                 "baseColorFactor": [1.0, 1.0, 1.0, 1.0], "metallicFactor": 0.0, "roughnessFactor": 0.85}}],
