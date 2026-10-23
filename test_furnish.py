@@ -562,6 +562,12 @@ def test_rooms_are_read_on_whole_tokens_id_first_then_role():
     assert k({"id": "manager_office"}) == "office"
     assert k({"id": "count_room"}) == "vault"
     assert k({"id": "stairwell_north"}) == "corridor"
+    # 0.263.0: a hall the id names and says nothing more of is a hallway; the
+    # gathering words keep the hall, and a word that says more wins
+    assert k({"id": "upper_hall", "role": "connector"}) == "hallway"
+    assert k({"id": "back_hall", "role": "connector"}) == "hallway"
+    assert k({"id": "assembly_hall", "role": "public_entry"}) == "hall"
+    assert k({"id": "chapel", "role": "public_entry"}) == "hall"
     # below grade and named nothing: a basement, ahead of the role
     assert k({"id": "north_wing", "role": "public_entry", "story": -1}) == "basement"
     # above grade and named nothing: the role's own tokens

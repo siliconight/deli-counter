@@ -48,7 +48,7 @@ def _dressing_stems(room, building):
     kind = L._room_kind(room, building)
     recipe = L._RECIPES[kind]
     pools = list(recipe.get("clusters") or ())
-    if room.get("story", 0) < 0 and kind not in ("basement", "vault", "corridor", "wine_cellar"):
+    if room.get("story", 0) < 0 and kind not in ("basement", "vault", "corridor", "hallway", "wine_cellar"):
         pools.append(L._BASEMENT_CLUSTER)
     clustered = {s for pool, _lo, _hi in pools for s in pool}
     functional = set()

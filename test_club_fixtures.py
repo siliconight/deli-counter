@@ -200,7 +200,10 @@ def test_no_board_outside_a_strip_clubs_club_rooms():
 
 def test_a_cigarette_machine_stands_in_a_club_a_bar_a_lobby_and_a_hall_and_nowhere_else():
     kinds = {("strip_club_x", "main_floor"): 1, ("country_club_x", "club_bar"): 1,
-             ("bank_x", "lobby"): 1, ("museum_x", "upper_hall"): 1,
+             ("bank_x", "lobby"): 1, ("museum_x", "exhibit_hall"): 1,
+             # 0.263.0: a hall the id names and says nothing more of is a
+             # hallway, and a hallway stands no cigarette machine
+             ("museum_x", "upper_hall"): 0,
              ("office_x", "office"): 0, ("warehouse_x", "stock_room"): 0,
              ("deli_x", "kitchen"): 0, ("shop_x", "sales_floor"): 0}
     for (name, rid), want in kinds.items():
@@ -293,8 +296,10 @@ def test_the_library_carries_the_fixture_pass_and_is_still_a_fixed_point_of_furn
     # edges, and no wall in their rooms holds them. 119 -> 118 (0.214.0):
     # stop_n_go's back-room rack stood on its north wall 0.96 m from
     # `rear_service`, which widened 1.0 -> 1.25 m to the contract's door, and
-    # refurnished beside it the rack is placed no more
-    assert counts == {"dartboard": 11, "cigarettes": 118}, counts
+    # refurnished beside it the rack is placed no more. 118 -> 86 (0.263.0):
+    # the 32 that stood in hallways -- `upper_hall`, `back_hall` -- which the
+    # gallery recipe furnished, and the hallway recipe stands none
+    assert counts == {"dartboard": 11, "cigarettes": 86}, counts
 
 
 def test_the_strip_club_preset_hangs_a_board():

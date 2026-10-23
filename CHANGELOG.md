@@ -1,3 +1,42 @@
+## [0.263.0] - a hall the id names and says nothing more of is a hallway
+
+**The walker's walk of cold run 9383** (the factory's `docs/findings/walk_2026-10-23_deli/`, finding 3; roadmap 300),
+of deli_a03's stair landing `upper_hall`: "layout of these tables doesn't seem to have a rhyme or reason". The
+landing took the `hall` kind by its id's token -- the row for galleries, chapels and courtrooms -- and was given a
+service counter, waiting benches, vending, a cigarette machine and a dining table with its chairs. 45 of the 64 rooms
+that row furnished are connectors, nearly all hallways and stair landings: `upper_hall` (24 of them), `back_hall`,
+`rear_hall`, `mezz_hall`. The role cannot tell them apart -- `connector` is 896 rooms, kitchens, offices and bars
+among them -- the id's words can.
+
+### Changed
+- **`_ROOM_KINDS`**: the `hall` row keeps the gathering words (gallery, exhibit, chapel, assembly, courtroom,
+  viewing, artifact) and loses "hall" itself; a last row, `hallway`, takes "hall" when no other kind's word does, so
+  `assembly_hall` stays a hall and `cellar_hall` and `under_hall` stay basements. 40 rooms in 38 library specs move
+  from `hall` to `hallway` and no room changes kind otherwise.
+- **The `hallway` recipe**: benches, a file cabinet, a bin and vending against the walls, at most six pieces, nothing
+  on the floor. Movement first; its floor share sits under the walker's 12-25 % band on purpose, and is reported.
+- Below grade a hallway takes no basement clutter, as a corridor does not.
+
+### The library, refurnished and sheltered
+- **40 rooms in 38 specs moved and no other** (the factory's `patches/dc_hallway/rooms_moved.out.txt`), none holding
+  an objective or loot marker. Furnish's pieces 8,510 -> 8,154; the moved rooms' floor share fell from 2.3-12.8 % to
+  0.9-7.3 %, the shelter pieces counted. The 32 cigarette machines that stood in them go (118 -> 86 in the
+  library); none moved elsewhere.
+- **The shelter pass** (`migrate_shelter.py`) stood a kiosk in courthouse_a02's and survival_demo's `upper_hall`, whose
+  only shelter had been the gallery set, and a tall crate stack in gas_station_a02's `back_hall`, which had none.
+  Every combat hallway is sheltered but stop_n_go's 27 m2 `back_hall`, under the seeder's 30 m2 floor
+  (`_SEED_MIN_AREA`) and unsheltered before this too.
+- **The route census** (the factory's `docs/findings/furnish_route_cost/route_cost.py`, both libraries in one
+  session): routes over the guide's 10 % detour 26 pairs in 25 rooms -> 23 in 22; narrowed from two abreast to single
+  file 151 -> 142; closed to a body 0 -> 0, to the bake 5 -> 5.
+
+### Tests
+- `test_furnish.py`: `upper_hall` and `back_hall` are hallways, `assembly_hall` and `chapel` halls -- failing on
+  0.262.0 on the first.
+- `test_club_fixtures.py`: its hall example was `upper_hall`, now `exhibit_hall`, and `upper_hall` stands no cigarette
+  machine; the library's 118 machines are 86.
+- `test_marker_room_routes.py` mirrors furnish's below-grade rule, `hallway` in it.
+
 ## [0.262.0] - every library stair is solid underneath unless named
 
 **The walker's walk of cold run 9383** (the factory's `docs/findings/walk_2026-10-23_deli/`, finding 4), of deli_a03's

@@ -2123,8 +2123,18 @@ _ROOM_KINDS = (
     # is somewhere people sit; a shop floor is shelving and stock.
     ("shop_floor", ("floor", "sales", "retail", "showroom", "market",
                     "aisle", "aisles", "stall", "customer", "shop")),
-    ("hall", ("hall", "gallery", "galleries", "exhibit", "chapel",
+    # A HALL IS WHERE PEOPLE GATHER BY THE WORD THAT SAYS SO (0.263.0). This
+    # row named "hall" itself, and 45 of the 64 rooms it furnished were
+    # hallways and stair landings -- `upper_hall`, `back_hall`, `rear_hall`,
+    # `mezz_hall` -- each given a service counter, benches, vending and a
+    # dining table: the walker, on deli_a03's landing in cold run 9383,
+    # "layout of these tables doesn't seem to have a rhyme or reason". The
+    # gathering words stay here; "hall" alone is the last row's.
+    ("hall", ("gallery", "galleries", "exhibit", "chapel",
               "assembly", "courtroom", "courtrooms", "viewing", "artifact")),
+    # "hall" and no other kind's word: a HALLWAY (0.263.0), last so any word
+    # that says more -- `assembly_hall`, `cellar_hall`, `under_hall` -- wins.
+    ("hallway", ("hall",)),
 )
 #: A room whose id names no kind is read by its ROLE: the role's own tokens
 #: through the same table (`public_entry` is a lobby, `loot_room` a vault),
@@ -2457,6 +2467,15 @@ _RECIPES = {
     "corridor": {"anchors": (), "wall": ("litter_bin", "cabinet_file",
                                          "vending"),
                  "floor": (), "clusters": (), "cap": 2},
+    # A HALLWAY (0.263.0): a hall the id names and says nothing more of --
+    # an upstairs hall, a stair landing, a back hall. Movement first, so
+    # nothing on its floor: benches, a cabinet, a bin and vending against its
+    # walls, at most six however big it is. Its floor share sits under the
+    # walker's 12-25 % band on purpose, and that is reported, not hidden.
+    "hallway": {"anchors": (), "wall": ("chair_waiting", "cabinet_file",
+                                        "litter_bin", "chair_waiting",
+                                        "vending"),
+                "floor": (), "clusters": (), "cap": 6},
     # Anything else: a wall run and ONE cluster. Not a table and chairs --
     # that default is what the walker called boring.
     "fallback": {"anchors": (), "wall": ("shelf_run", "cabinet_file",
@@ -5811,7 +5830,7 @@ def furnish(spec):
         if _holds_queue(spec, room):
             clusters = [c for c in clusters if "stanchion" not in c[0]]
         if story < 0 and kind not in ("basement", "vault", "corridor",
-                                      "wine_cellar"):
+                                      "hallway", "wine_cellar"):
             clusters.append(_BASEMENT_CLUSTER)
         rcx, rcy = (x0 + x1) / 2.0, (y0 + y1) / 2.0
         inner = _nested_rects(spec, room)
