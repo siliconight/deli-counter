@@ -290,6 +290,44 @@
       "rot_y": 0.0,
       "wall": "ext_0_E",
       "reacts_to_alarm": true
+    },
+    {
+      "id": "under_hall_landing",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -23.3,
+        12.0,
+        -0.4
+      ],
+      "rot_y": 0.0,
+      "room": "under_hall",
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 4.6,
+      "landing": "stair",
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "under_hall_landing_1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -23.3,
+        -12.0,
+        -0.4
+      ],
+      "rot_y": 0.0,
+      "room": "under_hall",
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 4.6,
+      "landing": "stair",
+      "reacts_to_alarm": true
     }
   ]
 }

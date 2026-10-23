@@ -694,6 +694,44 @@
       "rot_y": 0.0,
       "wall": "ext_0_E",
       "reacts_to_alarm": true
+    },
+    {
+      "id": "vault_west_landing",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -11.8,
+        9.45,
+        -0.4
+      ],
+      "rot_y": 0.0,
+      "room": "vault_west",
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 3.2,
+      "landing": "stair",
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "vault_east_landing",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        13.95,
+        -9.0,
+        -0.4
+      ],
+      "rot_y": 0.0,
+      "room": "vault_east",
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 3.2,
+      "landing": "stair",
+      "reacts_to_alarm": true
     }
   ]
 }

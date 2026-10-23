@@ -261,6 +261,44 @@
       "rot_y": 180.0,
       "wall": "ext_0_W",
       "reacts_to_alarm": true
+    },
+    {
+      "id": "bond_approach_landing",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -22.8,
+        10.0,
+        -0.4
+      ],
+      "rot_y": 0.0,
+      "room": "bond_approach",
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 4.6,
+      "landing": "stair",
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "bond_approach_landing_1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -22.8,
+        -10.0,
+        -0.4
+      ],
+      "rot_y": 0.0,
+      "room": "bond_approach",
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 4.6,
+      "landing": "stair",
+      "reacts_to_alarm": true
     }
   ]
 }

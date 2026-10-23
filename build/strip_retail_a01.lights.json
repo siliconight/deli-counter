@@ -686,6 +686,44 @@
       "rot_y": 0.0,
       "wall": "ext_0_E",
       "reacts_to_alarm": true
+    },
+    {
+      "id": "stash_room_landing",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        8.6,
+        4.0,
+        -0.4
+      ],
+      "rot_y": 0.0,
+      "room": "stash_room",
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 2.8,
+      "landing": "stair",
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "stash_room_landing_1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        7.1,
+        -1.0,
+        -0.4
+      ],
+      "rot_y": 0.0,
+      "room": "stash_room",
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 2.8,
+      "landing": "ladder",
+      "reacts_to_alarm": true
     }
   ]
 }

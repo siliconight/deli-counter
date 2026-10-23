@@ -3493,6 +3493,8 @@ def write_light_manifest(builder, path):
         # WHO IS INSIDE (0.165.0): the identity a club's neon is keyed on,
         # which the sign over the door names (Zoo 1.37.0)
         business=_ld.club_building_id(builder.s),
+        # WHERE EVERY OPENING LANDS (0.261.0): lit in a moody room, so it reads from above
+        landings=_lights.opening_landings(builder.s),
     )
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)

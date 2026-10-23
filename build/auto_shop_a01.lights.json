@@ -354,6 +354,25 @@
       "rot_y": 0.0,
       "wall": "ext_0_E",
       "reacts_to_alarm": true
+    },
+    {
+      "id": "upper_office_landing",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -9.35,
+        6.05,
+        6.8
+      ],
+      "rot_y": 0.0,
+      "room": "upper_office",
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 3.2,
+      "landing": "ladder",
+      "reacts_to_alarm": true
     }
   ]
 }

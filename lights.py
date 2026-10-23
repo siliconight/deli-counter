@@ -142,6 +142,13 @@ _TARGET_SPACING = 4.0
 #: metres, hanging on a cord below the slab. Lux reads the `pendant` type as a
 #: warm incandescent omni with a tight, drop-derived range.
 _PENDANT_AREA = 25.0    # m^2 of room per bare bulb
+#: AN OPENING SHOWS WHERE IT GOES (0.261.0). The walker, 2026-10-23, of a stair opening onto deli_a03's basement read
+#: pitch black from above: "you should be able to see into holes to know you can go forward into them". A moody room
+#: keeps its bare bulbs and its dark corners, but the LANDING of every opening into it -- a stair's foot, the floor
+#: under a hole, a ladder's base (`opening_landings`) -- gets a fluorescent over it, the light an ordinary room is
+#: lit by, so the place a way leads to reads from the way in. Measured before: the stairs land in cold storage at
+#: luma p50 10, the vault p50 3, against the stairwell above at 74 (`tools/light_check.py`).
+_LANDING_OFF_HOLE = 0.6   # metres past a hole's edge a landing lamp hangs, so it is mounted to ceiling, not air
 _PENDANT_CORD = 0.6     # metres of cord between slab underside and bulb
 #: THE COUNTER'S WARM ACCENT (0.160.0). The walker, 2026-09-29: "add the warm
 #: counter accent", from their 1990s lighting reference on the convenience
@@ -1455,10 +1462,79 @@ def _drapes_window(v, o):
             <= float(v.get("size_z", 0.0)) / 2.0)
 
 
+def opening_landings(spec):
+    """Where every opening into a storey lands, in spec metres: [{story, x, y, kind}] -- a stair's lower end
+    (`stairwell.stair_endpoints`), the floor under each hole in a slab that is not a stair's own
+    (`axonometric._slab_holes`: authored holes, floor holes, hatches), a ladder's base. One entry a place: a hole
+    named twice (as authored and as its link) is one landing."""
+    import axonometric
+    import stairwell
+    out, seen = [], set()
+
+    def add(story, x, y, kind):
+        key = (int(story), round(float(x), 2), round(float(y), 2))
+        if key not in seen:
+            seen.add(key)
+            out.append({"story": int(story), "x": round(float(x), 3), "y": round(float(y), 3), "kind": kind})
+    for st in getattr(spec, "stairs", []) or []:
+        for e in stairwell.stair_endpoints(st):
+            if e["end"] == "lower":
+                add(min(st.from_story, st.to_story), e["point"][0], e["point"][1], "stair")
+    for s, rects in sorted(axonometric._slab_holes(spec).items()):
+        for r, kind in rects:
+            if kind != "stair" and not _own_hole(spec, s, r):
+                add(s - 1, (r[0] + r[2]) / 2.0, (r[1] + r[3]) / 2.0, "hole")
+    for ld in getattr(spec, "ladders", []) or []:
+        add(min(ld.from_story, ld.to_story), ld.x, ld.y, "ladder")
+    return out
+
+
+def _own_hole(spec, s, r):
+    """Whether the hole ``r`` in storey ``s``'s slab is a ladder's or a stair's OWN cut -- that opening, not a second
+    one. The build cuts both into the slabs it lights from (`Builder`: `ladder_geom.through_hole` for a ladder, the
+    stair's run for a stair), so read off a built spec each was counted twice -- deli_a03's basement corridor took a
+    lamp for its ladder and another, at the same point, for the ladder's own hole. A ladder spanning that slab whose
+    through-hole centre falls in it; a stair serving the storeys either side whose footprint overlaps it."""
+    import ladder_geom
+    import stairwell
+    for ld in getattr(spec, "ladders", []) or []:
+        lo, hi = sorted((ld.from_story, ld.to_story))
+        if lo < s <= hi:
+            hx, hy, _sx, _sy = ladder_geom.through_hole(ld.x, ld.y, ld.width, ld.facing)
+            if r[0] - 1e-6 <= hx <= r[2] + 1e-6 and r[1] - 1e-6 <= hy <= r[3] + 1e-6:
+                return True
+    for st in getattr(spec, "stairs", []) or []:
+        served = stairwell.floors_served(spec, st)
+        if s in served and (s - 1) in served:
+            f = stairwell.footprint_rect(st)
+            if r[0] < f[2] and f[0] < r[2] and r[1] < f[3] and f[1] < r[3]:
+                return True
+    return False
+
+
+def _landing_point(x, y, bounds, voids):
+    """A landing lamp's point: over the landing, or -- where a hole is over it, as over a hole's own landing --
+    just past the hole's edge on the side nearest the room's middle, so it hangs from ceiling. None when no side
+    stands inside the room."""
+    hit = [v for v in (voids or ()) if v[0] <= x <= v[2] and v[1] <= y <= v[3]]
+    if not hit:
+        return (x, y)
+    x0, y0, x1, y1 = hit[0]
+    cx, cy = (bounds[0] + bounds[2]) / 2.0, (bounds[1] + bounds[3]) / 2.0
+    d = _LANDING_OFF_HOLE
+    cands = [(x0 - d, (y0 + y1) / 2.0), (x1 + d, (y0 + y1) / 2.0), ((x0 + x1) / 2.0, y0 - d),
+             ((x0 + x1) / 2.0, y1 + d)]
+    cands = [p for p in cands if bounds[0] < p[0] < bounds[2] and bounds[1] < p[1] < bounds[3]
+             and not any(v[0] <= p[0] <= v[2] and v[1] <= p[1] <= v[3] for v in voids)]
+    if not cands:
+        return None
+    return min(cands, key=lambda p: (p[0] - cx) ** 2 + (p[1] - cy) ** 2)
+
+
 def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
                          wall_thick, ceiling_voids=None, partitions=None,
                          report=None, volumes=None, club_rooms=None,
-                         storefronts=None, residence=False):
+                         storefronts=None, residence=False, landings=None):
     """Derive default light anchors: one fluorescent ceiling row per interior
     room, one area light per window opening, a wall pack over every exterior
     door, and one storefront sign. Every room also carries a `room_ambient`
@@ -1492,6 +1568,10 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
     `storefronts` (0.155.0) are the storefront slots as ``{story, facing, x,
     y}``; a fluorescent row whose room they wall carries `reach`, the metres
     to that glass (`_storefront_reach`). Without them no anchor carries it.
+
+    `landings` (0.261.0) are `opening_landings`: a moody room gets a
+    fluorescent over each one inside it (see `_LANDING_OFF_HOLE`), appended
+    last with the spills, so every anchor before it keeps its place.
     """
     anchors = []
     rep = report if report is not None else {}
@@ -1504,6 +1584,7 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
     rep.setdefault("counter_accents", 0)
     rep.setdefault("rows_laid", 0)
     rep.setdefault("rows_over_aisles", 0)
+    rep.setdefault("landing_lights", 0)
     spills = []
     clear = wall_clearance(wall_thick)
     club_ids = set(club_rooms or ())
@@ -1673,6 +1754,29 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
                     "reacts_to_alarm": True,
                 })
                 rep["counter_accents"] += 1
+        # THE LANDINGS (0.261.0): in a moody room, a fluorescent over every place an opening comes down into it
+        if moody:
+            mine = [g for g in (landings or ()) if int(g["story"]) == story
+                    and bounds[0] <= g["x"] <= bounds[2] and bounds[1] <= g["y"] <= bounds[3]]
+            for k, g in enumerate(mine):
+                at = _landing_point(g["x"], g["y"], bounds, rects)
+                if at is None:
+                    continue
+                for pos, _n, _sp in _row_runs([at[0], at[1], ceiling_z], 0.0, 1, 0.0, rects,
+                                              walls=walls, clear=clear, report=rep):
+                    spills.append({
+                        "id": "%s_landing%s" % (r.get("id", "room"), "_%d" % k if k else ""),
+                        "type": "fluorescent",
+                        "source": "derived",
+                        "pos": pos,
+                        "rot_y": 0.0,
+                        "room": r.get("id"),
+                        "row": {"count": 1, "spacing": 0.0},
+                        "drop": round(ceiling_z - c[2], 3),
+                        "landing": g["kind"],
+                        "reacts_to_alarm": True,
+                    })
+                    rep["landing_lights"] += 1
         # the room's box AFTER its row: a room's first anchor is its ceiling
         # light, as every reader of this list has assumed since v1.0
         anchors += screens
@@ -1749,7 +1853,7 @@ def build_light_manifest(building_id, rooms, openings, story_height,
                          *, cap_thick, wall_thick, authored=None, theme=None,
                          ceiling_voids=None, partitions=None, report=None,
                          volumes=None, club_rooms=None, storefronts=None,
-                         business=None):
+                         business=None, landings=None):
     """Full `<name>.lights.json` manifest. `authored` is an optional list of
     hand-placed anchors; an authored anchor replaces a derived one with the
     same id (auto defaults + spec overrides, like props). `volumes` and
@@ -1766,7 +1870,8 @@ def build_light_manifest(building_id, rooms, openings, story_height,
                                    partitions=partitions, report=report,
                                    volumes=volumes, club_rooms=club_rooms,
                                    storefronts=storefronts,
-                                   residence=is_residence(business))
+                                   residence=is_residence(business),
+                                   landings=landings)
     if authored:
         by_id = {a["id"]: a for a in anchors}
         for a in authored:

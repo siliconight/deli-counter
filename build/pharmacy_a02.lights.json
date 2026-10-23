@@ -264,6 +264,44 @@
       "rot_y": 180.0,
       "wall": "ext_0_W",
       "reacts_to_alarm": true
+    },
+    {
+      "id": "stock_hall_landing",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        11.8,
+        -6.0,
+        -0.4
+      ],
+      "rot_y": 0.0,
+      "room": "stock_hall",
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 3.0,
+      "landing": "stair",
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "schedule_vault_landing",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -10.8,
+        5.2,
+        -0.4
+      ],
+      "rot_y": 0.0,
+      "room": "schedule_vault",
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 3.0,
+      "landing": "stair",
+      "reacts_to_alarm": true
     }
   ]
 }

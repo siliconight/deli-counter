@@ -1,3 +1,33 @@
+## [0.261.0] - every opening's landing is lit to read from above
+
+**The walker's walk of cold run 9383** (the factory's `docs/findings/walk_2026-10-23_deli/`, finding 1), of a stair
+opening onto deli_a03's basement: "this shouldn't look pitch black" -- and the rule: "you should be able to see into
+holes to know you can go forward into them". The basement is moody by rule -- bare bulbs, dark corners -- and the
+place the stairs come down into it read luma p50 10 from its own station, against the stairwell above at 74.
+
+### Added
+- **`opening_landings(spec)`**: where every opening into a storey lands -- a stair's lower end
+  (`stairwell.stair_endpoints`), the floor under each hole in a slab that is not a stair's own (authored holes, floor
+  holes, hatches), a ladder's base -- one entry a place.
+- **A moody room lights its landings** (`derive_light_anchors(..., landings=)`, `build_light_manifest(...,
+  landings=)`, passed by the build): a fluorescent over each landing inside it -- the lamp an ordinary room is lit by
+  -- and, where a hole is over the landing, hung `_LANDING_OFF_HOLE` (0.6 m) past the hole's edge on the side nearest
+  the room's middle, then kept off the partitions as every lamp is (`_row_runs`). Each carries `landing` (its kind),
+  and they come last with the spills, so every anchor before them keeps its id and its place. A moody room keeps its
+  bulbs; an ordinary room, already lit by its rows, gets none. A hole that is a ladder's or a stair's own cut
+  (`_own_hole`: the builder cuts both into the slabs the lights are derived from) is that opening, not a second
+  one -- the first build of this change lit deli_a03's basement corridor twice at one point, its ladder and the
+  ladder's own hole, and 153 lamps went into 40 buildings where the openings asked fewer. The count the library
+  takes is the rebuilt light records' (the factory's `patches/dc_landing_lights/landing_census.out.txt`).
+
+### Tests
+- `test_landing_lights.py` (new): every opening of deli_a03 lands once; THE TEST THAT MATTERS -- its basement's stair
+  foot and ladder base are lit, the rooms above get nothing, and every anchor before is the same and in order; a
+  landing under a hole hangs its lamp beside the hole; a spec cut the way the builder cuts it lands exactly as the
+  library spec does. On 0.260.0 the four fail on the new names.
+  `test_lights_partitions.py` pins the derivation's report key for key: it gains `landing_lights` (the first run of
+  this change applied it without, and the paired suites caught it -- one new failure, the pinned dict).
+
 ## [0.260.0] - the scout model in the handheld's colours, with the score and the props worth knowing about
 
 **The factory's roadmap 295.** The walker, on the first frames: it "should roughly be in the style of a 1990s palm

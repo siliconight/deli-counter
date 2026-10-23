@@ -251,6 +251,44 @@
       "rot_y": 180.0,
       "wall": "ext_0_W",
       "reacts_to_alarm": true
+    },
+    {
+      "id": "vault_ante_landing",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        11.8,
+        -5.0,
+        -0.4
+      ],
+      "rot_y": 0.0,
+      "room": "vault_ante",
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 3.0,
+      "landing": "stair",
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "vault_room_landing",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -8.3,
+        7.3,
+        -0.4
+      ],
+      "rot_y": 0.0,
+      "room": "vault_room",
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 3.0,
+      "landing": "stair",
+      "reacts_to_alarm": true
     }
   ]
 }

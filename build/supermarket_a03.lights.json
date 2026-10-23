@@ -266,6 +266,44 @@
       "rot_y": 180.0,
       "wall": "ext_0_W",
       "reacts_to_alarm": true
+    },
+    {
+      "id": "cellar_west_landing",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -18.3,
+        11.0,
+        -0.4
+      ],
+      "rot_y": 0.0,
+      "room": "cellar_west",
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 3.8,
+      "landing": "stair",
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "cellar_west_landing_1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -18.3,
+        -12.5,
+        -0.4
+      ],
+      "rot_y": 0.0,
+      "room": "cellar_west",
+      "row": {
+        "count": 1,
+        "spacing": 0.0
+      },
+      "drop": 3.8,
+      "landing": "stair",
+      "reacts_to_alarm": true
     }
   ]
 }
