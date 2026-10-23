@@ -1,3 +1,25 @@
+## [0.262.0] - every library stair is solid underneath unless named
+
+**The walker's walk of cold run 9383** (the factory's `docs/findings/walk_2026-10-23_deli/`, finding 4), of deli_a03's
+up-stair: "this stair has unexpected space below it". Solid has been the default since 2026-09-13; that flight was the
+library's one exception, opened by hand in 0.124.1 because its foot could only be reached from under its high end, the
+basement flight's slab hole leaving 0.4 m beside it. 0.189.0 widened the door beside it to 2.4 m, and the door has
+opened onto the strip beside the flight ever since -- the opening outlived its reason and nothing asked.
+
+### Changed
+- **deli_a03's `deli_stair_up` is solid underneath**: `open_under` removed; its `open_under_why` becomes
+  `underside_why`, keeping the history. Built solid, the nav gate traverses both stairs and reaches objective_A
+  upstairs and the patrol point at 8 of 8 voxel-grid origins (the factory's
+  `patches/dc_solid_undersides/navgate_deli_a03.out.txt`). The flight takes the side and back guards every solid
+  one-run flight takes, and its slot is closed by its back.
+
+### Tests
+- `test_library_undersides.py` (new): THE TEST THAT MATTERS -- every library stair builds solid underneath unless it is
+  named in `OPEN_UNDERSIDES` with its reason (empty); a name there that no longer builds open fails too. On 0.261.0 it
+  fails naming `('deli_a03.json', 'deli_stair_up')`.
+- `test_stair_back.py`: the library's solid one-run flights are 132, not 131 -- deli_a03's joins them; the slots left
+  open are still `credit_union_a02`'s one, closed by its partition.
+
 ## [0.261.0] - every opening's landing is lit to read from above
 
 **The walker's walk of cold run 9383** (the factory's `docs/findings/walk_2026-10-23_deli/`, finding 1), of a stair

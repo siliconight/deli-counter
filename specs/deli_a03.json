@@ -406,9 +406,8 @@
    "facing": "S",
    "id": "deli_stair_up",
    "role": "public_convenience",
-   "open_under": true,
    "meta": {
-    "open_under_why": "Nav gate 2026-09-13: with the underside solid, objective_A upstairs is unreachable; the only route to this flight's foot passes under its high end, because deli_stair_down's slab hole leaves 0.4 m beside it. Reachable with the underside open.",
+    "underside_why": "Deli Counter 0.262.0: solid, the library default. 0.124.1 opened it (nav gate 2026-09-13: with the underside solid objective_A upstairs was unreachable, the only route to this flight's foot passing under its high end, deli_stair_down's slab hole leaving 0.4 m beside it). 0.189.0 widened office_stair_door to 2.4 m and the door now opens onto the strip beside this flight, so the opening outlived its reason: built solid, both stairs traverse and objective_A is reached at 8 of 8 voxel-grid origins. The walker, walking cold run 9383: \"this stair has unexpected space below it\".",
     "door_why": "Deli Counter 0.189.0: office_stair_door is 2.4 m centred on x -14.5, not 1.25 m on -15.0. At 1.25 m all but its east 0.2 m opened over deli_stair_down's slab hole, so the way to this flight turned inside the door's reveal, and that turn baked at 4 of 8 voxel-grid origins (nav_gate grid sweep; cold run 9185 lost two candidates to it). The wider door still meets the basement flight's top and opens about 0.5 m straight onto the strip beside this flight: 8 of 8."
    }
   }
