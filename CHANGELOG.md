@@ -1,3 +1,52 @@
+## [0.266.0] - an indoor litter bin stands against a wall
+
+**The walker, walking cold run 9386** (the factory's `docs/findings/walk_2026-10-23_9386/`, finding 8), of deli_a03's
+bin alone at an aisle's end: "garbage cans are usually up against walls inside buildings". Of the library's 288 bins
+furnish stood, none stood against a wall: 260 loose by the arrangement census, 18 aligned, 10 centred. Five recipes
+drew the bin as a floor cluster, and the corridor's and hallway's wall runs named it while its own `where` --
+`cluster` -- sent it to the floor grid anyway: a piece is placed by its `where`, not by the list that names it.
+
+### Changed
+- **`furnish` ends by standing every bin against a wall** (`stand_bins_on_walls`, after the fixtures): each bin it
+  or an earlier release stood goes to the nearest spot flush against a wall of its room -- every 0.2 m along each
+  edge a built wall holds its whole run on, at the wall slots' own offset, clear of exterior openings
+  (`_bin_wall_spots`) -- where `_seed_clear` lets it stand, asked with the bin set aside and backed on its wall's
+  edge, and off any route its room reserves (`reserves_routes`; furnish hands over the routes it already asked, so
+  none is searched twice); ties by position, so a re-run makes the same move. A bin no wall spot clears goes: a bin mid-floor is the
+  defect and a room without one is not. Its size, height and turn are kept, and NOTHING ELSE MOVES -- every recipe and
+  every draw is as it was.
+
+### Refuted and kept
+- **The bin as a wall piece in five recipes' wall runs.** Built and measured in full before this: 241 rooms
+  re-drawn for 288 bins, because a longer wall run re-shuffles every room that has one. The suite then named what
+  the bins had nothing to do with -- bank_job's queued lobby lost its payphone, ATM and sofa; deli_a03 lost its ATM;
+  a store poster stood on the deli's open edge; a chair stood in a stair core's egress; foundry_heist_vertical's
+  stair_0 stopped traversing -- and the galleries, chapels and courtrooms the `hall` recipe furnishes took the freed
+  turns as dining tables, 267 -> 324 pieces. Kept in the factory's `patches/dc_bins_on_walls/draft1/`.
+
+### Library
+- `migrations/migrate_bins_on_walls.py`: the same function over the stored specs. 92 specs: 280 bins moved to a
+  wall, 8 with no clear wall removed (the corner delis' customer floors -- deli_a01 2, deli_a02, cr_deli and
+  night_deli 1 each -- office_stepped's lobby 2, pawn_shop_a01's shop floor 1); a second run moves none. Every changed spec differs from 0.265.0 in its
+  litter bins and nothing else.
+- Census, 0.265.0 against this: the library's furnished bins 288 -> 280, against a wall 0 -> 280; every generated
+  standing piece loose 14.1 -> 10.8 %, rooms holding two or more loose 292 -> 238. Route census, both
+  libraries in one session: detours over 10 % 23 -> 23, closed 0 -> 0 to a body and 5 -> 5 to the bake, narrowed
+  to single file 141 -> 130 (the dressing's own 25 -> 16): a bin off the floor is a passage back.
+
+### Tests
+- `tests/test_bins_on_walls.py` (new): every furnished bin in the library reads `wall` to the arrangement census;
+  the library is a fixed point of the bin pass; a furnished corner deli and bank stand their bins on their walls and
+  every other volume exactly where furnish without the pass stands it; a bin no wall clears goes. All four fail on
+  0.265.0, the first on behaviour (288 bins off the wall).
+
+### Measured, the clone
+- `build.py --all` and `nav_gate.py --all` exit 0, 157 shells passed; the suite 1,821 tests, 0 failed, 31 skipped
+  (the factory's `patches/dc_bins_on_walls/`).
+- Drafts of this one refuted on the way, each by the suite: the bin pass's first stay test counted a corner bin
+  moved onto its own spot (two edges offer it); its second stood bins on rooms' reserved routes
+  (`test_marker_room_routes`, `test_reserved_routes`) and then searched market_aisles' routes twice.
+
 ## [0.265.0] - the root is the builder: tests in tests/, one-shots in migrations/, and a hook that keeps it so
 
 **The walker, 2026-10-23**: "Deli Counter Repo needs a little clean up/organization? (and a way so the home root
