@@ -298,8 +298,10 @@ def test_the_library_carries_the_fixture_pass_and_is_still_a_fixed_point_of_furn
     # `rear_service`, which widened 1.0 -> 1.25 m to the contract's door, and
     # refurnished beside it the rack is placed no more. 118 -> 86 (0.263.0):
     # the 32 that stood in hallways -- `upper_hall`, `back_hall` -- which the
-    # gallery recipe furnished, and the hallway recipe stands none
-    assert counts == {"dartboard": 11, "cigarettes": 86}, counts
+    # gallery recipe furnished, and the hallway recipe stands none. 86 -> 85
+    # (0.264.0): twin_a01's 38 m2 front_left_0, its kiosk and planter stood in
+    # a line, left the refurnish no wall for its machine
+    assert counts == {"dartboard": 11, "cigarettes": 85}, counts
 
 
 def test_the_strip_club_preset_hangs_a_board():

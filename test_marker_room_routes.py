@@ -136,14 +136,18 @@ def test_the_shelter_pass_keeps_off_a_rooms_routes_where_it_can(monkeypatch):
 
 
 def test_a_room_with_no_spot_off_its_routes_keeps_its_shelter(monkeypatch):
-    """twin_a01's front_right_1 has one clear spot for a crate stack. With a route through it, the pass stands the
-    crate there rather than leave a room both sides see over everything in: kept strictly off its routes, the
-    pawn_shop preset's safe_room lost its shelter and `test_cover_breaks_sightlines` failed on it."""
+    """twin_a01's front_right_1, its every clear spot on a route: the pass stands a crate anyway rather than leave
+    a room both sides see over everything in -- kept strictly off its routes, the pawn_shop preset's safe_room lost
+    its shelter and `test_cover_breaks_sightlines` failed on it. 0.264.0: the route covers the room's whole depth.
+    Through the one spot the square of the crate's longest side once left, it no longer holds the test's premise: by
+    the crate's own footprint the room has a second spot off that route (`_seed_clear`'s `size`)."""
     d0, room = _stripped_room("twin_a01", "front_right_1")
     free = _sheltered(d0, "front_right_1", [], monkeypatch)
     assert len(free) == 1, "asked no route the room is sheltered"
-    kept = _sheltered(d0, "front_right_1", _through(room, free[0]), monkeypatch)
-    assert [(v["x"], v["y"]) for v in kept] == [(free[0]["x"], free[0]["y"])], kept
+    x0, y0, x1, y1 = room["bounds"]
+    everywhere = [([(x0, (y0 + y1) / 2.0), (x1, (y0 + y1) / 2.0)], (y1 - y0) / 2.0 + 1.0)]
+    kept = _sheltered(d0, "front_right_1", everywhere, monkeypatch)
+    assert len(kept) == 1, kept
 
 
 def test_a_shelter_piece_on_a_route_is_the_pass_s_fallback():

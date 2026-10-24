@@ -1,3 +1,75 @@
+## [0.264.0] - a room's seeded pieces stand on a lattice, and a census of what has a reason to stand where it stands
+
+**The walker's walk of cold run 9383** (the factory's `docs/findings/walk_2026-10-23_deli/`, finding 3; roadmap 300),
+of deli_a03's stair landing: "layout of these tables doesn't seem to have a rhyme or reason" -- and of the fix: "do
+the full correct fix, allowing us to have nuance and flavor, but not look like random assortment". `seed_cover` stood
+a room's pieces where a shuffled, jittered grid's first fits fell, each turned by a coin flip.
+
+### Added
+- **`arrangement.py`**: every standing piece in a room gets the first visible reason it has to stand there -- `wall`,
+  `seat`, `aligned` (a row or grid of its own kind, lying the same way), `centred`, `grouped` (a pile, a stool at its
+  counter) -- or `loose`, the random assortment; by producer (seed, furnish, authored), over the library, Level
+  Factory's `lf_` specs (`--dir`, as they are untracked) or every preset built in memory (`--presets N`).
+  Measurements only; an empty population fails rather than reporting zeros. Its controls, `test_arrangement.py`.
+- **`_line_up(spec, room, pieces, routes=())`**: the same pieces on a LATTICE, in place -- one row first, then two, up
+  to `_SEED_LINE_ROWS` (3), a body's corridor between rows, every row on the same stations along it (a short last row
+  centred), ONE KIND A ROW (desks in a row and their cabinets behind, not alternating), long sides along the rows; the
+  rows' position across the room every `_SEED_LINE_CROSS` (0.5 m), sampled every `_SEED_LINE_STEP` (0.2 m), the room's
+  long axis first, then the lattice's middle nearest the room's, the first clear on every row winning. Each piece is
+  cleared as `seed_cover` clears one, by its own footprint, the pieces already stood among what it clears, and off
+  the room's reserved routes. A lone piece stands on the room's line too. A room no lattice fits keeps its pieces.
+  `seed_cover` lays a room's pieces and then `_line_up`s them.
+- **`_seed_clear(..., size=None)`**: a piece's own footprint for every box rule -- off another volume, a stair's
+  reserve, a hole, a vault leaf, the body's corridor -- when it stands the way it is asked; the radius rules still ask
+  `half`. A counter 0.8 m deep was cleared as if it were 2.2 m deep. `migrate_seed_corridor.failing` and
+  `test_seed_corridor` ask a stored piece by its footprint the same way.
+- **`migrate_seed_lines.py`**: lines up the pieces the library stores, never re-seeding (replayed, today's seeder gives
+  back its stored pieces in 7 of 128 specs and would place 1,419 where 75 stand), the routes asked without the
+  room's own pieces as `seed_cover` asks them; then refurnishes.
+
+### Measured
+- **The census, 0.263.0 against this** (the factory's `patches/dc_seed_lines/arrangement_*.out.txt`): every preset at
+  two seeds, built in memory -- seeded pieces loose 95.4 % -> 13.8 %, every generated piece 25.7 % -> 13.1 %, rooms
+  holding two or more loose generated pieces 145 -> 88. The library -- seeded pieces loose 71.8 % -> 3.8 %, every
+  generated piece 14.7 % -> 14.1 %. Level Factory's `lf_` mission shells, built from presets, read 28.6 % loose
+  before, seeded cover 72.5 % of 3,092 pieces: the next ones are built by this seeder.
+- **The library, laid out, refurnished and sheltered**: 35 of the 37 rooms storing seeded pieces stand them on a
+  lattice -- deli_a03's landing and its four twins two rows of two, a row of counters and a row of planters; the
+  bank offices a row of desks and their cabinets behind -- and 2 keep theirs: night_pawn's and pawn_shop_a01's safe
+  rooms, too tight for one clear of their own routes (pawn_shop_a01's crates stood on that route at 0.263.0). The
+  shelter pass stood one piece, night_pawn's safe room's tall crate, where the refurnish took the piece that had
+  sheltered it. Furnish's pieces 8,154 -> 8,139 in 23 rooms of 14 specs, every one under the walker's 12 % band
+  before and after; the offices 5.7 -> 4.8 % of their floor. Four hold a marker: landmark_hall_a01's artifact_room
+  (6 -> 3 pieces), night_pawn's safe_room (3 -> 1), rowhouse_raid's basement_vault and twin_a01's front_right_1 (no
+  count moved). twin_a01's 38 m2 front_left_0 leaves the refurnish no wall for its cigarette machine (the library's 86
+  -> 85).
+- **The route census**, both libraries in one session: detours over 10 % 23 -> 23 pairs, closed 0 -> 0 to a body and
+  5 -> 5 to the bake, narrowed from two abreast to single file 142 -> 141.
+- **A seeded desk still gets no chair** -- furnish seats its own hosts only -- and in an office the seeded lattice
+  takes the floor furnish stood its own desks on. Roadmap 300's next step lays floor hosts and seats a seeded one.
+
+### Refuted and kept
+- **A line alone, cleared as squares.** The first draft stood every room's pieces in one line, each cleared as the
+  square of its longest side: deli_a03's four want 10.5 m of clear line with the corridor between them and the strip
+  beside its stairwell is shorter, so the room the walker named kept its scatter. Two rows of two fit.
+- **Every line before choosing**, which ran `test_door_width`'s preset test past half an hour where 0.263.0 takes 35 s
+  (the first fit wins now: 59 s; presets are not in a cold run).
+- **The line's own pieces set aside while clearing each**: 2.2 m between centres put 0.6 m between a counter's end and
+  a planter's, a line a body could not pass through, and `test_seed_corridor` refused it.
+- **Routes asked with the room's pieces standing**: they bent round where the pieces stood, and the migration lined
+  pawn_shop_a01's two crates onto its safe room's true route.
+- **Kinds alternating along a row**: a desk, a cabinet, a desk, a cabinet mid-floor.
+
+### Tests
+- `test_seed_lines.py` (new): a bare room's pieces are seeded in a line, a body passing between any two; `_line_up`
+  moves the same pieces and nothing else; where one line cannot, two rows do; a room nothing fits keeps its pieces;
+  THE TEST THAT MATTERS -- every library room storing a seeded piece stands it on a lattice but the two named, and
+  the library is a fixed point of the migration. On 0.263.0 the five fail, the first on behaviour.
+- `test_arrangement.py` (new): the census's controls -- each reason read as built, a scatter told from a row.
+- `test_marker_room_routes.py`: a room with no spot off its routes keeps its shelter, the route now covering the
+  room's depth -- through the one spot the square once left, by the crate's footprint the room has a second.
+- `test_club_fixtures.py`: the library's cigarette machines 86 -> 85, and why. `test_seed_corridor.py`: by footprint.
+
 ## [0.263.0] - a hall the id names and says nothing more of is a hallway
 
 **The walker's walk of cold run 9383** (the factory's `docs/findings/walk_2026-10-23_deli/`, finding 3; roadmap 300),

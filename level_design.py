@@ -328,6 +328,21 @@ _SEED_ARCHETYPES = (
 _SEED_DEFAULT = [("crate_stack", 1.1, 1.1, 0.95)]
 _SEED_MIN_AREA = 30.0     # below this a bare room still reads fine
 _SEED_MAX_PIECES = 4      # thesis: don't over-cover
+#: SEEDED PIECES STAND IN ONE LINE (0.264.0, `_line_up`). The walker, walking
+#: cold run 9383, of deli_a03's stair landing: "layout of these tables doesn't
+#: seem to have a rhyme or reason" -- its four pieces stood where a shuffled,
+#: jittered grid's first fits fell, turned by coin flip. A line is tried
+#: every `_SEED_LINE_CROSS` across the room, both ways, sampled every
+#: `_SEED_LINE_STEP` along it; the spread between pieces is `_seed_clear`'s.
+_SEED_LINE_CROSS = 0.5
+_SEED_LINE_STEP = 0.2
+_SEED_SPREAD = 2.2
+#: AND WHERE ONE LINE CANNOT, PARALLEL ROWS (0.264.0): up to this many, the
+#: same spacing on each, a body's corridor between them. deli_a03's landing
+#: holds no line of its four pieces -- they want 10.5 m with the corridor
+#: between each, and the clear strip beside its stairwell is shorter -- and
+#: holds two rows of two.
+_SEED_LINE_ROWS = 3
 
 #: ONE PIECE PER ROOM THAT CAN ACTUALLY BE FOUGHT BEHIND, and its FOOTPRINT
 #: only -- the height comes from `shelter_height()`, so the archetype decides
@@ -690,7 +705,8 @@ def _corridor_obstacles(spec, story, floor, sh):
 
 
 def _seed_clear(spec, room, px, py, placed, half=0.0, above=None,
-                below=None, over_openings=False, corridor=False, backed_on=None):
+                below=None, over_openings=False, corridor=False, backed_on=None,
+                size=None):
     """Candidate point clear of walls, openings, verticals, props, markers.
     `half` is the worst-case half-extent of the piece that will stand here:
     clearances are measured from the piece's EDGE, not its center -- a 2.6 m
@@ -743,7 +759,17 @@ def _seed_clear(spec, room, px, py, placed, half=0.0, above=None,
     a held partition wall offers -- a piece backed against one stands its
     centre about half a metre off it. Every other partition, the door-approach
     rule and every other rule still apply. Only a piece with
-    ``backs_on_partitions`` passes it (`_place_fixture`)."""
+    ``backs_on_partitions`` passes it (`_place_fixture`).
+
+    `size` (0.264.0), when given, is the piece's own footprint, ``(size_x,
+    size_y)``, for a piece that will stand the way it is asked -- a lined-up
+    seeded piece (`_line_up`), a stored one (`migrate_seed_corridor`). Every
+    BOX rule -- off another volume, a stair's reserve, a hole, a vault leaf,
+    the body's corridor -- then asks the footprint rather than the square of
+    its longest side; the RADIUS rules -- a stair's centre, a ladder, a door's
+    approach -- still ask `half`. A counter 0.8 m deep was cleared as if it
+    were 2.2 m deep, and no line of four fitted where two rows of two do."""
+    hx, hy = (float(size[0]) / 2.0, float(size[1]) / 2.0) if size else (half, half)
     story = room.get("story", 0)
     sh = _story_height(spec)
     floor = story * sh
@@ -791,8 +817,8 @@ def _seed_clear(spec, room, px, py, placed, half=0.0, above=None,
                 continue
         elif _hung(v, floor):
             continue
-        if abs(v["x"] - px) < v.get("size_x", 1) / 2 + 0.9 + half and \
-                abs(v["y"] - py) < v.get("size_y", 1) / 2 + 0.9 + half:
+        if abs(v["x"] - px) < v.get("size_x", 1) / 2 + 0.9 + hx and \
+                abs(v["y"] - py) < v.get("size_y", 1) / 2 + 0.9 + hy:
             return False
     for s in spec.get("stairs", []):
         if math.hypot(s["x"] - px, s["y"] - py) < 2.6 + half:
@@ -801,8 +827,8 @@ def _seed_clear(spec, room, px, py, placed, half=0.0, above=None,
     # plus both landing rects (they reach ~run/2 + 2 m along the ascent
     # axis). Cover standing on a landing is a hard error since v0.78.
     for rect in _stair_reserved_rects(spec):
-        if px + half > rect[0] - 0.3 and px - half < rect[2] + 0.3 and \
-                py + half > rect[1] - 0.3 and py - half < rect[3] + 0.3:
+        if px + hx > rect[0] - 0.3 and px - hx < rect[2] + 0.3 and \
+                py + hy > rect[1] - 0.3 and py - hy < rect[3] + 0.3:
             return False
     # AN AUTHORED HOLE IN THIS STOREY'S FLOOR (0.202.0), kept off by the stair
     # reserve's own 0.3 m. Furnish cleared the stairs and never an authored
@@ -817,8 +843,8 @@ def _seed_clear(spec, room, px, py, placed, half=0.0, above=None,
                 continue
             hx0, hx1 = h["x"] - h["size_x"] / 2.0, h["x"] + h["size_x"] / 2.0
             hy0, hy1 = h["y"] - h["size_y"] / 2.0, h["y"] + h["size_y"] / 2.0
-            if px + half > hx0 - 0.3 and px - half < hx1 + 0.3 and \
-                    py + half > hy0 - 0.3 and py - half < hy1 + 0.3:
+            if px + hx > hx0 - 0.3 and px - hx < hx1 + 0.3 and \
+                    py + hy > hy0 - 0.3 and py - hy < hy1 + 0.3:
                 return False
     for l in spec.get("ladders", []):
         if math.hypot(l["x"] - px, l["y"] - py) < 1.6 + half:
@@ -836,22 +862,138 @@ def _seed_clear(spec, room, px, py, placed, half=0.0, above=None,
     # standing there is a leaf that cannot open -- layout_lint L22 fails it.
     import vault_room
     for x0, y0, x1, y1 in vault_room.keepout_rects(spec, story):
-        if (px + half > x0 - 0.3 and px - half < x1 + 0.3
-                and py + half > y0 - 0.3 and py - half < y1 + 0.3):
+        if (px + hx > x0 - 0.3 and px - hx < x1 + 0.3
+                and py + hy > y0 - 0.3 and py - hy < y1 + 0.3):
             return False
     # A BODY PASSES EVERY SIDE OF A SEEDED PIECE (`corridor`, 0.195.0; see
-    # the docstring). The box is the piece's worst-case square, as above.
+    # the docstring). The box is the piece's worst-case square, as above --
+    # or its footprint, given `size`.
     if corridor and above is None:
         import agent_contract
         cw = agent_contract.min_corridor_width()
-        box = (px - half, py - half, px + half, py + half)
+        box = (px - hx, py - hy, px + hx, py + hy)
         if any(_box_gap(box, r) < cw
                for r in _corridor_obstacles(spec, story, floor, sh)):
             return False
     for (qx, qy) in placed:
-        if math.hypot(qx - px, qy - py) < 2.2:
+        if math.hypot(qx - px, qy - py) < _SEED_SPREAD:
             return False
     return True
+
+
+def _seed_kind(v, room):
+    """A seeded piece's kind: its name before ``_<room>_<k>`` or ``_<room>_shelter``."""
+    name = str(v.get("name", ""))
+    head = name.rsplit("_" + str(room.get("id", "")) + "_", 1)[0]
+    return head or name
+
+
+def _line_up(spec, room, pieces, routes=()):
+    """Stand a room's seeded `pieces` (its volume dicts, in the seeder's order)
+    on a LATTICE, long sides along its rows, in place; True when one holds
+    them all, else False and nothing moved (0.264.0).
+
+    One row first, then two, up to `_SEED_LINE_ROWS`: rows parallel to a
+    wall, a body's corridor between them, every row's pieces at the same
+    stations along it (a short last row centred), so the lattice is square.
+    For each count, the rows' first position across the room every
+    `_SEED_LINE_CROSS`, tried in order -- the room's long axis first, then the
+    lattice's middle nearest the room's -- and on the first whose stretch
+    clear on every row holds a row, the first piece at its one end and the
+    last at its other. Clear is `_seed_clear`'s by each piece's own footprint,
+    asked as the seeder asks it with the pieces themselves set aside, the
+    pieces already stood among what it clears, and off the room's reserved
+    `routes`.
+
+    The same pieces, the same kinds and heights: only where they stand and
+    which way they lie. A room no line fits keeps them where they were --
+    cover that stood somewhere beats cover in a line that cannot."""
+    n = len(pieces)
+    if n < 1:
+        return False
+    # ONE KIND A ROW: like with like -- desks in a row and the cabinets behind them, not alternating -- each kind in
+    # the order the seeder first drew it, its pieces in theirs. A row ending mid-kind carries it on into the next.
+    first = {}
+    for v in pieces:
+        first.setdefault(_seed_kind(v, room), len(first))
+    order = sorted(range(n), key=lambda i: (first[_seed_kind(pieces[i], room)], i))
+    pieces = [pieces[i] for i in order]
+    ids = {id(v) for v in pieces}
+    probe = dict(spec, volumes=[v for v in spec.get("volumes") or [] if id(v) not in ids])
+    x0, y0, x1, y1 = room["bounds"]
+    long_x = (x1 - x0) >= (y1 - y0)
+    dims = [(max(float(v["size_x"]), float(v["size_y"])),
+             min(float(v["size_x"]), float(v["size_y"]))) for v in pieces]
+    along_len = max(d[0] for d in dims)      # the longest piece, along its row
+    across = max(d[1] for d in dims)         # the deepest, across it
+    import agent_contract
+    cw = agent_contract.min_corridor_width()
+
+    def clear(px, py, placed, size, standing=()):
+        # by the piece's own footprint (`_seed_clear`'s `size`); the pieces
+        # already stood are volumes to this one, so a body passes between two
+        # of them as it passes any piece (`corridor`)
+        within = dict(probe, volumes=probe["volumes"] + list(standing)) if standing else probe
+        if not _seed_clear(within, room, px, py, placed, half=max(size) / 2.0, corridor=True, size=size):
+            return False
+        return not (routes and on_protected_route(routes, px, py, size[0], size[1]))
+
+    for rows in range(1, min(n, _SEED_LINE_ROWS) + 1):
+        cols = -(-n // rows)
+        if rows > 1 and (rows - 1) * cols >= n:          # a row left empty is not a lattice
+            continue
+        # row to row: the deepest piece and a body's corridor, and never under the seeder's spread
+        pitch = max(across + cw, _SEED_SPREAD) if rows > 1 else 0.0
+        cands = []
+        for along_x in (long_x, not long_x):
+            a0, a1, c0, c1 = (x0, x1, y0, y1) if along_x else (y0, y1, x0, x1)
+            mid = (c0 + c1) / 2.0
+            k = 0
+            while c0 + 0.5 + k * _SEED_LINE_CROSS + (rows - 1) * pitch <= c1 - 0.5 + 1e-9:
+                c = c0 + 0.5 + k * _SEED_LINE_CROSS
+                k += 1
+                cands.append((along_x != long_x, abs(c + (rows - 1) * pitch / 2.0 - mid), c, along_x, a0, a1))
+        for _short, _off, c, along_x, a0, a1 in sorted(cands):
+            probe_size = (along_len, across) if along_x else (across, along_len)
+            steps = int(round((a1 - a0) / _SEED_LINE_STEP))
+            ok = [True] * (steps + 1)
+            for r in range(rows):                         # a stretch clear on every row: the lattice is square
+                cr = c + r * pitch
+                for i in range(steps + 1):
+                    if ok[i]:
+                        a = a0 + i * _SEED_LINE_STEP
+                        ok[i] = clear(*((a, cr) if along_x else (cr, a)), [], probe_size)
+            runs, run = [], None
+            for i in range(steps + 1):
+                a = a0 + i * _SEED_LINE_STEP
+                if ok[i]:
+                    run = [a, a] if run is None else [run[0], a]
+                if run is not None and (not ok[i] or i == steps):
+                    runs.append(tuple(run))
+                    run = None
+            for r0, r1 in sorted(runs, key=lambda r: r[0] - r[1]):
+                if cols > 1 and (r1 - r0) / (cols - 1) < _SEED_SPREAD:
+                    break
+                step = (r1 - r0) / (cols - 1) if cols > 1 else 0.0
+                placed, at, standing = [], [], []
+                for j, (lo, hi) in enumerate(dims):
+                    r, col = divmod(j, cols)
+                    in_row = min(cols, n - r * cols)
+                    # a short last row stands centred under the full ones
+                    a = (r0 + r1) / 2.0 if cols == 1 else r0 + (col + (cols - in_row) / 2.0) * step
+                    cr = c + r * pitch
+                    px, py = (a, cr) if along_x else (cr, a)
+                    size = (lo, hi) if along_x else (hi, lo)
+                    if not clear(px, py, placed, size, standing):
+                        break
+                    placed.append((px, py))
+                    at.append((px, py, size))
+                    standing.append(dict(pieces[j], x=px, y=py, size_x=size[0], size_y=size[1]))
+                if len(at) == n:
+                    for v, (px, py, (sx, sy)) in zip(pieces, at):
+                        v.update({"x": round(px, 2), "y": round(py, 2), "size_x": sx, "size_y": sy})
+                    return True
+    return False
 
 
 def _seeded_cover(v, room):
@@ -1072,6 +1214,7 @@ def seed_cover(spec):
         # AND life without overkill, and a room that already has furniture is
         # not short of life -- it is short of somewhere to fight from. A room
         # that has neither gets this and then its furniture below.
+        start = len(spec.get("volumes") or [])   # this room's pieces are appended after
         if needs_shelter:
             # THE ROOM'S OWN SHELTER PIECE FIRST, THEN THE SMALLEST (0.249.0,
             # the factory's roadmap 283). The piece is chosen by the room's
@@ -1152,6 +1295,10 @@ def seed_cover(spec):
             })
             placed.append((px, py))
             added += 1
+        # THEN THE SAME PIECES IN ONE LINE (0.264.0, `_line_up`): the
+        # shelter piece first and the archetype's after, as they were drawn.
+        mine = [v for v in (spec.get("volumes") or [])[start:] if _seeded_cover(v, room)]
+        _line_up(spec, room, mine, routes)
     return added
 
 

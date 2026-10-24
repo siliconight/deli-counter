@@ -61,8 +61,10 @@ def failing(d):
         placed = [(float(o["x"]), float(o["y"])) for o in vols
                   if o is not v and level_design._seeded_cover(o, room)]
         half = max(float(v["size_x"]), float(v["size_y"])) / 2.0
+        # by its own footprint (0.264.0): a stored piece stands the way it is
         if not level_design._seed_clear(without, room, float(v["x"]), float(v["y"]),
-                                        placed, half=half, corridor=True):
+                                        placed, half=half, corridor=True,
+                                        size=(float(v["size_x"]), float(v["size_y"]))):
             bad.append(v["name"])
     return sorted(bad)
 
