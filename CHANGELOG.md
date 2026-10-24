@@ -1,3 +1,34 @@
+## [0.265.0] - the root is the builder: tests in tests/, one-shots in migrations/, and a hook that keeps it so
+
+**The walker, 2026-10-23**: "Deli Counter Repo needs a little clean up/organization? (and a way so the home root
+doesn't just fill up with python files?)". 300 files stood at the root, 288 of them Python: 181 tests, 32
+`migrate_*`, 75 builder modules. 0.193.0 moved the 23 one-shots nothing imported into `migrations/` and left the rest,
+because the tests imported them by standing beside them.
+
+### Changed
+- **The 181 tests live in `tests/`**, with a `conftest.py` that puts the root and `migrations/` on the import path as
+  the root's own directory once was. In each, the name for the repo -- `HERE`, `here`, a `__file__`-relative path --
+  is the root, one level up, and a usage line that named a test or a migration names it where it now stands.
+- **26 `migrate_*` one-shots live in `migrations/`.** Six stay at the root, because they are builder code under an
+  old name: `presets.py` imports `migrate_roller_grill`, `migrate_slush_machine`, `migrate_wall_crossing`,
+  `migrate_window_poster` and `migrate_window_sign`, and a build reaches `migrate_furnish_recipes`
+  (`build_freshness.GEOMETRY_SOURCES`, which Level Factory parses by file name). Run one as `python
+  migrations/migrate_<name>.py`.
+- **The root holds the builder, 81 modules, and 92 files in all.** Nothing a consumer imports moved: Level Factory,
+  the factory's `tools/` and its findings import builder modules by name from the root, as before.
+
+### Added
+- **`root_modules.txt`** names every `.py` at the root. **`check.py`** -- the commit hook -- runs a first step, "the
+  root is the builder": a root `.py` not named there fails, with where it belongs (a test in `tests/`, a one-shot in
+  `migrations/`, an instrument in the factory's `tools/`), and so does a name with no file. A new builder module is
+  added to the list on purpose, in the change that adds it.
+- `check.py`'s held-back and Blender-only tests are named under `tests/`.
+
+### Tests
+- `tests/test_root_is_the_builder.py` (new): the root holds what `root_modules.txt` names and nothing else; a stray
+  script at the root and a name with no file are both refused.
+- `tests/test_check_order.py`: the population test named where it stands.
+
 ## [0.264.0] - a room's seeded pieces stand on a lattice, and a census of what has a reason to stand where it stands
 
 **The walker's walk of cold run 9383** (the factory's `docs/findings/walk_2026-10-23_deli/`, finding 3; roadmap 300),

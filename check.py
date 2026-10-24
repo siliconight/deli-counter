@@ -21,7 +21,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 # not listed here is gated. Keep this list as short as the truth allows --
 # every entry is a thing nobody is checking before a commit.
 BLENDER_ONLY = [
-    ("test_failing_fixtures.py",
+    ("tests/test_failing_fixtures.py",
      "imports bmesh -- needs a real Blender interpreter, not plain python"),
 ]
 
@@ -32,7 +32,20 @@ BLENDER_ONLY = [
 # Measured 2026-10-04: 0.174.0 added six rowhome Empties and committed clean,
 # and 0.175.0's hook refused for them -- their nav results were first written
 # during that hook. A test that opens build/*.navgate.json belongs here.
-AFTER_NAV_GATE = ["test_navgate_population.py"]
+AFTER_NAV_GATE = ["tests/test_navgate_population.py"]
+
+
+def root_is_the_builder():
+    """Every .py at the root is named in `root_modules.txt` and every name there is a file (0.265.0). The walker:
+    "a way so the home root doesn't just fill up with python files". Returns the problems, none when clean."""
+    listed = [l.strip() for l in open(os.path.join(HERE, "root_modules.txt"), encoding="utf-8")
+              if l.strip() and not l.startswith("#")]
+    have = sorted(f for f in os.listdir(HERE) if f.endswith(".py"))
+    out = ["%s stands at the root and is not in root_modules.txt: a test goes in tests/, a one-shot in "
+           "migrations/, an instrument in the factory's tools/ -- or, a builder module, add it there" % f
+           for f in have if f not in listed]
+    out += ["root_modules.txt names %s, which is not at the root" % f for f in listed if f not in have]
+    return out
 
 
 def run(args):
@@ -41,6 +54,11 @@ def run(args):
 
 def main():
     rc = 0
+    print("== the root is the builder (root_modules.txt) ==")
+    problems = root_is_the_builder()
+    for p in problems:
+        print("   " + p)
+    rc |= 1 if problems else 0
     print("== unit suites (everything that runs without Blender) ==")
     # EVERY test_*.py except the ones that genuinely need Blender.
     #
