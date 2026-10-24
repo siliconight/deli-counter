@@ -1,3 +1,55 @@
+## [0.267.0] - a loading dock's pile is pallet stacks, and a safe is painted steel
+
+**The walker, walking cold run 9386** (the factory's `docs/findings/walk_2026-10-23_9386/`, findings 9 and 3), of
+deli_a03's stockroom: "not sure what this large boring wood block is"; and of pharmacy_a01's drop safe: "looks like a
+brown box". The block was the corner deli preset's `loading_pallet_stack`, one 4.5 x 2.5 x 1.5 m volume: Zoo's
+`pallet_stack` fits 0.84-1.80 x 0.70-1.50 x 0.665-1.425 m, so the kit refused the species and built a plain box. The
+safe was `metal`, which a theme spends on its street metal -- delco_1997's `metal_rusted_street`, averaging
+(115, 80, 53) against its wood's (86, 60, 41).
+
+### Changed
+- **`presets.pallet_pile`**: a dock pile as a grid of stacks that each fit -- as many along each side as keep a
+  stack inside `PALLET_MAX` (1.8 x 1.5 m), `PALLET_GAP` (0.15 x 0.2 m) apart, too narrow for a body, so the pile is
+  still one obstacle and the cover it was -- at the heights a dock's stacks stand at (`PALLET_HEIGHTS`, 1.0-1.4 m in
+  turn). A 4.5 x 2.5 pile is three by two of 1.4 x 1.15 m. The corner deli preset stands its pile this way.
+- **A pile is one piece of what its room holds** (`_room_volume_count`, `PALLET_STACK_PREFIX`): a room's stacks count
+  once, as the block did, so furnish's target for the room is what it was.
+- **A safe is painted steel**: `level_design`'s material rows give `safe` `metal_painted`, above the row whose `safe`
+  it was. Zoo 1.125.0 paints `drop_safe` by default; a slot naming a kind builds that kind, so this row decides the
+  library's safes on any Zoo.
+
+### Noticed, not changed
+- The rows match a name's keyword, so `crate_stack_safe_room` -- five crate stacks named for the safe room they
+  stand in -- read `safe` and were `metal` before this; they are `metal_painted` now. The kind was already wrong;
+  a crate row above the safe row is its own change.
+
+### Library
+- `migrations/migrate_pallet_pile.py`: every stored `loading_pallet_stack` becomes `pallet_pile` over its own
+  footprint and floor, and the spec is refurnished (the library is a fixed point of furnish) -- 8 specs, 8 piles to
+  48 stacks, every other volume in them where it was (the factory's `patches/dc_pallets_safes/furniture_kept.py`).
+  `migrations/migrate_safe_paint.py`: every stored safe-named piece in `metal` to `metal_painted` -- 66 specs,
+  136 pieces (the 8 refurnished specs' safes come out of furnish painted). A second run of either changes nothing.
+
+### Refuted on the way, each kept in the factory's `patches/dc_pallets_safes/`
+- Migrating without the refurnish: four fixed-point-of-furnish tests failed on the six delis
+  (`suite_draft1.out.txt`).
+- Refurnishing with the pile counted as six: each of six delis' stockrooms lost five pieces -- its supply cabinet,
+  file cabinet, shelf run, cartons and pallets -- 30 in all (`furniture_kept_draft2.out.txt`; the instrument that saw
+  it now runs on every proof).
+- Counting it by a `pile` key on the stacks: `spec_loader.Volume` takes no key it does not know, and furnish failed
+  on every deli (`migrations_draft3.out.txt`, `suite_draft3.out.txt`).
+
+### Tests
+- `tests/test_pallets_safes.py` (new): a pile's stacks each fit Zoo's genome and no body passes between them, at
+  two pile sizes; no library spec keeps the one block (eight did: six at 4.5 x 2.5, two at 4.0 x 3.0); a pile
+  counts as one piece of its room; a safe is painted steel; no stored safe wears street metal. All six fail on
+  0.266.0.
+
+### Measured, the clone
+- From a fresh clone, the edit and both migrations (the factory's `patches/dc_pallets_safes/prove_clone.sh`):
+  `build.py --all` and `nav_gate.py --all` exit 0, 157 shells passed; the suite 1,827 tests, 0 failed, 31 skipped;
+  every spec holding a pile keeps every other volume where it was.
+
 ## [0.266.0] - an indoor litter bin stands against a wall
 
 **The walker, walking cold run 9386** (the factory's `docs/findings/walk_2026-10-23_9386/`, finding 8), of deli_a03's

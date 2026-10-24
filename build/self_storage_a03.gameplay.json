@@ -335,6 +335,12 @@
       "damping": null
     },
     {
+      "id": "metal_painted",
+      "acoustic": "Metal",
+      "absorption": 0.25,
+      "damping": 0.2
+    },
+    {
       "id": "carpet",
       "acoustic": "Curtain",
       "absorption": 0.85,
@@ -2217,10 +2223,10 @@
     {
       "node": "safe_floor_re0d39b37_1_col",
       "material": {
-        "id": "metal",
+        "id": "metal_painted",
         "acoustic": "Metal",
-        "absorption": 0.5,
-        "damping": 0.3
+        "absorption": 0.25,
+        "damping": 0.2
       }
     },
     {
@@ -2244,10 +2250,10 @@
     {
       "node": "safe_floor_re0d39b37_4_col",
       "material": {
-        "id": "metal",
+        "id": "metal_painted",
         "acoustic": "Metal",
-        "absorption": 0.5,
-        "damping": 0.3
+        "absorption": 0.25,
+        "damping": 0.2
       }
     },
     {

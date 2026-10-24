@@ -38,6 +38,12 @@
   {
    "id": "wood",
    "acoustic": "Wood"
+  },
+  {
+   "id": "metal_painted",
+   "acoustic": "Metal",
+   "absorption": 0.25,
+   "damping": 0.2
   }
  ],
  "ext_walls": [
@@ -1082,7 +1088,7 @@
    "size_y": 0.9,
    "size_z": 1.0,
    "collision": "convex",
-   "material": "metal"
+   "material": "metal_painted"
   },
   {
    "name": "shelf_run_r82482861_2",
@@ -1115,7 +1121,7 @@
    "size_y": 0.7,
    "size_z": 1.2,
    "collision": "convex",
-   "material": "metal",
+   "material": "metal_painted",
    "rot_z": 180.0
   },
   {

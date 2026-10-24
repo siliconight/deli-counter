@@ -2824,6 +2824,14 @@ _PROP_MATERIALS = (
     # a queue's stanchion runs are black powder coat, their species' own kind
     # (0.243.0): above the row below, whose `stanchion` every run's name holds
     (("stanchion_run",), "metal_painted"),
+    # A SAFE IS PAINTED STEEL (0.267.0). The walker, walking cold run 9386, of
+    # pharmacy_a01's drop safe: "looks like a brown box". `metal` is the
+    # theme's street metal -- delco_1997's `metal_rusted_street`, averaging
+    # (115, 80, 53) against its wood's (86, 60, 41) -- and `drop_safe` is the one
+    # species in this row whose genome takes `metal`, so every safe in the
+    # library wore street rust; the rest fall back to their own painted kind.
+    # Above the row below, whose `safe` it is.
+    (("safe",), "metal_painted"),
     (("safe", "tank", "locker", "panel", "hvac", "vault", "roof_ac", "ac_unit",
       "condenser", "generator", "dumpster", "furnace", "heater", "grill",
       "vending", "atm", "payphone", "stanchion", "litter_bin", "drum"),
@@ -3196,6 +3204,10 @@ def _holds_queue(spec, room):
                for v in spec.get("volumes") or [])
 
 
+#: the stacks of a loading dock's pile, `presets.pallet_pile`'s names (0.267.0)
+PALLET_STACK_PREFIX = "loading_pallet_stack_"
+
+
 def _room_volume_count(spec, room):
     """Volumes standing in this room on its own storey -- what is already
     there, so an authored room is topped up rather than doubled.
@@ -3215,6 +3227,7 @@ def _room_volume_count(spec, room):
     import agent_contract
     headroom = agent_contract.min_headroom()
     n = 0
+    pile_counted = False
     for v in spec.get("volumes", []):
         if not (x0 <= v.get("x", 1e9) <= x1 and y0 <= v.get("y", 1e9) <= y1):
             continue
@@ -3265,6 +3278,18 @@ def _room_volume_count(spec, room):
         # next storey's.
         if stands_on_storey(float(v.get("z", 0)), float(v.get("size_z", 0)),
                             story * sh, sh):
+            # A PILE IS ONE PIECE (0.267.0). A loading dock's pile was one
+            # block and counted one; as `presets.pallet_pile` stands it, six
+            # stacks -- and counted six, a deli's stockroom went without its
+            # supply cabinet, file cabinet, shelf run, cartons and pallets,
+            # five pieces in each of six delis, when the stored specs were
+            # refurnished. A room's stacks count once, by their name: a volume
+            # takes no key the spec loader does not know (`spec_loader.Volume`
+            # refused a `pile` id), and no room holds two piles.
+            if str(v.get("name", "")).startswith(PALLET_STACK_PREFIX):
+                if pile_counted:
+                    continue
+                pile_counted = True
             n += 1
     return n
 

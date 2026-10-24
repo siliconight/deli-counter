@@ -682,7 +682,8 @@ def corner_deli(name: str = "corner_deli_preset",
         {"name": "gondola_aisle_01", "x": -2.0, "y": -9.5, "z": 0.8, "size_x": 1.0, "size_y": 6.0, "size_z": 1.6, "collision": "convex", "material": "metal"},
         {"name": "gondola_aisle_02", "x": 2.5, "y": -9.5, "z": 0.8, "size_x": 1.0, "size_y": 6.0, "size_z": 1.6, "collision": "convex", "material": "metal"},
         {"name": "kitchen_prep_table", "x": 12.0, "y": -4.5, "z": 0.45, "size_x": 4.0, "size_y": 1.2, "size_z": 0.9, "collision": "convex", "material": "metal"},
-        {"name": "loading_pallet_stack", "x": 12.0, "y": 10.0, "z": 0.75, "size_x": 4.5, "size_y": 2.5, "size_z": 1.5, "collision": "convex", "material": "wood"},
+        # the loading dock's pile, as pallet stacks (0.267.0, `pallet_pile`)
+        *pallet_pile(12.0, 10.0, 0.0),
         {"name": "stockroom_rack_01", "x": 2.0, "y": 10.5, "z": 1.0, "size_x": 1.0, "size_y": 5.5, "size_z": 2.0, "collision": "convex", "material": "metal"},
         {"name": "manager_desk", "x": -9.5, "y": -6.5, "z": sh + 0.55, "size_x": 3.0, "size_y": 1.4, "size_z": 1.1, "collision": "convex", "material": "wood"},
         {"name": "server_rack_cluster", "x": 8.0, "y": 8.0, "z": sh + 0.8, "size_x": 4.0, "size_y": 1.4, "size_z": 2.2, "collision": "convex", "material": "metal"},
@@ -2809,6 +2810,47 @@ def card_shop(name: str = "card_shop_preset", mode: str = "heist",
     spec["parapets"] = [{"story": 2 if upper else 1, "height": 0.9,
                          "thick": 0.3}]
     return spec
+
+
+#: A LOADING DOCK'S PILE IS PALLET STACKS (0.267.0). The walker, walking cold
+#: run 9386, of deli_a03's stockroom: "not sure what this large boring wood
+#: block is". It was one 4.5 x 2.5 x 1.5 m volume, and Zoo's `pallet_stack`
+#: fits 0.84-1.80 x 0.70-1.50 x 0.665-1.425 m, so the kit refused the species
+#: and built a plain box. The same footprint as a grid of stacks that each fit:
+#: as many along each side as keep a stack inside `PALLET_MAX`, `PALLET_GAP`
+#: apart -- too narrow for a body, so the pile is still one obstacle and the
+#: cover it was -- at the heights a dock's stacks stand at (`PALLET_HEIGHTS`, in
+#: turn), none over the genome's. A 4.5 x 2.5 pile is three by two of 1.4 x 1.15.
+PALLET_MAX = (1.8, 1.5)
+PALLET_GAP = (0.15, 0.2)
+PALLET_HEIGHTS = (1.3, 1.1, 1.4, 1.2, 1.4, 1.0)
+
+
+def pallet_pile(cx, cy, floor_z, size_x=4.5, size_y=2.5, material="wood"):
+    """The pallet-stack volumes of a dock pile ``size_x`` by ``size_y`` centred
+    on (cx, cy), standing on ``floor_z``: ``loading_pallet_stack_1`` .. ``_n``,
+    row by row. One rule for the preset and for the stored specs
+    (`migrations/migrate_pallet_pile.py`)."""
+    import math
+    (mx, my), (gx, gy) = PALLET_MAX, PALLET_GAP
+    nx = max(1, int(math.ceil((size_x + gx) / (mx + gx) - 1e-9)))
+    ny = max(1, int(math.ceil((size_y + gy) / (my + gy) - 1e-9)))
+    uw = round((size_x - (nx - 1) * gx) / nx, 3)
+    ud = round((size_y - (ny - 1) * gy) / ny, 3)
+    # furnish counts a room's stacks as ONE piece of what it holds, as the one block they replace was
+    # (`level_design._room_volume_count`, by their name)
+    out = []
+    k = 0
+    for j in range(ny):
+        for i in range(nx):
+            h = PALLET_HEIGHTS[k % len(PALLET_HEIGHTS)]
+            k += 1
+            out.append({"name": "loading_pallet_stack_%d" % k,
+                        "x": round(cx + (i - (nx - 1) / 2.0) * (uw + gx), 3),
+                        "y": round(cy + (j - (ny - 1) / 2.0) * (ud + gy), 3),
+                        "z": round(floor_z + h / 2.0, 3), "size_x": uw, "size_y": ud, "size_z": h,
+                        "collision": "convex", "material": material})
+    return out
 
 
 def video_store(name: str = "video_store_preset", mode: str = "heist",
