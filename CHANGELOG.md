@@ -1,3 +1,33 @@
+## [0.268.0] - a stair hole's rail is a balustrade
+
+**The walker, walking cold run 9386** (the factory's `docs/findings/walk_2026-10-23_9386/`, finding 6), of the office's
+double stair -- its hole ringed by solid wood guard boxes 1.07 m high, a flight walled where it should be open: "something
+about the doulbe stairs still needs some work to not look so odd...mainly the walling/railing doesn't loook natural yet".
+Their pick for the form: the compact U, walls where they enclose the well, a rail between the flights. This is the
+first step: the rails.
+
+### Changed
+- **A stair hole's rail is Zoo's `stoop_railing`** (>= 1.128.0, its level form, posts at least every 2.0 m and
+  pickets between): `prop_species` routes `stair_guard_rail_<k>` to it, first in the table (no other row's keyword is in
+  those names, and no authored volume carries one), and `_stair_guards` gives a rail `form: level`.
+- **Painted iron where the palette has it, else wood**: a stair's rail took `wood` wherever the palette had it; a
+  ramp's still names its own steel. 117 of the library's 305 stair specs have `metal_painted`.
+- **The collider is unchanged**: each rail keeps its own `_col` box; Zoo's species builds no collision.
+
+### Still open
+- The seam wall a switchback's upper flight carries over the lower one's edge -- the plain block the walker circled --
+  becomes a raking rail in a later step; its underside stands a body's height up so the lower flight keeps its
+  headroom, and that has to hold.
+
+### Tests
+- `tests/test_stair_balustrade.py` (new): the rail's name routes to the balustrade and a side or back wall's does not;
+  the office's six rails are iron balustrades in the level form and keep their colliders, its walls stay walls. Both
+  fail on 0.267.0. `tests/test_ramp_cut.py`'s pin on the builder's material line follows it.
+
+### Measured, the clone
+- `build.py --all` and `nav_gate.py --all` exit 0, 157 shells passed; the suite 1,829 tests, 0 failed but the ramp
+  test's pin, since followed (the factory's `patches/dc_stair_balustrade/prove.out.txt`).
+
 ## [0.267.0] - a loading dock's pile is pallet stacks, and a safe is painted steel
 
 **The walker, walking cold run 9386** (the factory's `docs/findings/walk_2026-10-23_9386/`, findings 9 and 3), of

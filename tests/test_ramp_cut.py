@@ -122,4 +122,5 @@ def test_a_ramps_rails_are_steel_where_the_palette_has_it():
             if g["stair"] == "ramp_%d" % i:
                 assert g.get("material") == want, (stem, i, g.get("material"))
     src = open(os.path.join(HERE, "deli_counter.py"), encoding="utf-8").read()
-    assert 'mat = g.get("material") or ("wood" if "wood" in have else None)' in src
+    # the piece's own material first, still (0.268.0 made the default painted iron, then wood)
+    assert 'mat = g.get("material") or next(' in src

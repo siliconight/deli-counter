@@ -1860,8 +1860,11 @@ class _Builder:
                 mat = None
             else:
                 h = stairwell.GUARD_HEIGHT
-                # a piece may name its own (0.241.0: a ramp's rail is steel)
-                mat = g.get("material") or ("wood" if "wood" in have else None)
+                # a piece may name its own (0.241.0: a ramp's rail is steel);
+                # a stair's is painted iron where the palette has it, else wood
+                # (0.268.0, `prop_species`'s balustrade row)
+                mat = g.get("material") or next(
+                    (m for m in ("metal_painted", "wood") if m in have), None)
             # A SEAM PIECE'S UNDERSIDE FOLLOWS THE FLIGHT BELOW (0.225.0):
             # `z_lo` lifts the box's bottom off the storey floor and the top
             # stays at the slab underside (`stairwell._seam_pieces`).
@@ -1881,7 +1884,7 @@ class _Builder:
                 name=f"stair_guard_{g['kind']}_{k}", x=round(x, 4),
                 y=round(y, 4), z=round(z0 + h / 2.0, 4), size_x=round(sx, 4),
                 size_y=round(sy, 4), size_z=round(h, 4), collision="convex",
-                material=mat))
+                material=mat, form=("level" if g["kind"] == "rail" else None)))
 
     def _stair_hole(self, st, story, lx, ly, size_x, size_y):
         wx, wy = self._stair_pt(st, lx, ly)

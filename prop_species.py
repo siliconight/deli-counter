@@ -33,6 +33,15 @@ that are boxes by nature (``crate``, ``col_``; ``pallet`` until 0.131.0) are lis
 
 #: (keywords, species). Order matters.
 PROP_SPECIES = (
+    # A STAIR'S RAIL IS A BALUSTRADE (0.268.0). The walker, walking cold run
+    # 9386, of the office stair's hole ringed by solid wood guard boxes: "the
+    # walling/railing doesn't loook natural yet". `_stair_guards` names each
+    # rail `stair_guard_rail_<k>`, a stair's or a ramp's; Zoo's `stoop_railing`
+    # (>= 1.128.0, 8 m long and 0.12 m deep) draws it as its LEVEL form, posts
+    # at least every 2.0 m and pickets between. No other row's keyword is in
+    # those names, and no authored volume carries one, so first is as good as
+    # anywhere; first, so a later row can never claim them.
+    (("stair_guard_rail",), "stoop_railing"),
     # INTERIOR SPECIES (Zoo 0.84.0), each placed IMMEDIATELY AHEAD of the
     # row that would claim its names first, as that release's entry lists
     # them -- and no further up, because a row moved higher than it needs to
