@@ -1,3 +1,25 @@
+## [0.272.0] - a supermarket's aisles are gondolas too
+
+**The walker, walking seed 9205's supermarket, 2026-10-26**: "far too dark" and, of the level, "doesn't look finished".
+Under an inspection light the sales floor's aisles were five 14 m plain boxes (the factory's
+`docs/findings/walk_2026-10-26_panel/`, L3 and L4).
+
+### Changed
+- **`migrations/migrate_supermarket_gondolas.py`** renames the supermarkets' `aisle_N` volumes to `gondola_aisle_N`,
+  which `prop_species` routes to Zoo's `snack_gondola`: 5 in `supermarket_a01`, 4 in `supermarket_a03`.
+  - `migrate_store_gondolas.py` (0.149.0) had left them boxes because "a supermarket aisle is not a snack aisle".
+    They fit the species, though: 1.4 x 14.0 x 2.0 m and 1.4 x 12.0 x 2.0 m, against widths 1.2-14.0, depths
+    0.6-1.5 and heights 1.2-2.2. Grocery stock in place of snacks is a Zoo variant for later.
+- **`migrate_slush_machine.is_store` means a CONVENIENCE store and excludes supermarkets.** It reads "a sales floor
+  with `gondola_aisle` volumes", so the renamed supermarkets matched it, and six migrations would have given them a
+  slush station, a roller grill, window posters and signs. A supermarket's cooler wall and glass front are a decision
+  of their own, not this release's side effect.
+- `prop_species`' note records the change; `test_store_gondolas` keeps only the pharmacy out.
+
+### Tests
+- `tests/test_supermarket_gondolas.py` (both fail on 0.271.0): every supermarket aisle is a gondola; they fit the
+  species, all 9 checked, so the test cannot pass by finding none.
+
 ## [0.271.0] - a selling floor is tile and a working floor is concrete
 
 **The walker, walking seed 9205's supermarket, 2026-10-26: "far too dark in teh super market"** (the factory's

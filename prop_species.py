@@ -219,8 +219,11 @@ PROP_SPECIES = (
     (("deli_case",), "deli_case"),
     # THE SNACK GONDOLA (Zoo 1.13.0): a store's aisles. `gondola_aisle_N`
     # built as plain boxes; `migrate_store_gondolas.py` renames the other
-    # stores' `aisle_N` and `aisle_shelf_N` to it. The supermarkets' `aisle_N`
-    # and the pharmacy's `gondola_a/b` are not a snack aisle and stay.
+    # stores' `aisle_N` and `aisle_shelf_N` to it. The pharmacy's `gondola_a/b`
+    # are not a snack aisle and stay. The supermarkets' `aisle_N` stayed boxes
+    # too until 0.272.0 (`migrate_supermarket_gondolas.py`): the walker read the
+    # five 14 m blocks down seed 9205's sales floor as dark and unfinished, and
+    # they fit the species; grocery stock is a Zoo variant for later.
     (("gondola_aisle",), "snack_gondola"),
     # THE FROZEN DRINK STATION (Zoo 1.15.0): `migrate_slush_machine.py` puts
     # one in every convenience store; no volume carried `slush` before it.

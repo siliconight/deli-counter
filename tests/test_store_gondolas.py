@@ -36,10 +36,8 @@ def test_every_store_aisle_is_a_snack_gondola():
     assert (stores, delis) == (15, 6)
 
 
-def test_the_supermarkets_and_the_pharmacy_are_left_alone():
-    for name in ("supermarket_a01", "supermarket_a03"):
-        d = json.load(open(os.path.join(HERE, "specs", name + ".json"), encoding="utf-8"))
-        assert any(v["name"].startswith("aisle_") for v in d["volumes"]), name
+def test_the_pharmacy_is_left_alone():
+    # the supermarkets were left alone here until 0.272.0 (`test_supermarket_gondolas.py`)
     assert prop_species.species_for_name("gondola_a") is None
     assert prop_species.species_for_name("aisle_1") is None
 

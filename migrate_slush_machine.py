@@ -86,7 +86,13 @@ STAFF_DEPTH = 3.0
 
 
 def is_store(spec):
+    """A CONVENIENCE store: a sales floor whose aisles are snack gondolas -- and not a supermarket, whose aisles
+    are gondolas too since 0.272.0 (`migrate_supermarket_gondolas.py`) but which takes no slush station, roller
+    grill or window posters by this rule. The supermarkets' own cooler wall and glass front are their own
+    decision, not this one's side effect."""
     rooms = {r.get("id") for r in spec.get("rooms") or []}
+    if str(spec.get("name", "")).startswith("supermarket"):
+        return False
     return ROOM in rooms and any(str(v.get("name", "")).startswith("gondola_aisle")
                                  for v in spec.get("volumes") or [])
 
