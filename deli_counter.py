@@ -1832,6 +1832,9 @@ class _Builder:
             return (-angle, 0.0, 0.0)
         return (angle, 0.0, 0.0)
 
+    #: a seam's raking rail's depth across (0.269.0): the top rail's width, inside Zoo's genome's 0.03..0.12
+    RAKE_THICK_M = 0.05
+
     def _stair_guards(self):
         """Bake `stairwell.stair_guards` as volumes, so each guard gets the
         geometry, collision, recorded slot and surface material every volume
@@ -1868,6 +1871,8 @@ class _Builder:
             # A SEAM PIECE'S UNDERSIDE FOLLOWS THE FLIGHT BELOW (0.225.0):
             # `z_lo` lifts the box's bottom off the storey floor and the top
             # stays at the slab underside (`stairwell._seam_pieces`).
+            seam = "z_lo" in g
+            seam_z0 = z0
             if "z_lo" in g:
                 lift = max(0.0, float(g["z_lo"]) - z0)
                 z0 += lift
@@ -1884,7 +1889,48 @@ class _Builder:
                 name=f"stair_guard_{g['kind']}_{k}", x=round(x, 4),
                 y=round(y, 4), z=round(z0 + h / 2.0, 4), size_x=round(sx, 4),
                 size_y=round(sy, 4), size_z=round(h, 4), collision="convex",
-                material=mat, form=("level" if g["kind"] == "rail" else None)))
+                material=mat, form=("level" if g["kind"] == "rail" else None),
+                visual=not seam))
+            # A SEAM DRAWS AS A RAKING RAIL (0.269.0). The walker, walking cold
+            # run 9386, circled the block a switchback's upper flight carries
+            # over the lower one's edge: "the walling/railing doesn't loook
+            # natural yet"; their pick, the compact U, a rail between the
+            # flights. The block stays a collider, unseen -- its underside a
+            # body's height up so the lower flight keeps its headroom
+            # (`stairwell._seam_pieces`), which a rail's collider following the
+            # upper flight down to its treads would not -- and a visual-only
+            # `stoop_railing` flight (Zoo >= 1.129.0) follows the upper flight's
+            # inner edge, from its foot on the storey's floor to RAIL_H over its
+            # head. Zoo draws the high end at +X; the volume's long-side turn
+            # sends +X along -Y for a Y run, so a rail rising toward +Y turns a
+            # further 180, and an X run rising toward -X turns 180
+            # (`stoop.RAIL_ROT_Y`'s measured convention).
+            if seam:
+                hr = H + stoop.RAIL_H
+                rises_hi = bool(g.get("rises_hi", True))
+                # Zoo draws the high end at +X; the composer turns +X by rot_y to plan +X (0), -Y (90), -X (180)
+                # or +Y (270) (`stoop.RAIL_ROT_Y`'s measured convention)
+                if g["axis"] == "Y":
+                    rot = 270.0 if rises_hi else 90.0
+                else:
+                    rot = 0.0 if rises_hi else 180.0
+                # A SLOT WITH NO GREYBOX BOX, deliberately: a greybox visual box is navigation data to Lot's walk
+                # bake (the factory's memory `greybox-is-in-the-walk-navmesh`, cold run 9340), and this one would
+                # stand a thin wall from the storey's floor at the seam -- the floor-height seam 0.225.0 measured
+                # cutting the lower flight. With no greybox node the composer places the module by the slot's own
+                # transform and turn (`themed_tscn`: no extent to fit), and the bake sees the seam's collider alone.
+                rmat = next((m for m in ("metal_painted", "wood") if m in have), None) or self.s.default_material
+                self.slots.append({
+                    "slot_id": f"stair_guard_rake_{k}", "role": "prop", "size_mod": "full",
+                    "style": skin_style.style_for(rmat, self._mat_style, self.s.default_material),
+                    "material": rmat, "species": "stoop_railing", "stock": None, "variant": 0,
+                    "form": "flight", "current_ref": "prop_greybox_01", "kit_axis": "material",
+                    "wall": None, "story": None, "facing": None,
+                    "transform": {"translation": [round(x, 4), round(y, 4), round(seam_z0 + hr / 2.0, 4)],
+                                  "rot_y": rot, "scale": [1.0, 1.0, 1.0]},
+                    "fit": {"dims": [round(along, 4), self.RAKE_THICK_M, round(hr, 4)],
+                            "pivot": "center", "openings": [], "collision": "none"},
+                })
 
     def _stair_hole(self, st, story, lx, ly, size_x, size_y):
         wx, wy = self._stair_pt(st, lx, ly)

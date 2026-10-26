@@ -1,3 +1,31 @@
+## [0.269.0] - a switchback's seam draws as a raking rail
+
+**The walker, walking cold run 9386** (the factory's `docs/findings/walk_2026-10-23_9386/`, finding 6), circling the
+plain block over the office switchback's upper flight: "the walling/railing doesn't loook natural yet". Their pick, the
+compact U: walls where they enclose the well, a rail between the flights. 0.268.0 made the hole's rails balustrades;
+this is the block.
+
+### Changed
+- **The seam's collider stays exactly where it was, unseen** (`visual: false`): its underside a body's height over
+  the storey's floor so the lower flight keeps its headroom (`stairwell._seam_pieces`, 0.225.0's measurement), which a
+  rail's collider following the upper flight down to its treads would not.
+- **A raking rail along the upper flight's inner edge**: Zoo's `stoop_railing` flight form (>= 1.129.0), from the
+  storey's floor at the flight's foot to `stoop.RAIL_H` over its head, its high end up the flight (`rises_hi`, which
+  `_seam_pieces` now records from the leg's arrival end). A SLOT WITH NO GREYBOX BOX and no collider: a greybox visual
+  box is navigation data to Lot's walk bake, and this one would stand a thin wall from the floor at the seam -- the
+  floor-height seam 0.225.0 measured cutting the lower flight. With no greybox node the composer places the module by
+  the slot's own transform and turn, and the bake sees the seam's collider alone, as before.
+
+### Tests
+- `tests/test_stair_rake.py` (new): the office's seam keeps its collider, draws no box of its own and gains one raking
+  rail -- `stoop_railing`, flight, no collision, the seam's length by a storey and a rail, turned up the flight -- and
+  the rake draws no greybox box. The first fails on 0.268.0.
+
+### Measured, the clone
+- `build.py --all` and `nav_gate.py --all` exit 0, 157 shells passed -- the seam's collider is where it was, so
+  the walk bake meets what it met; the suite 1,831 tests, 0 failed, 31 skipped (the factory's
+  `patches/dc_stair_rake/prove.out.txt`).
+
 ## [0.268.0] - a stair hole's rail is a balustrade
 
 **The walker, walking cold run 9386** (the factory's `docs/findings/walk_2026-10-23_9386/`, finding 6), of the office's

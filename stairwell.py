@@ -848,7 +848,7 @@ WALKOFF_CLEAR = 0.8
 RAIL_OPEN_MIN = 1.4
 
 
-def _seam_pieces(st, H, s, sid, travel, pos, span):
+def _seam_pieces(st, H, s, sid, travel, pos, span, rises_hi=True):
     """The seam wall of a multi-storey switchback's top leg: ONE box, its
     underside a body's height above the storey's floor.
 
@@ -872,8 +872,11 @@ def _seam_pieces(st, H, s, sid, travel, pos, span):
     the first riser on, and at the very foot it is a doorway onto the lower
     flight's top step, a step a review reads as a step."""
     z_lo = s * H + agent_contract.body_height()
+    # `rises_hi` (0.269.0): whether the leg climbs toward ``hi`` -- the raking
+    # rail the builder draws along it points its high end that way
     return [{"stair": sid, "story": s, "kind": "side", "axis": travel,
-             "pos": pos, "lo": span[0], "hi": span[1], "z_lo": round(z_lo, 4)}]
+             "pos": pos, "lo": span[0], "hi": span[1], "z_lo": round(z_lo, 4),
+             "rises_hi": bool(rises_hi)}]
 
 
 def stair_guards(spec):
@@ -1082,7 +1085,7 @@ def stair_guards(spec):
                               else (t_lo, land_t - SIDE_GAP))
                 if solid and seam and s_span[1] - s_span[0] > T:
                     raw += _seam_pieces(st, H, s, sid, travel, pos_side,
-                                        s_span)
+                                        s_span, rises_hi=arrive_hi)
                 elif solid and s_span[1] - s_span[0] > T:
                     piece = {"stair": sid, "story": s, "kind": "side",
                              "axis": travel, "pos": pos_side,
