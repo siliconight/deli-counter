@@ -1760,6 +1760,18 @@ _PIECES = {p["name"]: p for p in (
     _piece("table_tasting", ((1.2, 0.8, 0.9), (1.0, 1.0, 0.9)), "floor",
            seats=("table", 2, 2)),
     _piece("table_work", ((1.6, 0.8, 0.9), (1.2, 0.7, 0.9)), "floor"),
+    # A PEW (0.270.0, the factory's roadmap 308; Zoo's `pew`, >= 1.130.0):
+    # the seat a chapel's, a courtroom's and an assembly hall's rows are
+    # made of (`facing_slots`), and a gallery's bench to look from. Its
+    # front is where a person sitting faces.
+    _piece("pew", ((3.6, 0.62, 0.95), (3.0, 0.62, 0.95), (2.4, 0.62, 0.95),
+                   (4.2, 0.62, 0.95)), "floor", front=True, most=60),
+    # A gallery's pew is a short one: a floor piece's spot stands a metre off
+    # the room's bounds, which holds a piece to about 2.4 m, and the first
+    # trial turned a 4.2 m pew 0.45 m through the generated compound's south
+    # wall (`tests/test_wall_crossing.py`). The same species, by name.
+    _piece("pew_short", ((2.4, 0.62, 0.95), (1.8, 0.62, 0.95)), "floor",
+           front=True, most=6),
     _piece("table_count", ((1.6, 0.9, 0.76), (2.0, 0.9, 0.76)), "floor",
            stock="vault", variants=True, seats=("table", 0, 2)),
     _piece("pool_table", ((2.0, 1.14, 0.79), (2.4, 1.3, 0.8)), "floor",
@@ -2277,8 +2289,17 @@ _ROOM_KINDS = (
     # dining table: the walker, on deli_a03's landing in cold run 9383,
     # "layout of these tables doesn't seem to have a rhyme or reason". The
     # gathering words stay here; "hall" alone is the last row's.
-    ("hall", ("gallery", "galleries", "exhibit", "chapel",
-              "assembly", "courtroom", "courtrooms", "viewing", "artifact")),
+    # A CIVIC ROOM IS FURNISHED AS WHAT IT IS (0.270.0, the factory's roadmap
+    # 308). These words were one `hall` row, and its recipe was a dining
+    # hall's -- a service counter, waiting chairs, vending, dining tables --
+    # so a chapel, a funeral home's viewing rooms, two courtrooms and two
+    # assembly halls each stood a cafeteria. Three face a front now
+    # (`facing_slots`): pews in rows towards an altar, a judge's bench, a
+    # lectern. A gallery keeps its floor open, its cases on its walls.
+    ("chapel", ("chapel", "viewing")),
+    ("courtroom", ("courtroom", "courtrooms")),
+    ("assembly", ("assembly",)),
+    ("gallery", ("gallery", "galleries", "exhibit", "artifact")),
     # "hall" and no other kind's word: a HALLWAY (0.263.0), last so any word
     # that says more -- `assembly_hall`, `cellar_hall`, `under_hall` -- wins.
     ("hallway", ("hall",)),
@@ -2584,12 +2605,41 @@ _RECIPES = {
               "floor": ("table_low",),
               "clusters": ((("stanchion",), 3, 4), (("litter_bin",), 1, 1)),
               "fixtures": ("cigarettes",)},
-    "hall": {"anchors": ("counter_service",),
-             "wall": ("chair_waiting", "shelf_run", "chair_waiting",
-                      "cabinet_file", "vending"),
-             "floor": ("table_dining",),
-             "clusters": ((("litter_bin",), 1, 1),),
-             "fixtures": ("cigarettes",)},
+    # THE CIVIC ROOMS (0.270.0, the factory's roadmap 308; `_ROOM_KINDS`).
+    # `facing` is a layer of its own (`facing_slots`): a piece at the room's
+    # FRONT -- the long-axis end away from its doors -- facing back into it,
+    # any `well` pieces in a row before it, then rows of `seat` across the
+    # room facing the front, a centre aisle and two side aisles, from `gap`
+    # metres off the front wall back to a door's clearance from the back
+    # one, until the room's floor share reaches `share`. It is laid first,
+    # so nothing else takes the floor the rows need. A chapel and a funeral
+    # home's viewing room are the altar and the pews; a courtroom is the
+    # judge's bench, two counsel tables in the well and the public's pews
+    # behind; an assembly hall a lectern and pews. `rows` caps the rows:
+    # every pew is its own mesh, so a draw, and these rooms run to 42 m --
+    # courthouse_a02's first trial stood 60 pews, the piece's cap, where the
+    # cafeteria had stood 21 pieces. A courtroom's public benches are six
+    # rows; the back of a long chapel is its narthex, left to walk. A
+    # courtroom's `cap` keeps its clerk's cabinets to six: uncapped, the
+    # 42 m room's wall run stood twelve.
+    "chapel": {"anchors": (), "wall": (), "floor": (), "clusters": (),
+               "facing": {"seat": "pew", "front": "table_work", "well": (),
+                          "gap": 3.0, "share": 0.30, "rows": 12}},
+    "courtroom": {"anchors": (), "wall": ("cabinet_file",), "floor": (),
+                  "clusters": (), "cap": 6,
+                  "facing": {"seat": "pew", "front": "counter_service",
+                             "well": ("table_work", "table_work"),
+                             "gap": 6.0, "share": 0.30, "rows": 6}},
+    "assembly": {"anchors": (), "wall": (), "floor": (), "clusters": (),
+                 "facing": {"seat": "pew", "front": "table_work", "well": (),
+                            "gap": 3.0, "share": 0.30, "rows": 12}},
+    # a gallery is looked at, not sat in: its cases on its walls, a pew or
+    # two to look from, the floor left open to walk (one piece in 40 m2, ten
+    # at most: museum_a02's 44 x 24 m galleries first stood twelve pews)
+    "gallery": {"anchors": (), "wall": ("display_case", "display_case",
+                                        "shelf_run"),
+                "floor": ("pew_short",), "clusters": (), "per_area": 40.0,
+                "cap": 10},
     # A corner store's selling floor is this recipe and ROWS of aisle
     # gondolas (0.247.0, `_shop_rows`), laid until the floor's share under
     # standing furniture reaches `rows_share` (`room_floor_share`). Any other
@@ -4154,8 +4204,15 @@ def reserves_routes(spec, room, building):
     (funeral_home_a02's records_office 4.3 -> 5.5 m). DRESSING ONLY, because
     those rooms were already under the walker's band: kept off by every floor
     piece, 47 of them -- 45 under 12 % of their floor before -- lost 45 pieces,
-    and twin_a01's front_right_1 both of its own and the shelter they gave."""
+    and twin_a01's front_right_1 both of its own and the shelter they gave.
+
+    ``"all"`` in a room that FACES A FRONT (0.270.0, its recipe's `facing`):
+    rows of pews are a store's rows by another name, and the census said so --
+    unreserved, landmark_hall_a01's assembly hall stood a block of pews across
+    its door to `entry_e`, 16.3 -> 20.8 m."""
     if _room_kind(room, building) == "shop_floor" and _shop_rows(room, building):
+        return "all"
+    if _RECIPES.get(_room_kind(room, building), {}).get("facing"):
         return "all"
     return "dressing" if holds_route_marker(spec, room) else ""
 
@@ -4536,6 +4593,177 @@ def _row_slots(spec, room, w, d, hosts, routes=None):
     return rows
 
 
+#: A facing row's pews stand this far apart, back of one to front of the next:
+#: a pew's pitch in a church is 0.85 to 0.95 m, and a 0.62 m pew leaves knees
+#: and a hymnal rack 0.3 m. Not an aisle -- nobody walks the length of it.
+FACING_ROW_GAP = 0.3
+#: The back row stops this far from the back wall's face: `_seed_clear_doors`'
+#: door approach, so a door in the back wall opens onto floor, not a pew.
+FACING_BACK_CLEAR = 1.5
+#: A front piece stands this far off the front wall's face.
+FACING_FRONT_OFF = 0.3
+
+
+def room_openings(spec, room):
+    """The doorways on `room`'s bounds: ``[(x, y, width), ...]``, every opening
+    of an exterior wall or a partition on its storey within half a metre of
+    one of its edges and inside its span. Read the way `_seed_clear_doors`
+    reads them, so the two agree on where a door is."""
+    story = room.get("story", 0)
+    x0, y0, x1, y1 = room["bounds"]
+    hx = spec.get("footprint_x", 20) / 2
+    hy = spec.get("footprint_y", 20) / 2
+    found = []
+    for w in spec.get("ext_walls", []):
+        if w.get("story", 0) != story:
+            continue
+        run = spec.get("footprint_x", 20) if w["wall"] in ("N", "S") else spec.get("footprint_y", 20)
+        for op in w.get("openings", []):
+            u = op.get("pos", 0.0) * run
+            ox, oy = {"N": (u, hy), "S": (u, -hy), "E": (hx, u), "W": (-hx, u)}[w["wall"]]
+            found.append((ox, oy, float(op.get("width", 1.0))))
+    for p in spec.get("partitions", []):
+        if p.get("story", 0) != story:
+            continue
+        run = abs(p["end"] - p["start"])
+        for op in p.get("openings", []):
+            u = p["start"] + (op.get("pos", 0.0) + 0.5) * run
+            ox, oy = (p["pos"], u) if p["axis"] == "Y" else (u, p["pos"])
+            found.append((ox, oy, float(op.get("width", 1.0))))
+    out = []
+    for ox, oy, ow in found:
+        inside = x0 - 0.5 <= ox <= x1 + 0.5 and y0 - 0.5 <= oy <= y1 + 0.5
+        edge = min(abs(ox - x0), abs(ox - x1), abs(oy - y0), abs(oy - y1))
+        if inside and edge <= 0.5:
+            out.append((ox, oy, ow))
+    return out
+
+
+#: An authored volume whose name carries one of these tokens is a row of seats
+#: its author laid (`room_front`): funeral_home_a01's chapel `pew_row_a`/`_b`,
+#: landmark_hall_a02's `bench_row`.
+FACING_AUTHORED_ROWS = ("pew", "bench")
+
+
+def room_front(spec, room):
+    """``(along_x, sign)``: the room's FRONT is an end of its long axis
+    (``along_x`` True when that is x), at the high end when ``sign`` is +1:
+    the end whose own wall has less doorway in it, and between two walls
+    with as much, the end away from the doors' mean -- where a person walking
+    in looks. Doors are weighed by width, so a pair of main doors outweighs a
+    side door; a room with no door on its bounds faces its high end.
+    MEASURED: landmark_hall_a02's assembly hall has three doors in each long
+    wall, and the mean alone put the front on a wall of doors, its lectern
+    refused by the middle one's approach.
+
+    AN AUTHORED ROW DECIDES THE AXIS: a seat row the spec's author stood in
+    the room (`FACING_AUTHORED_ROWS`, long one way) faces across its own
+    length, and the rows furnish lays continue it rather than crossing it.
+    MEASURED: funeral_home_a01's chapel is 32 x 14 m with two authored 8 m
+    pews long in x; the long-axis rule faced the room along x, and its first
+    plan stood pews at right angles to the author's."""
+    x0, y0, x1, y1 = room["bounds"]
+    along_x = (x1 - x0) >= (y1 - y0)
+    floor = room.get("story", 0) * _story_height(spec)
+    tag = "_%s_" % _room_tag(room)
+    for v in spec.get("volumes", []):
+        name = str(v.get("name", ""))
+        toks = set(name.lower().split("_"))
+        if tag in name or not toks.intersection(FACING_AUTHORED_ROWS):
+            continue
+        vx, vy = float(v.get("x", 0.0)), float(v.get("y", 0.0))
+        if not (x0 <= vx <= x1 and y0 <= vy <= y1):
+            continue
+        if abs(float(v.get("z", 0.0)) - float(v.get("size_z", 0.0)) / 2.0 - floor) > 0.3:
+            continue
+        along_x = float(v.get("size_y", 0.0)) > float(v.get("size_x", 0.0))
+        break
+    lo, hi = (x0, x1) if along_x else (y0, y1)
+    mid = (lo + hi) / 2.0
+    doors = room_openings(spec, room)
+    total = sum(w for _x, _y, w in doors)
+    if not total:
+        return along_x, 1
+    on_lo = sum(w for x, y, w in doors if abs((x if along_x else y) - lo) <= 0.5)
+    on_hi = sum(w for x, y, w in doors if abs((x if along_x else y) - hi) <= 0.5)
+    if abs(on_lo - on_hi) > 1e-6:
+        return along_x, (1 if on_hi < on_lo else -1)
+    mean = sum((x if along_x else y) * w for x, y, w in doors) / total
+    return along_x, (-1 if mean > mid + 1e-6 else 1)
+
+
+def facing_slots(spec, room, sizes, gap, hosts, routes=None):
+    """Where rows of seats stand facing `room`'s front (`room_front`):
+    ``(bearing, [[(x, y, sx, sy, (w, d, h)), ...], ...])``, the bearing the
+    seats face and the rows from the front back, each row its blocks left
+    and right of a centre aisle.
+
+    ACROSS THE ROOM: the band inside the walls' faces less an aisle each side
+    and one down the middle (`island_aisle_width`), halved into two blocks,
+    each taking the longest of `sizes` that fits it, as many as fit with an
+    aisle between them -- a wide room is sections, not one pew stretched; a
+    band too narrow for two blocks of the shortest takes one, centred. ALONG
+    IT: from `gap`
+    metres off the front wall's face, a pew's depth and `FACING_ROW_GAP`
+    apart, to `FACING_BACK_CLEAR` off the back wall's face.
+
+    EVERY SLOT IS ASKED OF THE ROOM AS IT STANDS BEFORE ANY ROW IS WRITTEN
+    (`_row_clear`): a row keeps an aisle from every wall, partition, stair
+    and standing piece, and from a door's approach, but not from the rows
+    beside it, which stand a knee's width apart by design. A slot that fails
+    is left out of its row; the rest of the row stands."""
+    face = float(spec.get("wall_thick", 0.3)) / 2.0
+    x0, y0, x1, y1 = room["bounds"]
+    cx0, cy0, cx1, cy1 = x0 + face, y0 + face, x1 - face, y1 - face
+    along_x, sign = room_front(spec, room)
+    l0, l1, s0, s1 = (cx0, cx1, cy0, cy1) if along_x else (cy0, cy1, cx0, cx1)
+    bearing = (90.0 if sign > 0 else 270.0) if along_x else (0.0 if sign > 0 else 180.0)
+    aisle = island_aisle_width()
+    sizes = sorted(sizes, key=lambda s: -s[0])
+    shortest = min(s[0] for s in sizes)
+    band = (s1 - s0) - 2.0 * aisle
+    block = (band - aisle) / 2.0
+    if block >= shortest - 1e-9:
+        mid = (s0 + s1) / 2.0
+        centres = [(mid - aisle / 2.0 - block / 2.0, block), (mid + aisle / 2.0 + block / 2.0, block)]
+    elif band >= shortest - 1e-9:
+        centres = [((s0 + s1) / 2.0, band)]
+    else:
+        return bearing, []
+    pick = []
+    for c, room_for in centres:
+        fits = [s for s in sizes if s[0] <= room_for + 1e-9]
+        if not fits:
+            continue
+        size = fits[0]
+        n = max(1, int((room_for + aisle) / (size[0] + aisle) + 1e-9))
+        run = n * size[0] + (n - 1) * aisle
+        for i in range(n):
+            pick.append((c - run / 2.0 + size[0] / 2.0 + i * (size[0] + aisle), size))
+    if not pick:
+        return bearing, []
+    depth = max(size[1] for _c, size in pick)
+    front_face = l1 if sign > 0 else l0
+    length = l1 - l0
+    obstacles = _corridor_obstacles(spec, room.get("story", 0),
+                                    room.get("story", 0) * _story_height(spec), _story_height(spec))
+    rows = []
+    t = gap + depth / 2.0
+    while t <= length - FACING_BACK_CLEAR - depth / 2.0 + 1e-9:
+        lc = round(front_face - sign * t, 2)
+        row = []
+        for c, (w, d, h) in pick:
+            sc = round(c, 2)
+            px, py = (lc, sc) if along_x else (sc, lc)
+            sx, sy = (d, w) if along_x else (w, d)
+            if _row_clear(spec, room, px, py, sx, sy, hosts, obstacles, routes):
+                row.append((px, py, sx, sy, (w, d, h)))
+        if row:
+            rows.append(row)
+        t += depth + FACING_ROW_GAP
+    return bearing, rows
+
+
 def _island(key, make, spec, px, py, w, d, h, front, twin=False):
     """Write an island's units and return how many were written.
 
@@ -4668,7 +4896,10 @@ def _furnish_plan(recipe, clusters, want, rng):
     """``[("host", key) | ("cluster", pool, n)]`` for one room: one or two
     anchors, about half the target as a wall run, the rest floor sets and
     clusters in turn. A `one_cluster` recipe is a wall run and one cluster."""
-    items = []
+    # A ROOM THAT FACES A FRONT LAYS IT FIRST (0.270.0, `facing_slots`): its
+    # rows are the room, and a wall run laid before them would take the
+    # aisles they need. Outside the count, as rows are.
+    items = [("facing", recipe["facing"])] if recipe.get("facing") else []
     anchors = list(recipe["anchors"])
     if recipe.get("all_anchors"):
         n_anchor = min(len(anchors), want)
@@ -6627,6 +6858,85 @@ def furnish(spec):
                     n += 1
             return n
 
+        def _facing(conf):
+            """The room's front piece, its well and its facing rows
+            (`facing_slots`; the recipe's `facing`). Returns pieces placed.
+
+            THE FRONT AND THE WELL FIRST, so the rows keep an aisle from
+            them: the front piece centred on the front wall, facing back
+            into the room; the well's pieces in one row, spread across the
+            middle, half way from the front piece to where the rows begin.
+            Then every row the room keeps clear, front to back, until the
+            room's floor share reaches `share` or `rows` rows stand. Draws
+            nothing from `rng`."""
+            nonlocal added
+            n = 0
+            along_x, sign = room_front(spec, room)
+            face = float(spec.get("wall_thick", 0.3)) / 2.0
+            l0, l1 = (x0 + face, x1 - face) if along_x else (y0 + face, y1 - face)
+            s0, s1 = (y0 + face, y1 - face) if along_x else (x0 + face, x1 - face)
+            front_face = l1 if sign > 0 else l0
+            seat_bearing = ((90.0 if sign > 0 else 270.0) if along_x
+                            else (0.0 if sign > 0 else 180.0))
+            back = (seat_bearing + 180.0) % 360.0
+
+            def _stand(key, t, s, bearing, slide=False):
+                """One piece `t` off the front wall's face at `s` across; a
+                piece that may `slide` takes the nearest spot along the wall,
+                a metre at a time, that a door's approach leaves it."""
+                w, d, h = _palette(spec, key)[0]
+                if h is None:
+                    h = to_ceiling_height(spec, _PIECES[key], clear_h)
+                lc = front_face - sign * (t + d / 2.0)
+                sx, sy = (d, w) if along_x else (w, d)
+                tries = [s]
+                if slide:
+                    k = 1
+                    while k <= (s1 - s0) / 2.0 - w / 2.0:
+                        tries += [s - k, s + k]
+                        k += 1
+                for s_try in tries:
+                    px, py = (lc, s_try) if along_x else (s_try, lc)
+                    if _seed_clear_doors(spec, room, px, py, max(sx, sy) / 2.0):
+                        break
+                else:
+                    return 0
+                vol = _volume(key, px, py, sx, sy, h, _front_turn(key, sx, sy, bearing))
+                spec.setdefault("volumes", []).append(vol)
+                placed.append((px, py))
+                per_name[key] += 1
+                return 1
+
+            mid = (s0 + s1) / 2.0
+            depth = 0.0
+            if conf.get("front"):
+                got = _stand(conf["front"], FACING_FRONT_OFF, mid, back, slide=True)
+                n += got
+                if got:
+                    depth = _palette(spec, conf["front"])[0][1]
+            well = list(conf.get("well") or ())
+            if well:
+                t = (FACING_FRONT_OFF + depth + float(conf["gap"])) / 2.0 - 0.5
+                span = (s1 - s0) / (len(well) + 1)
+                for i, key in enumerate(well):
+                    n += _stand(key, t, s0 + span * (i + 1), seat_bearing)
+            goal = float(conf.get("share") or 1.0)
+            seat = conf["seat"]
+            bearing, rows = facing_slots(spec, room, _palette(spec, seat),
+                                         float(conf["gap"]), list(placed),
+                                         routes if keep_all else None)
+            for row in rows[:int(conf.get("rows") or len(rows))]:
+                if room_floor_share(spec, room) >= goal:
+                    break
+                if len(row) > _PIECES[seat]["most"] - per_name[seat]:
+                    break
+                for qx, qy, _sx, _sy, (w, d, h) in row:
+                    n += _island(seat, _volume, spec, qx, qy, w, d, h, bearing)
+                    placed.append((qx, qy))
+                    per_name[seat] += 1
+            added += n
+            return n
+
         def _cluster(pool, n):
             """Place 2-4 small pieces as one group. Returns pieces placed."""
             nonlocal added
@@ -6700,6 +7010,8 @@ def furnish(spec):
                 short += 0 if _host(item[1]) else 1
             elif item[0] == "rows":
                 _rows(item[1])
+            elif item[0] == "facing":
+                _facing(item[1])
             else:
                 short += item[2] - _cluster(item[1], item[2])
         # A PIECE THAT FITS NOWHERE LEAVES ITS SHARE TO THE FLOOR. Wall runs

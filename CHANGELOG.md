@@ -1,3 +1,76 @@
+## [0.270.0] - a chapel, a courtroom, an assembly hall and a gallery furnished as what they are
+
+**The factory's roadmap 308.** One `hall` kind covered the words gallery, galleries, exhibit, chapel, assembly,
+courtroom, courtrooms, viewing and artifact, and its recipe was a dining hall's: a service counter, waiting chairs,
+a shelf run, a file cabinet, vending, dining tables, a litter bin and a cigarette machine. Fifteen rooms in twelve
+specs stood a cafeteria: a funeral home's chapel and viewing rooms, two courtrooms, two assembly halls, three
+museums' galleries, a mansion's gallery and final_stand's.
+
+### Changed
+- **Four kinds where there was one** (`_ROOM_KINDS`): `chapel` (chapel, viewing), `courtroom` (courtroom,
+  courtrooms), `assembly` (assembly), `gallery` (gallery, galleries, exhibit, artifact). `hall` is gone.
+- **A room's front** (`room_front`, `room_openings`): an end of its long axis. It is the end whose own wall has
+  less doorway, and between two walls with as much, the end away from the doors' mean. An authored seat row
+  (`pew`, `bench` in its name) turns the axis so furnish continues it. Each rule was measured on the library:
+  - landmark_hall_a02 has three doors in each long wall, and the mean alone put the front on a wall of doors;
+  - funeral_home_a01's chapel's authored 8 m pews run across the long axis.
+- **Facing rows** (`facing_slots`, furnish's `_facing`, the recipe's `facing`): laid first. In order:
+  - a front piece centred on the front wall, sliding a metre at a time off a door's approach, facing back into the
+    room;
+  - any well pieces in a row before it;
+  - rows of `seat` across the room, all facing the front: two blocks either side of a centre aisle, with side
+    aisles. A wide block is several pews with aisles between them. Rows run from `gap` off the front wall to a
+    door's clearance off the back wall, until `share` or `rows`.
+
+  Every slot is asked of the room as it stands before any row is written (`_row_clear`), so rows keep their aisles
+  from everything but one another; pews stand `FACING_ROW_GAP` 0.3 m apart.
+- **A room that faces a front reserves its routes** (`reserves_routes` -> `"all"`, as a corner store's rows have
+  since 0.250.0). Unreserved, landmark_hall_a01's assembly hall stood a block of pews across its door to `entry_e`
+  (16.3 -> 20.8 m in the route census); reserved, its worst detour is 1.068.
+- **The recipes:**
+  - chapel: an altar (`table_work`) and pews, 12 rows;
+  - courtroom: the judge's bench (`counter_service`), two counsel tables in the well, the public's pews 6 m back,
+    6 rows, clerk's cabinets on the walls, 6 pieces at most;
+  - assembly: a lectern (`table_work`) and pews, 12 rows;
+  - gallery: display cases and shelf runs on the walls and a short pew or two to look from (`pew_short`, 2.4 and
+    1.8 m: a floor piece's spot stands a metre off the room's bounds, and a 4.2 m pew turned 0.45 m through the
+    generated compound's south wall), one piece in 40 m2, 10 at most.
+
+  The rows are capped because every pew is its own mesh: courthouse_a02's first trial stood 60 where the cafeteria
+  had 21 pieces.
+- **`pew`**, a floor piece (3.6 / 3.0 / 2.4 / 4.2 x 0.62 x 0.95 m, front, 60 at most), built by Zoo's `pew`
+  (>= 1.130.0); `prop_species` routes `pew` names there before `chair`. That includes the funeral home's authored
+  `pew_row` boxes.
+- **The library refurnished** (`migrations/migrate_civic_rooms.py`): the twelve specs with civic rooms, then, in the
+  order they shipped, the passes the library is a fixed point of -- shelter, the seeded pieces' corridor and line,
+  the wall trim; every volume outside those rooms unchanged. A spec is migrated when none of its civic rooms holds a
+  piece only the old recipe stood.
+- **Cigarette machines 85 -> 71**: the 14 that stood in these rooms.
+
+### Measured (the factory's `patches/dc_civic_rooms/route_summary.out.txt`)
+- The route census on the twelve specs, before and after: no route closed to a body or to the bake. Pairs past the
+  guide's 1.10 detour are unchanged in every spec. funeral_home_a01's chapel narrows 6 pairs to single file, and
+  courthouse_a02 narrows 2. The worst new detour is 1.073 (funeral_home_a01's chapel).
+
+### Noted, not changed
+- A courtroom of 42 m (courthouse_a02) keeps most of its floor open behind six rows. Naming that floor's use is the
+  factory's roadmap 306.
+- Authored boxes in a room refuse the slots beside them, and two rooms' blocks come out uneven
+  (landmark_hall_a01: 12 pews and 6).
+- A courtroom's rail, a lectern and a plinth are not built: no piece or species makes them yet.
+- **Three rooms gain a seeded shelter piece**: funeral_home_a01's chapel (a kiosk) and viewing_wing, and
+  funeral_home_a02's viewing_rooms (crate stacks). The cafeteria's vending machines and shelves had given them
+  shelter-height cover; pews are 0.95 m. They stand in line (`tests/test_seed_lines.py`, lined rooms 35 -> 38). It
+  keeps the rooms fightable, but a crate stack in a viewing room is an odd sight. A shelter-height piece that belongs
+  in a chapel is open.
+
+### Tests
+- `tests/test_civic_rooms.py`: the kinds; the front away from the door; an authored row turning the axis; a chapel
+  as one altar and pews all facing it across a centre aisle, with no cafeteria piece; a courtroom's bench, well and
+  public in that order; a gallery's floor kept open. Fails on 0.269.0.
+- `tests/test_furnish.py` (the `pew` range), `tests/test_club_fixtures.py` (an exhibit hall stands no cigarette
+  machine; the library's 71), `tests/test_seed_lines.py` (38 lined rooms).
+
 ## [0.269.0] - a switchback's seam draws as a raking rail
 
 **The walker, walking cold run 9386** (the factory's `docs/findings/walk_2026-10-23_9386/`, finding 6), circling the

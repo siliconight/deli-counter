@@ -258,6 +258,7 @@ def test_a_table_brings_its_chairs_and_the_set_is_still_idempotent():
 _ZOO_RANGES = {
     "desk": ((1.0, 12.0), (0.5, 6.0), (0.65, 1.3)),
     "chair": ((0.38, 12.0), (0.38, 2.0), (0.5, 1.1)),
+    "pew": ((1.2, 8.0), (0.5, 1.0), (0.85, 1.1)),
     "table": ((0.6, 8.0), (0.6, 2.0), (0.4, 0.95)),
     "counter": ((0.8, 12.0), (0.5, 2.0), (0.85, 1.2)),
     "shelving": ((0.6, 20.0), (0.3, 1.4), (0.9, 4.5)),
@@ -566,8 +567,8 @@ def test_rooms_are_read_on_whole_tokens_id_first_then_role():
     # gathering words keep the hall, and a word that says more wins
     assert k({"id": "upper_hall", "role": "connector"}) == "hallway"
     assert k({"id": "back_hall", "role": "connector"}) == "hallway"
-    assert k({"id": "assembly_hall", "role": "public_entry"}) == "hall"
-    assert k({"id": "chapel", "role": "public_entry"}) == "hall"
+    assert k({"id": "assembly_hall", "role": "public_entry"}) == "assembly"
+    assert k({"id": "chapel", "role": "public_entry"}) == "chapel"
     # below grade and named nothing: a basement, ahead of the role
     assert k({"id": "north_wing", "role": "public_entry", "story": -1}) == "basement"
     # above grade and named nothing: the role's own tokens

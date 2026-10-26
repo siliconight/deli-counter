@@ -289,6 +289,9 @@ PROP_SPECIES = (
     # a den's drawn drape (0.205.0, `level_design.DRAPE_NAME`): Zoo's
     # `window_drape` (>= 1.91.0)
     (("window_drape",), "window_drape"),
+    # a pew before a seat (0.270.0; Zoo's `pew`, >= 1.130.0): furnish's
+    # `pew` and the funeral home's authored `pew_row` boxes
+    (("pew",), "pew"),
     (("chair", "seat", "bench", "waiting"), "chair"),
     (("pool", "billiard"), "pool_table"),
     (("cocktail", "club_table", "highboy"), "cocktail_table"),

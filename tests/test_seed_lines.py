@@ -26,7 +26,10 @@ import migrate_seed_corridor  # noqa: E402
 #: route -- night_pawn's, beside the tall crate the shelter pass stood there, and pawn_shop_a01's, whose crates stood
 #: on that route at 0.263.0 already.
 KEPT = {("night_pawn", "safe_room"), ("pawn_shop_a01", "safe_room")}
-LINED = 35
+# 35 -> 38 (0.270.0): funeral_home_a01's chapel and viewing_wing and funeral_home_a02's viewing_rooms. A dining
+# hall's vending and shelves gave them shelter-height cover; pews are 0.95 m, so the shelter pass seeds a piece in
+# each, laid in line.
+LINED = 38
 
 
 def _spec():
