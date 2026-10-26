@@ -1,3 +1,38 @@
+## [0.271.0] - a selling floor is tile and a working floor is concrete
+
+**The walker, walking seed 9205's supermarket, 2026-10-26: "far too dark in teh super market"** (the factory's
+`docs/findings/walk_2026-10-26_panel/`, L4).
+
+### Measured, in order
+1. The sales floor's light-check station read luma p50 3 at Blue Hour; the back stock next door read 77.
+2. Not the import: a complete re-walk read the same.
+3. Not missing lamps: every lamp is baked, and the bake supplies 15.8 of the frame's 20.7.
+4. Re-baked copies, against a control that reproduced the shipped frame exactly: doubling the lightmap's texels
+   changed nothing, and doubling the room fill raised both rooms alike.
+5. Under an inspection light the sales floor is a dark maroon carpet; the back stock is pale concrete. The room was
+   lit like its neighbour and dark because of what it was made of.
+
+### Changed
+- **`floors.floor_by_use`, asked by `_material` wherever the role map would carpet a floor.**
+  - `public_entry` maps to carpet. That is right for a lobby, a banking hall or a parlour, and it had carpeted 33
+    `sales_floor`s, the delis' `customer_floor`s and `stockroom_loading`s, pawn, pharmacy and market floors, a
+    garage deck, service bays, docks and train sheds.
+  - A room whose id SELLS (`sales`, `retail`, `shop`, `store`, `market`, `stall`, `customer`, `aisle`) now gets
+    `tile`, a 1990s store's vinyl tile.
+  - A room whose id WORKS (`stock`, `loading`, `dock`, `bay`, `deck`, `shed`, `lanes`, `works`, `pour`, `garage`)
+    gets `concrete`.
+  - A room's own floor material still wins, the ceiling is untouched, and floor and ceiling stay different surfaces.
+  - `main_floor` is left alone: it is a warehouse's and a club's both, so what it is needs the building, not the room.
+- Rebuilt library: 594 floor slots, 72 still carpet (lobbies, halls, parlours, lounges, waiting rooms, offices).
+
+### Tests
+- `tests/test_floor_by_use.py` (3 of 5 fail on 0.270.0; the other two guard lobbies and a room's own floor):
+  - the supermarket's sales floor is tile;
+  - stores sell on tile and work on concrete;
+  - a lobby, a banking hall and a parlour keep carpet;
+  - only a carpet is reconsidered, and a room's own floor wins;
+  - no selling or working floor in the library is carpeted.
+
 ## [0.270.0] - a chapel, a courtroom, an assembly hall and a gallery furnished as what they are
 
 **The factory's roadmap 308.** One `hall` kind covered the words gallery, galleries, exhibit, chapel, assembly,
