@@ -1445,6 +1445,11 @@ _PENNANT_STRIP_H = 0.3
 _UNDER_PENNANTS = round(_CEILING_AIR + _PENNANT_STRIP_H + _CEILING_AIR, 4)
 
 
+#: A camera's top this far under the ceiling plane (0.282.0): on its bracket,
+#: clear of the grid's lip, over every head.
+_CAMERA_AIR = 0.25
+
+
 def _piece(name, sizes, where, front=False, stock=None, variants=False,
            form=None, seats=None, most=None, lift=None, collision="convex",
            deck=None, lane=False, most_big=None, under=None,
@@ -2086,6 +2091,27 @@ _PIECES = {p["name"]: p for p in (
     # side, 1.1 m high -- below cover height, so a body sees over it; two in a
     # big hall at most.
     _piece("check_desk", ((1.6, 0.9, 1.1), (2.4, 1.0, 1.1)), "island", front=True, most=2),
+    # A BANK'S CAMERAS (0.282.0, Zoo's `security_camera`; the factory's
+    # roadmap 321). The walker: "were there cctv cameras in the 90s?" -- yes:
+    # the Bank Protection Act of 1968 asks for devices that identify a robber,
+    # and most banks met it with interior cameras on brackets aimed at the
+    # floor and the teller line, recorded on time-lapse VCRs
+    # (docs/reference/BANK_INTERIOR_COMPS.md, "researched"). No building placed
+    # the species. Hung under the ceiling (`under`) on a wall facing the room,
+    # out of reach, so no collision; two a room, four in a room of 300 m2 or
+    # more -- a lobby and each vault alike.
+    _piece("security_camera", ((0.18, 0.38, 0.2),), "wall", front=True, most=2, most_big=(300.0, 4),
+           under=_CAMERA_AIR, collision="none"),
+    # A LOBBY'S PLANTS AND ITS CLOCK (0.283.0, Zoo 1.136.0's `planter` and
+    # `wall_clock`; the factory's roadmap 321). The comps keep a plant in a
+    # planter by the windows and the counters, and a clock over the line
+    # (docs/reference/BANK_INTERIOR_COMPS.md); the walker, shown a 390 m2 lobby
+    # standing a dozen pieces: "fix it before we rush to the release". A
+    # `potted_plant`, not a `planter`: that word is the library's long planter
+    # BOXES (1.4 x 0.7 m and 2.4 x 1.4 m, fifteen in seven specs), which stay
+    # boxes. Against a wall, its variant the plant; the clock hung at 2.3 m.
+    _piece("potted_plant", ((0.6, 0.6, 1.5), (0.5, 0.5, 1.2), (0.7, 0.7, 1.8)), "wall", variants=True, most=4),
+    _piece("wall_clock", ((0.36, 0.06, 0.36),), "wall", front=True, most=1, lift=2.3, collision="none"),
     # A VAULT'S CASH CART (0.281.0, Zoo 1.135.0's `cash_cart`): the money
     # room's steel cage cart and its load, the comps' "carts and tubs". On the
     # floor, its load the variant, two a room at most.
@@ -2646,7 +2672,8 @@ _RECIPES = {
     "bank_vault": {"anchors": ("safe_floor",),
                    "wall": ("shelf_run", "cabinet_locker", "safe_floor"),
                    "floor": ("table_count", "cash_cart"),
-                   "clusters": ((("cartons",), 2, 3),)},
+                   "clusters": ((("cartons",), 2, 3),),
+                   "fixtures": ("security_camera",)},
     "vault": {"anchors": ("safe_floor",),
               "wall": ("shelf_run", "cabinet_locker", "safe_floor"),
               "floor": ("table_count",),
@@ -2659,10 +2686,15 @@ _RECIPES = {
     # (docs/findings/bank_interior/), its 390 m2 lobby stood a bench, two
     # bins and a queue. The service counter stays its anchor where a spec
     # has one; the check desk is the room's second.
-    "bank_lobby": {"anchors": ("check_desk",),
-                   "wall": ("chair_waiting", "chair_waiting", "atm"),
+    # THE ATM IS AN ANCHOR (0.282.0): placed before any wall piece, so a lobby
+    # keeps it -- with three plants in the wall pool, bank_branch_a03's took
+    # the wall its ATM and chairs had stood on (`test_ticket_queue`)
+    "bank_lobby": {"anchors": ("check_desk", "atm"),
+                   "all_anchors": True,
+                   "wall": ("chair_waiting", "chair_waiting", "potted_plant", "potted_plant"),
                    "floor": (),
-                   "clusters": ((("stanchion",), 3, 4), (("litter_bin",), 1, 1))},
+                   "clusters": ((("stanchion",), 3, 4), (("litter_bin",), 1, 1)),
+                   "fixtures": ("security_camera", "wall_clock")},
     "lobby": {"anchors": ("counter_service",),
               "wall": ("chair_waiting", "chair_waiting", "sofa", "atm",
                        "vending", "payphone"),

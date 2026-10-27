@@ -1,3 +1,54 @@
+## [0.282.0] - a bank's walls are plastered inside, and it hangs CCTV cameras, keeps plants and a clock
+
+The walker, shown the furnished bank (0.281.0): "fix it before we rush to the release". Then "were there cctv cameras in
+the 90s?" and "cameras first". Against the comps (the factory's docs/reference/BANK_INTERIOR_COMPS.md), every frame of
+the bank showed raw concrete walls in its lobby and offices, and it had no camera (docs/findings/bank_interior/).
+
+### Added
+- **A bank's walls are finished inside** (`DeliCounter.BANK_INTERIOR`, `_is_bank`, `_material_in`).
+  - A bank's concrete exterior walls above grade carry `material_in` plaster, the comps' painted walls.
+    - Concrete reads "the same both sides" and took no room face, so a concrete bank showed concrete in its lobby.
+    - bank_branch_a02: 108 wall slots plastered inside.
+  - Below grade the money rooms stay concrete: 56 of bank_branch_a02's slots, the comps' "hard rooms".
+  - Every other building's walls are what they were.
+- **`security_camera`**, a piece: Zoo's species, a CCTV camera on its wall bracket, which no building placed.
+  - Its basis: the Bank Protection Act of 1968 asks for devices that identify a robber, and banks met it with
+    interior cameras recorded on time-lapse VCRs (the reference's "researched" section).
+  - Hung on a wall facing the room, its top `_CAMERA_AIR` (0.25 m) under the ceiling, out of reach, so no collision.
+  - Two a room, four in a room of 300 m2 or more.
+  - A fixture of `bank_lobby` and `bank_vault`. bank_branch_a02 hangs 14: four in its lobby, and four, four and two
+    in its vaults.
+- `prop_species` routes it, and `DEPTH_LONG` lists it: its genome is longer in depth than in width, which
+  `test_depth_long` holds.
+- **`potted_plant`** and **`wall_clock`**, pieces: Zoo 1.136.0's `planter` and `wall_clock`, the comps' plants by the
+  windows and counters and the clock over the line.
+  - The plant stands against a wall, its variant the plant, two in the lobby's wall pool. The clock hangs at 2.3 m, one
+    a lobby.
+  - A `potted_plant`, not a `planter`: that word is the library's long planter BOXES (1.4 x 0.7 m and 2.4 x 1.4 m,
+    fifteen in seven specs), outside the species' range, and they stay boxes.
+- **The ATM is a bank lobby's anchor** (`all_anchors`), placed before any wall piece. With three plants in the wall
+  pool, bank_branch_a03's took the wall its ATM and chairs had stood on. `test_ticket_queue`, which holds that a queued
+  lobby keeps its ATM, failed on the clone's full suite.
+- **`migrations/migrate_bank_dress.py`** refurnishes the seven banks and nothing else: 6-14 cameras, 2-4 plants and one
+  clock a bank.
+
+### Tests
+- `tests/test_bank_walls_cameras.py` (fails on 0.281.0):
+  - the camera routes to Zoo's species, long in depth, and only the bank recipes hang it;
+  - every bank hangs cameras in its lobby and in each vault, above a head and below its own storey's ceiling;
+  - the plant and the clock route to Zoo's species, and the planter boxes stay boxes;
+  - every bank's lobby keeps a plant and one clock;
+  - no other building hangs one;
+  - a bank's concrete walls are plaster inside above grade and concrete below.
+  - The test reads a hung piece's storey by its CENTRE. `level_design._volume_story` rounds from the base, so a camera
+    under a basement's ceiling read as the ground floor. The first count of the placement was that misreading.
+- `test_inner_face` allows a bank's plastered concrete beside the outside-only finishes it held.
+- `test_furnish`:
+  - mirrors the camera's, the planter's and the clock's sizes;
+  - reads a species long in DEPTH short side first, as `prop_species.long_axis_first` records it. It compared the
+    camera's 0.38 m depth against Zoo's 0.24 m maximum width. Found by the full suite on the clone, which also had no
+    range for the camera.
+
 ## [0.281.0] - a bank's lobby furnished as the comps, and a bank's vault keeps a cash cart
 
 The walker's bank comps (the factory's docs/reference/BANK_INTERIOR_COMPS.md): the teller line is the room, and "a

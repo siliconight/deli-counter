@@ -325,6 +325,9 @@ _ZOO_RANGES = {
     # Zoo 1.132.0, Deli Counter 0.277.0's produce section
     "produce_table": ((1.2, 4.8), (0.8, 1.6), (0.8, 1.1)),
     "check_desk": ((1.0, 3.2), (0.6, 1.2), (1.0, 1.2)),
+    "planter": ((0.4, 0.9), (0.4, 0.9), (0.8, 2.0)),
+    "wall_clock": ((0.25, 0.5), (0.04, 0.1), (0.25, 0.5)),
+    "security_camera": ((0.12, 0.24), (0.28, 0.46), (0.14, 0.26)),
     "cash_cart": ((0.8, 1.6), (0.5, 0.9), (0.9, 1.4)),
 }
 ZOO = os.environ.get("DC_ZOO_ROOT") or os.path.join(
@@ -376,8 +379,11 @@ def test_every_piece_is_a_size_its_species_builds():
         sp = prop_species.species_for_name(name + "_room_1")
         rng = _ZOO_RANGES.get(sp)
         assert rng is not None, (name, sp)
+        # a species long in DEPTH is recorded short side first (0.282.0,
+        # `prop_species.long_axis_first`): its width is the short side
+        wd = (min(w, d), max(w, d)) if sp in prop_species.DEPTH_LONG else (max(w, d), min(w, d))
         for label, v, (lo, hi) in zip(("width", "depth", "height"),
-                                      (max(w, d), min(w, d), h), rng):
+                                      (wd[0], wd[1], h), rng):
             if not lo - 1e-9 <= v <= hi + 1e-9:
                 bad.append(f"{name} -> {sp}: {label} {v} outside {lo}-{hi}")
     assert not bad, bad

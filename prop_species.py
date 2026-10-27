@@ -72,6 +72,13 @@ PROP_SPECIES = (
     # of the box row, whose `cart` would build the cart as a grey box, and of
     # the `desk` rows below
     (("check_desk",), "check_desk"),
+    # A BANK'S CAMERAS (0.282.0): Zoo's `security_camera`, a CCTV camera on its
+    # wall bracket
+    (("security_camera",), "security_camera"),
+    # A LOBBY'S PLANT AND CLOCK (0.283.0, Zoo 1.136.0). `potted_plant`, ahead of
+    # the box row whose `planter` is the library's long planter boxes
+    (("potted_plant",), "planter"),
+    (("wall_clock",), "wall_clock"),
     (("cash_cart",), "cash_cart"),
     (("crate", "col_", "pillar", "column", "stack", "pump_island",
       "cart", "planter", "canopy", "kiosk", "vault"), None),
@@ -393,7 +400,7 @@ def species_for_name(name):
 #: wide and fit it recorded 2.4 wide and 6.0 deep. `test_depth_long.py`
 #: holds the set to the genomes: every routed species of that shape is here,
 #: and nothing else is.
-DEPTH_LONG = frozenset({"cargo_container"})
+DEPTH_LONG = frozenset({"cargo_container", "security_camera"})
 
 
 def long_axis_first(size, species=None):

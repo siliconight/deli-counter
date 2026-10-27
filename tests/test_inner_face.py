@@ -17,6 +17,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+import lights  # noqa: E402
 import themed_tscn  # noqa: E402
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -35,8 +36,14 @@ def test_every_outside_only_exterior_wall_names_its_room_face_and_nothing_else_d
         for s in d["slots"]:
             parts = str(s.get("wall") or "").split("_")
             ext = len(parts) >= 3 and parts[0] == "ext" and parts[2] in ("N", "E", "S", "W")
-            want = (ext and s.get("material") in OUTSIDE_ONLY and not s.get("glazing")
-                    and s.get("role") in ("wall", "window", "doorway", "breach"))
+            opening = not s.get("glazing") and s.get("role") in ("wall", "window", "doorway", "breach")
+            want = ext and s.get("material") in OUTSIDE_ONLY and opening
+            # 0.282.0: a bank's concrete above grade is plastered inside
+            bank = (ext and opening and s.get("material") == "concrete" and int(parts[1]) >= 0
+                    and lights.is_bank(d["building_id"]))
+            if bank:
+                assert s.get("material_in") == "plaster", (d["building_id"], s["slot_id"])
+                continue
             if want:
                 tagged += 1
                 assert s.get("material_in"), (d["building_id"], s["slot_id"])
