@@ -61,8 +61,8 @@ def test_a_ramps_cut_is_railed_and_its_head_left_open():
     trimmed, it is by what the stair rule trims for (furniture on its line, a wall holding it), so the kept pieces
     stay on the right lines."""
     for stem, spec, i, rp in _cut_ramps():
-        lo, hi = _span(stairwell.ramp_hole(rp), rp.axis)
-        cx, cy, sx, sy = stairwell.ramp_hole(rp)
+        lo, hi = _span(stairwell.ramp_hole(rp, spec), rp.axis)
+        cx, cy, sx, sy = stairwell.ramp_hole(rp, spec)
         lat0, lat1 = (cx - sx / 2, cx + sx / 2) if rp.axis == "Y" else (cy - sy / 2, cy + sy / 2)
         mine = [g for g in stairwell.stair_guards(spec) if g["stair"] == "ramp_%d" % i]
         assert mine, (stem, i, "no rail round the cut")
@@ -82,7 +82,7 @@ def test_the_garages_rails_are_whole():
     for stem, spec, i, rp in _cut_ramps():
         if "garage" not in stem:
             continue
-        lo, hi = _span(stairwell.ramp_hole(rp), rp.axis)
+        lo, hi = _span(stairwell.ramp_hole(rp, spec), rp.axis)
         mine = [g for g in stairwell.stair_guards(spec) if g["stair"] == "ramp_%d" % i]
         assert len(mine) == 3, (stem, i, mine)
         for g in mine:

@@ -651,28 +651,59 @@ RAMP_LANDING_MIN = 1.524
 RAMP_CUT_SIDE = 0.2
 
 
+def _ramp(rp):
+    """A ramp as attributes, whether a `spec_types.Ramp` or a spec's dict (furnish reads specs as dicts)."""
+    if not isinstance(rp, dict):
+        return rp
+    from types import SimpleNamespace
+    d = {"run": 8.0, "width": 2.0, "axis": "Y", "thickness": 0.3, "cut_slabs": True}
+    d.update(rp)
+    return SimpleNamespace(**d)
+
+
+def _spec_value(spec, key, default=None):
+    return spec.get(key, default) if isinstance(spec, dict) else getattr(spec, key, default)
+
+
 def _ramp_ascent(rp):
     """``(t_low, t_head, lateral centre)`` on the ramp's ascent axis. The box
     `Builder._ramps` builds is CENTRED on (x, y) and climbs toward +axis, so
     its foot is half a run behind the centre and its head half a run ahead."""
+    rp = _ramp(rp)
     t = rp.y if rp.axis == "Y" else rp.x
     return t - rp.run / 2.0, t + rp.run / 2.0, (rp.x if rp.axis == "Y" else rp.y)
 
 
-def ramp_cut_span(rp):
-    """``(t_mid, t_head)`` on the ascent axis: where the slab over a ramp is
-    open -- from the ramp's middle, where its cut has always begun, to its
+def ramp_cut_span(rp, spec=None):
+    """``(t_start, t_head)`` on the ascent axis: where the slab over a ramp is
+    open -- from where a body walking up first needs it open to the ramp's
     HEAD, where the ramp meets the floor it climbs to, and never past it.
 
-    NOT YET WHERE A BODY NEEDS IT. Measured on the nine library ramps (the
-    factory's docs/findings/ramp_cut_241/): where the cut begins, the clearance
-    between the slab's underside and the ramp's top face is 1.04 to 1.55 m,
-    under a body's 1.8 m, so a body walking up meets the slab's edge. The agent
-    contract's `min_headroom_m` would open each cut 1.4 to 3.2 m further down
-    its ramp -- under furniture that furnish lays without reading a ramp's cut
-    -- so that waits on furnish learning ramps (the factory's roadmap)."""
+    WHERE A BODY NEEDS IT (0.273.0, the factory's roadmap 270). The ramp's top
+    rises `rise` over its `run`; the slab it climbs to stands `rise - slab` over
+    the floor it climbs from. The cut must begin where the gap between the two
+    falls to the agent contract's `min_headroom_m` (2.0): at
+    ``t_low + run * (rise - slab - headroom) / rise``, and never later than the
+    ramp's middle, where every cut began until now. Measured before, on the nine
+    library ramps (the factory's docs/findings/ramp_cut_241/): the gap where the
+    cut began was 1.04 to 1.55 m, so a body walking up met the slab's edge -- the
+    walker, on seed 9205's garage: "i can't use this wide ramp to go up or
+    down?". Furnish keeps every piece off the longer cut (`level_design`'s
+    `ramp_holes`), which is what held this back.
+
+    Without ``spec`` (no storey height, no slab) the cut begins at the middle, as
+    it always did."""
+    rp = _ramp(rp)
     t_low, t_head, _lat = _ramp_ascent(rp)
-    return (t_low + t_head) / 2.0, t_head
+    t_mid = (t_low + t_head) / 2.0
+    if spec is None:
+        return t_mid, t_head
+    rise = float(_spec_value(spec, "story_height", 0.0)) * (rp.to_story - rp.from_story)
+    slab = float(_spec_value(spec, "floor_thick", 0.0) or 0.0)
+    if rise <= 0.0:
+        return t_mid, t_head
+    room = rise - slab - agent_contract.min_headroom()
+    return min(t_mid, t_low + rp.run * max(0.0, room) / rise), t_head
 
 
 def _ramp_rect(rp, a, b):
@@ -685,7 +716,7 @@ def _ramp_rect(rp, a, b):
     return (along, lat, b - a, across)
 
 
-def ramp_hole(rp):
+def ramp_hole(rp, spec=None):
     """``(cx, cy, size_x, size_y)`` of the slab cut a ramp makes, on the storey
     it climbs to: across the ramp's width and `RAMP_CUT_SIDE` either side,
     along its ascent over `ramp_cut_span`.
@@ -705,8 +736,8 @@ def ramp_hole(rp):
     The cut now stops at the head; `stair_guards` rails it, and `ramp_landing`
     keeps walls off the floor past it.
     """
-    t_mid, t_head = ramp_cut_span(rp)
-    return _ramp_rect(rp, t_mid, t_head)
+    t_start, t_head = ramp_cut_span(rp, spec)
+    return _ramp_rect(_ramp(rp), t_start, t_head)
 
 
 def ramp_landing(rp):
@@ -792,7 +823,7 @@ def wall_voids(spec):
         lo = min(rp.from_story, rp.to_story)
         hi = max(rp.from_story, rp.to_story)
         if getattr(rp, "cut_slabs", True) and rp.to_story > rp.from_story:
-            cx, cy, sx, sy = ramp_hole(rp)
+            cx, cy, sx, sy = ramp_hole(rp, spec)
             out.setdefault(rp.to_story, []).append(
                 (cx - sx / 2, cy - sy / 2, cx + sx / 2, cy + sy / 2))
             out[rp.to_story].append(ramp_landing(rp))
@@ -1235,7 +1266,7 @@ def stair_guards(spec):
     for i, rp in enumerate(getattr(spec, "ramps", ()) or ()):
         if not (getattr(rp, "cut_slabs", True) and rp.to_story > rp.from_story):
             continue
-        cx, cy, sx, sy = ramp_hole(rp)
+        cx, cy, sx, sy = ramp_hole(rp, spec)
         x0, y0, x1, y1 = cx - sx / 2, cy - sy / 2, cx + sx / 2, cy + sy / 2
         if rp.axis == "Y":
             pieces = (("Y", x0 - T / 2.0, y0, y1), ("Y", x1 + T / 2.0, y0, y1),
@@ -1414,7 +1445,7 @@ def stair_guards(spec):
         for rp in getattr(spec, "ramps", ()) or ():
             if getattr(rp, "cut_slabs", True) and rp.to_story in (s, s + 1) \
                     and rp.to_story > rp.from_story:
-                cx, cy, sx, sy = ramp_hole(rp)
+                cx, cy, sx, sy = ramp_hole(rp, spec)
                 holes.append((cx - sx / 2, cy - sy / 2, cx + sx / 2, cy + sy / 2))
             if min(rp.from_story, rp.to_story) <= s < max(rp.from_story,
                                                          rp.to_story):

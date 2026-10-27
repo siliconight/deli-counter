@@ -2398,7 +2398,7 @@ class _Builder:
                 # is one of the five things `wall_voids` clips a partition
                 # against, and two spellings of one rectangle is how a wall
                 # gets clipped against a hole the builder does not make.
-                hx, hy, hsx, hsy = stairwell.ramp_hole(rp)
+                hx, hy, hsx, hsy = stairwell.ramp_hole(rp, self.s)
                 self.s.slab_holes.append(SlabHole(
                     story=rp.to_story, x=hx, y=hy,
                     size_x=hsx, size_y=hsy))

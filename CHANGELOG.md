@@ -1,3 +1,35 @@
+## [0.273.0] - a ramp's cut begins where a body clears the slab, and nothing stands in it
+
+**The factory's roadmap 270.** The walker, on seed 9205's parking garage, 2026-10-26: "i can't use this wide ramp to
+go up or down?". Every library ramp's slab cut began at the ramp's middle. There the gap between the ramp's top and
+the slab it climbs to was 1.04 to 1.55 m, against the agent contract's `min_headroom_m` of 2.0, so a body met the
+slab's edge, up or down.
+
+### Changed
+- **`stairwell.ramp_cut_span(rp, spec)`**: the cut begins where that gap falls to `min_headroom_m`, at
+  `t_low + run * (rise - slab - headroom) / rise`, and never later than the middle.
+  - Across the nine library ramps the start moves 0.9 to 2.7 m down each ramp. The parking garages' cut now starts
+    2.33 m from the foot where it started at 5.00, and every gap where a cut starts is 2.00 m.
+  - `ramp_hole` and every caller (the builder, `slab_openings`, `stair_guards`, the stair walk-off) pass the spec,
+    so the rails, wall voids and holes follow the longer cut.
+  - Without a spec the cut begins at the middle, as before.
+- **Furnish keeps every piece off a ramp's cut** (`level_design.ramp_holes`), as it keeps off an authored hole. This
+  applies to piece placement and to the seeded corridor's obstacles.
+- **`migrations/migrate_ramp_cut.py`** clears what stood in the longer cuts.
+  - `cbp_town_finale`: cartons, a desk and a chair set, refurnished.
+  - `foundry_heist_vertical`: pallets and a drum refurnished, and two AUTHORED pieces moved by the least distance
+    that clears the cut and its rail: `forklift_cover` x 12.0 -> 10.6 and `loading_crate_stack_a` x 17.0 -> 17.6,
+    both still in the loading dock.
+- `tests/test_ramp_cut.py`'s two rail tests ask the rails of the cut the builder makes, `ramp_hole(rp, spec)`.
+
+### Tests
+- `tests/test_ramp_cut_headroom.py` (all 4 fail on 0.272.0):
+  - every library ramp's cut begins where the gap is at least 2.0 m and no later than its middle;
+  - the walker's garage opens 2.33 m up its ramp;
+  - nothing stands in any cut;
+  - the authored pieces moved by the least distance.
+- Layout lint over the garages unchanged: the same warnings before and after.
+
 ## [0.272.0] - a supermarket's aisles are gondolas too
 
 **The walker, walking seed 9205's supermarket, 2026-10-26**: "far too dark" and, of the level, "doesn't look finished".

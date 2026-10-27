@@ -846,6 +846,15 @@ def _seed_clear(spec, room, px, py, placed, half=0.0, above=None,
             if px + hx > hx0 - 0.3 and px - hx < hx1 + 0.3 and \
                     py + hy > hy0 - 0.3 and py - hy < hy1 + 0.3:
                 return False
+        # AND A RAMP'S CUT (0.273.0, roadmap 270), the same way: the builder
+        # opens it in this storey's slab, and its start moved down the ramp to
+        # where a body clears the slab -- under furniture that read only
+        # authored holes (foundry_heist_vertical's forklift, cbp_town_finale's
+        # chairs, found on a rail's line by 0.241.0's build).
+        for hx0, hy0, hx1, hy1 in ramp_holes(spec, story):
+            if px + hx > hx0 - 0.3 and px - hx < hx1 + 0.3 and \
+                    py + hy > hy0 - 0.3 and py - hy < hy1 + 0.3:
+                return False
     for l in spec.get("ladders", []):
         if math.hypot(l["x"] - px, l["y"] - py) < 1.6 + half:
             return False
@@ -2799,6 +2808,21 @@ _CORNER_STORE_IDS = frozenset(("deli", "convenience", "gas", "fuel", "bodega",
 _CORNER_STORE_FLOOR_TOKENS = frozenset(("market", "aisles", "aisle", "sales"))
 
 
+def ramp_holes(spec, story):
+    """``[(x0, y0, x1, y1)]``: the slab cuts the spec's ramps open in ``story``'s floor (`stairwell.ramp_hole`, from
+    where a body clears the slab to the ramp's head) -- what furnish keeps off, as it keeps off an authored hole."""
+    import stairwell
+    out = []
+    for r in spec.get("ramps") or []:
+        if not r.get("cut_slabs", True) or int(r.get("to_story", 0)) <= int(r.get("from_story", 0)):
+            continue
+        if int(r.get("to_story", 0)) != int(story):
+            continue
+        cx, cy, sx, sy = stairwell.ramp_hole(r, spec)
+        out.append((cx - sx / 2.0, cy - sy / 2.0, cx + sx / 2.0, cy + sy / 2.0))
+    return out
+
+
 def is_corner_store_floor(room, building):
     """Is `room` the selling floor of a corner store? The one rule, as
     `is_card_shop_room` is the card shop's."""
@@ -4315,6 +4339,7 @@ def room_necks(spec, room):
         if int(h.get("story", 0) or 0) == story:
             boxes.append((h["x"] - h["size_x"] / 2.0, h["y"] - h["size_y"] / 2.0,
                           h["x"] + h["size_x"] / 2.0, h["y"] + h["size_y"] / 2.0))
+    boxes.extend(ramp_holes(spec, story))      # a ramp's cut is a hole too (0.273.0)
     for v in spec.get("volumes") or []:
         if v.get("collision") == "none":
             continue
