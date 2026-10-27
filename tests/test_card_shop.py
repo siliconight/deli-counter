@@ -110,9 +110,11 @@ def test_the_selling_rooms_are_card_shop_rooms_and_the_back_rooms_are_not():
 
 def test_the_kind_does_not_leak_into_a_building_that_is_not_a_card_shop():
     """`sales_floor` is a shop floor everywhere else, and must stay one --
-    the club's `main_floor` defect (0.131.0) one building along."""
+    the club's `main_floor` defect (0.131.0) one building along. A
+    supermarket's is its own kind since 0.275.0, and never the card shop's."""
     room = {"id": "sales_floor", "story": 0}
-    assert level_design._room_kind(room, "supermarket_a01") == "shop_floor"
+    assert level_design._room_kind(room, "pawn_shop_a01") == "shop_floor"
+    assert level_design._room_kind(room, "supermarket_a01") == "supermarket"
     assert level_design._room_kind(room, "lf_card_shop_001_7") == "card_shop"
 
 

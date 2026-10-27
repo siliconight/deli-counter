@@ -49,7 +49,9 @@ def test_every_building_that_sells_has_one_atm_and_no_other_does():
     per = collections.Counter()
     for d in _library():
         building = level_design.club_building_id(d)
-        sells = any(level_design._room_kind(r, building) == "shop_floor" and _tokens(r) & SELLING
+        # a supermarket's selling floor is its own kind since 0.275.0, and sells
+        sells = any(level_design._room_kind(r, building) in ("shop_floor", "supermarket")
+                    and _tokens(r) & SELLING
                     and max(0.0, r["bounds"][2] - r["bounds"][0]) * max(0.0, r["bounds"][3] - r["bounds"][1])
                     >= level_design._FURNISH_MIN_AREA
                     for r in d["rooms"])

@@ -1,3 +1,56 @@
+## [0.275.0] - a supermarket is furnished as one, and stands its cooler wall
+
+The walker, 2026-10-26, walking seed 9205's supermarket: "far too dark in teh super market". Then came the comps:
+"shiny floor, bright lights, isles, glowing freezer section, stacked high". They are filed as the factory's
+docs/reference/GROCERY_STORE_COMPS.md.
+
+Before this release:
+- none of the library's three supermarkets stood a cooler. 0.272.0 kept them out of the convenience store's rule:
+  "their cooler wall and glass front are their own decision";
+- their sales floors took the shop floor's recipe. supermarket_a01's stood a service counter, two filing cabinets,
+  two vending machines, two video poker machines with their stools, and eleven cartons and bins round its five aisles;
+- supermarket_a02 had no aisle at all.
+
+### Added
+- **`migrations/migrate_supermarket_cooler.py`**: a supermarket's sales floor stands a glass-door cooler wall,
+  using `migrate_cooler_wall`'s clearances.
+  - The wall is the one opposite the storefront glass, where the aisles' heads face and a real store backs its
+    dairy and frozen cases onto the stockroom.
+  - The run is up to 24 m, in runs of at most 12 m (Zoo `cooler_run`'s widest), named `cooler_run_sales_<i>`.
+  - It is planned on the spec less its furnishing, then the spec is refurnished.
+  - a01 stands 2 x 8.85 m, a02 2 x 12.00 m, a03 2 x 10.95 m.
+- **The `supermarket` kind** (`level_design.is_supermarket_floor`, `_RECIPES["supermarket"]`). A building whose id
+  says supermarket or grocer, and a room whose id says it sells, are furnished as a supermarket:
+  - its aisles;
+  - shelving stacked along its walls;
+  - one cluster of cartons;
+  - an ATM.
+
+  Its stockroom, mezzanine and offices keep their kinds.
+- **`gondola_run`**: the supermarket's rows, Zoo's `snack_gondola` at 7.2 to 12.0 m, below shelter like
+  `gondola_aisle`.
+  - A floor whose own aisles already stand (`authored_aisles`) takes no rows. The first build laid 3.6 m islands down
+    the lanes between supermarket_a01's 14 m aisles.
+  - supermarket_a02 now stands four rows of three 7.2 m runs.
+
+### Changed
+- A one-cluster recipe lays its rows after its wall run, as every other recipe does. The supermarket is the first
+  one-cluster recipe that has rows.
+- No aisle signs yet. A fixture hangs where a hung slot is free, and the first build hung one over the checkout. A
+  supermarket's sign hangs over its aisle, which is a rule of its own.
+
+### Tests
+- `tests/test_supermarket_dress.py` (fails on 0.274.0) checks:
+  - the rule's rooms;
+  - every supermarket's cooler wall: on the back wall, facing in, at least 16 m;
+  - no office furniture on the floor;
+  - authored aisles take no rows, and a bare floor takes long runs;
+  - the migration is done and idempotent;
+  - the names route.
+- `test_furnish` knows the supermarket's rows.
+- `test_card_shop` and `test_store_atms` named a supermarket's sales floor a shop floor. It is its own kind now,
+  still never the card shop's, and it still sells.
+
 ## [0.274.0] - a selling room keeps a shop's lamp density, however big it is
 
 The walker, 2026-10-26, in seed 9205's supermarket: "far too dark in teh super market". Then came the comps: "shiny

@@ -146,13 +146,17 @@ def test_the_only_mid_floor_shelter_is_a_declared_island():
     # ...and the one giver of ROWS (0.247.0) is the shop floor's, per room:
     # a corner store's selling floor gets the aisle gondola and every other
     # room nothing. Its piece is capped above and stands under shelter.
+    # and the supermarket's (0.275.0), whose rows are its long gondola runs
     rows = {k for k, r in level_design._RECIPES.items() if "rows" in r}
-    assert rows == {"shop_floor"}, rows
+    assert rows == {"shop_floor", "supermarket"}, rows
     given = level_design._shop_rows({"id": "market_aisles"}, "deli_a03")
     assert given == ("gondola_aisle",) and set(given) <= islands
-    assert level_design._shop_rows({"id": "sales_floor"}, "supermarket_a01") == ()
-    for w, d, h in level_design._PIECES["gondola_aisle"]["sizes"]:
-        assert h < level_design.shelter_height(), (w, d, h)
+    given = level_design._shop_rows({"id": "sales_floor"}, "supermarket_a01")
+    assert given == ("gondola_run",) and set(given) <= islands
+    assert level_design._shop_rows({"id": "sales_floor"}, "pawn_shop_a01") == ()
+    for key in ("gondola_aisle", "gondola_run"):
+        for w, d, h in level_design._PIECES[key]["sizes"]:
+            assert h < level_design.shelter_height(), (key, w, d, h)
 
 
 def test_every_name_it_writes_routes_to_a_species_zoo_builds():

@@ -1571,7 +1571,25 @@
       }
     },
     {
-      "node": "counter_service_r48016798_1_col",
+      "node": "cooler_run_sales_0_col",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "cooler_run_sales_1_col",
+      "material": {
+        "id": "metal",
+        "acoustic": "Metal",
+        "absorption": 0.5,
+        "damping": 0.3
+      }
+    },
+    {
+      "node": "cartons_r48016798_1_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -1580,7 +1598,7 @@
       }
     },
     {
-      "node": "shelf_run_r48016798_2_col",
+      "node": "cartons_r48016798_2_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -1598,7 +1616,7 @@
       }
     },
     {
-      "node": "cabinet_file_r48016798_4_col",
+      "node": "shelf_run_r48016798_4_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -1607,12 +1625,12 @@
       }
     },
     {
-      "node": "vending_r48016798_5_col",
+      "node": "shelf_run_r48016798_5_col",
       "material": {
-        "id": "metal",
-        "acoustic": "Metal",
-        "absorption": 0.5,
-        "damping": 0.3
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
@@ -1634,7 +1652,7 @@
       }
     },
     {
-      "node": "cabinet_file_r48016798_8_col",
+      "node": "shelf_run_r48016798_8_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -1643,12 +1661,12 @@
       }
     },
     {
-      "node": "vending_r48016798_9_col",
+      "node": "shelf_run_r48016798_9_col",
       "material": {
-        "id": "metal",
-        "acoustic": "Metal",
-        "absorption": 0.5,
-        "damping": 0.3
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
@@ -1670,7 +1688,7 @@
       }
     },
     {
-      "node": "cartons_r48016798_12_col",
+      "node": "shelf_run_r48016798_12_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -1679,7 +1697,7 @@
       }
     },
     {
-      "node": "cartons_r48016798_13_col",
+      "node": "shelf_run_r48016798_13_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -1688,12 +1706,12 @@
       }
     },
     {
-      "node": "litter_bin_r48016798_14_col",
+      "node": "cartons_r48016798_14_col",
       "material": {
-        "id": "metal",
-        "acoustic": "Metal",
-        "absorption": 0.5,
-        "damping": 0.3
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
@@ -1724,25 +1742,7 @@
       }
     },
     {
-      "node": "litter_bin_r48016798_18_col",
-      "material": {
-        "id": "metal",
-        "acoustic": "Metal",
-        "absorption": 0.5,
-        "damping": 0.3
-      }
-    },
-    {
-      "node": "cartons_r48016798_19_col",
-      "material": {
-        "id": "wood",
-        "acoustic": "Wood",
-        "absorption": null,
-        "damping": null
-      }
-    },
-    {
-      "node": "cartons_r48016798_20_col",
+      "node": "cartons_r48016798_18_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -1904,48 +1904,12 @@
       }
     },
     {
-      "node": "atm_store_r48016798_21_col",
+      "node": "atm_store_r48016798_19_col",
       "material": {
         "id": "metal",
         "acoustic": "Metal",
         "absorption": 0.5,
         "damping": 0.3
-      }
-    },
-    {
-      "node": "video_poker_store_r48016798_22_col",
-      "material": {
-        "id": "metal_painted",
-        "acoustic": "Metal",
-        "absorption": 0.25,
-        "damping": 0.2
-      }
-    },
-    {
-      "node": "bar_stool_r48016798_22_1_col",
-      "material": {
-        "id": "metal_bare",
-        "acoustic": "Metal",
-        "absorption": 0.2,
-        "damping": 0.15
-      }
-    },
-    {
-      "node": "video_poker_store_r48016798_23_col",
-      "material": {
-        "id": "metal_painted",
-        "acoustic": "Metal",
-        "absorption": 0.25,
-        "damping": 0.2
-      }
-    },
-    {
-      "node": "bar_stool_r48016798_23_1_col",
-      "material": {
-        "id": "metal_bare",
-        "acoustic": "Metal",
-        "absorption": 0.2,
-        "damping": 0.15
       }
     }
   ],
@@ -2586,26 +2550,26 @@
     "gondola_aisle_3": "prop",
     "gondola_aisle_4": "prop",
     "checkout_row": "prop",
-    "counter_service_r48016798_1": "prop",
-    "shelf_run_r48016798_2": "prop",
+    "cooler_run_sales_0": "prop",
+    "cooler_run_sales_1": "prop",
+    "cartons_r48016798_1": "prop",
+    "cartons_r48016798_2": "prop",
     "shelf_run_r48016798_3": "prop",
-    "cabinet_file_r48016798_4": "prop",
-    "vending_r48016798_5": "prop",
+    "shelf_run_r48016798_4": "prop",
+    "shelf_run_r48016798_5": "prop",
     "shelf_run_r48016798_6": "prop",
     "shelf_run_r48016798_7": "prop",
-    "cabinet_file_r48016798_8": "prop",
-    "vending_r48016798_9": "prop",
+    "shelf_run_r48016798_8": "prop",
+    "shelf_run_r48016798_9": "prop",
     "shelf_run_r48016798_10": "prop",
     "shelf_run_r48016798_11": "prop",
-    "cartons_r48016798_12": "prop",
-    "cartons_r48016798_13": "prop",
-    "litter_bin_r48016798_14": "prop",
+    "shelf_run_r48016798_12": "prop",
+    "shelf_run_r48016798_13": "prop",
+    "cartons_r48016798_14": "prop",
     "cartons_r48016798_15": "prop",
     "cartons_r48016798_16": "prop",
     "cartons_r48016798_17": "prop",
-    "litter_bin_r48016798_18": "prop",
-    "cartons_r48016798_19": "prop",
-    "cartons_r48016798_20": "prop",
+    "cartons_r48016798_18": "prop",
     "safe_floor_r46ba397a_1": "prop",
     "safe_floor_r46ba397a_2": "prop",
     "shelf_run_r46ba397a_3": "prop",
@@ -2623,13 +2587,6 @@
     "pallets_rda998dc4_8": "prop",
     "cartons_rda998dc4_9": "prop",
     "cartons_rda998dc4_10": "prop",
-    "atm_store_r48016798_21": "prop",
-    "video_poker_store_r48016798_22": "prop",
-    "bar_stool_r48016798_22_1": "prop",
-    "video_poker_store_r48016798_23": "prop",
-    "bar_stool_r48016798_23_1": "prop",
-    "poster_wall_store_r48016798_24": "prop",
-    "poster_wall_store_r48016798_25": "prop",
-    "poster_wall_store_r48016798_26": "prop"
+    "atm_store_r48016798_19": "prop"
   }
 }

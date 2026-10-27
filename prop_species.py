@@ -225,6 +225,9 @@ PROP_SPECIES = (
     # five 14 m blocks down seed 9205's sales floor as dark and unfinished, and
     # they fit the species; grocery stock is a Zoo variant for later.
     (("gondola_aisle",), "snack_gondola"),
+    # the supermarket's long runs (Deli Counter 0.275.0, `level_design`'s
+    # `gondola_run`): the same species, which builds 1.2 to 14.0 m
+    (("gondola_run",), "snack_gondola"),
     # THE FROZEN DRINK STATION (Zoo 1.15.0): `migrate_slush_machine.py` puts
     # one in every convenience store; no volume carried `slush` before it.
     # Above the counter row, whose `station` would claim a `slush_station`.
