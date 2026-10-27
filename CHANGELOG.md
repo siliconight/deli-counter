@@ -1,3 +1,28 @@
+## [0.276.0] - a supermarket hangs a numbered marker over each aisle
+
+The walker's grocery comps, 2026-10-26 (the factory's docs/reference/GROCERY_STORE_COMPS.md) show a printed sign over
+the head of every aisle, its number large and what is down it beside it. Zoo 1.131.0 prints one: `aisle_sign` form
+`grocery`, the number its variant gives.
+
+### Added
+- **`level_design.aisle_markers(spec, room)`**: where a supermarket's sales floor hangs its markers, aisle 1 first.
+  - Read off the gondolas on the room's floor, its own aisles or the rows furnish laid, grouped into lines along
+    the axis most of them are long in.
+  - Each lane between two neighbouring lines takes one marker, 0.6 m in from its storefront end: the end nearer the
+    storey's glazed wall, else the low end.
+  - The board is 1.4 m across the lane, or the lane's width less 10 cm; a lane under 0.5 m takes none. Twelve at most.
+- **Furnish hangs them last** in a supermarket's sales floor, `form: grocery`, the variant the aisle's index, and only
+  where the storey gives a body its headroom under one (`hung_headroom_ok`).
+- **`migrations/migrate_aisle_markers.py`** refurnishes the supermarkets: supermarket_a01 hangs 4, a02 3, a03 3.
+
+### Tests
+- `tests/test_aisle_markers.py` (2 of 4 fail on 0.275.0; the other two hold every marker there is, and on 0.275.0
+  there is none):
+  - supermarket_a01's four at its lanes' storefront end;
+  - every supermarket's markers numbered in order;
+  - each over a lane with a body's headroom under it;
+  - the markers reach Zoo's grocery form.
+
 ## [0.275.0] - a supermarket is furnished as one, and stands its cooler wall
 
 The walker, 2026-10-26, walking seed 9205's supermarket: "far too dark in teh super market". Then came the comps:
