@@ -1572,7 +1572,8 @@ def _landing_point(x, y, bounds, voids):
 def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
                          wall_thick, ceiling_voids=None, partitions=None,
                          report=None, volumes=None, club_rooms=None,
-                         storefronts=None, residence=False, landings=None):
+                         storefronts=None, residence=False, landings=None,
+                         bake_reach_rooms=None):
     """Derive default light anchors: one fluorescent ceiling row per interior
     room, one area light per window opening, a wall pack over every exterior
     door, and one storefront sign. Every room also carries a `room_ambient`
@@ -1761,6 +1762,16 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
                     anchors[-1]["reach"] = reach
                     rep["storefront_rows"] += 1
                     room_reach = max(room_reach, reach)
+            # A ROW THAT BAKES TO THE NEXT LAMP (0.279.0): a room in
+            # `bake_reach_rooms` -- a supermarket's selling floor -- stamps its
+            # row's spacing as `bake_reach`, and Lux (>= 0.80.0) bakes the
+            # lamp to the floor under the next one along while its live
+            # range, the per-mesh claim, stays the drop rule. Measured on the
+            # walker's level: the store's frame 38.5 -> 61.5 mean at x 1.6
+            # range (the factory's docs/findings/black_gondola_ends/).
+            if (not moody and not home and sp > 0.0
+                    and r.get("id") in (bake_reach_rooms or ())):
+                anchors[-1]["bake_reach"] = round(float(sp), 3)
         # THE STORE'S LIGHT ON THE PAVEMENT (0.156.0): a room whose row
         # reaches its storefront throws that light back out through the
         # glass. Collected here and appended LAST, so every anchor before it
@@ -1888,6 +1899,16 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
     return anchors
 
 
+def _bake_reach_rooms(rooms, business):
+    """The rooms whose fluorescent rows bake to the next lamp (0.279.0): a
+    supermarket's selling floor (`level_design.is_supermarket_floor`), the
+    walker's "far too dark in the super market"."""
+    if not business:
+        return set()
+    import level_design
+    return {r.get("id") for r in rooms or () if level_design.is_supermarket_floor(r, business)}
+
+
 def build_light_manifest(building_id, rooms, openings, story_height,
                          *, cap_thick, wall_thick, authored=None, theme=None,
                          ceiling_voids=None, partitions=None, report=None,
@@ -1910,7 +1931,8 @@ def build_light_manifest(building_id, rooms, openings, story_height,
                                    volumes=volumes, club_rooms=club_rooms,
                                    storefronts=storefronts,
                                    residence=is_residence(business),
-                                   landings=landings)
+                                   landings=landings,
+                                   bake_reach_rooms=_bake_reach_rooms(rooms, business))
     if authored:
         by_id = {a["id"]: a for a in anchors}
         for a in authored:

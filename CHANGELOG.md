@@ -1,3 +1,30 @@
+## [0.279.0] - a supermarket's ceiling rows bake to the next lamp along
+
+The walker, 2026-10-26: "far too dark in teh super market". Measured on the walker's level (the factory's
+docs/findings/black_gondola_ends/):
+
+- The supermarket's lamps are baked statics whose range is the drop rule. That rule was written for the realtime
+  claim each lamp makes on every mesh it reaches.
+- Re-baked with the range x 1.6, the store's frame rose 38.5 -> 61.5 mean, and the gondolas' black ends lifted.
+
+Lux 0.80.0 lends a static lamp a longer range only while a lightmap bakes. It derives that range as
+`hypot(drop, bake_reach) + 0.75` from a row's `bake_reach`.
+
+### Added
+- **`bake_reach`** on the fluorescent rows of a room in `derive_light_anchors`' new `bake_reach_rooms`: the row's
+  lamp spacing, so the bake reaches the floor under the next lamp along. Lux makes 7.61 m of it in supermarket_a01
+  (drop 4.1, spacing 5.5), x 1.57 its live 4.85.
+- **`_bake_reach_rooms(rooms, business)`**: a supermarket's selling floor (`level_design.is_supermarket_floor`). In
+  the library that is the three supermarkets' `sales_floor` rows (spacing 5.5, 5.5 and 5.0 m). Every other anchor is
+  byte-identical to 0.278.0's. Zoo 1.134.0 carries it to the lamps' markers.
+
+### Tests
+- `tests/test_bake_reach.py` (all 6 fail on 0.278.0):
+  - a named room's rows carry their spacing, and no other room's do;
+  - without a named room every row is 0.278.0's anchor exactly (the control);
+  - the supermarket floor is the named room, and a convenience store's is not;
+  - every built supermarket's sales-floor rows carry it.
+
 ## [0.278.0] - a supermarket's shelves sell what the markers over them say
 
 The walker's grocery comps (the factory's docs/reference/GROCERY_STORE_COMPS.md). In the walker's level the
