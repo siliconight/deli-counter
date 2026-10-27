@@ -1,3 +1,39 @@
+## [0.278.0] - a supermarket's shelves sell what the markers over them say
+
+The walker's grocery comps (the factory's docs/reference/GROCERY_STORE_COMPS.md). In the walker's level the
+supermarket's gondolas sold the convenience store's chips under markers that said CEREAL and CANNED VEG (0.276.0).
+Zoo 1.133.0's `snack_gondola` form `grocery` sells, on each face, one of the 24 categories the markers print.
+
+### Added
+- **`stock_supermarket_gondolas(spec, room)`.** Furnish makes every gondola on a supermarket's floor, authored or
+  laid, Zoo's grocery form:
+  - its VARIANT is its line's index, low end of the cross axis first, as the markers number their lanes;
+  - it is turned half round where its module's +Y points to the lower lane. A gondola is an island shopped on both
+    sides, so the turn moves nothing it collides with.
+  - In Zoo's rule, face -Y of line v sells the second category of lane v - 1 and face +Y the first of lane v. So
+    lane j's two categories are on the +Y face of line j and the -Y face of line j + 1, under marker j.
+  - Twelve lines sell all 24 categories; a thirteenth starts round again.
+- **`_plus_y_plan(v)`**: where a gondola's module +Y points in plan. The slot's turn
+  (`prop_species.long_axis_first`, plus the volume's `rot_z`) takes the module's +X to plan +X at 0 degrees, -Y at
+  90, -X at 180 and +Y at 270 (the composer's measured convention), so its +Y goes to plan +Y, +X, -Y and -X.
+- **`migrations/migrate_grocery_gondolas.py`** refurnishes the three supermarkets:
+  - a01: 5 gondolas;
+  - a02: 10 gondolas. Its laid runs' variants, drawn for variety, are now their lines'. The two runs on line 2 that
+    stood at 180 degrees now stand at 0, their +Y toward the lane after.
+  - a03: 4 gondolas.
+
+### Changed
+- **`_gondola_lines(spec, room)`**: `aisle_markers`' grouping of the gondolas into lines, moved out whole so the
+  markers and the stock read one grouping. Each line now also carries its volumes. Every marker is where it was.
+
+### Tests
+- `tests/test_grocery_gondolas.py` (4 of 5 fail on 0.277.0; the first holds the library's three supermarkets):
+  - every gondola is the grocery form of its line, its +Y toward the lane after;
+  - a lane's marker and the faces either side of it agree. Every lane of the library takes a marker, which the
+    pairing needs: a skipped lane would renumber the markers after it.
+  - stocking is a fixed point, and turns a backward gondola back;
+  - the slots carry the form, the line and the turn.
+
 ## [0.277.0] - a supermarket stands a produce section
 
 The walker's grocery comps, 2026-10-26 (the factory's docs/reference/GROCERY_STORE_COMPS.md): "a retro produce
