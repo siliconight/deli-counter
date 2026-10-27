@@ -2079,6 +2079,17 @@ _PIECES = {p["name"]: p for p in (
     _piece("produce_table", ((2.4, 1.2, 0.95), (3.0, 1.2, 0.95),
                              (1.8, 1.0, 0.9)), "island", front=True,
            variants=True, most=3),
+    # A BANK'S CHECK DESK (0.281.0, Zoo 1.135.0's `check_desk`; the factory's
+    # roadmap 321): the comps' "check desk island ... mid-floor in front of
+    # [the teller line]: a standing-height table with slots for slips", its
+    # date block on its middle. An island a customer stands at from either
+    # side, 1.1 m high -- below cover height, so a body sees over it; two in a
+    # big hall at most.
+    _piece("check_desk", ((1.6, 0.9, 1.1), (2.4, 1.0, 1.1)), "island", front=True, most=2),
+    # A VAULT'S CASH CART (0.281.0, Zoo 1.135.0's `cash_cart`): the money
+    # room's steel cage cart and its load, the comps' "carts and tubs". On the
+    # floor, its load the variant, two a room at most.
+    _piece("cash_cart", ((1.2, 0.7, 1.1), (0.9, 0.6, 1.0)), "floor", variants=True, most=2),
     # THE PENNANTS, along the TOP of the wall -- `under`, not `lift`: the
     # batten is screwed under the ceiling, so its height is the storey's.
     # No collision: 2.9 m up at a 3.4 m storey, and Zoo's genome declares
@@ -2628,10 +2639,30 @@ _RECIPES = {
                "wall": ("cabinet_locker", "chair_waiting"),
                "floor": (),
                "clusters": ((("cartons",), 2, 3),)},
+    # A BANK'S VAULT (0.281.0, `_room_kind`'s `bank_vault`): a vault's
+    # furniture and the comps' cash cart beside the count table. A BANK'S
+    # only: the first build put a cart in every `vault`-kind room and moved
+    # 44 specs -- a deli's back safe, a stadium's, a funeral home's.
+    "bank_vault": {"anchors": ("safe_floor",),
+                   "wall": ("shelf_run", "cabinet_locker", "safe_floor"),
+                   "floor": ("table_count", "cash_cart"),
+                   "clusters": ((("cartons",), 2, 3),)},
     "vault": {"anchors": ("safe_floor",),
               "wall": ("shelf_run", "cabinet_locker", "safe_floor"),
               "floor": ("table_count",),
               "clusters": ((("cartons",), 2, 3),)},
+    # A BANK'S LOBBY (0.281.0, the factory's roadmap 321; `is_bank_lobby`): the
+    # walker's bank comps (docs/reference/BANK_INTERIOR_COMPS.md) -- the teller
+    # line is the room, a check desk mid-floor before it, a queue of
+    # stanchions, waiting chairs, an ATM. Not the general lobby's vending
+    # machine, cigarettes, payphone or sofa: measured on bank_branch_a02
+    # (docs/findings/bank_interior/), its 390 m2 lobby stood a bench, two
+    # bins and a queue. The service counter stays its anchor where a spec
+    # has one; the check desk is the room's second.
+    "bank_lobby": {"anchors": ("check_desk",),
+                   "wall": ("chair_waiting", "chair_waiting", "atm"),
+                   "floor": (),
+                   "clusters": ((("stanchion",), 3, 4), (("litter_bin",), 1, 1))},
     "lobby": {"anchors": ("counter_service",),
               "wall": ("chair_waiting", "chair_waiting", "sofa", "atm",
                        "vending", "payphone"),
@@ -3471,7 +3502,26 @@ def dress_club_rooms(spec):
     return n
 
 
+def is_bank_lobby(room, building):
+    """Is `room` a bank's public room (`lights.bank_public`: its
+    `public_entry`, a lobby or banking hall)? The one rule for its furniture
+    (0.281.0), its light and its floor (0.280.0)."""
+    import lights
+    return lights.bank_public(room, building)
+
+
 def _room_kind(room, building=None):
+    """`_room_kind_of`, and a bank's `vault` is a `bank_vault` (0.281.0): the
+    same furniture and the comps' cash cart, in a bank's vault only."""
+    kind = _room_kind_of(room, building)
+    if kind == "vault":
+        import lights
+        if lights.is_bank(building):
+            return "bank_vault"
+    return kind
+
+
+def _room_kind_of(room, building=None):
     """The furnishing KIND of a room: a strip club's club rooms, a card
     shop's selling rooms, a video store's and an office building's open
     floors first (`is_strip_club_room`, `is_card_shop_room`,
@@ -3493,6 +3543,8 @@ def _room_kind(room, building=None):
         return "office"
     if is_supermarket_floor(room, building):             # 0.275.0
         return "supermarket"
+    if is_bank_lobby(room, building):                    # 0.281.0
+        return "bank_lobby"
     tokens = set(str(room.get("id", "")).lower().replace("-", "_").split("_"))
     for kind, words in _ROOM_KINDS:
         if tokens.intersection(words):
@@ -6639,7 +6691,7 @@ def furnish(spec):
         # beside its runs would read as a queue somebody never finished.
         if _holds_queue(spec, room):
             clusters = [c for c in clusters if "stanchion" not in c[0]]
-        if story < 0 and kind not in ("basement", "vault", "corridor",
+        if story < 0 and kind not in ("basement", "vault", "bank_vault", "corridor",
                                       "hallway", "wine_cellar"):
             clusters.append(_BASEMENT_CLUSTER)
         rcx, rcy = (x0 + x1) / 2.0, (y0 + y1) / 2.0

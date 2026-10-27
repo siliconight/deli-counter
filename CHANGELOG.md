@@ -1,3 +1,50 @@
+## [0.281.0] - a bank's lobby furnished as the comps, and a bank's vault keeps a cash cart
+
+The walker's bank comps (the factory's docs/reference/BANK_INTERIOR_COMPS.md): the teller line is the room, and "a
+check desk island stands mid-floor in front of it". There is a queue of stanchions and waiting chairs, and the money
+room has its "steel cage cart". Measured on bank_branch_a02 after 0.280.0 lit and floored it
+(docs/findings/bank_interior/): its 390 m2 lobby stood a bench, two bins and a queue. The general lobby recipe a bank
+shared with a hotel handed it vending, cigarettes, a payphone and a sofa. Zoo 1.135.0 draws the desk and the cart.
+
+### Added
+- **`check_desk`**, a piece: an island at standing height (1.1 m, below cover height), 1.6 or 2.4 m long, two a room
+  at most. Zoo's `check_desk`, its date block on its middle.
+- **`cash_cart`**, a piece: on the floor, 1.2 or 0.9 m long, its load the variant, two a room at most. Zoo's
+  `cash_cart`.
+- **`bank_lobby`**, a kind and its recipe, for a bank's public room (`is_bank_lobby`, `lights.bank_public`, the rule
+  0.280.0 lit and floored by):
+  - the check desk its anchor;
+  - waiting chairs and an ATM on the walls;
+  - a queue of stanchions and a bin;
+  - no vending, cigarettes, payphone or sofa.
+- **`bank_vault`**, a kind and its recipe, for a bank's vault (`_room_kind` wraps `_room_kind_of`): the vault's
+  furniture and a cash cart beside the count table.
+  - A BANK'S only. The first build put a cart in every `vault`-kind room and moved 44 specs: a deli's back safe, a
+    stadium's, a funeral home's.
+  - It keeps the vault's exemption from the basement clutter.
+- `prop_species` routes both, ahead of the box row whose `cart` would make the cart a grey box.
+- **`migrations/migrate_bank_furnish.py`** refurnishes the seven banks:
+  - each lobby gets its check desk;
+  - the vaults get 1-5 cash carts a building;
+  - no other spec changes.
+
+### Tests
+- `tests/test_bank_furnish.py` (4 of 5 fail on 0.280.0; the fifth holds that no other building has either):
+  - a bank's lobby and vault are their own kinds, and a hotel's lobby and a deli's vault are not (the controls);
+  - the bank lobby recipe stands a check desk and none of the general lobby's extras;
+  - the pieces route to Zoo's species;
+  - every library bank has its check desk and carts, and no lobby extras.
+- `test_furnish`:
+  - names the bank lobby among the recipes that stand an island;
+  - mirrors both species' sizes.
+- Three tests held the old bank lobby, and say the new one:
+  - `test_club_fixtures`: a bank's lobby stands no cigarette machine and a hotel's keeps one; the library's count is
+    71 -> 64, the seven banks.
+  - `test_payphone_wall_form`: 39 -> 32 payphones, the seven banks' lobbies.
+  - `test_ticket_queue`: bank_job's lobby is known by its ATM and check desk, not its payphone and sofa.
+  - The first apply of this release stopped in the suite on all five. Only the furnish tests had been run on the
+    clone; the whole suite now runs there first.
+
 ## [0.280.0] - a bank's rooms lit and floored as the walker's bank comps
 
 The walker, 2026-10-27: "we need to prioritize a great looking bank interior next", with twelve comps (the factory's

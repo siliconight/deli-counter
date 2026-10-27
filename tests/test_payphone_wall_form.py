@@ -31,8 +31,9 @@ import re
 import level_design
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-#: Where the piece stands payphones today: 39 in 38 specs (0.204.0).
-PAYPHONES = 39
+#: Where the piece stands payphones today: 39 in 38 specs (0.204.0); 32 since
+#: 0.281.0, the seven banks' lobbies furnished as `bank_lobby`, which stands none.
+PAYPHONES = 32
 #: A furnish-written payphone's name: the stem, the room's tag, a count.
 PIECE_NAME = re.compile(r"^payphone_r[0-9a-f]{8}_\d+$")
 

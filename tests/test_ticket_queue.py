@@ -484,7 +484,9 @@ def test_furnish_does_not_count_a_queue_as_furniture():
     assert level_design._room_volume_count(spec, lobby) == level_design._room_volume_count(without, lobby)
 
 
-@pytest.mark.parametrize("name, kinds", [("bank_job", ("payphone", "atm", "sofa")),
+# 0.281.0: bank_job's lobby is `bank_lobby`'s -- its ATM and its check desk, no
+# payphone or sofa (the walker's bank comps)
+@pytest.mark.parametrize("name, kinds", [("bank_job", ("atm", "check_desk")),
                                          ("bank_branch_a03", ("atm",)), ("credit_union_a01", ("atm",))])
 def test_a_queued_lobby_keeps_what_a_lobby_is_known_by(name, kinds):
     spec = _spec(name)

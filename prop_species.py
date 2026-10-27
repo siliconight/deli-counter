@@ -68,6 +68,11 @@ PROP_SPECIES = (
     # row holds `crate` and `stack`, and would make them grey boxes -- which
     # `test_furnish` refuses for a furnished piece.
     (("milk_crate",), "milk_crate_stack"),
+    # A BANK'S CHECK DESK AND A VAULT'S CASH CART (0.281.0, Zoo 1.135.0). Ahead
+    # of the box row, whose `cart` would build the cart as a grey box, and of
+    # the `desk` rows below
+    (("check_desk",), "check_desk"),
+    (("cash_cart",), "cash_cart"),
     (("crate", "col_", "pillar", "column", "stack", "pump_island",
       "cart", "planter", "canopy", "kiosk", "vault"), None),
     # MINTED 2026-09-12 by zoo/tools/new_species.py (roadmap 150): the

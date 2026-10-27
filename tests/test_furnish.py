@@ -144,7 +144,8 @@ def test_the_only_mid_floor_shelter_is_a_declared_island():
               | (islands & set(r["floor"])) | (islands & set(r.get("rows") or ()))}
     # 0.277.0: the supermarket's produce tables, its anchors -- islands below
     # cover height, which a shopper walks round
-    assert naming == {"card_shop", "supermarket"}, naming
+    # 0.281.0: a bank's lobby, its check desk -- an island below cover height
+    assert naming == {"card_shop", "supermarket", "bank_lobby"}, naming
     # ...and the one giver of ROWS (0.247.0) is the shop floor's, per room:
     # a corner store's selling floor gets the aisle gondola and every other
     # room nothing. Its piece is capped above and stands under shelter.
@@ -323,6 +324,8 @@ _ZOO_RANGES = {
     "snack_gondola": ((1.2, 14.0), (0.6, 1.5), (1.2, 2.2)),
     # Zoo 1.132.0, Deli Counter 0.277.0's produce section
     "produce_table": ((1.2, 4.8), (0.8, 1.6), (0.8, 1.1)),
+    "check_desk": ((1.0, 3.2), (0.6, 1.2), (1.0, 1.2)),
+    "cash_cart": ((0.8, 1.6), (0.5, 0.9), (0.9, 1.4)),
 }
 ZOO = os.environ.get("DC_ZOO_ROOT") or os.path.join(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), "zoo")
