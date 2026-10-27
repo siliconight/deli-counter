@@ -1,3 +1,47 @@
+## [0.283.0] - a bank's lobby hangs its printed offers, and its teller line names the bank
+
+The walker's bank list, after the cameras, walls and plants (0.282.0): the rate board and posters, then the bank's name
+over the line and a number on every window (the factory's docs/reference/BANK_INTERIOR_COMPS.md). Zoo 1.137.0 paints
+both: `poster_wall` form `bank` and `teller_line` form `bank`.
+
+### Added
+- **`poster_wall_bank`**, a piece: a run of Zoo's bank offers, the Christmas Club, free checking and the rate board
+  among them.
+  - Framed and hung square and level at the eye, 0.30 m apart: runs of 2.0, 1.25 and 2.75 m, which are three, two and
+    four 0.46 x 0.62 m sheets.
+  - Its height steps are the library's gentlest, 5 cm either side of the eye. Each frame hangs level and a lobby's walls
+    differ, not all at one height: the placement guide's tell (0.170.0). A first build hung every run at the eye, and
+    `test_poster_walls` refused it on the clone's full suite.
+  - Two a lobby, three in a lobby of 150 m2 or more. Off the glass, no collision.
+  - A fixture of `bank_lobby` and nothing else. The seven banks hang two or three runs each.
+- **`dress_bank_teller_lines`**: a bank's teller line is Zoo's `teller_line` form `bank`, a nameboard over its windows.
+  - Its variant is `bank_teller_variant(business)`, the one whose name and colours Zoo's sign over the same building's
+    door picks (`storefront_names.sign_for`, keyed on the crc32 of `club_building_id`).
+  - The line names the bank its sign does: bank_branch_a02 variant 11, a03 5, a04 2, bank_job 14, credit_union_a01 8,
+    bank 2.
+  - A LINE is `_teller_lines`': 6 m and more, 2 m tall. `bank_tower_a01`'s and `a02`'s 3 m teller desks are not lines,
+    and each would have numbered its windows 1 and 2.
+  - A building is a bank by the words Zoo's sign reads one from (bank, credit, savings), so the credit union's line is
+    dressed too; `lights.is_bank` reads "bank" alone.
+  - Run at the end of furnish, from the spec alone; it moves nothing.
+- **`migrations/migrate_bank_posters.py`** refurnishes the eight specs with a bank lobby or a teller line, and dresses
+  `bank`, which has no rooms and so is never furnished.
+  - Nothing else moved but two litter bins. `stand_bins_on_walls` stood them again after the runs took their walls:
+    bank_branch_a02's 0.4 m along its wall, bank_tower_a01's 5.4 m.
+
+### Tests
+- `tests/test_bank_posters_teller.py` (fails on 0.282.0, seven of eight; the eighth holds that the tower desks are not
+  lines):
+  - the run is a bank lobby's fixture of Zoo's bank family, at the height Zoo hangs a bank sheet in, and each width
+    holds a whole run;
+  - every library bank lobby hangs its offers;
+  - every library teller line in a bank names it, and nothing else is dressed; dressing twice changes nothing;
+  - with Zoo reachable (`DC_ZOO_ROOT`, Zoo >= 1.137.0): `bank_teller_variant` is Zoo's `variant_for`, and the line
+    reads the name and colours over the door of every library bank with a line;
+  - the built slot asks Zoo for the bank form.
+- `tests/test_poster_walls.py`: the bank family joins the library-wide checks (Zoo's slot, its band of 0.62 m, the
+  height steps).
+
 ## [0.282.0] - a bank's walls are plastered inside, and it hangs CCTV cameras, keeps plants and a clock
 
 The walker, shown the furnished bank (0.281.0): "fix it before we rush to the release". Then "were there cctv cameras in

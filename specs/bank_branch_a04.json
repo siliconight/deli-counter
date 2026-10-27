@@ -50,6 +50,12 @@
    "acoustic": "Metal",
    "absorption": 0.25,
    "damping": 0.2
+  },
+  {
+   "id": "paper",
+   "acoustic": "Wood",
+   "absorption": 0.22,
+   "damping": 0.18
   }
  ],
  "ext_walls": [
@@ -411,7 +417,9 @@
    "size_y": 0.9,
    "size_z": 2.4,
    "collision": "convex",
-   "material": "wood"
+   "material": "wood",
+   "form": "bank",
+   "variant": 2
   },
   {
    "name": "column_w",
@@ -1694,6 +1702,46 @@
    "size_z": 0.36,
    "collision": "none",
    "material": "wood"
+  },
+  {
+   "name": "poster_wall_bank_re64a30a2_22",
+   "x": -19.84,
+   "y": -2.91,
+   "z": 1.6,
+   "size_x": 0.01,
+   "size_y": 2.75,
+   "size_z": 0.62,
+   "collision": "none",
+   "material": "paper",
+   "rot_z": 180.0,
+   "form": "bank",
+   "variant": 2
+  },
+  {
+   "name": "poster_wall_bank_re64a30a2_23",
+   "x": -4.22,
+   "y": -14.84,
+   "z": 1.65,
+   "size_x": 2.75,
+   "size_y": 0.01,
+   "size_z": 0.62,
+   "collision": "none",
+   "material": "paper",
+   "rot_z": 180.0,
+   "form": "bank"
+  },
+  {
+   "name": "poster_wall_bank_re64a30a2_24",
+   "x": 19.84,
+   "y": -8.43,
+   "z": 1.55,
+   "size_x": 0.01,
+   "size_y": 2.75,
+   "size_z": 0.62,
+   "collision": "none",
+   "material": "paper",
+   "form": "bank",
+   "variant": 3
   },
   {
    "name": "security_camera_r8f124671_17",

@@ -50,6 +50,12 @@
    "acoustic": "Metal",
    "absorption": 0.25,
    "damping": 0.2
+  },
+  {
+   "id": "paper",
+   "acoustic": "Wood",
+   "absorption": 0.22,
+   "damping": 0.18
   }
  ],
  "ext_walls": [
@@ -552,7 +558,9 @@
    "size_y": 0.8,
    "size_z": 2.4,
    "collision": "convex",
-   "material": "wood"
+   "material": "wood",
+   "form": "bank",
+   "variant": 11
   },
   {
    "name": "roof_unit",
@@ -795,7 +803,7 @@
   {
    "name": "litter_bin_rcce455f7_9",
    "x": -14.59,
-   "y": -9.65,
+   "y": -10.05,
    "z": 0.425,
    "size_x": 0.5,
    "size_y": 0.5,
@@ -1280,6 +1288,46 @@
    "size_z": 0.36,
    "collision": "none",
    "material": "wood"
+  },
+  {
+   "name": "poster_wall_bank_rcce455f7_15",
+   "x": -14.84,
+   "y": -8.12,
+   "z": 1.65,
+   "size_x": 0.01,
+   "size_y": 1.25,
+   "size_z": 0.62,
+   "collision": "none",
+   "material": "paper",
+   "rot_z": 180.0,
+   "form": "bank",
+   "variant": 1
+  },
+  {
+   "name": "poster_wall_bank_rcce455f7_16",
+   "x": 14.84,
+   "y": -2.66,
+   "z": 1.6,
+   "size_x": 0.01,
+   "size_y": 2.0,
+   "size_z": 0.62,
+   "collision": "none",
+   "material": "paper",
+   "form": "bank",
+   "variant": 3
+  },
+  {
+   "name": "poster_wall_bank_rcce455f7_17",
+   "x": 14.84,
+   "y": -9.73,
+   "z": 1.55,
+   "size_x": 0.01,
+   "size_y": 1.25,
+   "size_z": 0.62,
+   "collision": "none",
+   "material": "paper",
+   "form": "bank",
+   "variant": 2
   },
   {
    "name": "security_camera_r3a1da818_11",

@@ -11234,7 +11234,7 @@
       "slot_id": "floor_grand_lobby",
       "role": "floor",
       "size_mod": "full",
-      "style": 9,
+      "style": 10,
       "material": "tile",
       "current_ref": "floor_greybox_01",
       "kit_axis": "theme",
@@ -11284,7 +11284,7 @@
       "slot_id": "ceiling_grand_lobby",
       "role": "ceiling",
       "size_mod": "full",
-      "style": 10,
+      "style": 11,
       "material": "ceiling_tile",
       "current_ref": "ceiling_greybox_01",
       "kit_axis": "theme",
@@ -11321,7 +11321,7 @@
       "slot_id": "floor_teller_line",
       "role": "floor",
       "size_mod": "full",
-      "style": 9,
+      "style": 10,
       "material": "tile",
       "current_ref": "floor_greybox_01",
       "kit_axis": "theme",
@@ -11358,7 +11358,7 @@
       "slot_id": "ceiling_teller_line",
       "role": "ceiling",
       "size_mod": "full",
-      "style": 10,
+      "style": 11,
       "material": "ceiling_tile",
       "current_ref": "ceiling_greybox_01",
       "kit_axis": "theme",
@@ -11476,7 +11476,7 @@
       "slot_id": "floor_mezzanine",
       "role": "floor",
       "size_mod": "full",
-      "style": 9,
+      "style": 10,
       "material": "tile",
       "current_ref": "floor_greybox_01",
       "kit_axis": "theme",
@@ -11513,7 +11513,7 @@
       "slot_id": "ceiling_mezzanine",
       "role": "ceiling",
       "size_mod": "full",
-      "style": 10,
+      "style": 11,
       "material": "ceiling_tile",
       "current_ref": "ceiling_greybox_01",
       "kit_axis": "theme",
@@ -11644,7 +11644,7 @@
       "slot_id": "floor_vault_antechamber",
       "role": "floor",
       "size_mod": "full",
-      "style": 9,
+      "style": 10,
       "material": "tile",
       "current_ref": "floor_greybox_01",
       "kit_axis": "theme",
@@ -11681,7 +11681,7 @@
       "slot_id": "ceiling_vault_antechamber",
       "role": "ceiling",
       "size_mod": "full",
-      "style": 10,
+      "style": 11,
       "material": "ceiling_tile",
       "current_ref": "ceiling_greybox_01",
       "kit_axis": "theme",
@@ -11768,7 +11768,7 @@
       "slot_id": "ceiling_vault_room",
       "role": "ceiling",
       "size_mod": "full",
-      "style": 11,
+      "style": 12,
       "material": "plaster",
       "current_ref": "ceiling_greybox_01",
       "kit_axis": "theme",
@@ -11809,8 +11809,8 @@
       "material": "wood",
       "species": "teller_line",
       "stock": null,
-      "variant": 0,
-      "form": null,
+      "variant": 2,
+      "form": "bank",
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
       "wall": null,
@@ -16046,6 +16046,123 @@
           0.36,
           0.06,
           0.36
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "none"
+      }
+    },
+    {
+      "slot_id": "poster_wall_bank_re64a30a2_22",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 8,
+      "material": "paper",
+      "species": "poster_wall",
+      "stock": null,
+      "variant": 2,
+      "form": "bank",
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          -19.84,
+          -2.91,
+          1.6
+        ],
+        "rot_y": 270.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.75,
+          0.01,
+          0.62
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "none"
+      }
+    },
+    {
+      "slot_id": "poster_wall_bank_re64a30a2_23",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 8,
+      "material": "paper",
+      "species": "poster_wall",
+      "stock": null,
+      "variant": 0,
+      "form": "bank",
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          -4.22,
+          -14.84,
+          1.65
+        ],
+        "rot_y": 180.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.75,
+          0.01,
+          0.62
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "none"
+      }
+    },
+    {
+      "slot_id": "poster_wall_bank_re64a30a2_24",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 8,
+      "material": "paper",
+      "species": "poster_wall",
+      "stock": null,
+      "variant": 3,
+      "form": "bank",
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          19.84,
+          -8.43,
+          1.55
+        ],
+        "rot_y": 90.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.75,
+          0.01,
+          0.62
         ],
         "pivot": "center",
         "openings": [],

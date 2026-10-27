@@ -29,10 +29,11 @@ import level_design  # noqa: E402
 import prop_species  # noqa: E402
 
 HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PIECES = {"poster_wall_club": "club", "poster_wall_bar": "bar", "poster_wall_store": "store"}
+PIECES = {"poster_wall_club": "club", "poster_wall_bar": "bar", "poster_wall_store": "store",
+          "poster_wall_bank": "bank"}
 #: Zoo's `poster_wall_forms.band_height(family)` at 1.32.0: the sheet plus the
 #: family's wander. `test_the_band_is_zoo_s` pins it when Zoo is beside this repo.
-BAND = {"club": 0.64, "bar": 0.5, "store": 0.6}
+BAND = {"club": 0.64, "bar": 0.5, "store": 0.6, "bank": 0.62}
 ZOO = os.environ.get("DC_ZOO_ROOT") or os.path.join(os.path.dirname(HERE), "zoo")
 
 
