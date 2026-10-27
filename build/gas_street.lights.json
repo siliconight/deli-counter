@@ -84,7 +84,7 @@
       "source": "derived",
       "pos": [
         -5.0,
-        -7.2,
+        -8.4,
         3.8
       ],
       "rot_y": 0.0,
@@ -95,7 +95,7 @@
       },
       "drop": 3.8,
       "reacts_to_alarm": true,
-      "reach": 3.8
+      "reach": 2.6
     },
     {
       "id": "sales_floor_ceiling_r1",
@@ -103,7 +103,7 @@
       "source": "derived",
       "pos": [
         -5.0,
-        0.0,
+        -3.0,
         3.8
       ],
       "rot_y": 0.0,
@@ -114,7 +114,7 @@
       },
       "drop": 3.8,
       "reacts_to_alarm": true,
-      "reach": 11.0
+      "reach": 8.0
     },
     {
       "id": "sales_floor_ceiling_r2",
@@ -122,7 +122,7 @@
       "source": "derived",
       "pos": [
         -5.0,
-        7.2,
+        3.0,
         3.8
       ],
       "rot_y": 0.0,
@@ -133,7 +133,26 @@
       },
       "drop": 3.8,
       "reacts_to_alarm": true,
-      "reach": 18.2
+      "reach": 14.0
+    },
+    {
+      "id": "sales_floor_ceiling_r3",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -5.0,
+        8.4,
+        3.8
+      ],
+      "rot_y": 0.0,
+      "room": "sales_floor",
+      "row": {
+        "count": 4,
+        "spacing": 5.5
+      },
+      "drop": 3.8,
+      "reacts_to_alarm": true,
+      "reach": 19.4
     },
     {
       "id": "sales_floor_ambient",
@@ -476,7 +495,7 @@
       "wall": "S",
       "head": 3.0,
       "drop": 3.8,
-      "reach": 18.2,
+      "reach": 19.4,
       "reacts_to_alarm": true
     },
     {
@@ -493,7 +512,7 @@
       "wall": "S",
       "head": 3.0,
       "drop": 3.8,
-      "reach": 18.2,
+      "reach": 19.4,
       "reacts_to_alarm": true
     },
     {
@@ -510,7 +529,7 @@
       "wall": "S",
       "head": 3.0,
       "drop": 3.8,
-      "reach": 18.2,
+      "reach": 19.4,
       "reacts_to_alarm": true
     },
     {

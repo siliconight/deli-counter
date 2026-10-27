@@ -1,3 +1,38 @@
+## [0.274.0] - a selling room keeps a shop's lamp density, however big it is
+
+The walker, 2026-10-26, in seed 9205's supermarket: "far too dark in teh super market". Then came the comps: "shiny
+floor, bright lights, isles, glowing freezer section". They are filed as the factory's
+docs/reference/GROCERY_STORE_COMPS.md: long fluorescent runs 2 to 3 m apart, nothing in shadow.
+
+Every room was held to twelve lamps, whatever its size (`_MAX_LAMPS_ROOM`, "until the price of more is measured").
+So the library's selling floors got darker as they got bigger. The factory's
+docs/findings/selling_hall_lights/census.py counts it:
+- the shops under 340 m2: 13 to 34 m2 a lamp;
+- the supermarkets: 88 to 92;
+- the market halls: 89 to 104.
+
+### Changed
+- **`lights.room_caps(r, bounds)`**: a room whose id sells takes its lamp cap from its area. "Sells" means
+  `floors.floor_by_use` returns "tile", the same words that tile its floor.
+  - The cap is one lamp per `_SELLING_M2_PER_LAMP` (25.0) and never fewer than twelve. Its rows across and its
+    lamps along are bounded by that cap alone.
+  - 25 m2 is the density the library's capped selling rooms of 250 to 300 m2 already had: the delis'
+    `market_aisles` 25.0, gas_station_a02 23.0, convenience_store_a01 21.1, pharmacy_a01 26.4. A big store is lit
+    like a small one, not brighter.
+  - WOOD's spacing, unchanged, decides how many lamps a room asks for. supermarket_a01's 44 x 24 m sales floor goes
+    from 3 rows of 4 at 11 m to 5 rows of 8 at 5.5 m: 40 lamps, 26.4 m2 a lamp. market_hall_a01's stall floor
+    goes from 10 to 15.
+  - Every other room keeps the library's caps.
+- The lamps are baked, so what more of them costs a frame is their fixtures' draws. The price is in the factory's
+  docs/findings/selling_hall_lights/.
+
+### Tests
+- `tests/test_selling_room_lamps.py` (2 of 3 fail on 0.273.0):
+  - the cap's derivation;
+  - supermarket_a01 lit at 40 lamps;
+  - a non-selling hall kept at twelve.
+- `test_fixture_rows`'s many-aisles cap test now names a stockroom, which keeps the library's cap.
+
 ## [0.273.0] - a ramp's cut begins where a body clears the slab, and nothing stands in it
 
 **The factory's roadmap 270.** The walker, on seed 9205's parking garage, 2026-10-26: "i can't use this wide ramp to

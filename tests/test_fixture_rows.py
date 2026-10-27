@@ -260,11 +260,12 @@ def test_a_long_hall_favours_lamps_along_over_rows_across():
 
 
 def test_the_room_cap_holds_over_many_aisles():
-    # five gondolas across a 24 x 18 m floor make six lanes; six rows share the room's twelve lamps
-    r = {"id": "sales_floor", "story": 0, "bounds": [0.0, 0.0, 24.0, 18.0], "role": "sales",
+    # five racks across a 24 x 18 m stockroom make six lanes; six rows share the room's twelve lamps
+    # (a room whose id SELLS takes its cap from its area since 0.274.0: test_selling_room_lamps.py)
+    r = {"id": "stockroom", "story": 0, "bounds": [0.0, 0.0, 24.0, 18.0], "role": "sales",
          "center": [12.0, 9.0, 0.0]}
     vols = [_gondola("gondola_%d" % i, 12.0, 3.0 * (i + 1), sx=12.0, sy=1.0) for i in range(5)]
-    rows = _rows(_derive([r], volumes=vols), "sales_floor")
+    rows = _rows(_derive([r], volumes=vols), "stockroom")
     assert len(rows) == 6
     assert sum(a["row"]["count"] for a in rows) == lights._MAX_LAMPS_ROOM == 12
 

@@ -282,6 +282,27 @@ _ROW_SLACK = 0.3
 #: is unchanged.
 _MAX_ROWS = 3
 _MAX_LAMPS_ROOM = 12
+#: A SELLING ROOM KEEPS A SHOP'S DENSITY, HOWEVER BIG IT IS (0.274.0). The
+#: walker, 2026-10-26, in seed 9205's supermarket: "far too dark in teh super
+#: market", and then the comps -- "shiny floor, bright lights, isles, glowing
+#: freezer section" (the factory's docs/reference/GROCERY_STORE_COMPS.md: long
+#: fluorescent runs 2 to 3 m apart, nothing in shadow). The room cap above
+#: held every room to twelve lamps whatever its size, so the library's
+#: selling floors were lit at a density that fell with their area: 13 to 34
+#: m2 a lamp in the shops under 340 m2, 88 to 104 in the supermarkets and the
+#: market halls, a quarter as bright for being four times bigger (the
+#: factory's docs/findings/selling_hall_lights/census.py). A room whose id
+#: sells (`floors.floor_by_use` == "tile", the same words that tile its
+#: floor) takes its cap from its area instead -- one lamp a this many m2,
+#: never fewer than twelve -- and its rows across and lamps along are
+#: bounded by that cap alone; WOOD's spacing, unchanged, decides how many it
+#: asks for. 25 m2 is the density the library's capped selling rooms of
+#: 250 to 300 m2 already had (the delis' `market_aisles` 25.0, gas_station_a02
+#: 23.0, convenience_store_a01 21.1, pharmacy_a01 26.4): a big store is lit
+#: like a small one, not brighter. The lamps are baked (Lux bakes every
+#: steady fluorescent static), so what more of them costs a frame is their
+#: fixtures' draws -- priced in the same findings folder.
+_SELLING_M2_PER_LAMP = 25.0
 #: THE CEILING'S GRID. A fixture hangs from a joist or sits in a tile, so a
 #: row's line is a multiple of the pitch from the building's origin, not
 #: the room's centre: 0.6 m tiles over a desk or a counter, 0.4 m joists
@@ -1072,7 +1093,21 @@ def _snap(value, pitch):
     return round(pitch * round(value / pitch), 3)
 
 
-def _rows_for_room(bounds, lamp_z, floor_z, work_plane, residence, lanes=None):
+def room_caps(r, bounds):
+    """``(max_rows, max_fixtures, max_lamps)`` for a room's ceiling rows: the
+    library's `_MAX_ROWS`, `_MAX_FIXTURES` and `_MAX_LAMPS_ROOM`, except in a
+    room whose id sells, whose lamps are one a `_SELLING_M2_PER_LAMP` of its
+    floor and never fewer than `_MAX_LAMPS_ROOM`, bounding its rows and its
+    lamps along alike (0.274.0)."""
+    import floors
+    if floors.floor_by_use((r or {}).get("id")) != "tile":
+        return _MAX_ROWS, _MAX_FIXTURES, _MAX_LAMPS_ROOM
+    minx, miny, maxx, maxy = bounds
+    lamps = max(_MAX_LAMPS_ROOM, int((maxx - minx) * (maxy - miny) // _SELLING_M2_PER_LAMP))
+    return lamps, lamps, lamps
+
+
+def _rows_for_room(bounds, lamp_z, floor_z, work_plane, residence, lanes=None, caps=None):
     """The ceiling rows of a room (0.206.0, roadmap 229): along its longer
     axis as before, and across the shorter one as many as the work plane
     asks. With A the height from the work plane to the lamp and B = 1.5 x A
@@ -1092,7 +1127,9 @@ def _rows_for_room(bounds, lamp_z, floor_z, work_plane, residence, lanes=None):
     before and a room organised by its shelving is lit between the runs. A
     lane too narrow to keep a pitch inside each edge takes its centre.
     Where the room's cap binds, rows across are traded for lamps along
-    while the larger spacing shrinks (0.207.0, the long hall).
+    while the larger spacing shrinks (0.207.0, the long hall). `caps` is
+    `room_caps`'s ``(max_rows, max_fixtures, max_lamps)``; without it the
+    library's caps hold, as they always have.
 
     Returns ``[(rot_y, x, y, count, spacing)]``, the rows across in order."""
     minx, miny, maxx, maxy = bounds
@@ -1120,16 +1157,17 @@ def _rows_for_room(bounds, lamp_z, floor_z, work_plane, residence, lanes=None):
                 rows.append((rot, round(line, 3), round(cy, 3), count, spacing))
         return rows
     bands = list(lanes) if lanes else [(miny, maxy) if along_x else (minx, maxx)]
+    max_rows, max_fixtures, max_lamps = caps or (_MAX_ROWS, _MAX_FIXTURES, _MAX_LAMPS_ROOM)
     a = max(lamp_z - floor_z - work_plane, 1.0)
     b = _ROW_SPACING_OVER_A * a
     # ceil of each band's width in spacings, less the slack: a band up to 1.3 B wide is one row
-    per_band = [max(1, min(_MAX_ROWS, int(-(-((hi - lo) / b - _ROW_SLACK) // 1))))
+    per_band = [max(1, min(max_rows, int(-(-((hi - lo) / b - _ROW_SLACK) // 1))))
                 for lo, hi in bands]
-    count_ask = max(1, min(_MAX_FIXTURES, int(round(length / b))))
+    count_ask = max(1, min(max_fixtures, int(round(length / b))))
 
     def _fit(rows_per_band):
         n = count_ask
-        while sum(rows_per_band) * n > _MAX_LAMPS_ROOM and n > 1:
+        while sum(rows_per_band) * n > max_lamps and n > 1:
             n -= 1
         return n
 
@@ -1650,7 +1688,8 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
             # (0.207.0, `_lanes_for_room`); a home's room has no aisles
             lanes = None if home else _lanes_for_room(r, bounds, c[2], in_room, aisle_min)
             rows = _rows_for_room(bounds, ceiling_z, c[2],
-                                  _work_plane(r, home), home, lanes=lanes)
+                                  _work_plane(r, home), home, lanes=lanes,
+                                  caps=None if home else room_caps(r, bounds))
             if lanes:
                 rep["rows_over_aisles"] += 1
             rep["rows_laid"] += len(rows)
