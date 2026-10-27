@@ -10,36 +10,57 @@
       "type": "fluorescent",
       "source": "derived",
       "pos": [
-        0.0,
-        -10.4,
+        -0.0,
+        -12.0,
         3.8
       ],
       "rot_y": 0.0,
       "room": "grand_lobby",
       "row": {
-        "count": 5,
-        "spacing": 8.0
+        "count": 7,
+        "spacing": 5.714
       },
       "drop": 3.8,
-      "reacts_to_alarm": true
+      "reacts_to_alarm": true,
+      "bake_reach": 5.714
     },
     {
       "id": "grand_lobby_ceiling_r1",
       "type": "fluorescent",
       "source": "derived",
       "pos": [
-        0.0,
-        -1.6,
+        -0.0,
+        -6.0,
         3.8
       ],
       "rot_y": 0.0,
       "room": "grand_lobby",
       "row": {
-        "count": 5,
-        "spacing": 8.0
+        "count": 7,
+        "spacing": 5.714
       },
       "drop": 3.8,
-      "reacts_to_alarm": true
+      "reacts_to_alarm": true,
+      "bake_reach": 5.714
+    },
+    {
+      "id": "grand_lobby_ceiling_r2",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        -0.0,
+        0.0,
+        3.8
+      ],
+      "rot_y": 0.0,
+      "room": "grand_lobby",
+      "row": {
+        "count": 7,
+        "spacing": 5.714
+      },
+      "drop": 3.8,
+      "reacts_to_alarm": true,
+      "bake_reach": 5.714
     },
     {
       "id": "grand_lobby_ambient",
@@ -299,13 +320,13 @@
       "reacts_to_alarm": false
     },
     {
-      "id": "vault_antechamber_bulbs",
-      "type": "pendant",
+      "id": "vault_antechamber_ceiling",
+      "type": "fluorescent",
       "source": "derived",
       "pos": [
         0.0,
-        -6.5,
-        -1.0
+        -10.8,
+        -0.4
       ],
       "rot_y": 0.0,
       "room": "vault_antechamber",
@@ -313,7 +334,25 @@
         "count": 5,
         "spacing": 8.0
       },
-      "drop": 3.2,
+      "drop": 3.8,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "vault_antechamber_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        -2.4,
+        -0.4
+      ],
+      "rot_y": 0.0,
+      "room": "vault_antechamber",
+      "row": {
+        "count": 5,
+        "spacing": 8.0
+      },
+      "drop": 3.8,
       "reacts_to_alarm": true
     },
     {
@@ -336,13 +375,13 @@
       "reacts_to_alarm": false
     },
     {
-      "id": "vault_room_bulbs",
-      "type": "pendant",
+      "id": "vault_room_ceiling",
+      "type": "fluorescent",
       "source": "derived",
       "pos": [
         0.0,
-        8.5,
-        -1.0
+        5.2,
+        -0.4
       ],
       "rot_y": 0.0,
       "room": "vault_room",
@@ -350,7 +389,25 @@
         "count": 5,
         "spacing": 8.0
       },
-      "drop": 3.2,
+      "drop": 3.8,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "vault_room_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        0.0,
+        11.6,
+        -0.4
+      ],
+      "rot_y": 0.0,
+      "room": "vault_room",
+      "row": {
+        "count": 5,
+        "spacing": 8.0
+      },
+      "drop": 3.8,
       "reacts_to_alarm": true
     },
     {
@@ -510,44 +567,6 @@
       ],
       "rot_y": 180.0,
       "wall": "ext_0_W",
-      "reacts_to_alarm": true
-    },
-    {
-      "id": "vault_antechamber_landing",
-      "type": "fluorescent",
-      "source": "derived",
-      "pos": [
-        -17.3,
-        -8.0,
-        -0.4
-      ],
-      "rot_y": 0.0,
-      "room": "vault_antechamber",
-      "row": {
-        "count": 1,
-        "spacing": 0.0
-      },
-      "drop": 3.8,
-      "landing": "stair",
-      "reacts_to_alarm": true
-    },
-    {
-      "id": "vault_antechamber_landing_1",
-      "type": "fluorescent",
-      "source": "derived",
-      "pos": [
-        17.3,
-        -8.0,
-        -0.4
-      ],
-      "rot_y": 0.0,
-      "room": "vault_antechamber",
-      "row": {
-        "count": 1,
-        "spacing": 0.0
-      },
-      "drop": 3.8,
-      "landing": "stair",
       "reacts_to_alarm": true
     }
   ]

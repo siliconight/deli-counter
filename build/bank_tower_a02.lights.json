@@ -17,29 +17,31 @@
       "rot_y": 0.0,
       "room": "banking_hall",
       "row": {
-        "count": 4,
-        "spacing": 9.0
+        "count": 6,
+        "spacing": 6.0
       },
       "drop": 4.2,
-      "reacts_to_alarm": true
+      "reacts_to_alarm": true,
+      "bake_reach": 6.0
     },
     {
       "id": "banking_hall_ceiling_r1",
       "type": "fluorescent",
       "source": "derived",
       "pos": [
-        4.5,
+        0.0,
         -4.4,
         4.2
       ],
       "rot_y": 0.0,
       "room": "banking_hall",
       "row": {
-        "count": 3,
-        "spacing": 9.0
+        "count": 6,
+        "spacing": 6.0
       },
       "drop": 4.2,
-      "reacts_to_alarm": true
+      "reacts_to_alarm": true,
+      "bake_reach": 6.0
     },
     {
       "id": "banking_hall_ceiling_r2",
@@ -53,11 +55,12 @@
       "rot_y": 0.0,
       "room": "banking_hall",
       "row": {
-        "count": 4,
-        "spacing": 9.0
+        "count": 6,
+        "spacing": 6.0
       },
       "drop": 4.2,
-      "reacts_to_alarm": true
+      "reacts_to_alarm": true,
+      "bake_reach": 6.0
     },
     {
       "id": "banking_hall_ambient",
@@ -244,21 +247,39 @@
       "reacts_to_alarm": false
     },
     {
-      "id": "executive_safe_suite_bulbs",
-      "type": "pendant",
+      "id": "executive_safe_suite_ceiling",
+      "type": "fluorescent",
       "source": "derived",
       "pos": [
-        12.15,
+        9.0,
         7.0,
-        8.2
+        8.8
       ],
       "rot_y": 90.0,
       "room": "executive_safe_suite",
       "row": {
-        "count": 4,
-        "spacing": 3.5
+        "count": 3,
+        "spacing": 4.667
       },
-      "drop": 3.6,
+      "drop": 4.2,
+      "reacts_to_alarm": true
+    },
+    {
+      "id": "executive_safe_suite_ceiling_r1",
+      "type": "fluorescent",
+      "source": "derived",
+      "pos": [
+        15.0,
+        7.0,
+        8.8
+      ],
+      "rot_y": 90.0,
+      "room": "executive_safe_suite",
+      "row": {
+        "count": 3,
+        "spacing": 4.667
+      },
+      "drop": 4.2,
       "reacts_to_alarm": true
     },
     {

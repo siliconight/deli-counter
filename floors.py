@@ -408,17 +408,30 @@ def floor_by_use(room_id):
     return None
 
 
-def _material(room, surface, mapping, default):
+#: A BANK'S PUBLIC FLOOR IS HARD (0.280.0, the factory's roadmap 321). The
+#: note above kept carpet "right for a lobby, a banking hall"; the walker's
+#: bank comps (docs/reference/BANK_INTERIOR_COMPS.md) put terrazzo or pale
+#: tile in the public room in five of twelve, carpet only behind the line. A
+#: bank's `public_entry` takes `tile`; what the tile is, the theme's.
+BANK_PUBLIC_FLOOR = "tile"
+
+
+def _material(room, surface, mapping, default, business=None):
     """A room's own per-surface material wins (``floor_material`` /
     ``ceiling_material``); then its ``material`` for both; then the role
     map -- except that a floor the map would carpet is asked its use first
-    (`floor_by_use`, 0.271.0); then the spec default."""
+    (`floor_by_use`, 0.271.0), and a bank's public floor is
+    `BANK_PUBLIC_FLOOR` (0.280.0, ``business`` the building's
+    `level_design.club_building_id`); then the spec default."""
     own = (getattr(room, "%s_material" % surface, None)
            or getattr(room, "material", None))
     if own:
         return own
     got = mapping.get(getattr(room, "role", None), default)
     if surface == "floor" and got == "carpet":
+        import lights
+        if lights.bank_public({"role": getattr(room, "role", None)}, business):
+            return BANK_PUBLIC_FLOOR
         return floor_by_use(getattr(room, "id", None)) or got
     return got
 
@@ -435,8 +448,10 @@ def slab_slots(spec, top, skin=SKIN_THICK):
     make that a per-BUILDING choice. Room bounds already carry the division.
     """
     import skin_style
+    import level_design
     default = getattr(spec, "default_material", None)
     mapping = skin_style.material_styles(palette_ids(spec))
+    business = level_design.club_building_id(spec)
     out = []
     for r in getattr(spec, "rooms", []):
         s = int(getattr(r, "story", 0))
@@ -455,7 +470,7 @@ def slab_slots(spec, top, skin=SKIN_THICK):
         # stockroom had the same fight before that.
         nested = nested_room_voids(spec, r, cx, cy, sx, sy)
 
-        fmat = _material(r, "floor", FLOOR_BY_ROLE, default)
+        fmat = _material(r, "floor", FLOOR_BY_ROLE, default, business)
         out.append(_slot(
             "floor_%s" % r.id, FLOOR_SLOT_ROLE, FLOOR_GREYBOX_REF, s,
             cx, cy, s * spec.story_height + skin / 2.0, sx, sy, "up",

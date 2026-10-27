@@ -1,3 +1,42 @@
+## [0.280.0] - a bank's rooms lit and floored as the walker's bank comps
+
+The walker, 2026-10-27: "we need to prioritize a great looking bank interior next", with twelve comps (the factory's
+docs/reference/BANK_INTERIOR_COMPS.md). The comps show "bright, even ceilings" in every public room, terrazzo or pale
+tile under the public in five of twelve, and the money "in hard rooms ... all lit by bare tubes".
+
+Measured before on bank_branch_a02 (the factory's docs/findings/bank_interior/):
+
+- the lobby carpeted maroon under one lamp a 39 m2, a mean of 37 under the level's light;
+- the vault floor under bare bulbs, one a 55 m2, 30-40.
+
+### Added
+- **`lights.is_bank(business)`**, a whole word of the building's id, and **`bank_public(r, business)`**, its
+  `public_entry` rooms.
+- **A bank's public room is lit as a selling room** (`_selling_rooms`; `room_caps(..., selling=True)`): one lamp a
+  `_SELLING_M2_PER_LAMP` (25 m2), and the bake-only reach (`_bake_reach_rooms`, 0.279.0's).
+  - bank_branch_a02's lobby goes from 10 lamps to 15.
+  - bank_tower_a01's banking hall goes from 10 to 18. Its 4.2 m ceiling's row spacing holds it to one lamp a 40 m2.
+- **A bank's rooms below grade and over the take are lit by tubes** (`_tube_rooms`): ceiling rows of fluorescents
+  where every other building hangs moody bulbs. No bank in the library hangs a pendant now. bank_branch_a02's vault
+  goes from one lamp a 32 m2 to one a 16 m2.
+- **A bank's public floor is `tile`** (`floors.BANK_PUBLIC_FLOOR`). `floors._material` takes the building's
+  `business`, and `slab_slots` and `hole_causes._surface` both pass it, so the slab and the hole rule give one answer.
+  What the tile is, the theme's. Every other lobby keeps its carpet.
+
+### Fixed
+- **A row split into one-lamp runs carries the row's `bake_reach`.** The stamp read each run's own spacing, which is 0
+  for a run of one lamp. So the lamps over a split went without the bake-only reach. In a bank that is the line over
+  the teller counter; in a supermarket, the pieces of a split row.
+
+### Tests
+- `tests/test_bank_light_floor.py` (all fail on 0.279.0):
+  - a bank is a whole word;
+  - a bank's public floor is tile, another lobby keeps its carpet, a room's own material wins;
+  - the hole rule asks as the slab does;
+  - a bank's lobby is lit as a selling room and its money by tubes, while a cellar elsewhere stays moody (the
+    control);
+  - every built bank's public floor is tile, no room hangs a pendant, and every public row carries the reach.
+
 ## [0.279.0] - a supermarket's ceiling rows bake to the next lamp along
 
 The walker, 2026-10-26: "far too dark in teh super market". Measured on the walker's level (the factory's

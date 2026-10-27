@@ -220,9 +220,12 @@ def cause_for(spec, link):
 
 
 def _surface(spec, room, surface):
+    # the building asked as `floors.slab_slots` asks it (0.280.0): a bank's
+    # public floor is the slab's answer here too
+    import level_design
     mapping = floors.FLOOR_BY_ROLE if surface == "floor" else floors.CEILING_BY_ROLE
     return floors._material(types.SimpleNamespace(**room), surface, mapping,
-                            spec.get("default_material"))
+                            spec.get("default_material"), level_design.club_building_id(spec))
 
 
 def form_for(spec, link, cause):

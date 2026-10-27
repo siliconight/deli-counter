@@ -458,6 +458,31 @@ RESIDENCE_WORDS = frozenset(("apartment", "walkup", "rowhouse", "twin", "mansion
                              "tenement"))
 
 
+#: A BANK READS AS THE WALKER'S COMPS (0.280.0, the factory's roadmap 321;
+#: docs/reference/BANK_INTERIOR_COMPS.md): "bright, even ceilings" in every
+#: public room, the money "in hard rooms ... all lit by bare tubes". Measured
+#: on bank_branch_a02 before (docs/findings/bank_interior/): its lobby one lamp
+#: a 39 m2, a mean of 37 under the level's light; its vault floor under bare
+#: bulbs, one a 55 m2, 30-40. A bank's public room (`public_entry`) takes a
+#: selling room's lamp density (`room_caps`) and the bake-only reach
+#: (`bake_reach`); its rooms below grade and over the take take ceiling rows
+#: of tubes instead of the moody bulbs every other building's do.
+_BANK_WORDS = ("bank",)
+
+
+def is_bank(business):
+    """Does ``business`` (`level_design.club_building_id`) name a bank? A
+    whole word of it: `bank_branch_a02`, `bank_job`, `bank_tower_a01`."""
+    import re
+    words = set(re.split(r"[^a-z0-9]+", str(business or "").lower()))
+    return bool(words & set(_BANK_WORDS))
+
+
+def bank_public(r, business):
+    """A bank's public room: its `public_entry` (lobby, banking hall)."""
+    return is_bank(business) and (r or {}).get("role") == "public_entry"
+
+
 def is_residence(business):
     """Does ``business`` (`level_design.club_building_id`) name a home?"""
     words = str(business or "").lower().replace("-", "_").replace(" ", "_").split("_")
@@ -1093,14 +1118,15 @@ def _snap(value, pitch):
     return round(pitch * round(value / pitch), 3)
 
 
-def room_caps(r, bounds):
+def room_caps(r, bounds, selling=False):
     """``(max_rows, max_fixtures, max_lamps)`` for a room's ceiling rows: the
     library's `_MAX_ROWS`, `_MAX_FIXTURES` and `_MAX_LAMPS_ROOM`, except in a
-    room whose id sells, whose lamps are one a `_SELLING_M2_PER_LAMP` of its
-    floor and never fewer than `_MAX_LAMPS_ROOM`, bounding its rows and its
-    lamps along alike (0.274.0)."""
+    room whose id sells -- or that the caller says is lit as one, ``selling``
+    (a bank's public room, 0.280.0) -- whose lamps are one a
+    `_SELLING_M2_PER_LAMP` of its floor and never fewer than `_MAX_LAMPS_ROOM`,
+    bounding its rows and its lamps along alike (0.274.0)."""
     import floors
-    if floors.floor_by_use((r or {}).get("id")) != "tile":
+    if not selling and floors.floor_by_use((r or {}).get("id")) != "tile":
         return _MAX_ROWS, _MAX_FIXTURES, _MAX_LAMPS_ROOM
     minx, miny, maxx, maxy = bounds
     lamps = max(_MAX_LAMPS_ROOM, int((maxx - minx) * (maxy - miny) // _SELLING_M2_PER_LAMP))
@@ -1573,7 +1599,7 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
                          wall_thick, ceiling_voids=None, partitions=None,
                          report=None, volumes=None, club_rooms=None,
                          storefronts=None, residence=False, landings=None,
-                         bake_reach_rooms=None):
+                         bake_reach_rooms=None, selling_rooms=None, tube_rooms=None):
     """Derive default light anchors: one fluorescent ceiling row per interior
     room, one area light per window opening, a wall pack over every exterior
     door, and one storefront sign. Every room also carries a `room_ambient`
@@ -1672,6 +1698,10 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
         # run machinery (a stairwell still splits a line around its hole),
         # different type, density and hang; see _PENDANT_AREA.
         moody = story < 0 or (bool(r.get("objective")) and r.get("role") not in _LIT_ROLES)
+        # A BANK'S MONEY ROOMS ARE LIT BY TUBES (0.280.0, `tube_rooms`): the
+        # comps' counting room and cage, not a moody cellar
+        if moody and r.get("id") in (tube_rooms or ()):
+            moody = False
         if moody:
             home = False          # a bare bulb below grade or over the take
             rot, count, spacing = _row_for_bounds(bounds)
@@ -1690,7 +1720,8 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
             lanes = None if home else _lanes_for_room(r, bounds, c[2], in_room, aisle_min)
             rows = _rows_for_room(bounds, ceiling_z, c[2],
                                   _work_plane(r, home), home, lanes=lanes,
-                                  caps=None if home else room_caps(r, bounds))
+                                  caps=None if home else room_caps(
+                                      r, bounds, selling=r.get("id") in (selling_rooms or ())))
             if lanes:
                 rep["rows_over_aisles"] += 1
             rep["rows_laid"] += len(rows)
@@ -1721,9 +1752,9 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
             row_id = base_id if k == 0 else "%s_r%d" % (base_id, k)
             for i, (pos, n, sp) in enumerate(got):
                 runs.append((pos, n, sp, rot,
-                             row_id if len(got) == 1 else "%s_%d" % (row_id, i)))
+                             row_id if len(got) == 1 else "%s_%d" % (row_id, i), spacing))
         room_reach = 0.0
-        for pos, n, sp, rot, rid in runs:
+        for pos, n, sp, rot, rid, row_sp in runs:
             anchors.append({
                 "id": rid,
                 # A HOME'S DOME (0.208.0, roadmap 229's species step): a home's
@@ -1769,9 +1800,12 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
             # range, the per-mesh claim, stays the drop rule. Measured on the
             # walker's level: the store's frame 38.5 -> 61.5 mean at x 1.6
             # range (the factory's docs/findings/black_gondola_ends/).
-            if (not moody and not home and sp > 0.0
+            # THE ROW'S spacing, not the run's (0.280.0): a row split round a
+            # teller line's staff room leaves one-lamp runs whose own spacing
+            # is 0, and they hang over the line
+            if (not moody and not home and row_sp > 0.0
                     and r.get("id") in (bake_reach_rooms or ())):
-                anchors[-1]["bake_reach"] = round(float(sp), 3)
+                anchors[-1]["bake_reach"] = round(float(row_sp), 3)
         # THE STORE'S LIGHT ON THE PAVEMENT (0.156.0): a room whose row
         # reaches its storefront throws that light back out through the
         # glass. Collected here and appended LAST, so every anchor before it
@@ -1906,7 +1940,22 @@ def _bake_reach_rooms(rooms, business):
     if not business:
         return set()
     import level_design
-    return {r.get("id") for r in rooms or () if level_design.is_supermarket_floor(r, business)}
+    return ({r.get("id") for r in rooms or () if level_design.is_supermarket_floor(r, business)}
+            | _selling_rooms(rooms, business))
+
+
+def _selling_rooms(rooms, business):
+    """The rooms lit at a selling room's density whatever their id says
+    (0.280.0): a bank's public rooms (`bank_public`)."""
+    return {r.get("id") for r in rooms or () if bank_public(r, business)}
+
+
+def _tube_rooms(rooms, business):
+    """The rooms below grade or over the take that are lit by tubes, not
+    moody bulbs (0.280.0): every such room of a bank."""
+    if not is_bank(business):
+        return set()
+    return {r.get("id") for r in rooms or ()}
 
 
 def build_light_manifest(building_id, rooms, openings, story_height,
@@ -1932,7 +1981,9 @@ def build_light_manifest(building_id, rooms, openings, story_height,
                                    storefronts=storefronts,
                                    residence=is_residence(business),
                                    landings=landings,
-                                   bake_reach_rooms=_bake_reach_rooms(rooms, business))
+                                   bake_reach_rooms=_bake_reach_rooms(rooms, business),
+                                   selling_rooms=_selling_rooms(rooms, business),
+                                   tube_rooms=_tube_rooms(rooms, business))
     if authored:
         by_id = {a["id"]: a for a in anchors}
         for a in authored:
