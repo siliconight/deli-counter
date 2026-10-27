@@ -228,6 +228,8 @@ PROP_SPECIES = (
     # the supermarket's long runs (Deli Counter 0.275.0, `level_design`'s
     # `gondola_run`): the same species, which builds 1.2 to 14.0 m
     (("gondola_run",), "snack_gondola"),
+    # a supermarket's produce section (Deli Counter 0.277.0; Zoo 1.132.0)
+    (("produce_table",), "produce_table"),
     # THE FROZEN DRINK STATION (Zoo 1.15.0): `migrate_slush_machine.py` puts
     # one in every convenience store; no volume carried `slush` before it.
     # Above the counter row, whose `station` would claim a `slush_station`.

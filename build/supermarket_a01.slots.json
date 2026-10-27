@@ -4832,7 +4832,85 @@
       }
     },
     {
-      "slot_id": "cartons_r48016798_1",
+      "slot_id": "produce_table_r48016798_1",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 5,
+      "material": "wood",
+      "species": "produce_table",
+      "stock": null,
+      "variant": 1,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          -19.25,
+          -4.0,
+          0.475
+        ],
+        "rot_y": 0.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          3.0,
+          1.2,
+          0.95
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "produce_table_r48016798_2",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 5,
+      "material": "wood",
+      "species": "produce_table",
+      "stock": null,
+      "variant": 3,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          19.55,
+          -4.0,
+          0.475
+        ],
+        "rot_y": 180.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.4,
+          1.2,
+          0.95
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "cartons_r48016798_3",
       "role": "prop",
       "size_mod": "full",
       "style": 5,
@@ -4848,11 +4926,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          18.44,
-          -6.11,
+          -20.04,
+          -6.57,
           0.5
         ],
-        "rot_y": 180.0,
+        "rot_y": 270.0,
         "scale": [
           1.0,
           1.0,
@@ -4871,14 +4949,14 @@
       }
     },
     {
-      "slot_id": "cartons_r48016798_2",
+      "slot_id": "cartons_r48016798_4",
       "role": "prop",
       "size_mod": "full",
       "style": 5,
       "material": "wood",
       "species": "carton_stack",
       "stock": null,
-      "variant": 2,
+      "variant": 3,
       "form": null,
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -4887,9 +4965,9 @@
       "facing": null,
       "transform": {
         "translation": [
-          19.71,
-          -6.11,
-          0.7
+          -19.16,
+          -6.57,
+          0.3
         ],
         "rot_y": 270.0,
         "scale": [
@@ -4900,87 +4978,9 @@
       },
       "fit": {
         "dims": [
-          1.2,
-          0.8,
-          1.4
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "shelf_run_r48016798_3",
-      "role": "prop",
-      "size_mod": "full",
-      "style": 5,
-      "material": "wood",
-      "species": "shelving",
-      "stock": null,
-      "variant": 0,
-      "form": null,
-      "current_ref": "prop_greybox_01",
-      "kit_axis": "material",
-      "wall": null,
-      "story": null,
-      "facing": null,
-      "transform": {
-        "translation": [
-          -15.68,
-          -15.54,
-          1.05
-        ],
-        "rot_y": 180.0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.4,
           0.6,
-          2.1
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "shelf_run_r48016798_4",
-      "role": "prop",
-      "size_mod": "full",
-      "style": 5,
-      "material": "wood",
-      "species": "shelving",
-      "stock": null,
-      "variant": 0,
-      "form": null,
-      "current_ref": "prop_greybox_01",
-      "kit_axis": "material",
-      "wall": null,
-      "story": null,
-      "facing": null,
-      "transform": {
-        "translation": [
-          21.54,
-          -9.76,
-          1.05
-        ],
-        "rot_y": 90.0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.4,
-          0.6,
-          2.1
+          0.4,
+          0.6
         ],
         "pivot": "center",
         "openings": [],
@@ -5004,11 +5004,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          18.07,
-          -15.54,
+          -21.59,
+          4.51,
           0.95
         ],
-        "rot_y": 180.0,
+        "rot_y": 270.0,
         "scale": [
           1.0,
           1.0,
@@ -5017,8 +5017,8 @@
       },
       "fit": {
         "dims": [
-          2.6,
-          0.6,
+          2.0,
+          0.5,
           1.9
         ],
         "pivot": "center",
@@ -5043,11 +5043,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          -21.54,
-          -13.37,
+          14.54,
+          -15.59,
           0.95
         ],
-        "rot_y": 270.0,
+        "rot_y": 180.0,
         "scale": [
           1.0,
           1.0,
@@ -5056,8 +5056,8 @@
       },
       "fit": {
         "dims": [
-          2.6,
-          0.6,
+          2.0,
+          0.5,
           1.9
         ],
         "pivot": "center",
@@ -5082,11 +5082,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          7.87,
-          -15.59,
-          0.95
+          21.54,
+          -8.1,
+          1.05
         ],
-        "rot_y": 180.0,
+        "rot_y": 90.0,
         "scale": [
           1.0,
           1.0,
@@ -5095,9 +5095,9 @@
       },
       "fit": {
         "dims": [
-          2.0,
-          0.5,
-          1.9
+          2.4,
+          0.6,
+          2.1
         ],
         "pivot": "center",
         "openings": [],
@@ -5121,8 +5121,8 @@
       "facing": null,
       "transform": {
         "translation": [
-          -5.71,
-          -15.59,
+          -18.28,
+          -15.54,
           0.95
         ],
         "rot_y": 180.0,
@@ -5134,8 +5134,8 @@
       },
       "fit": {
         "dims": [
-          2.0,
-          0.5,
+          2.6,
+          0.6,
           1.9
         ],
         "pivot": "center",
@@ -5160,11 +5160,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          -21.59,
-          -5.7,
-          0.95
+          20.37,
+          -15.54,
+          1.05
         ],
-        "rot_y": 270.0,
+        "rot_y": 180.0,
         "scale": [
           1.0,
           1.0,
@@ -5173,9 +5173,9 @@
       },
       "fit": {
         "dims": [
-          2.0,
-          0.5,
-          1.9
+          2.4,
+          0.6,
+          2.1
         ],
         "pivot": "center",
         "openings": [],
@@ -5199,11 +5199,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          21.54,
-          3.85,
-          1.05
+          -21.59,
+          -9.28,
+          0.95
         ],
-        "rot_y": 90.0,
+        "rot_y": 270.0,
         "scale": [
           1.0,
           1.0,
@@ -5212,9 +5212,9 @@
       },
       "fit": {
         "dims": [
-          2.4,
-          0.6,
-          2.1
+          2.0,
+          0.5,
+          1.9
         ],
         "pivot": "center",
         "openings": [],
@@ -5238,11 +5238,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          -21.54,
-          3.51,
-          1.05
+          21.59,
+          -12.75,
+          0.95
         ],
-        "rot_y": 270.0,
+        "rot_y": 90.0,
         "scale": [
           1.0,
           1.0,
@@ -5251,9 +5251,9 @@
       },
       "fit": {
         "dims": [
-          2.4,
-          0.6,
-          2.1
+          2.0,
+          0.5,
+          1.9
         ],
         "pivot": "center",
         "openings": [],
@@ -5277,11 +5277,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          -21.59,
-          -9.82,
+          21.54,
+          4.85,
           0.95
         ],
-        "rot_y": 270.0,
+        "rot_y": 90.0,
         "scale": [
           1.0,
           1.0,
@@ -5290,8 +5290,8 @@
       },
       "fit": {
         "dims": [
-          2.0,
-          0.5,
+          2.6,
+          0.6,
           1.9
         ],
         "pivot": "center",
@@ -5316,11 +5316,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          14.33,
-          -15.54,
-          0.95
+          -21.54,
+          -12.94,
+          1.05
         ],
-        "rot_y": 180.0,
+        "rot_y": 270.0,
         "scale": [
           1.0,
           1.0,
@@ -5329,9 +5329,9 @@
       },
       "fit": {
         "dims": [
-          2.6,
+          2.4,
           0.6,
-          1.9
+          2.1
         ],
         "pivot": "center",
         "openings": [],
@@ -5339,14 +5339,14 @@
       }
     },
     {
-      "slot_id": "cartons_r48016798_14",
+      "slot_id": "shelf_run_r48016798_14",
       "role": "prop",
       "size_mod": "full",
       "style": 5,
       "material": "wood",
-      "species": "carton_stack",
+      "species": "shelving",
       "stock": null,
-      "variant": 2,
+      "variant": 0,
       "form": null,
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -5355,9 +5355,9 @@
       "facing": null,
       "transform": {
         "translation": [
-          16.65,
-          -1.22,
-          0.3
+          -14.74,
+          -15.54,
+          1.05
         ],
         "rot_y": 180.0,
         "scale": [
@@ -5368,9 +5368,9 @@
       },
       "fit": {
         "dims": [
+          2.4,
           0.6,
-          0.4,
-          0.6
+          2.1
         ],
         "pivot": "center",
         "openings": [],
@@ -5394,11 +5394,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          16.65,
-          -0.48,
-          0.3
+          16.09,
+          -0.85,
+          0.5
         ],
-        "rot_y": 180.0,
+        "rot_y": 90.0,
         "scale": [
           1.0,
           1.0,
@@ -5407,9 +5407,9 @@
       },
       "fit": {
         "dims": [
+          0.9,
           0.6,
-          0.4,
-          0.6
+          1.0
         ],
         "pivot": "center",
         "openings": [],
@@ -5433,11 +5433,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          -11.24,
-          -0.97,
-          0.7
+          17.31,
+          -0.85,
+          0.3
         ],
-        "rot_y": 0.0,
+        "rot_y": 90.0,
         "scale": [
           1.0,
           1.0,
@@ -5446,9 +5446,9 @@
       },
       "fit": {
         "dims": [
-          1.2,
-          0.8,
-          1.4
+          0.6,
+          0.4,
+          0.6
         ],
         "pivot": "center",
         "openings": [],
@@ -5472,11 +5472,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          -9.42,
-          -0.97,
+          -11.05,
+          4.74,
           0.5
         ],
-        "rot_y": 0.0,
+        "rot_y": 180.0,
         "scale": [
           1.0,
           1.0,
@@ -5511,11 +5511,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          -11.36,
-          -9.34,
+          -9.57,
+          4.74,
           0.5
         ],
-        "rot_y": 90.0,
+        "rot_y": 180.0,
         "scale": [
           1.0,
           1.0,
@@ -6369,11 +6369,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          21.57,
-          -6.17,
+          -21.57,
+          -6.14,
           0.725
         ],
-        "rot_y": 90.0,
+        "rot_y": 270.0,
         "scale": [
           1.0,
           1.0,

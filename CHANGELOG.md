@@ -1,3 +1,32 @@
+## [0.277.0] - a supermarket stands a produce section
+
+The walker's grocery comps, 2026-10-26 (the factory's docs/reference/GROCERY_STORE_COMPS.md): "a retro produce
+section ... neatly arranged fruit and vegetables". Zoo 1.132.0's `produce_table` is the table.
+
+### Added
+- **`produce_table`**, a piece:
+  - an island a shopper walks round, front to the aisle;
+  - 1.8 to 3.0 m wide and 0.9-0.95 m tall, below cover height, so it stands mid-floor under furnish's rule.
+  - Its variant is its stock, the heap a table's first bay starts from. It takes FOUR variants, not Zoo's eight: a
+    piece past four draws its variant from the building's id (the neon sign's rule), and the first build gave both
+    tables in every store the same heaps.
+- **The supermarket recipe stands two first** (`anchors`, `all_anchors`): its produce section, where furnish's island
+  rule finds them clear floor. `migrations/migrate_produce_section.py` refurnishes the three supermarkets, each with
+  two tables of different stock.
+- `prop_species` routes `produce_table` to Zoo's species.
+
+### Changed
+- The supermarket recipe's note said "NO AISLE SIGNS YET". Its signs are `aisle_markers`' rule (0.276.0), and the note
+  says so.
+
+### Tests
+- `tests/test_produce_section.py` (3 of 4 fail on 0.276.0; the fourth holds every pair of tables there is):
+  - the recipe stands two tables first, below cover height;
+  - every supermarket stands one or two;
+  - two in a store carry different heaps;
+  - each routes to Zoo's species, within its genome's sizes.
+- `test_furnish` names the supermarket among the recipes that stand an island, and mirrors `produce_table`'s sizes.
+
 ## [0.276.0] - a supermarket hangs a numbered marker over each aisle
 
 The walker's grocery comps, 2026-10-26 (the factory's docs/reference/GROCERY_STORE_COMPS.md) show a printed sign over
