@@ -1,3 +1,39 @@
+## [0.286.0] - a bank lobby's officers' desks, and a bank vault's money
+
+The walker, of the bank after the interior pass (the factory's docs/findings/bank_interior/, frames 17 and 18): "add
+the lobby desks and fix those two first", then "we need to make the cash! in the vault room!". The 390 m2 lobby stood a
+check desk, a queue, chairs and plants and nothing on its floor; the vault a cash cart, two safes and a count table
+with a few bundles on it, each a note's size.
+
+### Added
+- **Officers' desks on a bank lobby's floor** (`bank_lobby`'s `floor`: `desk`). Comp 5 is a branch's open office off
+  its public floor, grey steel desks and CRTs: each desk its chair and its `office` stock, in turn with the queue and
+  the bin.
+- **A bank vault's money rack** (`shelf_cash`: Zoo 1.142.0's `shelving` with stock `vault`, strapped bricks of notes
+  banded by denomination and deposit bags; 1.8 x 0.5 x 1.9 or 1.2 x 0.5 x 1.8, against a wall).
+  - A bank vault (`bank_vault`) anchors a money rack, its safe and a cash cart, all three (`all_anchors`), and its
+    wall run's racks are money racks where they were a back office's `shelf_run`. Placed in turn, the racks took
+    the floor turns the carts drew from and bank_branch_a03's vaults lost five carts: the cart anchors.
+  - `vault`, every other vault -- a deli's back safe, a stadium's -- is unchanged.
+- `migrations/migrate_bank_money.py`: refurnishes the seven specs with a bank lobby or a bank vault, and nothing
+  else.
+
+### Changed
+- **A deposit wall asks for painted steel** (`SPECIES_MATERIALS`' `safe_deposit_boxes`: `metal_painted`, or
+  `laminate`). Zoo 1.142.0 painted it: a building piece lit by the bake, its bare steel read near black.
+
+### Measured, the library refurnished
+- Only the seven banks' built slots moved; every other building's are 0.285.0's byte for byte.
+- Lobby desks: 13 more, bank_branch_a02 2, a03 3, a04 2, bank_job 2, bank_tower_a01 to a03 2, 1 and 1.
+- Money racks: 42, a02 8, a03 7, a04 10, bank_job 9, the towers 5, 2 and 1; 21 back-office `shelf_run`s gave way.
+- Cash carts 17 -> 21; every bank vault has a rack, a cart and a safe. The deposit walls ask for `metal_painted`.
+
+### Tests
+- `tests/test_bank_money.py` (new; fails on 0.285.0): the recipes; every library bank lobby stands a desk and every
+  bank vault a money rack, a cart and a safe; no other building has a money rack; every built rack asks Zoo for
+  shelving's `vault` stock and no other shelving does.
+- `tests/test_bank_finish.py`: the deposit walls are painted steel.
+
 ## [0.285.0] - a bank's public room panelled below a chair rail, and its glass front a storefront
 
 The walker, of the bank's frames: "do the interiors look really good?", then "hold the release, do the interior pass

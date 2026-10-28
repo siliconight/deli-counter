@@ -112,7 +112,8 @@ def test_a_vaults_fixtures_ask_for_what_they_are_made_of():
     spec's own `metal`, which is not what either is made of, so each takes its own (`FIXTURE_OPENINGS`)."""
     import glob
     seen = {"safe_deposit_boxes": 0, "vault_door": 0}
-    want = {"safe_deposit_boxes": "metal_bare", "vault_door": "metal_painted"}
+    # the deposit wall bare steel until 0.286.0 (Zoo 1.142.0 painted it: bare read near black under the bake)
+    want = {"safe_deposit_boxes": "metal_painted", "vault_door": "metal_painted"}
     for p in glob.glob(os.path.join(BUILD, "*.slots.json")):
         for s in json.load(open(p, encoding="utf-8"))["slots"]:
             if s["role"] in want:

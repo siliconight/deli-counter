@@ -2116,6 +2116,13 @@ _PIECES = {p["name"]: p for p in (
     # room's steel cage cart and its load, the comps' "carts and tubs". On the
     # floor, its load the variant, two a room at most.
     _piece("cash_cart", ((1.2, 0.7, 1.1), (0.9, 0.6, 1.0)), "floor", variants=True, most=2),
+    # A VAULT'S MONEY RACK (0.286.0, Zoo 1.142.0's `shelving` stock `vault`):
+    # the walker, of the vault: "we need to make the cash! in the vault
+    # room!". A steel rack against the wall, its shelves strapped bricks of
+    # notes banded by denomination and deposit bags. `shelf_` routes it to
+    # shelving (`prop_species`); its stock is the whole difference from a
+    # `shelf_run`.
+    _piece("shelf_cash", ((1.8, 0.5, 1.9), (1.2, 0.5, 1.8)), "wall", front=True, stock="vault"),
     # THE PENNANTS, along the TOP of the wall -- `under`, not `lift`: the
     # batten is screwed under the ceiling, so its height is the storey's.
     # No collision: 2.9 m up at a 3.4 m storey, and Zoo's genome declares
@@ -2681,8 +2688,14 @@ _RECIPES = {
     # furniture and the comps' cash cart beside the count table. A BANK'S
     # only: the first build put a cart in every `vault`-kind room and moved
     # 44 specs -- a deli's back safe, a stadium's, a funeral home's.
-    "bank_vault": {"anchors": ("safe_floor",),
-                   "wall": ("shelf_run", "cabinet_locker", "safe_floor"),
+    # ITS MONEY (0.286.0): the walker, "we need to make the cash! in the vault
+    # room!". A money rack and a cash cart are anchors beside the safe, so
+    # every bank vault has both -- placed in turn, the racks took the floor
+    # turns the carts drew from and bank_branch_a03's vaults lost five -- and
+    # the wall run's racks are money racks, not a back office's.
+    "bank_vault": {"anchors": ("shelf_cash", "safe_floor", "cash_cart"),
+                   "all_anchors": True,
+                   "wall": ("shelf_cash", "shelf_cash", "cabinet_locker", "safe_floor"),
                    "floor": ("table_count", "cash_cart"),
                    "clusters": ((("cartons",), 2, 3),),
                    "fixtures": ("security_camera",)},
@@ -2701,10 +2714,14 @@ _RECIPES = {
     # THE ATM IS AN ANCHOR (0.282.0): placed before any wall piece, so a lobby
     # keeps it -- with three plants in the wall pool, bank_branch_a03's took
     # the wall its ATM and chairs had stood on (`test_ticket_queue`)
+    # OFFICERS' DESKS ON THE FLOOR (0.286.0): comp 5 is a branch's open office
+    # off its public floor, grey steel desks and CRTs, and the walker, of the
+    # lobby after the interior pass: "add the lobby desks". Each its chair and its CRT
+    # (`desk`'s `office` stock); in turn with the queue and the bin.
     "bank_lobby": {"anchors": ("check_desk", "atm"),
                    "all_anchors": True,
                    "wall": ("chair_waiting", "chair_waiting", "potted_plant", "potted_plant"),
-                   "floor": (),
+                   "floor": ("desk",),
                    "clusters": ((("stanchion",), 3, 4), (("litter_bin",), 1, 1)),
                    "fixtures": ("security_camera", "wall_clock", "poster_wall_bank")},
     "lobby": {"anchors": ("counter_service",),

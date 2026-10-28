@@ -440,8 +440,9 @@ SPECIES_MATERIALS = {
     'pump': ('metal_painted', ('metal_painted',)),
     'queue_stanchion': ('metal_painted', ('metal_painted',)),
     'roller_grill': ('metal_bare', ('metal_bare', 'glass')),
-    # a vault's fixtures, which `deli_counter`'s `FIXTURE_OPENINGS` asks by (0.285.0)
-    'safe_deposit_boxes': ('metal_bare', ('metal_bare', 'laminate')),
+    # a vault's fixtures, which `deli_counter`'s `FIXTURE_OPENINGS` asks by (0.285.0); the deposit wall painted
+    # steel since Zoo 1.142.0, which found its bare steel near black under the bake (0.286.0)
+    'safe_deposit_boxes': ('metal_painted', ('metal_painted', 'laminate')),
     'security_camera': ('plastic', ('plastic', 'metal')),
     'shelving': ('metal_bare', ('metal_bare', 'wood')),
     'slush_machine': ('metal_painted', ('metal_painted', 'glass')),
