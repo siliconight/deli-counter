@@ -5181,14 +5181,14 @@
       }
     },
     {
-      "slot_id": "cash_cart_r7d649e32_5",
+      "slot_id": "shelf_cash_row_r7d649e32_5",
       "role": "prop",
       "size_mod": "full",
-      "style": 5,
+      "style": 9,
       "material": "metal_bare",
-      "species": "cash_cart",
-      "stock": null,
-      "variant": 1,
+      "species": "shelving",
+      "stock": "vault",
+      "variant": 0,
       "form": null,
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -5197,11 +5197,50 @@
       "facing": null,
       "transform": {
         "translation": [
-          -15.57,
-          6.0,
-          0.55
+          -16.62,
+          6.2,
+          0.7
         ],
         "rot_y": 0.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.8,
+          0.6,
+          1.4
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "cash_cart_r7d649e32_6",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 5,
+      "material": "metal_bare",
+      "species": "cash_cart",
+      "stock": null,
+      "variant": 3,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          -17.14,
+          9.84,
+          0.55
+        ],
+        "rot_y": 90.0,
         "scale": [
           1.0,
           1.0,
@@ -6039,7 +6078,7 @@
       }
     },
     {
-      "slot_id": "security_camera_r7d649e32_6",
+      "slot_id": "security_camera_r7d649e32_7",
       "role": "prop",
       "size_mod": "full",
       "style": 5,
@@ -6078,7 +6117,7 @@
       }
     },
     {
-      "slot_id": "security_camera_r7d649e32_7",
+      "slot_id": "security_camera_r7d649e32_8",
       "role": "prop",
       "size_mod": "full",
       "style": 5,

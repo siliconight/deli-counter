@@ -1,3 +1,33 @@
+## [0.287.0] - a bank vault's money racks stand in rows
+
+The walker, of the vault: "that vault room needs some love", with a photograph of a gold vault -- racks of blue
+painted steel in rows down the room, an aisle between. On 0.286.x a bank vault's money stood against its walls; its
+330 m2 rooms read empty in the middle.
+
+### Added
+- **`shelf_cash_row`**: Zoo 1.143.0's open-backed vault rack (`shelving`, stock `vault`), 2.4 or 1.8 x 0.6 x 1.4 m,
+  an ISLAND, capped at 8 a room and facing an aisle. 1.4 m is the corner store gondola's height and for its reason:
+  cover a body crouches behind and an eye at 1.60 m sees over, so the rows are lanes and not a maze. The wall racks
+  stay 1.9 m.
+- **A bank vault lays rows of them** (`bank_vault`'s `rows`, `rows_share` 0.25), as a supermarket lays its gondolas:
+  whole rows, from the middle out, an aisle from every piece already standing.
+  - NO ROUTE RESERVATION. Reserving the routes as a shop floor does was measured first and cost
+    bank_tower_a03's teller cage both its cash carts and its locker for no row; without it the cage keeps them and
+    stands a row. The rows' own aisle rule and the nav gate are what keep a route open.
+
+### Measured, the seven banks refurnished (`migrations/migrate_bank_money.py`)
+- Only the seven banks' built slots moved; every other building's are 0.286.2's byte for byte.
+- 73 row racks: bank_branch_a02 16, a03 19, a04 10, bank_job 14, bank_tower_a01 to a03 6, 7 and 1, every one
+  `metal_bare` with shelving's `vault` stock. A 330 m2 vault stands up to 11, its share of floor under furniture
+  0.02-0.06 -> 0.04-0.08: the rows stop at the piece's cap, not at `rows_share`.
+- The nav gate's 157 shells pass: no row cuts a route. bank_branch_a02's count tables give way to the rows (3 -> 0
+  in its vaults), the rows taking the floor before the floor pieces.
+
+### Tests
+- `tests/test_bank_money.py`: the row piece, under shelter height, the vault's stock; rows in every library bank's
+  vaults (fails on 0.286.2).
+- `tests/test_furnish.py`: `bank_vault` joins the recipes that hand out islands and that give rows.
+
 ## [0.286.2] - the migrations index names migrate_bank_money.py
 
 `migrations/README.md`'s generated index (the factory's `tools/factory_index.py --write`) gained its line for `migrate_bank_money.py` after 0.286.1 was tagged, in a commit of its own, so the newest code commit was newer than VERSION and the factory's `verify-manifest --strict` read Deli Counter STALE. This release carries that line and changes nothing else.

@@ -145,19 +145,22 @@ def test_the_only_mid_floor_shelter_is_a_declared_island():
     # 0.277.0: the supermarket's produce tables, its anchors -- islands below
     # cover height, which a shopper walks round
     # 0.281.0: a bank's lobby, its check desk -- an island below cover height
-    assert naming == {"card_shop", "supermarket", "bank_lobby"}, naming
+    # 0.287.0: a bank's vault, its rows of money racks -- islands below shelter height
+    assert naming == {"card_shop", "supermarket", "bank_lobby", "bank_vault"}, naming
     # ...and the one giver of ROWS (0.247.0) is the shop floor's, per room:
     # a corner store's selling floor gets the aisle gondola and every other
     # room nothing. Its piece is capped above and stands under shelter.
     # and the supermarket's (0.275.0), whose rows are its long gondola runs
+    # and a bank vault's (0.287.0), the one recipe whose rows are its own rather than given per room
     rows = {k for k, r in level_design._RECIPES.items() if "rows" in r}
-    assert rows == {"shop_floor", "supermarket"}, rows
+    assert rows == {"shop_floor", "supermarket", "bank_vault"}, rows
+    assert level_design._RECIPES["bank_vault"]["rows"] == ("shelf_cash_row",)
     given = level_design._shop_rows({"id": "market_aisles"}, "deli_a03")
     assert given == ("gondola_aisle",) and set(given) <= islands
     given = level_design._shop_rows({"id": "sales_floor"}, "supermarket_a01")
     assert given == ("gondola_run",) and set(given) <= islands
     assert level_design._shop_rows({"id": "sales_floor"}, "pawn_shop_a01") == ()
-    for key in ("gondola_aisle", "gondola_run"):
+    for key in ("gondola_aisle", "gondola_run", "shelf_cash_row"):
         for w, d, h in level_design._PIECES[key]["sizes"]:
             assert h < level_design.shelter_height(), (key, w, d, h)
 

@@ -9956,14 +9956,14 @@
       }
     },
     {
-      "slot_id": "cash_cart_ra4e25a10_7",
+      "slot_id": "shelf_cash_row_ra4e25a10_7",
       "role": "prop",
       "size_mod": "full",
-      "style": 5,
+      "style": 9,
       "material": "metal_bare",
-      "species": "cash_cart",
-      "stock": null,
-      "variant": 1,
+      "species": "shelving",
+      "stock": "vault",
+      "variant": 0,
       "form": null,
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -9972,87 +9972,9 @@
       "facing": null,
       "transform": {
         "translation": [
-          11.41,
-          8.7,
-          5.1
-        ],
-        "rot_y": 0.0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          0.9,
-          0.6,
-          1.0
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "cartons_ra4e25a10_8",
-      "role": "prop",
-      "size_mod": "full",
-      "style": 5,
-      "material": "paper",
-      "species": "carton_stack",
-      "stock": null,
-      "variant": 1,
-      "form": null,
-      "current_ref": "prop_greybox_01",
-      "kit_axis": "material",
-      "wall": null,
-      "story": null,
-      "facing": null,
-      "transform": {
-        "translation": [
-          13.16,
-          11.12,
+          12.15,
+          3.35,
           5.3
-        ],
-        "rot_y": 180.0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          1.2,
-          0.8,
-          1.4
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "cartons_ra4e25a10_9",
-      "role": "prop",
-      "size_mod": "full",
-      "style": 5,
-      "material": "paper",
-      "species": "carton_stack",
-      "stock": null,
-      "variant": 3,
-      "form": null,
-      "current_ref": "prop_greybox_01",
-      "kit_axis": "material",
-      "wall": null,
-      "story": null,
-      "facing": null,
-      "transform": {
-        "translation": [
-          8.42,
-          11.01,
-          5.2
         ],
         "rot_y": 270.0,
         "scale": [
@@ -10063,9 +9985,9 @@
       },
       "fit": {
         "dims": [
-          1.6,
-          1.2,
-          1.2
+          2.4,
+          0.6,
+          1.4
         ],
         "pivot": "center",
         "openings": [],
@@ -10073,14 +9995,248 @@
       }
     },
     {
-      "slot_id": "table_count_ra4e25a10_10",
+      "slot_id": "shelf_cash_row_ra4e25a10_8",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 9,
+      "material": "metal_bare",
+      "species": "shelving",
+      "stock": "vault",
+      "variant": 0,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          12.15,
+          7.0,
+          5.3
+        ],
+        "rot_y": 90.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.4,
+          0.6,
+          1.4
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "shelf_cash_row_ra4e25a10_9",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 9,
+      "material": "metal_bare",
+      "species": "shelving",
+      "stock": "vault",
+      "variant": 0,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          12.15,
+          10.65,
+          5.3
+        ],
+        "rot_y": 90.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.4,
+          0.6,
+          1.4
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "shelf_cash_row_ra4e25a10_10",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 9,
+      "material": "metal_bare",
+      "species": "shelving",
+      "stock": "vault",
+      "variant": 0,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          10.07,
+          3.35,
+          5.3
+        ],
+        "rot_y": 90.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.4,
+          0.6,
+          1.4
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "shelf_cash_row_ra4e25a10_11",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 9,
+      "material": "metal_bare",
+      "species": "shelving",
+      "stock": "vault",
+      "variant": 0,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          10.07,
+          9.0,
+          5.3
+        ],
+        "rot_y": 270.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.4,
+          0.6,
+          1.4
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "shelf_cash_row_ra4e25a10_12",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 9,
+      "material": "metal_bare",
+      "species": "shelving",
+      "stock": "vault",
+      "variant": 0,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          14.23,
+          3.35,
+          5.3
+        ],
+        "rot_y": 270.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.4,
+          0.6,
+          1.4
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "shelf_cash_row_ra4e25a10_13",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 9,
+      "material": "metal_bare",
+      "species": "shelving",
+      "stock": "vault",
+      "variant": 0,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          14.23,
+          9.5,
+          5.3
+        ],
+        "rot_y": 270.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          2.4,
+          0.6,
+          1.4
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "cash_cart_ra4e25a10_14",
       "role": "prop",
       "size_mod": "full",
       "style": 5,
-      "material": "wood",
-      "species": "table",
-      "stock": "vault",
-      "variant": 1,
+      "material": "metal_bare",
+      "species": "cash_cart",
+      "stock": null,
+      "variant": 2,
       "form": null,
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -10091,6 +10247,45 @@
         "translation": [
           7.37,
           4.66,
+          5.15
+        ],
+        "rot_y": 90.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.2,
+          0.7,
+          1.1
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "table_count_ra4e25a10_15",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 5,
+      "material": "wood",
+      "species": "table",
+      "stock": "vault",
+      "variant": 2,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          7.55,
+          9.35,
           4.98
         ],
         "rot_y": 0.0,
@@ -10112,7 +10307,7 @@
       }
     },
     {
-      "slot_id": "chair_set_ra4e25a10_10_1",
+      "slot_id": "chair_set_ra4e25a10_15_1",
       "role": "prop",
       "size_mod": "full",
       "style": 5,
@@ -10128,50 +10323,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          7.51,
-          5.56,
+          7.45,
+          10.55,
           5.05
         ],
-        "rot_y": 0.0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          0.5,
-          0.5,
-          0.9
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "chair_set_ra4e25a10_10_2",
-      "role": "prop",
-      "size_mod": "full",
-      "style": 5,
-      "material": "wood",
-      "species": "chair",
-      "stock": null,
-      "variant": 0,
-      "form": null,
-      "current_ref": "prop_greybox_01",
-      "kit_axis": "material",
-      "wall": null,
-      "story": null,
-      "facing": null,
-      "transform": {
-        "translation": [
-          7.37,
-          3.76,
-          5.05
-        ],
-        "rot_y": 162.4,
+        "rot_y": 15.8,
         "scale": [
           1.0,
           1.0,
@@ -10502,7 +10658,7 @@
       }
     },
     {
-      "slot_id": "security_camera_ra4e25a10_11",
+      "slot_id": "security_camera_ra4e25a10_16",
       "role": "prop",
       "size_mod": "full",
       "style": 5,
@@ -10541,7 +10697,7 @@
       }
     },
     {
-      "slot_id": "security_camera_ra4e25a10_12",
+      "slot_id": "security_camera_ra4e25a10_17",
       "role": "prop",
       "size_mod": "full",
       "style": 5,

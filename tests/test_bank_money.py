@@ -47,6 +47,11 @@ def test_the_recipes():
     piece = level_design._PIECES["shelf_cash"]
     assert piece["stock"] == "vault" and piece["where"] == "wall" and piece["front"]
     assert prop_species.species_for_name("shelf_cash_r3a1da818_2") == "shelving"
+    # its racks in rows (0.287.0): an island under shelter height, the vault's stock, steel
+    row = level_design._PIECES["shelf_cash_row"]
+    assert vault["rows"] == ("shelf_cash_row",) and row["where"] == "island" and row["stock"] == "vault"
+    assert all(h < level_design.shelter_height() for _w, _d, h in row["sizes"]) and row["most"]
+    assert prop_species.species_for_name("shelf_cash_row_r3a1da818_2") == "shelving"
 
 
 def test_every_library_bank_lobby_stands_a_desk_and_every_vault_its_money():
@@ -59,6 +64,9 @@ def test_every_library_bank_lobby_stands_a_desk_and_every_vault_its_money():
             inside = [v["name"] for v in d["volumes"] if _in(d, v, r)]
             for piece in ("shelf_cash", "cash_cart", "safe_floor"):
                 assert any(n.startswith(piece) for n in inside), (name, r["id"], piece, inside)
+        # rows of money racks stand in every library bank's vaults (0.287.0)
+        rows = [v for r in vaults for v in d["volumes"] if _in(d, v, r) and v["name"].startswith("shelf_cash_row")]
+        assert rows, name
 
 
 def test_no_other_building_has_a_money_rack():

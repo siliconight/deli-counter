@@ -2123,6 +2123,16 @@ _PIECES = {p["name"]: p for p in (
     # shelving (`prop_species`); its stock is the whole difference from a
     # `shelf_run`.
     _piece("shelf_cash", ((1.8, 0.5, 1.9), (1.2, 0.5, 1.8)), "wall", front=True, stock="vault"),
+    # A VAULT'S RACKS IN ROWS (0.287.0, Zoo 1.143.0's open-backed blue rack):
+    # the walker's photograph of a gold vault -- racks of money standing in
+    # rows down the room, an aisle between -- and "that vault room needs some
+    # love". An ISLAND, laid by `bank_vault`'s rows as a supermarket's
+    # gondolas are, so it is capped and faces an aisle. 1.4 m, the corner
+    # store gondola's height and for its reason: cover a body crouches behind
+    # and an eye at 1.60 m sees over, so the rows are lanes and not a maze --
+    # the wall racks stay 1.9.
+    _piece("shelf_cash_row", ((2.4, 0.6, 1.4), (1.8, 0.6, 1.4)), "island", front=True, stock="vault",
+           most=8),
     # THE PENNANTS, along the TOP of the wall -- `under`, not `lift`: the
     # batten is screwed under the ceiling, so its height is the storey's.
     # No collision: 2.9 m up at a 3.4 m storey, and Zoo's genome declares
@@ -2697,6 +2707,8 @@ _RECIPES = {
                    "all_anchors": True,
                    "wall": ("shelf_cash", "shelf_cash", "cabinet_locker", "safe_floor"),
                    "floor": ("table_count", "cash_cart"),
+                   # and its racks in rows down the room (0.287.0, `shelf_cash_row`)
+                   "rows": ("shelf_cash_row",), "rows_share": 0.25,
                    "clusters": ((("cartons",), 2, 3),),
                    "fixtures": ("security_camera",)},
     "vault": {"anchors": ("safe_floor",),
