@@ -83,6 +83,21 @@
       "room": "teller_line"
     },
     {
+      "name": "ALARM_INT_-1_1_OPEN1",
+      "type": "alarm",
+      "id": "int_-1_1_open1",
+      "x": -2.0,
+      "y": 0.0,
+      "z": -1.85,
+      "rot_z": 0.0,
+      "room": "vault_ante",
+      "meta": {
+        "event": "alarm.vault_door",
+        "audible": true,
+        "fixture": "vault_door"
+      }
+    },
+    {
       "name": "ALARM_ATM_RCCE455F7_2",
       "type": "alarm",
       "id": "atm_rcce455f7_2",
@@ -359,17 +374,17 @@
     },
     {
       "wall": "int_-1_1",
-      "kind": "door",
+      "kind": "vault",
       "story": -1,
       "x": -2.0,
       "y": 0.0,
-      "z": -2.3,
-      "width": 1.25,
-      "height": 2.2,
+      "z": -2.35,
+      "width": 1.3,
+      "height": 2.1,
       "sill": 0.0,
       "tag": "vault_gate",
       "breach_class": null,
-      "material": null,
+      "material": "metal",
       "vaultable": false,
       "reinforceable": true,
       "building": "credit_union_a03"
@@ -1572,7 +1587,7 @@
       }
     },
     {
-      "node": "int_col_-1_1_seg3",
+      "node": "int_col_-1_1_open1_VAULTDOOR",
       "material": {
         "id": "concrete",
         "acoustic": "Concrete",
@@ -1581,7 +1596,7 @@
       }
     },
     {
-      "node": "int_col_-1_1_open1_lintel",
+      "node": "int_col_-1_1_seg3",
       "material": {
         "id": "concrete",
         "acoustic": "Concrete",
@@ -1609,24 +1624,6 @@
     },
     {
       "node": "int_col_-1_1_seg6",
-      "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
-      }
-    },
-    {
-      "node": "int_col_-1_1_seg7",
-      "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
-      }
-    },
-    {
-      "node": "int_col_-1_1_seg8",
       "material": {
         "id": "concrete",
         "acoustic": "Concrete",
@@ -1888,24 +1885,6 @@
     },
     {
       "node": "table_count_r66cbf98f_8_col",
-      "material": {
-        "id": "wood",
-        "acoustic": "Wood",
-        "absorption": null,
-        "damping": null
-      }
-    },
-    {
-      "node": "cartons_r66cbf98f_9_col",
-      "material": {
-        "id": "wood",
-        "acoustic": "Wood",
-        "absorption": null,
-        "damping": null
-      }
-    },
-    {
-      "node": "cartons_r66cbf98f_10_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -2360,40 +2339,65 @@
       "building": "credit_union_a03"
     },
     {
-      "id": "credit_union_a03:if:4e39c4e4",
-      "kind": "door",
+      "id": "credit_union_a03:if:e77d06d1",
+      "kind": "vault_door",
       "slot_ref": "int_-1_1_open1",
       "transform": {
         "translation": [
           -2.0,
           0.0,
-          -2.3
+          -2.35
         ],
-        "rot_y": 90
+        "rot_y": 270
       },
       "states": [
-        "closed",
-        "open"
+        "locked",
+        "unlocked",
+        "open",
+        "breached"
       ],
-      "default": "closed",
+      "default": "locked",
       "transitions": [
         {
-          "event": "toggle",
-          "from": "closed",
+          "event": "unlock",
+          "from": "locked",
+          "to": "unlocked"
+        },
+        {
+          "event": "lock",
+          "from": "unlocked",
+          "to": "locked"
+        },
+        {
+          "event": "open",
+          "from": "unlocked",
           "to": "open"
         },
         {
-          "event": "toggle",
+          "event": "close",
           "from": "open",
-          "to": "closed"
+          "to": "unlocked"
+        },
+        {
+          "event": "breach",
+          "from": "locked",
+          "to": "breached"
+        },
+        {
+          "event": "breach",
+          "from": "unlocked",
+          "to": "breached"
         }
       ],
       "source": "inferred",
-      "reversible": true,
+      "reversible": false,
       "collision_per_state": {
-        "closed": true,
-        "open": false
+        "locked": true,
+        "unlocked": true,
+        "open": false,
+        "breached": false
       },
+      "material": "metal",
       "building": "credit_union_a03"
     },
     {
@@ -2545,11 +2549,11 @@
       "door_nodes": [
         {
           "floor": -1,
-          "kind": "door",
+          "kind": "vault",
           "wall": "int_-1_1",
           "pos": 0.0,
-          "interactive": "credit_union_a03:if:4e39c4e4",
-          "default_state": "closed",
+          "interactive": "credit_union_a03:if:e77d06d1",
+          "default_state": "locked",
           "connects_from": "vault_room",
           "discharge_door": false
         },
@@ -2742,11 +2746,11 @@
       "door_nodes": [
         {
           "floor": -1,
-          "kind": "door",
+          "kind": "vault",
           "wall": "int_-1_1",
           "pos": 0.0,
-          "interactive": "credit_union_a03:if:4e39c4e4",
-          "default_state": "closed",
+          "interactive": "credit_union_a03:if:e77d06d1",
+          "default_state": "locked",
           "connects_from": "vault_room",
           "discharge_door": false
         },
@@ -3036,13 +3040,11 @@
     "int_-1_1_open0_BREACHPANEL": "breach",
     "int_-1_1_seg1": "wall",
     "int_-1_1_seg2": "wall",
+    "int_-1_1_open1_VAULTDOOR": "vault_door",
     "int_-1_1_seg3": "wall",
-    "int_-1_1_open1_lintel": "doorway",
     "int_-1_1_seg4": "wall",
     "int_-1_1_seg5": "wall",
     "int_-1_1_seg6": "wall",
-    "int_-1_1_seg7": "wall",
-    "int_-1_1_seg8": "wall",
     "stair0_-1_0": "stair",
     "stair0_-1_1": "stair",
     "stair0_-1_2": "stair",
@@ -3108,8 +3110,6 @@
     "table_count_r66cbf98f_7": "prop",
     "chair_set_r66cbf98f_7_1": "prop",
     "table_count_r66cbf98f_8": "prop",
-    "cartons_r66cbf98f_9": "prop",
-    "cartons_r66cbf98f_10": "prop",
     "safe_floor_r82482861_1": "prop",
     "shelf_run_r82482861_2": "prop",
     "cabinet_locker_r82482861_3": "prop",

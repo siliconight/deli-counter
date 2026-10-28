@@ -1,3 +1,18 @@
+## [0.290.0] - a bank's vault gate is a vault door
+
+The factory's roadmap 323. Four score banks -- `bank_branch_a04`, `bank_tower_a01`, `credit_union_a01`,
+`credit_union_a03` -- entered their vault through an ordinary door tagged `vault_gate`, built as a doorway: no vault
+door, no vault-door states, and no `alarm.vault_door` hook (0.289.0's), so four of the library's banks could never send
+the event a vault job turns on. `migrations/migrate_bank_vault_doors.py` makes each the vault door the other banks
+author (`bank_branch_a02`'s `vault_door_0`: 1.3 x 2.1 m, from the floor, metal, facing its approach), refurnishes the
+spec, and holds the result to `vault_room.findings` (layout_lint's L22) before keeping it: three became vault doors,
+and `credit_union_a01` keeps its door, because the leaf would swing across its stair `cu01_stair_w` -- the first apply
+of this release was refused by this repo's own gate for exactly that. `credit_union_a03`'s antechamber gives up two
+cartons that stood in the swing. A `vault_gate` not into an objective room, or more than one, is left and reported. The towers whose score is an
+executive safe suite or a teller cage, and the credit union whose score is a records room, keep their doors: not every
+score is a vault. Fourteen other families tag a `vault_gate`; only banks and credit unions are read. Tests:
+tests/test_bank_vault_doors.py (fails on 0.289.0). build.py --all, nav_gate.py --all (157 shells), the suite.
+
 ## [0.289.0] - a score's alarm hooks
 
 The walker, 2026-10-28, of score locations: "gameplay events or something that doesn't mean much for level factory but

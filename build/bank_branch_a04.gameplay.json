@@ -133,6 +133,21 @@
       "room": "vault_antechamber"
     },
     {
+      "name": "ALARM_INT_-1_3_OPEN0",
+      "type": "alarm",
+      "id": "int_-1_3_open0",
+      "x": -10.0,
+      "y": 2.0,
+      "z": -2.25,
+      "rot_z": 0.0,
+      "room": "vault_room",
+      "meta": {
+        "event": "alarm.vault_door",
+        "audible": true,
+        "fixture": "vault_door"
+      }
+    },
+    {
       "name": "ALARM_TELLER_COUNTER",
       "type": "alarm",
       "id": "teller_counter",
@@ -705,17 +720,17 @@
     },
     {
       "wall": "int_-1_3",
-      "kind": "door",
+      "kind": "vault",
       "story": -1,
       "x": -10.0,
       "y": 2.0,
-      "z": -3.1,
-      "width": 1.25,
-      "height": 2.2,
+      "z": -3.15,
+      "width": 1.3,
+      "height": 2.1,
       "sill": 0.0,
       "tag": "vault_gate",
       "breach_class": null,
-      "material": null,
+      "material": "metal",
       "vaultable": false,
       "reinforceable": true,
       "building": "bank_branch_a04"
@@ -3532,7 +3547,7 @@
       }
     },
     {
-      "node": "int_col_-1_3_open0_lintel",
+      "node": "int_col_-1_3_open0_VAULTDOOR",
       "material": {
         "id": "concrete",
         "acoustic": "Concrete",
@@ -3631,15 +3646,6 @@
       }
     },
     {
-      "node": "int_col_-1_3_seg15",
-      "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
-      }
-    },
-    {
       "node": "int_col_-1_3_open1_lintel",
       "material": {
         "id": "concrete",
@@ -3650,6 +3656,15 @@
     },
     {
       "node": "int_col_-1_3_open1_BREACHPANEL",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "int_col_-1_3_seg15",
       "material": {
         "id": "concrete",
         "acoustic": "Concrete",
@@ -3677,15 +3692,6 @@
     },
     {
       "node": "int_col_-1_3_seg18",
-      "material": {
-        "id": "concrete",
-        "acoustic": "Concrete",
-        "absorption": 0.7,
-        "damping": 0.6
-      }
-    },
-    {
-      "node": "int_col_-1_3_seg19",
       "material": {
         "id": "concrete",
         "acoustic": "Concrete",
@@ -5232,40 +5238,65 @@
       "building": "bank_branch_a04"
     },
     {
-      "id": "bank_branch_a04:if:eb74b0cf",
-      "kind": "door",
+      "id": "bank_branch_a04:if:14161f64",
+      "kind": "vault_door",
       "slot_ref": "int_-1_3_open0",
       "transform": {
         "translation": [
           -10.0,
           2.0,
-          -3.1
+          -3.15
         ],
-        "rot_y": 0
+        "rot_y": 180
       },
       "states": [
-        "closed",
-        "open"
+        "locked",
+        "unlocked",
+        "open",
+        "breached"
       ],
-      "default": "closed",
+      "default": "locked",
       "transitions": [
         {
-          "event": "toggle",
-          "from": "closed",
+          "event": "unlock",
+          "from": "locked",
+          "to": "unlocked"
+        },
+        {
+          "event": "lock",
+          "from": "unlocked",
+          "to": "locked"
+        },
+        {
+          "event": "open",
+          "from": "unlocked",
           "to": "open"
         },
         {
-          "event": "toggle",
+          "event": "close",
           "from": "open",
-          "to": "closed"
+          "to": "unlocked"
+        },
+        {
+          "event": "breach",
+          "from": "locked",
+          "to": "breached"
+        },
+        {
+          "event": "breach",
+          "from": "unlocked",
+          "to": "breached"
         }
       ],
       "source": "inferred",
-      "reversible": true,
+      "reversible": false,
       "collision_per_state": {
-        "closed": true,
-        "open": false
+        "locked": true,
+        "unlocked": true,
+        "open": false,
+        "breached": false
       },
+      "material": "metal",
       "building": "bank_branch_a04"
     },
     {
@@ -5454,11 +5485,11 @@
       "door_nodes": [
         {
           "floor": -1,
-          "kind": "door",
+          "kind": "vault",
           "wall": "int_-1_3",
           "pos": -0.25,
-          "interactive": "bank_branch_a04:if:eb74b0cf",
-          "default_state": "closed",
+          "interactive": "bank_branch_a04:if:14161f64",
+          "default_state": "locked",
           "connects_from": "vault_room",
           "discharge_door": false
         },
@@ -5641,11 +5672,11 @@
       "door_nodes": [
         {
           "floor": -1,
-          "kind": "door",
+          "kind": "vault",
           "wall": "int_-1_3",
           "pos": -0.25,
-          "interactive": "bank_branch_a04:if:eb74b0cf",
-          "default_state": "closed",
+          "interactive": "bank_branch_a04:if:14161f64",
+          "default_state": "locked",
           "connects_from": "vault_room",
           "discharge_door": false
         },
@@ -6607,7 +6638,7 @@
     "int_-1_3_seg2": "wall",
     "int_-1_3_seg3": "wall",
     "int_-1_3_seg4": "wall",
-    "int_-1_3_open0_lintel": "doorway",
+    "int_-1_3_open0_VAULTDOOR": "vault_door",
     "int_-1_3_seg5": "wall",
     "int_-1_3_seg6": "wall",
     "int_-1_3_seg7": "wall",
@@ -6618,13 +6649,12 @@
     "int_-1_3_seg12": "wall",
     "int_-1_3_seg13": "wall",
     "int_-1_3_seg14": "wall",
-    "int_-1_3_seg15": "wall",
     "int_-1_3_open1_lintel": "breach",
     "int_-1_3_open1_BREACHPANEL": "breach",
+    "int_-1_3_seg15": "wall",
     "int_-1_3_seg16": "wall",
     "int_-1_3_seg17": "wall",
     "int_-1_3_seg18": "wall",
-    "int_-1_3_seg19": "wall",
     "stair0_-1_0": "stair",
     "stair0_-1_1": "stair",
     "stair0_-1_2": "stair",
