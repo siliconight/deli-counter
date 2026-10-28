@@ -1,3 +1,7 @@
+## [0.286.2] - the migrations index names migrate_bank_money.py
+
+`migrations/README.md`'s generated index (the factory's `tools/factory_index.py --write`) gained its line for `migrate_bank_money.py` after 0.286.1 was tagged, in a commit of its own, so the newest code commit was newer than VERSION and the factory's `verify-manifest --strict` read Deli Counter STALE. This release carries that line and changes nothing else.
+
 ## [0.286.1] - a vault's money rack is steel
 
 0.286.0's money racks were built as timber bookcases: `shelf_cash` had no row in `_PROP_MATERIALS`, took the `wood`
