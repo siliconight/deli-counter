@@ -8,7 +8,7 @@
   "coverage": {
     "breach/generated": 3,
     "doorway/generated": 9,
-    "safe_deposit_boxes/generated": 1,
+    "safe_deposit_boxes/generated": 4,
     "vault_door/generated": 1,
     "wall/generated": 267,
     "window/generated": 10
@@ -8391,10 +8391,10 @@
     {
       "slot_id": "int_-1_5_seg2",
       "role": "wall",
-      "size_mod": "full",
+      "size_mod": "end",
       "style": 1,
       "material": "concrete",
-      "current_ref": "wall_greybox_01",
+      "current_ref": "wallEnd_greybox_01",
       "kit_axis": "theme",
       "wall": "int_-1_5",
       "story": -1,
@@ -8402,7 +8402,42 @@
       "transform": {
         "translation": [
           7.0,
-          8.25,
+          7.3925,
+          -1.95
+        ],
+        "rot_y": 90,
+        "scale": [
+          0.285,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.285,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_-1_5_open2",
+      "role": "safe_deposit_boxes",
+      "size_mod": "full",
+      "style": 1,
+      "material": "metal_painted",
+      "current_ref": "safe_deposit_boxes_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_-1_5",
+      "story": -1,
+      "facing": "Y",
+      "transform": {
+        "translation": [
+          7.0,
+          9.0,
           -1.95
         ],
         "rot_y": 90,
@@ -8414,13 +8449,33 @@
       },
       "fit": {
         "dims": [
-          2.0,
+          2.93,
           0.3,
           3.3
         ],
         "pivot": "center",
-        "openings": [],
+        "openings": [
+          {
+            "kind": "safe_deposit",
+            "width": 2.93,
+            "height": 2.4,
+            "sill": 0.0
+          }
+        ],
         "collision": "convex"
+      },
+      "interactive": {
+        "id": "bank_job:if:e670ac4d",
+        "kind": "safe_deposit_boxes",
+        "states": [
+          "intact",
+          "drilled"
+        ],
+        "default": "intact",
+        "collision_per_state": {
+          "intact": true,
+          "drilled": true
+        }
       }
     },
     {
@@ -8437,19 +8492,19 @@
       "transform": {
         "translation": [
           7.0,
-          10.125,
+          10.7325,
           -1.95
         ],
         "rot_y": 90,
         "scale": [
-          1.75,
+          0.535,
           0.3,
           3.3
         ]
       },
       "fit": {
         "dims": [
-          1.75,
+          0.535,
           0.3,
           3.3
         ],
@@ -8461,10 +8516,45 @@
     {
       "slot_id": "int_-1_6_seg0",
       "role": "wall",
-      "size_mod": "full",
+      "size_mod": "end",
       "style": 1,
       "material": "concrete",
-      "current_ref": "wall_greybox_01",
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_-1_6",
+      "story": -1,
+      "facing": "X",
+      "transform": {
+        "translation": [
+          7.155,
+          2.0,
+          -1.95
+        ],
+        "rot_y": 0,
+        "scale": [
+          0.31,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.31,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_-1_6_open0",
+      "role": "safe_deposit_boxes",
+      "size_mod": "full",
+      "style": 1,
+      "material": "metal_painted",
+      "current_ref": "safe_deposit_boxes_greybox_01",
       "kit_axis": "theme",
       "wall": "int_-1_6",
       "story": -1,
@@ -8484,13 +8574,33 @@
       },
       "fit": {
         "dims": [
-          2.0,
+          1.38,
           0.3,
           3.3
         ],
         "pivot": "center",
-        "openings": [],
+        "openings": [
+          {
+            "kind": "safe_deposit",
+            "width": 1.38,
+            "height": 2.4,
+            "sill": 0.0
+          }
+        ],
         "collision": "convex"
+      },
+      "interactive": {
+        "id": "bank_job:if:dc8ed64a",
+        "kind": "safe_deposit_boxes",
+        "states": [
+          "intact",
+          "drilled"
+        ],
+        "default": "intact",
+        "collision_per_state": {
+          "intact": true,
+          "drilled": true
+        }
       }
     },
     {
@@ -8506,20 +8616,20 @@
       "facing": "X",
       "transform": {
         "translation": [
-          9.1,
+          8.945,
           2.0,
           -1.95
         ],
         "rot_y": 0,
         "scale": [
-          0.2,
+          0.51,
           0.3,
           3.3
         ]
       },
       "fit": {
         "dims": [
-          0.2,
+          0.51,
           0.3,
           3.3
         ],
@@ -8529,7 +8639,7 @@
       }
     },
     {
-      "slot_id": "int_-1_6_open0",
+      "slot_id": "int_-1_6_open1",
       "role": "vault_door",
       "size_mod": "full",
       "style": 1,
@@ -8596,17 +8706,52 @@
     {
       "slot_id": "int_-1_6_seg2",
       "role": "wall",
-      "size_mod": "full",
+      "size_mod": "end",
       "style": 1,
       "material": "concrete",
-      "current_ref": "wall_greybox_01",
+      "current_ref": "wallEnd_greybox_01",
       "kit_axis": "theme",
       "wall": "int_-1_6",
       "story": -1,
       "facing": "X",
       "transform": {
         "translation": [
-          13.8,
+          13.055,
+          2.0,
+          -1.95
+        ],
+        "rot_y": 0,
+        "scale": [
+          0.51,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.51,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "int_-1_6_open2",
+      "role": "safe_deposit_boxes",
+      "size_mod": "full",
+      "style": 1,
+      "material": "metal_painted",
+      "current_ref": "safe_deposit_boxes_greybox_01",
+      "kit_axis": "theme",
+      "wall": "int_-1_6",
+      "story": -1,
+      "facing": "X",
+      "transform": {
+        "translation": [
+          14.0,
           2.0,
           -1.95
         ],
@@ -8619,13 +8764,33 @@
       },
       "fit": {
         "dims": [
-          2.0,
+          1.38,
           0.3,
           3.3
         ],
         "pivot": "center",
-        "openings": [],
+        "openings": [
+          {
+            "kind": "safe_deposit",
+            "width": 1.38,
+            "height": 2.4,
+            "sill": 0.0
+          }
+        ],
         "collision": "convex"
+      },
+      "interactive": {
+        "id": "bank_job:if:739dc291",
+        "kind": "safe_deposit_boxes",
+        "states": [
+          "intact",
+          "drilled"
+        ],
+        "default": "intact",
+        "collision_per_state": {
+          "intact": true,
+          "drilled": true
+        }
       }
     },
     {
@@ -8641,20 +8806,20 @@
       "facing": "X",
       "transform": {
         "translation": [
-          14.9,
+          14.845,
           2.0,
           -1.95
         ],
         "rot_y": 0,
         "scale": [
-          0.2,
+          0.31,
           0.3,
           3.3
         ]
       },
       "fit": {
         "dims": [
-          0.2,
+          0.31,
           0.3,
           3.3
         ],
@@ -12013,92 +12178,14 @@
       }
     },
     {
-      "slot_id": "shelf_cash_rff304921_1",
-      "role": "prop",
-      "size_mod": "full",
-      "style": 9,
-      "material": "metal_bare",
-      "species": "shelving",
-      "stock": "vault",
-      "variant": 0,
-      "form": null,
-      "current_ref": "prop_greybox_01",
-      "kit_axis": "material",
-      "wall": null,
-      "story": null,
-      "facing": null,
-      "transform": {
-        "translation": [
-          14.59,
-          9.08,
-          -2.65
-        ],
-        "rot_y": 90.0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          1.8,
-          0.5,
-          1.9
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "safe_floor_rff304921_2",
-      "role": "prop",
-      "size_mod": "full",
-      "style": 7,
-      "material": "metal_painted",
-      "species": "drop_safe",
-      "stock": null,
-      "variant": 0,
-      "form": null,
-      "current_ref": "prop_greybox_01",
-      "kit_axis": "material",
-      "wall": null,
-      "story": null,
-      "facing": null,
-      "transform": {
-        "translation": [
-          14.49,
-          4.57,
-          -3.0
-        ],
-        "rot_y": 90.0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          0.8,
-          0.7,
-          1.2
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "cash_cart_rff304921_3",
+      "slot_id": "table_count_rff304921_1",
       "role": "prop",
       "size_mod": "full",
       "style": 5,
-      "material": "metal_bare",
-      "species": "cash_cart",
-      "stock": null,
-      "variant": 3,
+      "material": "wood",
+      "species": "table",
+      "stock": "vault",
+      "variant": 2,
       "form": null,
       "current_ref": "prop_greybox_01",
       "kit_axis": "material",
@@ -12109,46 +12196,7 @@
         "translation": [
           9.31,
           4.92,
-          -3.05
-        ],
-        "rot_y": 90.0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          1.2,
-          0.7,
-          1.1
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "safe_floor_rff304921_4",
-      "role": "prop",
-      "size_mod": "full",
-      "style": 7,
-      "material": "metal_painted",
-      "species": "drop_safe",
-      "stock": null,
-      "variant": 0,
-      "form": null,
-      "current_ref": "prop_greybox_01",
-      "kit_axis": "material",
-      "wall": null,
-      "story": null,
-      "facing": null,
-      "transform": {
-        "translation": [
-          8.7,
-          10.49,
-          -3.0
+          -3.22
         ],
         "rot_y": 0.0,
         "scale": [
@@ -12159,9 +12207,9 @@
       },
       "fit": {
         "dims": [
-          0.8,
-          0.7,
-          1.2
+          1.6,
+          0.9,
+          0.76
         ],
         "pivot": "center",
         "openings": [],
@@ -12169,13 +12217,13 @@
       }
     },
     {
-      "slot_id": "shelf_cash_row_rff304921_5",
+      "slot_id": "chair_set_rff304921_1_1",
       "role": "prop",
       "size_mod": "full",
-      "style": 9,
-      "material": "metal_bare",
-      "species": "shelving",
-      "stock": "vault",
+      "style": 5,
+      "material": "wood",
+      "species": "chair",
+      "stock": null,
       "variant": 0,
       "form": null,
       "current_ref": "prop_greybox_01",
@@ -12185,11 +12233,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          11.0,
-          7.43,
-          -2.9
+          9.28,
+          3.86,
+          -3.15
         ],
-        "rot_y": 270.0,
+        "rot_y": 191.2,
         "scale": [
           1.0,
           1.0,
@@ -12198,9 +12246,165 @@
       },
       "fit": {
         "dims": [
-          2.4,
+          0.5,
+          0.5,
+          0.9
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "chair_set_rff304921_1_2",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 5,
+      "material": "wood",
+      "species": "chair",
+      "stock": null,
+      "variant": 0,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          9.28,
+          5.82,
+          -3.15
+        ],
+        "rot_y": 0.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.5,
+          0.5,
+          0.9
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "dust_sheet_rff304921_2",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 5,
+      "material": "canvas",
+      "species": "dust_sheet",
+      "stock": null,
+      "variant": 3,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          9.24,
+          9.41,
+          -3.15
+        ],
+        "rot_y": 180.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.0,
+          0.8,
+          0.9
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "cartons_rff304921_3",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 5,
+      "material": "paper",
+      "species": "carton_stack",
+      "stock": null,
+      "variant": 2,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          10.54,
+          9.41,
+          -3.1
+        ],
+        "rot_y": 0.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.9,
           0.6,
-          1.4
+          1.0
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "cartons_rff304921_4",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 5,
+      "material": "paper",
+      "species": "carton_stack",
+      "stock": null,
+      "variant": 1,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          12.02,
+          9.41,
+          -3.1
+        ],
+        "rot_y": 90.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.9,
+          0.6,
+          1.0
         ],
         "pivot": "center",
         "openings": [],
@@ -12832,7 +13036,7 @@
       }
     },
     {
-      "slot_id": "security_camera_rff304921_6",
+      "slot_id": "security_camera_rff304921_5",
       "role": "prop",
       "size_mod": "full",
       "style": 5,
@@ -12871,7 +13075,7 @@
       }
     },
     {
-      "slot_id": "security_camera_rff304921_7",
+      "slot_id": "security_camera_rff304921_6",
       "role": "prop",
       "size_mod": "full",
       "style": 5,

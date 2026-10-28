@@ -1,3 +1,44 @@
+## [0.288.0] - a bank's deposit vault is lined with boxes
+
+The walker, of the bank's vault: "that vault room needs some love", with a photograph of a room walled floor to
+ceiling in numbered boxes. A library bank's deposit wall was one authored 2 m panel in a room otherwise furnished as
+a money room.
+
+### Added
+- **`level_design.deposit_vault_ids`**: the room an authored deposit wall faces -- for each `safe_deposit` opening
+  on a partition, the innermost room on its storey holding a point just past it on its `face` side.
+  bank_branch_a02's two deposit walls (x = -8 facing east, x = 0 facing west) both face its inner 64 m2 `vault`;
+  bank_job's faces its inner `vault`; bank_branch_a04 has none.
+- **`level_design.line_deposit_vaults`**: every partition round a deposit vault is filled with more `safe_deposit`
+  OPENINGS facing it -- the free stretch inside the room's corners and clear of every other opening by
+  `DEPOSIT_LINING_MARGIN` (0.4 m), cut into equal units of at most `DEPOSIT_LINING_MAX_W` (4.0 m; Zoo builds
+  0.6-5.0), tagged `deposit_lining_<n>`. An opening, not a placed piece: the builder already makes a deposit
+  opening a rotated, collided module with its own drillable interactive, so every unit is a real one. A vault door
+  clears its 3.6 m SLOT (`vault_room.slot_width`, the width layout lint L22 holds it to), not its 1.3 m aperture.
+  Idempotent. Run by `presets.make` with the faces, before cover and furniture; the vault's exterior walls are not
+  lined.
+- **`bank_deposit`**: furnish makes a deposit vault the boxes and a viewing table (`table_count`) and a camera -- no
+  money racks, rows or carts, which are the money room's.
+- `migrations/migrate_deposit_lining.py`: lines and refurnishes the three library banks with a deposit wall, and
+  nothing else.
+
+### Refuted, kept
+- **Furnish's wall pieces were tried first**: a `deposit_wall` piece against every wall stood 1-4 units along 32 m
+  of wall. `_wall_slots` offered 16 places a size; furnish's spacing keeps pieces apart, and a wall of boxes abuts.
+  Letting the piece back onto partitions changed nothing -- the knob was not the one refusing it.
+- **The first lining cleared the vault door's aperture**, and layout lint L22 failed bank_branch_a02: two units in
+  the door's 3.6 m slot.
+
+### Measured, the library lined
+- bank_branch_a02 and a03: 5 units, 9.6 m, beside the 2 authored (4.0 m); bank_job: 3 units, 5.7 m, beside 1.
+  Every other spec unchanged. The nav gate's 157 shells pass.
+
+### Tests
+- `tests/test_deposit_lining.py` (new; all five fail on 0.287.1): which room is the deposit vault; the lining runs
+  the vault's partitions, faces it, clears every opening and corner; it is idempotent and touches no other spec; the
+  room is the boxes and a table; the built vaults carry their units as deposit slots.
+- `tests/test_bank_money.py`: a deposit vault is not a money room.
+
 ## [0.287.1] - a designer's level name is not held to the IP-name guard
 
 The factory's authoring panel names a level what the designer types, and Level Factory writes its per-run spec as

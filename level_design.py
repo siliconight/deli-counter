@@ -2703,6 +2703,15 @@ _RECIPES = {
     # every bank vault has both -- placed in turn, the racks took the floor
     # turns the carts drew from and bank_branch_a03's vaults lost five -- and
     # the wall run's racks are money racks, not a back office's.
+    # A BANK'S DEPOSIT VAULT (0.288.0, `deposit_vault_ids`): its walls are boxes
+    # (`line_deposit_vaults`), and the room is the boxes and a viewing table --
+    # the walker's photograph of a room walled in numbered boxes -- with no
+    # money racks, rows or carts, which are the money room's.
+    "bank_deposit": {"anchors": ("table_count",),
+                     "wall": (),
+                     "floor": (),
+                     "clusters": (),
+                     "fixtures": ("security_camera",)},
     "bank_vault": {"anchors": ("shelf_cash", "safe_floor", "cash_cart"),
                    "all_anchors": True,
                    "wall": ("shelf_cash", "shelf_cash", "cabinet_locker", "safe_floor"),
@@ -3579,6 +3588,130 @@ def dress_club_rooms(spec):
             spec, "paint_block", _CLUB_FINISHES["paint_block"])
         n += 1
     del sh
+    return n
+
+
+#: A DEPOSIT VAULT'S LINING (0.288.0). The walker, of the bank's vault: "that
+#: vault room needs some love", with a photograph of a room walled floor to
+#: ceiling in numbered boxes. A bank's authored deposit wall was one 2 m panel.
+#: `line_deposit_vaults` fills the rest of each partition round the vault it
+#: faces with more of the same OPENING -- not a furnished piece: the builder
+#: already makes a deposit opening a rotated, collided module with its own
+#: drillable interactive, so every unit a lining adds is a real one. Furnish's
+#: wall pieces were tried first and stood 1-4 units along 32 m of wall: its
+#: spacing rule keeps pieces apart, and a wall of boxes abuts.
+DEPOSIT_LINING_TAG = "deposit_lining"
+#: Kept this far from a room's corner and from any other opening's edge, metres.
+DEPOSIT_LINING_MARGIN = 0.4
+#: A unit is at most this wide (Zoo's genome builds 0.6-5.0) and a span under
+#: the minimum takes none.
+DEPOSIT_LINING_MAX_W = 4.0
+DEPOSIT_LINING_MIN_W = 0.8
+#: An opening that names no width is this wide, by kind, for the lining's
+#: clearance only (the builder's own defaults are not asked).
+_OPENING_W = {"door": 1.0, "garage": 2.4, "window": 1.2, "breach": 1.5, "vault": 1.3, "teller": 2.0,
+              "safe_deposit": 2.0}
+
+
+def deposit_vault_ids(spec):
+    """The ids of the rooms an authored deposit wall faces (0.288.0): for each
+    `safe_deposit` opening on a partition, the innermost room on its storey that
+    holds a point just past the opening on its `face` side. bank_branch_a02's two
+    deposit walls, x = -8 facing east and x = 0 facing west, both face its inner
+    64 m2 `vault`; bank_job's faces its inner `vault` too. An opening is
+    ``pos * run`` from its run's centre (`deli_counter`'s `u`)."""
+    out = set()
+    rooms = spec.get("rooms") or []
+    for p in spec.get("partitions") or []:
+        story = int(p.get("story", 0) or 0)
+        lo, hi = float(p.get("start", 0.0)), float(p.get("end", 0.0))
+        mid, run = (lo + hi) / 2.0, hi - lo
+        for op in p.get("openings") or []:
+            if op.get("kind") != "safe_deposit" or op.get("face") not in ("N", "S", "E", "W"):
+                continue
+            if op.get("tag", "").startswith(DEPOSIT_LINING_TAG):
+                continue
+            u = mid + float(op.get("pos", 0.0)) * run
+            step = 0.2 if op["face"] in ("E", "N") else -0.2
+            if p.get("axis") == "Y":
+                x, y = float(p["pos"]) + step, u
+            else:
+                x, y = u, float(p["pos"]) + step
+            holding = [r for r in rooms if int(r.get("story", 0) or 0) == story
+                       and r["bounds"][0] <= x <= r["bounds"][2] and r["bounds"][1] <= y <= r["bounds"][3]]
+            if holding:
+                inner = min(holding, key=lambda r: (r["bounds"][2] - r["bounds"][0]) * (r["bounds"][3] - r["bounds"][1]))
+                out.add(inner["id"])
+    return out
+
+
+def line_deposit_vaults(spec):
+    """Line every deposit vault's partitions with deposit openings (0.288.0;
+    `DEPOSIT_LINING_TAG`). For each partition along one of the vault's edges,
+    the free stretch of the edge -- inside the room's corners by
+    `DEPOSIT_LINING_MARGIN`, clear of every opening on the partition by the same
+    -- is cut into units of at most `DEPOSIT_LINING_MAX_W`, equal widths, each
+    a `safe_deposit` opening facing the vault. Idempotent: a vault already lined
+    is lined again from scratch. The vault's exterior walls are not lined.
+    Returns the number of units added."""
+    ids = deposit_vault_ids(spec)
+    rooms = {r["id"]: r for r in spec.get("rooms") or []}
+    for p in spec.get("partitions") or []:
+        p["openings"] = [op for op in p.get("openings") or []
+                         if not str(op.get("tag", "")).startswith(DEPOSIT_LINING_TAG)]
+    n = 0
+    for rid in sorted(ids):
+        r = rooms[rid]
+        x0, y0, x1, y1 = (float(v) for v in r["bounds"])
+        story = int(r.get("story", 0) or 0)
+        # an edge: (the partition axis along it, its line, the room's span along it, the face toward the room)
+        edges = (("Y", x0, (y0, y1), "E"), ("Y", x1, (y0, y1), "W"),
+                 ("X", y0, (x0, x1), "N"), ("X", y1, (x0, x1), "S"))
+        for axis, line, (a, b), face in edges:
+            for p in spec.get("partitions") or []:
+                if (p.get("axis") != axis or int(p.get("story", 0) or 0) != story
+                        or abs(float(p.get("pos", 0.0)) - line) > 0.05):
+                    continue
+                lo, hi = float(p["start"]), float(p["end"])
+                mid, run = (lo + hi) / 2.0, hi - lo
+                if run <= 0:
+                    continue
+                free_lo, free_hi = max(a, lo) + DEPOSIT_LINING_MARGIN, min(b, hi) - DEPOSIT_LINING_MARGIN
+                if free_hi - free_lo < DEPOSIT_LINING_MIN_W:
+                    continue
+                taken = []
+                for op in p.get("openings") or []:
+                    u = mid + float(op.get("pos", 0.0)) * run
+                    w = float(op.get("width") or _OPENING_W.get(op.get("kind"), 1.2))
+                    if op.get("kind") == "vault":
+                        # A VAULT DOOR TAKES ITS SLOT, not its aperture: the 1.3 m door stands in a 3.6 m slot
+                        # (`vault_room.slot_width`, the width layout lint L22 holds it to), and the first lining
+                        # cleared only the aperture and stood two units inside bank_branch_a02's door slot
+                        import vault_room
+                        ap = vault_room.resolved_aperture(op)
+                        w = vault_room.slot_width(ap["width"], ap["height"], ap["sill"])
+                    taken.append((u - w / 2.0 - DEPOSIT_LINING_MARGIN, u + w / 2.0 + DEPOSIT_LINING_MARGIN))
+                spans, at = [], free_lo
+                for t0, t1 in sorted(taken):
+                    if t1 <= at or t0 >= free_hi:
+                        continue
+                    if t0 > at:
+                        spans.append((at, min(t0, free_hi)))
+                    at = max(at, t1)
+                if at < free_hi:
+                    spans.append((at, free_hi))
+                for s0, s1 in spans:
+                    length = s1 - s0
+                    if length < DEPOSIT_LINING_MIN_W:
+                        continue
+                    k = int(-(-length // DEPOSIT_LINING_MAX_W))
+                    w = length / k
+                    for i in range(k):
+                        u = s0 + (i + 0.5) * w
+                        p["openings"].append({"kind": "safe_deposit", "pos": round((u - mid) / run, 6),
+                                              "width": round(w - 0.02, 3), "face": face,
+                                              "tag": "%s_%d" % (DEPOSIT_LINING_TAG, n), "material": "metal"})
+                        n += 1
     return n
 
 
@@ -6736,6 +6869,9 @@ def furnish(spec):
                for v in spec.get("volumes", [])):
             continue
         kind = _room_kind(room, building)
+        # a bank vault an authored deposit wall faces is a deposit vault (0.288.0)
+        if kind == "bank_vault" and room.get("id") in deposit_vault_ids(spec):
+            kind = "bank_deposit"
         recipe = _RECIPES[kind]
         if kind == "strip_club":
             recipe = dict(recipe, anchors=_club_anchors(room))

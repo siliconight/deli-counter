@@ -731,6 +731,23 @@
       "building": "bank_job"
     },
     {
+      "wall": "int_-1_5",
+      "kind": "safe_deposit",
+      "story": -1,
+      "x": 7.0,
+      "y": 9.0,
+      "z": -2.4,
+      "width": 2.93,
+      "height": 2.4,
+      "sill": 0.0,
+      "tag": "deposit_lining_0",
+      "breach_class": null,
+      "material": "metal",
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "bank_job"
+    },
+    {
       "wall": "int_-1_6",
       "kind": "vault",
       "story": -1,
@@ -741,6 +758,40 @@
       "height": 2.1,
       "sill": 0.0,
       "tag": "vault_door_0",
+      "breach_class": null,
+      "material": "metal",
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "bank_job"
+    },
+    {
+      "wall": "int_-1_6",
+      "kind": "safe_deposit",
+      "story": -1,
+      "x": 8.0,
+      "y": 2.0,
+      "z": -2.4,
+      "width": 1.38,
+      "height": 2.4,
+      "sill": 0.0,
+      "tag": "deposit_lining_1",
+      "breach_class": null,
+      "material": "metal",
+      "vaultable": false,
+      "reinforceable": false,
+      "building": "bank_job"
+    },
+    {
+      "wall": "int_-1_6",
+      "kind": "safe_deposit",
+      "story": -1,
+      "x": 14.0,
+      "y": 2.0,
+      "z": -2.4,
+      "width": 1.38,
+      "height": 2.4,
+      "sill": 0.0,
+      "tag": "deposit_lining_2",
       "breach_class": null,
       "material": "metal",
       "vaultable": false,
@@ -3179,6 +3230,24 @@
       }
     },
     {
+      "node": "int_col_-1_5_open2_lintel",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "int_col_-1_5_open2_SAFEDEPOSIT",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
       "node": "int_col_-1_5_seg3",
       "material": {
         "id": "concrete",
@@ -3197,6 +3266,24 @@
       }
     },
     {
+      "node": "int_col_-1_6_open0_lintel",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "int_col_-1_6_open0_SAFEDEPOSIT",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
       "node": "int_col_-1_6_seg1",
       "material": {
         "id": "concrete",
@@ -3206,7 +3293,7 @@
       }
     },
     {
-      "node": "int_col_-1_6_open0_VAULTDOOR",
+      "node": "int_col_-1_6_open1_VAULTDOOR",
       "material": {
         "id": "concrete",
         "acoustic": "Concrete",
@@ -3216,6 +3303,24 @@
     },
     {
       "node": "int_col_-1_6_seg2",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "int_col_-1_6_open2_lintel",
+      "material": {
+        "id": "concrete",
+        "acoustic": "Concrete",
+        "absorption": 0.7,
+        "damping": 0.6
+      }
+    },
+    {
+      "node": "int_col_-1_6_open2_SAFEDEPOSIT",
       "material": {
         "id": "concrete",
         "acoustic": "Concrete",
@@ -3827,25 +3932,7 @@
       }
     },
     {
-      "node": "shelf_cash_rff304921_1_col",
-      "material": {
-        "id": "metal_bare",
-        "acoustic": "Metal",
-        "absorption": 0.2,
-        "damping": 0.15
-      }
-    },
-    {
-      "node": "safe_floor_rff304921_2_col",
-      "material": {
-        "id": "metal_painted",
-        "acoustic": "Metal",
-        "absorption": 0.25,
-        "damping": 0.2
-      }
-    },
-    {
-      "node": "cash_cart_rff304921_3_col",
+      "node": "table_count_rff304921_1_col",
       "material": {
         "id": "wood",
         "acoustic": "Wood",
@@ -3854,21 +3941,48 @@
       }
     },
     {
-      "node": "safe_floor_rff304921_4_col",
+      "node": "chair_set_rff304921_1_1_col",
       "material": {
-        "id": "metal_painted",
-        "acoustic": "Metal",
-        "absorption": 0.25,
-        "damping": 0.2
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
-      "node": "shelf_cash_row_rff304921_5_col",
+      "node": "chair_set_rff304921_1_2_col",
       "material": {
-        "id": "metal_bare",
-        "acoustic": "Metal",
-        "absorption": 0.2,
-        "damping": 0.15
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
+      }
+    },
+    {
+      "node": "dust_sheet_rff304921_2_col",
+      "material": {
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
+      }
+    },
+    {
+      "node": "cartons_rff304921_3_col",
+      "material": {
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
+      }
+    },
+    {
+      "node": "cartons_rff304921_4_col",
+      "material": {
+        "id": "wood",
+        "acoustic": "Wood",
+        "absorption": null,
+        "damping": null
       }
     },
     {
@@ -4528,9 +4642,42 @@
       "building": "bank_job"
     },
     {
+      "id": "bank_job:if:e670ac4d",
+      "kind": "safe_deposit_boxes",
+      "slot_ref": "int_-1_5_open2",
+      "transform": {
+        "translation": [
+          7.0,
+          9.0,
+          -2.4
+        ],
+        "rot_y": 90
+      },
+      "states": [
+        "intact",
+        "drilled"
+      ],
+      "default": "intact",
+      "transitions": [
+        {
+          "event": "drill",
+          "from": "intact",
+          "to": "drilled"
+        }
+      ],
+      "source": "inferred",
+      "reversible": false,
+      "collision_per_state": {
+        "intact": true,
+        "drilled": true
+      },
+      "material": "metal",
+      "building": "bank_job"
+    },
+    {
       "id": "bank_job:if:b46d2a4f",
       "kind": "vault_door",
-      "slot_ref": "int_-1_6_open0",
+      "slot_ref": "int_-1_6_open1",
       "transform": {
         "translation": [
           11.0,
@@ -4585,6 +4732,72 @@
         "unlocked": true,
         "open": false,
         "breached": false
+      },
+      "material": "metal",
+      "building": "bank_job"
+    },
+    {
+      "id": "bank_job:if:dc8ed64a",
+      "kind": "safe_deposit_boxes",
+      "slot_ref": "int_-1_6_open0",
+      "transform": {
+        "translation": [
+          8.0,
+          2.0,
+          -2.4
+        ],
+        "rot_y": 0
+      },
+      "states": [
+        "intact",
+        "drilled"
+      ],
+      "default": "intact",
+      "transitions": [
+        {
+          "event": "drill",
+          "from": "intact",
+          "to": "drilled"
+        }
+      ],
+      "source": "inferred",
+      "reversible": false,
+      "collision_per_state": {
+        "intact": true,
+        "drilled": true
+      },
+      "material": "metal",
+      "building": "bank_job"
+    },
+    {
+      "id": "bank_job:if:739dc291",
+      "kind": "safe_deposit_boxes",
+      "slot_ref": "int_-1_6_open2",
+      "transform": {
+        "translation": [
+          14.0,
+          2.0,
+          -2.4
+        ],
+        "rot_y": 0
+      },
+      "states": [
+        "intact",
+        "drilled"
+      ],
+      "default": "intact",
+      "transitions": [
+        {
+          "event": "drill",
+          "from": "intact",
+          "to": "drilled"
+        }
+      ],
+      "source": "inferred",
+      "reversible": false,
+      "collision_per_state": {
+        "intact": true,
+        "drilled": true
       },
       "material": "metal",
       "building": "bank_job"
@@ -5398,11 +5611,17 @@
     "int_-1_5_open1_lintel": "breach",
     "int_-1_5_open1_BREACHPANEL": "breach",
     "int_-1_5_seg2": "wall",
+    "int_-1_5_open2_lintel": "safe_deposit_boxes",
+    "int_-1_5_open2_SAFEDEPOSIT": "safe_deposit_boxes",
     "int_-1_5_seg3": "wall",
     "int_-1_6_seg0": "wall",
+    "int_-1_6_open0_lintel": "safe_deposit_boxes",
+    "int_-1_6_open0_SAFEDEPOSIT": "safe_deposit_boxes",
     "int_-1_6_seg1": "wall",
-    "int_-1_6_open0_VAULTDOOR": "vault_door",
+    "int_-1_6_open1_VAULTDOOR": "vault_door",
     "int_-1_6_seg2": "wall",
+    "int_-1_6_open2_lintel": "safe_deposit_boxes",
+    "int_-1_6_open2_SAFEDEPOSIT": "safe_deposit_boxes",
     "int_-1_6_seg3": "wall",
     "stair0_-1_0": "stair",
     "stair0_-1_1": "stair",
@@ -5531,11 +5750,12 @@
     "cartons_rdc1e69ac_17": "prop",
     "cartons_r83237949_1": "prop",
     "cartons_r83237949_2": "prop",
-    "shelf_cash_rff304921_1": "prop",
-    "safe_floor_rff304921_2": "prop",
-    "cash_cart_rff304921_3": "prop",
-    "safe_floor_rff304921_4": "prop",
-    "shelf_cash_row_rff304921_5": "prop",
+    "table_count_rff304921_1": "prop",
+    "chair_set_rff304921_1_1": "prop",
+    "chair_set_rff304921_1_2": "prop",
+    "dust_sheet_rff304921_2": "prop",
+    "cartons_rff304921_3": "prop",
+    "cartons_rff304921_4": "prop",
     "security_camera_rcce455f7_10": "prop",
     "security_camera_rcce455f7_11": "prop",
     "security_camera_rcce455f7_12": "prop",
@@ -5552,8 +5772,8 @@
     "security_camera_rdc1e69ac_19": "prop",
     "security_camera_rdc1e69ac_20": "prop",
     "security_camera_rdc1e69ac_21": "prop",
+    "security_camera_rff304921_5": "prop",
     "security_camera_rff304921_6": "prop",
-    "security_camera_rff304921_7": "prop",
     "stair_guard_side_0": "prop",
     "stair_guard_rail_1": "prop",
     "stair_guard_side_2": "prop",

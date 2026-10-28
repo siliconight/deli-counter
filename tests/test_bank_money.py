@@ -57,7 +57,10 @@ def test_the_recipes():
 def test_every_library_bank_lobby_stands_a_desk_and_every_vault_its_money():
     for name in BANKS:
         d = _spec(name)
-        lobbies, vaults = _rooms(d, "bank_lobby"), _rooms(d, "bank_vault")
+        # a deposit vault is the boxes and a table, not a money room (0.288.0, `test_deposit_lining`)
+        deposit = level_design.deposit_vault_ids(d)
+        lobbies = _rooms(d, "bank_lobby")
+        vaults = [r for r in _rooms(d, "bank_vault") if r["id"] not in deposit]
         assert lobbies and vaults, name
         assert any(_in(d, v, r) and v["name"].startswith("desk") for r in lobbies for v in d["volumes"]), name
         for r in vaults:

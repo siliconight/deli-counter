@@ -3916,6 +3916,9 @@ def make(preset: str, enrich: bool = True, stairs_first: bool = False,
     # every pass below, so the cover and the furniture are laid round the
     # windows that are built.
     facade_plan.stack_mirrored(spec)
+    # A DEPOSIT VAULT IS LINED (0.288.0, `level_design.line_deposit_vaults`):
+    # here, with the faces, so the walls are settled before cover and furniture
+    level_design.line_deposit_vaults(spec)
     # NO PIECE THROUGH A WALL (0.199.0): a piece a recipe authors through one
     # of its own walls is trimmed back to the side it stands on --
     # `corner_deli`'s case came 0.825 m out into the market aisles and the

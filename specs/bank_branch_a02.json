@@ -288,6 +288,14 @@
      "face": "W",
      "tag": "deposit_boxes_0",
      "material": "metal"
+    },
+    {
+     "kind": "safe_deposit",
+     "pos": -0.210227,
+     "width": 2.43,
+     "face": "W",
+     "tag": "deposit_lining_2",
+     "material": "metal"
     }
    ]
   },
@@ -411,6 +419,22 @@
      "face": "E",
      "tag": "deposit_boxes_0",
      "material": "metal"
+    },
+    {
+     "kind": "safe_deposit",
+     "pos": -0.3125,
+     "width": 2.18,
+     "face": "E",
+     "tag": "deposit_lining_0",
+     "material": "metal"
+    },
+    {
+     "kind": "safe_deposit",
+     "pos": 0.3125,
+     "width": 2.18,
+     "face": "E",
+     "tag": "deposit_lining_1",
+     "material": "metal"
     }
    ],
    "material": "concrete"
@@ -430,6 +454,22 @@
      "sill": 0.0,
      "face": "N",
      "tag": "vault_door_0",
+     "material": "metal"
+    },
+    {
+     "kind": "safe_deposit",
+     "pos": -0.3625,
+     "width": 1.38,
+     "face": "S",
+     "tag": "deposit_lining_3",
+     "material": "metal"
+    },
+    {
+     "kind": "safe_deposit",
+     "pos": 0.3625,
+     "width": 1.38,
+     "face": "S",
+     "tag": "deposit_lining_4",
      "material": "metal"
     }
    ],
@@ -1383,91 +1423,29 @@
    "variant": 3
   },
   {
-   "name": "shelf_cash_rff304921_1",
-   "x": -2.27,
-   "y": -10.59,
-   "z": -2.7,
-   "size_x": 1.2,
-   "size_y": 0.5,
-   "size_z": 1.8,
-   "collision": "convex",
-   "material": "metal_bare",
-   "rot_z": 180.0,
-   "stock": "vault"
-  },
-  {
-   "name": "safe_floor_rff304921_2",
-   "x": -4.53,
-   "y": -10.39,
-   "z": -3.1,
-   "size_x": 0.9,
-   "size_y": 0.9,
-   "size_z": 1.0,
-   "collision": "convex",
-   "material": "metal_painted",
-   "rot_z": 180.0
-  },
-  {
-   "name": "cash_cart_rff304921_3",
+   "name": "table_count_rff304921_1",
    "x": -5.51,
    "y": -7.22,
-   "z": -3.1,
-   "size_x": 0.6,
-   "size_y": 0.9,
-   "size_z": 1.0,
-   "collision": "convex",
-   "material": "wood",
-   "variant": 3
-  },
-  {
-   "name": "shelf_cash_row_rff304921_4",
-   "x": -2.52,
-   "y": -7.0,
-   "z": -2.9,
-   "size_x": 1.8,
-   "size_y": 0.6,
-   "size_z": 1.4,
-   "collision": "convex",
-   "material": "metal_bare",
-   "rot_z": 180.0,
-   "stock": "vault"
-  },
-  {
-   "name": "shelf_cash_row_rff304921_5",
-   "x": -5.52,
-   "y": -4.7,
-   "z": -2.9,
-   "size_x": 1.8,
-   "size_y": 0.6,
-   "size_z": 1.4,
-   "collision": "convex",
-   "material": "metal_bare",
-   "rot_z": 180.0,
-   "stock": "vault"
-  },
-  {
-   "name": "shelf_cash_row_rff304921_6",
-   "x": -2.47,
-   "y": -4.7,
-   "z": -2.9,
-   "size_x": 1.8,
-   "size_y": 0.6,
-   "size_z": 1.4,
-   "collision": "convex",
-   "material": "metal_bare",
-   "stock": "vault"
-  },
-  {
-   "name": "cash_cart_rff304921_7",
-   "x": -6.89,
-   "y": -9.51,
-   "z": -3.1,
+   "z": -3.22,
    "size_x": 0.9,
-   "size_y": 0.6,
-   "size_z": 1.0,
+   "size_y": 2.0,
+   "size_z": 0.76,
    "collision": "convex",
    "material": "wood",
+   "stock": "vault",
    "variant": 2
+  },
+  {
+   "material": "wood",
+   "name": "chair_set_rff304921_1_1",
+   "x": -4.61,
+   "y": -7.2,
+   "z": -3.15,
+   "size_x": 0.5,
+   "size_y": 0.5,
+   "size_z": 0.9,
+   "collision": "convex",
+   "rot_z": 77.1
   },
   {
    "name": "security_camera_rcce455f7_10",
@@ -1665,7 +1643,7 @@
    "rot_z": 90.0
   },
   {
-   "name": "security_camera_rff304921_8",
+   "name": "security_camera_rff304921_2",
    "x": -0.25,
    "y": -4.22,
    "z": -0.7,
@@ -1677,7 +1655,7 @@
    "rot_z": 90.0
   },
   {
-   "name": "security_camera_rff304921_9",
+   "name": "security_camera_rff304921_3",
    "x": -7.75,
    "y": -5.85,
    "z": -0.7,
