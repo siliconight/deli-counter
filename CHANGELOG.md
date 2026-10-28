@@ -1,3 +1,21 @@
+## [0.287.1] - a designer's level name is not held to the IP-name guard
+
+The factory's authoring panel names a level what the designer types, and Level Factory writes its per-run spec as
+`lf_<mission>_<seed>`: git-ignored (`.gitignore`'s `specs/lf_*.json`), never shipped. The walker asked for a "Delco
+Ave" template, and the first level made from it, `lf_delco_ave_001_9003`, failed all three candidates on
+`IP-NAME: 'delco' found in name` -- as would a level called "Gabagool Heist".
+
+### Fixed
+- **`guards._iter_strings` skips the name of a `TRANSIENT_PREFIX` (`lf_`) spec.** The guard's rule is that no brand
+  name ships in a spec, and these specs do not ship; their name is the level's. Every room, marker, zone, objective,
+  loot and opening tag in such a spec comes from a preset and is still held to it, and a library spec's name is
+  refused as before.
+
+### Tests
+- `tests/test_ip_guard.py` (new; two of its four fail on 0.287.0): a designer's level name passes; a library spec's
+  name, and a per-run spec's room id, are still refused; the guard still matches on word edges only. The guard had no
+  tests before.
+
 ## [0.287.0] - a bank vault's money racks stand in rows
 
 The walker, of the vault: "that vault room needs some love", with a photograph of a gold vault -- racks of blue

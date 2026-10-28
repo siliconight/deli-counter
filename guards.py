@@ -39,10 +39,20 @@ IP_ALLOWLIST = {
 }
 
 
+#: Level Factory's per-run specs (`lf_<mission>_<seed>`, git-ignored, never
+#: shipped): their NAME is the level's, which a designer types in the authoring
+#: panel, so it is not Deli Counter's to de-brand (0.287.1). A level named
+#: "Delco Ave" made `lf_delco_ave_001_9003`, and this guard refused every
+#: candidate of it. Only the name is exempt; every room, marker and tag in such
+#: a spec comes from a preset and is still held to the guard.
+TRANSIENT_PREFIX = "lf_"
+
+
 def _iter_strings(spec):
     """Yield (location, string) for every author-controlled string in a spec
     that could carry a brand name."""
-    yield ("name", spec.name or "")
+    if not (spec.name or "").startswith(TRANSIENT_PREFIX):
+        yield ("name", spec.name or "")
     for r in getattr(spec, "rooms", []) or []:
         yield (f"room.id", r.id or "")
         if getattr(r, "role", None):
