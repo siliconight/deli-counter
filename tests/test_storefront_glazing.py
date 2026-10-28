@@ -104,12 +104,15 @@ def test_only_the_storefronts_full_walls_and_doors_are_tagged(name):
 
 
 def test_a_curtain_wall_and_a_facade_shell_are_not_storefronts():
-    """`glass` is every bank's and tower's opaque curtain wall."""
+    """`glass` is every tower's opaque curtain wall, and every other building's -- except a bank's front before its
+    public room, a storefront since 0.285.0 (`deli_counter.bank_front`): the three whose front is `glass`."""
     import glob
     for p in sorted(glob.glob(os.path.join(HERE, "build", "*.slots.json"))):
         b = os.path.basename(p)[: -len(".slots.json")]
         # 0.171.0: and the video store, a glass shopfront on a sales floor
         if b in STORES or b in ("card_shop_a01", "video_store_a01"):
+            continue
+        if b in ("bank_branch_a02", "bank_branch_a03", "bank_job"):
             continue
         slots = json.load(open(p, encoding="utf-8"))["slots"]
         assert not [s for s in slots if s.get("glazing") == "storefront"], b

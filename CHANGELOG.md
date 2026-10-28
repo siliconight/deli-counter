@@ -1,3 +1,53 @@
+## [0.285.0] - a bank's public room panelled below a chair rail, and its glass front a storefront
+
+The walker, of the bank's frames: "do the interiors look really good?", then "hold the release, do the interior pass
+first". The comps (the factory's docs/reference/BANK_INTERIOR_COMPS.md) put dark wood panelling under white or beige
+walls and a tall window to the street. On 0.284.0 a bank's lobby was plaster floor to ceiling, and its front a wall of
+dark bars (docs/findings/bank_interior/, frames 09, 10 and 13).
+
+### Added
+- **A bank's public room is panelled below a chair rail** (`_dados`, `BANK_DADO`).
+  - On the room face of every wall and window slot on a bank's public room's edge (`lights.bank_public`): a sheet of
+    `wood_panel` from the wall's foot, `BANK_DADO_T` (6 mm, 1/4 in sheet) proud, under a rail `BANK_RAIL_H` (5 cm) high
+    and `BANK_RAIL_T` (9 mm) proud. The rail's top is `BANK_DADO_TOP` (0.9 m, about 36 in) over the foot, or a window's
+    sill where that is lower.
+  - Both stay inside `level_design._WALL_PIECE_AIR` (0.01 m), so a chair or an ATM against the wall still clears them,
+    and both are four or more times `zfight_gate.TOL` off the face.
+  - Each is a `wallEnd` slot -- the unit box Deli Counter scales -- named under its wall, so no module is added to a
+    kit and the export's merge (Level Factory 0.223.0) folds a wall side's panelling into one mesh. No collision.
+  - A door, a breach, the teller line and glass take none. Where two walls meet, the one along X owns the corner.
+  - The card shop's note that a dado "is not built and it is not pretended" stands: its panelling is still whole
+    partitions. This is the geometry it asked for, so far a bank's.
+
+### Changed
+- **A bank's glass front is a storefront** (`bank_front`, `BANK_FRONT_MATERIALS`).
+  - The library's banks name their front `glass`, which Zoo builds as a solid `glass_facade` slab (`OPAQUE_FOR`).
+    A full wall or door slot of it in front of a bank's public room is tagged `glazing: "storefront"`, the shop-front
+    rule the walker set on 2026-09-28: Zoo's aluminium storefront, see-through, its collider unchanged.
+  - Not the bank's other rooms, and not the library's other 49 `glass` walls (pharmacies, supermarkets, pawn shops,
+    clinics, offices): the walker's call.
+
+### Fixed
+- **A vault's fixtures ask for what they are made of** (`FIXTURE_OPENINGS`).
+  - An opening slot took its WALL's material, so the library's deposit-box walls and vault doors asked Zoo for
+    `concrete`, which Zoo builds whatever a species offers, and which the vault door's genome even offers.
+  - A vault door's and a deposit wall's slot asks its species for the opening's own material (the spec's `metal`), by
+    0.284.0's `prop_species.material_for`: the deposit boxes take bare steel (Zoo 1.140.0's), the door painted steel.
+    `SPECIES_MATERIALS` mirrors both. A doorway, a window and a breach are the wall and keep it.
+
+### Measured, the library built
+- Every bank is panelled: `bank_branch_a02` 51.3 m of sheet in 58 slots, `a03` 49.4 m, `a04` 108.8 m, `bank_job`
+  51.3 m, `bank_tower_a01` to `a03` 96.9-102.2 m. No other building.
+- Three fronts are storefronts, the three whose front is `glass`: `bank_branch_a02` 10 slots, `a03` 13, `bank_job` 10.
+- The five deposit-box walls are `metal_bare`, the three vault doors `metal_painted`, where all eight were `concrete`.
+- Nothing else moved: every building's slots are 0.284.0's but for its panelling.
+
+### Tests
+- `tests/test_bank_finish.py` (new; fails on 0.284.0): a bank's public room panelled below a rail, every piece on its
+  edge and inside the wall piece's air, no two overlapping, no other building panelled, the three glass fronts
+  storefronts and a pharmacy's and a supermarket's not, and every vault fixture on its own steel.
+- `tests/test_storefront_glazing.py`: the three bank fronts leave its opaque list; every tower's glass stays opaque.
+
 ## [0.284.0] - a placed piece asks Zoo for a material its species is made of
 
 The walker, of the bank's frames: "fix those three", among them a brown cash cart, then "make it look better". The

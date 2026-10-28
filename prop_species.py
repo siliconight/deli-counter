@@ -440,6 +440,8 @@ SPECIES_MATERIALS = {
     'pump': ('metal_painted', ('metal_painted',)),
     'queue_stanchion': ('metal_painted', ('metal_painted',)),
     'roller_grill': ('metal_bare', ('metal_bare', 'glass')),
+    # a vault's fixtures, which `deli_counter`'s `FIXTURE_OPENINGS` asks by (0.285.0)
+    'safe_deposit_boxes': ('metal_bare', ('metal_bare', 'laminate')),
     'security_camera': ('plastic', ('plastic', 'metal')),
     'shelving': ('metal_bare', ('metal_bare', 'wood')),
     'slush_machine': ('metal_painted', ('metal_painted', 'glass')),
@@ -448,6 +450,7 @@ SPECIES_MATERIALS = {
     'stoop_railing': ('metal_painted', ('metal_painted',)),
     'table': ('wood', ('wood', 'laminate', 'metal')),
     'teller_line': ('metal', ('metal', 'laminate', 'concrete', 'wood')),
+    'vault_door': ('metal_painted', ('metal_painted', 'concrete')),
     'vending_machine': ('metal_painted', ('metal_painted', 'plastic')),
     'video_poker': ('metal_painted', ('metal_painted',)),
     'video_rack': ('metal_painted', ('metal_painted',)),
