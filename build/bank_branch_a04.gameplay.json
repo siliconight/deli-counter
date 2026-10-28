@@ -131,6 +131,141 @@
       "z": -0.6,
       "rot_z": 0.0,
       "room": "vault_antechamber"
+    },
+    {
+      "name": "ALARM_TELLER_COUNTER",
+      "type": "alarm",
+      "id": "teller_counter",
+      "x": -6.0,
+      "y": 3.5,
+      "z": 1.2,
+      "rot_z": 0.0,
+      "room": "teller_line",
+      "meta": {
+        "event": "alarm.panic_button",
+        "audible": false,
+        "fixture": "teller_line"
+      }
+    },
+    {
+      "name": "ALARM_ATM_RE64A30A2_2",
+      "type": "alarm",
+      "id": "atm_re64a30a2_2",
+      "x": 19.57,
+      "y": -6.49,
+      "z": 0.725,
+      "rot_z": 0.0,
+      "room": "grand_lobby",
+      "meta": {
+        "event": "alarm.atm_tampered",
+        "audible": true,
+        "fixture": "atm"
+      }
+    },
+    {
+      "name": "ALARM_SAFE_FLOOR_R8F124671_2",
+      "type": "alarm",
+      "id": "safe_floor_r8f124671_2",
+      "x": -18.98,
+      "y": -14.54,
+      "z": -3.8,
+      "rot_z": 0.0,
+      "room": "vault_antechamber",
+      "meta": {
+        "event": "alarm.safe_opened",
+        "audible": false,
+        "fixture": "drop_safe"
+      }
+    },
+    {
+      "name": "ALARM_CASH_CART_R8F124671_3",
+      "type": "alarm",
+      "id": "cash_cart_r8f124671_3",
+      "x": -18.84,
+      "y": -11.0,
+      "z": -3.7,
+      "rot_z": 0.0,
+      "room": "vault_antechamber",
+      "meta": {
+        "event": "score.cash_moved",
+        "audible": false,
+        "fixture": "cash_cart"
+      }
+    },
+    {
+      "name": "ALARM_SAFE_FLOOR_R8F124671_7",
+      "type": "alarm",
+      "id": "safe_floor_r8f124671_7",
+      "x": -19.39,
+      "y": -1.97,
+      "z": -3.7,
+      "rot_z": 0.0,
+      "room": "vault_antechamber",
+      "meta": {
+        "event": "alarm.safe_opened",
+        "audible": false,
+        "fixture": "drop_safe"
+      }
+    },
+    {
+      "name": "ALARM_CASH_CART_R8F124671_15",
+      "type": "alarm",
+      "id": "cash_cart_r8f124671_15",
+      "x": 8.9,
+      "y": -1.1,
+      "z": -3.65,
+      "rot_z": 0.0,
+      "room": "vault_antechamber",
+      "meta": {
+        "event": "score.cash_moved",
+        "audible": false,
+        "fixture": "cash_cart"
+      }
+    },
+    {
+      "name": "ALARM_SAFE_FLOOR_R82482861_2",
+      "type": "alarm",
+      "id": "safe_floor_r82482861_2",
+      "x": -7.44,
+      "y": 14.49,
+      "z": -3.6,
+      "rot_z": 0.0,
+      "room": "vault_room",
+      "meta": {
+        "event": "alarm.safe_opened",
+        "audible": false,
+        "fixture": "drop_safe"
+      }
+    },
+    {
+      "name": "ALARM_CASH_CART_R82482861_3",
+      "type": "alarm",
+      "id": "cash_cart_r82482861_3",
+      "x": -2.87,
+      "y": 11.96,
+      "z": -3.65,
+      "rot_z": 0.0,
+      "room": "vault_room",
+      "meta": {
+        "event": "score.cash_moved",
+        "audible": false,
+        "fixture": "cash_cart"
+      }
+    },
+    {
+      "name": "ALARM_SAFE_FLOOR_R82482861_7",
+      "type": "alarm",
+      "id": "safe_floor_r82482861_7",
+      "x": 12.84,
+      "y": 14.49,
+      "z": -3.6,
+      "rot_z": 0.0,
+      "room": "vault_room",
+      "meta": {
+        "event": "alarm.safe_opened",
+        "audible": false,
+        "fixture": "drop_safe"
+      }
     }
   ],
   "rooms": [

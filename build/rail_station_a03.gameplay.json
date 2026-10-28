@@ -101,6 +101,21 @@
       "z": 3.8,
       "rot_z": 0.0,
       "room": "waiting_hall"
+    },
+    {
+      "name": "ALARM_ATM_RBBB4C67C_2",
+      "type": "alarm",
+      "id": "atm_rbbb4c67c_2",
+      "x": 22.57,
+      "y": -10.93,
+      "z": 0.725,
+      "rot_z": 0.0,
+      "room": "waiting_hall",
+      "meta": {
+        "event": "alarm.atm_tampered",
+        "audible": true,
+        "fixture": "atm"
+      }
     }
   ],
   "rooms": [

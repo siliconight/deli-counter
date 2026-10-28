@@ -111,6 +111,36 @@
       "z": 4.2,
       "rot_z": 0.0,
       "room": "dock_floor"
+    },
+    {
+      "name": "ALARM_SAFE_FLOOR_R56A64E51_1",
+      "type": "alarm",
+      "id": "safe_floor_r56a64e51_1",
+      "x": 17.54,
+      "y": 10.14,
+      "z": 0.4,
+      "rot_z": 0.0,
+      "room": "cage",
+      "meta": {
+        "event": "alarm.safe_opened",
+        "audible": false,
+        "fixture": "drop_safe"
+      }
+    },
+    {
+      "name": "ALARM_SAFE_FLOOR_R56A64E51_3",
+      "type": "alarm",
+      "id": "safe_floor_r56a64e51_3",
+      "x": 17.49,
+      "y": 6.19,
+      "z": 0.6,
+      "rot_z": 0.0,
+      "room": "cage",
+      "meta": {
+        "event": "alarm.safe_opened",
+        "audible": false,
+        "fixture": "drop_safe"
+      }
     }
   ],
   "rooms": [

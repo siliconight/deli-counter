@@ -197,6 +197,51 @@
       "z": -3.3,
       "rot_z": 0.0,
       "room": "cold_storage_e"
+    },
+    {
+      "name": "ALARM_SAFE_FLOOR_R365B5162_1",
+      "type": "alarm",
+      "id": "safe_floor_r365b5162_1",
+      "x": 18.52,
+      "y": 7.37,
+      "z": -2.9,
+      "rot_z": 0.0,
+      "room": "basement_vault",
+      "meta": {
+        "event": "alarm.safe_opened",
+        "audible": false,
+        "fixture": "drop_safe"
+      }
+    },
+    {
+      "name": "ALARM_SAFE_FLOOR_R365B5162_2",
+      "type": "alarm",
+      "id": "safe_floor_r365b5162_2",
+      "x": 6.39,
+      "y": 13.52,
+      "z": -2.9,
+      "rot_z": 0.0,
+      "room": "basement_vault",
+      "meta": {
+        "event": "alarm.safe_opened",
+        "audible": false,
+        "fixture": "drop_safe"
+      }
+    },
+    {
+      "name": "ALARM_ATM_STORE_R7070A315_8",
+      "type": "alarm",
+      "id": "atm_store_r7070a315_8",
+      "x": -18.54,
+      "y": -11.14,
+      "z": 0.725,
+      "rot_z": 0.0,
+      "room": "customer_floor",
+      "meta": {
+        "event": "alarm.atm_tampered",
+        "audible": true,
+        "fixture": "atm"
+      }
     }
   ],
   "rooms": [

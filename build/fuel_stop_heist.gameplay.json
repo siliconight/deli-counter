@@ -209,6 +209,36 @@
       "z": 0.0,
       "rot_z": 0.0,
       "room": "walk_in_cooler"
+    },
+    {
+      "name": "ALARM_OFFICE_SAFE",
+      "type": "alarm",
+      "id": "office_safe",
+      "x": -9.0,
+      "y": 9.5,
+      "z": 0.6,
+      "rot_z": 0.0,
+      "room": "manager_office",
+      "meta": {
+        "event": "alarm.safe_opened",
+        "audible": false,
+        "fixture": "drop_safe"
+      }
+    },
+    {
+      "name": "ALARM_ATM_STORE_R48016798_8",
+      "type": "alarm",
+      "id": "atm_store_r48016798_8",
+      "x": 1.71,
+      "y": -10.56,
+      "z": 0.725,
+      "rot_z": 0.0,
+      "room": "sales_floor",
+      "meta": {
+        "event": "alarm.atm_tampered",
+        "audible": true,
+        "fixture": "atm"
+      }
     }
   ],
   "rooms": [

@@ -81,6 +81,36 @@
       "z": 2.8,
       "rot_z": 0.0,
       "room": "showroom"
+    },
+    {
+      "name": "ALARM_SAFE_FLOOR_RA81A3B5C_1",
+      "type": "alarm",
+      "id": "safe_floor_ra81a3b5c_1",
+      "x": 8.39,
+      "y": 2.51,
+      "z": 0.5,
+      "rot_z": 0.0,
+      "room": "stone_vault",
+      "meta": {
+        "event": "alarm.safe_opened",
+        "audible": false,
+        "fixture": "drop_safe"
+      }
+    },
+    {
+      "name": "ALARM_ATM_STORE_R1E2F444F_8",
+      "type": "alarm",
+      "id": "atm_store_r1e2f444f_8",
+      "x": -8.56,
+      "y": -6.32,
+      "z": 0.725,
+      "rot_z": 0.0,
+      "room": "showroom",
+      "meta": {
+        "event": "alarm.atm_tampered",
+        "audible": true,
+        "fixture": "atm"
+      }
     }
   ],
   "rooms": [

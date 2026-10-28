@@ -81,6 +81,51 @@
       "z": 4.0,
       "rot_z": 0.0,
       "room": "concourse"
+    },
+    {
+      "name": "ALARM_ATM_RF6F9E27A_2",
+      "type": "alarm",
+      "id": "atm_rf6f9e27a_2",
+      "x": 24.57,
+      "y": 2.07,
+      "z": 0.725,
+      "rot_z": 0.0,
+      "room": "concourse",
+      "meta": {
+        "event": "alarm.atm_tampered",
+        "audible": true,
+        "fixture": "atm"
+      }
+    },
+    {
+      "name": "ALARM_SAFE_FLOOR_R039B277F_1",
+      "type": "alarm",
+      "id": "safe_floor_r039b277f_1",
+      "x": 24.54,
+      "y": -2.65,
+      "z": -4.6,
+      "rot_z": 0.0,
+      "room": "strong_room",
+      "meta": {
+        "event": "alarm.safe_opened",
+        "audible": false,
+        "fixture": "drop_safe"
+      }
+    },
+    {
+      "name": "ALARM_SAFE_FLOOR_R039B277F_4",
+      "type": "alarm",
+      "id": "safe_floor_r039b277f_4",
+      "x": 24.54,
+      "y": -9.0,
+      "z": -4.6,
+      "rot_z": 0.0,
+      "room": "strong_room",
+      "meta": {
+        "event": "alarm.safe_opened",
+        "audible": false,
+        "fixture": "drop_safe"
+      }
     }
   ],
   "rooms": [

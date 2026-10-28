@@ -81,6 +81,36 @@
       "z": 5.0,
       "rot_z": 0.0,
       "room": "event_floor"
+    },
+    {
+      "name": "ALARM_SAFE_FLOOR_R82482861_1",
+      "type": "alarm",
+      "id": "safe_floor_r82482861_1",
+      "x": 21.49,
+      "y": 17.39,
+      "z": -5.5,
+      "rot_z": 0.0,
+      "room": "vault_room",
+      "meta": {
+        "event": "alarm.safe_opened",
+        "audible": false,
+        "fixture": "drop_safe"
+      }
+    },
+    {
+      "name": "ALARM_SAFE_FLOOR_R82482861_4",
+      "type": "alarm",
+      "id": "safe_floor_r82482861_4",
+      "x": 26.12,
+      "y": -17.49,
+      "z": -5.4,
+      "rot_z": 0.0,
+      "room": "vault_room",
+      "meta": {
+        "event": "alarm.safe_opened",
+        "audible": false,
+        "fixture": "drop_safe"
+      }
     }
   ],
   "rooms": [

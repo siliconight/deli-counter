@@ -205,6 +205,36 @@
         "label": "back_office",
         "role": "objective_room"
       }
+    },
+    {
+      "name": "ALARM_OFFICE_SAFE",
+      "type": "alarm",
+      "id": "office_safe",
+      "x": 14.5,
+      "y": 9.0,
+      "z": 0.5,
+      "rot_z": 0.0,
+      "room": "back_office",
+      "meta": {
+        "event": "alarm.safe_opened",
+        "audible": false,
+        "fixture": "drop_safe"
+      }
+    },
+    {
+      "name": "ALARM_ATM_STORE_R48016798_17",
+      "type": "alarm",
+      "id": "atm_store_r48016798_17",
+      "x": 1.55,
+      "y": 10.56,
+      "z": 0.725,
+      "rot_z": 0.0,
+      "room": "sales_floor",
+      "meta": {
+        "event": "alarm.atm_tampered",
+        "audible": true,
+        "fixture": "atm"
+      }
     }
   ],
   "rooms": [

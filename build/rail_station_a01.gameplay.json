@@ -81,6 +81,51 @@
       "z": 3.8,
       "rot_z": 0.0,
       "room": "fare_hall"
+    },
+    {
+      "name": "ALARM_ATM_R76773C77_6",
+      "type": "alarm",
+      "id": "atm_r76773c77_6",
+      "x": 16.59,
+      "y": -11.56,
+      "z": 0.725,
+      "rot_z": 0.0,
+      "room": "fare_hall",
+      "meta": {
+        "event": "alarm.atm_tampered",
+        "audible": true,
+        "fixture": "atm"
+      }
+    },
+    {
+      "name": "ALARM_SAFE_FLOOR_R9D13F29C_1",
+      "type": "alarm",
+      "id": "safe_floor_r9d13f29c_1",
+      "x": -19.47,
+      "y": 11.54,
+      "z": 0.4,
+      "rot_z": 0.0,
+      "room": "money_room",
+      "meta": {
+        "event": "alarm.safe_opened",
+        "audible": false,
+        "fixture": "drop_safe"
+      }
+    },
+    {
+      "name": "ALARM_SAFE_FLOOR_R9D13F29C_3",
+      "type": "alarm",
+      "id": "safe_floor_r9d13f29c_3",
+      "x": -21.49,
+      "y": 9.66,
+      "z": 0.6,
+      "rot_z": 0.0,
+      "room": "money_room",
+      "meta": {
+        "event": "alarm.safe_opened",
+        "audible": false,
+        "fixture": "drop_safe"
+      }
     }
   ],
   "rooms": [

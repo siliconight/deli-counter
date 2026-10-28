@@ -81,6 +81,21 @@
       "z": 2.6,
       "rot_z": 0.0,
       "room": "lobby_aisle"
+    },
+    {
+      "name": "ALARM_ATM_R358D4AD1_7",
+      "type": "alarm",
+      "id": "atm_r358d4ad1_7",
+      "x": 18.57,
+      "y": -0.5,
+      "z": 0.725,
+      "rot_z": 0.0,
+      "room": "lobby_aisle",
+      "meta": {
+        "event": "alarm.atm_tampered",
+        "audible": true,
+        "fixture": "atm"
+      }
     }
   ],
   "rooms": [

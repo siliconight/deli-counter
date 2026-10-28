@@ -81,6 +81,111 @@
       "z": 3.5999999999999996,
       "rot_z": 0.0,
       "room": "banking_hall"
+    },
+    {
+      "name": "ALARM_TELLER_DESK_0",
+      "type": "alarm",
+      "id": "teller_desk_0",
+      "x": -10.0,
+      "y": -6.0,
+      "z": 1.2,
+      "rot_z": 0.0,
+      "room": "banking_hall",
+      "meta": {
+        "event": "alarm.panic_button",
+        "audible": false,
+        "fixture": "teller_line"
+      }
+    },
+    {
+      "name": "ALARM_TELLER_DESK_1",
+      "type": "alarm",
+      "id": "teller_desk_1",
+      "x": -1.0,
+      "y": -6.0,
+      "z": 1.2,
+      "rot_z": 0.0,
+      "room": "banking_hall",
+      "meta": {
+        "event": "alarm.panic_button",
+        "audible": false,
+        "fixture": "teller_line"
+      }
+    },
+    {
+      "name": "ALARM_TELLER_DESK_2",
+      "type": "alarm",
+      "id": "teller_desk_2",
+      "x": 8.0,
+      "y": -6.0,
+      "z": 1.2,
+      "rot_z": 0.0,
+      "room": "banking_hall",
+      "meta": {
+        "event": "alarm.panic_button",
+        "audible": false,
+        "fixture": "teller_line"
+      }
+    },
+    {
+      "name": "ALARM_ATM_RBEAACA49_2",
+      "type": "alarm",
+      "id": "atm_rbeaaca49_2",
+      "x": -15.35,
+      "y": -13.56,
+      "z": 0.725,
+      "rot_z": 0.0,
+      "room": "banking_hall",
+      "meta": {
+        "event": "alarm.atm_tampered",
+        "audible": true,
+        "fixture": "atm"
+      }
+    },
+    {
+      "name": "ALARM_SAFE_FLOOR_R5C6CFA67_2",
+      "type": "alarm",
+      "id": "safe_floor_r5c6cfa67_2",
+      "x": 2.87,
+      "y": 13.54,
+      "z": -4.2,
+      "rot_z": 0.0,
+      "room": "main_vault",
+      "meta": {
+        "event": "alarm.safe_opened",
+        "audible": false,
+        "fixture": "drop_safe"
+      }
+    },
+    {
+      "name": "ALARM_CASH_CART_R5C6CFA67_3",
+      "type": "alarm",
+      "id": "cash_cart_r5c6cfa67_3",
+      "x": 12.99,
+      "y": -11.94,
+      "z": -4.1,
+      "rot_z": 0.0,
+      "room": "main_vault",
+      "meta": {
+        "event": "score.cash_moved",
+        "audible": false,
+        "fixture": "cash_cart"
+      }
+    },
+    {
+      "name": "ALARM_SAFE_FLOOR_R5C6CFA67_6",
+      "type": "alarm",
+      "id": "safe_floor_r5c6cfa67_6",
+      "x": 4.1,
+      "y": -13.39,
+      "z": -4.1,
+      "rot_z": 0.0,
+      "room": "main_vault",
+      "meta": {
+        "event": "alarm.safe_opened",
+        "audible": false,
+        "fixture": "drop_safe"
+      }
     }
   ],
   "rooms": [

@@ -81,6 +81,36 @@
       "z": 2.5,
       "rot_z": 0.0,
       "room": "living_floor"
+    },
+    {
+      "name": "ALARM_SAFE_FLOOR_R35D033BA_1",
+      "type": "alarm",
+      "id": "safe_floor_r35d033ba_1",
+      "x": 8.71,
+      "y": -7.49,
+      "z": 0.6,
+      "rot_z": 0.0,
+      "room": "garage_cage",
+      "meta": {
+        "event": "alarm.safe_opened",
+        "audible": false,
+        "fixture": "drop_safe"
+      }
+    },
+    {
+      "name": "ALARM_SAFE_FLOOR_R35D033BA_3",
+      "type": "alarm",
+      "id": "safe_floor_r35d033ba_3",
+      "x": 10.54,
+      "y": 4.57,
+      "z": 0.4,
+      "rot_z": 0.0,
+      "room": "garage_cage",
+      "meta": {
+        "event": "alarm.safe_opened",
+        "audible": false,
+        "fixture": "drop_safe"
+      }
     }
   ],
   "rooms": [

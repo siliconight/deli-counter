@@ -111,6 +111,21 @@
       "z": 2.8,
       "rot_z": 0.0,
       "room": "lobby"
+    },
+    {
+      "name": "ALARM_ATM_RCCE455F7_3",
+      "type": "alarm",
+      "id": "atm_rcce455f7_3",
+      "x": 2.4,
+      "y": -9.56,
+      "z": 0.725,
+      "rot_z": 0.0,
+      "room": "lobby",
+      "meta": {
+        "event": "alarm.atm_tampered",
+        "audible": true,
+        "fixture": "atm"
+      }
     }
   ],
   "rooms": [

@@ -48,6 +48,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 # circulation), which re-run against whatever is there.
 GEOMETRY_SOURCES = (
     "deli_counter.py",      # the builder itself
+    "score_alarms.py",      # a score's alarm markers, in the gameplay manifest a shell carries (0.289.0)
     "stairwell.py",         # stair geometry + ramp_foot_extension
     "stair_core.py",
     "stair_place.py",

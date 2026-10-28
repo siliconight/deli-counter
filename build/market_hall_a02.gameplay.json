@@ -81,6 +81,21 @@
       "z": 5.0,
       "rot_z": 0.0,
       "room": "stall_floor"
+    },
+    {
+      "name": "ALARM_ATM_STORE_RF6103D6F_19",
+      "type": "alarm",
+      "id": "atm_store_rf6103d6f_19",
+      "x": -21.57,
+      "y": 2.95,
+      "z": 0.725,
+      "rot_z": 0.0,
+      "room": "stall_floor",
+      "meta": {
+        "event": "alarm.atm_tampered",
+        "audible": true,
+        "fixture": "atm"
+      }
     }
   ],
   "rooms": [

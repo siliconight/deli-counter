@@ -81,6 +81,51 @@
       "z": 2.8,
       "rot_z": 0.0,
       "room": "reception"
+    },
+    {
+      "name": "ALARM_ATM_R50D6852F_5",
+      "type": "alarm",
+      "id": "atm_r50d6852f_5",
+      "x": -8.95,
+      "y": -11.56,
+      "z": 0.725,
+      "rot_z": 0.0,
+      "room": "reception",
+      "meta": {
+        "event": "alarm.atm_tampered",
+        "audible": true,
+        "fixture": "atm"
+      }
+    },
+    {
+      "name": "ALARM_SAFE_FLOOR_RE3B7F37F_1",
+      "type": "alarm",
+      "id": "safe_floor_re3b7f37f_1",
+      "x": 16.39,
+      "y": -0.47,
+      "z": -2.9,
+      "rot_z": 0.0,
+      "room": "columbarium_vault",
+      "meta": {
+        "event": "alarm.safe_opened",
+        "audible": false,
+        "fixture": "drop_safe"
+      }
+    },
+    {
+      "name": "ALARM_SAFE_FLOOR_RE3B7F37F_3",
+      "type": "alarm",
+      "id": "safe_floor_re3b7f37f_3",
+      "x": 15.16,
+      "y": 11.49,
+      "z": -2.8,
+      "rot_z": 0.0,
+      "room": "columbarium_vault",
+      "meta": {
+        "event": "alarm.safe_opened",
+        "audible": false,
+        "fixture": "drop_safe"
+      }
     }
   ],
   "rooms": [

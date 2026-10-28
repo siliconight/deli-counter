@@ -135,6 +135,21 @@
       "z": 2.6,
       "rot_z": 0.0,
       "room": "dining_room"
+    },
+    {
+      "name": "ALARM_COUNT_SAFE",
+      "type": "alarm",
+      "id": "count_safe",
+      "x": 8.5,
+      "y": -5.5,
+      "z": 3.95,
+      "rot_z": 0.0,
+      "room": "count_room",
+      "meta": {
+        "event": "alarm.safe_opened",
+        "audible": false,
+        "fixture": "drop_safe"
+      }
     }
   ],
   "rooms": [

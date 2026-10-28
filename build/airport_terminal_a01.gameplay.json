@@ -101,6 +101,21 @@
       "z": 4.5,
       "rot_z": 0.0,
       "room": "checkin_hall"
+    },
+    {
+      "name": "ALARM_ATM_RBDF78977_3",
+      "type": "alarm",
+      "id": "atm_rbdf78977_3",
+      "x": 27.57,
+      "y": 1.91,
+      "z": 0.725,
+      "rot_z": 0.0,
+      "room": "checkin_hall",
+      "meta": {
+        "event": "alarm.atm_tampered",
+        "audible": true,
+        "fixture": "atm"
+      }
     }
   ],
   "rooms": [

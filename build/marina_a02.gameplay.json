@@ -81,6 +81,21 @@
       "z": 3.6,
       "rot_z": 0.0,
       "room": "boat_hall"
+    },
+    {
+      "name": "ALARM_ATM_STORE_R79F0E33F_11",
+      "type": "alarm",
+      "id": "atm_store_r79f0e33f_11",
+      "x": 6.28,
+      "y": 12.56,
+      "z": 0.725,
+      "rot_z": 0.0,
+      "room": "shop_wing",
+      "meta": {
+        "event": "alarm.atm_tampered",
+        "audible": true,
+        "fixture": "atm"
+      }
     }
   ],
   "rooms": [

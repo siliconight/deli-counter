@@ -91,6 +91,21 @@
       "z": -0.8,
       "rot_z": 0.0,
       "room": "panic_approach"
+    },
+    {
+      "name": "ALARM_ATM_R641A2BDD_4",
+      "type": "alarm",
+      "id": "atm_r641a2bdd_4",
+      "x": -11.08,
+      "y": -13.56,
+      "z": 0.725,
+      "rot_z": 0.0,
+      "room": "grand_foyer",
+      "meta": {
+        "event": "alarm.atm_tampered",
+        "audible": true,
+        "fixture": "atm"
+      }
     }
   ],
   "rooms": [

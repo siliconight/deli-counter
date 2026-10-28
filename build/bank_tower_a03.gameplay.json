@@ -101,6 +101,66 @@
       "z": 3.2,
       "rot_z": 0.0,
       "room": "banking_hall"
+    },
+    {
+      "name": "ALARM_ATM_RBEAACA49_2",
+      "type": "alarm",
+      "id": "atm_rbeaaca49_2",
+      "x": -19.57,
+      "y": -9.35,
+      "z": 0.725,
+      "rot_z": 0.0,
+      "room": "banking_hall",
+      "meta": {
+        "event": "alarm.atm_tampered",
+        "audible": true,
+        "fixture": "atm"
+      }
+    },
+    {
+      "name": "ALARM_SAFE_FLOOR_R7D649E32_2",
+      "type": "alarm",
+      "id": "safe_floor_r7d649e32_2",
+      "x": -19.49,
+      "y": 6.31,
+      "z": 0.6,
+      "rot_z": 0.0,
+      "room": "teller_cage",
+      "meta": {
+        "event": "alarm.safe_opened",
+        "audible": false,
+        "fixture": "drop_safe"
+      }
+    },
+    {
+      "name": "ALARM_CASH_CART_R7D649E32_3",
+      "type": "alarm",
+      "id": "cash_cart_r7d649e32_3",
+      "x": -12.96,
+      "y": 7.28,
+      "z": 0.5,
+      "rot_z": 0.0,
+      "room": "teller_cage",
+      "meta": {
+        "event": "score.cash_moved",
+        "audible": false,
+        "fixture": "cash_cart"
+      }
+    },
+    {
+      "name": "ALARM_CASH_CART_R7D649E32_6",
+      "type": "alarm",
+      "id": "cash_cart_r7d649e32_6",
+      "x": -17.14,
+      "y": 9.84,
+      "z": 0.55,
+      "rot_z": 0.0,
+      "room": "teller_cage",
+      "meta": {
+        "event": "score.cash_moved",
+        "audible": false,
+        "fixture": "cash_cart"
+      }
     }
   ],
   "rooms": [

@@ -81,6 +81,96 @@
       "z": 2.8,
       "rot_z": 0.0,
       "room": "lobby"
+    },
+    {
+      "name": "ALARM_TELLER_COUNTER",
+      "type": "alarm",
+      "id": "teller_counter",
+      "x": 0.0,
+      "y": 0.5,
+      "z": 1.2,
+      "rot_z": 0.0,
+      "room": "lobby",
+      "meta": {
+        "event": "alarm.panic_button",
+        "audible": false,
+        "fixture": "teller_line"
+      }
+    },
+    {
+      "name": "ALARM_ATM_RCCE455F7_4",
+      "type": "alarm",
+      "id": "atm_rcce455f7_4",
+      "x": -12.56,
+      "y": -3.01,
+      "z": 0.725,
+      "rot_z": 0.0,
+      "room": "lobby",
+      "meta": {
+        "event": "alarm.atm_tampered",
+        "audible": true,
+        "fixture": "atm"
+      }
+    },
+    {
+      "name": "ALARM_SAFE_FLOOR_R66CBF98F_1",
+      "type": "alarm",
+      "id": "safe_floor_r66cbf98f_1",
+      "x": 12.21,
+      "y": -8.39,
+      "z": -2.9,
+      "rot_z": 0.0,
+      "room": "vault_ante",
+      "meta": {
+        "event": "alarm.safe_opened",
+        "audible": false,
+        "fixture": "drop_safe"
+      }
+    },
+    {
+      "name": "ALARM_SAFE_FLOOR_R66CBF98F_4",
+      "type": "alarm",
+      "id": "safe_floor_r66cbf98f_4",
+      "x": -9.93,
+      "y": -8.54,
+      "z": -3.0,
+      "rot_z": 0.0,
+      "room": "vault_ante",
+      "meta": {
+        "event": "alarm.safe_opened",
+        "audible": false,
+        "fixture": "drop_safe"
+      }
+    },
+    {
+      "name": "ALARM_SAFE_FLOOR_R82482861_1",
+      "type": "alarm",
+      "id": "safe_floor_r82482861_1",
+      "x": 12.39,
+      "y": 7.94,
+      "z": -2.9,
+      "rot_z": 0.0,
+      "room": "vault_room",
+      "meta": {
+        "event": "alarm.safe_opened",
+        "audible": false,
+        "fixture": "drop_safe"
+      }
+    },
+    {
+      "name": "ALARM_SAFE_FLOOR_R82482861_2",
+      "type": "alarm",
+      "id": "safe_floor_r82482861_2",
+      "x": -12.54,
+      "y": 3.19,
+      "z": -3.0,
+      "rot_z": 0.0,
+      "room": "vault_room",
+      "meta": {
+        "event": "alarm.safe_opened",
+        "audible": false,
+        "fixture": "drop_safe"
+      }
     }
   ],
   "rooms": [

@@ -4,12 +4,12 @@
   "schema_version": "1.21.1",
   "spec": "pharmacy_a01.json",
   "spec_sha256_16": "78870d0d4ad367ae",
-  "built_utc": "2026-10-28T17:14:35.610439+00:00",
+  "built_utc": "2026-10-28T19:21:33.226649+00:00",
   "outputs": [
     "pharmacy_a01.glb"
   ],
   "outputs_sha256_16": {
-    "pharmacy_a01.glb": "05c5c939f83199bb"
+    "pharmacy_a01.glb": "403a4d7b5664be0a"
   },
   "expected": {
     "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
@@ -94,6 +94,24 @@
           10.0,
           -7.0,
           2.8
+        ]
+      },
+      {
+        "name": "ALARM_SAFE_FLOOR_R901AD3D6_1",
+        "type": "alarm",
+        "pos": [
+          11.39,
+          6.85,
+          0.5
+        ]
+      },
+      {
+        "name": "ALARM_ATM_STORE_R2090556B_9",
+        "type": "alarm",
+        "pos": [
+          10.07,
+          -8.56,
+          0.725
         ]
       }
     ]

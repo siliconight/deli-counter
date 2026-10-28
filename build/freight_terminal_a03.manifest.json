@@ -4,12 +4,12 @@
   "schema_version": "1.21.1",
   "spec": "freight_terminal_a03.json",
   "spec_sha256_16": "947c3c905ecf72e5",
-  "built_utc": "2026-10-28T17:12:30.557119+00:00",
+  "built_utc": "2026-10-28T19:19:30.016258+00:00",
   "outputs": [
     "freight_terminal_a03.glb"
   ],
   "outputs_sha256_16": {
-    "freight_terminal_a03.glb": "72c22dd83d13dd1b"
+    "freight_terminal_a03.glb": "09a4d4ca65641699"
   },
   "expected": {
     "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
@@ -94,6 +94,33 @@
           21.0,
           -11.0,
           4.2
+        ]
+      },
+      {
+        "name": "ALARM_ATM_R8AB5A479_4",
+        "type": "alarm",
+        "pos": [
+          -21.36,
+          -14.56,
+          0.725
+        ]
+      },
+      {
+        "name": "ALARM_SAFE_FLOOR_RCB102C2F_1",
+        "type": "alarm",
+        "pos": [
+          23.39,
+          -3.24,
+          -4.5
+        ]
+      },
+      {
+        "name": "ALARM_SAFE_FLOOR_RCB102C2F_2",
+        "type": "alarm",
+        "pos": [
+          23.39,
+          -12.66,
+          -4.5
         ]
       }
     ]

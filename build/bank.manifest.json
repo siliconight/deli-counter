@@ -4,12 +4,12 @@
   "schema_version": "1.21.1",
   "spec": "bank.json",
   "spec_sha256_16": "d75a929f5422dc5d",
-  "built_utc": "2026-10-28T17:09:55.360589+00:00",
+  "built_utc": "2026-10-28T19:16:51.950339+00:00",
   "outputs": [
     "bank.glb"
   ],
   "outputs_sha256_16": {
-    "bank.glb": "9adda863adeaea67"
+    "bank.glb": "f4869819cfc7a583"
   },
   "expected": {
     "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
@@ -33,6 +33,16 @@
       0.0,
       3.5
     ],
-    "markers": []
+    "markers": [
+      {
+        "name": "ALARM_TELLER_COUNTER",
+        "type": "alarm",
+        "pos": [
+          -2.0,
+          -2.0,
+          1.2
+        ]
+      }
+    ]
   }
 }

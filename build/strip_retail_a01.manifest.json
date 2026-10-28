@@ -4,12 +4,12 @@
   "schema_version": "1.21.1",
   "spec": "strip_retail_a01.json",
   "spec_sha256_16": "1fe66babdd242145",
-  "built_utc": "2026-10-28T17:15:23.336152+00:00",
+  "built_utc": "2026-10-28T19:22:19.425038+00:00",
   "outputs": [
     "strip_retail_a01.glb"
   ],
   "outputs_sha256_16": {
-    "strip_retail_a01.glb": "c2d2b3f070585626"
+    "strip_retail_a01.glb": "88d484b34183099c"
   },
   "expected": {
     "space": "spec/Blender Z-up meters (see COORDINATE_CONTRACT.md)",
@@ -131,6 +131,15 @@
           8.0,
           -4.0,
           2.6
+        ]
+      },
+      {
+        "name": "ALARM_COUNT_SAFE",
+        "type": "alarm",
+        "pos": [
+          8.5,
+          -5.5,
+          3.95
         ]
       }
     ]

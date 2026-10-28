@@ -1485,6 +1485,8 @@ class _Builder:
         self._stair_semantics()
         self._ladder_semantics()
         self._markers()
+        # after the markers and every slot: the score's alarm hooks (0.289.0)
+        self._score_alarms()
         self._heist()
         self._materials()
         self._scale_ref()
@@ -3279,6 +3281,36 @@ class _Builder:
                         self.MARKERS)
             self._empty(f"{d['id'].upper()}_DISMOUNT", (ld.x, ld.y, z1),
                         self.MARKERS)
+
+    #: the score's alarm hooks (0.289.0): the table lives in `score_alarms`, which needs no Blender
+    def _score_alarms(self):
+        """One `alarm` marker per slot an `ALARM_FIXTURES` row names, at the slot's centre, in the innermost room on
+        its storey that holds it (or none), its event in `meta`. Lot carries a marker whole into the site and Level
+        Factory hands it to Dispatch as a `trigger` anchor. Returns the number written."""
+        import math
+        import score_alarms
+        H = float(self.s.story_height or 3.0)
+        rooms = self.gameplay.get("rooms") or []
+        n = 0
+        for s in self.slots:
+            row = next((r for r in score_alarms.ALARM_FIXTURES if s.get(r[0]) == r[1]), None)
+            if row is None:
+                continue
+            x, y, z = (float(v) for v in s["transform"]["translation"])
+            story = s.get("story")
+            story = int(story) if story is not None else int(math.floor((z + 1e-6) / H))
+            holding = [r for r in rooms if int(r.get("story", 0) or 0) == story
+                       and r["bounds"][0] <= x <= r["bounds"][2] and r["bounds"][1] <= y <= r["bounds"][3]]
+            room = min(holding, key=lambda r: (r["bounds"][2] - r["bounds"][0]) * (r["bounds"][3] - r["bounds"][1]),
+                       default=None)
+            name = "ALARM_%s" % s["slot_id"].upper()
+            self._empty(name, (x, y, z), self.MARKERS)
+            self.gameplay["markers"].append({
+                "name": name, "type": "alarm", "id": s["slot_id"], "x": x, "y": y, "z": z, "rot_z": 0.0,
+                "room": room["id"] if room else None,
+                "meta": {"event": row[2], "audible": row[3], "fixture": row[1]}})
+            n += 1
+        return n
 
     def _markers(self):
         for m in self.s.markers:

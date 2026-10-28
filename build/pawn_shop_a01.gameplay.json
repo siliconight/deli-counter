@@ -113,6 +113,36 @@
       "z": 2.6,
       "rot_z": 0.0,
       "room": "shop_floor"
+    },
+    {
+      "name": "ALARM_SAFE_FLOOR_R6AA17A30_1",
+      "type": "alarm",
+      "id": "safe_floor_r6aa17a30_1",
+      "x": -6.98,
+      "y": 6.51,
+      "z": 0.6,
+      "rot_z": 0.0,
+      "room": "safe_room",
+      "meta": {
+        "event": "alarm.safe_opened",
+        "audible": false,
+        "fixture": "drop_safe"
+      }
+    },
+    {
+      "name": "ALARM_ATM_STORE_R79538C7C_7",
+      "type": "alarm",
+      "id": "atm_store_r79538c7c_7",
+      "x": 7.59,
+      "y": -5.6,
+      "z": 0.725,
+      "rot_z": 0.0,
+      "room": "shop_floor",
+      "meta": {
+        "event": "alarm.atm_tampered",
+        "audible": true,
+        "fixture": "atm"
+      }
     }
   ],
   "rooms": [

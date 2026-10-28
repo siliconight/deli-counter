@@ -101,6 +101,36 @@
       "z": 2.6,
       "rot_z": 0.0,
       "room": "front_hall"
+    },
+    {
+      "name": "ALARM_SAFE_FLOOR_R365B5162_1",
+      "type": "alarm",
+      "id": "safe_floor_r365b5162_1",
+      "x": 9.39,
+      "y": 8.54,
+      "z": -2.8,
+      "rot_z": 0.0,
+      "room": "basement_vault",
+      "meta": {
+        "event": "alarm.safe_opened",
+        "audible": false,
+        "fixture": "drop_safe"
+      }
+    },
+    {
+      "name": "ALARM_SAFE_FLOOR_R365B5162_2",
+      "type": "alarm",
+      "id": "safe_floor_r365b5162_2",
+      "x": 4.79,
+      "y": 8.54,
+      "z": -2.8,
+      "rot_z": 0.0,
+      "room": "basement_vault",
+      "meta": {
+        "event": "alarm.safe_opened",
+        "audible": false,
+        "fixture": "drop_safe"
+      }
     }
   ],
   "rooms": [
