@@ -1,3 +1,37 @@
+## [0.284.0] - a placed piece asks Zoo for a material its species is made of
+
+The walker, of the bank's frames: "fix those three", among them a brown cash cart, then "make it look better". The
+cause was general.
+
+### Fixed
+- **A prop slot asks for a kind its species offers, else the species' own** (`prop_species.material_for`,
+  `SPECIES_MATERIALS`).
+  - Zoo builds ANY known kind a slot names, options or not (`dna.resolve_module_plan`). delco_1997 maps `metal` to
+    `metal_rusted_street`.
+  - Measured on the bank level's kit: the ATM was built `_mmetal`, rust; the cash cart, cameras, clock and planters
+    `_mwood`. The slots had asked for the name table's row or its `wood` default.
+  - Across the library's built slots, about 2,800 asked for a kind their species does not offer: ATMs, vending
+    machines, litter bins, filing cabinets, furnaces, payphones and queue stanchions in street rust; cartons in wood
+    rather than paper, dust sheets in wood rather than canvas, cameras and water barrels in wood or rust rather than
+    plastic.
+  - The table's own comment on the safe's row said the rest "fall back to their own painted kind". They did not; Zoo
+    builds what it is asked. Kept, refuted.
+  - Applied where the slot is written, so authored and furnished volumes alike are covered and no spec changes. A box
+    (no species) keeps what it asked for.
+  - Also a stair's guard rail (`stair_guard_rake_*`), which names `stoop_railing` and asked for its stair's own
+    material: a wood stair's rail asked for `wood`, which the species does not offer, and is now its painted steel. The
+    clone's first full suite found the two; neither comes from the volume path the rule was first written into.
+- `SPECIES_MATERIALS` mirrors Zoo's genome `materials` for every routed species (65), because Deli Counter does not
+  read Zoo. It is read off Zoo 1.139.0, which puts the bank's own pieces on their surfaces and lets the teller line
+  keep its wood.
+
+### Tests
+- `tests/test_species_materials.py` (new; fails on 0.283.0):
+  - every routed species is mirrored, and the mirror is Zoo's genomes when Zoo is beside the repo;
+  - an offered kind is kept, and any other is the species' own;
+  - no built slot asks a species for what it is not made of (over 1,000 slots);
+  - the bank level's bank asks for painted steel, plastic and wood where it asked for rust and wood.
+
 ## [0.283.0] - a bank's lobby hangs its printed offers, and its teller line names the bank
 
 The walker's bank list, after the cameras, walls and plants (0.282.0): the rate board and posters, then the bank's name

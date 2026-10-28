@@ -1946,7 +1946,9 @@ class _Builder:
                 self.slots.append({
                     "slot_id": f"stair_guard_rake_{k}", "role": "prop", "size_mod": "full",
                     "style": skin_style.style_for(rmat, self._mat_style, self.s.default_material),
-                    "material": rmat, "species": "stoop_railing", "stock": None, "variant": 0,
+                    # the rail a species offers (0.284.0): a wood stair's guard is a steel pipe rail
+                    "material": prop_species.material_for("stoop_railing", rmat), "species": "stoop_railing",
+                    "stock": None, "variant": 0,
                     "form": "flight", "current_ref": "prop_greybox_01", "kit_axis": "material",
                     "wall": None, "story": None, "facing": None,
                     "transform": {"translation": [round(x, 4), round(y, 4), round(seam_z0 + hr / 2.0, 4)],
@@ -2640,7 +2642,8 @@ class _Builder:
                     "slot_id": v.name, "role": "prop", "size_mod": "full",
                     "style": skin_style.style_for(v.material, self._mat_style,
                                                   self.s.default_material),
-                    "material": v.material or self.s.default_material,
+                    # a kind the species is made of, else its own (0.284.0, `prop_species.material_for`)
+                    "material": prop_species.material_for(species, v.material or self.s.default_material),
                     "species": species,
                     # DRESSING (Zoo 0.84.0): always written, None / 0 /
                     # None when unset, so a slot says it has none rather
