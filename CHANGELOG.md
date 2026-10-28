@@ -1,3 +1,18 @@
+## [0.286.1] - a vault's money rack is steel
+
+0.286.0's money racks were built as timber bookcases: `shelf_cash` had no row in `_PROP_MATERIALS`, took the `wood`
+default, which shelving offers, and the first bank built on it stood its banded bricks on wooden shelves, where they
+read as book spines (the factory's docs/findings/bank_interior/, frame 20).
+
+### Fixed
+- **A money rack asks for steel** (`_PROP_MATERIALS`' `shelf_cash` row: `metal_bare`, shelving's own kind). A back
+  office's `shelf_run` keeps its wood.
+- The seven banks refurnished by `migrations/migrate_bank_money.py` again: their 42 racks `wood` -> `metal_bare`, and
+  nothing else in any spec moved.
+
+### Tests
+- `tests/test_bank_money.py`: every built money rack asks for `metal_bare` (fails on 0.286.0).
+
 ## [0.286.0] - a bank lobby's officers' desks, and a bank vault's money
 
 The walker, of the bank after the interior pass (the factory's docs/findings/bank_interior/, frames 17 and 18): "add

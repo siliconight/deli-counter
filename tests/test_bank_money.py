@@ -85,6 +85,8 @@ def test_the_built_racks_ask_zoo_for_the_vaults_stock():
         for s in json.load(open(p, encoding="utf-8"))["slots"]:
             if s["slot_id"].startswith("shelf_cash"):
                 assert s["species"] == "shelving" and s["stock"] == "vault", (os.path.basename(p), s)
+                # steel, shelving's own kind (0.286.1): on the `wood` default the rack read as a bookcase
+                assert s["material"] == "metal_bare", (os.path.basename(p), s["slot_id"], s["material"])
                 racks += 1
             elif s.get("species") == "shelving":
                 assert s.get("stock") != "vault", (os.path.basename(p), s["slot_id"])

@@ -3228,6 +3228,13 @@ _PROP_MATERIALS = (
     # a queue's stanchion runs are black powder coat, their species' own kind
     # (0.243.0): above the row below, whose `stanchion` every run's name holds
     (("stanchion_run",), "metal_painted"),
+    # A VAULT'S MONEY RACK IS STEEL (0.286.1), shelving's own kind. With no
+    # row it took the `wood` default, which shelving offers, and the first
+    # bank built on 0.286.0 stood its money in a timber bookcase: banded
+    # bricks on wooden shelves read as book spines (the factory's
+    # docs/findings/bank_interior/, frame 20). The back office's `shelf_run`
+    # keeps its wood.
+    (("shelf_cash",), "metal_bare"),
     # A SAFE IS PAINTED STEEL (0.267.0). The walker, walking cold run 9386, of
     # pharmacy_a01's drop safe: "looks like a brown box". `metal` is the
     # theme's street metal -- delco_1997's `metal_rusted_street`, averaging
