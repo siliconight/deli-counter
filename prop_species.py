@@ -80,6 +80,12 @@ PROP_SPECIES = (
     (("potted_plant",), "planter"),
     (("wall_clock",), "wall_clock"),
     (("cash_cart",), "cash_cart"),
+    # A FILLING STATION'S CANOPY (0.293.0, Zoo 1.149.0, the factory's roadmap 324): the specs author it as
+    # `canopy_roof` on six `canopy_col`, and the box row's `canopy` and `col_` held both to a greybox box -- the
+    # forecourt's landmark a grey slab on grey posts (the factory's docs/findings/slice_look/). Ahead of that row and
+    # no further up; no other authored name carries either keyword (16 decks, 96 columns, measured over specs/).
+    (("canopy_roof",), "fuel_canopy"),
+    (("canopy_col",), "canopy_column"),
     (("crate", "col_", "pillar", "column", "stack", "pump_island",
       "cart", "planter", "canopy", "kiosk", "vault"), None),
     # MINTED 2026-09-12 by zoo/tools/new_species.py (roadmap 150): the
@@ -392,6 +398,7 @@ def owns_collision(species):
 SPECIES_MATERIALS = {
     'aisle_sign': ('wood', ('wood', 'paper', 'plastic', 'metal_painted')),
     'atm': ('metal_painted', ('metal_painted', 'plastic')),
+    'canopy_column': ('metal_painted', ('metal_painted',)),
     'back_bar': ('wood_stained', ('wood_stained', 'wood', 'laminate')),
     'bar_stool': ('metal_bare', ('metal_bare', 'wood')),
     'booth_seat': ('leather', ('leather', 'canvas', 'plastic')),
@@ -421,6 +428,7 @@ SPECIES_MATERIALS = {
     'flat_top_grill': ('metal_bare', ('metal_bare',)),
     'folding_chair': ('plastic', ('plastic', 'metal_painted', 'wood', 'laminate')),
     'folding_table': ('plastic', ('plastic', 'laminate', 'wood', 'metal_painted')),
+    'fuel_canopy': ('metal_painted', ('metal_painted',)),
     'furnace': ('metal_painted', ('metal_painted',)),
     'hanging_banner': ('cloth', ('cloth', 'canvas', 'plastic', 'paper')),
     'hvac_unit': ('metal', ('metal', 'plastic')),

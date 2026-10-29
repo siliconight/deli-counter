@@ -1,3 +1,13 @@
+## [0.293.0] - a filling station's canopy is built
+
+The factory's roadmap 324; the walker, 2026-10-29, of the game's vertical slice: "Things still look simple, and
+computer made". The specs author a filling station's canopy as volumes, `canopy_roof` (16 decks) on `canopy_col`
+(96 columns), and the box row of `prop_species.PROP_SPECIES` held both to a greybox box through its `canopy` and
+`col_`: the forecourt's landmark shipped as a grey slab on grey posts (the factory's `docs/findings/slice_look/`).
+Two rows ahead of the box row route them to Zoo 1.149.0's `fuel_canopy` and `canopy_column`, each asking for
+`metal_painted` (`SPECIES_MATERIALS`); no other authored name carries either keyword. Tests:
+tests/test_canopy_species.py (fails on 0.292.0).
+
 ## [0.292.0] - a parapet stands on the wall below it
 
 The factory's roadmap 324; the walker, 2026-10-29: "keep going on the edges", then "make the parapets flush".
