@@ -67,8 +67,11 @@ def test_every_parapet_tile_is_a_wall_slot_in_the_wall_below_s_material(dc):
         by_side.setdefault(sl["facing"], set()).add(sl["material"])
     assert by_side["S"] == {"siding"}
     assert by_side["N"] == by_side["E"] == by_side["W"] == {"brick"}
-    # the parapet's own size, module-local: (run, thickness, height)
-    assert all(abs(sl["fit"]["dims"][2] - 0.8) < 1e-9 and abs(sl["fit"]["dims"][1] - 0.3) < 1e-9
+    # the parapet's own size, module-local: (run, thickness, height) -- its
+    # 0.8 m above the roof and, since 0.292.0, the roof slab's edge below it
+    spec = spec_from_dict(s)
+    cap = spec.roof_thick or spec.floor_thick
+    assert all(abs(sl["fit"]["dims"][2] - (0.8 + cap)) < 1e-9 and abs(sl["fit"]["dims"][1] - 0.3) < 1e-9
                for sl in slots)
 
 

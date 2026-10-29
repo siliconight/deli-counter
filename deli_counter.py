@@ -3437,10 +3437,25 @@ class _Builder:
             # inset facade. Collapses to +/- half the footprint when nothing
             # is inset. (roadmap 116)
             _px0, _py0, _px1, _py1 = setbacks_mod.slab_extent(self.s, p.story)
+            # A PARAPET STANDS ON THE WALL BELOW IT (0.292.0). That slab's
+            # extent is the walls' CENTRELINE -- `_exterior` centres every
+            # wall on it -- so a ring on it stood half a wall behind the face
+            # it was meant to carry up: 15 cm on a 0.3 m wall, with the roof
+            # slab's edge in a recess under it, because the wall stops under
+            # that slab (`_cap_thick`). Measured on `bank_branch_a02` (the
+            # factory's docs/findings/parapet_coping/): storey walls' face at
+            # y 11.15 and top at 6.9, parapet's and slab's face at 11.0. The
+            # ring now takes the walls' OUTER faces, and each tile starts at
+            # the wall's top, so it covers the slab's edge; its top is where
+            # it was.
+            wt = self.s.wall_thick
+            _px0, _py0, _px1, _py1 = _px0 - wt / 2, _py0 - wt / 2, _px1 + wt / 2, _py1 + wt / 2
             hx, hy = (_px1 - _px0) / 2, (_py1 - _py0) / 2
             _pcx, _pcy = (_px0 + _px1) / 2, (_py0 + _py1) / 2
             z = p.story * self.s.story_height
-            cz = z + p.height / 2
+            cap = self._cap_thick(p.story - 1, self._story_range()[1])
+            ph = p.height + cap
+            cz = z - cap + ph / 2
             t = p.thick
             # THE CORNERS BELONG TO N/S. When all four segments run their full
             # footprint extent, each corner is a t x t column inside BOTH the
@@ -3460,15 +3475,15 @@ class _Builder:
             # which is how geometry is supposed to meet.
             ex, ey = _px1 - _px0, (_py1 - _py0) - 2 * t
             segs = [
-                ("N", (_pcx, _pcy + hy - t / 2, cz), (ex, t, p.height)),
-                ("S", (_pcx, _pcy - hy + t / 2, cz), (ex, t, p.height)),
+                ("N", (_pcx, _pcy + hy - t / 2, cz), (ex, t, ph)),
+                ("S", (_pcx, _pcy - hy + t / 2, cz), (ex, t, ph)),
             ]
             if ey > 1e-6:
                 # A footprint narrower than two parapet thicknesses has no room
                 # for a side run at all; N and S already meet.
                 segs += [
-                    ("E", (_pcx + hx - t / 2, _pcy, cz), (t, ey, p.height)),
-                    ("W", (_pcx - hx + t / 2, _pcy, cz), (t, ey, p.height)),
+                    ("E", (_pcx + hx - t / 2, _pcy, cz), (t, ey, ph)),
+                    ("W", (_pcx - hx + t / 2, _pcy, cz), (t, ey, ph)),
                 ]
             for n, c, size in segs:
                 # The VISUAL is tiled under the same law as the slabs

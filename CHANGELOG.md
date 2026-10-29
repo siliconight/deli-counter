@@ -1,3 +1,22 @@
+## [0.292.0] - a parapet stands on the wall below it
+
+The factory's roadmap 324; the walker, 2026-10-29: "keep going on the edges", then "make the parapets flush".
+`_exterior` centres every storey wall on the slab's extent, and the parapet ring took that extent as its OUTER face,
+so it stood half a wall behind the facade it is meant to carry up -- 15 cm on a 0.3 m wall -- with the roof slab's
+edge in a recess under it, because the wall stops under that slab (`_cap_thick`). Measured on `bank_branch_a02`
+(the factory's `docs/findings/parapet_coping/`): the storey walls' face at y 11.15 and top at 6.9, the parapet's and
+the slab's face at 11.0. The comment above `_record_parapet_slot` said "the wall below it carried past the roof"; the
+coordinates said otherwise.
+
+### Changed
+- **`_parapets`**: the ring stands on the walls' outer faces (the slab's extent plus half `wall_thick`) and each tile
+  starts at the top of the wall below -- the underside of the slab that caps it -- so it covers the slab's edge; its
+  top is unchanged. The corners still belong to N and S. A parapet slot is `cap` taller (the roof's thickness): on
+  `bank_branch_a02` 1.1 -> 1.4 m, centred 7.6 where it was 7.75, its N face at 11.15. `polybudget` mirrors the new
+  runs. Seed 9082 rebuilt (the factory's `docs/findings/parapet_flush/`): every Empty's step strips are gone (14 each)
+  and Patina's copings follow the slots onto the facade line; priced PASS over 53 headings, draws median +0, largest
+  +1. Tests: `tests/test_parapet_flush.py` (fails on 0.291.0); `tests/test_parapet_slots.py`'s height pin follows.
+
 ## [0.291.0] - where a crew stands to drill
 
 The factory's roadmap 323; the walker: "opening the safe should be a gameplay event where you have to stand in an

@@ -102,9 +102,10 @@ def estimate(spec):
     # the builder emits none otherwise, so the old flat "4 boxes" here
     # overcounted exactly that case.
     for para in spec.parapets:
-        t = para.thick
-        ey = spec.footprint_y - 2 * t
-        runs = [("N", spec.footprint_x, t), ("S", spec.footprint_x, t)]
+        # the ring stands on the walls' outer faces (0.292.0)
+        t, wt = para.thick, spec.wall_thick
+        ey = spec.footprint_y + wt - 2 * t
+        runs = [("N", spec.footprint_x + wt, t), ("S", spec.footprint_x + wt, t)]
         if ey > 1e-6:
             runs += [("E", t, ey), ("W", t, ey)]
         for side, sx, sy in runs:
