@@ -361,6 +361,174 @@
         "audible": false,
         "fixture": "drop_safe"
       }
+    },
+    {
+      "name": "DRILL_INT_-1_2_OPEN0",
+      "type": "drill",
+      "id": "drill_int_-1_2_open0",
+      "x": -0.5,
+      "y": -9.5,
+      "z": -1.95,
+      "rot_z": 0.0,
+      "room": "vault",
+      "meta": {
+        "event": "zone.drill",
+        "fires": [
+          "on_enter",
+          "on_exit"
+        ],
+        "repeat": "edge",
+        "radius": 1.35,
+        "target": "bank_branch_a03:if:bf9d5eeb",
+        "fixture": "safe_deposit_boxes"
+      }
+    },
+    {
+      "name": "DRILL_INT_-1_2_OPEN2",
+      "type": "drill",
+      "id": "drill_int_-1_2_open2",
+      "x": -0.5,
+      "y": -4.5,
+      "z": -1.95,
+      "rot_z": 0.0,
+      "room": "vault",
+      "meta": {
+        "event": "zone.drill",
+        "fires": [
+          "on_enter",
+          "on_exit"
+        ],
+        "repeat": "edge",
+        "radius": 1.565,
+        "target": "bank_branch_a03:if:f8a420fa",
+        "fixture": "safe_deposit_boxes"
+      }
+    },
+    {
+      "name": "DRILL_INT_-1_7_OPEN0",
+      "type": "drill",
+      "id": "drill_int_-1_7_open0",
+      "x": -7.5,
+      "y": -9.5,
+      "z": -1.95,
+      "rot_z": 0.0,
+      "room": "vault",
+      "meta": {
+        "event": "zone.drill",
+        "fires": [
+          "on_enter",
+          "on_exit"
+        ],
+        "repeat": "edge",
+        "radius": 1.44,
+        "target": "bank_branch_a03:if:0f3ec9f7",
+        "fixture": "safe_deposit_boxes"
+      }
+    },
+    {
+      "name": "DRILL_INT_-1_7_OPEN1",
+      "type": "drill",
+      "id": "drill_int_-1_7_open1",
+      "x": -7.5,
+      "y": -7.0,
+      "z": -1.95,
+      "rot_z": 0.0,
+      "room": "vault",
+      "meta": {
+        "event": "zone.drill",
+        "fires": [
+          "on_enter",
+          "on_exit"
+        ],
+        "repeat": "edge",
+        "radius": 1.35,
+        "target": "bank_branch_a03:if:ad5cebc4",
+        "fixture": "safe_deposit_boxes"
+      }
+    },
+    {
+      "name": "DRILL_INT_-1_7_OPEN2",
+      "type": "drill",
+      "id": "drill_int_-1_7_open2",
+      "x": -7.5,
+      "y": -4.5,
+      "z": -1.95,
+      "rot_z": 0.0,
+      "room": "vault",
+      "meta": {
+        "event": "zone.drill",
+        "fires": [
+          "on_enter",
+          "on_exit"
+        ],
+        "repeat": "edge",
+        "radius": 1.44,
+        "target": "bank_branch_a03:if:6621f51e",
+        "fixture": "safe_deposit_boxes"
+      }
+    },
+    {
+      "name": "DRILL_INT_-1_8_OPEN0",
+      "type": "drill",
+      "id": "drill_int_-1_8_open0",
+      "x": -7.0,
+      "y": -3.5,
+      "z": -1.95,
+      "rot_z": 0.0,
+      "room": "vault",
+      "meta": {
+        "event": "zone.drill",
+        "fires": [
+          "on_enter",
+          "on_exit"
+        ],
+        "repeat": "edge",
+        "radius": 1.04,
+        "target": "bank_branch_a03:if:dabb3b6b",
+        "fixture": "safe_deposit_boxes"
+      }
+    },
+    {
+      "name": "DRILL_INT_-1_8_OPEN1",
+      "type": "drill",
+      "id": "drill_int_-1_8_open1",
+      "x": -4.0,
+      "y": -2.5,
+      "z": -1.95,
+      "rot_z": 0.0,
+      "room": "vault_west",
+      "meta": {
+        "event": "zone.drill",
+        "fires": [
+          "on_enter",
+          "on_exit"
+        ],
+        "repeat": "edge",
+        "radius": 1.0,
+        "target": "bank_branch_a03:if:328c2407",
+        "fixture": "vault_door"
+      }
+    },
+    {
+      "name": "DRILL_INT_-1_8_OPEN2",
+      "type": "drill",
+      "id": "drill_int_-1_8_open2",
+      "x": -1.0,
+      "y": -3.5,
+      "z": -1.95,
+      "rot_z": 0.0,
+      "room": "vault",
+      "meta": {
+        "event": "zone.drill",
+        "fires": [
+          "on_enter",
+          "on_exit"
+        ],
+        "repeat": "edge",
+        "radius": 1.04,
+        "target": "bank_branch_a03:if:5bad2510",
+        "fixture": "safe_deposit_boxes"
+      }
     }
   ],
   "rooms": [

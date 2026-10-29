@@ -1,3 +1,17 @@
+## [0.291.0] - where a crew stands to drill
+
+The factory's roadmap 323; the walker: "opening the safe should be a gameplay event where you have to stand in an
+area for a certain amount of time close to the 'drill' and then the door opens", then "no drill time from the factory
+... These will be networked events programmed somwhere else...we just want the seams/hooks in place on some level so
+we can invoke them visually on peoples clients if needed later (muiltiplayer game)". Every vault door and deposit wall
+(`score_alarms.DRILL_FIXTURES`) writes one `drill` marker, `drill_<slot>`: a zone in front of its face
+(`score_alarms.drill_zone` -- its centre half the slot's depth plus the contract's body radius out along the slot's
+facing, its radius half the opening's width plus that radius: 1.0 m at a vault door), its event `zone.drill` sent on
+entry and exit, `repeat: edge`, and its `target` the interactive it opens -- a vault door's (locked, unlocked, open,
+breached), a deposit unit's (intact, drilled). A vault door's zone stands in the room it is entered from; a deposit
+wall's inside the vault, before the boxes. No drill time, timer or response: the game's. Level Factory 0.267.0 stages
+it for Dispatch 0.8.0 when a level's gameplay events are on. Tests: tests/test_drill_zones.py (fails on 0.290.0).
+
 ## [0.290.0] - a bank's vault gate is a vault door
 
 The factory's roadmap 323. Four score banks -- `bank_branch_a04`, `bank_tower_a01`, `credit_union_a01`,

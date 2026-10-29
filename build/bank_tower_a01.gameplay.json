@@ -201,6 +201,27 @@
         "audible": false,
         "fixture": "drop_safe"
       }
+    },
+    {
+      "name": "DRILL_INT_-1_1_OPEN0",
+      "type": "drill",
+      "id": "drill_int_-1_1_open0",
+      "x": -0.5,
+      "y": -7.0,
+      "z": -2.45,
+      "rot_z": 0.0,
+      "room": "under_hall",
+      "meta": {
+        "event": "zone.drill",
+        "fires": [
+          "on_enter",
+          "on_exit"
+        ],
+        "repeat": "edge",
+        "radius": 1.0,
+        "target": "bank_tower_a01:if:da127ee3",
+        "fixture": "vault_door"
+      }
     }
   ],
   "rooms": [

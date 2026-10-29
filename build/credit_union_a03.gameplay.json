@@ -171,6 +171,27 @@
         "audible": false,
         "fixture": "drop_safe"
       }
+    },
+    {
+      "name": "DRILL_INT_-1_1_OPEN1",
+      "type": "drill",
+      "id": "drill_int_-1_1_open1",
+      "x": -2.5,
+      "y": -0.0,
+      "z": -1.85,
+      "rot_z": 0.0,
+      "room": "vault_ante",
+      "meta": {
+        "event": "zone.drill",
+        "fires": [
+          "on_enter",
+          "on_exit"
+        ],
+        "repeat": "edge",
+        "radius": 1.0,
+        "target": "credit_union_a03:if:e77d06d1",
+        "fixture": "vault_door"
+      }
     }
   ],
   "rooms": [

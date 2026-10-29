@@ -3310,6 +3310,31 @@ class _Builder:
                 "room": room["id"] if room else None,
                 "meta": {"event": row[2], "audible": row[3], "fixture": row[1]}})
             n += 1
+        # ...and where a crew stands to drill a vault door or a deposit wall (0.291.0): one `drill` marker per slot a
+        # `DRILL_FIXTURES` row names, at `score_alarms.drill_zone`, naming the interactive it opens. No drill time.
+        import agent_contract
+        body = agent_contract.body_radius()
+        for s in self.slots:
+            if not any(s.get(k) == v for k, v in score_alarms.DRILL_FIXTURES):
+                continue
+            zone = score_alarms.drill_zone(s, body)
+            if zone is None:
+                continue
+            x, y, z, radius = zone
+            story = s.get("story")
+            story = int(story) if story is not None else int(math.floor((z + 1e-6) / H))
+            holding = [r for r in rooms if int(r.get("story", 0) or 0) == story
+                       and r["bounds"][0] <= x <= r["bounds"][2] and r["bounds"][1] <= y <= r["bounds"][3]]
+            room = min(holding, key=lambda r: (r["bounds"][2] - r["bounds"][0]) * (r["bounds"][3] - r["bounds"][1]),
+                       default=None)
+            name = "DRILL_%s" % s["slot_id"].upper()
+            self._empty(name, (x, y, z), self.MARKERS)
+            self.gameplay["markers"].append({
+                "name": name, "type": "drill", "id": "drill_" + s["slot_id"], "x": round(x, 4), "y": round(y, 4),
+                "z": z, "rot_z": 0.0, "room": room["id"] if room else None,
+                "meta": {"event": "zone.drill", "fires": ["on_enter", "on_exit"], "repeat": "edge",
+                         "radius": round(radius, 4), "target": s["interactive"]["id"], "fixture": s["role"]}})
+            n += 1
         return n
 
     def _markers(self):

@@ -281,6 +281,27 @@
         "audible": false,
         "fixture": "drop_safe"
       }
+    },
+    {
+      "name": "DRILL_INT_-1_3_OPEN0",
+      "type": "drill",
+      "id": "drill_int_-1_3_open0",
+      "x": -10.0,
+      "y": 1.5,
+      "z": -2.25,
+      "rot_z": 0.0,
+      "room": "vault_antechamber",
+      "meta": {
+        "event": "zone.drill",
+        "fires": [
+          "on_enter",
+          "on_exit"
+        ],
+        "repeat": "edge",
+        "radius": 1.0,
+        "target": "bank_branch_a04:if:14161f64",
+        "fixture": "vault_door"
+      }
     }
   ],
   "rooms": [

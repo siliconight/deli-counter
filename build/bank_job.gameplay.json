@@ -410,6 +410,111 @@
         "audible": false,
         "fixture": "drop_safe"
       }
+    },
+    {
+      "name": "DRILL_INT_-1_5_OPEN0",
+      "type": "drill",
+      "id": "drill_int_-1_5_open0",
+      "x": 7.5,
+      "y": 4.0,
+      "z": -1.95,
+      "rot_z": 0.0,
+      "room": "vault",
+      "meta": {
+        "event": "zone.drill",
+        "fires": [
+          "on_enter",
+          "on_exit"
+        ],
+        "repeat": "edge",
+        "radius": 1.35,
+        "target": "bank_job:if:15597360",
+        "fixture": "safe_deposit_boxes"
+      }
+    },
+    {
+      "name": "DRILL_INT_-1_5_OPEN2",
+      "type": "drill",
+      "id": "drill_int_-1_5_open2",
+      "x": 7.5,
+      "y": 9.0,
+      "z": -1.95,
+      "rot_z": 0.0,
+      "room": "vault",
+      "meta": {
+        "event": "zone.drill",
+        "fires": [
+          "on_enter",
+          "on_exit"
+        ],
+        "repeat": "edge",
+        "radius": 1.815,
+        "target": "bank_job:if:e670ac4d",
+        "fixture": "safe_deposit_boxes"
+      }
+    },
+    {
+      "name": "DRILL_INT_-1_6_OPEN0",
+      "type": "drill",
+      "id": "drill_int_-1_6_open0",
+      "x": 8.0,
+      "y": 2.5,
+      "z": -1.95,
+      "rot_z": 0.0,
+      "room": "vault",
+      "meta": {
+        "event": "zone.drill",
+        "fires": [
+          "on_enter",
+          "on_exit"
+        ],
+        "repeat": "edge",
+        "radius": 1.04,
+        "target": "bank_job:if:dc8ed64a",
+        "fixture": "safe_deposit_boxes"
+      }
+    },
+    {
+      "name": "DRILL_INT_-1_6_OPEN1",
+      "type": "drill",
+      "id": "drill_int_-1_6_open1",
+      "x": 11.0,
+      "y": 1.5,
+      "z": -1.95,
+      "rot_z": 0.0,
+      "room": "vault_room_east",
+      "meta": {
+        "event": "zone.drill",
+        "fires": [
+          "on_enter",
+          "on_exit"
+        ],
+        "repeat": "edge",
+        "radius": 1.0,
+        "target": "bank_job:if:b46d2a4f",
+        "fixture": "vault_door"
+      }
+    },
+    {
+      "name": "DRILL_INT_-1_6_OPEN2",
+      "type": "drill",
+      "id": "drill_int_-1_6_open2",
+      "x": 14.0,
+      "y": 2.5,
+      "z": -1.95,
+      "rot_z": 0.0,
+      "room": "vault",
+      "meta": {
+        "event": "zone.drill",
+        "fires": [
+          "on_enter",
+          "on_exit"
+        ],
+        "repeat": "edge",
+        "radius": 1.04,
+        "target": "bank_job:if:739dc291",
+        "fixture": "safe_deposit_boxes"
+      }
     }
   ],
   "rooms": [
