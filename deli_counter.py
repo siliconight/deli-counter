@@ -61,6 +61,7 @@ import roofs
 import floors
 import empty_panes
 import shop_awning
+import pilasters
 import fire_escape_stack
 import stoop
 import vault_room
@@ -1477,6 +1478,9 @@ class _Builder:
             self._record_slab_slots()
         self._volumes()
         self._placements()
+        # A CIVIC BUILDING'S PILASTERS (0.294.0): solid piers at the bays its
+        # openings imply, `prop` slots Zoo builds; nothing on any other building
+        self._pilasters()
         self._parapets()
         self._rooms()
         # after the rooms: a bank's panelling is laid along its public room's
@@ -2922,6 +2926,50 @@ class _Builder:
             "fit": {"dims": [round(v, 4) for v in size],
                     "pivot": "center", "openings": [], "collision": "none"},
         })
+
+    def _pilasters(self):
+        """A CIVIC BUILDING'S PILASTERS (0.294.0, factory roadmap 324; `pilasters.py`):
+        Zoo's `wall_pilaster` (>= 1.150.0) at each bay line `pilasters.plan`
+        chooses, recorded as a `prop` slot in the building's stone trim, its
+        greybox a visual box and a convex collider -- it stands a hand proud
+        where a body walks, so it is solid. Nothing on a building that is not
+        civic, an Empty, or one whose storeys stand on different extents."""
+        if not self.s.n_stories:
+            return
+        top = self.s.n_stories
+        H = self.s.story_height
+        extents = {setbacks_mod.storey_extent(self.s, s) for s in range(0, top)}
+        if len(extents) != 1:
+            return
+        x0, y0, x1, y1 = next(iter(extents))
+        runs = {"N": x1 - x0, "S": x1 - x0, "E": y1 - y0, "W": y1 - y0}
+        by_side = {}
+        for w in self.s.ext_walls:
+            if w.story < 0 or w.story >= top:
+                continue
+            for op in w.openings:
+                r = op.resolved()
+                by_side.setdefault(w.wall, []).append((op.pos * runs[w.wall], r["width"]))
+        z1 = (top - 1) * H + (H - self._cap_thick(top - 1, top))
+        mat = "plaster"
+        style = skin_style.style_for(mat, self._mat_style, self.s.default_material)
+        for p in pilasters.plan(self.s, (x0, y0, x1, y1), self.s.wall_thick, 0.0, z1, by_side):
+            c, size = p["centre"], p["size"]
+            self._box(p["slot_id"], c, size, self.VISUAL, role="prop")
+            self._col_box(p["slot_id"] + "_col", c, size, mode="convex")
+            self.slots.append({
+                "slot_id": p["slot_id"], "role": "prop", "size_mod": "full",
+                "style": style, "material": mat, "species": "wall_pilaster",
+                "stock": None, "variant": 0, "form": None,
+                "current_ref": "prop_greybox_01", "kit_axis": "material",
+                "wall": None, "story": None, "facing": None,
+                "transform": {"translation": [round(c[0], 4), round(c[1], 4),
+                                              round(c[2], 4)],
+                              "rot_y": p["rot_y"], "scale": [1.0, 1.0, 1.0]},
+                "fit": {"dims": [round(v, 4) for v in p["dims"]],
+                        "pivot": "center", "openings": [],
+                        "collision": "convex"},
+            })
 
     def _fire_escape_stack(self):
         """A WALK-UP'S FIRE ESCAPE (0.220.0, factory roadmaps 156 and 241;

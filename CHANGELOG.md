@@ -1,3 +1,19 @@
+## [0.294.0] - a civic building's pilasters
+
+The factory's roadmap 324; the walker, 2026-10-29, of the game's vertical slice: "Things still look simple, and
+computer made", and of the target, "detail and placement of hard surfaces". The slice's bank had a 22 m east flank of
+blank stucco between its corners. `pilasters.plan` stands Zoo's `wall_pilaster` (>= 1.150.0) on a civic building that
+is not an Empty and whose storeys share one extent: on each side the bays are laid between anchors -- the wall's
+ends and each opening's centre, pooled over the storeys -- one pier midway between two openings and every interval
+divided so no bay is longer than `MAX_BAY` (6.5 m), none within `OPENING_CLEAR` of an opening or `CORNER_CLEAR` of a
+corner, each `PIER_W` (0.6) wide and `PROUD` (0.08) off the outer face, its back `BURY` into the wall, from grade to
+the top storey's wall top, its front out. `_pilasters` records each as a `prop` slot in plaster (the stone trim) with
+a greybox visual box and a CONVEX COLLIDER: it stands where a body walks, so it is solid -- the rule a proud Patina
+pilaster was withdrawn for breaking. Piers carved into the wall modules were refused: a carved pier stands only on a
+module seam and the storeys share almost none (the factory's `docs/findings/slice_look/`). `prop_species` routes
+`pilaster` names to the species and mirrors its material. The bank's east flank: one pier at its middle. Tests:
+tests/test_pilasters.py.
+
 ## [0.293.0] - a filling station's canopy is built
 
 The factory's roadmap 324; the walker, 2026-10-29, of the game's vertical slice: "Things still look simple, and

@@ -86,6 +86,9 @@ PROP_SPECIES = (
     # no further up; no other authored name carries either keyword (16 decks, 96 columns, measured over specs/).
     (("canopy_roof",), "fuel_canopy"),
     (("canopy_col",), "canopy_column"),
+    # A CIVIC BUILDING'S PILASTER (0.294.0, Zoo 1.150.0): `pilasters.plan` names its slots `pilaster_<side>_<n>`;
+    # no authored name carries the word (measured over specs/)
+    (("pilaster",), "wall_pilaster"),
     (("crate", "col_", "pillar", "column", "stack", "pump_island",
       "cart", "planter", "canopy", "kiosk", "vault"), None),
     # MINTED 2026-09-12 by zoo/tools/new_species.py (roadmap 150): the
@@ -399,6 +402,7 @@ SPECIES_MATERIALS = {
     'aisle_sign': ('wood', ('wood', 'paper', 'plastic', 'metal_painted')),
     'atm': ('metal_painted', ('metal_painted', 'plastic')),
     'canopy_column': ('metal_painted', ('metal_painted',)),
+    'wall_pilaster': ('plaster', ('plaster',)),
     'back_bar': ('wood_stained', ('wood_stained', 'wood', 'laminate')),
     'bar_stool': ('metal_bare', ('metal_bare', 'wood')),
     'booth_seat': ('leather', ('leather', 'canvas', 'plastic')),
