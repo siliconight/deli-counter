@@ -3916,6 +3916,10 @@ def make(preset: str, enrich: bool = True, stairs_first: bool = False,
     # every pass below, so the cover and the furniture are laid round the
     # windows that are built.
     facade_plan.stack_mirrored(spec)
+    # A STOREY NOBODY REACHES IS A FACADE (0.295.0), AND A FAMILY'S STREET FACE STANDS ON ITS ROW (0.296.0):
+    # composed after the stacking, which they replace on the faces they compose, and before the furniture
+    facade_plan.compose_unreached(spec)
+    facade_plan.compose_front(spec)
     # A DEPOSIT VAULT IS LINED (0.288.0, `level_design.line_deposit_vaults`):
     # here, with the faces, so the walls are settled before cover and furniture
     level_design.line_deposit_vaults(spec)

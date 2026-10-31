@@ -1,3 +1,28 @@
+## [0.296.0] - a card shop's street face upstairs stands on the mid-rise bays
+
+The factory's roadmap 79 (the facade planner) and 324 (the vertical slice). The slice's card shop stood two 1.4 m
+windows on its 20 m street face over its apartment, beside a bank whose upper storey stands on 3.0 m bays (0.295.0).
+Unlike the bank's, people stand behind these, so each new window is a sightline out over the street, and that was put
+to the walker: "yes to window rhythm".
+
+### Added
+- **`facade_plan.compose_front`** and **`FRONT_ROWS`**: on a building whose preset `FRONT_ROWS` names (`card_shop`,
+  with its source), the street face (`FRONT`, the south wall) of every upper storey people reach is laid as
+  `compose_unreached` lays a storey nobody reaches -- its untagged windows go and one like its widest stands at the
+  centre of every `midrise` bay that `_fits` -- and stays clear glass onto the rooms behind it. A face a fire escape
+  serves or a drape hangs over is left as authored. A family is added by name: the library's other 69 multi-storey
+  buildings keep their windows. `compose_unreached` and it share one body (`_compose`); the bank's output is
+  unchanged.
+- **`presets.make` composes** both, after `stack_mirrored` and before cover and furniture, so a preset builds what the
+  library carries: until now a bank built from its preset kept the two windows a face that
+  `migrate_unreached_facade.py` had re-laid.
+- **`migrations/migrate_front_rows.py`**: composes the library's named families and refurnishes a spec it changes
+  (`migrate_furnish_recipes.migrate`, a fixed point on `card_shop_a01` before it ran), so the furniture stands round
+  the windows that are built. `card_shop_a01`: S1 2 -> 6 windows at -7.5 .. 7.5 m; only the apartment's pieces
+  moved (2 gone, 3 new, 5 moved); every other room as it was.
+
+Tests: tests/test_front_rows.py (fails on 0.295.1: the card shop's street face upstairs has two windows).
+
 ## [0.295.1] - CATALOG.md is written in LF
 
 ### Fixed

@@ -77,6 +77,17 @@ MIN_PIER = 0.3
 EDGE_WALLS = 1.5
 #: Two centres this close along a face are one line: the specs' openings are on a 0.5 m grid.
 TOL = 0.05
+#: FRONTS A FAMILY COMPOSES (0.296.0): the presets whose street face stands on a row's bays on every upper storey,
+#: people's rooms behind it or not. The walker, of the slice's card shop -- two 1.4 m windows on a 20 m front over an
+#: apartment, beside a bank whose upper storey stands on 3.0 m bays -- asked whether it should get a proper window
+#: rhythm: "yes to window rhythm". Every window on a storey people reach is a sightline out over the street, so this
+#: is a family's call and not the library's: a family is added here by name, with its source.
+FRONT_ROWS = {
+    "card_shop": "midrise",     # the walker, 2026-10-31: the slice's card shop, an apartment over the shop
+}
+#: The face a Deli Counter building turns to its street (Level Factory stands every front door to the road, and the
+#: presets put the door on the south wall).
+FRONT = "S"
 DRAPE_NAME = "window_drape"
 
 
@@ -115,14 +126,53 @@ def compose_unreached(d):
     storeys = set(unreached_storeys(spec))
     if not storeys:
         return []
+    return _compose(d, spec, lambda side, story: story in storeys)
+
+
+def compose_front(d):
+    """A FAMILY'S STREET FACE ON ITS ROW (0.296.0): on a building whose preset `FRONT_ROWS` names, the `FRONT` face of
+    every upper storey people reach is composed as `compose_unreached` composes a storey nobody reaches -- its untagged
+    windows go and one like its widest stands at the centre of every bay that `_fits` -- and the windows stay clear
+    glass, onto the rooms behind them. A face is left as authored when a fire escape serves it or a drape hangs over
+    any of its windows (`_held`): both were placed for the windows that are there. Composed before cover and
+    furniture are laid (`presets.make`), so they are laid round the windows that are built; a spec composed
+    after it was furnished must be refurnished. Idempotent. In place; returns ``[(wall, story, before, after)]``."""
+    if d.get("facade") or FRONT_ROWS.get(d.get("preset")) != "midrise":
+        return []
+    spec = spec_loader.spec_from_dict(d)
+    nobody = set(unreached_storeys(spec))
+    sh = float(spec.story_height)
+
+    def pick(side, story):
+        if side != FRONT or story < 1 or story in nobody:
+            return False
+        for i, w in enumerate(d.get("ext_walls") or []):
+            if w["wall"] != side or int(w["story"]) != story:
+                continue
+            run, centre, line = _run(spec, side, story)
+            for o, ob in zip(w.get("openings") or [], spec.ext_walls[i].openings):
+                if o.get("kind") != "window" or o.get("tag"):
+                    continue
+                r = ob.resolved()
+                z = story * sh + float(r.get("sill") or 0.0) + float(r.get("height") or 0.0) / 2.0
+                if _held(spec, d, side, story, float(ob.pos) * run, float(r["width"]), centre, line, z):
+                    return False
+        return True
+
+    return _compose(d, spec, pick)
+
+
+def _compose(d, spec, pick):
+    """Each face `pick(side, story)` names, its untagged windows re-laid one to a `midrise` bay; the body of
+    `compose_unreached` and `compose_front`."""
     grid = float(spec.grid)
     wt = float(spec.wall_thick)
     out = []
     for i, w in enumerate(d.get("ext_walls") or []):
         story = int(w["story"])
-        if story not in storeys:
-            continue
         side = w["wall"]
+        if not pick(side, story):
+            continue
         ops = w.get("openings") or []
         objs = spec.ext_walls[i].openings
         free = [j for j, o in enumerate(ops) if o.get("kind") == "window" and not o.get("tag")]
