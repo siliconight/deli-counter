@@ -171,7 +171,10 @@ def main():
         print("CATALOG.md up to date.")
         return
 
-    with open(out, "w", encoding="utf-8") as f:
+    # LF ON EVERY PLATFORM (0.295.1): text mode wrote CRLF on Windows, so every commit hook left this tracked file
+    # dirty with nothing changed but its endings -- and a dirty tracked file is folded into Level Factory's build
+    # fingerprint, the cache-busting roadmap 73 fixed for the transients (tests/test_catalog_transients.py)
+    with open(out, "w", encoding="utf-8", newline="\n") as f:
         f.write(content)
     print(f"Wrote {out} ({len(rows)} levels)")
 

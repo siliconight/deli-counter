@@ -24,6 +24,8 @@ spec write leaves this repo's tracked tree BYTE-IDENTICAL.
 """
 import json
 import shutil
+import subprocess
+import sys
 from pathlib import Path
 
 import catalog
@@ -72,3 +74,17 @@ def test_a_pipeline_spec_write_does_not_move_the_catalogue():
             "a pipeline spec write moved CATALOG.md -- roadmap 73 is back"
     finally:
         transient.unlink(missing_ok=True)
+
+
+def test_writing_the_catalogue_leaves_it_byte_identical():
+    """FAILS ON 0.295.0 ON WINDOWS: `catalog.py` wrote in text mode, CRLF, so every commit hook left CATALOG.md dirty
+    with only its endings changed -- the same dirty tracked file this module's roadmap 73 guard exists for."""
+    out = SPECS / "CATALOG.md"
+    before = out.read_bytes()
+    try:
+        subprocess.run([sys.executable, str(HERE / "catalog.py")], cwd=HERE, check=True, capture_output=True)
+        after = out.read_bytes()
+        assert b"\r\n" not in after, "catalog.py wrote CRLF"
+        assert after == before, "catalog.py moved CATALOG.md"
+    finally:
+        out.write_bytes(before)

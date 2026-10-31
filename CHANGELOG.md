@@ -1,3 +1,12 @@
+## [0.295.1] - CATALOG.md is written in LF
+
+### Fixed
+- **`catalog.py` wrote `specs/CATALOG.md` in text mode**, CRLF on Windows, so every commit hook -- which runs it --
+  left the tracked file dirty with nothing changed but its endings, to be restored by hand after each commit. A dirty
+  tracked file is what Level Factory folds into its build fingerprint (`tests/test_catalog_transients.py`, roadmap 73),
+  so a hook's leftover could cache-miss every later job of a run. It writes `newline="\n"`. Queued since 0.294.0 to
+  ride the next change and missed by 0.295.0. Tests: tests/test_catalog_transients.py (fails on 0.295.0).
+
 ## [0.295.0] - a storey nobody reaches is a facade
 
 The factory's roadmap 79 (the facade planner) and 324 (the walker's vertical slice: "keep getting us closer to that
