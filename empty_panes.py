@@ -60,9 +60,18 @@ def _pick(table, key):
     return table[-1][0]
 
 
-def choose(building, seed, slot_id, story, vacant=False):
+#: AN OFFICE STOREY NOBODY REACHES (0.295.0): a bank's or a shop's upper floor
+#: after hours. Blinds and shades on most, half drawn; a few left lit under cool
+#: tubes, a few warm. No bars, no box fan, no air conditioner -- an office on a
+#: main street is cooled from the roof. 36 lit in 100.
+OFFICE = (("dark_blind", 28), ("dark_shade", 14), ("dark", 14), ("dark_curtain", 8),
+          ("lit_blind_cool", 14), ("lit_cool", 8), ("lit_blind", 8), ("lit_shade", 6))
+
+
+def choose(building, seed, slot_id, story, vacant=False, office=False):
     """The state of one window: ``boarded`` on a vacant building, else drawn
-    from the street-level table on storey 0 and the upstairs one above.
+    from the street-level table on storey 0 and the upstairs one above, or the
+    office one on a storey nobody reaches (`office`, 0.295.0).
 
     VACANCY IS AUTHORED, NOT DRAWN. A seeded one-in-seven left none of the six
     rowhomes vacant (the odds of that are (6/7)^6, about 40%), and the agreed
@@ -71,6 +80,8 @@ def choose(building, seed, slot_id, story, vacant=False):
     says which is siding."""
     if vacant:
         return "boarded"
+    if office:
+        return _pick(OFFICE, "%s:%s:%s" % (building, seed, slot_id))
     return _pick(GROUND if int(story or 0) <= 0 else UPPER,
                  "%s:%s:%s" % (building, seed, slot_id))
 

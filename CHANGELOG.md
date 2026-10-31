@@ -1,3 +1,32 @@
+## [0.295.0] - a storey nobody reaches is a facade
+
+The factory's roadmap 79 (the facade planner) and 324 (the walker's vertical slice: "keep getting us closer to that
+amazing vertical slice look"). The slice's bank, bank_branch_a02, has an upper storey with no room and no stair to it,
+and stood two 1.6 m windows on each 30 m and 22 m face -- a warehouse's rhythm on a bank -- glazed clear onto an empty
+box. Across the library the multi-storey buildings carry a median 20 m of upper wall a window; a street's offices are 3
+to 4 m (the factory's `docs/findings/slice_look/`, slice 22).
+
+### Added
+- **`facade_plan.unreached_storeys`**: an upper storey with no room on it that no stair, ladder, ramp or fire escape
+  arrives at or passes. One spec in the library has one: bank_branch_a02's first storey.
+- **`facade_plan.compose_unreached`** and `migrations/migrate_unreached_facade.py`: on such a storey nothing a window
+  does to play can happen -- no sightline out, no route, no room to furnish -- so its faces are composed whole: each
+  face's untagged windows are re-laid one like its widest at every bay of an equal row centred on the face, the
+  mid-rise bay rounded to two grid steps so the row lands on the builder's grid at either count (3.0 m here); a 30 /
+  9 = 3.33 m row snapped to 3.5, 3.5, 3.0, 3.5, an uneven rhythm, and was refused on the way. A face with no untagged
+  window stays as it was; tagged windows and every other opening stay where they were authored. Idempotent. The bank:
+  10 windows on each long face, 7 on each short one.
+- **The emitter paints them** (`_record_opening_slot`): a window on an unreached storey is `glazing: facade` with a
+  pane drawn from **`empty_panes.OFFICE`** -- an office after hours: blinds and shades on most, a few lit under cool
+  tubes, a few warm, 36 lit in 100; no bars, box fan or air conditioner (`choose(..., office=True)`). The bank: 34
+  painted, 15 lit.
+- **A painted window derives no light** (`lights.derive_light_anchors(painted_storeys=)`): its area light stands for
+  the street through the glass into a room, and there is none -- the draped window's rule.
+
+`tests/test_empty_panes.py`'s control, "the same house made enterable", was the Empty's shell with `facade` off and
+no room or stair up -- a storey nobody reaches, which is now painted; it takes a room on every storey. On the slice (slice 22 against slice 21, Level Factory 0.274.0, Deli Counter 0.295.0 and Lux 0.82.0 together; the factory's docs/findings/slice_look/, perf_s22c_*): the median heading +0 draws and -0.08 ms p95, the worst street view (longest_sightline yaw 90) 2,312 -> 2,320; the two camera sockets set on building faces at upper-storey height +134 to +365, with the same objects in their frustum (+-16), so what moved there is culling, not submissions added -- not attributed further. Tests:
+tests/test_unreached_facade.py (fails on 0.294.0).
+
 ## [0.294.0] - a civic building's pilasters
 
 The factory's roadmap 324; the walker, 2026-10-29, of the game's vertical slice: "Things still look simple, and

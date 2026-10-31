@@ -96,6 +96,13 @@ class _Builder:
         self._module_cache = {}
 
     # -- helpers ------------------------------------------------------------
+    def _unreached(self):
+        """The storeys nobody can stand on (`facade_plan.unreached_storeys`, 0.295.0), once a build."""
+        if getattr(self, "_unreached_storeys", None) is None:
+            import facade_plan
+            self._unreached_storeys = set(facade_plan.unreached_storeys(self.s))
+        return self._unreached_storeys
+
     def snap(self, v):
         g = self.s.grid
         return round(v / g) * g
@@ -990,7 +997,15 @@ class _Builder:
         # collision and was drawn as an open frame -- a doorway into a dark
         # box that a player walks into as a wall. The same tag says "nothing
         # behind this opening" to Zoo (>= 1.61.0), which shuts it with a leaf.
-        if role in ("window", "doorway") and getattr(self.s, "facade", False):
+        # A STOREY NOBODY REACHES IS A FACADE TOO (0.295.0): no room on it and no
+        # stair, ladder, ramp or fire escape arriving (`facade_plan.
+        # unreached_storeys`), so nobody sees through its glass from inside and
+        # an empty box would show through it from out. Its windows are painted
+        # as an office after hours (`empty_panes.OFFICE`); the bank's upper
+        # floor is the first.
+        office = (role == "window" and not getattr(self.s, "facade", False)
+                  and story in self._unreached())
+        if role in ("window", "doorway") and (getattr(self.s, "facade", False) or office):
             slot["glazing"] = "facade"
             # AND WHAT IT SHOWS (0.179.0): lit, dark, curtained, barred or
             # boarded, chosen per window -- which windows glow is a fact about
@@ -1000,12 +1015,14 @@ class _Builder:
                 # shows the shop its preset names on the opening
                 slot["pane"] = empty_panes.authored(h.get("pane")) or empty_panes.choose(
                     self.s.name, self.s.seed, vb, story,
-                    vacant=getattr(self.s, "vacant", False))
+                    vacant=getattr(self.s, "vacant", False), office=office)
                 # AND WHAT HANGS IN IT (0.181.0): bars on a barred pane, an
                 # air conditioner in some others. Patina (>= 0.26.0) orders
-                # them from these fields and Zoo (>= 1.69.0) builds them.
-                slot.update(empty_panes.fixtures(
-                    slot["pane"], self.s.name, self.s.seed, vb, story))
+                # them from these fields and Zoo (>= 1.69.0) builds them. An
+                # office's window carries neither.
+                if not office:
+                    slot.update(empty_panes.fixtures(
+                        slot["pane"], self.s.name, self.s.seed, vb, story))
             # AND ITS FRONT DOOR (0.182.0): the house's painted finish and its
             # iron security door, authored on the spec. Zoo (>= 1.72.0) paints
             # the leaf; Patina (>= 0.28.0) orders the security door.
@@ -3847,6 +3864,8 @@ def write_light_manifest(builder, path):
         business=_ld.club_building_id(builder.s),
         # WHERE EVERY OPENING LANDS (0.261.0): lit in a moody room, so it reads from above
         landings=_lights.opening_landings(builder.s),
+        # A PAINTED WINDOW LETS NO LIGHT IN (0.295.0): no room stands behind one
+        painted_storeys=builder._unreached(),
     )
     with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)

@@ -93,7 +93,12 @@ def test_an_empty_s_window_carries_its_state_and_an_enterable_one_does_not(dc):
     s = presets.empty_rowhome(floors=3)
     empty = _windows(dc, s)
     assert empty and all(w.get("pane") in empty_panes.STATES for w in empty)
-    assert all("pane" not in w for w in _windows(dc, dict(s, facade=False)))
+    # ENTERABLE MEANS A ROOM ON EVERY STOREY (0.295.0): the shell alone with
+    # `facade` off has no room and no stair up, and a storey nobody reaches is
+    # painted too (`facade_plan.unreached_storeys`)
+    fx, fy = s["footprint_x"] / 2.0 - 1.0, s["footprint_y"] / 2.0 - 1.0
+    rooms = [{"id": "r%d" % k, "story": k, "bounds": [-fx, -fy, fx, fy]} for k in range(int(s["n_stories"]))]
+    assert all("pane" not in w for w in _windows(dc, dict(s, facade=False, rooms=rooms)))
     boarded = _windows(dc, presets.empty_rowhome(floors=3, vacant=True))
     assert {w["pane"] for w in boarded} == {"boarded"}
 

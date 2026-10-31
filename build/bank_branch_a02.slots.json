@@ -10,8 +10,8 @@
     "doorway/generated": 9,
     "safe_deposit_boxes/generated": 7,
     "vault_door/generated": 1,
-    "wall/generated": 267,
-    "window/generated": 10
+    "wall/generated": 253,
+    "window/generated": 36
   },
   "slots": [
     {
@@ -4299,114 +4299,6 @@
     {
       "slot_id": "ext_1_N_seg0",
       "role": "wall",
-      "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "ext_1_N",
-      "story": 1,
-      "facing": "N",
-      "transform": {
-        "translation": [
-          -13.85,
-          11.0,
-          5.25
-        ],
-        "rot_y": 0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          3.3
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      },
-      "material_in": "plaster"
-    },
-    {
-      "slot_id": "ext_1_N_seg1",
-      "role": "wall",
-      "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "ext_1_N",
-      "story": 1,
-      "facing": "N",
-      "transform": {
-        "translation": [
-          -11.85,
-          11.0,
-          5.25
-        ],
-        "rot_y": 0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          3.3
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      },
-      "material_in": "plaster"
-    },
-    {
-      "slot_id": "ext_1_N_seg2",
-      "role": "wall",
-      "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "ext_1_N",
-      "story": 1,
-      "facing": "N",
-      "transform": {
-        "translation": [
-          -9.85,
-          11.0,
-          5.25
-        ],
-        "rot_y": 0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          3.3
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      },
-      "material_in": "plaster"
-    },
-    {
-      "slot_id": "ext_1_N_seg3",
-      "role": "wall",
       "size_mod": "end",
       "style": 1,
       "material": "concrete",
@@ -4417,7 +4309,7 @@
       "facing": "N",
       "transform": {
         "translation": [
-          -8.575,
+          -14.575,
           11.0,
           5.25
         ],
@@ -4442,6 +4334,166 @@
     },
     {
       "slot_id": "ext_1_N_open0",
+      "role": "window",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "window_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_N",
+      "story": 1,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          -13.5,
+          11.0,
+          5.25
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.6,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [
+          {
+            "kind": "window",
+            "width": 1.6,
+            "height": 1.4,
+            "sill": 0.9
+          }
+        ],
+        "collision": "convex"
+      },
+      "glazing": "facade",
+      "pane": "lit_shade"
+    },
+    {
+      "slot_id": "ext_1_N_seg1",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_N",
+      "story": 1,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          -12.0,
+          11.0,
+          5.25
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.4,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.4,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      },
+      "material_in": "plaster"
+    },
+    {
+      "slot_id": "ext_1_N_open1",
+      "role": "window",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "window_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_N",
+      "story": 1,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          -10.5,
+          11.0,
+          5.25
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.6,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [
+          {
+            "kind": "window",
+            "width": 1.6,
+            "height": 1.4,
+            "sill": 0.9
+          }
+        ],
+        "collision": "convex"
+      },
+      "glazing": "facade",
+      "pane": "lit_blind_cool"
+    },
+    {
+      "slot_id": "ext_1_N_seg2",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_N",
+      "story": 1,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          -9.0,
+          11.0,
+          5.25
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.4,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.4,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      },
+      "material_in": "plaster"
+    },
+    {
+      "slot_id": "ext_1_N_open2",
       "role": "window",
       "size_mod": "full",
       "style": 1,
@@ -4481,22 +4533,139 @@
         ],
         "collision": "convex"
       },
+      "glazing": "facade",
+      "pane": "dark_shade"
+    },
+    {
+      "slot_id": "ext_1_N_seg3",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_N",
+      "story": 1,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          -6.0,
+          11.0,
+          5.25
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.4,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.4,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      },
       "material_in": "plaster"
+    },
+    {
+      "slot_id": "ext_1_N_open3",
+      "role": "window",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "window_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_N",
+      "story": 1,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          -4.5,
+          11.0,
+          5.25
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.6,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [
+          {
+            "kind": "window",
+            "width": 1.6,
+            "height": 1.4,
+            "sill": 0.9
+          }
+        ],
+        "collision": "convex"
+      },
+      "glazing": "facade",
+      "pane": "dark_blind"
     },
     {
       "slot_id": "ext_1_N_seg4",
       "role": "wall",
-      "size_mod": "full",
+      "size_mod": "end",
       "style": 1,
       "material": "concrete",
-      "current_ref": "wall_greybox_01",
+      "current_ref": "wallEnd_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_1_N",
       "story": 1,
       "facing": "N",
       "transform": {
         "translation": [
-          -5.7,
+          -3.0,
+          11.0,
+          5.25
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.4,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.4,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      },
+      "material_in": "plaster"
+    },
+    {
+      "slot_id": "ext_1_N_open4",
+      "role": "window",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "window_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_N",
+      "story": 1,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          -1.5,
           11.0,
           5.25
         ],
@@ -4509,30 +4678,74 @@
       },
       "fit": {
         "dims": [
-          2.0,
+          1.6,
           0.3,
           3.3
         ],
         "pivot": "center",
-        "openings": [],
+        "openings": [
+          {
+            "kind": "window",
+            "width": 1.6,
+            "height": 1.4,
+            "sill": 0.9
+          }
+        ],
         "collision": "convex"
       },
-      "material_in": "plaster"
+      "glazing": "facade",
+      "pane": "lit_blind_cool"
     },
     {
       "slot_id": "ext_1_N_seg5",
       "role": "wall",
-      "size_mod": "full",
+      "size_mod": "end",
       "style": 1,
       "material": "concrete",
-      "current_ref": "wall_greybox_01",
+      "current_ref": "wallEnd_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_1_N",
       "story": 1,
       "facing": "N",
       "transform": {
         "translation": [
-          -3.7,
+          0.0,
+          11.0,
+          5.25
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.4,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.4,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      },
+      "material_in": "plaster"
+    },
+    {
+      "slot_id": "ext_1_N_open5",
+      "role": "window",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "window_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_N",
+      "story": 1,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          1.5,
           11.0,
           5.25
         ],
@@ -4545,30 +4758,74 @@
       },
       "fit": {
         "dims": [
-          2.0,
+          1.6,
           0.3,
           3.3
         ],
         "pivot": "center",
-        "openings": [],
+        "openings": [
+          {
+            "kind": "window",
+            "width": 1.6,
+            "height": 1.4,
+            "sill": 0.9
+          }
+        ],
         "collision": "convex"
       },
-      "material_in": "plaster"
+      "glazing": "facade",
+      "pane": "lit_blind_cool"
     },
     {
       "slot_id": "ext_1_N_seg6",
       "role": "wall",
-      "size_mod": "full",
+      "size_mod": "end",
       "style": 1,
       "material": "concrete",
-      "current_ref": "wall_greybox_01",
+      "current_ref": "wallEnd_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_1_N",
       "story": 1,
       "facing": "N",
       "transform": {
         "translation": [
-          -1.7,
+          3.0,
+          11.0,
+          5.25
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.4,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.4,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      },
+      "material_in": "plaster"
+    },
+    {
+      "slot_id": "ext_1_N_open6",
+      "role": "window",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "window_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_N",
+      "story": 1,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          4.5,
           11.0,
           5.25
         ],
@@ -4581,126 +4838,26 @@
       },
       "fit": {
         "dims": [
-          2.0,
+          1.6,
           0.3,
           3.3
         ],
         "pivot": "center",
-        "openings": [],
+        "openings": [
+          {
+            "kind": "window",
+            "width": 1.6,
+            "height": 1.4,
+            "sill": 0.9
+          }
+        ],
         "collision": "convex"
       },
-      "material_in": "plaster"
+      "glazing": "facade",
+      "pane": "dark"
     },
     {
       "slot_id": "ext_1_N_seg7",
-      "role": "wall",
-      "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "ext_1_N",
-      "story": 1,
-      "facing": "N",
-      "transform": {
-        "translation": [
-          0.3,
-          11.0,
-          5.25
-        ],
-        "rot_y": 0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          3.3
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      },
-      "material_in": "plaster"
-    },
-    {
-      "slot_id": "ext_1_N_seg8",
-      "role": "wall",
-      "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "ext_1_N",
-      "story": 1,
-      "facing": "N",
-      "transform": {
-        "translation": [
-          2.3,
-          11.0,
-          5.25
-        ],
-        "rot_y": 0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          3.3
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      },
-      "material_in": "plaster"
-    },
-    {
-      "slot_id": "ext_1_N_seg9",
-      "role": "wall",
-      "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "ext_1_N",
-      "story": 1,
-      "facing": "N",
-      "transform": {
-        "translation": [
-          4.3,
-          11.0,
-          5.25
-        ],
-        "rot_y": 0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          3.3
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      },
-      "material_in": "plaster"
-    },
-    {
-      "slot_id": "ext_1_N_seg10",
       "role": "wall",
       "size_mod": "end",
       "style": 1,
@@ -4736,7 +4893,7 @@
       "material_in": "plaster"
     },
     {
-      "slot_id": "ext_1_N_open1",
+      "slot_id": "ext_1_N_open7",
       "role": "window",
       "size_mod": "full",
       "style": 1,
@@ -4776,22 +4933,59 @@
         ],
         "collision": "convex"
       },
-      "material_in": "plaster"
+      "glazing": "facade",
+      "pane": "dark_blind"
     },
     {
-      "slot_id": "ext_1_N_seg11",
+      "slot_id": "ext_1_N_seg8",
       "role": "wall",
-      "size_mod": "full",
+      "size_mod": "end",
       "style": 1,
       "material": "concrete",
-      "current_ref": "wall_greybox_01",
+      "current_ref": "wallEnd_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_1_N",
       "story": 1,
       "facing": "N",
       "transform": {
         "translation": [
-          9.3,
+          9.0,
+          11.0,
+          5.25
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.4,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.4,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      },
+      "material_in": "plaster"
+    },
+    {
+      "slot_id": "ext_1_N_open8",
+      "role": "window",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "window_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_N",
+      "story": 1,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          10.5,
           11.0,
           5.25
         ],
@@ -4804,7 +4998,51 @@
       },
       "fit": {
         "dims": [
-          2.0,
+          1.6,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [
+          {
+            "kind": "window",
+            "width": 1.6,
+            "height": 1.4,
+            "sill": 0.9
+          }
+        ],
+        "collision": "convex"
+      },
+      "glazing": "facade",
+      "pane": "lit_cool"
+    },
+    {
+      "slot_id": "ext_1_N_seg9",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_N",
+      "story": 1,
+      "facing": "N",
+      "transform": {
+        "translation": [
+          12.0,
+          11.0,
+          5.25
+        ],
+        "rot_y": 0,
+        "scale": [
+          1.4,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.4,
           0.3,
           3.3
         ],
@@ -4815,19 +5053,19 @@
       "material_in": "plaster"
     },
     {
-      "slot_id": "ext_1_N_seg12",
-      "role": "wall",
+      "slot_id": "ext_1_N_open9",
+      "role": "window",
       "size_mod": "full",
       "style": 1,
       "material": "concrete",
-      "current_ref": "wall_greybox_01",
+      "current_ref": "window_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_1_N",
       "story": 1,
       "facing": "N",
       "transform": {
         "translation": [
-          11.3,
+          13.5,
           11.0,
           5.25
         ],
@@ -4840,54 +5078,26 @@
       },
       "fit": {
         "dims": [
-          2.0,
+          1.6,
           0.3,
           3.3
         ],
         "pivot": "center",
-        "openings": [],
+        "openings": [
+          {
+            "kind": "window",
+            "width": 1.6,
+            "height": 1.4,
+            "sill": 0.9
+          }
+        ],
         "collision": "convex"
       },
-      "material_in": "plaster"
+      "glazing": "facade",
+      "pane": "dark"
     },
     {
-      "slot_id": "ext_1_N_seg13",
-      "role": "wall",
-      "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "ext_1_N",
-      "story": 1,
-      "facing": "N",
-      "transform": {
-        "translation": [
-          13.3,
-          11.0,
-          5.25
-        ],
-        "rot_y": 0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          3.3
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      },
-      "material_in": "plaster"
-    },
-    {
-      "slot_id": "ext_1_N_seg14",
+      "slot_id": "ext_1_N_seg10",
       "role": "wall",
       "size_mod": "end",
       "style": 1,
@@ -4923,7 +5133,7 @@
       "material_in": "plaster"
     },
     {
-      "slot_id": "ext_1_N_seg15",
+      "slot_id": "ext_1_N_seg11",
       "role": "wall",
       "size_mod": "end",
       "style": 1,
@@ -4959,7 +5169,7 @@
       "material_in": "plaster"
     },
     {
-      "slot_id": "ext_1_N_seg16",
+      "slot_id": "ext_1_N_seg12",
       "role": "wall",
       "size_mod": "end",
       "style": 1,
@@ -4997,114 +5207,6 @@
     {
       "slot_id": "ext_1_S_seg0",
       "role": "wall",
-      "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "ext_1_S",
-      "story": 1,
-      "facing": "S",
-      "transform": {
-        "translation": [
-          -13.85,
-          -11.0,
-          5.25
-        ],
-        "rot_y": 180,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          3.3
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      },
-      "material_in": "plaster"
-    },
-    {
-      "slot_id": "ext_1_S_seg1",
-      "role": "wall",
-      "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "ext_1_S",
-      "story": 1,
-      "facing": "S",
-      "transform": {
-        "translation": [
-          -11.85,
-          -11.0,
-          5.25
-        ],
-        "rot_y": 180,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          3.3
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      },
-      "material_in": "plaster"
-    },
-    {
-      "slot_id": "ext_1_S_seg2",
-      "role": "wall",
-      "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "ext_1_S",
-      "story": 1,
-      "facing": "S",
-      "transform": {
-        "translation": [
-          -9.85,
-          -11.0,
-          5.25
-        ],
-        "rot_y": 180,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          3.3
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      },
-      "material_in": "plaster"
-    },
-    {
-      "slot_id": "ext_1_S_seg3",
-      "role": "wall",
       "size_mod": "end",
       "style": 1,
       "material": "concrete",
@@ -5115,7 +5217,7 @@
       "facing": "S",
       "transform": {
         "translation": [
-          -8.575,
+          -14.575,
           -11.0,
           5.25
         ],
@@ -5140,6 +5242,166 @@
     },
     {
       "slot_id": "ext_1_S_open0",
+      "role": "window",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "window_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_S",
+      "story": 1,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          -13.5,
+          -11.0,
+          5.25
+        ],
+        "rot_y": 180,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.6,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [
+          {
+            "kind": "window",
+            "width": 1.6,
+            "height": 1.4,
+            "sill": 0.9
+          }
+        ],
+        "collision": "convex"
+      },
+      "glazing": "facade",
+      "pane": "dark_shade"
+    },
+    {
+      "slot_id": "ext_1_S_seg1",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_S",
+      "story": 1,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          -12.0,
+          -11.0,
+          5.25
+        ],
+        "rot_y": 180,
+        "scale": [
+          1.4,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.4,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      },
+      "material_in": "plaster"
+    },
+    {
+      "slot_id": "ext_1_S_open1",
+      "role": "window",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "window_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_S",
+      "story": 1,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          -10.5,
+          -11.0,
+          5.25
+        ],
+        "rot_y": 180,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.6,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [
+          {
+            "kind": "window",
+            "width": 1.6,
+            "height": 1.4,
+            "sill": 0.9
+          }
+        ],
+        "collision": "convex"
+      },
+      "glazing": "facade",
+      "pane": "lit_shade"
+    },
+    {
+      "slot_id": "ext_1_S_seg2",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_S",
+      "story": 1,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          -9.0,
+          -11.0,
+          5.25
+        ],
+        "rot_y": 180,
+        "scale": [
+          1.4,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.4,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      },
+      "material_in": "plaster"
+    },
+    {
+      "slot_id": "ext_1_S_open2",
       "role": "window",
       "size_mod": "full",
       "style": 1,
@@ -5179,22 +5441,139 @@
         ],
         "collision": "convex"
       },
+      "glazing": "facade",
+      "pane": "dark_blind"
+    },
+    {
+      "slot_id": "ext_1_S_seg3",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_S",
+      "story": 1,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          -6.0,
+          -11.0,
+          5.25
+        ],
+        "rot_y": 180,
+        "scale": [
+          1.4,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.4,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      },
       "material_in": "plaster"
+    },
+    {
+      "slot_id": "ext_1_S_open3",
+      "role": "window",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "window_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_S",
+      "story": 1,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          -4.5,
+          -11.0,
+          5.25
+        ],
+        "rot_y": 180,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.6,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [
+          {
+            "kind": "window",
+            "width": 1.6,
+            "height": 1.4,
+            "sill": 0.9
+          }
+        ],
+        "collision": "convex"
+      },
+      "glazing": "facade",
+      "pane": "dark_shade"
     },
     {
       "slot_id": "ext_1_S_seg4",
       "role": "wall",
-      "size_mod": "full",
+      "size_mod": "end",
       "style": 1,
       "material": "concrete",
-      "current_ref": "wall_greybox_01",
+      "current_ref": "wallEnd_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_1_S",
       "story": 1,
       "facing": "S",
       "transform": {
         "translation": [
-          -5.7,
+          -3.0,
+          -11.0,
+          5.25
+        ],
+        "rot_y": 180,
+        "scale": [
+          1.4,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.4,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      },
+      "material_in": "plaster"
+    },
+    {
+      "slot_id": "ext_1_S_open4",
+      "role": "window",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "window_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_S",
+      "story": 1,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          -1.5,
           -11.0,
           5.25
         ],
@@ -5207,30 +5586,74 @@
       },
       "fit": {
         "dims": [
-          2.0,
+          1.6,
           0.3,
           3.3
         ],
         "pivot": "center",
-        "openings": [],
+        "openings": [
+          {
+            "kind": "window",
+            "width": 1.6,
+            "height": 1.4,
+            "sill": 0.9
+          }
+        ],
         "collision": "convex"
       },
-      "material_in": "plaster"
+      "glazing": "facade",
+      "pane": "dark_blind"
     },
     {
       "slot_id": "ext_1_S_seg5",
       "role": "wall",
-      "size_mod": "full",
+      "size_mod": "end",
       "style": 1,
       "material": "concrete",
-      "current_ref": "wall_greybox_01",
+      "current_ref": "wallEnd_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_1_S",
       "story": 1,
       "facing": "S",
       "transform": {
         "translation": [
-          -3.7,
+          0.0,
+          -11.0,
+          5.25
+        ],
+        "rot_y": 180,
+        "scale": [
+          1.4,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.4,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      },
+      "material_in": "plaster"
+    },
+    {
+      "slot_id": "ext_1_S_open5",
+      "role": "window",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "window_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_S",
+      "story": 1,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          1.5,
           -11.0,
           5.25
         ],
@@ -5243,30 +5666,74 @@
       },
       "fit": {
         "dims": [
-          2.0,
+          1.6,
           0.3,
           3.3
         ],
         "pivot": "center",
-        "openings": [],
+        "openings": [
+          {
+            "kind": "window",
+            "width": 1.6,
+            "height": 1.4,
+            "sill": 0.9
+          }
+        ],
         "collision": "convex"
       },
-      "material_in": "plaster"
+      "glazing": "facade",
+      "pane": "dark"
     },
     {
       "slot_id": "ext_1_S_seg6",
       "role": "wall",
-      "size_mod": "full",
+      "size_mod": "end",
       "style": 1,
       "material": "concrete",
-      "current_ref": "wall_greybox_01",
+      "current_ref": "wallEnd_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_1_S",
       "story": 1,
       "facing": "S",
       "transform": {
         "translation": [
-          -1.7,
+          3.0,
+          -11.0,
+          5.25
+        ],
+        "rot_y": 180,
+        "scale": [
+          1.4,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.4,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      },
+      "material_in": "plaster"
+    },
+    {
+      "slot_id": "ext_1_S_open6",
+      "role": "window",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "window_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_S",
+      "story": 1,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          4.5,
           -11.0,
           5.25
         ],
@@ -5279,126 +5746,26 @@
       },
       "fit": {
         "dims": [
-          2.0,
+          1.6,
           0.3,
           3.3
         ],
         "pivot": "center",
-        "openings": [],
+        "openings": [
+          {
+            "kind": "window",
+            "width": 1.6,
+            "height": 1.4,
+            "sill": 0.9
+          }
+        ],
         "collision": "convex"
       },
-      "material_in": "plaster"
+      "glazing": "facade",
+      "pane": "lit_blind"
     },
     {
       "slot_id": "ext_1_S_seg7",
-      "role": "wall",
-      "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "ext_1_S",
-      "story": 1,
-      "facing": "S",
-      "transform": {
-        "translation": [
-          0.3,
-          -11.0,
-          5.25
-        ],
-        "rot_y": 180,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          3.3
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      },
-      "material_in": "plaster"
-    },
-    {
-      "slot_id": "ext_1_S_seg8",
-      "role": "wall",
-      "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "ext_1_S",
-      "story": 1,
-      "facing": "S",
-      "transform": {
-        "translation": [
-          2.3,
-          -11.0,
-          5.25
-        ],
-        "rot_y": 180,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          3.3
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      },
-      "material_in": "plaster"
-    },
-    {
-      "slot_id": "ext_1_S_seg9",
-      "role": "wall",
-      "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "ext_1_S",
-      "story": 1,
-      "facing": "S",
-      "transform": {
-        "translation": [
-          4.3,
-          -11.0,
-          5.25
-        ],
-        "rot_y": 180,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          3.3
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      },
-      "material_in": "plaster"
-    },
-    {
-      "slot_id": "ext_1_S_seg10",
       "role": "wall",
       "size_mod": "end",
       "style": 1,
@@ -5434,7 +5801,7 @@
       "material_in": "plaster"
     },
     {
-      "slot_id": "ext_1_S_open1",
+      "slot_id": "ext_1_S_open7",
       "role": "window",
       "size_mod": "full",
       "style": 1,
@@ -5474,22 +5841,59 @@
         ],
         "collision": "convex"
       },
-      "material_in": "plaster"
+      "glazing": "facade",
+      "pane": "lit_blind_cool"
     },
     {
-      "slot_id": "ext_1_S_seg11",
+      "slot_id": "ext_1_S_seg8",
       "role": "wall",
-      "size_mod": "full",
+      "size_mod": "end",
       "style": 1,
       "material": "concrete",
-      "current_ref": "wall_greybox_01",
+      "current_ref": "wallEnd_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_1_S",
       "story": 1,
       "facing": "S",
       "transform": {
         "translation": [
-          9.3,
+          9.0,
+          -11.0,
+          5.25
+        ],
+        "rot_y": 180,
+        "scale": [
+          1.4,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.4,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      },
+      "material_in": "plaster"
+    },
+    {
+      "slot_id": "ext_1_S_open8",
+      "role": "window",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "window_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_S",
+      "story": 1,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          10.5,
           -11.0,
           5.25
         ],
@@ -5502,7 +5906,51 @@
       },
       "fit": {
         "dims": [
-          2.0,
+          1.6,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [
+          {
+            "kind": "window",
+            "width": 1.6,
+            "height": 1.4,
+            "sill": 0.9
+          }
+        ],
+        "collision": "convex"
+      },
+      "glazing": "facade",
+      "pane": "lit_cool"
+    },
+    {
+      "slot_id": "ext_1_S_seg9",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_S",
+      "story": 1,
+      "facing": "S",
+      "transform": {
+        "translation": [
+          12.0,
+          -11.0,
+          5.25
+        ],
+        "rot_y": 180,
+        "scale": [
+          1.4,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.4,
           0.3,
           3.3
         ],
@@ -5513,19 +5961,19 @@
       "material_in": "plaster"
     },
     {
-      "slot_id": "ext_1_S_seg12",
-      "role": "wall",
+      "slot_id": "ext_1_S_open9",
+      "role": "window",
       "size_mod": "full",
       "style": 1,
       "material": "concrete",
-      "current_ref": "wall_greybox_01",
+      "current_ref": "window_greybox_01",
       "kit_axis": "theme",
       "wall": "ext_1_S",
       "story": 1,
       "facing": "S",
       "transform": {
         "translation": [
-          11.3,
+          13.5,
           -11.0,
           5.25
         ],
@@ -5538,54 +5986,26 @@
       },
       "fit": {
         "dims": [
-          2.0,
+          1.6,
           0.3,
           3.3
         ],
         "pivot": "center",
-        "openings": [],
+        "openings": [
+          {
+            "kind": "window",
+            "width": 1.6,
+            "height": 1.4,
+            "sill": 0.9
+          }
+        ],
         "collision": "convex"
       },
-      "material_in": "plaster"
+      "glazing": "facade",
+      "pane": "lit_blind"
     },
     {
-      "slot_id": "ext_1_S_seg13",
-      "role": "wall",
-      "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "ext_1_S",
-      "story": 1,
-      "facing": "S",
-      "transform": {
-        "translation": [
-          13.3,
-          -11.0,
-          5.25
-        ],
-        "rot_y": 180,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          3.3
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      },
-      "material_in": "plaster"
-    },
-    {
-      "slot_id": "ext_1_S_seg14",
+      "slot_id": "ext_1_S_seg10",
       "role": "wall",
       "size_mod": "end",
       "style": 1,
@@ -5621,7 +6041,7 @@
       "material_in": "plaster"
     },
     {
-      "slot_id": "ext_1_S_seg15",
+      "slot_id": "ext_1_S_seg11",
       "role": "wall",
       "size_mod": "end",
       "style": 1,
@@ -5657,7 +6077,7 @@
       "material_in": "plaster"
     },
     {
-      "slot_id": "ext_1_S_seg16",
+      "slot_id": "ext_1_S_seg12",
       "role": "wall",
       "size_mod": "end",
       "style": 1,
@@ -5695,78 +6115,6 @@
     {
       "slot_id": "ext_1_E_seg0",
       "role": "wall",
-      "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "ext_1_E",
-      "story": 1,
-      "facing": "E",
-      "transform": {
-        "translation": [
-          15.0,
-          -9.85,
-          5.25
-        ],
-        "rot_y": 90,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          3.3
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      },
-      "material_in": "plaster"
-    },
-    {
-      "slot_id": "ext_1_E_seg1",
-      "role": "wall",
-      "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "ext_1_E",
-      "story": 1,
-      "facing": "E",
-      "transform": {
-        "translation": [
-          15.0,
-          -7.85,
-          5.25
-        ],
-        "rot_y": 90,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          3.3
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      },
-      "material_in": "plaster"
-    },
-    {
-      "slot_id": "ext_1_E_seg2",
-      "role": "wall",
       "size_mod": "end",
       "style": 1,
       "material": "concrete",
@@ -5778,19 +6126,19 @@
       "transform": {
         "translation": [
           15.0,
-          -6.575,
+          -10.325,
           5.25
         ],
         "rot_y": 90,
         "scale": [
-          0.55,
+          1.05,
           0.3,
           3.3
         ]
       },
       "fit": {
         "dims": [
-          0.55,
+          1.05,
           0.3,
           3.3
         ],
@@ -5814,7 +6162,7 @@
       "transform": {
         "translation": [
           15.0,
-          -5.5,
+          -9.0,
           5.25
         ],
         "rot_y": 90,
@@ -5841,154 +6189,11 @@
         ],
         "collision": "convex"
       },
-      "material_in": "plaster"
+      "glazing": "facade",
+      "pane": "lit_cool"
     },
     {
-      "slot_id": "ext_1_E_seg3",
-      "role": "wall",
-      "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "ext_1_E",
-      "story": 1,
-      "facing": "E",
-      "transform": {
-        "translation": [
-          15.0,
-          -3.7,
-          5.25
-        ],
-        "rot_y": 90,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          3.3
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      },
-      "material_in": "plaster"
-    },
-    {
-      "slot_id": "ext_1_E_seg4",
-      "role": "wall",
-      "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "ext_1_E",
-      "story": 1,
-      "facing": "E",
-      "transform": {
-        "translation": [
-          15.0,
-          -1.7,
-          5.25
-        ],
-        "rot_y": 90,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          3.3
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      },
-      "material_in": "plaster"
-    },
-    {
-      "slot_id": "ext_1_E_seg5",
-      "role": "wall",
-      "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "ext_1_E",
-      "story": 1,
-      "facing": "E",
-      "transform": {
-        "translation": [
-          15.0,
-          0.3,
-          5.25
-        ],
-        "rot_y": 90,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          3.3
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      },
-      "material_in": "plaster"
-    },
-    {
-      "slot_id": "ext_1_E_seg6",
-      "role": "wall",
-      "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "ext_1_E",
-      "story": 1,
-      "facing": "E",
-      "transform": {
-        "translation": [
-          15.0,
-          2.3,
-          5.25
-        ],
-        "rot_y": 90,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          3.3
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      },
-      "material_in": "plaster"
-    },
-    {
-      "slot_id": "ext_1_E_seg7",
+      "slot_id": "ext_1_E_seg1",
       "role": "wall",
       "size_mod": "end",
       "style": 1,
@@ -6001,7 +6206,7 @@
       "transform": {
         "translation": [
           15.0,
-          4.0,
+          -7.5,
           5.25
         ],
         "rot_y": 90,
@@ -6037,7 +6242,7 @@
       "transform": {
         "translation": [
           15.0,
-          5.5,
+          -6.0,
           5.25
         ],
         "rot_y": 90,
@@ -6064,82 +6269,11 @@
         ],
         "collision": "convex"
       },
-      "material_in": "plaster"
+      "glazing": "facade",
+      "pane": "dark"
     },
     {
-      "slot_id": "ext_1_E_seg8",
-      "role": "wall",
-      "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "ext_1_E",
-      "story": 1,
-      "facing": "E",
-      "transform": {
-        "translation": [
-          15.0,
-          7.3,
-          5.25
-        ],
-        "rot_y": 90,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          3.3
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      },
-      "material_in": "plaster"
-    },
-    {
-      "slot_id": "ext_1_E_seg9",
-      "role": "wall",
-      "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "ext_1_E",
-      "story": 1,
-      "facing": "E",
-      "transform": {
-        "translation": [
-          15.0,
-          9.3,
-          5.25
-        ],
-        "rot_y": 90,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          3.3
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      },
-      "material_in": "plaster"
-    },
-    {
-      "slot_id": "ext_1_E_seg10",
+      "slot_id": "ext_1_E_seg2",
       "role": "wall",
       "size_mod": "end",
       "style": 1,
@@ -6152,19 +6286,419 @@
       "transform": {
         "translation": [
           15.0,
-          10.575,
+          -4.5,
           5.25
         ],
         "rot_y": 90,
         "scale": [
-          0.55,
+          1.4,
           0.3,
           3.3
         ]
       },
       "fit": {
         "dims": [
-          0.55,
+          1.4,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      },
+      "material_in": "plaster"
+    },
+    {
+      "slot_id": "ext_1_E_open2",
+      "role": "window",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "window_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_E",
+      "story": 1,
+      "facing": "E",
+      "transform": {
+        "translation": [
+          15.0,
+          -3.0,
+          5.25
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.6,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [
+          {
+            "kind": "window",
+            "width": 1.6,
+            "height": 1.4,
+            "sill": 0.9
+          }
+        ],
+        "collision": "convex"
+      },
+      "glazing": "facade",
+      "pane": "dark_shade"
+    },
+    {
+      "slot_id": "ext_1_E_seg3",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_E",
+      "story": 1,
+      "facing": "E",
+      "transform": {
+        "translation": [
+          15.0,
+          -1.5,
+          5.25
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.4,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.4,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      },
+      "material_in": "plaster"
+    },
+    {
+      "slot_id": "ext_1_E_open3",
+      "role": "window",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "window_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_E",
+      "story": 1,
+      "facing": "E",
+      "transform": {
+        "translation": [
+          15.0,
+          0.0,
+          5.25
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.6,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [
+          {
+            "kind": "window",
+            "width": 1.6,
+            "height": 1.4,
+            "sill": 0.9
+          }
+        ],
+        "collision": "convex"
+      },
+      "glazing": "facade",
+      "pane": "dark_blind"
+    },
+    {
+      "slot_id": "ext_1_E_seg4",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_E",
+      "story": 1,
+      "facing": "E",
+      "transform": {
+        "translation": [
+          15.0,
+          1.5,
+          5.25
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.4,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.4,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      },
+      "material_in": "plaster"
+    },
+    {
+      "slot_id": "ext_1_E_open4",
+      "role": "window",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "window_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_E",
+      "story": 1,
+      "facing": "E",
+      "transform": {
+        "translation": [
+          15.0,
+          3.0,
+          5.25
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.6,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [
+          {
+            "kind": "window",
+            "width": 1.6,
+            "height": 1.4,
+            "sill": 0.9
+          }
+        ],
+        "collision": "convex"
+      },
+      "glazing": "facade",
+      "pane": "lit_cool"
+    },
+    {
+      "slot_id": "ext_1_E_seg5",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_E",
+      "story": 1,
+      "facing": "E",
+      "transform": {
+        "translation": [
+          15.0,
+          4.5,
+          5.25
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.4,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.4,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      },
+      "material_in": "plaster"
+    },
+    {
+      "slot_id": "ext_1_E_open5",
+      "role": "window",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "window_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_E",
+      "story": 1,
+      "facing": "E",
+      "transform": {
+        "translation": [
+          15.0,
+          6.0,
+          5.25
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.6,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [
+          {
+            "kind": "window",
+            "width": 1.6,
+            "height": 1.4,
+            "sill": 0.9
+          }
+        ],
+        "collision": "convex"
+      },
+      "glazing": "facade",
+      "pane": "lit_shade"
+    },
+    {
+      "slot_id": "ext_1_E_seg6",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_E",
+      "story": 1,
+      "facing": "E",
+      "transform": {
+        "translation": [
+          15.0,
+          7.5,
+          5.25
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.4,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.4,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      },
+      "material_in": "plaster"
+    },
+    {
+      "slot_id": "ext_1_E_open6",
+      "role": "window",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "window_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_E",
+      "story": 1,
+      "facing": "E",
+      "transform": {
+        "translation": [
+          15.0,
+          9.0,
+          5.25
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.6,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [
+          {
+            "kind": "window",
+            "width": 1.6,
+            "height": 1.4,
+            "sill": 0.9
+          }
+        ],
+        "collision": "convex"
+      },
+      "glazing": "facade",
+      "pane": "lit_shade"
+    },
+    {
+      "slot_id": "ext_1_E_seg7",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_E",
+      "story": 1,
+      "facing": "E",
+      "transform": {
+        "translation": [
+          15.0,
+          10.325,
+          5.25
+        ],
+        "rot_y": 90,
+        "scale": [
+          1.05,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.05,
           0.3,
           3.3
         ],
@@ -6177,78 +6711,6 @@
     {
       "slot_id": "ext_1_W_seg0",
       "role": "wall",
-      "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "ext_1_W",
-      "story": 1,
-      "facing": "W",
-      "transform": {
-        "translation": [
-          -15.0,
-          -9.85,
-          5.25
-        ],
-        "rot_y": 270,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          3.3
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      },
-      "material_in": "plaster"
-    },
-    {
-      "slot_id": "ext_1_W_seg1",
-      "role": "wall",
-      "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "ext_1_W",
-      "story": 1,
-      "facing": "W",
-      "transform": {
-        "translation": [
-          -15.0,
-          -7.85,
-          5.25
-        ],
-        "rot_y": 270,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          3.3
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      },
-      "material_in": "plaster"
-    },
-    {
-      "slot_id": "ext_1_W_seg2",
-      "role": "wall",
       "size_mod": "end",
       "style": 1,
       "material": "concrete",
@@ -6260,19 +6722,19 @@
       "transform": {
         "translation": [
           -15.0,
-          -6.575,
+          -10.325,
           5.25
         ],
         "rot_y": 270,
         "scale": [
-          0.55,
+          1.05,
           0.3,
           3.3
         ]
       },
       "fit": {
         "dims": [
-          0.55,
+          1.05,
           0.3,
           3.3
         ],
@@ -6296,7 +6758,7 @@
       "transform": {
         "translation": [
           -15.0,
-          -5.5,
+          -9.0,
           5.25
         ],
         "rot_y": 270,
@@ -6323,154 +6785,11 @@
         ],
         "collision": "convex"
       },
-      "material_in": "plaster"
+      "glazing": "facade",
+      "pane": "lit_cool"
     },
     {
-      "slot_id": "ext_1_W_seg3",
-      "role": "wall",
-      "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "ext_1_W",
-      "story": 1,
-      "facing": "W",
-      "transform": {
-        "translation": [
-          -15.0,
-          -3.7,
-          5.25
-        ],
-        "rot_y": 270,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          3.3
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      },
-      "material_in": "plaster"
-    },
-    {
-      "slot_id": "ext_1_W_seg4",
-      "role": "wall",
-      "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "ext_1_W",
-      "story": 1,
-      "facing": "W",
-      "transform": {
-        "translation": [
-          -15.0,
-          -1.7,
-          5.25
-        ],
-        "rot_y": 270,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          3.3
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      },
-      "material_in": "plaster"
-    },
-    {
-      "slot_id": "ext_1_W_seg5",
-      "role": "wall",
-      "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "ext_1_W",
-      "story": 1,
-      "facing": "W",
-      "transform": {
-        "translation": [
-          -15.0,
-          0.3,
-          5.25
-        ],
-        "rot_y": 270,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          3.3
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      },
-      "material_in": "plaster"
-    },
-    {
-      "slot_id": "ext_1_W_seg6",
-      "role": "wall",
-      "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "ext_1_W",
-      "story": 1,
-      "facing": "W",
-      "transform": {
-        "translation": [
-          -15.0,
-          2.3,
-          5.25
-        ],
-        "rot_y": 270,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          3.3
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      },
-      "material_in": "plaster"
-    },
-    {
-      "slot_id": "ext_1_W_seg7",
+      "slot_id": "ext_1_W_seg1",
       "role": "wall",
       "size_mod": "end",
       "style": 1,
@@ -6483,7 +6802,7 @@
       "transform": {
         "translation": [
           -15.0,
-          4.0,
+          -7.5,
           5.25
         ],
         "rot_y": 270,
@@ -6519,7 +6838,7 @@
       "transform": {
         "translation": [
           -15.0,
-          5.5,
+          -6.0,
           5.25
         ],
         "rot_y": 270,
@@ -6546,82 +6865,11 @@
         ],
         "collision": "convex"
       },
-      "material_in": "plaster"
+      "glazing": "facade",
+      "pane": "dark_blind"
     },
     {
-      "slot_id": "ext_1_W_seg8",
-      "role": "wall",
-      "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "ext_1_W",
-      "story": 1,
-      "facing": "W",
-      "transform": {
-        "translation": [
-          -15.0,
-          7.3,
-          5.25
-        ],
-        "rot_y": 270,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          3.3
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      },
-      "material_in": "plaster"
-    },
-    {
-      "slot_id": "ext_1_W_seg9",
-      "role": "wall",
-      "size_mod": "full",
-      "style": 1,
-      "material": "concrete",
-      "current_ref": "wall_greybox_01",
-      "kit_axis": "theme",
-      "wall": "ext_1_W",
-      "story": 1,
-      "facing": "W",
-      "transform": {
-        "translation": [
-          -15.0,
-          9.3,
-          5.25
-        ],
-        "rot_y": 270,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          2.0,
-          0.3,
-          3.3
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      },
-      "material_in": "plaster"
-    },
-    {
-      "slot_id": "ext_1_W_seg10",
+      "slot_id": "ext_1_W_seg2",
       "role": "wall",
       "size_mod": "end",
       "style": 1,
@@ -6634,19 +6882,419 @@
       "transform": {
         "translation": [
           -15.0,
-          10.575,
+          -4.5,
           5.25
         ],
         "rot_y": 270,
         "scale": [
-          0.55,
+          1.4,
           0.3,
           3.3
         ]
       },
       "fit": {
         "dims": [
-          0.55,
+          1.4,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      },
+      "material_in": "plaster"
+    },
+    {
+      "slot_id": "ext_1_W_open2",
+      "role": "window",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "window_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_W",
+      "story": 1,
+      "facing": "W",
+      "transform": {
+        "translation": [
+          -15.0,
+          -3.0,
+          5.25
+        ],
+        "rot_y": 270,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.6,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [
+          {
+            "kind": "window",
+            "width": 1.6,
+            "height": 1.4,
+            "sill": 0.9
+          }
+        ],
+        "collision": "convex"
+      },
+      "glazing": "facade",
+      "pane": "dark_shade"
+    },
+    {
+      "slot_id": "ext_1_W_seg3",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_W",
+      "story": 1,
+      "facing": "W",
+      "transform": {
+        "translation": [
+          -15.0,
+          -1.5,
+          5.25
+        ],
+        "rot_y": 270,
+        "scale": [
+          1.4,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.4,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      },
+      "material_in": "plaster"
+    },
+    {
+      "slot_id": "ext_1_W_open3",
+      "role": "window",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "window_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_W",
+      "story": 1,
+      "facing": "W",
+      "transform": {
+        "translation": [
+          -15.0,
+          0.0,
+          5.25
+        ],
+        "rot_y": 270,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.6,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [
+          {
+            "kind": "window",
+            "width": 1.6,
+            "height": 1.4,
+            "sill": 0.9
+          }
+        ],
+        "collision": "convex"
+      },
+      "glazing": "facade",
+      "pane": "dark_curtain"
+    },
+    {
+      "slot_id": "ext_1_W_seg4",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_W",
+      "story": 1,
+      "facing": "W",
+      "transform": {
+        "translation": [
+          -15.0,
+          1.5,
+          5.25
+        ],
+        "rot_y": 270,
+        "scale": [
+          1.4,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.4,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      },
+      "material_in": "plaster"
+    },
+    {
+      "slot_id": "ext_1_W_open4",
+      "role": "window",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "window_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_W",
+      "story": 1,
+      "facing": "W",
+      "transform": {
+        "translation": [
+          -15.0,
+          3.0,
+          5.25
+        ],
+        "rot_y": 270,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.6,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [
+          {
+            "kind": "window",
+            "width": 1.6,
+            "height": 1.4,
+            "sill": 0.9
+          }
+        ],
+        "collision": "convex"
+      },
+      "glazing": "facade",
+      "pane": "dark_blind"
+    },
+    {
+      "slot_id": "ext_1_W_seg5",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_W",
+      "story": 1,
+      "facing": "W",
+      "transform": {
+        "translation": [
+          -15.0,
+          4.5,
+          5.25
+        ],
+        "rot_y": 270,
+        "scale": [
+          1.4,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.4,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      },
+      "material_in": "plaster"
+    },
+    {
+      "slot_id": "ext_1_W_open5",
+      "role": "window",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "window_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_W",
+      "story": 1,
+      "facing": "W",
+      "transform": {
+        "translation": [
+          -15.0,
+          6.0,
+          5.25
+        ],
+        "rot_y": 270,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.6,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [
+          {
+            "kind": "window",
+            "width": 1.6,
+            "height": 1.4,
+            "sill": 0.9
+          }
+        ],
+        "collision": "convex"
+      },
+      "glazing": "facade",
+      "pane": "dark"
+    },
+    {
+      "slot_id": "ext_1_W_seg6",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_W",
+      "story": 1,
+      "facing": "W",
+      "transform": {
+        "translation": [
+          -15.0,
+          7.5,
+          5.25
+        ],
+        "rot_y": 270,
+        "scale": [
+          1.4,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.4,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      },
+      "material_in": "plaster"
+    },
+    {
+      "slot_id": "ext_1_W_open6",
+      "role": "window",
+      "size_mod": "full",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "window_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_W",
+      "story": 1,
+      "facing": "W",
+      "transform": {
+        "translation": [
+          -15.0,
+          9.0,
+          5.25
+        ],
+        "rot_y": 270,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.6,
+          0.3,
+          3.3
+        ],
+        "pivot": "center",
+        "openings": [
+          {
+            "kind": "window",
+            "width": 1.6,
+            "height": 1.4,
+            "sill": 0.9
+          }
+        ],
+        "collision": "convex"
+      },
+      "glazing": "facade",
+      "pane": "dark_shade"
+    },
+    {
+      "slot_id": "ext_1_W_seg7",
+      "role": "wall",
+      "size_mod": "end",
+      "style": 1,
+      "material": "concrete",
+      "current_ref": "wallEnd_greybox_01",
+      "kit_axis": "theme",
+      "wall": "ext_1_W",
+      "story": 1,
+      "facing": "W",
+      "transform": {
+        "translation": [
+          -15.0,
+          10.325,
+          5.25
+        ],
+        "rot_y": 270,
+        "scale": [
+          1.05,
+          0.3,
+          3.3
+        ]
+      },
+      "fit": {
+        "dims": [
+          1.05,
           0.3,
           3.3
         ],
@@ -13561,7 +14209,7 @@
       "facing": null,
       "transform": {
         "translation": [
-          -11.25,
+          -6.0,
           11.18,
           3.45
         ],
@@ -13600,85 +14248,7 @@
       "facing": null,
       "transform": {
         "translation": [
-          -2.7333,
-          11.18,
-          3.45
-        ],
-        "rot_y": 180.0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          0.6,
-          0.1,
-          6.9
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "pilaster_N_2",
-      "role": "prop",
-      "size_mod": "full",
-      "style": 13,
-      "material": "plaster",
-      "species": "wall_pilaster",
-      "stock": null,
-      "variant": 0,
-      "form": null,
-      "current_ref": "prop_greybox_01",
-      "kit_axis": "material",
-      "wall": null,
-      "story": null,
-      "facing": null,
-      "transform": {
-        "translation": [
-          2.0333,
-          11.18,
-          3.45
-        ],
-        "rot_y": 180.0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          0.6,
-          0.1,
-          6.9
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "pilaster_N_3",
-      "role": "prop",
-      "size_mod": "full",
-      "style": 13,
-      "material": "plaster",
-      "species": "wall_pilaster",
-      "stock": null,
-      "variant": 0,
-      "form": null,
-      "current_ref": "prop_greybox_01",
-      "kit_axis": "material",
-      "wall": null,
-      "story": null,
-      "facing": null,
-      "transform": {
-        "translation": [
-          10.9,
+          -3.0,
           11.18,
           3.45
         ],
@@ -13718,7 +14288,7 @@
       "transform": {
         "translation": [
           15.18,
-          0.0,
+          -7.5,
           3.45
         ],
         "rot_y": 270.0,
@@ -13740,7 +14310,7 @@
       }
     },
     {
-      "slot_id": "pilaster_S_0",
+      "slot_id": "pilaster_E_1",
       "role": "prop",
       "size_mod": "full",
       "style": 13,
@@ -13756,11 +14326,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          -11.25,
-          -11.18,
+          15.18,
+          -1.5,
           3.45
         ],
-        "rot_y": 0.0,
+        "rot_y": 270.0,
         "scale": [
           1.0,
           1.0,
@@ -13779,7 +14349,7 @@
       }
     },
     {
-      "slot_id": "pilaster_S_1",
+      "slot_id": "pilaster_E_2",
       "role": "prop",
       "size_mod": "full",
       "style": 13,
@@ -13795,89 +14365,11 @@
       "facing": null,
       "transform": {
         "translation": [
-          -5.25,
-          -11.18,
+          15.18,
+          1.5,
           3.45
         ],
-        "rot_y": 0.0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          0.6,
-          0.1,
-          6.9
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "pilaster_S_2",
-      "role": "prop",
-      "size_mod": "full",
-      "style": 13,
-      "material": "plaster",
-      "species": "wall_pilaster",
-      "stock": null,
-      "variant": 0,
-      "form": null,
-      "current_ref": "prop_greybox_01",
-      "kit_axis": "material",
-      "wall": null,
-      "story": null,
-      "facing": null,
-      "transform": {
-        "translation": [
-          1.775,
-          -11.18,
-          3.45
-        ],
-        "rot_y": 0.0,
-        "scale": [
-          1.0,
-          1.0,
-          1.0
-        ]
-      },
-      "fit": {
-        "dims": [
-          0.6,
-          0.1,
-          6.9
-        ],
-        "pivot": "center",
-        "openings": [],
-        "collision": "convex"
-      }
-    },
-    {
-      "slot_id": "pilaster_S_3",
-      "role": "prop",
-      "size_mod": "full",
-      "style": 13,
-      "material": "plaster",
-      "species": "wall_pilaster",
-      "stock": null,
-      "variant": 0,
-      "form": null,
-      "current_ref": "prop_greybox_01",
-      "kit_axis": "material",
-      "wall": null,
-      "story": null,
-      "facing": null,
-      "transform": {
-        "translation": [
-          9.275,
-          -11.18,
-          3.45
-        ],
-        "rot_y": 0.0,
+        "rot_y": 270.0,
         "scale": [
           1.0,
           1.0,
@@ -13913,7 +14405,7 @@
       "transform": {
         "translation": [
           -15.18,
-          -2.75,
+          -7.5,
           3.45
         ],
         "rot_y": 90.0,
@@ -13952,7 +14444,85 @@
       "transform": {
         "translation": [
           -15.18,
-          2.75,
+          -1.5,
+          3.45
+        ],
+        "rot_y": 90.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.6,
+          0.1,
+          6.9
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "pilaster_W_2",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 13,
+      "material": "plaster",
+      "species": "wall_pilaster",
+      "stock": null,
+      "variant": 0,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          -15.18,
+          1.5,
+          3.45
+        ],
+        "rot_y": 90.0,
+        "scale": [
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "fit": {
+        "dims": [
+          0.6,
+          0.1,
+          6.9
+        ],
+        "pivot": "center",
+        "openings": [],
+        "collision": "convex"
+      }
+    },
+    {
+      "slot_id": "pilaster_W_3",
+      "role": "prop",
+      "size_mod": "full",
+      "style": 13,
+      "material": "plaster",
+      "species": "wall_pilaster",
+      "stock": null,
+      "variant": 0,
+      "form": null,
+      "current_ref": "prop_greybox_01",
+      "kit_axis": "material",
+      "wall": null,
+      "story": null,
+      "facing": null,
+      "transform": {
+        "translation": [
+          -15.18,
+          7.5,
           3.45
         ],
         "rot_y": 90.0,

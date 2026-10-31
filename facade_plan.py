@@ -80,6 +80,81 @@ TOL = 0.05
 DRAPE_NAME = "window_drape"
 
 
+def unreached_storeys(spec):
+    """The upper storeys nobody can stand on (0.295.0): no room is on them, and no stair, ladder, ramp or fire escape
+    arrives at or passes them. A link reaches every storey from its lower end to its upper one, which can only call a
+    storey reached that a switchback does not stop at -- never the other way. Storey 0 is the street and always
+    reached; a basement is never upper."""
+    reached = {int(r.story) for r in spec.rooms}
+    for link in list(spec.stairs) + list(spec.ladders) + list(spec.ramps):
+        a, b = sorted((int(link.from_story), int(link.to_story)))
+        reached.update(range(a, b + 1))
+    for fe in spec.fire_escapes:
+        reached.update(int(s) for s in fe.served_stories)
+    return [s for s in range(1, int(spec.n_stories)) if s not in reached]
+
+
+def _snap_sym(v, grid):
+    """`v` to the grid, symmetric about zero, so a mirrored pair of bays stays a mirrored pair."""
+    return (1 if v >= 0 else -1) * round(abs(v) / grid) * grid
+
+
+def compose_unreached(d):
+    """A STOREY NOBODY REACHES IS A FACADE (0.295.0), composed on the mid-rise row. The walker's slice, the bank: its
+    upper storey has no room and no stair, and stood two 1.6 m windows on each 30 m and 22 m face -- a warehouse's
+    rhythm on a bank. The library's 70 multi-storey buildings carry a median 20 m of upper wall a window (the factory's
+    `docs/findings/slice_look/`, slice 22); a street's offices are 3 to 4. On a storey nobody can stand on, nothing a
+    window does to play -- a sightline, a route, a room's furnishing -- can happen, so it is the one place a face can
+    be composed whole without a gameplay cost: each face's untagged windows go, and one window like its widest
+    stands at the centre of every `midrise` bay that `_fits`. A face with no untagged window stays as it was: nothing
+    asked for windows there. Every tagged window and every other opening stays where it was authored. Idempotent.
+    In place; returns ``[(wall, story, windows before, windows after)]``."""
+    if d.get("facade"):
+        return []
+    spec = spec_loader.spec_from_dict(d)
+    storeys = set(unreached_storeys(spec))
+    if not storeys:
+        return []
+    grid = float(spec.grid)
+    wt = float(spec.wall_thick)
+    out = []
+    for i, w in enumerate(d.get("ext_walls") or []):
+        story = int(w["story"])
+        if story not in storeys:
+            continue
+        side = w["wall"]
+        ops = w.get("openings") or []
+        objs = spec.ext_walls[i].openings
+        free = [j for j, o in enumerate(ops) if o.get("kind") == "window" and not o.get("tag")]
+        if not free:
+            continue
+        run, centre, line = _run(spec, side, story)
+        kept = [(_snap_sym(float(objs[j].pos) * run, grid), float(objs[j].resolved()["width"]))
+                for j in range(len(ops)) if j not in free]
+        proto = dict(ops[max(free, key=lambda j: float(objs[j].resolved()["width"]))])
+        width = float(objs[max(free, key=lambda j: float(objs[j].resolved()["width"]))].resolved()["width"])
+        junctions = _junctions(spec, side, story, centre, line)
+        placed = list(kept)
+        windows = []
+        # EQUAL BAYS ON THE BUILDER'S GRID. The builder cuts every opening on `grid`, so `bay_positions`' 30 / 9 =
+        # 3.33 m bays came out 3.5, 3.5, 3.0, 3.5 -- an uneven rhythm, which is what reads as generated. The mid-rise
+        # bay is rounded to two grid steps, so a row centred on the face lands on the grid at either count, and as
+        # many bays stand as keep a window clear of the corners.
+        bay = max(2.0 * grid, round(float(ROWS["midrise"]["bay_m"]) / (2.0 * grid)) * 2.0 * grid)
+        reach = run / 2.0 - EDGE_WALLS * wt - width / 2.0
+        n = max(0, 1 + int((2.0 * reach) / bay + 1e-9))
+        for k in range(n):
+            u = _snap_sym((k - (n - 1) / 2.0) * bay, grid)
+            if _fits(u, width, placed, run, wt, junctions) is None:
+                placed.append((u, width))
+                win = dict(proto)
+                win["pos"] = round(u / run, 6)
+                windows.append(win)
+        w["openings"] = [o for j, o in enumerate(ops) if j not in free] + windows
+        out.append((side, story, len(free), len(windows)))
+    return out
+
+
 def bay_positions(row, width):
     """The bay centres of `row` across a front `width` metres wide, as fractions of the front (-0.5..0.5)."""
     r = ROWS[row]

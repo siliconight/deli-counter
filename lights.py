@@ -1599,7 +1599,8 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
                          wall_thick, ceiling_voids=None, partitions=None,
                          report=None, volumes=None, club_rooms=None,
                          storefronts=None, residence=False, landings=None,
-                         bake_reach_rooms=None, selling_rooms=None, tube_rooms=None):
+                         bake_reach_rooms=None, selling_rooms=None, tube_rooms=None,
+                         painted_storeys=None):
     """Derive default light anchors: one fluorescent ceiling row per interior
     room, one area light per window opening, a wall pack over every exterior
     door, and one storefront sign. Every room also carries a `room_ambient`
@@ -1881,6 +1882,12 @@ def derive_light_anchors(rooms, openings, story_height, *, cap_thick,
         if any(_drapes_window(v, o) for v in drapes):
             rep["draped_windows"] = rep.get("draped_windows", 0) + 1
             continue
+        # NOR DOES A PAINTED ONE (0.295.0): a window on a storey nobody
+        # reaches is painted shut (`facade_plan.unreached_storeys`), with no
+        # room behind it to light. Counted before the skip, as a drape is.
+        if o.get("story") in (painted_storeys or ()):
+            rep["painted_windows"] = rep.get("painted_windows", 0) + 1
+            continue
         facing = _wall_facing(wall)
         anchors.append({
             "id": "%s_window_%d" % (wall, win_n[wall]),
@@ -1962,7 +1969,7 @@ def build_light_manifest(building_id, rooms, openings, story_height,
                          *, cap_thick, wall_thick, authored=None, theme=None,
                          ceiling_voids=None, partitions=None, report=None,
                          volumes=None, club_rooms=None, storefronts=None,
-                         business=None, landings=None):
+                         business=None, landings=None, painted_storeys=None):
     """Full `<name>.lights.json` manifest. `authored` is an optional list of
     hand-placed anchors; an authored anchor replaces a derived one with the
     same id (auto defaults + spec overrides, like props). `volumes` and
@@ -1983,7 +1990,8 @@ def build_light_manifest(building_id, rooms, openings, story_height,
                                    landings=landings,
                                    bake_reach_rooms=_bake_reach_rooms(rooms, business),
                                    selling_rooms=_selling_rooms(rooms, business),
-                                   tube_rooms=_tube_rooms(rooms, business))
+                                   tube_rooms=_tube_rooms(rooms, business),
+                                   painted_storeys=painted_storeys)
     if authored:
         by_id = {a["id"]: a for a in anchors}
         for a in authored:
